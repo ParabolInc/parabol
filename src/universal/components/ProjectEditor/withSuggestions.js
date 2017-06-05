@@ -112,18 +112,14 @@ const withSuggestions = (ComposedComponent) => {
       }
       const {block, anchorOffset} = getAnchorLocation(editorState);
       const blockText = block.getText();
-      const entityKey = block.getEntityAt(anchorOffset);
-      const {word} = getWordAt(blockText, anchorOffset);
+      const entityKey = block.getEntityAt(anchorOffset - 1);
+      const {word} = getWordAt(blockText, anchorOffset - 1);
 
-      if (word && !entityKey) {
-        this.checkForSuggestions(word);
-      } else {
-        const {suggestionType} = this.state;
-        if (suggestionType) {
-          this.removeModal();
-        }
+      const inASuggestion = word && !entityKey && this.checkForSuggestions(word);
+      const {suggestionType} = this.state;
+      if (!inASuggestion && suggestionType) {
+        this.removeModal()
       }
-      //setEditorState(editorState);
     }
 
     initialize = () => {

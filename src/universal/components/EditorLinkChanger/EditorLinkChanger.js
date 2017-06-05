@@ -34,27 +34,24 @@ const EditorLinkChanger = (props) => {
     styles,
     removeModal,
     handleSubmit,
-    submitting,
     setEditorState,
     setEdit
   } = props;
 
-  console.log('LT', left, top)
   const pos = {left, top};
-  const {selectionState} = linkData;
+  const {text} = linkData;
   const menuStyles = css(
     styles.modal,
     isClosing && styles.closing
   );
-  const text = getSelectionText(editorState, selectionState);
+
   const onSubmit = (submissionData) => {
     const schema = changerValidation();
     const {data} = schema(submissionData);
-
     const href = linkify.match(data.link)[0].url;
     removeModal();
-    editorRef.focus();
-    setEditorState(completeEntity(editorState, 'insert-link', {href}, data.text));
+    setEditorState(completeEntity(editorState, 'insert-link', {href}, data.text))
+    setTimeout(() => editorRef.focus(), 0);
   };
 
   let stillInModal = null;
@@ -71,6 +68,10 @@ const EditorLinkChanger = (props) => {
   const handleKeyDown = (e) => {
     if (e.key === 'Tab') {
       stillInModal = true;
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      removeModal();
+      editorRef.focus()
     }
   }
   return (

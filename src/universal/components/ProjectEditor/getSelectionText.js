@@ -7,7 +7,7 @@ const getSelectionText = (editorState, selection) => {
   const content = editorState.getCurrentContent();
   const block = content.getBlockForKey(anchorKey);
   const blockText = block.getText();
-  return blockText.substr(selection.getStartOffset() -1, selection.getEndOffset());
+  return blockText.substring(selection.getStartOffset(), selection.getEndOffset());
 };
 
 export default getSelectionText;

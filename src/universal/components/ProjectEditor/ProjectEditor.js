@@ -74,10 +74,7 @@ class ProjectEditor extends Component {
 
   handleEscape = (e) => {
     e.preventDefault();
-    const {renderModal} = this.state;
-    if (renderModal) {
-      this.removeModal();
-    }
+    this.removeModal();
   };
 
   handleKeyCommand = (command, editorState) => {
@@ -110,7 +107,9 @@ class ProjectEditor extends Component {
           onTab={this.handleTab}
           handleReturn={this.handleReturn}
           readOnly={isDragging}
-          ref={(c) => {this.editorRef = c;}}
+          ref={(c) => {
+            this.editorRef = c;
+          }}
         />
         {renderModal && renderModal({editorState, setEditorState, editorRef: this.editorRef})}
       </div>

@@ -6,8 +6,9 @@ import linkify from 'universal/utils/linkify';
 const maybeLinkify = (editorState) => {
   const {block, anchorOffset} = getAnchorLocation(editorState);
   const blockText = block.getText();
-  const {begin, end, word} = getWordAt(blockText, anchorOffset, true);
-  const entityKey = block.getEntityAt(anchorOffset);
+  // -1 to remove the link from the current caret state
+  const {begin, end, word} = getWordAt(blockText, anchorOffset - 1, true);
+  const entityKey = block.getEntityAt(anchorOffset - 1);
   if (word && !entityKey) {
     const links = linkify.match(word);
     if (links) {

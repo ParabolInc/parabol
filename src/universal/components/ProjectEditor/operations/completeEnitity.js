@@ -17,28 +17,58 @@ const operationTypes = {
   }
 };
 
-
-const completeEntity = (editorState, operation, entityData, mention) => {
-  const {entityName, entityType} = operationTypes[operation];
-  const contentState = editorState.getCurrentContent();
+const getExpandedSelectionState = (editorState) => {
   const selectionState = editorState.getSelection();
-  const contentStateWithEntity = contentState
-    .createEntity(entityName, entityType, entityData);
-  const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-  const {block, anchorOffset} = getAnchorLocation(editorState);
-  const {begin, end} = getWordAt(block.getText(), anchorOffset);
-  const emojiTextSelection = selectionState.merge({
-    anchorOffset: begin,
-    focusOffset: end
-  });
-  const contentWithTag = Modifier.replaceText(
+  if (selectionState.isCollapsed()) {
+    const {block, anchorOffset} = getAnchorLocation(editorState);
+    const {begin, end} = getWordAt(block.getText(), anchorOffset);
+    return selectionState.merge({
+      anchorOffset: begin,
+      focusOffset: end
+    });
+  } else {
+    return selectionState;
+  }
+};
+
+const makeContentWithEntity = (contentState, selectionState, mention, entityKey) => {
+  if (!mention) {
+    // anchorKey && focusKey should be different here (used for EditorLinkChanger)
+    return Modifier.applyEntity(
+      contentState,
+      selectionState,
+      entityKey
+    );
+  }
+  return Modifier.replaceText(
     contentState,
-    emojiTextSelection,
+    selectionState,
     mention,
     null,
     entityKey
   );
-  return EditorState.push(editorState, contentWithTag, operation);
+};
+
+const completeEntity = (editorState, operation, entityData, mention) => {
+  const {entityName, entityType} = operationTypes[operation];
+  const contentState = editorState.getCurrentContent();
+  const contentStateWithEntity = contentState
+    .createEntity(entityName, entityType, entityData);
+  const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+  const expandedSelectionState = getExpandedSelectionState(editorState);
+  const contentWithEntity = makeContentWithEntity(contentState, expandedSelectionState, mention, entityKey);
+  const endKey = contentWithEntity.getSelectionAfter().getEndKey();
+  const endOffset = contentWithEntity.getSelectionAfter().getEndOffset();
+  const collapsedSelectionState = expandedSelectionState.merge({
+    anchorKey: endKey,
+    anchorOffset: endOffset,
+    focusKey: endKey,
+    focusOffset: endOffset
+  });
+  const finalContent = contentWithEntity.merge({
+    selectionAfter: collapsedSelectionState
+  })
+  return EditorState.push(editorState, finalContent, operation);
 };
 
 export default completeEntity;

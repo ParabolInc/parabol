@@ -1,17 +1,19 @@
-import {EditorState, getVisibleSelectionRect, KeyBindingUtil, Modifier} from 'draft-js';
+import {EditorState, KeyBindingUtil, Modifier} from 'draft-js';
 import React, {Component} from 'react';
 import EditorLinkChanger from 'universal/components/EditorLinkChanger/EditorLinkChanger';
 import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import maybeLinkify from './maybeLinkify';
+import getDraftCoords from 'universal/utils/getDraftCoords';
+import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
 
 const getCtrlKSelection = (editorState) => {
   const selection = editorState.getSelection();
   if (selection.isCollapsed()) {
     const {block, anchorOffset} = getAnchorLocation(editorState);
     const blockText = block.getText();
-    const {word, begin, end} = getWordAt(blockText, anchorOffset);
+    const {word, begin, end} = getWordAt(blockText, anchorOffset - 1);
 
     if (word) {
       return selection.merge({
@@ -67,6 +69,11 @@ const withLinks = (ComposedComponent) => {
     initialize = () => {
       const {linkViewerData, linkChangerData} = this.state;
       if (linkViewerData || linkChangerData) {
+        const targetRect = getDraftCoords();
+        if (targetRect) {
+          this.left = targetRect.left;
+          this.top = targetRect.top + 32;
+        }
         const renderModal = linkViewerData ? this.renderViewerModal : this.renderChangerModal;
         const {removeModal} = this;
         return {
@@ -79,16 +86,17 @@ const withLinks = (ComposedComponent) => {
 
     renderChangerModal = ({editorState, setEditorState, editorRef}) => {
       const {linkChangerData} = this.state;
-      const targetRect = getVisibleSelectionRect(window);
+      //const targetRect = getDraftCoords();
       return (
         <EditorLinkChanger
           isOpen
-          top={targetRect && targetRect.top + 32}
-          left={targetRect && targetRect.left}
+          top={this.top}
+          left={this.left}
           editorState={editorState}
           setEditorState={setEditorState}
           removeModal={this.removeModal}
           linkData={linkChangerData}
+          initialValues={{text: linkChangerData.text}}
           editorRef={editorRef}
         />
       );
@@ -96,7 +104,10 @@ const withLinks = (ComposedComponent) => {
 
     renderViewerModal = ({editorState, setEditorState}) => {
       const {linkViewerData} = this.state;
-      const targetRect = getVisibleSelectionRect(window);
+      const targetRect = getDraftCoords();
+      if (!targetRect) {
+        console.log('no target rect!')
+      }
       return (
         <EditorLinkViewer
           isOpen
@@ -132,9 +143,13 @@ const withLinks = (ComposedComponent) => {
           setEditorState(linkedEditorState);
         } else {
           // hitting space should close the modal
-          const {linkViewerData, linkChangerData} = this.state;
-          if (linkViewerData || linkChangerData) {
-            this.removeModal();
+          if (this.props.renderModal) {
+            this.props.removeModal();
+          } else {
+            const {linkViewerData, linkChangerData} = this.state;
+            if (linkViewerData || linkChangerData) {
+              this.removeModal();
+            }
           }
           setEditorState(whitespacedEditorState);
         }
@@ -151,14 +166,20 @@ const withLinks = (ComposedComponent) => {
 
       if (command === 'add-hyperlink') {
         const selectionState = getCtrlKSelection(editorState);
-        if (selectionState !== editorState.getSelection()) {
-          setEditorState(EditorState.forceSelection(editorState, selectionState));
-        }
+        const text = getSelectionText(editorState, selectionState);
+        //if (selectionState !== editorState.getSelection()) {
+        //  setEditorState(EditorState.forceSelection(editorState, selectionState));
+        //}
+        console.log('current selectionState', selectionState.toJS(), `__${text}__`)
         // TODO if they ctrl + k a link, then grab the href of that
         this.setState({
           linkChangerData: {
             //href: '',
-            selectionState
+            selectionState,
+            text,
+            //initialValues: {
+            //  text
+            //}
           }
         })
         //this.setState({
@@ -192,9 +213,15 @@ const withLinks = (ComposedComponent) => {
         handleChange(editorState, setEditorState);
       }
       const {block, anchorOffset} = getAnchorLocation(editorState);
-      const entityKey = block.getEntityAt(anchorOffset);
+      const entityKey = block.getEntityAt(anchorOffset - 1);
       const inALink = entityKey && this.checkForLinks(editorState, entityKey);
-      const {linkViewerData} = this.state;
+      const {linkViewerData, undoLink} = this.state;
+      if (undoLink) {
+        this.setState({
+          undoLink: undefined
+        })
+      }
+
       if (!inALink && linkViewerData) {
         this.removeModal()
       }

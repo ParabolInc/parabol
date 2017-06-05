@@ -3,7 +3,7 @@ const getAnchorLocation = (editorState) => {
   const currentContent = editorState.getCurrentContent();
   const anchorKey = selection.getAnchorKey();
   return {
-    anchorOffset: selection.getAnchorOffset() - 1,
+    anchorOffset: selection.getAnchorOffset(),
     block: currentContent.getBlockForKey(anchorKey)
   }
 };

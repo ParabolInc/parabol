@@ -6,6 +6,14 @@ const getWordAt = (string, position, willBreakAfterAnchor) => {
 
   // Search for the word's beginning and end.
   const left = str.slice(0, pos + 1).search(/\S+$/);
+
+  if (left === -1) {
+    return {
+      word: '',
+      begin: pos,
+      end: pos
+    }
+  }
   // if i move to the beginning of a word & then type a url, when i hit space, i want it to end where the space WILL be
   const right = willBreakAfterAnchor ? 1 : str.slice(pos).search(/\s/);
   // The last word in the string is a special case.
