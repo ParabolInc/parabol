@@ -10,7 +10,8 @@ import shouldValidate from 'universal/validation/shouldValidate';
 import {reduxForm, Field} from 'redux-form';
 import InputField from 'universal/components/InputField/InputField';
 import changerValidation from './changerValidation';
-import targetIsDescendant from 'universal/utils/targetIsDescendant';
+import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
+import linkify from 'universal/utils/linkify';
 
 const validate = (values) => {
   const schema = changerValidation();
@@ -25,6 +26,7 @@ const dontTellDraft = (e) => {
 const EditorLinkChanger = (props) => {
   const {
     editorState,
+    editorRef,
     isClosing,
     left,
     top,
@@ -32,10 +34,12 @@ const EditorLinkChanger = (props) => {
     styles,
     removeModal,
     handleSubmit,
-    submitting
+    submitting,
+    setEditorState,
+    setEdit
   } = props;
 
-  const {selectionState, href} = linkData;
+  const {selectionState} = linkData;
   const menuStyles = css(
     styles.modal,
     isClosing && styles.closing
@@ -44,29 +48,31 @@ const EditorLinkChanger = (props) => {
   const onSubmit = (submissionData) => {
     const schema = changerValidation();
     const {data} = schema(submissionData);
-    console.log('submitting', data)
+
+    const href = linkify.match(data.link)[0].url;
+    removeModal();
+    editorRef.focus();
+    setEditorState(completeEntity(editorState, 'insert-link', {href}, data.text));
   };
 
-  let mousedownTarget = null;
+  let stillInModal = null;
   const handleMouseDown = (e) => {
-    mousedownTarget = e.target;
-    //targetIsDescendant(e.target, findDOMNode(this))
-    //console.log('mousedown', component);
-
+    stillInModal = true;
   }
   const handleBlur = (e) => {
-    if (!mousedownTarget){
+    if (!stillInModal ){
       removeModal();
     }
-    mousedownTarget = null;
-    //const isDescendant = targetIsDescendant(mousedownTarget, component);
-    //console.log('isDescendant', isDescendant);
-    //removeModal();
+    stillInModal = null;
   };
-  let component;
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Tab') {
+      stillInModal = true;
+    }
+  }
   return (
-    <div className={menuStyles} ref={(c) => {component = c}} onBlur={handleBlur} onMouseDown={handleMouseDown}>
+    <div className={menuStyles} onKeyDown={handleKeyDown} onBlur={handleBlur} onMouseDown={handleMouseDown} tabIndex={-1}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {text !== null &&
           <div className={css(styles.textBlock)}>
@@ -141,13 +147,14 @@ const styleThunk = (theme, props) => ({
     borderRadius: ui.borderRadiusSmall,
     boxShadow: ui.menuBoxShadow,
     color: ui.palette.dark,
+    outline: 'none',
     padding: ui.borderRadiusSmall,
     zIndex: 1,
     animationName: animateIn,
     animationDuration: '200ms',
     position: 'absolute',
     left: props.left,
-    top: props.top
+    top: props.top,
   },
 
   active: {
@@ -172,7 +179,7 @@ const styleThunk = (theme, props) => ({
 });
 
 export default portal({closeAfter: 100})(
-  reduxForm({form: 'linkChanger', validate, shouldValidate})(
+  reduxForm({form: 'linkChanger', validate, shouldValidate, immutables: ['editorState']})(
     withStyles(styleThunk)(EditorLinkChanger)
   )
 )

@@ -6546,9 +6546,9 @@ react-addons-test-utils@15.4.2, react-addons-test-utils@^15.0.1:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-react-async-hoc@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/react-async-hoc/-/react-async-hoc-0.3.1.tgz#37b59f93cd263b33d13a09149dcea2a892f912ba"
+react-async-hoc@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/react-async-hoc/-/react-async-hoc-0.3.3.tgz#19d9a34fd36458a92670c3bf1bfb4dd8d4906860"
 
 react-copy-to-clipboard@^4.2.3:
   version "4.3.1"
@@ -6895,9 +6895,9 @@ redux-actions@^0.9.0:
     flux-standard-action "^0.6.0"
     reduce-reducers "^0.1.0"
 
-redux-form@^6.5.0:
-  version "6.6.3"
-  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-6.6.3.tgz#62362654f2214c83a8f9fcb8313702bb46f92205"
+redux-form@^6.7.0:
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-6.7.0.tgz#9fb0769e76f14febf1dd7686e02c4ab2d6f953aa"
   dependencies:
     deep-equal "^1.0.1"
     es6-error "^4.0.0"

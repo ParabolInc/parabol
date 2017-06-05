@@ -10,6 +10,10 @@ const operationTypes = {
   'insert-tag': {
     entityName: 'TAG',
     entityType: 'IMMUTABLE'
+  },
+  'insert-link': {
+    entityName: 'LINK',
+    entityType: 'MUTABLE'
   }
 };
 

@@ -33,7 +33,7 @@ module.exports = {
       'react-router-dom',
       'redbox-react',
       'redux',
-      'redux-form',
+      //'redux-form',
       'redux-logger',
       'redux-raven-middleware',
       'redux-segment',

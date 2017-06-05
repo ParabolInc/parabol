@@ -77,7 +77,7 @@ const withLinks = (ComposedComponent) => {
       return {};
     };
 
-    renderChangerModal = (editorState, setEditorState) => {
+    renderChangerModal = ({editorState, setEditorState, editorRef}) => {
       const {linkChangerData} = this.state;
       const targetRect = getVisibleSelectionRect(window);
       return (
@@ -89,11 +89,12 @@ const withLinks = (ComposedComponent) => {
           setEditorState={setEditorState}
           removeModal={this.removeModal}
           linkData={linkChangerData}
+          editorRef={editorRef}
         />
       );
     };
 
-    renderViewerModal = (editorState, setEditorState) => {
+    renderViewerModal = ({editorState, setEditorState}) => {
       const {linkViewerData} = this.state;
       const targetRect = getVisibleSelectionRect(window);
       return (
@@ -130,6 +131,11 @@ const withLinks = (ComposedComponent) => {
           });
           setEditorState(linkedEditorState);
         } else {
+          // hitting space should close the modal
+          const {linkViewerData, linkChangerData} = this.state;
+          if (linkViewerData || linkChangerData) {
+            this.removeModal();
+          }
           setEditorState(whitespacedEditorState);
         }
         return 'handled';

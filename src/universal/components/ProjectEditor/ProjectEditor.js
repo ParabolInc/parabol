@@ -94,26 +94,10 @@ class ProjectEditor extends Component {
     }
   };
 
-  setEdit = (e) => {
-    const {readOnly} = this.state;
-    if (readOnly && !this.props.isDragging) {
-      this.setState({
-        readOnly: false,
-      });
-    }
-  }
-
-  setReadOnly = (e) => {
-    this.setState({
-      readOnly: true
-    });
-  }
-  // https://github.com/facebook/draft-js/issues/494 DnD throws errors
   render() {
     const {editorState, setEditorState, renderModal, isDragging} = this.props;
-    const {readOnly} = this.state;
     return (
-      <div onMouseDown={this.setEdit} onBlur={this.setReadOnly}>
+      <div>
         <Editor
           editorState={editorState}
           onChange={this.handleChange}
@@ -125,9 +109,10 @@ class ProjectEditor extends Component {
           onEscape={this.handleEscape}
           onTab={this.handleTab}
           handleReturn={this.handleReturn}
-          readOnly={isDragging || readOnly}
+          readOnly={isDragging}
+          ref={(c) => {this.editorRef = c;}}
         />
-        {renderModal && renderModal(editorState, setEditorState)}
+        {renderModal && renderModal({editorState, setEditorState, editorRef: this.editorRef})}
       </div>
     );
   }

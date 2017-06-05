@@ -1,11 +1,7 @@
-import linkifyIt from 'linkify-it';
-import tlds from 'tlds';
 import getWordAt from './getWordAt';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 import makeAddLink from 'universal/components/ProjectEditor/operations/makeAddLink';
-
-const linkify = linkifyIt();
-linkify.tlds(tlds);
+import linkify from 'universal/utils/linkify';
 
 const maybeLinkify = (editorState) => {
   const {block, anchorOffset} = getAnchorLocation(editorState);

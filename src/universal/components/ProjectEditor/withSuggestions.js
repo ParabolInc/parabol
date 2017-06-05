@@ -135,7 +135,7 @@ const withSuggestions = (ComposedComponent) => {
       return {};
     }
 
-    renderModal = (editorState, setEditorState) => {
+    renderModal = ({editorState, setEditorState}) => {
       const {active, suggestions, suggestionType} = this.state;
       const targetRect = getVisibleSelectionRect(window);
       return (

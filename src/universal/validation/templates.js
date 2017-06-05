@@ -1,7 +1,7 @@
-import {compositeIdRegex, emailRegex, idRegex, urlRegex} from 'universal/validation/regex';
 import emailAddresses from 'email-addresses';
-import {APP_MAX_AVATAR_FILE_SIZE} from 'universal/utils/constants';
-import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
+import {APP_MAX_AVATAR_FILE_SIZE, PROJECT_MAX_CHARS} from 'universal/utils/constants';
+import linkify from 'universal/utils/linkify';
+import {compositeIdRegex, emailRegex, idRegex, urlRegex} from 'universal/validation/regex';
 
 export const avatar = {
   size: (value) => value
@@ -98,3 +98,10 @@ export const linkText = (value) => value
   .trim()
   .min(1, 'Maybe give it a name?')
   .max(100, 'That name is looking pretty long');
+
+export const linkifiedUrl = (value) => value
+  .test((maybeUrl) => {
+    if (!maybeUrl) return 'No link provided';
+    const links = linkify.match(maybeUrl);
+    return !links && 'Not looking too linky';
+  });
