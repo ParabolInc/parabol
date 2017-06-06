@@ -8,10 +8,6 @@ import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRe
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 
-const dontTellDraft = (e) => {
-  e.preventDefault();
-};
-
 const EditorLinkViewer = (props) => {
   const {
     isClosing,
@@ -19,6 +15,8 @@ const EditorLinkViewer = (props) => {
     top,
     linkData,
     styles,
+    addHyperlink,
+    editorState
   } = props;
 
   const {href} = linkData;
@@ -41,15 +39,19 @@ const EditorLinkViewer = (props) => {
     removeModal();
   };
 
+  const changeLink = (e) => {
+    addHyperlink(editorState);
+  };
+
   return (
     <div style={linkViewer} className={menuStyles}>
       <span>
-        <a href={href} rel="noopener noreferrer" onMouseDown={dontTellDraft} target="_blank">{href}</a>
+        <a href={href} rel="noopener noreferrer" target="_blank">{href}</a>
       </span>
       <span> - </span>
-      <span>Change</span>
+      <span onClick={changeLink}>Change</span>
       <span> | </span>
-      <span onMouseDown={dontTellDraft} onClick={removeLink}>Remove</span>
+      <span onClick={removeLink}>Remove</span>
     </div>
   )
 };

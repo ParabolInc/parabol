@@ -73,7 +73,8 @@ const EditorLinkChanger = (props) => {
       removeModal();
       editorRef.focus()
     }
-  }
+  };
+
   return (
     <div style={pos} className={menuStyles} onKeyDown={handleKeyDown} onBlur={handleBlur} onMouseDown={handleMouseDown} tabIndex={-1}>
       <form onSubmit={handleSubmit(onSubmit)}>

@@ -48,6 +48,19 @@ const withLinks = (ComposedComponent) => {
   class WithLinks extends Component {
     state = {};
 
+    addHyperlink = (editorState) => {
+      const selectionState = getCtrlKSelection(editorState);
+      const text = getSelectionText(editorState, selectionState);
+      const link = getSelectionLink(editorState, selectionState);
+      this.setState({
+        linkViewerData: undefined,
+        linkChangerData: {
+          link,
+          text,
+        }
+      });
+    };
+
     removeModal = () => {
       this.setState({
         linkViewerData: undefined,
@@ -119,6 +132,7 @@ const withLinks = (ComposedComponent) => {
           setEditorState={setEditorState}
           removeModal={this.removeModal}
           linkData={linkViewerData}
+          addHyperlink={this.addHyperlink}
         />
       )
     };
@@ -167,16 +181,7 @@ const withLinks = (ComposedComponent) => {
       }
 
       if (command === 'add-hyperlink') {
-        const selectionState = getCtrlKSelection(editorState);
-        const text = getSelectionText(editorState, selectionState);
-        const link = getSelectionLink(editorState, selectionState);
-        this.setState({
-          linkViewerData: undefined,
-          linkChangerData: {
-            link,
-            text,
-          }
-        });
+        this.addHyperlink(editorState);
         return 'handled';
       }
       return 'not-handled';
