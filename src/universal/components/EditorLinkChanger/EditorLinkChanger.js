@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import portal from 'react-portal-hoc';
 import {Field, reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
-import InputField from 'universal/components/InputField/InputField';
+import PlainInputField from 'universal/components/PlainInputField/PlainInputField';
 import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -69,7 +69,7 @@ class EditorLinkChanger extends Component {
       top,
       linkData,
       styles,
-      handleSubmit,
+      handleSubmit
     } = this.props;
 
     const pos = {left, top};
@@ -79,32 +79,36 @@ class EditorLinkChanger extends Component {
       isClosing && styles.closing
     );
 
+    const label = text ? 'Update' : 'Add';
     return (
       <div style={pos} className={menuStyles} onKeyDown={this.handleKeyDown} onBlur={this.handleBlur}
            onMouseDown={this.handleMouseDown} tabIndex={-1}>
-        <form onSubmit={handleSubmit(this.onSubmit)}>
+        <form onSubmit={handleSubmit(this.onSubmit)} className={css(styles.form)}>
           {text !== null &&
           <div className={css(styles.textBlock)}>
-            <span>Text</span>
+            <span className={css(styles.inputLabel)}>Text</span>
             <Field
               autoFocus
-              component={InputField}
+              colorPalette="cool"
+              component={PlainInputField}
               name="text"
             />
           </div>
           }
-          <div className={css(styles.hrefBlock)}>
-            <span>Link</span>
+          <div className={css(styles.textBlock)}>
+            <span className={css(styles.inputLabel)}>Link</span>
             <Field
               autoFocus={text === null}
-              component={InputField}
+              colorPalette="cool"
+              component={PlainInputField}
               name="link"
+              spellCheck={false}
             />
           </div>
           <div className={css(styles.buttonBlock)}>
             <Button
-              colorPalette="cool"
-              label="Add"
+              colorPalette="dark"
+              label={label}
               size="small"
               type="submit"
               onClick={handleSubmit(this.onSubmit)}
@@ -152,6 +156,14 @@ const styleThunk = (theme, props) => ({
     animationName: animateOut
   },
 
+  inputLabel: {
+    fontWeight: 800
+  },
+
+  form: {
+    margin: '1rem',
+  },
+
   modal: {
     background: '#fff',
     border: `1px solid ${ui.cardBorderCoor}`,
@@ -182,6 +194,10 @@ const styleThunk = (theme, props) => ({
     padding: '.5rem'
   },
 
+  textBlock: {
+    alignItems: 'center',
+    display: 'flex',
+  },
   value: {
     fontWeight: 700
   }
