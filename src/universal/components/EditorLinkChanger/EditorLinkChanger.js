@@ -17,10 +17,6 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
-const dontTellDraft = (e) => {
-  e.preventDefault();
-};
-
 //const
 class EditorLinkChanger extends Component {
 
@@ -63,13 +59,13 @@ class EditorLinkChanger extends Component {
 
   render() {
     const {
-      editorState,
       isClosing,
       left,
       top,
       linkData,
       styles,
-      handleSubmit
+      handleSubmit,
+      valid
     } = this.props;
 
     const pos = {left, top};
@@ -108,6 +104,7 @@ class EditorLinkChanger extends Component {
           <div className={css(styles.buttonBlock)}>
             <Button
               colorPalette="dark"
+              disabled={!valid}
               label={label}
               size="small"
               type="submit"
@@ -195,7 +192,8 @@ const styleThunk = (theme, props) => ({
   },
 
   textBlock: {
-    alignItems: 'center',
+    // use baseline so errors don't bump it off center
+    alignItems: 'baseline',
     display: 'flex',
   },
   value: {

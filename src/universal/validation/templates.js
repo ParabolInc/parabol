@@ -96,6 +96,7 @@ export const url = (value) => value.matches(urlRegex);
 
 export const linkText = (value) => value
   .trim()
+  .required()
   .min(1, 'Maybe give it a name?')
   .max(100, 'That name is looking pretty long');
 
