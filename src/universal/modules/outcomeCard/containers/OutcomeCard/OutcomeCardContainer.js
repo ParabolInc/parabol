@@ -1,14 +1,15 @@
 import {cashay} from 'cashay';
-import {ContentState, convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {findDOMNode} from 'react-dom';
 import {connect} from 'react-redux';
+import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import labels from 'universal/styles/theme/labels';
 import removeTagFromString from 'universal/utils/removeTagFromString';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
-import editorDecorators from 'universal/components/ProjectEditor/decorators';
+import mergeServerContent from 'universal/utils/mergeServerContent';
 
 const teamMembersQuery = `
 query {
@@ -58,8 +59,8 @@ class OutcomeCardContainer extends Component {
     const {content: nextContent} = nextProps.outcome;
     const {content} = this.props.outcome;
     if (content !== nextContent) {
-      const newContentState = nextContent ? convertFromRaw(JSON.parse(nextContent)) : ContentState.createFromText('');
-      const newEditorState = EditorState.push(this.state.editorState, newContentState);
+      const newContentState = mergeServerContent(this.state.editorState, convertFromRaw(JSON.parse(nextContent)));
+      const newEditorState = EditorState.push(this.state.editorState, newContentState, 'insert-characters');
       this.setEditorState(newEditorState)
     }
   }
@@ -103,18 +104,22 @@ class OutcomeCardContainer extends Component {
   handleCardUpdate = () => {
     const {editorState} = this.state;
     const {outcome: {id: projectId, content}} = this.props;
-    if (!editorState) {
+    const contentState = editorState.getCurrentContent();
+    if (contentState.getPlainText() === '') {
       cashay.mutate('deleteProject', {variables: {projectId}});
-    } else if (editorState !== content) {
-      cashay.mutate('updateProject', {
-        ops: {},
-        variables: {
-          updatedProject: {
-            id: projectId,
-            content: JSON.stringify(convertToRaw(editorState.getCurrentContent()))
+    } else {
+      const rawContentStr = JSON.stringify(convertToRaw(contentState));
+      if (rawContentStr !== content) {
+        cashay.mutate('updateProject', {
+          ops: {},
+          variables: {
+            updatedProject: {
+              id: projectId,
+              content: rawContentStr
+            }
           }
-        }
-      });
+        });
+      }
     }
   };
 

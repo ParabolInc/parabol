@@ -33,7 +33,7 @@ const addSpace = (editorState) => {
     editorState.getSelection(),
     ' '
   );
-  return EditorState.push(editorState, contentState);
+  return EditorState.push(editorState, contentState, 'insert-characters');
 };
 
 const splitBlock = (editorState) => {
@@ -177,6 +177,7 @@ const withLinks = (ComposedComponent) => {
       }
 
       if (command === 'backspace' && undoLink) {
+        console.log('handling backspace')
         setEditorState(undoLink(editorState));
         this.setState({
           undoLink: undefined

@@ -3,16 +3,16 @@ import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocat
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 
 const operationTypes = {
-  'insert-emoji': {
-    entityName: 'EMOJI',
+  EMOJI: {
+    editorChangeType: 'apply-entity',
     entityType: 'IMMUTABLE'
   },
-  'insert-tag': {
-    entityName: 'TAG',
+  TAG: {
+    editorChangeType: 'apply-entity',
     entityType: 'IMMUTABLE'
   },
-  'insert-link': {
-    entityName: 'LINK',
+  LINK: {
+    editorChangeType: 'apply-entity',
     entityType: 'MUTABLE'
   }
 };
@@ -49,8 +49,8 @@ const makeContentWithEntity = (contentState, selectionState, mention, entityKey)
   );
 };
 
-const completeEntity = (editorState, operation, entityData, mention) => {
-  const {entityName, entityType} = operationTypes[operation];
+const completeEntity = (editorState, entityName, entityData, mention) => {
+  const {editorChangeType, entityType} = operationTypes[entityName];
   const contentState = editorState.getCurrentContent();
   const contentStateWithEntity = contentState
     .createEntity(entityName, entityType, entityData);
@@ -66,9 +66,10 @@ const completeEntity = (editorState, operation, entityData, mention) => {
     focusOffset: endOffset
   });
   const finalContent = contentWithEntity.merge({
-    selectionAfter: collapsedSelectionState
+    selectionAfter: collapsedSelectionState,
+    //selectionBefore: collapsedSelectionState,
   })
-  return EditorState.push(editorState, finalContent, operation);
+  return EditorState.push(editorState, finalContent, editorChangeType);
 };
 
 export default completeEntity;

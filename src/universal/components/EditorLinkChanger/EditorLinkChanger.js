@@ -1,17 +1,16 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import React from 'react';
+import React, {Component} from 'react';
 import portal from 'react-portal-hoc';
+import {Field, reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
-import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
+import InputField from 'universal/components/InputField/InputField';
+import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import shouldValidate from 'universal/validation/shouldValidate';
-import {reduxForm, Field} from 'redux-form';
-import InputField from 'universal/components/InputField/InputField';
-import changerValidation from './changerValidation';
-import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import linkify from 'universal/utils/linkify';
+import shouldValidate from 'universal/validation/shouldValidate';
+import changerValidation from './changerValidation';
 
 const validate = (values) => {
   const schema = changerValidation();
@@ -23,51 +22,38 @@ const dontTellDraft = (e) => {
 };
 
 //const
-const EditorLinkChanger = (props) => {
-  const {
-    editorState,
-    editorRef,
-    isClosing,
-    left,
-    top,
-    linkData,
-    styles,
-    removeModal,
-    handleSubmit,
-    setEditorState,
-    setEdit
-  } = props;
+class EditorLinkChanger extends Component {
 
-  const pos = {left, top};
-  const {text} = linkData;
-  const menuStyles = css(
-    styles.modal,
-    isClosing && styles.closing
-  );
+  constructor(props) {
+    super(props);
+    this.stillInModal = null;
+  }
 
-  const onSubmit = (submissionData) => {
+  onSubmit = (submissionData) => {
+    const {editorState, editorRef, removeModal, setEditorState} = this.props;
     const schema = changerValidation();
     const {data} = schema(submissionData);
     const href = linkify.match(data.link)[0].url;
     removeModal(true);
-    setEditorState(completeEntity(editorState, 'insert-link', {href}, data.text))
+    setEditorState(completeEntity(editorState, 'LINK', {href}, data.text))
     setTimeout(() => editorRef.focus(), 0);
   };
 
-  let stillInModal = null;
-  const handleMouseDown = (e) => {
-    stillInModal = true;
+  handleMouseDown = (e) => {
+    this.stillInModal = true;
   }
-  const handleBlur = (e) => {
-    if (!stillInModal ){
-      removeModal(true);
+
+  handleBlur = (e) => {
+    if (!this.stillInModal) {
+      this.props.removeModal(true);
     }
-    stillInModal = null;
+    this.stillInModal = null;
   };
 
-  const handleKeyDown = (e) => {
+  handleKeyDown = (e) => {
+    const {removeModal, editorRef} = this.props;
     if (e.key === 'Tab') {
-      stillInModal = true;
+      this.stillInModal = true;
     } else if (e.key === 'Escape') {
       e.preventDefault();
       removeModal(true);
@@ -75,10 +61,29 @@ const EditorLinkChanger = (props) => {
     }
   };
 
-  return (
-    <div style={pos} className={menuStyles} onKeyDown={handleKeyDown} onBlur={handleBlur} onMouseDown={handleMouseDown} tabIndex={-1}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {text !== null &&
+  render() {
+    const {
+      editorState,
+      isClosing,
+      left,
+      top,
+      linkData,
+      styles,
+      handleSubmit,
+    } = this.props;
+
+    const pos = {left, top};
+    const {text} = linkData;
+    const menuStyles = css(
+      styles.modal,
+      isClosing && styles.closing
+    );
+
+    return (
+      <div style={pos} className={menuStyles} onKeyDown={this.handleKeyDown} onBlur={this.handleBlur}
+           onMouseDown={this.handleMouseDown} tabIndex={-1}>
+        <form onSubmit={handleSubmit(this.onSubmit)}>
+          {text !== null &&
           <div className={css(styles.textBlock)}>
             <span>Text</span>
             <Field
@@ -87,28 +92,30 @@ const EditorLinkChanger = (props) => {
               name="text"
             />
           </div>
-        }
-        <div className={css(styles.hrefBlock)}>
-          <span>Link</span>
-          <Field
-            autoFocus={text === null}
-            component={InputField}
-            name="link"
-          />
-        </div>
-        <div className={css(styles.buttonBlock)}>
-          <Button
-            colorPalette="cool"
-            label="Add"
-            size="small"
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-          />
-        </div>
-      </form>
-    </div>
-  )
-};
+          }
+          <div className={css(styles.hrefBlock)}>
+            <span>Link</span>
+            <Field
+              autoFocus={text === null}
+              component={InputField}
+              name="link"
+            />
+          </div>
+          <div className={css(styles.buttonBlock)}>
+            <Button
+              colorPalette="cool"
+              label="Add"
+              size="small"
+              type="submit"
+              onClick={handleSubmit(this.onSubmit)}
+            />
+          </div>
+        </form>
+      </div>
+    )
+  }
+}
+;
 
 const animateIn = {
   '0%': {

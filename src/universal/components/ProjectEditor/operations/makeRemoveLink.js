@@ -16,7 +16,7 @@ const makeRemoveLink = (blockKey, anchorOffset, focusOffset) => (editorState) =>
     selectionAfter: selection,
     selectionBefore: selection
   });
-  return EditorState.push(editorState, contentWithoutLink, 'remove-link');
+  return EditorState.push(editorState, contentWithoutLink, 'apply-entity');
 };
 
 export default makeRemoveLink;

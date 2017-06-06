@@ -20,6 +20,10 @@ class ProjectEditor extends Component {
     removeModal: PropTypes.func
   };
 
+  componentWillReceiveProps(nextProps) {
+    const {isDragging, editorState} = this.props;
+    return isDragging !== nextProps.isDragging || editorState !== nextProps.editorState;
+  }
   state = {};
 
   removeModal = () => {
@@ -30,10 +34,13 @@ class ProjectEditor extends Component {
   };
 
   handleChange = (editorState) => {
-    const {onBlur, setEditorState, handleChange} = this.props;
+    const {onBlur, setEditorState, handleChange, renderModal} = this.props;
     if (!editorState.getSelection().getHasFocus()) {
-      onBlur(editorState);
-      this.removeModal();
+      if (!renderModal) {
+        onBlur(editorState);
+      } else {
+        this.removeModal();
+      }
       return;
     }
 
@@ -93,7 +100,6 @@ class ProjectEditor extends Component {
 
   render() {
     const {editorState, setEditorState, renderModal, isDragging} = this.props;
-    //console.log('ES', editorState.toJS())
     return (
       <div>
         <Editor

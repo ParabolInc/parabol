@@ -23,7 +23,7 @@ const makeAddLink = (blockKey, anchorOffset, focusOffset, url) => (editorState) 
     selectionBefore: selectionState
   });
   return {
-    editorState: EditorState.push(editorState, contentWithUrl, 'apply-link'),
+    editorState: EditorState.push(editorState, contentWithUrl, 'apply-entity'),
     undoLinkify: makeRemoveLink(blockKey, anchorOffset, focusOffset)
   };
 };

@@ -27,10 +27,10 @@ class EditorSuggestions extends Component {
     const item = suggestions[idx];
     if (suggestionType === 'tag') {
       const {name} = item;
-      setEditorState(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
+      setEditorState(completeEntity(editorState, 'TAG', {value: name}, `#${name}`));
     } else if (suggestionType === 'emoji') {
       const unicode = item.emoji;
-      setEditorState(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
+      setEditorState(completeEntity(editorState, 'EMOJI', {unicode}, unicode))
     }
     removeModal();
   };
