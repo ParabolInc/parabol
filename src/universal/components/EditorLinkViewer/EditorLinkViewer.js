@@ -7,6 +7,13 @@ import withStyles from 'universal/styles/withStyles';
 import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRemoveLink';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
+import Button from 'universal/components/Button/Button';
+import {textOverflow} from 'universal/styles/helpers';
+
+const dontTellDraft = (e) => {
+  e.preventDefault()
+  e.stopPropagation();
+};
 
 const EditorLinkViewer = (props) => {
   const {
@@ -44,14 +51,13 @@ const EditorLinkViewer = (props) => {
   };
 
   return (
-    <div style={linkViewer} className={menuStyles}>
-      <span>
-        <a href={href} rel="noopener noreferrer" target="_blank">{href}</a>
+    <div style={linkViewer} className={menuStyles} onMouseDown={dontTellDraft}>
+      <span className={css(styles.url)}>
+        <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
       </span>
-      <span> - </span>
-      <span onClick={changeLink}>Change</span>
-      <span> | </span>
-      <span onClick={removeLink}>Remove</span>
+
+      <Button buttonStyle="flat" size="small" colorPalette="cool" label="Change" onClick={changeLink}/>
+      <Button buttonStyle="flat" size="small" colorPalette="cool" label="Remove" onClick={removeLink}/>
     </div>
   )
 };
@@ -87,15 +93,21 @@ const styleThunk = (theme, props) => ({
   },
 
   modal: {
+    alignItems: 'center',
     background: '#fff',
     border: `1px solid ${ui.cardBorderCoor}`,
     borderRadius: ui.borderRadiusSmall,
     boxShadow: ui.menuBoxShadow,
     color: ui.palette.dark,
-    padding: ui.borderRadiusSmall,
+    display: 'flex',
+    //padding: ui.borderRadiusSmall,
     zIndex: 1,
     animationName: animateIn,
-    animationDuration: '200ms'
+    animationDuration: '200ms',
+    fontSize: appTheme.typography.s5,
+    fontWeight: 600,
+    margin: '0.5rem',
+    height: '64px'
   },
 
   active: {
@@ -107,6 +119,11 @@ const styleThunk = (theme, props) => ({
     marginLeft: '.5rem'
   },
 
+  linkText: {
+    ...textOverflow,
+    marginRight: '0.5rem',
+    maxWidth: '20rem'
+  },
   row: {
     alignItems: 'center',
     cursor: 'pointer',
@@ -114,6 +131,15 @@ const styleThunk = (theme, props) => ({
     padding: '.5rem'
   },
 
+  url: {
+    ...textOverflow,
+    flexShrink: 2,
+    alignItems: 'center',
+    borderRight: `2px solid ${appTheme.palette.mid20l}`,
+    display: 'flex',
+    height: '100%',
+    margin: '0.5rem'
+  },
   value: {
     fontWeight: 700
   }

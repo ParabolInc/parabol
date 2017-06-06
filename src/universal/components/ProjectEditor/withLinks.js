@@ -61,11 +61,15 @@ const withLinks = (ComposedComponent) => {
       });
     };
 
-    removeModal = () => {
-      this.setState({
-        linkViewerData: undefined,
-        linkChangerData: undefined
-      });
+    // LinkChanger can take focus, so sometimes we don't want to blur
+    removeModal = (allowFocus) => {
+      const {linkChangerData} = this.state;
+      if (!linkChangerData || allowFocus) {
+        this.setState({
+          linkViewerData: undefined,
+          linkChangerData: undefined
+        });
+      }
     };
 
     checkForLinks = (editorState, entityKey) => {

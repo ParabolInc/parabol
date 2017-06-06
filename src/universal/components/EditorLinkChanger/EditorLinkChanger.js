@@ -49,7 +49,7 @@ const EditorLinkChanger = (props) => {
     const schema = changerValidation();
     const {data} = schema(submissionData);
     const href = linkify.match(data.link)[0].url;
-    removeModal();
+    removeModal(true);
     setEditorState(completeEntity(editorState, 'insert-link', {href}, data.text))
     setTimeout(() => editorRef.focus(), 0);
   };
@@ -60,7 +60,7 @@ const EditorLinkChanger = (props) => {
   }
   const handleBlur = (e) => {
     if (!stillInModal ){
-      removeModal();
+      removeModal(true);
     }
     stillInModal = null;
   };
@@ -70,7 +70,7 @@ const EditorLinkChanger = (props) => {
       stillInModal = true;
     } else if (e.key === 'Escape') {
       e.preventDefault();
-      removeModal();
+      removeModal(true);
       editorRef.focus()
     }
   };

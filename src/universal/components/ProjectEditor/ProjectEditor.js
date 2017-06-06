@@ -30,8 +30,8 @@ class ProjectEditor extends Component {
   };
 
   handleChange = (editorState) => {
-    const {onBlur, setEditorState, handleChange, renderModal} = this.props;
-    if (!editorState.getSelection().getHasFocus() && !renderModal) {
+    const {onBlur, setEditorState, handleChange} = this.props;
+    if (!editorState.getSelection().getHasFocus()) {
       onBlur(editorState);
       this.removeModal();
       return;
