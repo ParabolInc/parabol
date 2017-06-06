@@ -93,6 +93,7 @@ class ProjectEditor extends Component {
 
   render() {
     const {editorState, setEditorState, renderModal, isDragging} = this.props;
+    //console.log('ES', editorState.toJS())
     return (
       <div>
         <Editor

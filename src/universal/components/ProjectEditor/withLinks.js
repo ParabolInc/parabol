@@ -7,6 +7,7 @@ import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import maybeLinkify from './maybeLinkify';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
+import getSelectionLink from 'universal/components/ProjectEditor/getSelectionLink';
 
 const getCtrlKSelection = (editorState) => {
   const selection = editorState.getSelection();
@@ -86,6 +87,7 @@ const withLinks = (ComposedComponent) => {
 
     renderChangerModal = ({editorState, setEditorState, editorRef}) => {
       const {linkChangerData} = this.state;
+      const {text, link} = linkChangerData;
       //const targetRect = getDraftCoords();
       return (
         <EditorLinkChanger
@@ -96,7 +98,7 @@ const withLinks = (ComposedComponent) => {
           setEditorState={setEditorState}
           removeModal={this.removeModal}
           linkData={linkChangerData}
-          initialValues={{text: linkChangerData.text}}
+          initialValues={{text, link}}
           editorRef={editorRef}
         />
       );
@@ -167,24 +169,14 @@ const withLinks = (ComposedComponent) => {
       if (command === 'add-hyperlink') {
         const selectionState = getCtrlKSelection(editorState);
         const text = getSelectionText(editorState, selectionState);
-        //if (selectionState !== editorState.getSelection()) {
-        //  setEditorState(EditorState.forceSelection(editorState, selectionState));
-        //}
-        console.log('current selectionState', selectionState.toJS(), `__${text}__`)
-        // TODO if they ctrl + k a link, then grab the href of that
+        const link = getSelectionLink(editorState, selectionState);
         this.setState({
+          linkViewerData: undefined,
           linkChangerData: {
-            //href: '',
-            selectionState,
+            link,
             text,
-            //initialValues: {
-            //  text
-            //}
           }
-        })
-        //this.setState({
-        //  addingHyperlink: true
-        //});
+        });
         return 'handled';
       }
       return 'not-handled';
@@ -209,13 +201,13 @@ const withLinks = (ComposedComponent) => {
 
     handleChange = (editorState, setEditorState) => {
       const {handleChange} = this.props;
+      const {linkChangerData, linkViewerData, undoLink} = this.state;
       if (handleChange) {
         handleChange(editorState, setEditorState);
       }
       const {block, anchorOffset} = getAnchorLocation(editorState);
       const entityKey = block.getEntityAt(anchorOffset - 1);
-      const inALink = entityKey && this.checkForLinks(editorState, entityKey);
-      const {linkViewerData, undoLink} = this.state;
+      const inALink = entityKey && !linkChangerData && this.checkForLinks(editorState, entityKey);
       if (undoLink) {
         this.setState({
           undoLink: undefined
