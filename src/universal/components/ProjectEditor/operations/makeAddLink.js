@@ -1,6 +1,4 @@
 import {EditorState, Modifier} from 'draft-js';
-import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRemoveLink';
-
 
 const makeAddLink = (blockKey, anchorOffset, focusOffset, url) => (editorState) => {
   const contentState = editorState.getCurrentContent();
@@ -22,10 +20,7 @@ const makeAddLink = (blockKey, anchorOffset, focusOffset, url) => (editorState) 
     selectionAfter: selectionState,
     selectionBefore: selectionState
   });
-  return {
-    editorState: EditorState.push(editorState, contentWithUrl, 'apply-entity'),
-    undoLinkify: makeRemoveLink(blockKey, anchorOffset, focusOffset)
-  };
+  return EditorState.push(editorState, contentWithUrl, 'apply-entity');
 };
 
 export default makeAddLink;

@@ -5,6 +5,7 @@ import customStyleMap from './customStyleMap';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
+import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
 
 class ProjectEditor extends Component {
 
@@ -24,6 +25,7 @@ class ProjectEditor extends Component {
     const {isDragging, editorState} = this.props;
     return isDragging !== nextProps.isDragging || editorState !== nextProps.editorState;
   }
+
   state = {};
 
   removeModal = () => {
@@ -98,21 +100,29 @@ class ProjectEditor extends Component {
     }
   };
 
+  handleBeforeInput = (char) => {
+    const {handleBeforeInput, editorState, setEditorState} = this.props;
+    if (handleBeforeInput) {
+      return handleBeforeInput(char, editorState, setEditorState);
+    }
+  }
+
   render() {
     const {editorState, setEditorState, renderModal, isDragging} = this.props;
     return (
       <div>
         <Editor
-          editorState={editorState}
-          onChange={this.handleChange}
-          keyBindingFn={this.keyBindingFn}
           customStyleMap={customStyleMap}
+          editorState={editorState}
+          handleBeforeInput={this.handleBeforeInput}
           handleKeyCommand={this.handleKeyCommand}
-          onUpArrow={this.handleUpArrow}
+          handleReturn={this.handleReturn}
+          keyBindingFn={this.keyBindingFn}
+          onChange={this.handleChange}
           onDownArrow={this.handleDownArrow}
           onEscape={this.handleEscape}
           onTab={this.handleTab}
-          handleReturn={this.handleReturn}
+          onUpArrow={this.handleUpArrow}
           readOnly={isDragging}
           ref={(c) => {
             this.editorRef = c;
@@ -127,8 +137,10 @@ class ProjectEditor extends Component {
 export default
 withSuggestions(
   withLinks(
-    withKeyboardShortcuts(
-      ProjectEditor
-    )
+    //withMarkdown(
+      withKeyboardShortcuts(
+        ProjectEditor
+      )
+    //)
   )
 );
