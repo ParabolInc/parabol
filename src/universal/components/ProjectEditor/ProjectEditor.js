@@ -109,10 +109,10 @@ class ProjectEditor extends Component {
 
   render() {
     const {editorState, setEditorState, renderModal, isDragging} = this.props;
+    //console.log('es', editorState)
     return (
       <div>
         <Editor
-          customStyleMap={customStyleMap}
           editorState={editorState}
           handleBeforeInput={this.handleBeforeInput}
           handleKeyCommand={this.handleKeyCommand}

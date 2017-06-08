@@ -1,5 +1,5 @@
 import {EditorState, Modifier} from 'draft-js';
-import {OrderedSet} from 'immutable';
+import {List, Map, OrderedSet} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
@@ -12,6 +12,8 @@ const inlineMatchers = {
   CODE: {regex: /`([^`]+)`/, matchIdx: 1},
   STRIKETHROUGH: {regex: /(~+)([^~\s]+)\1/, matchIdx: 2}
 };
+
+const CODE_FENCE = '```';
 
 const styles = Object.keys(inlineMatchers);
 
@@ -47,7 +49,7 @@ const extractStyle = (editorState, getNextState, style, blockKey, extractedStyle
       afterPhrase,
       OrderedSet.of(...extractedStyles)
     ).merge({
-      selectionAfter,
+      selectionAfter
     });
     return EditorState.push(es, markdownedContent, 'change-inline-style');
   }
@@ -75,9 +77,10 @@ const extractMarkdownStyles = (editorState, getNextState, blockKey) => {
 
 const doUndo = (editorState, count) => {
   const nextEditorState = EditorState.undo(editorState);
-  return count === 1 ? nextEditorState : doUndo(nextEditorState, count -1);
+  return count === 1 ? nextEditorState : doUndo(nextEditorState, count - 1);
 }
-const withLinks = (ComposedComponent) => {
+
+const withMarkdown = (ComposedComponent) => {
   return class WithMarkdown extends Component {
     static propTypes = {
       removeModal: PropTypes.func,
@@ -103,6 +106,53 @@ const withLinks = (ComposedComponent) => {
           return result;
         }
       }
+      return this.getMaybeCodeBlockState(editorState);
+    };
+
+    getMaybeCodeBlockState = (editorState) => {
+      const contentState = editorState.getCurrentContent();
+      const selectionState = editorState.getSelection();
+      const currentBlockKey = selectionState.getAnchorKey();
+      const currentBlock = contentState.getBlockForKey(currentBlockKey);
+      const currentBlockText = currentBlock.getText();
+      if (!currentBlockText.startsWith(CODE_FENCE) || selectionState.getAnchorOffset() < 3) return undefined;
+      const lastCodeBlock = contentState.getBlockBefore(currentBlockKey);
+      let cb = lastCodeBlock;
+      while (cb) {
+        if (cb.getText().startsWith(CODE_FENCE)) {
+          break;
+        }
+        cb = contentState.getBlockBefore(cb.getKey());
+      }
+      if (!cb) return undefined;
+      const blockMap = contentState.getBlockMap();
+      const updatedLastline = blockMap.get(currentBlockKey).merge({
+        text: '',
+        characterList: List(),
+        data: Map()
+      });
+      const contentStateWithoutFences = contentState.merge({
+        blockMap: blockMap
+          .set(currentBlockKey, updatedLastline)
+          .delete(cb.getKey())
+      });
+      const firstCodeBlock = contentState.getBlockAfter(cb.getKey());
+      const selectedCode = selectionState.merge({
+        anchorOffset: 0,
+        focusOffset: lastCodeBlock.getLength(),
+        anchorKey: firstCodeBlock.getKey(),
+        focusKey: lastCodeBlock.getKey()
+      });
+
+      const styledContent = Modifier
+        .setBlockType(contentStateWithoutFences, selectedCode, 'code-block')
+        .merge({
+          selectionAfter: selectionState.merge({
+            anchorOffset: 0,
+            focusOffset: 0
+          })
+        });
+      return EditorState.push(editorState, styledContent, 'change-block-type');
     };
 
     handleKeyCommand = (command, editorState, setEditorState) => {
@@ -113,7 +163,6 @@ const withLinks = (ComposedComponent) => {
           return result;
         }
       }
-
       if (command === 'split-block') {
         const getNextState = () => splitBlock(editorState);
         const updatedEditorState = this.getMaybeMarkdownState(getNextState, editorState);
@@ -137,10 +186,6 @@ const withLinks = (ComposedComponent) => {
         if (result) {
           return result;
         }
-      }
-      if (e.key === ' ') {
-        // handleBeforeInput is buggy, let's just intercept space commands & handle them ourselves
-        //return 'space';
       }
       return undefined;
     };
@@ -185,4 +230,4 @@ const withLinks = (ComposedComponent) => {
   }
 };
 
-export default withLinks;
+export default withMarkdown;
