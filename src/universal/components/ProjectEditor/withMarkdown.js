@@ -7,9 +7,9 @@ import addSpace from 'universal/components/ProjectEditor/operations/addSpace';
 import splitBlock from 'universal/components/ProjectEditor/operations/splitBlock';
 
 const inlineMatchers = {
-  ITALIC: {regex: /(\*\*|__)(.*?)\1/, matchIdx: 2},
-  BOLD: {regex: /([\*_])(.*?)\1/, matchIdx: 2},
-  CODE: {regex: /`([^`]+)`/, matchIdx: 2},
+  BOLD: {regex: /(\*\*|__)(.*?)\1/, matchIdx: 2},
+  ITALIC: {regex: /([\*_])(.*?)\1/, matchIdx: 2},
+  CODE: {regex: /`([^`]+)`/, matchIdx: 1},
   STRIKETHROUGH: {regex: /(~+)([^~\s]+)\1/, matchIdx: 2}
 };
 
