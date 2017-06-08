@@ -1,11 +1,13 @@
 import {Editor, getDefaultKeyBinding} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import customStyleMap from './customStyleMap';
+import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
-import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
+import appTheme from 'universal/styles/theme/appTheme';
 
 class ProjectEditor extends Component {
 
@@ -27,6 +29,14 @@ class ProjectEditor extends Component {
   }
 
   state = {};
+
+  blockStyleFn = (contentBlock) => {
+    const {styles} = this.props;
+    const type = contentBlock.getType();
+    if (type === 'blockquote') {
+      return css(styles.editorBlockquote);
+    }
+  };
 
   removeModal = () => {
     const {removeModal} = this.props;
@@ -113,6 +123,7 @@ class ProjectEditor extends Component {
     return (
       <div>
         <Editor
+          blockStyleFn={this.blockStyleFn}
           editorState={editorState}
           handleBeforeInput={this.handleBeforeInput}
           handleKeyCommand={this.handleKeyCommand}
@@ -134,12 +145,22 @@ class ProjectEditor extends Component {
   }
 }
 
+const styleThunk = () => ({
+  editorBlockquote: {
+    fontStyle: 'italic',
+    borderLeft: `4px ${appTheme.palette.mid40l} solid`,
+    paddingLeft: '8px'
+  }
+});
+
 export default
 withSuggestions(
   withLinks(
     withMarkdown(
       withKeyboardShortcuts(
-        ProjectEditor
+        withStyles(styleThunk)(
+          ProjectEditor
+        )
       )
     )
   )

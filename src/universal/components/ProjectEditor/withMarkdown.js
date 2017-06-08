@@ -13,6 +13,9 @@ const inlineMatchers = {
   STRIKETHROUGH: {regex: /(~+)([^~\s]+)\1/, matchIdx: 2}
 };
 
+const blockQuoteRegex = /(\s*>\s*)(.*)/;
+
+
 const CODE_FENCE = '```';
 
 const styles = Object.keys(inlineMatchers);
@@ -155,6 +158,45 @@ const withMarkdown = (ComposedComponent) => {
       return EditorState.push(editorState, styledContent, 'change-block-type');
     };
 
+    getMaybeBlockquote = (editorState, command) => {
+      const addWhiteSpace = command === 'split-block' ? splitBlock : addSpace;
+      const preSplitES = addWhiteSpace(editorState);
+      const startingEditorState = EditorState.set(preSplitES, {
+        selection: editorState.getSelection()
+        //currentContent: preSplitES.getCurrentContent().merge({
+        //  selectionAfter: editorState.getSelection()
+        //})
+      });
+      const contentState = startingEditorState.getCurrentContent();
+      const selectionState = startingEditorState.getSelection();
+      const currentBlockKey = selectionState.getAnchorKey();
+      const currentBlock = contentState.getBlockForKey(currentBlockKey);
+      const currentBlockText = currentBlock.getText();
+      const matchedBlockQuote = blockQuoteRegex.exec(currentBlockText);
+      if (!matchedBlockQuote) return undefined;
+      const triggerPhrase = matchedBlockQuote[1];
+      const selectionToRemove = selectionState.merge({
+        anchorOffset: 0,
+        focusOffset: triggerPhrase.length
+      });
+      const contentWithoutTrigger = Modifier.removeRange(
+        contentState,
+        selectionToRemove,
+        'forward'
+      );
+      const fullBlockSelection = selectionToRemove.merge({
+        focusOffset: currentBlock.getLength()
+      });
+      const styledContent = Modifier
+        .setBlockType(contentWithoutTrigger, fullBlockSelection, 'blockquote')
+        .merge({
+          selectionAfter: fullBlockSelection.merge({
+            anchorOffset: fullBlockSelection.getFocusOffset()
+          })
+        });
+      return EditorState.push(startingEditorState, styledContent, 'change-block-type');
+    }
+
     handleKeyCommand = (command, editorState, setEditorState) => {
       const {handleKeyCommand} = this.props;
       if (handleKeyCommand) {
@@ -165,7 +207,9 @@ const withMarkdown = (ComposedComponent) => {
       }
       if (command === 'split-block') {
         const getNextState = () => splitBlock(editorState);
-        const updatedEditorState = this.getMaybeMarkdownState(getNextState, editorState);
+        const updatedEditorState =
+          this.getMaybeMarkdownState(getNextState, editorState) ||
+          this.getMaybeBlockquote(editorState, command)
         if (updatedEditorState) {
           setEditorState(updatedEditorState);
           return 'handled';
@@ -200,7 +244,8 @@ const withMarkdown = (ComposedComponent) => {
       }
       if (char === ' ') {
         const getNextState = () => addSpace(editorState);
-        const updatedEditorState = this.getMaybeMarkdownState(getNextState, editorState);
+        const updatedEditorState = this.getMaybeMarkdownState(getNextState, editorState) ||
+          this.getMaybeBlockquote(editorState, 'space');
         if (updatedEditorState) {
           setEditorState(updatedEditorState);
           return 'handled';
