@@ -1,10 +1,6 @@
-const getWordAt = (string, position, willBreakAfterAnchor) => {
-  // Perform type conversions.
-  const str = String(string);
-  // eslint-disable-next-line no-bitwise
-  const pos = Number(position) >>> 0;
+const getWordAt = (str, pos, willBreakAfterAnchor) => {
 
-  // Search for the word's beginning and end.
+  // find the last nonwhitespace char before the position. if str ends in a space, this is -1
   const left = str.slice(0, pos + 1).search(/\S+$/);
 
   if (left === -1) {

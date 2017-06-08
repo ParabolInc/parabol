@@ -137,10 +137,10 @@ class ProjectEditor extends Component {
 export default
 withSuggestions(
   withLinks(
-    //withMarkdown(
+    withMarkdown(
       withKeyboardShortcuts(
         ProjectEditor
       )
-    //)
+    )
   )
 );

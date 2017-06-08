@@ -21,7 +21,7 @@ const getExpandedSelectionState = (editorState) => {
   const selectionState = editorState.getSelection();
   if (selectionState.isCollapsed()) {
     const {block, anchorOffset} = getAnchorLocation(editorState);
-    const {begin, end} = getWordAt(block.getText(), anchorOffset);
+    const {begin, end} = getWordAt(block.getText(), anchorOffset - 1);
     return selectionState.merge({
       anchorOffset: begin,
       focusOffset: end

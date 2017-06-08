@@ -1,4 +1,5 @@
 import {EditorState, KeyBindingUtil} from 'draft-js';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import EditorLinkChanger from 'universal/components/EditorLinkChanger/EditorLinkChanger';
 import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
@@ -7,9 +8,9 @@ import getSelectionLink from 'universal/components/ProjectEditor/getSelectionLin
 import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import addSpace from 'universal/components/ProjectEditor/operations/addSpace';
+import makeAddLink from 'universal/components/ProjectEditor/operations/makeAddLink';
 import splitBlock from 'universal/components/ProjectEditor/operations/splitBlock';
 import getDraftCoords from 'universal/utils/getDraftCoords';
-import makeAddLink from 'universal/components/ProjectEditor/operations/makeAddLink';
 import linkify from 'universal/utils/linkify';
 
 const getCtrlKSelection = (editorState) => {
@@ -23,7 +24,7 @@ const getCtrlKSelection = (editorState) => {
       return selection.merge({
         anchorOffset: begin,
         focusOffset: end
-      })
+      });
     }
   }
   return selection;
@@ -32,21 +33,16 @@ const getCtrlKSelection = (editorState) => {
 const {hasCommandModifier} = KeyBindingUtil;
 
 const withLinks = (ComposedComponent) => {
-  class WithLinks extends Component {
-    state = {};
-
-    addHyperlink = (editorState) => {
-      const selectionState = getCtrlKSelection(editorState);
-      const text = getSelectionText(editorState, selectionState);
-      const link = getSelectionLink(editorState, selectionState);
-      this.setState({
-        linkViewerData: undefined,
-        linkChangerData: {
-          link,
-          text
-        }
-      });
+  return class WithLinks extends Component {
+    static propTypes = {
+      removeModal: PropTypes.func,
+      renderModal: PropTypes.func,
+      handleBeforeInput: PropTypes.func,
+      handleChange: PropTypes.func,
+      handleKeyCommand: PropTypes.func,
+      keyBindingFn: PropTypes.func
     };
+    state = {};
 
     // LinkChanger can take focus, so sometimes we don't want to blur
     removeModal = (allowFocus) => {
@@ -59,16 +55,122 @@ const withLinks = (ComposedComponent) => {
       }
     };
 
-    checkForLinks = (editorState, entityKey) => {
-      const contentState = editorState.getCurrentContent();
-      const entity = contentState.getEntity(entityKey);
-      if (entity.getType() === 'LINK') {
-        this.setState({
-          linkViewerData: entity.getData()
-        });
-        return true;
+    getMaybeLinkifiedState = (getNextState, editorState) => {
+      this.undoLink = undefined;
+      const {block, anchorOffset} = getAnchorLocation(editorState);
+      const blockText = block.getText();
+      // -1 to remove the link from the current caret state
+      const {begin, end, word} = getWordAt(blockText, anchorOffset - 1, true);
+      if (!word) return undefined;
+      const entityKey = block.getEntityAt(anchorOffset - 1);
+
+      if (entityKey) {
+        const contentState = editorState.getCurrentContent();
+        const entity = contentState.getEntity(entityKey);
+        if (entity.getType() === 'LINK') {
+          // the character that is to the left of the caret is a link
+          //  const {begin, end, word} = getWordAt(blockText, anchorOffset, true);
+          const entityKeyToRight = block.getEntityAt(anchorOffset);
+          // if they're putting a space within the link, keep it contiguous
+          if (entityKey !== entityKeyToRight) {
+            // hitting space should close the modal
+            if (this.props.renderModal) {
+              this.props.removeModal();
+            } else {
+              const {linkViewerData, linkChangerData} = this.state;
+              if (linkViewerData || linkChangerData) {
+                this.removeModal();
+              }
+            }
+            return getNextState();
+          }
+        }
+      } else {
+        const links = linkify.match(word);
+        if (links) {
+          const {url} = links[0];
+          const linkifier = makeAddLink(block.getKey(), begin, end, url);
+          this.undoLink = true;
+          // getNextState is a thunk because 99% of the time, we won't ever use it,
+          return linkifier(getNextState());
+        }
       }
-      return false;
+      return undefined;
+    };
+
+    handleBeforeInput = (char, editorState, setEditorState) => {
+      const {handleBeforeInput} = this.props;
+      if (handleBeforeInput) {
+        const result = handleBeforeInput(char, editorState, setEditorState);
+        if (result === 'handled' || result === true) {
+          return result;
+        }
+      }
+      if (char === ' ') {
+        const getNextState = () => addSpace(editorState);
+        const updatedEditorState = this.getMaybeLinkifiedState(getNextState, editorState);
+        if (updatedEditorState) {
+          setEditorState(updatedEditorState);
+          return 'handled';
+        }
+
+        return undefined;
+      }
+    };
+
+    handleChange = (editorState, setEditorState) => {
+      const {handleChange} = this.props;
+      const {linkChangerData, linkViewerData} = this.state;
+      if (handleChange) {
+        handleChange(editorState, setEditorState);
+      }
+      this.undoLink = undefined;
+      const {block, anchorOffset} = getAnchorLocation(editorState);
+      const entityKey = block.getEntityAt(anchorOffset - 1);
+      if (entityKey && !linkChangerData) {
+        const contentState = editorState.getCurrentContent();
+        const entity = contentState.getEntity(entityKey);
+        if (entity.getType() === 'LINK') {
+          this.setState({
+            linkViewerData: entity.getData()
+          });
+          return;
+        }
+      }
+      if (linkViewerData) {
+        this.removeModal();
+      }
+    };
+
+    handleKeyCommand = (command, editorState, setEditorState) => {
+      const {handleKeyCommand} = this.props;
+      if (handleKeyCommand) {
+        const result = handleKeyCommand(command, editorState, setEditorState);
+        if (result === 'handled' || result === true) {
+          return result;
+        }
+      }
+
+      if (command === 'split-block') {
+        const getNextState = () => splitBlock(editorState);
+        const updatedEditorState = this.getMaybeLinkifiedState(getNextState, editorState);
+        if (updatedEditorState) {
+          setEditorState(updatedEditorState);
+          return 'handled';
+        }
+      }
+
+      if (command === 'backspace' && this.undoLink) {
+        setEditorState(EditorState.undo(editorState));
+        this.undoLink = undefined;
+        return 'handled';
+      }
+
+      if (command === 'add-hyperlink') {
+        this.addHyperlink(editorState);
+        return 'handled';
+      }
+      return 'not-handled';
     };
 
     initialize = () => {
@@ -87,6 +189,20 @@ const withLinks = (ComposedComponent) => {
         };
       }
       return {};
+    };
+
+    keyBindingFn = (e) => {
+      const {keyBindingFn} = this.props;
+      if (keyBindingFn) {
+        const result = keyBindingFn(e);
+        if (result) {
+          return result;
+        }
+      }
+      if (e.key === 'k' && hasCommandModifier(e)) {
+        return 'add-hyperlink';
+      }
+      return undefined;
     };
 
     renderChangerModal = ({editorState, setEditorState, editorRef}) => {
@@ -111,7 +227,7 @@ const withLinks = (ComposedComponent) => {
       const {linkViewerData} = this.state;
       const targetRect = getDraftCoords();
       if (!targetRect) {
-        console.log('no target rect!')
+        console.log('no target rect!');
       }
       return (
         <EditorLinkViewer
@@ -124,130 +240,34 @@ const withLinks = (ComposedComponent) => {
           linkData={linkViewerData}
           addHyperlink={this.addHyperlink}
         />
-      )
+      );
     };
 
-    getMaybeLinkifiedState = (spacedEditorState, editorState) => {
-      const {block, anchorOffset} = getAnchorLocation(editorState);
-      const blockText = block.getText();
-      // -1 to remove the link from the current caret state
-      const {begin, end, word} = getWordAt(blockText, anchorOffset - 1, true);
-      const entityKey = block.getEntityAt(anchorOffset - 1);
-      if (word && !entityKey) {
-        const links = linkify.match(word);
-        if (links) {
-          const {url} = links[0];
-          const linkifier = makeAddLink(block.getKey(), begin, end, url);
-          this.undoLink = true;
-          return linkifier(spacedEditorState);
+    addHyperlink = (editorState) => {
+      const selectionState = getCtrlKSelection(editorState);
+      const text = getSelectionText(editorState, selectionState);
+      const link = getSelectionLink(editorState, selectionState);
+      this.setState({
+        linkViewerData: undefined,
+        linkChangerData: {
+          link,
+          text
         }
-      }
-
-      this.undoLink = undefined;
-
-      // hitting space should close the modal
-      if (this.props.renderModal) {
-        this.props.removeModal();
-      } else {
-        const {linkViewerData, linkChangerData} = this.state;
-        if (linkViewerData || linkChangerData) {
-          this.removeModal();
-        }
-      }
-      return spacedEditorState;
-    };
-
-    handleBeforeInput = (char, editorState, setEditorState) => {
-      const {handleBeforeInput} = this.props;
-      if (handleBeforeInput) {
-        const result = handleBeforeInput(char, editorState, setEditorState);
-        if (result === 'handled' || result === true) {
-          return result;
-        }
-      }
-      if (char === ' ') {
-        const spacedEditorState = addSpace(editorState);
-        const updatedEditorState = this.getMaybeLinkifiedState(spacedEditorState, editorState);
-        setEditorState(updatedEditorState);
-        // always handle this because we always want to break entities on whitespace, even mutable ones
-        return 'handled';
-
-      }
-    };
-
-    handleKeyCommand = (command, editorState, setEditorState) => {
-      const {handleKeyCommand} = this.props;
-      if (handleKeyCommand) {
-        const result = handleKeyCommand(command, editorState, setEditorState);
-        if (result === 'handled' || result === true) {
-          return result;
-        }
-      }
-
-      if (command === 'split-block') {
-        const spacedEditorState = splitBlock(editorState);
-        const updatedEditorState = this.getMaybeLinkifiedState(spacedEditorState, editorState);
-        setEditorState(updatedEditorState);
-        return 'handled';
-      }
-
-      if (command === 'backspace' && this.undoLink) {
-        setEditorState(EditorState.undo(editorState));
-        this.undoLink = undefined;
-        return 'handled';
-      }
-
-      if (command === 'add-hyperlink') {
-        this.addHyperlink(editorState);
-        return 'handled';
-      }
-      return 'not-handled';
-    };
-
-    keyBindingFn = (e) => {
-      const {keyBindingFn} = this.props;
-      if (keyBindingFn) {
-        const result = keyBindingFn(e);
-        if (result) {
-          return result;
-        }
-      }
-      if (e.key === 'k' && hasCommandModifier(e)) {
-        return 'add-hyperlink';
-      }
-      return undefined;
-    };
-
-    handleChange = (editorState, setEditorState) => {
-      const {handleChange} = this.props;
-      const {linkChangerData, linkViewerData} = this.state;
-      if (handleChange) {
-        handleChange(editorState, setEditorState);
-      }
-      this.undoLink = undefined;
-      const {block, anchorOffset} = getAnchorLocation(editorState);
-      const entityKey = block.getEntityAt(anchorOffset - 1);
-      const inALink = entityKey && !linkChangerData && this.checkForLinks(editorState, entityKey);
-
-
-      if (!inALink && linkViewerData) {
-        this.removeModal()
-      }
+      });
     };
 
     render() {
       const modalProps = this.initialize();
-      return <ComposedComponent
+      return (<ComposedComponent
         {...this.props}
         {...modalProps}
         handleBeforeInput={this.handleBeforeInput}
         handleChange={this.handleChange}
         handleKeyCommand={this.handleKeyCommand}
         keyBindingFn={this.keyBindingFn}
-      />;
+      />);
     }
   }
-  return WithLinks;
 };
 
 export default withLinks;
