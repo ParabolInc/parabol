@@ -13,7 +13,8 @@ const inlineMatchers = {
   STRIKETHROUGH: {regex: /(~+)([^~\s]+)\1/, matchIdx: 2}
 };
 
-const blockQuoteRegex = /(\s*>\s*)(.*)/;
+const blockQuoteRegex = /^(\s*>\s*)(.*)$/;
+const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/;
 
 
 const CODE_FENCE = '```';
@@ -159,6 +160,14 @@ const withMarkdown = (ComposedComponent) => {
     };
 
     getMaybeBlockquote = (editorState, command) => {
+      const initialContentState = editorState.getCurrentContent();
+      const initialSelectionState = editorState.getSelection();
+      const currentBlockKey = initialSelectionState.getAnchorKey();
+      const currentBlock = initialContentState.getBlockForKey(currentBlockKey);
+      const currentBlockText = currentBlock.getText();
+      const matchedBlockQuote = blockQuoteRegex.exec(currentBlockText);
+      if (!matchedBlockQuote) return undefined;
+      // now that we're doing something, let's spend the cycles and manually exec the command
       const addWhiteSpace = command === 'split-block' ? splitBlock : addSpace;
       const preSplitES = addWhiteSpace(editorState);
       const startingEditorState = EditorState.set(preSplitES, {
@@ -169,11 +178,6 @@ const withMarkdown = (ComposedComponent) => {
       });
       const contentState = startingEditorState.getCurrentContent();
       const selectionState = startingEditorState.getSelection();
-      const currentBlockKey = selectionState.getAnchorKey();
-      const currentBlock = contentState.getBlockForKey(currentBlockKey);
-      const currentBlockText = currentBlock.getText();
-      const matchedBlockQuote = blockQuoteRegex.exec(currentBlockText);
-      if (!matchedBlockQuote) return undefined;
       const triggerPhrase = matchedBlockQuote[1];
       const selectionToRemove = selectionState.merge({
         anchorOffset: 0,
@@ -195,7 +199,47 @@ const withMarkdown = (ComposedComponent) => {
           })
         });
       return EditorState.push(startingEditorState, styledContent, 'change-block-type');
-    }
+    };
+
+    getMaybeLink = (editorState, command) => {
+      const initialContentState = editorState.getCurrentContent();
+      const selectionState = editorState.getSelection();
+      const currentBlockKey = selectionState.getAnchorKey();
+      const currentBlock = initialContentState.getBlockForKey(currentBlockKey);
+      const textToLeft = currentBlock.getText().slice(0, selectionState.getAnchorOffset());
+      const matchedLink = linkRegex.exec(textToLeft);
+      if (!matchedLink) return undefined;
+      // now that we're doing something, let's spend the cycles and manually exec the command
+      const addWhiteSpace = command === 'split-block' ? splitBlock : addSpace;
+      const preSplitES = addWhiteSpace(editorState);
+      const contentState = preSplitES.getCurrentContent();
+      const [phrase, text, href] = matchedLink;
+      const selectionToRemove = selectionState.merge({
+        anchorOffset: matchedLink.index,
+        focusOffset: phrase.length
+      });
+      const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', {href});
+      const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+      const linkifiedContent = Modifier.replaceText(
+        contentState,
+        selectionToRemove,
+        text,
+        null,
+        entityKey
+      );
+
+      const selectionAfter = command === 'split-block' ? preSplitES.getSelection() :
+        linkifiedContent.getSelectionAfter().merge({
+          anchorOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1,
+          focusOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1
+        });
+      const adjustedSelectionContent = linkifiedContent.merge({
+        selectionAfter,
+        selectionBefore: selectionAfter
+      });
+      this.undoMarkdown = true;
+      return EditorState.push(preSplitES, adjustedSelectionContent, 'apply-entity');
+    };
 
     handleKeyCommand = (command, editorState, setEditorState) => {
       const {handleKeyCommand} = this.props;
@@ -209,7 +253,8 @@ const withMarkdown = (ComposedComponent) => {
         const getNextState = () => splitBlock(editorState);
         const updatedEditorState =
           this.getMaybeMarkdownState(getNextState, editorState) ||
-          this.getMaybeBlockquote(editorState, command)
+          this.getMaybeBlockquote(editorState, command) ||
+          this.getMaybeLink(editorState, command);
         if (updatedEditorState) {
           setEditorState(updatedEditorState);
           return 'handled';
@@ -245,7 +290,8 @@ const withMarkdown = (ComposedComponent) => {
       if (char === ' ') {
         const getNextState = () => addSpace(editorState);
         const updatedEditorState = this.getMaybeMarkdownState(getNextState, editorState) ||
-          this.getMaybeBlockquote(editorState, 'space');
+          this.getMaybeBlockquote(editorState, 'space') ||
+          this.getMaybeLink(editorState, 'space');
         if (updatedEditorState) {
           setEditorState(updatedEditorState);
           return 'handled';

@@ -87,7 +87,8 @@ const withLinks = (ComposedComponent) => {
         }
       } else {
         const links = linkify.match(word);
-        if (links) {
+        // make sure the link starts at the beginning of the word otherwise we get conflicts with markdown and junk
+        if (links && links[0].index === 0) {
           const {url} = links[0];
           const linkifier = makeAddLink(block.getKey(), begin, end, url);
           this.undoLink = true;
