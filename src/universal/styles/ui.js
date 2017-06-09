@@ -352,13 +352,18 @@ const ui = {
 
   // Menus
   // ---------------------------------------------------------------------------
-  menuBackgroundColor: '#fff' || backgroundColor,
+  menuBackgroundColor: '#fff',
   menuBorderColor: appTheme.palette.mid30l,
+  menuBorderRadius: borderRadiusSmall,
   menuBoxShadow: shadow[1],
-  menuGutterHorizontal: '.75rem',
-  menuGutterVertical: '.375rem',
-  menuItemPaddingHorizontal: '.75rem',
-  menuItemPaddingVertical: '.25rem',
+  menuGutterHorizontal: '1rem',
+  menuGutterVertical: '.5rem',
+  menuItemBackgroundColorHover: appTheme.palette.mid10l,
+  menuItemBackgroundColorActive: appTheme.palette.mid20l,
+  menuItemHeight: '2rem',
+  menuItemFontSize: '.9375rem',
+  menuItemPaddingHorizontal: '.5rem',
+  menuItemPaddingVertical: 0,
   zMenu: zIndexScale(4),
 
   // Modals

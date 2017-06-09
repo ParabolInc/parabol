@@ -3,7 +3,6 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import tinycolor from 'tinycolor2';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {textOverflow} from 'universal/styles/helpers';
@@ -72,15 +71,13 @@ MenuItem.propTypes = {
   title: PropTypes.string
 };
 
-const activeBackgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 85).toHexString();
 const hoverFocusStyles = {
-  backgroundColor: appTheme.palette.mid10l,
-  // for the blue focus outline
+  backgroundColor: ui.menuItemBackgroundColorHover,
   outline: 0
 };
+
 const activeHoverFocusStyles = {
-  backgroundColor: activeBackgroundColor,
-  styles: PropTypes.object
+  backgroundColor: ui.menuItemBackgroundColorActive
 };
 
 
@@ -101,7 +98,7 @@ const styleThunk = () => ({
   },
 
   active: {
-    backgroundColor: activeBackgroundColor,
+    backgroundColor: ui.menuItemBackgroundColorActive,
     cursor: 'default',
 
     ':hover': {
@@ -115,9 +112,8 @@ const styleThunk = () => ({
   label: {
     ...textOverflow,
     color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: '1.5rem',
+    fontSize: ui.menuItemFontSize,
+    lineHeight: ui.menuItemHeight,
     padding: `${ui.menuItemPaddingVertical} ${ui.menuItemPaddingHorizontal}`
   },
 

@@ -118,10 +118,10 @@ class ProjectEditor extends Component {
   }
 
   render() {
-    const {editorState, setEditorState, renderModal, isDragging} = this.props;
+    const {editorState, setEditorState, renderModal, isDragging, styles} = this.props;
     //console.log('es', editorState)
     return (
-      <div>
+      <div className={css(styles.block)}>
         <Editor
           blockStyleFn={this.blockStyleFn}
           editorState={editorState}
@@ -146,10 +146,14 @@ class ProjectEditor extends Component {
 }
 
 const styleThunk = () => ({
+  block: {
+    padding: '0 .5rem'
+  },
+
   editorBlockquote: {
     fontStyle: 'italic',
-    borderLeft: `4px ${appTheme.palette.mid40l} solid`,
-    paddingLeft: '8px'
+    borderLeft: `.25rem ${appTheme.palette.mid40l} solid`,
+    paddingLeft: '.5rem'
   }
 });
 
