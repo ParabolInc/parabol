@@ -14,6 +14,10 @@ const operationTypes = {
   LINK: {
     editorChangeType: 'apply-entity',
     entityType: 'MUTABLE'
+  },
+  MENTION: {
+    editorChangeType: 'apply-entity',
+    entityType: 'SEGMENTED'
   }
 };
 

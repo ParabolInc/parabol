@@ -14,21 +14,18 @@ import TagSuggestion from 'universal/components/TagSuggestion/TagSuggestion';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {tags} from 'universal/utils/constants';
-//import createKeyShortcutsPlugin from 'universal/utils/createKeyShortcutsPlugin';
-import createDocLinkPlugin from 'universal/utils/draft-js-linkify-plugin/src/index';
 import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
 
-const immutableTags = fromJS(tags);
+//const immutableTags = fromJS(tags);
 
-const tagSuggestionFilter = (searchValue, suggestions) => {
-  const value = searchValue.toLowerCase();
-  const filteredSuggestions = suggestions.filter((suggestion) => (
-    !value || suggestion.get('name').toLowerCase().startsWith(value)
-  ));
-  const size = filteredSuggestions.size < 5 ? filteredSuggestions.size : 5;
-  return filteredSuggestions.setSize(size);
-};
+//const tagSuggestionFilter = (searchValue, suggestions) => {
+//  const value = searchValue.toLowerCase();
+//  const filteredSuggestions = suggestions.filter((suggestion) => (
+//    !value || suggestion.get('name').toLowerCase().startsWith(value)
+//  ));
+//  const size = filteredSuggestions.size < 5 ? filteredSuggestions.size : 5;
+//  return filteredSuggestions.setSize(size);
+//};
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
@@ -196,6 +193,7 @@ class OutcomeCardTextArea extends Component {
           isDragging={this.props.isDragging}
           editorState={this.props.editorState}
           setEditorState={this.props.setEditorState}
+          teamMembers={this.props.teamMembers}
           onBlur={this.props.handleCardUpdate}
         />
     )

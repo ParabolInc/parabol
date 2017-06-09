@@ -1,6 +1,7 @@
 import EditorLink from './EditorLink';
 import {CompositeDecorator} from 'draft-js';
 import Hashtag from 'universal/components/ProjectEditor/Hashtag';
+import Mention from 'universal/components/ProjectEditor/Mention';
 
 const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   contentBlock.findEntityRanges(
@@ -23,6 +24,10 @@ const decorators = new CompositeDecorator([
   {
     strategy: findEntity('TAG'),
     component: Hashtag
+  },
+  {
+    strategy: findEntity('MENTION'),
+    component: Mention
   }
 ]);
 

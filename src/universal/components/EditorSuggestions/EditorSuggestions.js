@@ -7,6 +7,7 @@ import completeEntity from 'universal/components/ProjectEditor/operations/comple
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import MentionUser from 'universal/components/MentionUser/MentionUser';
 
 const dontTellDraft = (e) => {
   e.preventDefault();
@@ -14,7 +15,8 @@ const dontTellDraft = (e) => {
 
 const suggestionTypes = {
   emoji: MentionEmoji,
-  tag: MentionTag
+  tag: MentionTag,
+  mention: MentionUser
 };
 
 class EditorSuggestions extends Component {
@@ -24,6 +26,7 @@ class EditorSuggestions extends Component {
     //if (e) {
     //  e.preventDefault();
     //}
+    // TODO refactor & combine with handleSelect in withSuggestoins
     const item = suggestions[idx];
     if (suggestionType === 'tag') {
       const {name} = item;
@@ -31,6 +34,10 @@ class EditorSuggestions extends Component {
     } else if (suggestionType === 'emoji') {
       const unicode = item.emoji;
       setEditorState(completeEntity(editorState, 'EMOJI', {unicode}, unicode))
+    } else if (suggestionType === 'mention') {
+      // team is derived from the project itself, so userId is the real useful thing here
+      const [userId] = item.id;
+      setEditorState(completeEntity(editorState, 'MENTION', {userId}, item.preferredName))
     }
     removeModal();
   };

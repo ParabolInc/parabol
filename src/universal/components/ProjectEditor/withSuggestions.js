@@ -5,6 +5,7 @@ import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import resolvers from 'universal/components/ProjectEditor/resolvers';
 import getAnchorLocation from './getAnchorLocation';
+import stringScore from 'string-score';
 
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
@@ -45,6 +46,10 @@ const withSuggestions = (ComposedComponent) => {
       } else if (suggestionType === 'emoji') {
         const unicode = item.emoji;
         setEditorState(completeEntity(editorState, 'EMOJI', {unicode}, unicode))
+      } else if (suggestionType === 'mention') {
+        // team is derived from the project itself, so userId is the real useful thing here
+        const [userId] = item.id;
+        setEditorState(completeEntity(editorState, 'MENTION', {userId}, item.preferredName))
       }
       this.removeModal();
     };
@@ -84,22 +89,31 @@ const withSuggestions = (ComposedComponent) => {
         this.makeSuggestions(query, 'tag');
         return true;
       } else if (trigger === '@') {
-        //this.makeSuggestions(query, 'mention');
-        //return true;
+        this.makeSuggestions(query, 'mention');
+        return true;
       }
       return false;
     };
 
     resolveMentions = async (query) => {
-      return 'a';
-
+      const {teamMembers} = this.props;
+      if (!query) {
+        return teamMembers.slice(0, 6);
+      }
+      return teamMembers.map((teamMember) => ({
+        ...teamMember,
+        score: stringScore(teamMember.preferredName, query)
+      }))
+        .sort((a, b) => a.score < b.score ? 1 : -1)
+        .slice(0, 6)
+        .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
     };
 
     resolver = (resolveType) => {
       if (resolveType !== 'mention') {
         return resolvers[resolveType];
       } else {
-        //return this.resolveMentions;
+        return this.resolveMentions;
       }
     }
     makeSuggestions = async (query, resolveType) => {
