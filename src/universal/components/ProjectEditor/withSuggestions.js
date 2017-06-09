@@ -1,9 +1,9 @@
 import {getVisibleSelectionRect} from 'draft-js';
 import React, {Component} from 'react';
 import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
+import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import resolvers from 'universal/components/ProjectEditor/resolvers';
-import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import getAnchorLocation from './getAnchorLocation';
 
 const withSuggestions = (ComposedComponent) => {
@@ -83,16 +83,31 @@ const withSuggestions = (ComposedComponent) => {
       } else if (trigger === '#') {
         this.makeSuggestions(query, 'tag');
         return true;
+      } else if (trigger === '@') {
+        //this.makeSuggestions(query, 'mention');
+        //return true;
       }
       return false;
     };
 
+    resolveMentions = async (query) => {
+      return 'a';
+
+    };
+
+    resolver = (resolveType) => {
+      if (resolveType !== 'mention') {
+        return resolvers[resolveType];
+      } else {
+        //return this.resolveMentions;
+      }
+    }
     makeSuggestions = async (query, resolveType) => {
       // setState before promise so we can add a spinner to the component
       //this.setState({
       //  suggestionType: resolveType,
       //});
-      const resolve = resolvers[resolveType];
+      const resolve = this.resolver(resolveType);
       const suggestions = await resolve(query);
       if (suggestions.length > 0) {
         this.setState({
