@@ -190,6 +190,7 @@ class OutcomeCardTextArea extends Component {
   render() {
     return (
         <ProjectEditor
+          annouceEditing={this.props.annouceEditing}
           isDragging={this.props.isDragging}
           editorState={this.props.editorState}
           setEditorState={this.props.setEditorState}

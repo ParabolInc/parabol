@@ -39,9 +39,8 @@ const getMergedSelection = (oldEditorState, newContentState) => {
 };
 
 const mergeServerContent = (oldEditorState, newContentState) => {
-  const oldSelection = oldEditorState.getSelection();
   // unless it's being simultaneously edited, don't bother setting selection
-  if (!oldSelection.getHasFocus()) {
+  if (!oldEditorState.getSelection().getHasFocus()) {
     return newContentState;
   }
   return newContentState.merge({

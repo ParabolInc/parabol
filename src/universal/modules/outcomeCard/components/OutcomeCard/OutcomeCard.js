@@ -17,6 +17,7 @@ import isProjectArchived from 'universal/utils/isProjectArchived';
 
 const OutcomeCard = (props) => {
   const {
+    annouceEditing,
     area,
     isAgenda,
     isEditing,
@@ -72,6 +73,7 @@ const OutcomeCard = (props) => {
             updatedAt={outcome.updatedAt}
           />
           <OutcomeCardTextarea
+            annouceEditing={annouceEditing}
             isDragging={isDragging}
             cardHasHover={hasHover}
             content={outcome.content}
@@ -80,11 +82,9 @@ const OutcomeCard = (props) => {
             isEditing={isEditing}
             isPrivate={isPrivate}
             name={outcome.id}
-            setEditing={setEditing}
             setEditorState={setEditorState}
             teamMembers={teamMembers}
             editorState={editorState}
-            unsetEditing={unsetEditing}
           />
         </div>
       }

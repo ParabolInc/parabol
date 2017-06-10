@@ -24,7 +24,24 @@ class ProjectEditor extends Component {
     removeModal: PropTypes.func
   };
 
+  componentDidMount() {
+    const {editorState} = this.props;
+    const text = editorState.getCurrentContent().getPlainText();
+    if (text === '') {
+      this.editorRef.focus();
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
+    const {editorState, annouceEditing} = this.props;
+    const wasFocused = editorState.getSelection().getHasFocus();
+    const isFocused = nextProps.editorState.getSelection().getHasFocus();
+    if (wasFocused !== isFocused) {
+      annouceEditing(isFocused);
+    }
+  }
+
+  shouldComponentUpdate(nextProps) {
     const {isDragging, editorState} = this.props;
     return isDragging !== nextProps.isDragging || editorState !== nextProps.editorState;
   }

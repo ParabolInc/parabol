@@ -40,34 +40,47 @@ class OutcomeCardContainer extends Component {
     const {outcome: {content}} = props;
     this.state = {
       hasHover: false,
-      isEditing: !content,
       openArea: 'content',
-      editorState: content ? EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) : EditorState.createEmpty(editorDecorators)
+      editorState: content ?
+        EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
+        EditorState.createEmpty(editorDecorators)
     };
   }
 
-  componentWillMount() {
-    // const {outcome: {content}} = this.props;
-    const {outcome: {content}} = this.props;
-    if (!content) {
-      // if there is no content, delete it if the user clicks away from the card
-      document.addEventListener('click', this.handleDocumentClick);
-    }
-  }
+  //componentWillMount() {
+  //  // const {outcome: {content}} = this.props;
+  //  const {outcome: {content}} = this.props;
+  //  if (!content) {
+  //    // if there is no content, delete it if the user clicks away from the card
+  //    document.addEventListener('click', this.handleDocumentClick);
+  //  }
+  //}
 
   componentWillReceiveProps(nextProps) {
     const {content: nextContent} = nextProps.outcome;
     const {content} = this.props.outcome;
     if (content !== nextContent) {
-      const newContentState = mergeServerContent(this.state.editorState, convertFromRaw(JSON.parse(nextContent)));
-      const newEditorState = EditorState.push(this.state.editorState, newContentState, 'insert-characters');
-      this.setEditorState(newEditorState)
+      const {editorState} = this.state;
+      const newContentState = mergeServerContent(editorState, convertFromRaw(JSON.parse(nextContent)));
+      const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
+      this.setEditorState(newEditorState);
     }
   }
 
-  componentWillUnmount() {
-    document.removeEventListener('click', this.handleDocumentClick);
-  }
+  //componentWillUnmount() {
+  //  document.removeEventListener('click', this.handleDocumentClick);
+  //}
+
+  annouceEditing = (isEditing) => {
+    const {outcome: {id: projectId}} = this.props;
+    const [teamId] = projectId.split('::');
+    cashay.mutate('edit', {
+      variables: {
+        teamId,
+        editing: isEditing ? `Task::${projectId}` : null
+      }
+    });
+  };
 
   setEditorState = (editorState) => {
     this.setState({
@@ -75,18 +88,18 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-  setEditing = () => {
-    this.setState({isEditing: true});
-    document.addEventListener('click', this.handleDocumentClick);
-    const {outcome: {id: projectId}} = this.props;
-    const [teamId] = projectId.split('::');
-    cashay.mutate('edit', {
-      variables: {
-        teamId,
-        editing: `Task::${projectId}`
-      }
-    });
-  };
+  //setEditing = () => {
+  //  this.setState({isEditing: true});
+  //  document.addEventListener('click', this.handleDocumentClick);
+  //  const {outcome: {id: projectId}} = this.props;
+  //  const [teamId] = projectId.split('::');
+  //  cashay.mutate('edit', {
+  //    variables: {
+  //      teamId,
+  //      editing: `Task::${projectId}`
+  //    }
+  //  });
+  //};
 
   hoverOn = () => this.setState({hasHover: true});
 
@@ -94,11 +107,8 @@ class OutcomeCardContainer extends Component {
 
   openMenu = (nextArea) => () => {
     const {openArea} = this.state;
-    if (nextArea === openArea) {
-      this.setState({openArea: 'content'});
-    } else {
-      this.setState({openArea: nextArea});
-    }
+    const newOpenArea = nextArea === openArea ? 'content' : nextArea;
+    this.setState({openArea: newOpenArea});
   };
 
   handleCardUpdate = () => {
@@ -123,13 +133,13 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-  handleDocumentClick = (e) => {
-    // try to delete empty card unless they click inside the card
-    if (!targetIsDescendant(e.target, findDOMNode(this))) {
-      this.handleCardUpdate();
-      this.unsetEditing();
-    }
-  };
+  //handleDocumentClick = (e) => {
+  //  // try to delete empty card unless they click inside the card
+  //  if (!targetIsDescendant(e.target, findDOMNode(this))) {
+  //    this.handleCardUpdate();
+  //    this.unsetEditing();
+  //  }
+  //};
 
   unarchiveProject = () => {
     const {outcome: {id, content}} = this.props;
@@ -146,24 +156,25 @@ class OutcomeCardContainer extends Component {
     cashay.mutate('updateProject', options);
   };
 
-  unsetEditing = () => {
-    const {outcome: {id: projectId}} = this.props;
-    this.setState({isEditing: false});
-    document.removeEventListener('click', this.handleDocumentClick);
-    const [teamId] = projectId.split('::');
-    cashay.mutate('edit', {
-      variables: {
-        teamId,
-        editing: null
-      }
-    });
-  };
+  //unsetEditing = () => {
+  //  const {outcome: {id: projectId}} = this.props;
+  //  this.setState({isEditing: false});
+  //  document.removeEventListener('click', this.handleDocumentClick);
+  //  const [teamId] = projectId.split('::');
+  //  cashay.mutate('edit', {
+  //    variables: {
+  //      teamId,
+  //      editing: null
+  //    }
+  //  });
+  //};
 
   render() {
     const {hasHover, isEditing, openArea, editorState} = this.state;
     const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <OutcomeCard
+        annouceEditing={this.annouceEditing}
         isDragging={isDragging}
         area={area}
         handleCardUpdate={this.handleCardUpdate}
@@ -171,16 +182,13 @@ class OutcomeCardContainer extends Component {
         hoverOn={this.hoverOn}
         hoverOff={this.hoverOff}
         isAgenda={isAgenda}
-        isEditing={isEditing}
         openArea={openArea}
         openMenu={this.openMenu}
         outcome={outcome}
         unarchiveProject={this.unarchiveProject}
-        setEditing={this.setEditing}
         setEditorState={this.setEditorState}
         teamMembers={teamMembers}
         editorState={editorState}
-        unsetEditing={this.unsetEditing}
       />
 
     );
