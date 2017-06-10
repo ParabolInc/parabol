@@ -8,22 +8,60 @@ import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
 import OutcomeCardMenuButton from 'universal/modules/outcomeCard/components/OutcomeCardMenuButton/OutcomeCardMenuButton';
+import {SelectionState, convertToRaw, Modifier} from 'draft-js';
 
 const buttonArray = labels.projectStatus.slugs.slice(0);
 
 const OutcomeCardStatusMenu = (props) => {
-  const {onComplete, outcome, isAgenda, styles} = props;
+  const {onComplete, outcome, isAgenda, styles, editorState} = props;
   const {id: projectId, status} = outcome;
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
   const deleteOutcomeLabel = <span>De<u>l</u>ete this Project</span>;
 
   const archiveProject = () => {
+    const contentState = editorState.getCurrentContent();
+    const lastBlock = contentState.getLastBlock();
+    // get to the last space of the last block
+    // split block
+    // add entity
+    const selectionState = new SelectionState({
+      anchorKey: lastBlock.getKey(),
+      anchorOffset: lastBlock.getLength(),
+      focusKey: lastBlock.getKey(),
+      focusOffset: lastBlock.getLength(),
+      isBackward: false,
+      hasFocus: false
+    });
+    const contentStateWithNewBlock = Modifier.splitBlock(
+      contentState,
+      selectionState
+    );
+    const newBlock = contentStateWithNewBlock.getLastBlock();
+    const lastSelection = selectionState.merge({
+      anchorKey: newBlock.getKey(),
+      focusKey: newBlock.getKey(),
+      anchorOffset: 0,
+      focusOffset: 0
+    });
+
+    const contentStateWithEntity = contentStateWithNewBlock
+      .createEntity('TAG', 'IMMUTABLE', {value: '#archived'});
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+
+    const newContent = Modifier.replaceText(
+      contentStateWithEntity,
+      lastSelection,
+      '#archived',
+      null,
+      entityKey
+    );
+    const rawContentStr = JSON.stringify(convertToRaw(newContent));
     const options = {
       ops: {},
       variables: {
         updatedProject: {
           id: projectId,
-          content: `${outcome.content} #archived`
+          content: rawContentStr
         }
       }
     };

@@ -58,6 +58,7 @@ const OutcomeCard = (props) => {
       }
       {openArea === 'status' &&
         <OutcomeCardStatusMenu
+          editorState={editorState}
           isAgenda={isAgenda}
           onComplete={openContentMenu}
           outcome={outcome}
