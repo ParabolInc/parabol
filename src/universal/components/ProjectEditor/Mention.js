@@ -17,7 +17,6 @@ const styleThunk = () => ({
   mention: {
     color: appTheme.palette.cool,
     fontWeight: 800
-
   }
 });
 

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 
@@ -28,11 +29,12 @@ MentionUser.propTypes = {
 
 const styleThunk = () => ({
   active: {
-    backgroundColor: appTheme.palette.dark,
-    color: '#fff'
+    backgroundColor: ui.menuItemBackgroundColorHover
   },
 
   description: {
+    fontSize: ui.menuItemFontSize,
+    lineHeight: ui.menuItemHeight,
     marginLeft: '.5rem'
   },
 
@@ -40,7 +42,7 @@ const styleThunk = () => ({
     alignItems: 'center',
     cursor: 'pointer',
     display: 'flex',
-    padding: '.5rem'
+    padding: '0 1rem'
   },
 
   value: {

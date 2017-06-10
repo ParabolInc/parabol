@@ -112,15 +112,14 @@ const styleThunk = (theme, props) => ({
   },
 
   mentionMenu: {
+    animationDuration: '200ms',
+    animationName: animateIn,
     background: '#fff',
-    border: `1px solid ${ui.cardBorderCoor}`,
-    borderRadius: ui.borderRadiusSmall,
+    borderRadius: ui.menuBorderRadius,
     boxShadow: ui.menuBoxShadow,
     color: ui.palette.dark,
-    padding: ui.borderRadiusSmall,
-    zIndex: 1,
-    animationName: animateIn,
-    animationDuration: '200ms'
+    padding: `${ui.menuGutterVertical} 0`,
+    zIndex: 1
   },
 
   active: {

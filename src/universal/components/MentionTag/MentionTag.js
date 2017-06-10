@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const MentionTag = (props) => {
@@ -27,8 +28,7 @@ MentionTag.propTypes = {
 
 const styleThunk = () => ({
   active: {
-    backgroundColor: appTheme.palette.dark,
-    color: '#fff'
+    backgroundColor: ui.menuItemBackgroundColorHover
   },
 
   description: {
@@ -39,11 +39,15 @@ const styleThunk = () => ({
     alignItems: 'center',
     cursor: 'pointer',
     display: 'flex',
-    padding: '.5rem'
+    fontSize: ui.menuItemFontSize,
+    height: ui.menuItemHeight,
+    lineHeight: ui.menuItemHeight,
+    padding: '0 1rem'
   },
 
   value: {
-    fontWeight: 700
+    fontWeight: 700,
+    minWidth: '4.5rem'
   }
 });
 

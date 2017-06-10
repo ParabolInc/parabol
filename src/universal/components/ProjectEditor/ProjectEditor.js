@@ -7,6 +7,7 @@ import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 class ProjectEditor extends Component {
@@ -118,10 +119,10 @@ class ProjectEditor extends Component {
   }
 
   render() {
-    const {editorState, setEditorState, renderModal, isDragging} = this.props;
+    const {editorState, setEditorState, renderModal, isDragging, styles} = this.props;
     //console.log('es', editorState)
     return (
-      <div>
+      <div className={css(styles.root)}>
         <Editor
           blockStyleFn={this.blockStyleFn}
           editorState={editorState}
@@ -146,10 +147,14 @@ class ProjectEditor extends Component {
 }
 
 const styleThunk = () => ({
+  root: {
+    padding: `0 ${ui.cardPaddingBase}`
+  },
+
   editorBlockquote: {
     fontStyle: 'italic',
-    borderLeft: `4px ${appTheme.palette.mid40l} solid`,
-    paddingLeft: '8px'
+    borderLeft: `.25rem ${appTheme.palette.mid40l} solid`,
+    paddingLeft: '.5rem'
   }
 });
 
