@@ -41,10 +41,10 @@ class ProjectEditor extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
-    const {isDragging, editorState} = this.props;
-    return isDragging !== nextProps.isDragging || editorState !== nextProps.editorState;
-  }
+  //shouldComponentUpdate(nextProps) {
+  //  const {isDragging, editorState} = this.props;
+  //  return isDragging !== nextProps.isDragging || editorState !== nextProps.editorState;
+  //}
 
   state = {};
 

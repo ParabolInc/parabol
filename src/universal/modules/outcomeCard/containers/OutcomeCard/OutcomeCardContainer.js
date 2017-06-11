@@ -1,5 +1,5 @@
 import {cashay} from 'cashay';
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import {convertFromRaw, convertToRaw, EditorState, Modifier} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {findDOMNode} from 'react-dom';
@@ -7,8 +7,6 @@ import {connect} from 'react-redux';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import labels from 'universal/styles/theme/labels';
-import removeTagFromString from 'universal/utils/removeTagFromString';
-import targetIsDescendant from 'universal/utils/targetIsDescendant';
 import mergeServerContent from 'universal/utils/mergeServerContent';
 
 const teamMembersQuery = `
@@ -143,31 +141,63 @@ class OutcomeCardContainer extends Component {
 
   unarchiveProject = () => {
     const {outcome: {id, content}} = this.props;
-
+    const {editorState} = this.state;
+    const rawContent = JSON.parse(content);
+    const {blocks, entityMap} = rawContent;
+    const entityKeys = Object.keys(entityMap);
+    const archivedTags = [];
+    for (let i =0; i < entityKeys.length; i++) {
+      const key = entityKeys[i];
+      const entity = entityMap[key];
+      if (entity.type === 'TAG' && entity.data.value === 'archived') {
+        archivedTags.push(key);
+      }
+    }
+    let contentState = editorState.getCurrentContent();
+    const selectionState= editorState.getSelection();
+    for (let i = blocks.length -1; i >= 0; i--) {
+      const block = blocks[i];
+      const {entityRanges, key: blockKey, text} = block;
+      const removalRanges = [];
+      for (let j = 0; j < entityRanges.length; j++) {
+        const range = entityRanges[j];
+        const entityKey = String(range.key);
+        if (archivedTags.indexOf(entityKey) !== -1) {
+          const offset = range.offset;
+          const entityEnd = offset + range.length;
+          const end = offset === 0 && text[entityEnd] === ' ' ? entityEnd + 1 : entityEnd;
+          const start = text[offset - 1] === ' ' ? offset - 1 : offset;
+          removalRanges.push({start, end});
+        }
+      }
+      removalRanges.sort((a, b) => a.end < b.end ? 1 : -1);
+      for (let j = 0; j < removalRanges.length; j++) {
+        const range = removalRanges[j];
+        const selectionToRemove = selectionState.merge({
+          anchorKey: blockKey,
+          focusKey: blockKey,
+          anchorOffset: range.start,
+          focusOffset: range.end
+        });
+        contentState = Modifier.removeRange(contentState, selectionToRemove, 'backward');
+      }
+      if (contentState.getBlockForKey(blockKey).getText() === '') {
+        contentState = contentState.merge({
+          blockMap: contentState.getBlockMap().delete(blockKey)
+        });
+      }
+    }
     const options = {
       ops: {},
       variables: {
         updatedProject: {
           id,
-          content: removeTagFromString(content, '#archived')
+          content: JSON.stringify(convertToRaw(contentState))
         }
       }
     };
     cashay.mutate('updateProject', options);
   };
-
-  //unsetEditing = () => {
-  //  const {outcome: {id: projectId}} = this.props;
-  //  this.setState({isEditing: false});
-  //  document.removeEventListener('click', this.handleDocumentClick);
-  //  const [teamId] = projectId.split('::');
-  //  cashay.mutate('edit', {
-  //    variables: {
-  //      teamId,
-  //      editing: null
-  //    }
-  //  });
-  //};
 
   render() {
     const {hasHover, isEditing, openArea, editorState} = this.state;
