@@ -32,20 +32,6 @@ class ProjectEditor extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {editorState, annouceEditing} = this.props;
-    const wasFocused = editorState.getSelection().getHasFocus();
-    const isFocused = nextProps.editorState.getSelection().getHasFocus();
-    if (wasFocused !== isFocused) {
-      annouceEditing(isFocused);
-    }
-  }
-
-  //shouldComponentUpdate(nextProps) {
-  //  const {isDragging, editorState} = this.props;
-  //  return isDragging !== nextProps.isDragging || editorState !== nextProps.editorState;
-  //}
-
   state = {};
 
   blockStyleFn = (contentBlock) => {
@@ -57,20 +43,17 @@ class ProjectEditor extends Component {
   };
 
   removeModal = () => {
-    const {removeModal} = this.props;
-    if (removeModal) {
+    const {removeModal, renderModal} = this.props;
+    if (renderModal && removeModal) {
       removeModal();
     }
   };
 
   handleChange = (editorState) => {
-    const {onBlur, setEditorState, handleChange, renderModal} = this.props;
+    const {setEditorState, handleChange} = this.props;
     if (!editorState.getSelection().getHasFocus()) {
-      if (!renderModal) {
-        onBlur(editorState);
-      } else {
-        this.removeModal();
-      }
+      this.removeModal();
+      setEditorState(editorState)
       return;
     }
 

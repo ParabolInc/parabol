@@ -1,1 +1,1 @@
-export default (tags) => tags.includes('#archived');
+export default (tags) => tags.includes('archived');

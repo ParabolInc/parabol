@@ -45,7 +45,7 @@ const OutcomeCardStatusMenu = (props) => {
     });
 
     const contentStateWithEntity = contentStateWithNewBlock
-      .createEntity('TAG', 'IMMUTABLE', {value: '#archived'});
+      .createEntity('TAG', 'IMMUTABLE', {value: 'archived'});
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
 
     const newContent = Modifier.replaceText(

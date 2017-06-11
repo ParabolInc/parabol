@@ -12,7 +12,10 @@ export default class OutcomeOrNullCard extends Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return Boolean(!nextProps.isPreview || nextProps.outcome.status !== this.props.outcome.status);
+    return Boolean(!nextProps.isPreview ||
+      nextProps.outcome.status !== this.props.outcome.status ||
+      nextProps.outcome.content !== this.props.outcome.content
+    );
   }
   render() {
     const {area, isAgenda, myUserId, outcome, isDragging} = this.props;

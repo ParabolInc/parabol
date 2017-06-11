@@ -1,13 +1,14 @@
 import {cashay} from 'cashay';
-import {convertFromRaw, convertToRaw, EditorState, Modifier} from 'draft-js';
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {findDOMNode} from 'react-dom';
 import {connect} from 'react-redux';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
+import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
+import getTagsFromContent from 'universal/utils/draftjs/getTagsFromContent';
 
 const teamMembersQuery = `
 query {
@@ -43,6 +44,7 @@ class OutcomeCardContainer extends Component {
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
         EditorState.createEmpty(editorDecorators)
     };
+    this.tags = content ? getTagsFromContent(content) : [];
   }
 
   //componentWillMount() {
@@ -56,20 +58,41 @@ class OutcomeCardContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     const {content: nextContent} = nextProps.outcome;
-    const {content} = this.props.outcome;
+    const {outcome:{content}, editorState} = this.props;
     if (content !== nextContent) {
       const {editorState} = this.state;
       const newContentState = mergeServerContent(editorState, convertFromRaw(JSON.parse(nextContent)));
       const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
       this.setEditorState(newEditorState);
+      this.tags = getTagsFromContent(nextContent);
     }
+
+    if (!this.props.isDragging && nextProps.isDragging) {
+      this.handleCardUpdate();
+    }
+
   }
 
   //componentWillUnmount() {
   //  document.removeEventListener('click', this.handleDocumentClick);
   //}
 
+  setEditorState = (editorState) => {
+    const wasFocused = this.state.editorState.getSelection().getHasFocus();
+    const isFocused = editorState.getSelection().getHasFocus();
+    if (wasFocused !== isFocused) {
+      this.annouceEditing(isFocused);
+    }
+    this.setState({
+      editorState
+    });
+  };
+
   annouceEditing = (isEditing) => {
+    console.log('annoucing', isEditing);
+    this.setState({
+      isEditing
+    })
     const {outcome: {id: projectId}} = this.props;
     const [teamId] = projectId.split('::');
     cashay.mutate('edit', {
@@ -77,12 +100,6 @@ class OutcomeCardContainer extends Component {
         teamId,
         editing: isEditing ? `Task::${projectId}` : null
       }
-    });
-  };
-
-  setEditorState = (editorState) => {
-    this.setState({
-      editorState
     });
   };
 
@@ -131,96 +148,53 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-  //handleDocumentClick = (e) => {
-  //  // try to delete empty card unless they click inside the card
-  //  if (!targetIsDescendant(e.target, findDOMNode(this))) {
-  //    this.handleCardUpdate();
-  //    this.unsetEditing();
-  //  }
-  //};
-
   unarchiveProject = () => {
     const {outcome: {id, content}} = this.props;
     const {editorState} = this.state;
-    const rawContent = JSON.parse(content);
-    const {blocks, entityMap} = rawContent;
-    const entityKeys = Object.keys(entityMap);
-    const archivedTags = [];
-    for (let i =0; i < entityKeys.length; i++) {
-      const key = entityKeys[i];
-      const entity = entityMap[key];
-      if (entity.type === 'TAG' && entity.data.value === 'archived') {
-        archivedTags.push(key);
-      }
-    }
-    let contentState = editorState.getCurrentContent();
-    const selectionState= editorState.getSelection();
-    for (let i = blocks.length -1; i >= 0; i--) {
-      const block = blocks[i];
-      const {entityRanges, key: blockKey, text} = block;
-      const removalRanges = [];
-      for (let j = 0; j < entityRanges.length; j++) {
-        const range = entityRanges[j];
-        const entityKey = String(range.key);
-        if (archivedTags.indexOf(entityKey) !== -1) {
-          const offset = range.offset;
-          const entityEnd = offset + range.length;
-          const end = offset === 0 && text[entityEnd] === ' ' ? entityEnd + 1 : entityEnd;
-          const start = text[offset - 1] === ' ' ? offset - 1 : offset;
-          removalRanges.push({start, end});
-        }
-      }
-      removalRanges.sort((a, b) => a.end < b.end ? 1 : -1);
-      for (let j = 0; j < removalRanges.length; j++) {
-        const range = removalRanges[j];
-        const selectionToRemove = selectionState.merge({
-          anchorKey: blockKey,
-          focusKey: blockKey,
-          anchorOffset: range.start,
-          focusOffset: range.end
-        });
-        contentState = Modifier.removeRange(contentState, selectionToRemove, 'backward');
-      }
-      if (contentState.getBlockForKey(blockKey).getText() === '') {
-        contentState = contentState.merge({
-          blockMap: contentState.getBlockMap().delete(blockKey)
-        });
-      }
-    }
+    const eqFn = (data) => data.value === 'archived';
+    const nextContentState = removeAllRangesForEntity(editorState, content, 'TAG', eqFn);
     const options = {
       ops: {},
       variables: {
         updatedProject: {
           id,
-          content: JSON.stringify(convertToRaw(contentState))
+          content: JSON.stringify(convertToRaw(nextContentState))
         }
       }
     };
     cashay.mutate('updateProject', options);
   };
 
+  handleBlur = (e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      this.handleCardUpdate();
+    }
+  };
+
   render() {
     const {hasHover, isEditing, openArea, editorState} = this.state;
     const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
-      <OutcomeCard
-        annouceEditing={this.annouceEditing}
-        isDragging={isDragging}
-        area={area}
-        handleCardUpdate={this.handleCardUpdate}
-        hasHover={hasHover}
-        hoverOn={this.hoverOn}
-        hoverOff={this.hoverOff}
-        isAgenda={isAgenda}
-        openArea={openArea}
-        openMenu={this.openMenu}
-        outcome={outcome}
-        unarchiveProject={this.unarchiveProject}
-        setEditorState={this.setEditorState}
-        teamMembers={teamMembers}
-        editorState={editorState}
-      />
-
+      <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
+        <OutcomeCard
+          area={area}
+          editorState={editorState}
+          handleCardUpdate={this.handleCardUpdate}
+          hasHover={hasHover}
+          hoverOff={this.hoverOff}
+          hoverOn={this.hoverOn}
+          isAgenda={isAgenda}
+          isDragging={isDragging}
+          isEditing={isEditing}
+          openArea={openArea}
+          openMenu={this.openMenu}
+          outcome={outcome}
+          setEditorState={this.setEditorState}
+          tags={this.tags}
+          teamMembers={teamMembers}
+          unarchiveProject={this.unarchiveProject}
+        />
+      </div>
     );
   }
 }
