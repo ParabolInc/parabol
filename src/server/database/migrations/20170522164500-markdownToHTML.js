@@ -5,6 +5,7 @@ import jsdom from 'jsdom';
 import toMarkdown from 'to-markdown';
 import {stateToHTML} from 'draft-js-export-html';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 
 const options = {
@@ -43,9 +44,10 @@ exports.up = async (r) => {
     });
     const nextContentState = entitizeText(contentState, selectionState) || contentState;
     const raw = convertToRaw(nextContentState);
+    const tags = getTagsFromEntityMap(raw.entityMap);
     const rawString = JSON.stringify(raw);
+    return r.table('Project').get(project.id).update({content: rawString, tags}).run();
 
-    return r.table('Project').get(project.id).update({content: rawString}).run();
   });
   try {
     await Promise.all(projects);

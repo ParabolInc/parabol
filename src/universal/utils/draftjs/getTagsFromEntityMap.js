@@ -1,6 +1,5 @@
-const getTagsFromContent = (content) => {
-  const rawContent = JSON.parse(content);
-  const {entityMap} = rawContent;
+const getTagsFromEntityMap = (entityMap) => {
+  //const {entityMap} = rawContent;
   const entityKeys = Object.keys(entityMap);
   const tags = [];
   for (let i = 0; i < entityKeys.length; i++) {
@@ -13,4 +12,4 @@ const getTagsFromContent = (content) => {
   return tags;
 };
 
-export default getTagsFromContent;
+export default getTagsFromEntityMap;

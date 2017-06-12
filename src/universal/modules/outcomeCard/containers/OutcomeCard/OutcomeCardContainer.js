@@ -8,7 +8,7 @@ import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/Ou
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
-import getTagsFromContent from 'universal/utils/draftjs/getTagsFromContent';
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 const teamMembersQuery = `
 query {
@@ -44,7 +44,7 @@ class OutcomeCardContainer extends Component {
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
         EditorState.createEmpty(editorDecorators)
     };
-    this.tags = content ? getTagsFromContent(content) : [];
+    this.tags = content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : [];
   }
 
   //componentWillMount() {
@@ -64,7 +64,7 @@ class OutcomeCardContainer extends Component {
       const newContentState = mergeServerContent(editorState, convertFromRaw(JSON.parse(nextContent)));
       const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
       this.setEditorState(newEditorState);
-      this.tags = getTagsFromContent(nextContent);
+      this.tags = getTagsFromEntityMap(JSON.parse(nextContent).entityMap);
     }
 
     if (!this.props.isDragging && nextProps.isDragging) {
