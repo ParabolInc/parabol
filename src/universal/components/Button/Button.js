@@ -176,7 +176,7 @@ const styleThunk = (theme, props) => ({
     borderRadius: ui.buttonBorderRadius,
     fontSize: ui.buttonFontSize[props.size] || ui.buttonFontSize.medium,
     lineHeight: ui.buttonLineHeight,
-    padding: ui.buttonPadding,
+    padding: ui.buttonPadding[props.size],
     textTransform: props.textTransform || 'none'
   },
 

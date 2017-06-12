@@ -60,6 +60,7 @@ PlainInputField.propTypes = {
   colorPalette: PropTypes.oneOf([
     'cool',
     'gray',
+    'link',
     'warm',
     'white'
   ]),
@@ -69,12 +70,15 @@ PlainInputField.propTypes = {
 const styleThunk = () => ({
   field: {
     ...ui.fieldBaseStyles,
-    border: 'none',
-    boxShadow: 'none'
+    border: 0,
+    boxShadow: 'none',
+    fontSize: '.9375rem',
+    lineHeight: '1.5rem'
   },
 
   cool: makeFieldColorPalette('cool'),
   gray: makeFieldColorPalette('gray'),
+  link: makeFieldColorPalette('link'),
   warm: makeFieldColorPalette('warm'),
   white: makeFieldColorPalette('white'),
 
