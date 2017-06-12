@@ -135,10 +135,10 @@ export const tags = [
     description: 'Hidden from your main board'
   }
 ];
-export const tagLookup = {
-  private: 'Only you will be able to see this project',
-  archived: 'Hidden from your main board'
-};
+
+export const textTags = ['#private', '#archived'];
+
+export const NEWLINE_REGEX = /\r\n?|\n/g;
 
 /* Integrations */
 export const GITHUB = 'github';

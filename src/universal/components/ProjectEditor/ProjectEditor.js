@@ -1,14 +1,16 @@
-import {Editor, getDefaultKeyBinding} from 'draft-js';
+import {css} from 'aphrodite-local-styles/no-important';
+import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {textTags} from 'universal/utils/constants';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import entitizeText from 'universal/utils/draftjs/entitizeText';
 
 class ProjectEditor extends Component {
 
@@ -53,11 +55,25 @@ class ProjectEditor extends Component {
 
   handleChange = (editorState) => {
     const {setEditorState, handleChange} = this.props;
+    if (this.entityPasteStart) {
+      const {anchorOffset, anchorKey} = this.entityPasteStart;
+      const selectionState = editorState.getSelection().merge({
+        anchorOffset,
+        anchorKey
+      });
+      const contentState = entitizeText(editorState.getCurrentContent(), selectionState);
+      this.entityPasteStart = undefined;
+      if (contentState) {
+        setEditorState(EditorState.push(editorState, contentState, 'apply-entity'));
+        return;
+      }
+    }
     if (!editorState.getSelection().getHasFocus()) {
       this.removeModal();
     } else if (handleChange) {
       handleChange(editorState);
     }
+    console.log('onChange', editorState)
     setEditorState(editorState);
   };
 
@@ -116,9 +132,25 @@ class ProjectEditor extends Component {
     }
   }
 
+  handlePastedText = (text, html) => {
+    if (text) {
+      for (let i = 0; i < textTags.length; i++) {
+        const tag = textTags[i];
+        if (text.indexOf(tag) !== -1) {
+          const selection = this.props.editorState.getSelection();
+          this.entityPasteStart = {
+            anchorOffset: selection.getAnchorOffset(),
+            anchorKey: selection.getAnchorKey()
+          };
+        }
+      }
+      return 'not-handled';
+    }
+  };
+
   render() {
     const {editorState, renderModal, isDragging, styles, setEditorRef} = this.props;
-    //console.log('es', editorState)
+    //console.log('es', Editor.getClipboard())
     return (
       <div className={css(styles.root)}>
         <Editor
@@ -126,6 +158,7 @@ class ProjectEditor extends Component {
           editorState={editorState}
           handleBeforeInput={this.handleBeforeInput}
           handleKeyCommand={this.handleKeyCommand}
+          handlePastedText={this.handlePastedText}
           handleReturn={this.handleReturn}
           keyBindingFn={this.keyBindingFn}
           onChange={this.handleChange}
@@ -155,6 +188,7 @@ const styleThunk = () => ({
     paddingLeft: '.5rem'
   },
   codeBlock: {
+    //overflowX: 'scroll'
     //background: 'blue',
     //whiteSpace: 'pre!important'
   }
