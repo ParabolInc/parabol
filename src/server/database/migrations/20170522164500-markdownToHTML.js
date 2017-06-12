@@ -1,9 +1,10 @@
-import {convertFromHTML, ContentState, convertToRaw, convertFromRaw} from 'draft-js';
+import {convertFromHTML, ContentState, convertToRaw, convertFromRaw, SelectionState} from 'draft-js';
 import MarkdownIt from 'markdown-it';
 import emoji from 'markdown-it-emoji';
 import jsdom from 'jsdom';
 import toMarkdown from 'to-markdown';
 import {stateToHTML} from 'draft-js-export-html';
+import entitizeText from 'universal/utils/draftjs/entitizeText';
 
 
 const options = {
@@ -28,11 +29,20 @@ exports.up = async (r) => {
   const projects = await r.table('Project').pluck('id', 'content');
   projects.map((project) => {
     const blocksFromHTML = convertFromHTML(md.render(project.content || ''));
-    const state = ContentState.createFromBlockArray(
+    const contentState = ContentState.createFromBlockArray(
       blocksFromHTML.contentBlocks,
       blocksFromHTML.entityMap,
     );
-    const raw = convertToRaw(state);
+    const selectionState = new SelectionState({
+      anchorKey: contentState.getFirstBlock().getKey(),
+      anchorOffset: 0,
+      focusKey: contentState.getLastBlock().getKey(),
+      focusOffset: contentState.getLastBlock().getLength(),
+      isBackward: false,
+      hasFocus: false
+    });
+    const nextContentState = entitizeText(contentState, selectionState) || contentState;
+    const raw = convertToRaw(nextContentState);
     const rawString = JSON.stringify(raw);
 
     return r.table('Project').get(project.id).update({content: rawString}).run();
