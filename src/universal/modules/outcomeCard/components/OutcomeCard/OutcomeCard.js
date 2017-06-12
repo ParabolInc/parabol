@@ -18,6 +18,7 @@ import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
 const OutcomeCard = (props) => {
   const {
     area,
+    editorRef,
     isAgenda,
     isEditing,
     handleCardUpdate,
@@ -27,6 +28,7 @@ const OutcomeCard = (props) => {
     openArea,
     openMenu,
     outcome,
+    setEditorRef,
     setEditorState,
     styles,
     tags,
@@ -71,9 +73,11 @@ const OutcomeCard = (props) => {
             updatedAt={outcome.updatedAt}
           />
           <ProjectEditor
+            editorRef={editorRef}
             editorState={editorState}
             onBlur={handleCardUpdate}
             isDragging={isDragging}
+            setEditorRef={setEditorRef}
             setEditorState={setEditorState}
             teamMembers={teamMembers}
           />

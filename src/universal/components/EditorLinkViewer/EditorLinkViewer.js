@@ -23,7 +23,6 @@ const EditorLinkViewer = (props) => {
     linkData,
     styles,
     addHyperlink,
-    editorState
   } = props;
 
   const {href} = linkData;
@@ -47,7 +46,7 @@ const EditorLinkViewer = (props) => {
   };
 
   const changeLink = (e) => {
-    addHyperlink(editorState);
+    addHyperlink();
   };
 
   return (

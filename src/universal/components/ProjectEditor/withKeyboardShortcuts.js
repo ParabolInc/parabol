@@ -6,10 +6,10 @@ const {hasCommandModifier} = KeyBindingUtil;
 
 const withKeyboardShortcuts = (ComposedComponent) => {
   class WithKeyboardShortcuts extends Component {
-    handleKeyCommand = (command, editorState, setEditorState) => {
-      const {handleKeyCommand} = this.props;
+    handleKeyCommand = (command) => {
+      const {handleKeyCommand, editorState, setEditorState} = this.props;
       if (handleKeyCommand) {
-        const result = handleKeyCommand(command, editorState, setEditorState);
+        const result = handleKeyCommand(command);
         if (result === 'handled' || result === true) {
           return result;
         }

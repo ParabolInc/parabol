@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import portal from 'react-portal-hoc';
 import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
 import MentionTag from 'universal/components/MentionTag/MentionTag';
-import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -21,32 +20,11 @@ const suggestionTypes = {
 
 class EditorSuggestions extends Component {
 
-  handleItemClick = (idx) => (e) => {
-    const {editorState, setEditorState, suggestions, suggestionType, removeModal} = this.props;
-    //if (e) {
-    //  e.preventDefault();
-    //}
-    // TODO refactor & combine with handleSelect in withSuggestoins
-    const item = suggestions[idx];
-    if (suggestionType === 'tag') {
-      const {name} = item;
-      setEditorState(completeEntity(editorState, 'TAG', {value: name}, `#${name}`));
-    } else if (suggestionType === 'emoji') {
-      const unicode = item.emoji;
-      setEditorState(completeEntity(editorState, 'EMOJI', {unicode}, unicode))
-    } else if (suggestionType === 'mention') {
-      // team is derived from the project itself, so userId is the real useful thing here
-      const [userId] = item.id;
-      setEditorState(completeEntity(editorState, 'MENTION', {userId}, item.preferredName))
-    }
-    removeModal();
-  };
-
-
   render() {
     const {
       isClosing,
       active,
+      handleSelect,
       suggestions,
       suggestionType,
       top,
@@ -71,7 +49,7 @@ class EditorSuggestions extends Component {
       <div style={menuStyle} className={menuStyles}>
         {suggestions.map((suggestion, idx) => {
           return (
-            <div key={idx} onMouseDown={dontTellDraft} onClick={this.handleItemClick(idx)}>
+            <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
               <SuggestionItem active={active === idx} {...suggestion}/>
             </div>
           )

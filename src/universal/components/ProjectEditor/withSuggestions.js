@@ -11,10 +11,10 @@ const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
     state = {};
 
-    handleUpArrow = (e, editorState, setEditorState) => {
+    handleUpArrow = (e) => {
       const {handleUpArrow} = this.props;
       if (handleUpArrow) {
-        handleUpArrow(e, editorState, setEditorState);
+        handleUpArrow(e);
       }
       e.preventDefault();
       const {active} = this.state;
@@ -23,10 +23,10 @@ const withSuggestions = (ComposedComponent) => {
       });
     };
 
-    handleDownArrow = (e, editorState, setEditorState) => {
+    handleDownArrow = (e) => {
       const {handleDownArrow} = this.props;
       if (handleDownArrow) {
-        handleDownArrow(e, editorState, setEditorState);
+        handleDownArrow(e);
       }
       e.preventDefault();
       const {active, suggestions} = this.state;
@@ -36,10 +36,11 @@ const withSuggestions = (ComposedComponent) => {
     };
 
 
-    handleSelect = (e, editorState, setEditorState) => {
-      const {active, suggestions, suggestionType} = this.state;
+    handleSelect = (idx) => (e) => {
+      const {editorState, setEditorState} = this.props;
+      const {suggestions, suggestionType} = this.state;
       e.preventDefault();
-      const item = suggestions[active];
+      const item = suggestions[idx];
       if (suggestionType === 'tag') {
         const {name} = item;
         setEditorState(completeEntity(editorState, 'TAG', {value: name}, `#${name}`));
@@ -54,20 +55,22 @@ const withSuggestions = (ComposedComponent) => {
       this.removeModal();
     };
 
-    handleTab = (e, editorState, setEditorState) => {
+    handleTab = (e) => {
       const {handleTab} = this.props;
+      const {active} = this.state;
       if (handleTab) {
-        handleTab(e, editorState, setEditorState);
+        handleTab(e);
       }
-      this.handleSelect(e, editorState, setEditorState);
+      this.handleSelect(active)(e);
     };
 
-    handleReturn = (e, editorState, setEditorState) => {
+    handleReturn = (e) => {
       const {handleReturn} = this.props;
+      const {active} = this.state;
       if (handleReturn) {
-        handleReturn(e, editorState, setEditorState);
+        handleReturn(e);
       }
-      this.handleSelect(e, editorState, setEditorState);
+      this.handleSelect(active)(e);
       return 'handled';
     };
 
@@ -115,7 +118,8 @@ const withSuggestions = (ComposedComponent) => {
       } else {
         return this.resolveMentions;
       }
-    }
+    };
+
     makeSuggestions = async (query, resolveType) => {
       // setState before promise so we can add a spinner to the component
       //this.setState({
@@ -134,10 +138,10 @@ const withSuggestions = (ComposedComponent) => {
       }
     };
 
-    handleChange = (editorState, setEditorState) => {
+    handleChange = (editorState) => {
       const {handleChange} = this.props;
       if (handleChange) {
-        handleChange(editorState, setEditorState);
+        handleChange(editorState);
       }
       const {block, anchorOffset} = getAnchorLocation(editorState);
       const blockText = block.getText();
@@ -160,8 +164,9 @@ const withSuggestions = (ComposedComponent) => {
       return {};
     }
 
-    renderModal = ({editorState, setEditorState}) => {
+    renderModal = () => {
       const {active, suggestions, suggestionType} = this.state;
+      const {editorState, setEditorState} = this.props;
       const targetRect = getVisibleSelectionRect(window);
       return (
         <EditorSuggestions

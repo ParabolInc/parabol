@@ -171,6 +171,10 @@ class OutcomeCardContainer extends Component {
     }
   };
 
+  setEditorRef = (c) => {
+    this.editorRef = c;
+  };
+
   render() {
     const {hasHover, isEditing, openArea, editorState} = this.state;
     const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
@@ -178,6 +182,7 @@ class OutcomeCardContainer extends Component {
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
         <OutcomeCard
           area={area}
+          editorRef={this.editorRef}
           editorState={editorState}
           handleCardUpdate={this.handleCardUpdate}
           hasHover={hasHover}
@@ -189,6 +194,7 @@ class OutcomeCardContainer extends Component {
           openArea={openArea}
           openMenu={this.openMenu}
           outcome={outcome}
+          setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
           tags={this.tags}
           teamMembers={teamMembers}

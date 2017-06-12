@@ -39,6 +39,8 @@ class ProjectEditor extends Component {
     const type = contentBlock.getType();
     if (type === 'blockquote') {
       return css(styles.editorBlockquote);
+    } else if (type === 'code-block') {
+      return css(styles.codeBlock);
     }
   };
 
@@ -53,41 +55,37 @@ class ProjectEditor extends Component {
     const {setEditorState, handleChange} = this.props;
     if (!editorState.getSelection().getHasFocus()) {
       this.removeModal();
-      setEditorState(editorState)
-      return;
-    }
-
-    if (handleChange) {
-      handleChange(editorState, setEditorState);
+    } else if (handleChange) {
+      handleChange(editorState);
     }
     setEditorState(editorState);
   };
 
   handleUpArrow = (e) => {
-    const {handleUpArrow, setEditorState, editorState} = this.props;
+    const {handleUpArrow} = this.props;
     if (handleUpArrow) {
-      handleUpArrow(e, editorState, setEditorState);
+      handleUpArrow(e);
     }
   };
 
   handleDownArrow = (e) => {
-    const {handleDownArrow, setEditorState, editorState} = this.props;
+    const {handleDownArrow} = this.props;
     if (handleDownArrow) {
-      handleDownArrow(e, editorState, setEditorState);
+      handleDownArrow(e);
     }
   };
 
   handleTab = (e) => {
-    const {handleTab, setEditorState, editorState} = this.props;
+    const {handleTab} = this.props;
     if (handleTab) {
-      handleTab(e, editorState, setEditorState);
+      handleTab(e);
     }
   };
 
   handleReturn = (e) => {
-    const {handleReturn, setEditorState, editorState} = this.props;
+    const {handleReturn} = this.props;
     if (handleReturn) {
-      return handleReturn(e, editorState, setEditorState);
+      return handleReturn(e);
     }
     return 'not-handled';
   };
@@ -97,10 +95,10 @@ class ProjectEditor extends Component {
     this.removeModal();
   };
 
-  handleKeyCommand = (command, editorState) => {
-    const {handleKeyCommand, setEditorState} = this.props;
+  handleKeyCommand = (command) => {
+    const {handleKeyCommand} = this.props;
     if (handleKeyCommand) {
-      return handleKeyCommand(command, editorState, setEditorState);
+      return handleKeyCommand(command);
     }
   };
 
@@ -112,14 +110,14 @@ class ProjectEditor extends Component {
   };
 
   handleBeforeInput = (char) => {
-    const {handleBeforeInput, editorState, setEditorState} = this.props;
+    const {handleBeforeInput} = this.props;
     if (handleBeforeInput) {
-      return handleBeforeInput(char, editorState, setEditorState);
+      return handleBeforeInput(char);
     }
   }
 
   render() {
-    const {editorState, setEditorState, renderModal, isDragging, styles} = this.props;
+    const {editorState, renderModal, isDragging, styles, setEditorRef} = this.props;
     //console.log('es', editorState)
     return (
       <div className={css(styles.root)}>
@@ -137,10 +135,10 @@ class ProjectEditor extends Component {
           onUpArrow={this.handleUpArrow}
           readOnly={isDragging}
           ref={(c) => {
-            this.editorRef = c;
+            setEditorRef(c);
           }}
         />
-        {renderModal && renderModal({editorState, setEditorState, editorRef: this.editorRef})}
+        {renderModal && renderModal()}
       </div>
     );
   }
@@ -155,6 +153,10 @@ const styleThunk = () => ({
     fontStyle: 'italic',
     borderLeft: `.25rem ${appTheme.palette.mid40l} solid`,
     paddingLeft: '.5rem'
+  },
+  codeBlock: {
+    //background: 'blue',
+    //whiteSpace: 'pre!important'
   }
 });
 

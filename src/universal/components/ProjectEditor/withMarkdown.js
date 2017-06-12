@@ -105,7 +105,6 @@ const withMarkdown = (ComposedComponent) => {
       if (!entityKey) {
         const result = extractMarkdownStyles(editorState, getNextState, blockKey);
         if (result) {
-          console.log('res', result)
           this.undoMarkdown = true;
           return result;
         }
@@ -241,10 +240,10 @@ const withMarkdown = (ComposedComponent) => {
       return EditorState.push(preSplitES, adjustedSelectionContent, 'apply-entity');
     };
 
-    handleKeyCommand = (command, editorState, setEditorState) => {
-      const {handleKeyCommand} = this.props;
+    handleKeyCommand = (command) => {
+      const {handleKeyCommand, editorState, setEditorState} = this.props;
       if (handleKeyCommand) {
-        const result = handleKeyCommand(command, editorState, setEditorState);
+        const result = handleKeyCommand(command);
         if (result === 'handled' || result === true) {
           return result;
         }
@@ -279,10 +278,10 @@ const withMarkdown = (ComposedComponent) => {
       return undefined;
     };
 
-    handleBeforeInput = (char, editorState, setEditorState) => {
-      const {handleBeforeInput} = this.props;
+    handleBeforeInput = (char) => {
+      const {handleBeforeInput, editorState, setEditorState} = this.props;
       if (handleBeforeInput) {
-        const result = handleBeforeInput(char, editorState, setEditorState);
+        const result = handleBeforeInput(char);
         if (result === 'handled' || result === true) {
           return result;
         }
@@ -301,10 +300,10 @@ const withMarkdown = (ComposedComponent) => {
       }
     };
 
-    handleChange = (editorState, setEditorState) => {
+    handleChange = (editorState) => {
       const {handleChange} = this.props;
       if (handleChange) {
-        handleChange(editorState, setEditorState);
+        handleChange(editorState);
       }
       this.undoMarkdown = undefined;
     };

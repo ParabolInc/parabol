@@ -99,19 +99,19 @@ const withLinks = (ComposedComponent) => {
       return undefined;
     };
 
-    handleBeforeInput = (char, editorState, setEditorState) => {
-      const {handleBeforeInput} = this.props;
+    handleBeforeInput = (char) => {
+      const {handleBeforeInput, editorState, setEditorState} = this.props;
       if (handleBeforeInput) {
-        const result = handleBeforeInput(char, editorState, setEditorState);
+        const result = handleBeforeInput(char);
         if (result === 'handled' || result === true) {
           return result;
         }
       }
       if (char === ' ') {
         const getNextState = () => addSpace(editorState);
-        const updatedEditorState = this.getMaybeLinkifiedState(getNextState, editorState);
-        if (updatedEditorState) {
-          setEditorState(updatedEditorState);
+        const nextEditorState = this.getMaybeLinkifiedState(getNextState, editorState);
+        if (nextEditorState) {
+          setEditorState(nextEditorState);
           return 'handled';
         }
 
@@ -119,11 +119,11 @@ const withLinks = (ComposedComponent) => {
       }
     };
 
-    handleChange = (editorState, setEditorState) => {
+    handleChange = (editorState) => {
       const {handleChange} = this.props;
       const {linkChangerData, linkViewerData} = this.state;
       if (handleChange) {
-        handleChange(editorState, setEditorState);
+        handleChange(editorState);
       }
       this.undoLink = undefined;
       const {block, anchorOffset} = getAnchorLocation(editorState);
@@ -143,10 +143,10 @@ const withLinks = (ComposedComponent) => {
       }
     };
 
-    handleKeyCommand = (command, editorState, setEditorState) => {
-      const {handleKeyCommand} = this.props;
+    handleKeyCommand = (command) => {
+      const {handleKeyCommand, editorState, setEditorState} = this.props;
       if (handleKeyCommand) {
-        const result = handleKeyCommand(command, editorState, setEditorState);
+        const result = handleKeyCommand(command);
         if (result === 'handled' || result === true) {
           return result;
         }
@@ -154,9 +154,9 @@ const withLinks = (ComposedComponent) => {
 
       if (command === 'split-block') {
         const getNextState = () => splitBlock(editorState);
-        const updatedEditorState = this.getMaybeLinkifiedState(getNextState, editorState);
-        if (updatedEditorState) {
-          setEditorState(updatedEditorState);
+        const nextEditorState = this.getMaybeLinkifiedState(getNextState, editorState);
+        if (nextEditorState) {
+          setEditorState(nextEditorState);
           return 'handled';
         }
       }
@@ -168,7 +168,7 @@ const withLinks = (ComposedComponent) => {
       }
 
       if (command === 'add-hyperlink') {
-        this.addHyperlink(editorState);
+        this.addHyperlink();
         return 'handled';
       }
       return 'not-handled';
@@ -206,9 +206,10 @@ const withLinks = (ComposedComponent) => {
       return undefined;
     };
 
-    renderChangerModal = ({editorState, setEditorState, editorRef}) => {
+    renderChangerModal = () => {
       const {linkChangerData} = this.state;
       const {text, link} = linkChangerData;
+      const {editorState, setEditorState, editorRef} = this.props;
       return (
         <EditorLinkChanger
           isOpen
@@ -224,8 +225,9 @@ const withLinks = (ComposedComponent) => {
       );
     };
 
-    renderViewerModal = ({editorState, setEditorState}) => {
+    renderViewerModal = () => {
       const {linkViewerData} = this.state;
+      const {editorState, setEditorState} = this.props;
       const targetRect = getDraftCoords();
       if (!targetRect) {
         console.log('no target rect!');
@@ -244,7 +246,8 @@ const withLinks = (ComposedComponent) => {
       );
     };
 
-    addHyperlink = (editorState) => {
+    addHyperlink = () => {
+      const {editorState} = this.props;
       const selectionState = getCtrlKSelection(editorState);
       const text = getSelectionText(editorState, selectionState);
       const link = getSelectionLink(editorState, selectionState);
