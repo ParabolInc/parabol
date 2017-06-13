@@ -58,7 +58,7 @@ const mapStateToProps = (state, props) => {
     mutationHandlers,
     variables: {teamMemberId},
     filter: {
-      projects: (project) => !project.tags.includes('#private')
+      projects: (project) => !project.tags.includes('private')
     },
     resolveCached: {
       teamMember: (source) => source.teamMemberId

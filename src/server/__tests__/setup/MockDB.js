@@ -115,14 +115,14 @@ class MockDB {
     // 3 agenda items, #1 has 1 private project, #2 has 1 project, #3 has 1 of each
     const projects = [];
     this.newAgendaItem({isComplete: true});
-    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['#private']});
+    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['private']});
     this.teamMember(1);
     this.newAgendaItem({isComplete: true});
     this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined});
     projects.push(meetingProject(this.context.project));
     this.teamMember(2);
     this.newAgendaItem({isComplete: true});
-    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['#private']});
+    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['private']});
     this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined});
     projects.push(meetingProject(this.context.project));
     if (inProgress) {
