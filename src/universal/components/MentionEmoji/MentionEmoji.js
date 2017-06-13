@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
+import mentionBaseStyles from '../MentionBase/mentionBaseStyles';
 
 const MentionEmoji = (props) => {
   const {active, emoji, value, styles} = props;
@@ -12,8 +12,8 @@ const MentionEmoji = (props) => {
   );
   return (
     <div className={itemStyle}>
-      <span className={css(styles.value)}>{emoji}</span>
-      <span className={css(styles.description)}>{value}</span>
+      <div className={css(styles.value)}>{emoji}</div>
+      <div className={css(styles.description)}>{value}</div>
     </div>
   );
 };
@@ -26,24 +26,11 @@ MentionEmoji.propTypes = {
 };
 
 const styleThunk = () => ({
-  active: {
-    backgroundColor: appTheme.palette.dark,
-    color: '#fff'
-  },
-
-  description: {
-    marginLeft: '.5rem'
-  },
-
-  row: {
-    alignItems: 'center',
-    cursor: 'pointer',
-    display: 'flex',
-    padding: '.5rem'
-  },
+  // includes row, active, description
+  ...mentionBaseStyles,
 
   value: {
-    fontWeight: 700
+    minWidth: '1.5rem'
   }
 });
 

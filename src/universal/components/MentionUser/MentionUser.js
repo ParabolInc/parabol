@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import mentionBaseStyles from '../MentionBase/mentionBaseStyles';
 import Avatar from 'universal/components/Avatar/Avatar';
 
 const MentionUser = (props) => {
@@ -15,7 +14,7 @@ const MentionUser = (props) => {
   return (
     <div className={itemStyle}>
       <Avatar picture={picture} size="smallest" />
-      <span className={css(styles.description)}>{preferredName}</span>
+      <div className={css(styles.description)}>{preferredName}</div>
     </div>
   );
 };
@@ -23,31 +22,12 @@ const MentionUser = (props) => {
 MentionUser.propTypes = {
   active: PropTypes.bool,
   description: PropTypes.string,
-  styles: PropTypes.object,
-  value: PropTypes.string
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
-  active: {
-    backgroundColor: ui.menuItemBackgroundColorHover
-  },
-
-  description: {
-    fontSize: ui.menuItemFontSize,
-    lineHeight: ui.menuItemHeight,
-    marginLeft: '.5rem'
-  },
-
-  row: {
-    alignItems: 'center',
-    cursor: 'pointer',
-    display: 'flex',
-    padding: '0 1rem'
-  },
-
-  value: {
-    fontWeight: 700
-  }
+  // includes row, active, description
+  ...mentionBaseStyles
 });
 
 export default withStyles(styleThunk)(MentionUser);

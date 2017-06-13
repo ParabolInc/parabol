@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import mentionBaseStyles from '../MentionBase/mentionBaseStyles';
 
 const MentionTag = (props) => {
   const {active, description, name, styles} = props;
@@ -13,8 +12,8 @@ const MentionTag = (props) => {
   );
   return (
     <div className={itemStyle}>
-      <span className={css(styles.value)}>{name}</span>
-      <span className={css(styles.description)}>{description}</span>
+      <div className={css(styles.value)}>{name}</div>
+      <div className={css(styles.description)}>{description}</div>
     </div>
   );
 };
@@ -27,23 +26,8 @@ MentionTag.propTypes = {
 };
 
 const styleThunk = () => ({
-  active: {
-    backgroundColor: ui.menuItemBackgroundColorHover
-  },
-
-  description: {
-    marginLeft: '.5rem'
-  },
-
-  row: {
-    alignItems: 'center',
-    cursor: 'pointer',
-    display: 'flex',
-    fontSize: ui.menuItemFontSize,
-    height: ui.menuItemHeight,
-    lineHeight: ui.menuItemHeight,
-    padding: '0 1rem'
-  },
+  // includes row, active, description
+  ...mentionBaseStyles,
 
   value: {
     fontWeight: 700,
