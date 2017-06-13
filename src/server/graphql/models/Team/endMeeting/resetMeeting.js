@@ -5,6 +5,23 @@ export default async function resetMeeting(teamId) {
   return new Promise((resolve) => {
     setTimeout(async () => {
       const r = getRethink();
+      const projects = await r.table('Project').getAll(teamId, {index: 'teamId'})
+        .filter({status: DONE})
+        .filter((project) => project('tags').contains('archived').not())
+        .pluck('id', 'content', 'tags')
+      const archivedProjects = projects.map((project) => {
+        const nextContent =
+        return {
+          content: nextContent,
+          tags: nextTags,
+          id: project.id
+        }
+      })
+        //.update((project) => ({
+        //  tags: project('tags').append('archived'),
+        //  content: project('content').add(' archived')
+        //}));
+
       await r.table('Team').get(teamId)
         .update({
           facilitatorPhase: LOBBY,
@@ -22,14 +39,7 @@ export default async function resetMeeting(teamId) {
             });
         })
         .do(() => {
-          // archive projects that are DONE
-          return r.table('Project').getAll(teamId, {index: 'teamId'})
-            .filter({status: DONE})
-            .filter((project) => project('tags').contains('#archived').not())
-            .update((project) => ({
-              tags: project('tags').append('#archived'),
-              content: project('content').add(' #archived')
-            }));
+          return r.table('')
         })
         .do(() => {
           // shuffle the teamMember check in order, uncheck them in
