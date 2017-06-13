@@ -54,9 +54,8 @@ const EditorLinkViewer = (props) => {
       <span className={css(styles.url)}>
         <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
       </span>
-
-      <Button buttonStyle="flat" size="small" colorPalette="cool" label="Change" onClick={changeLink}/>
-      <Button buttonStyle="flat" size="small" colorPalette="cool" label="Remove" onClick={removeLink}/>
+      <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Change" onClick={changeLink}/>
+      <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Remove" onClick={removeLink}/>
     </div>
   )
 };
@@ -86,61 +85,41 @@ const animateOut = {
 };
 
 const styleThunk = (theme, props) => ({
+  modal: {
+    alignItems: 'center',
+    animationDuration: '200ms',
+    animationName: animateIn,
+    background: '#fff',
+    borderRadius: ui.menuBorderRadius,
+    boxShadow: ui.menuBoxShadow,
+    color: ui.palette.dark,
+    display: 'flex',
+    fontSize: appTheme.typography.s5,
+    padding: '0 .25rem',
+    zIndex: 1
+  },
+
   closing: {
     animationDuration: `${props.closeAfter}ms`,
     animationName: animateOut
   },
 
-  modal: {
+  url: {
+    ...textOverflow,
     alignItems: 'center',
-    background: '#fff',
-    border: `1px solid ${ui.cardBorderCoor}`,
-    borderRadius: ui.borderRadiusSmall,
-    boxShadow: ui.menuBoxShadow,
-    color: ui.palette.dark,
+    borderRight: `1px solid ${ui.cardBorderColor}`,
     display: 'flex',
-    //padding: ui.borderRadiusSmall,
-    zIndex: 1,
-    animationName: animateIn,
-    animationDuration: '200ms',
-    fontSize: appTheme.typography.s5,
-    fontWeight: 600,
-    margin: '0.5rem',
-    height: '64px'
-  },
-
-  active: {
-    backgroundColor: appTheme.palette.dark,
-    color: '#fff'
-  },
-
-  description: {
-    marginLeft: '.5rem'
+    flexShrink: 2,
+    fontSize: appTheme.typography.s3,
+    height: '100%',
+    marginRight: '.25rem',
+    padding: '.75rem'
   },
 
   linkText: {
     ...textOverflow,
     marginRight: '0.5rem',
     maxWidth: '20rem'
-  },
-  row: {
-    alignItems: 'center',
-    cursor: 'pointer',
-    display: 'flex',
-    padding: '.5rem'
-  },
-
-  url: {
-    ...textOverflow,
-    flexShrink: 2,
-    alignItems: 'center',
-    borderRight: `2px solid ${appTheme.palette.mid20l}`,
-    display: 'flex',
-    height: '100%',
-    margin: '0.5rem'
-  },
-  value: {
-    fontWeight: 700
   }
 });
 

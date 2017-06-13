@@ -23,6 +23,7 @@ const PlainInputField = (props) => {
     // allow hotkeys to be triggered when inside a field input
     styles.field,
     colorPalette ? styles[colorPalette] : styles.white,
+    // !disabled && styles.boxShadow,
     disabled && styles.disabled,
   );
 
@@ -60,23 +61,38 @@ PlainInputField.propTypes = {
   colorPalette: PropTypes.oneOf([
     'cool',
     'gray',
+    'link',
     'warm',
     'white'
   ]),
   meta: PropTypes.object.isRequired,
 };
 
+// const boxShadow = 'inset 0 0 1px rgba(0, 0, 0, .5)';
+
 const styleThunk = () => ({
   field: {
     ...ui.fieldBaseStyles,
-    border: 'none',
-    boxShadow: 'none'
+    // border: 0,
+    // boxShadow: 'none',
+    fontSize: '.9375rem',
+    lineHeight: '1.375rem'
   },
 
   cool: makeFieldColorPalette('cool'),
   gray: makeFieldColorPalette('gray'),
+  link: makeFieldColorPalette('link'),
   warm: makeFieldColorPalette('warm'),
   white: makeFieldColorPalette('white'),
+
+  // boxShadow: {
+  //   ':focus': {
+  //     boxShadow
+  //   },
+  //   ':active': {
+  //     boxShadow
+  //   }
+  // },
 
   disabled: ui.fieldDisabled,
 

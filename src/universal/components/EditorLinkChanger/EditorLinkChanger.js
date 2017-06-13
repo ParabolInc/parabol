@@ -82,20 +82,20 @@ class EditorLinkChanger extends Component {
         <form onSubmit={handleSubmit(this.onSubmit)} className={css(styles.form)}>
           {text !== null &&
           <div className={css(styles.textBlock)}>
-            <span className={css(styles.inputLabel)}>Text</span>
+            <span className={css(styles.inputLabel)}>{'Text'}</span>
             <Field
               autoFocus
-              colorPalette="cool"
+              colorPalette="link"
               component={PlainInputField}
               name="text"
             />
           </div>
           }
           <div className={css(styles.textBlock)}>
-            <span className={css(styles.inputLabel)}>Link</span>
+            <span className={css(styles.inputLabel)}>{'Link'}</span>
             <Field
               autoFocus={text === null}
-              colorPalette="cool"
+              colorPalette="link"
               component={PlainInputField}
               name="link"
               spellCheck={false}
@@ -106,7 +106,7 @@ class EditorLinkChanger extends Component {
               colorPalette="dark"
               disabled={!valid}
               label={label}
-              size="small"
+              size="smallest"
               type="submit"
               onClick={handleSubmit(this.onSubmit)}
             />
@@ -143,61 +143,46 @@ const animateOut = {
 };
 
 const styleThunk = (theme, props) => ({
-  buttonBlock: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginTop: '0.125rem'
+  modal: {
+    animationDuration: '200ms',
+    animationName: animateIn,
+    background: '#fff',
+    borderRadius: ui.menuBorderRadius,
+    boxShadow: ui.menuBoxShadow,
+    color: ui.palette.dark,
+    outline: 'none',
+    padding: '.5rem .5rem .5rem 1rem',
+    position: 'absolute',
+    zIndex: 1
   },
+
   closing: {
     animationDuration: `${props.closeAfter}ms`,
     animationName: animateOut
   },
 
-  inputLabel: {
-    fontWeight: 800
-  },
-
   form: {
-    margin: '1rem',
-  },
-
-  modal: {
-    background: '#fff',
-    border: `1px solid ${ui.cardBorderCoor}`,
-    borderRadius: ui.borderRadiusSmall,
-    boxShadow: ui.menuBoxShadow,
-    color: ui.palette.dark,
-    outline: 'none',
-    padding: ui.borderRadiusSmall,
-    zIndex: 1,
-    animationName: animateIn,
-    animationDuration: '200ms',
-    position: 'absolute'
-  },
-
-  active: {
-    backgroundColor: appTheme.palette.dark,
-    color: '#fff'
-  },
-
-  description: {
-    marginLeft: '.5rem'
-  },
-
-  row: {
-    alignItems: 'center',
-    cursor: 'pointer',
-    display: 'flex',
-    padding: '.5rem'
+    // Define
   },
 
   textBlock: {
     // use baseline so errors don't bump it off center
-    alignItems: 'baseline',
+    alignItems: 'top',
     display: 'flex',
+    marginBottom: '.5rem'
   },
-  value: {
-    fontWeight: 700
+
+  inputLabel: {
+    display: 'block',
+    fontSize: '.9375rem',
+    fontWeight: 700,
+    lineHeight: '2rem',
+    marginRight: '.5rem'
+  },
+
+  buttonBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end'
   }
 });
 
