@@ -98,8 +98,8 @@ export default {
         .do((teamIds) => r.db('actionProduction').table('TeamMember')
           .getAll(r.args(teamIds), {index: 'teamId'})
           .filter({isLead: true})
-        )                                                       // join by team leader userId
-        .pluck('teamId', 'userId');
+          .pluck('teamId', 'userId')
+        );                                                       // join by team leader userId
       const promises = idPairs.map(async ({teamId, userId}) => {
         await endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}});
         const segmentTraits = await getUserSegmentTraits(userId);
