@@ -90,7 +90,7 @@ export default {
       // RESOLUTION
       const activeThresh = new Date(Date.now() - OLD_MEETING_AGE);
       const idPairs = await r.table('Meeting')
-        .group('teamId', {index: 'teamId'})                     // for each team
+        .group({index: 'teamId'})                               // for each team
         .max('createdAt')                                       // get the most recent meeting only
         .ungroup()('reduction')                                 // return as sequence
         .filter({ endedAt: null }, { default: true })           // filter to unended meetings
