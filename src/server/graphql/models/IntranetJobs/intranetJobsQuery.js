@@ -95,7 +95,7 @@ export default {
         .ungroup()('reduction')                                 // return as sequence
         .filter({ endedAt: null }, { default: true })           // filter to unended meetings
         .filter(r.row('createdAt').le(activeThresh))('teamId')  // filter to old meetings, return teamIds
-        .do((teamIds) => r.db('actionProduction').table('TeamMember')
+        .do((teamIds) => r.table('TeamMember')
           .getAll(r.args(teamIds), {index: 'teamId'})
           .filter({isLead: true})
           .pluck('teamId', 'userId')
