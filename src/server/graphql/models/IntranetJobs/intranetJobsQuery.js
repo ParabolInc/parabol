@@ -95,11 +95,10 @@ export default {
         .ungroup()('reduction')                                 // return as sequence
         .filter({ endedAt: null }, { default: true })           // filter to unended meetings
         .filter(r.row('createdAt').le(activeThresh))('teamId')  // filter to old meetings, return teamIds
-        .map((teamId) => r.table('TeamMember')
-          .getAll(teamId, {index: 'teamId'})
+        .do((teamIds) => r.db('actionProduction').table('TeamMember')
+          .getAll(r.args(teamIds), {index: 'teamId'})
           .filter({isLead: true})
-          .nth(0)
-        )                                                       // join with team leader userId
+        )                                                       // join by team leader userId
         .pluck('teamId', 'userId');
       const promises = idPairs.map(async ({teamId, userId}) => {
         await endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}});
