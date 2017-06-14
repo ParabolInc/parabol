@@ -3,7 +3,7 @@ import {
   GraphQLString,
   GraphQLInt
 } from 'graphql';
-import {requireSU} from 'server/utils/authorization';
+import {getUserSegmentTraits, requireSU} from 'server/utils/authorization';
 import {
   AUTO_PAUSE_THRESH,
   AUTO_PAUSE_USER,
@@ -11,6 +11,7 @@ import {
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
+import segmentIo from 'server/utils/segmentIo';
 
 export default {
   intranetPing: {
@@ -88,15 +89,32 @@ export default {
 
       // RESOLUTION
       const activeThresh = new Date(Date.now() - OLD_MEETING_AGE);
-      const teamIds = await r.table('Meeting')
+      const idPairs = await r.table('Meeting')
         .group('teamId', {index: 'teamId'})                     // for each team
         .max('createdAt')                                       // get the most recent meeting only
         .ungroup()('reduction')                                 // return as sequence
         .filter({ endedAt: null }, { default: true })           // filter to unended meetings
-        .filter(r.row('createdAt').le(activeThresh))('teamId'); // filter to old meetings, return teamIds
-      const promises = teamIds.map((teamId) => endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}}));
+        .filter(r.row('createdAt').le(activeThresh))('teamId')  // filter to old meetings, return teamIds
+        .map((teamId) => r.table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isLead: true})
+          .nth(0)
+        )                                                       // join with team leader userId
+        .pluck('teamId', 'userId');
+      const promises = idPairs.map(async ({teamId, userId}) => {
+        await endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}});
+        const segmentTraits = await getUserSegmentTraits(userId);
+        segmentIo.track({
+          userId,
+          event: 'endOldMeeting',
+          properties: {
+            teamId,
+            traits: segmentTraits
+          }
+        });
+      });
       await Promise.all(promises);
-      return teamIds.length;
+      return idPairs.length;
     }
   }
 };
