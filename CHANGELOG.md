@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.18.3 - 14-Jun-2017
+### Added
+- #1070 Create segment event when meeting is automatically ended
+
+### Fixed
+- #1074 endOldMeetings: meeting already ended
+
 ## v0.18.2 - 02-Jun-2017
 ### Added
 - Enhanced design of beta integrations configuration panel, starting with Slack
