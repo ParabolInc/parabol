@@ -1,8 +1,8 @@
 import {convertFromRaw, convertToRaw} from 'draft-js';
 import getRethink from 'server/database/rethinkDriver';
 import {DONE, LOBBY} from 'universal/utils/constants';
-import addTagToProject from 'src/universal/utils/draftjs/addTagToProject';
-import getTagsFromEntityMap from 'src/universal/utils/draftjs/getTagsFromEntityMap';
+import addTagToProject from 'universal/utils/draftjs/addTagToProject';
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 export default async function resetMeeting(teamId) {
   return new Promise((resolve) => {

@@ -7,9 +7,9 @@ import addSpace from 'universal/components/ProjectEditor/operations/addSpace';
 import splitBlock from 'universal/components/ProjectEditor/operations/splitBlock';
 
 const inlineMatchers = {
-  BOLD: {regex: /(\*\*|__)(.*?)\1/, matchIdx: 2},
-  ITALIC: {regex: /([\*_])(.*?)\1/, matchIdx: 2},
   CODE: {regex: /`([^`]+)`/, matchIdx: 1},
+  BOLD: {regex: /(\*\*|__)(.*?)\1/, matchIdx: 2},
+  ITALIC: {regex: /([*_])(.*?)\1/, matchIdx: 2},
   STRIKETHROUGH: {regex: /(~+)([^~\s]+)\1/, matchIdx: 2}
 };
 
@@ -26,8 +26,7 @@ const extractStyle = (editorState, getNextState, style, blockKey, extractedStyle
   const blockText = editorState.getCurrentContent().getBlockForKey(blockKey).getText();
   const result = regex.exec(blockText);
   if (result) {
-    extractedStyles.push(style);
-    const es = extractedStyles.length === 1 ? getNextState() : editorState;
+    const es = extractedStyles.length === 0 ? getNextState() : editorState;
     const contentState = es.getCurrentContent();
     const selectionState = es.getSelection();
     const beforePhrase = result[0];
@@ -38,6 +37,12 @@ const extractStyle = (editorState, getNextState, style, blockKey, extractedStyle
       anchorOffset: result.index,
       focusOffset: result.index + beforePhrase.length
     });
+    // style **`b`** not `**b**`
+    if (extractedStyles.indexOf('CODE') !== -1) {
+      const hasCode = contentState.getBlockForKey(blockKey).getInlineStyleAt(result.index).has('CODE');
+      if (hasCode) return editorState;
+    }
+    extractedStyles.push(style);
 
     const phraseShrink = beforePhrase.length - afterPhrase.length;
     // if it's a split block, then go to 0
@@ -321,3 +326,6 @@ const withMarkdown = (ComposedComponent) => {
 };
 
 export default withMarkdown;
+
+// **`b`** = bold code b
+// `**b**` = code **b**

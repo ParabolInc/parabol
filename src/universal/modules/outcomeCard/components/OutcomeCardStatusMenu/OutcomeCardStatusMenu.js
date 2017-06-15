@@ -9,7 +9,7 @@ import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
 import OutcomeCardMenuButton from 'universal/modules/outcomeCard/components/OutcomeCardMenuButton/OutcomeCardMenuButton';
 import {convertToRaw} from 'draft-js';
-import addTagToProject from 'src/universal/utils/draftjs/addTagToProject';
+import addTagToProject from 'universal/utils/draftjs/addTagToProject';
 
 const buttonArray = labels.projectStatus.slugs.slice(0);
 
