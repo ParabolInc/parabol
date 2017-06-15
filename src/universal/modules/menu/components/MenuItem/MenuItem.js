@@ -36,11 +36,10 @@ const MenuItem = (props) => {
   const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
   const titleStr = title || titleFallbackStr;
   const iconStyle = {
-    color: appTheme.palette.mid,
     fontSize: ui.iconSize,
     lineHeight: 'inherit',
     marginLeft: ui.menuGutterHorizontal,
-    marginRight: '.375rem',
+    marginRight: ui.menuGutterInner,
     textAlign: 'center',
     width: '1.25rem'
   };
@@ -73,6 +72,7 @@ MenuItem.propTypes = {
 
 const hoverFocusStyles = {
   backgroundColor: ui.menuItemBackgroundColorHover,
+  color: ui.menuItemColorHoverActive,
   outline: 0
 };
 
@@ -85,6 +85,7 @@ const styleThunk = () => ({
   root: {
     alignItems: 'center',
     backgroundColor: ui.menuBackgroundColor,
+    color: ui.menuItemColor,
     cursor: 'pointer',
     display: 'flex',
     transition: `background-color ${ui.transitionFastest}`,
@@ -99,6 +100,7 @@ const styleThunk = () => ({
 
   active: {
     backgroundColor: ui.menuItemBackgroundColorActive,
+    color: ui.menuItemColorHoverActive,
     cursor: 'default',
 
     ':hover': {
@@ -111,10 +113,9 @@ const styleThunk = () => ({
 
   label: {
     ...textOverflow,
-    color: appTheme.palette.dark,
     fontSize: ui.menuItemFontSize,
     lineHeight: ui.menuItemHeight,
-    padding: `${ui.menuItemPaddingVertical} ${ui.menuItemPaddingHorizontal}`
+    padding: `0 ${ui.menuGutterHorizontal}`
   },
 
   labelWithIcon: {

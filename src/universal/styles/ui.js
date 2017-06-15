@@ -371,13 +371,14 @@ const ui = {
   menuBorderRadius: borderRadiusSmall,
   menuBoxShadow: shadow[1],
   menuGutterHorizontal: '1rem',
+  menuGutterInner: '.75rem',
   menuGutterVertical: '.5rem',
   menuItemBackgroundColorHover: appTheme.palette.mid10l,
   menuItemBackgroundColorActive: appTheme.palette.mid20l,
+  menuItemColor: appTheme.palette.dark,
+  menuItemColorHoverActive: appTheme.palette.dark50d,
   menuItemHeight: '2rem',
   menuItemFontSize: '.9375rem',
-  menuItemPaddingHorizontal: '.5rem',
-  menuItemPaddingVertical: 0,
   zMenu: zIndexScale(4),
 
   // Modals
