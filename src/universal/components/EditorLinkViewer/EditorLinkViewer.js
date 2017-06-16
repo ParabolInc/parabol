@@ -1,5 +1,5 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import React from 'react';
+import React, {Component} from 'react';
 import portal from 'react-portal-hoc';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -15,49 +15,57 @@ const dontTellDraft = (e) => {
   e.stopPropagation();
 };
 
-const EditorLinkViewer = (props) => {
-  const {
-    isClosing,
-    left,
-    top,
-    linkData,
-    styles,
-    addHyperlink,
-  } = props;
+class EditorLinkViewer extends Component {
+  componentDidMount() {
+    const rect = this.ref.getBoundingClientRect();
+    this.offset = rect.width;
+  }
+  render() {
+    const {
+      isClosing,
+      left,
+      top,
+      linkData,
+      styles,
+      addHyperlink,
+    } = this.props;
 
-  const {href} = linkData;
-  const linkViewer = {
-    left,
-    top,
-    position: 'absolute'
-  };
-  const menuStyles = css(
-    styles.modal,
-    isClosing && styles.closing
-  );
+    const {href} = linkData;
+    console.log('left', left, this.offset)
+    const linkViewer = {
+      left: left - this.offset,
+      top,
+      position: 'absolute'
+    };
+    const menuStyles = css(
+      styles.modal,
+      isClosing && styles.closing
+    );
 
-  const removeLink = (e) => {
-    const {editorState, setEditorState, removeModal} = props;
-    const {block, anchorOffset} = getAnchorLocation(editorState);
-    const blockText = block.getText();
-    const {begin, end} = getWordAt(blockText, anchorOffset);
-    setEditorState(makeRemoveLink(block.getKey(), begin, end)(editorState));
-    removeModal();
-  };
+    const removeLink = (e) => {
+      const {editorState, setEditorState, removeModal} = this.props;
+      const {block, anchorOffset} = getAnchorLocation(editorState);
+      const blockText = block.getText();
+      const {begin, end} = getWordAt(blockText, anchorOffset);
+      setEditorState(makeRemoveLink(block.getKey(), begin, end)(editorState));
+      removeModal();
+    };
 
-  const changeLink = (e) => {
-    addHyperlink();
-  };
+    const changeLink = (e) => {
+      addHyperlink();
+    };
 
-  return (
-    <div style={linkViewer} className={menuStyles} onMouseDown={dontTellDraft}>
+    return (
+      <div style={linkViewer} className={menuStyles} onMouseDown={dontTellDraft} ref={(c) => this.ref = c}>
       <span className={css(styles.url)}>
         <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
       </span>
-      <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Change" onClick={changeLink}/>
-      <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Remove" onClick={removeLink}/>
-    </div>
-  )
+        <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Change" onClick={changeLink}/>
+        <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Remove" onClick={removeLink}/>
+      </div>
+    )
+  }
+
 };
 
 const animateIn = {

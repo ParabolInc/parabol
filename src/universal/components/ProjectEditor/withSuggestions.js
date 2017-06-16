@@ -2,7 +2,7 @@ import {getVisibleSelectionRect} from 'draft-js';
 import React, {Component} from 'react';
 import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
-import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
+import completeEntity, {autoCompleteEmoji} from 'universal/components/ProjectEditor/operations/completeEnitity';
 import resolvers from 'universal/components/ProjectEditor/resolvers';
 import getAnchorLocation from './getAnchorLocation';
 import stringScore from 'string-score';
@@ -46,7 +46,7 @@ const withSuggestions = (ComposedComponent) => {
         setEditorState(completeEntity(editorState, 'TAG', {value: name}, `#${name}`));
       } else if (suggestionType === 'emoji') {
         const unicode = item.emoji;
-        setEditorState(completeEntity(editorState, 'EMOJI', {unicode}, unicode))
+        setEditorState(autoCompleteEmoji(editorState, unicode))
       } else if (suggestionType === 'mention') {
         // team is derived from the project itself, so userId is the real useful thing here
         const [userId] = item.id;

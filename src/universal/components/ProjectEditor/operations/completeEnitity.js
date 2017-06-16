@@ -53,6 +53,30 @@ const makeContentWithEntity = (contentState, selectionState, mention, entityKey)
   );
 };
 
+export const autoCompleteEmoji = (editorState, emoji) => {
+  const contentState = editorState.getCurrentContent();
+  const expandedSelectionState = getExpandedSelectionState(editorState);
+
+  const nextContentState = Modifier.replaceText(
+    contentState,
+    expandedSelectionState,
+    emoji
+  );
+  const endKey = nextContentState.getSelectionAfter().getEndKey();
+  const endOffset = nextContentState.getSelectionAfter().getEndOffset();
+  const collapsedSelectionState = expandedSelectionState.merge({
+    anchorKey: endKey,
+    anchorOffset: endOffset,
+    focusKey: endKey,
+    focusOffset: endOffset
+  });
+  const finalContent = nextContentState.merge({
+    selectionAfter: collapsedSelectionState,
+    //selectionBefore: collapsedSelectionState,
+  })
+  return EditorState.push(editorState, finalContent, 'remove-characters');
+};
+
 const completeEntity = (editorState, entityName, entityData, mention) => {
   const {editorChangeType, entityType} = operationTypes[entityName];
   const contentState = editorState.getCurrentContent();

@@ -229,6 +229,7 @@ const withLinks = (ComposedComponent) => {
       const {linkViewerData} = this.state;
       const {editorState, setEditorState} = this.props;
       const targetRect = getDraftCoords();
+      console.log('rect', targetRect)
       if (!targetRect) {
         console.log('no target rect!');
       }
