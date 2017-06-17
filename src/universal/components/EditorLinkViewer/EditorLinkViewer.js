@@ -1,39 +1,37 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import React, {Component} from 'react';
 import portal from 'react-portal-hoc';
+import Button from 'universal/components/Button/Button';
+import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
+import getWordAt from 'universal/components/ProjectEditor/getWordAt';
+import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRemoveLink';
+import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRemoveLink';
-import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
-import getWordAt from 'universal/components/ProjectEditor/getWordAt';
-import Button from 'universal/components/Button/Button';
-import {textOverflow} from 'universal/styles/helpers';
+import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 
 const dontTellDraft = (e) => {
   e.preventDefault()
   e.stopPropagation();
 };
 
+
 class EditorLinkViewer extends Component {
-  componentDidMount() {
-    const rect = this.ref.getBoundingClientRect();
-    this.offset = rect.width;
-  }
   render() {
     const {
-      isClosing,
       left,
       top,
+      isClosing,
       linkData,
       styles,
       addHyperlink,
+      setRef
     } = this.props;
 
     const {href} = linkData;
-    console.log('left', left, this.offset)
     const linkViewer = {
-      left: left - this.offset,
+      left,
       top,
       position: 'absolute'
     };
@@ -56,7 +54,7 @@ class EditorLinkViewer extends Component {
     };
 
     return (
-      <div style={linkViewer} className={menuStyles} onMouseDown={dontTellDraft} ref={(c) => this.ref = c}>
+      <div style={linkViewer} className={menuStyles} onMouseDown={dontTellDraft} ref={setRef}>
       <span className={css(styles.url)}>
         <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
       </span>
@@ -132,5 +130,7 @@ const styleThunk = (theme, props) => ({
 });
 
 export default portal({closeAfter: 100})(
-  withStyles(styleThunk)(EditorLinkViewer)
+  boundedModal(
+    withStyles(styleThunk)(EditorLinkViewer)
+  )
 )

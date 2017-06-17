@@ -5,7 +5,7 @@ import {Field, reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import PlainInputField from 'universal/components/PlainInputField/PlainInputField';
 import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
-import appTheme from 'universal/styles/theme/appTheme';
+import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import linkify from 'universal/utils/linkify';
@@ -17,9 +17,7 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
-//const
 class EditorLinkChanger extends Component {
-
   constructor(props) {
     super(props);
     this.stillInModal = null;
@@ -65,7 +63,8 @@ class EditorLinkChanger extends Component {
       linkData,
       styles,
       handleSubmit,
-      valid
+      valid,
+      setRef
     } = this.props;
 
     const pos = {left, top};
@@ -78,7 +77,7 @@ class EditorLinkChanger extends Component {
     const label = text ? 'Update' : 'Add';
     return (
       <div style={pos} className={menuStyles} onKeyDown={this.handleKeyDown} onBlur={this.handleBlur}
-           onMouseDown={this.handleMouseDown} tabIndex={-1}>
+           onMouseDown={this.handleMouseDown} tabIndex={-1} ref={setRef}>
         <form onSubmit={handleSubmit(this.onSubmit)} className={css(styles.form)}>
           {text !== null &&
           <div className={css(styles.textBlock)}>
@@ -188,6 +187,8 @@ const styleThunk = (theme, props) => ({
 
 export default portal({closeAfter: 100})(
   reduxForm({form: 'linkChanger', validate, shouldValidate, immutables: ['editorState']})(
-    withStyles(styleThunk)(EditorLinkChanger)
+    boundedModal(
+      withStyles(styleThunk)(EditorLinkChanger)
+    )
   )
 )

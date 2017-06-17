@@ -250,7 +250,7 @@ const ui = {
   dashSectionHeaderLineHeight: '2rem',
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
-
+  draftModalMargin: 32,
   // Email
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,

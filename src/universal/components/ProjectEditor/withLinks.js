@@ -12,6 +12,7 @@ import makeAddLink from 'universal/components/ProjectEditor/operations/makeAddLi
 import splitBlock from 'universal/components/ProjectEditor/operations/splitBlock';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
+import ui from 'universal/styles/ui';
 
 const getCtrlKSelection = (editorState) => {
   const selection = editorState.getSelection();
@@ -178,9 +179,11 @@ const withLinks = (ComposedComponent) => {
       const {linkViewerData, linkChangerData} = this.state;
       if (linkViewerData || linkChangerData) {
         const targetRect = getDraftCoords();
+        console.log('targetRect', targetRect)
         if (targetRect) {
           this.left = targetRect.left;
-          this.top = targetRect.top + 32;
+          this.top = targetRect.top + ui.draftModalMargin;
+          this.height = targetRect.height;
         }
         const renderModal = linkViewerData ? this.renderViewerModal : this.renderChangerModal;
         const {removeModal} = this;
@@ -215,6 +218,7 @@ const withLinks = (ComposedComponent) => {
           isOpen
           top={this.top}
           left={this.left}
+          height={this.height}
           editorState={editorState}
           setEditorState={setEditorState}
           removeModal={this.removeModal}
@@ -229,15 +233,15 @@ const withLinks = (ComposedComponent) => {
       const {linkViewerData} = this.state;
       const {editorState, setEditorState} = this.props;
       const targetRect = getDraftCoords();
-      console.log('rect', targetRect)
       if (!targetRect) {
         console.log('no target rect!');
       }
       return (
         <EditorLinkViewer
           isOpen
-          top={targetRect && targetRect.top + 32}
-          left={targetRect && targetRect.left}
+          top={this.top}
+          left={this.left}
+          height={this.height}
           editorState={editorState}
           setEditorState={setEditorState}
           removeModal={this.removeModal}

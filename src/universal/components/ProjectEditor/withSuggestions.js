@@ -6,6 +6,7 @@ import completeEntity, {autoCompleteEmoji} from 'universal/components/ProjectEdi
 import resolvers from 'universal/components/ProjectEditor/resolvers';
 import getAnchorLocation from './getAnchorLocation';
 import stringScore from 'string-score';
+import ui from 'universal/styles/ui';
 
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
@@ -174,8 +175,9 @@ const withSuggestions = (ComposedComponent) => {
           active={active}
           suggestions={suggestions}
           suggestionType={suggestionType}
-          top={targetRect && targetRect.top + 32}
+          top={targetRect && targetRect.top + ui.draftModalMargin}
           left={targetRect && targetRect.left}
+          height={targetRect && targetRect.height}
           editorState={editorState}
           setEditorState={setEditorState}
           removeModal={this.removeModal}

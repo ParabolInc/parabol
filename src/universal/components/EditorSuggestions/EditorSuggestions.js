@@ -7,6 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import MentionUser from 'universal/components/MentionUser/MentionUser';
+import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 
 const dontTellDraft = (e) => {
   e.preventDefault();
@@ -29,6 +30,7 @@ class EditorSuggestions extends Component {
       suggestionType,
       top,
       left,
+      setRef,
       styles
     } = this.props;
 
@@ -46,7 +48,7 @@ class EditorSuggestions extends Component {
     );
 
     return (
-      <div style={menuStyle} className={menuStyles}>
+      <div style={menuStyle} className={menuStyles} ref={setRef}>
         {suggestions.map((suggestion, idx) => {
           return (
             <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
@@ -122,5 +124,5 @@ const styleThunk = (theme, props) => ({
 });
 
 export default portal({closeAfter: 100})(
-  withStyles(styleThunk)(EditorSuggestions)
+  boundedModal(withStyles(styleThunk)(EditorSuggestions))
 )

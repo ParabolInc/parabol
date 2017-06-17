@@ -172,17 +172,19 @@ class OutcomeCardContainer extends Component {
   };
 
   setEditorRef = (c) => {
-    this.editorRef = c;
+    this.setState({
+      editorRef: c
+    });
   };
 
   render() {
-    const {hasHover, isEditing, openArea, editorState} = this.state;
+    const {hasHover, isEditing, openArea, editorRef, editorState} = this.state;
     const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
         <OutcomeCard
           area={area}
-          editorRef={this.editorRef}
+          editorRef={editorRef}
           editorState={editorState}
           handleCardUpdate={this.handleCardUpdate}
           hasHover={hasHover}

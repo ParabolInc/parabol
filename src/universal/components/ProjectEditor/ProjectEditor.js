@@ -29,8 +29,10 @@ class ProjectEditor extends Component {
   componentDidMount() {
     const {editorState} = this.props;
     const text = editorState.getCurrentContent().getPlainText();
+
     if (text === '') {
-      this.editorRef.focus();
+      // don't pull it from this.props because react will mutate this.props to our advantage
+      setTimeout(() => this.props.editorRef.focus());
     }
   }
 
@@ -73,7 +75,6 @@ class ProjectEditor extends Component {
     } else if (handleChange) {
       handleChange(editorState);
     }
-    console.log('onChange', editorState)
     setEditorState(editorState);
   };
 
@@ -167,9 +168,7 @@ class ProjectEditor extends Component {
           onTab={this.handleTab}
           onUpArrow={this.handleUpArrow}
           readOnly={isDragging}
-          ref={(c) => {
-            setEditorRef(c);
-          }}
+          ref={setEditorRef}
         />
         {renderModal && renderModal()}
       </div>
