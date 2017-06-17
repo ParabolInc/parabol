@@ -46,7 +46,7 @@ const removeAllRangesForEntity = (editorState, content, entityType, eqFn) => {
       });
     }
   }
-  return contentState === editorState.getCurrentSelection() ? null : contentState;
+  return contentState === editorState.getCurrentContent() ? null : contentState;
 };
 
 export default removeAllRangesForEntity;

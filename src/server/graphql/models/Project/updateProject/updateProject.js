@@ -9,7 +9,7 @@ import shortid from 'shortid';
 import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import {handleSchemaErrors} from 'server/utils/utils';
-import extractTags from 'universal/utils/extractTags';
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -54,7 +54,8 @@ export default {
     }
 
     if (content) {
-      newProject.tags = extractTags(content);
+      const {entityMap} = JSON.parse(content);
+      newProject.tags = getTagsFromEntityMap(entityMap);
     }
     const dbWork = [];
 
