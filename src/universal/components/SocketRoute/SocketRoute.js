@@ -8,18 +8,14 @@ import withReducer from '../../decorators/withReducer/withReducer';
 import {socketClusterReducer} from 'redux-socket-cluster';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
+const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
+const meetingContainer = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer');
 
 const PrivateRoute = () => {
   return (
     <Switch>
-      <AsyncRoute
-        path="(/me|/newteam|/team)"
-        mod={() => System.import('universal/components/DashboardWrapper/DashboardWrapper')}
-      />
-      <AsyncRoute
-        path="/meeting/:teamId/:localPhase?/:localPhaseItem?"
-        mod={() => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer')}
-      />
+      <AsyncRoute path="(/me|/newteam|/team)" mod={dashWrapper} />
+      <AsyncRoute bottom path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingContainer} />
     </Switch>
   );
 };
