@@ -11,6 +11,7 @@ import withStyles from 'universal/styles/withStyles';
 import linkify from 'universal/utils/linkify';
 import shouldValidate from 'universal/validation/shouldValidate';
 import changerValidation from './changerValidation';
+import {EditorState} from 'draft-js';
 
 const validate = (values) => {
   const schema = changerValidation();
@@ -20,38 +21,23 @@ const validate = (values) => {
 class EditorLinkChanger extends Component {
   constructor(props) {
     super(props);
-    this.stillInModal = null;
   }
 
   onSubmit = (submissionData) => {
-    const {editorState, editorRef, removeModal, setEditorState} = this.props;
+    const {editorState, editorRef, removeModal, selectionState, setEditorState} = this.props;
     const schema = changerValidation();
     const {data} = schema(submissionData);
     const href = linkify.match(data.link)[0].url;
     removeModal(true);
-    setEditorState(completeEntity(editorState, 'LINK', {href}, data.text))
+    const focusedEditorState = EditorState.forceSelection(editorState, selectionState);
+    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text);
+    setEditorState(nextEditorState)
     setTimeout(() => editorRef.focus(), 0);
   };
 
-  handleMouseDown = (e) => {
-    this.stillInModal = true;
-  }
-
   handleBlur = (e) => {
-    if (!this.stillInModal) {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
       this.props.removeModal(true);
-    }
-    this.stillInModal = null;
-  };
-
-  handleKeyDown = (e) => {
-    const {removeModal, editorRef} = this.props;
-    if (e.key === 'Tab') {
-      this.stillInModal = true;
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      removeModal(true);
-      editorRef.focus()
     }
   };
 
@@ -60,24 +46,21 @@ class EditorLinkChanger extends Component {
       isClosing,
       left,
       top,
-      linkData,
       styles,
       handleSubmit,
       valid,
-      setRef
+      setRef,
+      text
     } = this.props;
 
     const pos = {left, top};
-    const {text} = linkData;
     const menuStyles = css(
       styles.modal,
       isClosing && styles.closing
     );
-
     const label = text ? 'Update' : 'Add';
     return (
-      <div style={pos} className={menuStyles} onKeyDown={this.handleKeyDown} onBlur={this.handleBlur}
-           onMouseDown={this.handleMouseDown} tabIndex={-1} ref={setRef}>
+      <div style={pos} className={menuStyles} onBlur={this.handleBlur} tabIndex={-1} ref={setRef}>
         <form onSubmit={handleSubmit(this.onSubmit)} className={css(styles.form)}>
           {text !== null &&
           <div className={css(styles.textBlock)}>
@@ -186,7 +169,7 @@ const styleThunk = (theme, props) => ({
 });
 
 export default portal({closeAfter: 100})(
-  reduxForm({form: 'linkChanger', validate, shouldValidate, immutables: ['editorState']})(
+  reduxForm({form: 'linkChanger', validate, shouldValidate, immutables: ['editorState', 'selectionState']})(
     boundedModal(
       withStyles(styleThunk)(EditorLinkChanger)
     )

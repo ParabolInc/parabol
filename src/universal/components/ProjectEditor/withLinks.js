@@ -179,7 +179,6 @@ const withLinks = (ComposedComponent) => {
       const {linkViewerData, linkChangerData} = this.state;
       if (linkViewerData || linkChangerData) {
         const targetRect = getDraftCoords();
-        console.log('targetRect', targetRect)
         if (targetRect) {
           this.left = targetRect.left;
           this.top = targetRect.top + ui.draftModalMargin;
@@ -211,7 +210,7 @@ const withLinks = (ComposedComponent) => {
 
     renderChangerModal = () => {
       const {linkChangerData} = this.state;
-      const {text, link} = linkChangerData;
+      const {text, link, selectionState} = linkChangerData;
       const {editorState, setEditorState, editorRef} = this.props;
       return (
         <EditorLinkChanger
@@ -220,9 +219,10 @@ const withLinks = (ComposedComponent) => {
           left={this.left}
           height={this.height}
           editorState={editorState}
+          selectionState={selectionState}
           setEditorState={setEditorState}
           removeModal={this.removeModal}
-          linkData={linkChangerData}
+          text={text}
           initialValues={{text, link}}
           editorRef={editorRef}
         />
@@ -260,7 +260,8 @@ const withLinks = (ComposedComponent) => {
         linkViewerData: undefined,
         linkChangerData: {
           link,
-          text
+          text,
+          selectionState
         }
       });
     };

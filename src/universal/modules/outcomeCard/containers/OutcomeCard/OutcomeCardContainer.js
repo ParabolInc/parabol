@@ -89,7 +89,6 @@ class OutcomeCardContainer extends Component {
   };
 
   annouceEditing = (isEditing) => {
-    console.log('annoucing', isEditing);
     this.setState({
       isEditing
     })
