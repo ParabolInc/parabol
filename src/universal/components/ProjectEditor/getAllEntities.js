@@ -1,4 +1,5 @@
 // hopefully draft adds this to their API because it's just silly
+// keeping this around in case we need to use this instead of the raw object
 const getAllEntities = (contentState) => {
   const entityIds = new Set();
   const blockMap = contentState.getBlockMap();

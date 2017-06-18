@@ -43,17 +43,7 @@ class OutcomeCardContainer extends Component {
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
         EditorState.createEmpty(editorDecorators)
     };
-    // this.tags = content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : [];
   }
-
-  // componentWillMount() {
-  //  // const {outcome: {content}} = this.props;
-  //  const {outcome: {content}} = this.props;
-  //  if (!content) {
-  //    // if there is no content, delete it if the user clicks away from the card
-  //    document.addEventListener('click', this.handleDocumentClick);
-  //  }
-  // }
 
   componentWillReceiveProps(nextProps) {
     const {content: nextContent} = nextProps.outcome;
@@ -63,17 +53,12 @@ class OutcomeCardContainer extends Component {
       const newContentState = mergeServerContent(editorState, convertFromRaw(JSON.parse(nextContent)));
       const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
       this.setEditorState(newEditorState);
-      // this.tags = getTagsFromEntityMap(JSON.parse(nextContent).entityMap);
     }
 
     if (!this.props.isDragging && nextProps.isDragging) {
       this.handleCardUpdate();
     }
   }
-
-  // componentWillUnmount() {
-  //  document.removeEventListener('click', this.handleDocumentClick);
-  // }
 
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
@@ -86,18 +71,6 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-  // setEditing = () => {
-  //  this.setState({isEditing: true});
-  //  document.addEventListener('click', this.handleDocumentClick);
-  //  const {outcome: {id: projectId}} = this.props;
-  //  const [teamId] = projectId.split('::');
-  //  cashay.mutate('edit', {
-  //    variables: {
-  //      teamId,
-  //      editing: `Task::${projectId}`
-  //    }
-  //  });
-  // };
 
   setEditorRef = (c) => {
     this.setState({

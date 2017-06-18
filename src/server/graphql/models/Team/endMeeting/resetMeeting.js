@@ -51,9 +51,6 @@ export default async function resetMeeting(teamId) {
             });
         })
         .do(() => {
-          return r.table('');
-        })
-        .do(() => {
           // shuffle the teamMember check in order, uncheck them in
           return r.table('TeamMember')
             .getAll(teamId, {index: 'teamId'})
