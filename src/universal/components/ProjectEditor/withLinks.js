@@ -255,7 +255,7 @@ const withLinks = (ComposedComponent) => {
       const {editorState} = this.props;
       const selectionState = getCtrlKSelection(editorState);
       const text = getSelectionText(editorState, selectionState);
-      const link = getSelectionLink(editorState, selectionState);
+      const link = text && getSelectionLink(editorState, selectionState);
       this.setState({
         linkViewerData: undefined,
         linkChangerData: {

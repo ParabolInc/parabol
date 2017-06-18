@@ -5,6 +5,7 @@ import React, {Component} from 'react';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 import addSpace from 'universal/components/ProjectEditor/operations/addSpace';
 import splitBlock from 'universal/components/ProjectEditor/operations/splitBlock';
+import linkify from 'universal/utils/linkify';
 
 const inlineMatchers = {
   CODE: {regex: /`([^`]+)`/, matchIdx: 1},
@@ -217,11 +218,12 @@ const withMarkdown = (ComposedComponent) => {
       const addWhiteSpace = command === 'split-block' ? splitBlock : addSpace;
       const preSplitES = addWhiteSpace(editorState);
       const contentState = preSplitES.getCurrentContent();
-      const [phrase, text, href] = matchedLink;
+      const [phrase, text, link] = matchedLink;
       const selectionToRemove = selectionState.merge({
         anchorOffset: matchedLink.index,
         focusOffset: phrase.length
       });
+      const href = linkify.match(link)[0].url;
       const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', {href});
       const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
       const linkifiedContent = Modifier.replaceText(
