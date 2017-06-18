@@ -13,6 +13,7 @@ import {__anHourAgo} from 'server/__tests__/setup/mockTimes';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
+import convertToRichText from './convertToRichText';
 
 const meetingProject = ({id, content, status, teamMemberId}) => ({
   id,
@@ -88,7 +89,7 @@ class MockDB {
     const table = this.db.agendaItem;
     return this.closeout('agendaItem', {
       id: `${teamId}::${shortid.generate()}`,
-      content: `Test Agenda Item[${table.length}]`,
+      content: convertToRichText(`Test Agenda Item[${table.length}]`),
       isActive: true,
       isComplete: false,
       createdAt: new Date(__anHourAgo - 1 - table.length),
@@ -198,7 +199,7 @@ class MockDB {
     const table = this.db.project;
     return this.closeout('project', {
       id: `${teamId}::${shortid.generate()}`,
-      content: `Test Project[${table.length}]`,
+      content: convertToRichText(`Test Project[${table.length}]`),
       createdAt: new Date(__anHourAgo - 1 - table.length),
       createdBy: userId,
       sortOrder: table.filter((item) => item.teamId === teamId).length,

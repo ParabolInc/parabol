@@ -24,8 +24,6 @@ export default async function resetMeeting(teamId) {
           id: project.id
         };
       });
-      // const archivedProjectIds = projects.map((proj) => proj.id);
-
       await r.table('Team').get(teamId)
         .update({
           facilitatorPhase: LOBBY,
@@ -36,11 +34,13 @@ export default async function resetMeeting(teamId) {
           activeFacilitator: null
         })
         .do(() => {
-          return r.args(archivedProjects).forEach((project) => {
-            return r.table('Project').update(project('id'), {
-              content: project('content'),
-              tags: project('tags')
-            });
+          return r.expr(archivedProjects).forEach((project) => {
+            return r.table('Project')
+              .get(project('id'))
+              .update({
+                content: project('content'),
+                tags: project('tags')
+              });
           });
         })
         .do(() => {
@@ -57,12 +57,12 @@ export default async function resetMeeting(teamId) {
             .sample(100000)
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
-              return r.table('TeamMember').get(doc('id'))
+                return r.table('TeamMember').get(doc('id'))
                   .update({
                     checkInOrder: arr.offsetsOf(doc).nth(0),
                     isCheckedIn: null
                   });
-            })
+              })
             );
         });
       resolve();

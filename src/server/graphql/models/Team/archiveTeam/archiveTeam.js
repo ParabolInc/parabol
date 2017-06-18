@@ -26,7 +26,8 @@ export default {
     const now = new Date();
 
     // AUTH
-    requireSUOrLead(authToken, teamId);
+    const teamMemberId = `${authToken.sub}::${teamId}`;
+    requireSUOrLead(authToken, teamMemberId);
     requireWebsocket(socket);
 
     // RESOLUTION
