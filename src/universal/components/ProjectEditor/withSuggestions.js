@@ -188,9 +188,6 @@ const withSuggestions = (ComposedComponent) => {
 
     render() {
       const modalProps = this.initialize();
-      if (Object.keys(modalProps) > 0) {
-      }
-
       return <ComposedComponent
         {...this.props}
         {...modalProps}
