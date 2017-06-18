@@ -3,7 +3,7 @@ import {
   GraphQLString,
   GraphQLInt
 } from 'graphql';
-import {requireSU} from 'server/utils/authorization';
+import {getUserSegmentTraits, requireSU} from 'server/utils/authorization';
 import {
   AUTO_PAUSE_THRESH,
   AUTO_PAUSE_USER,
@@ -11,6 +11,7 @@ import {
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
+import segmentIo from 'server/utils/segmentIo';
 
 export default {
   intranetPing: {
@@ -88,12 +89,31 @@ export default {
 
       // RESOLUTION
       const activeThresh = new Date(Date.now() - OLD_MEETING_AGE);
-      const teamIds = await r.table('Meeting')
-        .filter({ endedAt: null }, { default: true })
-        .filter((meeting) => meeting('createdAt').le(activeThresh))('teamId');
-      const promises = teamIds.map((teamId) => endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}}));
+      const idPairs = await r.table('Meeting')
+        .group({index: 'teamId'})                               // for each team
+        .max('createdAt')                                       // get the most recent meeting only
+        .ungroup()('reduction')                                 // return as sequence
+        .filter({ endedAt: null }, { default: true })           // filter to unended meetings
+        .filter(r.row('createdAt').le(activeThresh))('teamId')  // filter to old meetings, return teamIds
+        .do((teamIds) => r.table('TeamMember')
+          .getAll(r.args(teamIds), {index: 'teamId'})
+          .filter({isLead: true})
+          .pluck('teamId', 'userId')
+        );                                                       // join by team leader userId
+      const promises = idPairs.map(async ({teamId, userId}) => {
+        await endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}});
+        const segmentTraits = await getUserSegmentTraits(userId);
+        segmentIo.track({
+          userId,
+          event: 'endOldMeeting',
+          properties: {
+            teamId,
+            traits: segmentTraits
+          }
+        });
+      });
       await Promise.all(promises);
-      return teamIds.length;
+      return idPairs.length;
     }
   }
 };

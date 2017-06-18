@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import portal from 'react-portal-hoc';
-import Integrations from 'universal/modules/integrations/components/Integrations/Integrations';
+// import portal from 'react-portal-hoc';
+// import Integrations from 'universal/modules/integrations/components/Integrations/Integrations';
+import IntegrationRows from 'universal/modules/integrations/components/IntegrationRows/IntegrationRows';
 
 const teamSettingsQuery = `
 query {
@@ -49,17 +50,14 @@ const mapStateToProps = (state, props) => {
 
 const IntegrationsContainer = (props) => {
   const {
-    closeAfter,
-    closePortal,
-    isClosing,
+    // closeAfter,
+    // closePortal,
+    // isClosing,
     teamMemberId,
     services
   } = props;
   return (
-    <Integrations
-      closeAfter={closeAfter}
-      closePortal={closePortal}
-      isClosing={isClosing}
+    <IntegrationRows
       teamMemberId={teamMemberId}
       services={services}
     />
@@ -67,13 +65,15 @@ const IntegrationsContainer = (props) => {
 };
 
 IntegrationsContainer.propTypes = {
-  closeAfter: PropTypes.number.isRequired,
-  closePortal: PropTypes.func.isRequired,
-  isClosing: PropTypes.bool,
+  // closeAfter: PropTypes.number.isRequired,
+  // closePortal: PropTypes.func.isRequired,
+  // isClosing: PropTypes.bool,
   teamMemberId: PropTypes.string.isRequired,
   services: PropTypes.object.isRequired
 };
 
-export default portal({escToClose: true, closeAfter: 100})(
-  connect(mapStateToProps)(IntegrationsContainer)
-);
+export default connect(mapStateToProps)(IntegrationsContainer);
+
+// export default portal({escToClose: true, closeAfter: 100})(
+//   connect(mapStateToProps)(IntegrationsContainer)
+// );
