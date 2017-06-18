@@ -1,9 +1,9 @@
-//import getWordAt from './getWordAt';
-//import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
-//import makeAddLink from 'universal/components/ProjectEditor/operations/makeAddLink';
-//import linkify from 'universal/utils/linkify';
+// import getWordAt from './getWordAt';
+// import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
+// import makeAddLink from 'universal/components/ProjectEditor/operations/makeAddLink';
+// import linkify from 'universal/utils/linkify';
 //
-//const maybeLinkify = (editorState) => {
+// const maybeLinkify = (editorState) => {
 //  const {block, anchorOffset} = getAnchorLocation(editorState);
 //  const blockText = block.getText();
 //  // -1 to remove the link from the current caret state
@@ -17,6 +17,6 @@
 //    }
 //  }
 //  return undefined;
-//};
+// };
 //
-//export default maybeLinkify;
+// export default maybeLinkify;

@@ -38,9 +38,9 @@ class UserDashboard extends Component {
           mod={() => System.import('universal/modules/notifications/containers/Notifications/NotificationsContainer')}
         />
       </Switch>
-    )
+    );
   }
-};
+}
 
 UserDashboard.propTypes = {
   match: PropTypes.object.isRequired

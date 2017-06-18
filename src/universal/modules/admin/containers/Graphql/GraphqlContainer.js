@@ -84,7 +84,7 @@ export default class Graphiql extends Component {
     }
     return (
       <div className={css(styles.graphiql)}>
-        <GraphiQL fetcher={graphQLFetcher}/>
+        <GraphiQL fetcher={graphQLFetcher} />
       </div>
     );
   }

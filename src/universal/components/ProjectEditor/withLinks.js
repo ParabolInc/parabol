@@ -36,12 +36,15 @@ const {hasCommandModifier} = KeyBindingUtil;
 const withLinks = (ComposedComponent) => {
   return class WithLinks extends Component {
     static propTypes = {
-      removeModal: PropTypes.func,
-      renderModal: PropTypes.func,
+      editorRef: PropTypes.any,
+      editorState: PropTypes.object.isRequired,
       handleBeforeInput: PropTypes.func,
       handleChange: PropTypes.func,
       handleKeyCommand: PropTypes.func,
-      keyBindingFn: PropTypes.func
+      keyBindingFn: PropTypes.func,
+      removeModal: PropTypes.func,
+      renderModal: PropTypes.func,
+      setEditorState: PropTypes.func.isRequired
     };
     state = {};
 
@@ -115,9 +118,8 @@ const withLinks = (ComposedComponent) => {
           setEditorState(nextEditorState);
           return 'handled';
         }
-
-        return undefined;
       }
+      return undefined;
     };
 
     handleChange = (editorState) => {
@@ -245,7 +247,7 @@ const withLinks = (ComposedComponent) => {
           editorState={editorState}
           setEditorState={setEditorState}
           removeModal={this.removeModal}
-          linkData={linkViewerData}
+          href={linkViewerData.href}
           addHyperlink={this.addHyperlink}
         />
       );
@@ -277,7 +279,7 @@ const withLinks = (ComposedComponent) => {
         keyBindingFn={this.keyBindingFn}
       />);
     }
-  }
+  };
 };
 
 export default withLinks;

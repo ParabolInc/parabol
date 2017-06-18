@@ -1,3 +1,0 @@
-const removeEntity = (contentState, entityType) => {
-  //
-};

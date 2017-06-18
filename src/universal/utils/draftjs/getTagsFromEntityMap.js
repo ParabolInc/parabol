@@ -1,5 +1,5 @@
 const getTagsFromEntityMap = (entityMap) => {
-  //const {entityMap} = rawContent;
+  // const {entityMap} = rawContent;
   const entityKeys = Object.keys(entityMap);
   const tags = [];
   for (let i = 0; i < entityKeys.length; i++) {

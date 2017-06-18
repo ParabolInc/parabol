@@ -25,17 +25,16 @@ const getMergedSelection = (oldEditorState, newContentState) => {
       focusOffset: startOffset,
       anchorKey: startKey,
       focusKey: startKey
-    })
-  } else {
-    const {offset: endOffset, key: endKey} =
-      getBestFitSelection(oldContent, newContentState, oldSelection.getEndKey(), oldSelection.getEndOffset());
-    return oldSelection.merge({
-      anchorOffset: startOffset,
-      focusOffset: endOffset,
-      anchorKey: startKey,
-      focusKey: endKey
-    })
+    });
   }
+  const {offset: endOffset, key: endKey} =
+      getBestFitSelection(oldContent, newContentState, oldSelection.getEndKey(), oldSelection.getEndOffset());
+  return oldSelection.merge({
+    anchorOffset: startOffset,
+    focusOffset: endOffset,
+    anchorKey: startKey,
+    focusKey: endKey
+  });
 };
 
 const mergeServerContent = (oldEditorState, newContentState) => {
@@ -45,7 +44,7 @@ const mergeServerContent = (oldEditorState, newContentState) => {
   }
   return newContentState.merge({
     selectionAfter: getMergedSelection(oldEditorState, newContentState)
-    //selectionBefore: updatedSelectionState
+    // selectionBefore: updatedSelectionState
   });
 };
 

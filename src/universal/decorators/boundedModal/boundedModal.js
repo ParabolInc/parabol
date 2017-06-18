@@ -29,7 +29,7 @@ export default (ComposedComponent) => {
         this.setState({
           left: Math.min(left, maxLeft),
           top: isBelow ? top : top - ui.draftModalMargin - height - rect.height
-        })
+        });
       }
     };
 
@@ -39,7 +39,7 @@ export default (ComposedComponent) => {
 
     render() {
       const {left, top} = this.state;
-      return <ComposedComponent {...this.props} left={left} top={top} setRef={this.setRef}/>;
+      return <ComposedComponent {...this.props} left={left} top={top} setRef={this.setRef} />;
     }
-  }
+  };
 };

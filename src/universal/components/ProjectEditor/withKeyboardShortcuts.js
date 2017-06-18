@@ -1,11 +1,19 @@
 import {RichUtils} from 'draft-js';
 import React, {Component} from 'react';
 import {KeyBindingUtil} from 'draft-js';
+import PropTypes from 'prop-types';
 
 const {hasCommandModifier} = KeyBindingUtil;
 
 const withKeyboardShortcuts = (ComposedComponent) => {
   class WithKeyboardShortcuts extends Component {
+    static propTypes = {
+      editorState: PropTypes.object.isRequired,
+      handleKeyCommand: PropTypes.func,
+      keyBindingFn: PropTypes.func,
+      setEditorState: PropTypes.func.isRequired
+    };
+
     handleKeyCommand = (command) => {
       const {handleKeyCommand, editorState, setEditorState} = this.props;
       if (handleKeyCommand) {
@@ -43,12 +51,11 @@ const withKeyboardShortcuts = (ComposedComponent) => {
     };
 
     render() {
-      return <ComposedComponent
+      return (<ComposedComponent
         {...this.props}
         handleKeyCommand={this.handleKeyCommand}
         keyBindingFn={this.keyBindingFn}
-      />;
-
+      />);
     }
   }
   return WithKeyboardShortcuts;

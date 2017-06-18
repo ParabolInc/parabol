@@ -1,12 +1,12 @@
-//import {css} from 'aphrodite-local-styles/no-important';
-//import React from 'react';
-//import portal from 'react-portal-hoc';
-//import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
-//import appTheme from 'universal/styles/theme/appTheme';
-//import ui from 'universal/styles/ui';
-//import withStyles from 'universal/styles/withStyles';
+// import {css} from 'aphrodite-local-styles/no-important';
+// import React from 'react';
+// import portal from 'react-portal-hoc';
+// import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
+// import appTheme from 'universal/styles/theme/appTheme';
+// import ui from 'universal/styles/ui';
+// import withStyles from 'universal/styles/withStyles';
 //
-//const EmojiPicker = (props) => {
+// const EmojiPicker = (props) => {
 //  const {
 //    isClosing, suggestions, active, left, top, handleItemClick, styles
 //  } = props;
@@ -31,9 +31,9 @@
 //      })}
 //    </div>
 //  )
-//};
+// };
 //
-//const animateIn = {
+// const animateIn = {
 //  '0%': {
 //    opacity: '0',
 //    transform: 'translate3d(0, -32px, 0)'
@@ -43,9 +43,9 @@
 //    opacity: '1',
 //    transform: 'translate3d(0, 0, 0)'
 //  }
-//};
+// };
 //
-//const animateOut = {
+// const animateOut = {
 //  '0%': {
 //    opacity: '1',
 //    transform: 'translate3d(0, 0, 0)'
@@ -55,9 +55,9 @@
 //    opacity: '0',
 //    transform: 'translate3d(0, -32px, 0)'
 //  }
-//};
+// };
 //
-//const styleThunk = (theme, props) => ({
+// const styleThunk = (theme, props) => ({
 //  closing: {
 //    animationDuration: `${props.closeAfter}ms`,
 //    animationName: animateOut
@@ -94,6 +94,6 @@
 //  value: {
 //    fontWeight: 700
 //  }
-//});
+// });
 //
-//export default withStyles(styleThunk)(EmojiPicker)
+// export default withStyles(styleThunk)(EmojiPicker)

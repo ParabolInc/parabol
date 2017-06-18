@@ -31,14 +31,13 @@ const OutcomeCard = (props) => {
     setEditorRef,
     setEditorState,
     styles,
-    tags,
     teamMembers,
     editorState,
     unarchiveProject,
     isDragging
   } = props;
-  const isPrivate = isProjectPrivate(tags);
-  const isArchived = isProjectArchived(tags);
+  const isPrivate = isProjectPrivate(outcome.tags);
+  const isArchived = isProjectArchived(outcome.tags);
   const {status} = outcome;
   const rootStyles = css(
     styles.root,
@@ -99,16 +98,17 @@ const OutcomeCard = (props) => {
 
 OutcomeCard.propTypes = {
   area: PropTypes.string,
-  isAgenda: PropTypes.bool,
+  editorRef: PropTypes.any,
+  editorState: PropTypes.object,
   handleCardUpdate: PropTypes.func,
   hasHover: PropTypes.bool,
   hoverOn: PropTypes.func,
   hoverOff: PropTypes.func,
+  isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
   openArea: PropTypes.string,
   openMenu: PropTypes.func,
-  styles: PropTypes.object,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
@@ -116,10 +116,11 @@ OutcomeCard.propTypes = {
     teamMemberId: PropTypes.string,
     updatedAt: PropTypes.instanceOf(Date)
   }),
+  setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
+  styles: PropTypes.object,
   teamMembers: PropTypes.array,
-  editorState: PropTypes.object,
-  unarchiveProject: PropTypes.func.isRequired,
+  unarchiveProject: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({

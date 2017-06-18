@@ -5,7 +5,7 @@ const getAnchorLocation = (editorState) => {
   return {
     anchorOffset: selection.getAnchorOffset(),
     block: currentContent.getBlockForKey(anchorKey)
-  }
+  };
 };
 
 export default getAnchorLocation;

@@ -8,7 +8,6 @@ import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/Ou
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 const teamMembersQuery = `
 query {
@@ -44,38 +43,37 @@ class OutcomeCardContainer extends Component {
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
         EditorState.createEmpty(editorDecorators)
     };
-    this.tags = content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : [];
+    // this.tags = content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : [];
   }
 
-  //componentWillMount() {
+  // componentWillMount() {
   //  // const {outcome: {content}} = this.props;
   //  const {outcome: {content}} = this.props;
   //  if (!content) {
   //    // if there is no content, delete it if the user clicks away from the card
   //    document.addEventListener('click', this.handleDocumentClick);
   //  }
-  //}
+  // }
 
   componentWillReceiveProps(nextProps) {
     const {content: nextContent} = nextProps.outcome;
-    const {outcome:{content}, editorState} = this.props;
+    const {outcome: {content}} = this.props;
     if (content !== nextContent) {
       const {editorState} = this.state;
       const newContentState = mergeServerContent(editorState, convertFromRaw(JSON.parse(nextContent)));
       const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
       this.setEditorState(newEditorState);
-      this.tags = getTagsFromEntityMap(JSON.parse(nextContent).entityMap);
+      // this.tags = getTagsFromEntityMap(JSON.parse(nextContent).entityMap);
     }
 
     if (!this.props.isDragging && nextProps.isDragging) {
       this.handleCardUpdate();
     }
-
   }
 
-  //componentWillUnmount() {
+  // componentWillUnmount() {
   //  document.removeEventListener('click', this.handleDocumentClick);
-  //}
+  // }
 
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
@@ -88,21 +86,7 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-  annouceEditing = (isEditing) => {
-    this.setState({
-      isEditing
-    })
-    const {outcome: {id: projectId}} = this.props;
-    const [teamId] = projectId.split('::');
-    cashay.mutate('edit', {
-      variables: {
-        teamId,
-        editing: isEditing ? `Task::${projectId}` : null
-      }
-    });
-  };
-
-  //setEditing = () => {
+  // setEditing = () => {
   //  this.setState({isEditing: true});
   //  document.addEventListener('click', this.handleDocumentClick);
   //  const {outcome: {id: projectId}} = this.props;
@@ -113,16 +97,12 @@ class OutcomeCardContainer extends Component {
   //      editing: `Task::${projectId}`
   //    }
   //  });
-  //};
+  // };
 
-  hoverOn = () => this.setState({hasHover: true});
-
-  hoverOff = () => this.setState({hasHover: false});
-
-  openMenu = (nextArea) => () => {
-    const {openArea} = this.state;
-    const newOpenArea = nextArea === openArea ? 'content' : nextArea;
-    this.setState({openArea: newOpenArea});
+  setEditorRef = (c) => {
+    this.setState({
+      editorRef: c
+    });
   };
 
   handleCardUpdate = () => {
@@ -170,9 +150,27 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-  setEditorRef = (c) => {
+  openMenu = (nextArea) => () => {
+    const {openArea} = this.state;
+    const newOpenArea = nextArea === openArea ? 'content' : nextArea;
+    this.setState({openArea: newOpenArea});
+  };
+
+  hoverOn = () => this.setState({hasHover: true});
+
+  hoverOff = () => this.setState({hasHover: false});
+
+  annouceEditing = (isEditing) => {
     this.setState({
-      editorRef: c
+      isEditing
+    });
+    const {outcome: {id: projectId}} = this.props;
+    const [teamId] = projectId.split('::');
+    cashay.mutate('edit', {
+      variables: {
+        teamId,
+        editing: isEditing ? `Task::${projectId}` : null
+      }
     });
   };
 
@@ -197,7 +195,6 @@ class OutcomeCardContainer extends Component {
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
-          tags={this.tags}
           teamMembers={teamMembers}
           unarchiveProject={this.unarchiveProject}
         />
@@ -214,6 +211,7 @@ OutcomeCardContainer.propTypes = {
     status: PropTypes.oneOf(labels.projectStatus.slugs),
     teamMemberId: PropTypes.string
   }),
+  editorState: PropTypes.object,
   editors: PropTypes.array,
   field: PropTypes.string,
   focus: PropTypes.func,
@@ -222,6 +220,7 @@ OutcomeCardContainer.propTypes = {
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isAgenda: PropTypes.bool,
+  isDragging: PropTypes.bool,
   owner: PropTypes.object,
   teamMembers: PropTypes.array,
   tags: PropTypes.array,

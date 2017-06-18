@@ -30,9 +30,8 @@ const getExpandedSelectionState = (editorState) => {
       anchorOffset: begin,
       focusOffset: end
     });
-  } else {
-    return selectionState;
   }
+  return selectionState;
 };
 
 const makeContentWithEntity = (contentState, selectionState, mention, entityKey) => {
@@ -71,9 +70,9 @@ export const autoCompleteEmoji = (editorState, emoji) => {
     focusOffset: endOffset
   });
   const finalContent = nextContentState.merge({
-    selectionAfter: collapsedSelectionState,
-    //selectionBefore: collapsedSelectionState,
-  })
+    selectionAfter: collapsedSelectionState
+    // selectionBefore: collapsedSelectionState,
+  });
   return EditorState.push(editorState, finalContent, 'remove-characters');
 };
 
@@ -94,9 +93,9 @@ const completeEntity = (editorState, entityName, entityData, mention) => {
     focusOffset: endOffset
   });
   const finalContent = contentWithEntity.merge({
-    selectionAfter: collapsedSelectionState,
-    //selectionBefore: collapsedSelectionState,
-  })
+    selectionAfter: collapsedSelectionState
+    // selectionBefore: collapsedSelectionState,
+  });
   return EditorState.push(editorState, finalContent, editorChangeType);
 };
 

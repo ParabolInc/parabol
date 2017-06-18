@@ -1,5 +1,4 @@
 const getWordAt = (str, pos, willBreakAfterAnchor) => {
-
   // find the last nonwhitespace char before the position. if str ends in a space, this is -1
   const left = str.slice(0, pos + 1).search(/\S+$/);
 
@@ -8,7 +7,7 @@ const getWordAt = (str, pos, willBreakAfterAnchor) => {
       word: '',
       begin: pos,
       end: pos
-    }
+    };
   }
   // if i move to the beginning of a word & then type a url, when i hit space, i want it to end where the space WILL be
   const right = willBreakAfterAnchor ? 1 : str.slice(pos).search(/\s/);
@@ -17,7 +16,7 @@ const getWordAt = (str, pos, willBreakAfterAnchor) => {
     return {
       word: str.slice(left),
       begin: left,
-      end: str.length,
+      end: str.length
     };
   }
 
@@ -25,7 +24,7 @@ const getWordAt = (str, pos, willBreakAfterAnchor) => {
   return {
     word: str.slice(left, right + pos),
     begin: left,
-    end: right + pos,
+    end: right + pos
   };
 };
 

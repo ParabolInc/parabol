@@ -15,16 +15,26 @@ import entitizeText from 'universal/utils/draftjs/entitizeText';
 class ProjectEditor extends Component {
 
   static propTypes = {
-    onBlur: PropTypes.func,
+    editorRef: PropTypes.any,
     editorState: PropTypes.object,
     setEditorState: PropTypes.func,
+    handleBeforeInput: PropTypes.func,
+    handleChange: PropTypes.func,
     handleUpArrow: PropTypes.func,
     handleDownArrow: PropTypes.func,
+    handleKeyCommand: PropTypes.func,
     handleTab: PropTypes.func,
     handleReturn: PropTypes.func,
+    isDragging: PropTypes.bool,
+    keyBindingFn: PropTypes.func,
+    onBlur: PropTypes.func,
     renderModal: PropTypes.func,
-    removeModal: PropTypes.func
+    removeModal: PropTypes.func,
+    setEditorRef: PropTypes.func.isRequired,
+    styles: PropTypes.object
   };
+
+  state = {};
 
   componentDidMount() {
     const {editorState} = this.props;
@@ -36,8 +46,6 @@ class ProjectEditor extends Component {
     }
   }
 
-  state = {};
-
   blockStyleFn = (contentBlock) => {
     const {styles} = this.props;
     const type = contentBlock.getType();
@@ -46,6 +54,7 @@ class ProjectEditor extends Component {
     } else if (type === 'code-block') {
       return css(styles.codeBlock);
     }
+    return undefined;
   };
 
   removeModal = () => {
@@ -117,6 +126,7 @@ class ProjectEditor extends Component {
     if (handleKeyCommand) {
       return handleKeyCommand(command);
     }
+    return undefined;
   };
 
   keyBindingFn = (e) => {
@@ -124,6 +134,7 @@ class ProjectEditor extends Component {
     if (keyBindingFn) {
       return keyBindingFn(e) || getDefaultKeyBinding(e);
     }
+    return undefined;
   };
 
   handleBeforeInput = (char) => {
@@ -131,9 +142,10 @@ class ProjectEditor extends Component {
     if (handleBeforeInput) {
       return handleBeforeInput(char);
     }
+    return undefined;
   }
 
-  handlePastedText = (text, html) => {
+  handlePastedText = (text) => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i];
@@ -145,13 +157,13 @@ class ProjectEditor extends Component {
           };
         }
       }
-      return 'not-handled';
     }
+    return 'not-handled';
   };
 
   render() {
     const {editorState, renderModal, isDragging, styles, setEditorRef} = this.props;
-    //console.log('es', Editor.getClipboard())
+    // console.log('es', Editor.getClipboard())
     return (
       <div className={css(styles.root)}>
         <Editor
@@ -187,9 +199,9 @@ const styleThunk = () => ({
     paddingLeft: '.5rem'
   },
   codeBlock: {
-    //overflowX: 'scroll'
-    //background: 'blue',
-    //whiteSpace: 'pre!important'
+    // overflowX: 'scroll'
+    // background: 'blue',
+    // whiteSpace: 'pre!important'
   }
 });
 

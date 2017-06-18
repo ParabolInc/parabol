@@ -11,7 +11,7 @@ export default async function resetMeeting(teamId) {
       const projects = await r.table('Project').getAll(teamId, {index: 'teamId'})
         .filter({status: DONE})
         .filter((project) => project('tags').contains('archived').not())
-        .pluck('id', 'content', 'tags')
+        .pluck('id', 'content', 'tags');
       const archivedProjects = projects.map((project) => {
         const contentState = convertFromRaw(JSON.parse(project.content));
         const nextContentState = addTagToProject(contentState, '#archived');
@@ -22,9 +22,9 @@ export default async function resetMeeting(teamId) {
           content: nextContentStr,
           tags: nextTags,
           id: project.id
-        }
+        };
       });
-      //const archivedProjectIds = projects.map((proj) => proj.id);
+      // const archivedProjectIds = projects.map((proj) => proj.id);
 
       await r.table('Team').get(teamId)
         .update({
@@ -40,8 +40,8 @@ export default async function resetMeeting(teamId) {
             return r.table('Project').update(project('id'), {
               content: project('content'),
               tags: project('tags')
-            })
-          })
+            });
+          });
         })
         .do(() => {
           // flag agenda items as inactive (more or less deleted)
@@ -51,7 +51,7 @@ export default async function resetMeeting(teamId) {
             });
         })
         .do(() => {
-          return r.table('')
+          return r.table('');
         })
         .do(() => {
           // shuffle the teamMember check in order, uncheck them in
@@ -60,12 +60,12 @@ export default async function resetMeeting(teamId) {
             .sample(100000)
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
-                return r.table('TeamMember').get(doc('id'))
+              return r.table('TeamMember').get(doc('id'))
                   .update({
                     checkInOrder: arr.offsetsOf(doc).nth(0),
                     isCheckedIn: null
                   });
-              })
+            })
             );
         });
       resolve();

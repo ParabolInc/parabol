@@ -9,11 +9,11 @@ const getAllEntities = (contentState) => {
       if (entityId) {
         entityIds.add(entityId);
       }
-    })
+    });
   });
   const entities = [];
   entityIds.forEach((id) => {
-    entities.push(contentState.getEntity(id))
+    entities.push(contentState.getEntity(id));
   });
   return entities;
 };

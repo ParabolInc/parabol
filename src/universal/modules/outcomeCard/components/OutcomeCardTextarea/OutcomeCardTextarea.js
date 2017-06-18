@@ -1,33 +1,33 @@
-//import {css} from 'aphrodite-local-styles/no-important';
-//import createEmojiPlugin from 'draft-js-emoji-plugin';
-//import 'draft-js-emoji-plugin/lib/plugin.css';
-//import createLinkifyPlugin from 'draft-js-linkify-plugin';
-//import 'draft-js-linkify-plugin/lib/plugin.css';
-//import createMarkdownShortcutsPlugin from 'draft-js-markdown-shortcuts-plugin';
-//import createMentionPlugin from 'draft-js-mention-plugin';
-//import 'draft-js-mention-plugin/lib/plugin.css';
+// import {css} from 'aphrodite-local-styles/no-important';
+// import createEmojiPlugin from 'draft-js-emoji-plugin';
+// import 'draft-js-emoji-plugin/lib/plugin.css';
+// import createLinkifyPlugin from 'draft-js-linkify-plugin';
+// import 'draft-js-linkify-plugin/lib/plugin.css';
+// import createMarkdownShortcutsPlugin from 'draft-js-markdown-shortcuts-plugin';
+// import createMentionPlugin from 'draft-js-mention-plugin';
+// import 'draft-js-mention-plugin/lib/plugin.css';
 //
-//import {fromJS} from 'immutable';
-//import PropTypes from 'prop-types';
-//import React, {Component} from 'react';
-//import TagSuggestion from 'universal/components/TagSuggestion/TagSuggestion';
-//import appTheme from 'universal/styles/theme/appTheme';
-//import ui from 'universal/styles/ui';
-//import withStyles from 'universal/styles/withStyles';
-//import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
+// import {fromJS} from 'immutable';
+// import PropTypes from 'prop-types';
+// import React, {Component} from 'react';
+// import TagSuggestion from 'universal/components/TagSuggestion/TagSuggestion';
+// import appTheme from 'universal/styles/theme/appTheme';
+// import ui from 'universal/styles/ui';
+// import withStyles from 'universal/styles/withStyles';
+// import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
 //
-////const immutableTags = fromJS(tags);
+// //const immutableTags = fromJS(tags);
 //
-////const tagSuggestionFilter = (searchValue, suggestions) => {
-////  const value = searchValue.toLowerCase();
-////  const filteredSuggestions = suggestions.filter((suggestion) => (
-////    !value || suggestion.get('name').toLowerCase().startsWith(value)
-////  ));
-////  const size = filteredSuggestions.size < 5 ? filteredSuggestions.size : 5;
-////  return filteredSuggestions.setSize(size);
-////};
+// //const tagSuggestionFilter = (searchValue, suggestions) => {
+// //  const value = searchValue.toLowerCase();
+// //  const filteredSuggestions = suggestions.filter((suggestion) => (
+// //    !value || suggestion.get('name').toLowerCase().startsWith(value)
+// //  ));
+// //  const size = filteredSuggestions.size < 5 ? filteredSuggestions.size : 5;
+// //  return filteredSuggestions.setSize(size);
+// //};
 //
-//class OutcomeCardTextArea extends Component {
+// class OutcomeCardTextArea extends Component {
 //  static propTypes = {
 //    cardHasHover: PropTypes.bool,
 //    content: PropTypes.string,
@@ -67,12 +67,12 @@
 //        />
 //    )
 //  }
-//}
+// }
 //
-//// const basePadding = '.375rem';
-//// const labelHeight = '1.5rem';
+// // const basePadding = '.375rem';
+// // const labelHeight = '1.5rem';
 //
-//const baseStyles = {
+// const baseStyles = {
 //  backgroundColor: 'transparent',
 //  border: 0,
 //  boxShadow: 'none',
@@ -83,32 +83,32 @@
 //  outline: 'none',
 //  resize: 'none',
 //  width: '100%'
-//};
+// };
 //
-//const contentBase = {
+// const contentBase = {
 //  ...baseStyles,
 //  borderBottom: '1px solid transparent',
 //  borderTop: '1px solid transparent',
 //  color: appTheme.palette.dark10d
-//};
+// };
 //
-//const contentFA = {
+// const contentFA = {
 //  backgroundColor: appTheme.palette.mid10l,
 //  borderBottomColor: ui.cardBorderColor,
 //  borderTopColor: ui.cardBorderColor,
 //  color: appTheme.palette.mid10d
-//};
+// };
 //
-//const contentPrivateFA = {
+// const contentPrivateFA = {
 //  backgroundColor: ui.privateCardBgActive,
 //  borderBottomColor: ui.cardBorderColor,
 //  borderTopColor: ui.cardBorderColor,
 //  color: appTheme.palette.mid10d
-//};
+// };
 //
-//const descriptionBreakpoint = '@media (min-width: 90rem)';
+// const descriptionBreakpoint = '@media (min-width: 90rem)';
 //
-//const styleThunk = () => ({
+// const styleThunk = () => ({
 //  content: {
 //    ...contentBase,
 //    padding: `0 ${ui.cardPaddingBase} .1875rem`,
@@ -165,6 +165,6 @@
 //  markdown: {
 //    wordBreak: 'break-word'
 //  }
-//});
+// });
 //
-//export default withStyles(styleThunk)(OutcomeCardTextArea);
+// export default withStyles(styleThunk)(OutcomeCardTextArea);

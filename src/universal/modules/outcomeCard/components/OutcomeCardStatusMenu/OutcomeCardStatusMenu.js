@@ -118,6 +118,7 @@ const OutcomeCardStatusMenu = (props) => {
 };
 
 OutcomeCardStatusMenu.propTypes = {
+  editorState: PropTypes.object,
   outcome: PropTypes.object,
   isAgenda: PropTypes.bool,
   onComplete: PropTypes.func,

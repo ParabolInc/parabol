@@ -7,9 +7,20 @@ import resolvers from 'universal/components/ProjectEditor/resolvers';
 import getAnchorLocation from './getAnchorLocation';
 import stringScore from 'string-score';
 import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types';
 
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
+    static propTypes = {
+      handleUpArrow: PropTypes.func,
+      handleDownArrow: PropTypes.func,
+      editorState: PropTypes.object.isRequired,
+      handleTab: PropTypes.func,
+      handleReturn: PropTypes.func,
+      handleChange: PropTypes.func,
+      setEditorState: PropTypes.func.isRequired
+    };
+
     state = {};
 
     handleUpArrow = (e) => {
@@ -33,7 +44,7 @@ const withSuggestions = (ComposedComponent) => {
       const {active, suggestions} = this.state;
       this.setState({
         active: Math.min(active + 1, suggestions.length - 1)
-      })
+      });
     };
 
 
@@ -47,11 +58,11 @@ const withSuggestions = (ComposedComponent) => {
         setEditorState(completeEntity(editorState, 'TAG', {value: name}, `#${name}`));
       } else if (suggestionType === 'emoji') {
         const unicode = item.emoji;
-        setEditorState(autoCompleteEmoji(editorState, unicode))
+        setEditorState(autoCompleteEmoji(editorState, unicode));
       } else if (suggestionType === 'mention') {
         // team is derived from the project itself, so userId is the real useful thing here
         const [userId] = item.id;
-        setEditorState(completeEntity(editorState, 'MENTION', {userId}, item.preferredName))
+        setEditorState(completeEntity(editorState, 'MENTION', {userId}, item.preferredName));
       }
       this.removeModal();
     };
@@ -104,10 +115,13 @@ const withSuggestions = (ComposedComponent) => {
       if (!query) {
         return teamMembers.slice(0, 6);
       }
-      return teamMembers.map((teamMember) => ({
-        ...teamMember,
-        score: stringScore(teamMember.preferredName, query)
-      }))
+      return teamMembers.map((teamMember) => {
+        const score = stringScore(teamMember.preferredName, query);
+        return {
+          ...teamMember,
+          score
+        };
+      })
         .sort((a, b) => a.score < b.score ? 1 : -1)
         .slice(0, 6)
         .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
@@ -116,16 +130,15 @@ const withSuggestions = (ComposedComponent) => {
     resolver = (resolveType) => {
       if (resolveType !== 'mention') {
         return resolvers[resolveType];
-      } else {
-        return this.resolveMentions;
       }
+      return this.resolveMentions;
     };
 
     makeSuggestions = async (query, resolveType) => {
       // setState before promise so we can add a spinner to the component
-      //this.setState({
+      // this.setState({
       //  suggestionType: resolveType,
-      //});
+      // });
       const resolve = this.resolver(resolveType);
       const suggestions = await resolve(query);
       if (suggestions.length > 0) {
@@ -152,7 +165,7 @@ const withSuggestions = (ComposedComponent) => {
       const inASuggestion = word && !entityKey && this.checkForSuggestions(word);
       const {suggestionType} = this.state;
       if (!inASuggestion && suggestionType) {
-        this.removeModal()
+        this.removeModal();
       }
     }
 
@@ -183,16 +196,16 @@ const withSuggestions = (ComposedComponent) => {
           removeModal={this.removeModal}
           handleSelect={this.handleSelect}
         />
-      )
+      );
     };
 
     render() {
       const modalProps = this.initialize();
-      return <ComposedComponent
+      return (<ComposedComponent
         {...this.props}
         {...modalProps}
         handleChange={this.handleChange}
-      />;
+      />);
     }
   }
   return WithSuggestions;

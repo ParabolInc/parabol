@@ -65,7 +65,7 @@ PlainInputField.propTypes = {
     'warm',
     'white'
   ]),
-  meta: PropTypes.object.isRequired,
+  meta: PropTypes.object.isRequired
 };
 
 // const boxShadow = 'inset 0 0 1px rgba(0, 0, 0, .5)';

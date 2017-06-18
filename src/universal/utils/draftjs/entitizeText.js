@@ -13,7 +13,8 @@ const entitizeText = (contentState, selectionState) => {
     const currentStart = anchorKey === currentKey ? anchorOffset : 0;
     const currentEnd = focusKey === currentKey ? focusOffset : currentBlock.getLength();
     const blockText = currentBlock.getText().slice(currentStart, currentEnd);
-    textTags.forEach((tag) => {
+    for (let i = 0; i < textTags.length; i++) {
+      const tag = textTags[i];
       const startIdx = blockText.indexOf(tag);
       if (startIdx !== -1) {
         const contentStateWithEntity = cs.createEntity('TAG', 'IMMUTABLE', {value: tag.slice(1)});
@@ -29,14 +30,15 @@ const entitizeText = (contentState, selectionState) => {
           entityKey
         );
       }
-    });
+    }
     if (focusKey === currentKey) {
       return contentState === cs ? null : cs.merge({
         selectionAfter: contentState.getSelectionAfter()
-      })
+      });
     }
     currentKey = contentState.getKeyAfter(currentKey);
   }
+  return undefined;
 };
 
 export default entitizeText;

@@ -8,7 +8,7 @@ console.error = jest.fn();
 
 // https://github.com/Khan/aphrodite/issues/62
 afterEach(() => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
     return process.nextTick(resolve);
   });
@@ -39,7 +39,7 @@ class EditorProps {
 describe('ProjectEditor', () => {
   test('gains focus when clicked', () => {
     const props = new EditorProps();
-    const component = <ProjectEditor {...props}/>;
+    const component = <ProjectEditor {...props} />;
     const wrapper = mount(component);
     wrapper
       .find('.public-DraftEditor-content')
@@ -49,7 +49,7 @@ describe('ProjectEditor', () => {
     expect(props.editorState.getCurrentContent().getPlainText()).toEqual('S');
     expect(props.editorRef).toBeDefined();
   });
-  //test.only('open suggestions when triggered by #', () => {
+  // test.only('open suggestions when triggered by #', () => {
   //  const props = new EditorProps();
   //  const component = <ProjectEditor {...props}/>;
   //  const wrapper = mount(component);
@@ -63,5 +63,5 @@ describe('ProjectEditor', () => {
   //  console.log('wra', wrapper2.html())
   //  //expect(props.editorState.getCurrentContent().getPlainText()).toEqual('S');
   //  expect(wrapper2.prop('renderModal')).toBeDefined();
-  //});
-})
+  // });
+});

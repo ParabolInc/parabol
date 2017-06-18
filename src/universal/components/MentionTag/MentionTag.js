@@ -22,7 +22,7 @@ MentionTag.propTypes = {
   active: PropTypes.bool,
   description: PropTypes.string,
   styles: PropTypes.object,
-  value: PropTypes.string
+  name: PropTypes.string
 };
 
 const styleThunk = () => ({

@@ -17,12 +17,12 @@ const options = {
 
 exports.up = async (r) => {
   const dom = new jsdom.JSDOM('');
-  global.window = dom.window
-  global.document = dom.window.document
-  global.navigator = dom.window.navigator
-  global.HTMLElement = dom.window.HTMLElement
-  global.HTMLAnchorElement = dom.window.HTMLAnchorElement
-  global.HTMLImageElement = dom.window.HTMLImageElement
+  global.window = dom.window;
+  global.document = dom.window.document;
+  global.navigator = dom.window.navigator;
+  global.HTMLElement = dom.window.HTMLElement;
+  global.HTMLAnchorElement = dom.window.HTMLAnchorElement;
+  global.HTMLImageElement = dom.window.HTMLImageElement;
 
   const md = new MarkdownIt(options);
   md.use(emoji);
@@ -47,24 +47,23 @@ exports.up = async (r) => {
     const tags = getTagsFromEntityMap(raw.entityMap);
     const rawString = JSON.stringify(raw);
     return r.table('Project').get(project.id).update({content: rawString, tags}).run();
-
   });
   try {
     await Promise.all(projects);
   } catch (e) {
-    console.log('ERR', e)
+    console.log('ERR', e);
   }
 };
 
 exports.down = async (r) => {
   // untested
   const dom = new jsdom.JSDOM('');
-  global.window = dom.window
-  global.document = dom.window.document
-  global.navigator = dom.window.navigator
-  global.HTMLElement = dom.window.HTMLElement
-  global.HTMLAnchorElement = dom.window.HTMLAnchorElement
-  global.HTMLImageElement = dom.window.HTMLImageElement
+  global.window = dom.window;
+  global.document = dom.window.document;
+  global.navigator = dom.window.navigator;
+  global.HTMLElement = dom.window.HTMLElement;
+  global.HTMLAnchorElement = dom.window.HTMLAnchorElement;
+  global.HTMLImageElement = dom.window.HTMLImageElement;
 
   const projects = await r.table('Project').pluck('id', 'content');
   projects.map((project) => {

@@ -63,7 +63,7 @@ const extractStyle = (editorState, getNextState, style, blockKey, extractedStyle
     });
     return EditorState.push(es, markdownedContent, 'change-inline-style');
   }
-  return editorState
+  return editorState;
 };
 
 const extractMarkdownStyles = (editorState, getNextState, blockKey) => {
@@ -83,22 +83,25 @@ const extractMarkdownStyles = (editorState, getNextState, blockKey) => {
       inlineStyleOverride: OrderedSet()
     });
   }
-}
+  return undefined;
+};
 
 const doUndo = (editorState, count) => {
   const nextEditorState = EditorState.undo(editorState);
   return count === 1 ? nextEditorState : doUndo(nextEditorState, count - 1);
-}
+};
 
 const withMarkdown = (ComposedComponent) => {
   return class WithMarkdown extends Component {
     static propTypes = {
-      removeModal: PropTypes.func,
-      renderModal: PropTypes.func,
+      editorState: PropTypes.object.isRequired,
       handleBeforeInput: PropTypes.func,
       handleChange: PropTypes.func,
       handleKeyCommand: PropTypes.func,
-      keyBindingFn: PropTypes.func
+      keyBindingFn: PropTypes.func,
+      removeModal: PropTypes.func,
+      renderModal: PropTypes.func,
+      setEditorState: PropTypes.func.isRequired
     };
 
     state = {};
@@ -177,9 +180,9 @@ const withMarkdown = (ComposedComponent) => {
       const preSplitES = addWhiteSpace(editorState);
       const startingEditorState = EditorState.set(preSplitES, {
         selection: editorState.getSelection()
-        //currentContent: preSplitES.getCurrentContent().merge({
+        // currentContent: preSplitES.getCurrentContent().merge({
         //  selectionAfter: editorState.getSelection()
-        //})
+        // })
       });
       const contentState = startingEditorState.getCurrentContent();
       const selectionState = startingEditorState.getSelection();
@@ -272,6 +275,7 @@ const withMarkdown = (ComposedComponent) => {
         this.undoMarkdown = undefined;
         return 'handled';
       }
+      return undefined;
     };
 
     keyBindingFn = (e) => {
@@ -302,9 +306,8 @@ const withMarkdown = (ComposedComponent) => {
           setEditorState(updatedEditorState);
           return 'handled';
         }
-
-        return undefined;
       }
+      return undefined;
     };
 
     handleChange = (editorState) => {
@@ -316,15 +319,15 @@ const withMarkdown = (ComposedComponent) => {
     };
 
     render() {
-      return <ComposedComponent
+      return (<ComposedComponent
         {...this.props}
         handleBeforeInput={this.handleBeforeInput}
         handleChange={this.handleChange}
         handleKeyCommand={this.handleKeyCommand}
         keyBindingFn={this.keyBindingFn}
-      />;
+      />);
     }
-  }
+  };
 };
 
 export default withMarkdown;

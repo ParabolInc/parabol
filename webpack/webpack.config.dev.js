@@ -94,7 +94,7 @@ export default {
         test: /auth0-lock\/.*\.ejs$/,
         loader: 'transform-loader/cacheable?ejsify'
       },
-      { test: /\.css$/, loader: "style-loader!css-loader" }
+      { test: /\.css$/, loader: 'style-loader!css-loader' }
     ]
   }
 };

@@ -12,6 +12,7 @@ import linkify from 'universal/utils/linkify';
 import shouldValidate from 'universal/validation/shouldValidate';
 import changerValidation from './changerValidation';
 import {EditorState} from 'draft-js';
+import PropTypes from 'prop-types';
 
 const validate = (values) => {
   const schema = changerValidation();
@@ -19,9 +20,6 @@ const validate = (values) => {
 };
 
 class EditorLinkChanger extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   onSubmit = (submissionData) => {
     const {editorState, editorRef, removeModal, selectionState, setEditorState} = this.props;
@@ -31,7 +29,7 @@ class EditorLinkChanger extends Component {
     removeModal(true);
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState);
     const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text);
-    setEditorState(nextEditorState)
+    setEditorState(nextEditorState);
     setTimeout(() => editorRef.focus(), 0);
   };
 
@@ -95,10 +93,27 @@ class EditorLinkChanger extends Component {
           </div>
         </form>
       </div>
-    )
+    );
   }
 }
-;
+
+EditorLinkChanger.propTypes = {
+  addHyperlink: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  href: PropTypes.string,
+  editorRef: PropTypes.any,
+  editorState: PropTypes.object,
+  isClosing: PropTypes.bool,
+  left: PropTypes.number,
+  removeModal: PropTypes.func.isRequired,
+  selectionState: PropTypes.object.isRequired,
+  setEditorState: PropTypes.func.isRequired,
+  setRef: PropTypes.func,
+  styles: PropTypes.object,
+  text: PropTypes.string,
+  top: PropTypes.number,
+  valid: PropTypes.bool
+};
 
 const animateIn = {
   '0%': {
@@ -174,4 +189,4 @@ export default portal({closeAfter: 100})(
       withStyles(styleThunk)(EditorLinkChanger)
     )
   )
-)
+);

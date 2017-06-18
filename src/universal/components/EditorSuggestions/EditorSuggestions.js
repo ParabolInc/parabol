@@ -1,13 +1,14 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import React, {Component} from 'react';
+import React from 'react';
 import portal from 'react-portal-hoc';
 import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
 import MentionTag from 'universal/components/MentionTag/MentionTag';
+import MentionUser from 'universal/components/MentionUser/MentionUser';
+import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import MentionUser from 'universal/components/MentionUser/MentionUser';
-import boundedModal from 'universal/decorators/boundedModal/boundedModal';
+import PropTypes from 'prop-types';
 
 const dontTellDraft = (e) => {
   e.preventDefault();
@@ -19,46 +20,55 @@ const suggestionTypes = {
   mention: MentionUser
 };
 
-class EditorSuggestions extends Component {
+const EditorSuggestions = (props) => {
+  const {
+    active,
+    handleSelect,
+    isClosing,
+    left,
+    setRef,
+    styles,
+    suggestions,
+    suggestionType,
+    top
+  } = props;
 
-  render() {
-    const {
-      isClosing,
-      active,
-      handleSelect,
-      suggestions,
-      suggestionType,
-      top,
-      left,
-      setRef,
-      styles
-    } = this.props;
+  const SuggestionItem = suggestionTypes[suggestionType];
 
-    const SuggestionItem = suggestionTypes[suggestionType];
+  const menuStyle = {
+    left,
+    top,
+    position: 'absolute'
+  };
 
-    const menuStyle = {
-      left,
-      top,
-      position: 'absolute'
-    };
+  const menuStyles = css(
+    styles.mentionMenu,
+    isClosing && styles.closing
+  );
 
-    const menuStyles = css(
-      styles.mentionMenu,
-      isClosing && styles.closing
-    );
+  return (
+    <div style={menuStyle} className={menuStyles} ref={setRef}>
+      {suggestions.map((suggestion, idx) => {
+        return (
+          <div key={suggestion.id} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
+            <SuggestionItem active={active === idx} {...suggestion} />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
-    return (
-      <div style={menuStyle} className={menuStyles} ref={setRef}>
-        {suggestions.map((suggestion, idx) => {
-          return (
-            <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
-              <SuggestionItem active={active === idx} {...suggestion}/>
-            </div>
-          )
-        })}
-      </div>
-    )
-  }
+EditorSuggestions.propTypes = {
+  active: PropTypes.bool,
+  handleSelect: PropTypes.func.isRequired,
+  isClosing: PropTypes.bool,
+  left: PropTypes.number,
+  setRef: PropTypes.func,
+  styles: PropTypes.object,
+  suggestions: PropTypes.array,
+  suggestionType: PropTypes.string,
+  top: PropTypes.number
 };
 
 const animateIn = {
@@ -125,4 +135,4 @@ const styleThunk = (theme, props) => ({
 
 export default portal({closeAfter: 100})(
   boundedModal(withStyles(styleThunk)(EditorSuggestions))
-)
+);

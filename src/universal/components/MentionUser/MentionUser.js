@@ -21,7 +21,8 @@ const MentionUser = (props) => {
 
 MentionUser.propTypes = {
   active: PropTypes.bool,
-  description: PropTypes.string,
+  picture: PropTypes.string.isRequired,
+  preferredName: PropTypes.string.isRequired,
   styles: PropTypes.object
 };
 

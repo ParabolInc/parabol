@@ -1,4 +1,5 @@
 import ui from 'universal/styles/ui';
+
 const mentionBaseStyles = {
   row: {
     alignItems: 'center',

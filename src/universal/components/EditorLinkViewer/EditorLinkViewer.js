@@ -10,9 +10,10 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import boundedModal from 'universal/decorators/boundedModal/boundedModal';
+import PropTypes from 'prop-types';
 
 const dontTellDraft = (e) => {
-  e.preventDefault()
+  e.preventDefault();
   e.stopPropagation();
 };
 
@@ -22,14 +23,13 @@ class EditorLinkViewer extends Component {
     const {
       left,
       top,
+      href,
       isClosing,
-      linkData,
       styles,
       addHyperlink,
       setRef
     } = this.props;
 
-    const {href} = linkData;
     const linkViewer = {
       left,
       top,
@@ -40,7 +40,7 @@ class EditorLinkViewer extends Component {
       isClosing && styles.closing
     );
 
-    const removeLink = (e) => {
+    const removeLink = () => {
       const {editorState, setEditorState, removeModal} = this.props;
       const {block, anchorOffset} = getAnchorLocation(editorState);
       const blockText = block.getText();
@@ -49,22 +49,35 @@ class EditorLinkViewer extends Component {
       removeModal();
     };
 
-    const changeLink = (e) => {
+    const changeLink = () => {
       addHyperlink();
     };
 
     return (
       <div style={linkViewer} className={menuStyles} onMouseDown={dontTellDraft} ref={setRef}>
-      <span className={css(styles.url)}>
-        <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
-      </span>
-        <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Change" onClick={changeLink}/>
-        <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Remove" onClick={removeLink}/>
+        <span className={css(styles.url)}>
+          <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
+        </span>
+        <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Change" onClick={changeLink} />
+        <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Remove" onClick={removeLink} />
       </div>
-    )
+    );
   }
+}
 
+EditorLinkViewer.propTypes = {
+  addHyperlink: PropTypes.func.isRequired,
+  href: PropTypes.string,
+  editorState: PropTypes.object,
+  isClosing: PropTypes.bool,
+  left: PropTypes.number,
+  removeModal: PropTypes.func.isRequired,
+  setEditorState: PropTypes.func.isRequired,
+  setRef: PropTypes.func,
+  styles: PropTypes.object,
+  top: PropTypes.number
 };
+
 
 const animateIn = {
   '0%': {
@@ -133,4 +146,4 @@ export default portal({closeAfter: 100})(
   boundedModal(
     withStyles(styleThunk)(EditorLinkViewer)
   )
-)
+);

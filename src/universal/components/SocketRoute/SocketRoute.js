@@ -10,7 +10,7 @@ import withReducer from '../../decorators/withReducer/withReducer';
 import withAsync from 'react-async-hoc';
 
 const parentMod = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
-const meetingMod = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer')
+const meetingMod = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer');
 
 class SocketRoute extends Component {
   shouldComponentUpdate() {
@@ -30,7 +30,7 @@ class SocketRoute extends Component {
       </Switch>
     );
   }
-};
+}
 
 
 SocketRoute.propTypes = {

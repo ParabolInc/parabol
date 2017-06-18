@@ -4,7 +4,6 @@ import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import {textOverflow} from 'universal/styles/helpers';
 
 const MenuItem = (props) => {
