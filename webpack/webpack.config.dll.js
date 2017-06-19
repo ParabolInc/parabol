@@ -23,7 +23,6 @@ module.exports = {
       'react-dnd-html5-backend',
       'react-dom',
       'react-fontawesome',
-      'react-githubish-mentions',
       'react-helmet',
       'react-hotkey-hoc',
       'react-notification-system',
