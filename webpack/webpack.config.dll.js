@@ -23,7 +23,6 @@ module.exports = {
       'react-dnd-html5-backend',
       'react-dom',
       'react-fontawesome',
-      'react-githubish-mentions',
       'react-helmet',
       'react-hotkey-hoc',
       'react-notification-system',
@@ -53,7 +52,7 @@ module.exports = {
     library: '[name]'
   },
   plugins: [
-    new webpack.DllPlugin({ name: '[name]', path: path.join(root, 'dll', '[name].json') }) // eslint-disable-line no-new
+    new webpack.DllPlugin({name: '[name]', path: path.join(root, 'dll', '[name].json')}) // eslint-disable-line no-new
   ],
   module: {
     loaders: [

@@ -7,11 +7,14 @@ export default function makeFieldColorPalette(colorPalette, palettes = fieldColo
   return {
     backgroundColor: palettes[colorPalette].backgroundColor,
     borderColor: palettes[colorPalette].borderColor,
+    borderRadius: ui.fieldBaseStyles.borderRadius,
     color: palettes[colorPalette].color,
     ...palettes[colorPalette].placeholder,
+
     '::selection': {
       backgroundColor: palettes[colorPalette].selection
     },
+
     ':focus': {
       borderColor: palettes[colorPalette].focusBorderColor,
       boxShadow: ui.fieldFocusBoxShadow,

@@ -84,8 +84,8 @@ const transitionSlowest = '3200ms ease-in';
 
 // Shadows
 const shadow = [
-  '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-  '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+  '0 2px 2px rgba(0, 0, 0, .2), 0 1px 1px rgba(0, 0, 0, .2), 0 0 1px rgba(0, 0, 0, .35)',
+  '0 4px 4px rgba(0, 0, 0, .2), 0 2px 2px rgba(0, 0, 0, .2), 0 0 2px rgba(0, 0, 0, .35)',
   '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
   '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
   '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)'
@@ -195,7 +195,13 @@ const ui = {
     [BUTTON_SIZE_LARGEST]: iconSize2x
   },
   buttonLineHeight: '1.5em !important', // 2.5em
-  buttonPadding: '.25em 1em',
+  buttonPadding: {
+    [BUTTON_SIZE_SMALLEST]: '.322em 1em',
+    [BUTTON_SIZE_SMALL]: '.25em 1em',
+    [BUTTON_SIZE_MEDIUM]: '.25em 1em',
+    [BUTTON_SIZE_LARGE]: '.25em 1em',
+    [BUTTON_SIZE_LARGEST]: '.25em 1em'
+  },
   buttonPaddingHorizontalCompact: BUTTON_PADDING_HORIZONTAL_COMPACT,
   buttonSizes: [
     BUTTON_SIZE_SMALLEST,
@@ -244,7 +250,7 @@ const ui = {
   dashSectionHeaderLineHeight: '2rem',
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
-
+  draftModalMargin: 32,
   // Email
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
@@ -290,6 +296,14 @@ const ui = {
       focusBorderColor: appTheme.palette.mid80l,
       placeholder: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR),
       selection: appTheme.palette.mid20l
+    },
+    link: {
+      backgroundColor: appTheme.palette.mid10l,
+      borderColor: appTheme.palette.mid40l,
+      color: appTheme.palette.cool,
+      focusBorderColor: appTheme.palette.mid80l,
+      placeholder: makePlaceholderStyles(appTheme.palette.cool70l),
+      selection: appTheme.palette.cool20l
     },
     warm: {
       backgroundColor: appTheme.palette.warm10l,
@@ -352,13 +366,19 @@ const ui = {
 
   // Menus
   // ---------------------------------------------------------------------------
-  menuBackgroundColor: '#fff' || backgroundColor,
+  menuBackgroundColor: '#fff',
   menuBorderColor: appTheme.palette.mid30l,
+  menuBorderRadius: borderRadiusSmall,
   menuBoxShadow: shadow[1],
-  menuGutterHorizontal: '.75rem',
-  menuGutterVertical: '.375rem',
-  menuItemPaddingHorizontal: '.75rem',
-  menuItemPaddingVertical: '.25rem',
+  menuGutterHorizontal: '1rem',
+  menuGutterInner: '.75rem',
+  menuGutterVertical: '.5rem',
+  menuItemBackgroundColorHover: appTheme.palette.mid10l,
+  menuItemBackgroundColorActive: appTheme.palette.mid20l,
+  menuItemColor: appTheme.palette.dark,
+  menuItemColorHoverActive: appTheme.palette.dark50d,
+  menuItemHeight: '2rem',
+  menuItemFontSize: '.9375rem',
   zMenu: zIndexScale(4),
 
   // Modals

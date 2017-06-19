@@ -9,6 +9,7 @@ import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
 import updateProject from 'server/graphql/models/Project/updateProject/updateProject';
 import {DONE} from 'universal/utils/constants';
+import convertToRichText from 'server/__tests__/setup/convertToRichText';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -54,7 +55,7 @@ describe('updateProject', () => {
     // TEST
     const updatedProject = {
       id: projectId,
-      content: 'Updated content'
+      content: convertToRichText('Updated content')
     };
     await updateProject.resolve(undefined, {updatedProject}, {authToken, socket});
 
@@ -110,7 +111,7 @@ describe('updateProject', () => {
     // TEST
     const updatedProject = {
       id: projectId,
-      content: 'Updated content'
+      content: convertToRichText('Updated content')
     };
     await updateProject.resolve(undefined, {updatedProject}, {authToken, socket});
 

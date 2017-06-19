@@ -1,10 +1,29 @@
+import {convertFromRaw, convertToRaw} from 'draft-js';
 import getRethink from 'server/database/rethinkDriver';
 import {DONE, LOBBY} from 'universal/utils/constants';
+import addTagToProject from 'universal/utils/draftjs/addTagToProject';
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 export default async function resetMeeting(teamId) {
   return new Promise((resolve) => {
     setTimeout(async () => {
       const r = getRethink();
+      const projects = await r.table('Project').getAll(teamId, {index: 'teamId'})
+        .filter({status: DONE})
+        .filter((project) => project('tags').contains('archived').not())
+        .pluck('id', 'content', 'tags');
+      const archivedProjects = projects.map((project) => {
+        const contentState = convertFromRaw(JSON.parse(project.content));
+        const nextContentState = addTagToProject(contentState, '#archived');
+        const raw = convertToRaw(nextContentState);
+        const nextTags = getTagsFromEntityMap(raw.entityMap);
+        const nextContentStr = JSON.stringify(raw);
+        return {
+          content: nextContentStr,
+          tags: nextTags,
+          id: project.id
+        };
+      });
       await r.table('Team').get(teamId)
         .update({
           facilitatorPhase: LOBBY,
@@ -15,21 +34,21 @@ export default async function resetMeeting(teamId) {
           activeFacilitator: null
         })
         .do(() => {
+          return r.expr(archivedProjects).forEach((project) => {
+            return r.table('Project')
+              .get(project('id'))
+              .update({
+                content: project('content'),
+                tags: project('tags')
+              });
+          });
+        })
+        .do(() => {
           // flag agenda items as inactive (more or less deleted)
           return r.table('AgendaItem').getAll(teamId, {index: 'teamId'})
             .update({
               isActive: false
             });
-        })
-        .do(() => {
-          // archive projects that are DONE
-          return r.table('Project').getAll(teamId, {index: 'teamId'})
-            .filter({status: DONE})
-            .filter((project) => project('tags').contains('#archived').not())
-            .update((project) => ({
-              tags: project('tags').append('#archived'),
-              content: project('content').add(' #archived')
-            }));
         })
         .do(() => {
           // shuffle the teamMember check in order, uncheck them in

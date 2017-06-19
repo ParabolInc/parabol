@@ -114,8 +114,7 @@ const styleThunk = (theme, {maxHeight}) => ({
 
   menu: {
     backgroundColor: ui.menuBackgroundColor,
-    border: `1px solid ${ui.menuBorderColor}`,
-    borderRadius: '.25rem',
+    borderRadius: ui.menuBorderRadius,
     maxHeight: maxHeight || '10rem',
     outline: 0,
     overflowY: 'auto',
@@ -128,12 +127,12 @@ const styleThunk = (theme, {maxHeight}) => ({
   label: {
     ...textOverflow,
     borderBottom: `1px solid ${appTheme.palette.mid30l}`,
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
+    color: ui.palette.dark,
+    fontSize: ui.menuItemFontSize,
     fontWeight: 700,
-    lineHeight: '1.5rem',
+    lineHeight: ui.menuItemHeight,
     marginBottom: ui.menuGutterVertical,
-    padding: `0 ${ui.menuGutterHorizontal} ${ui.menuGutterVertical}`
+    padding: `0 ${ui.menuGutterHorizontal}`
   },
 
   spinner: {

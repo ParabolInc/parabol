@@ -1,31 +1,41 @@
 import shortid from 'shortid';
 import getRethink from '../../../../database/rethinkDriver';
 import {ACTIVE, FUTURE} from '../../../../../universal/utils/constants';
+import {ContentState, convertToRaw} from 'draft-js';
+
+const removeSpaces = (str) => str.split(/\s/).filter((s) => s.length).join(' ');
+
+const convertToRawDraftJSON = (spacedText) => {
+  const text = removeSpaces(spacedText);
+  const contentState = ContentState.createFromText(text);
+  const raw = convertToRaw(contentState);
+  return JSON.stringify(raw);
+};
 
 const SEED_PROJECTS = [
   {
     status: ACTIVE,
     sortOrder: 0,
-    content: `
+    content: convertToRawDraftJSON(`
       Invite any missing team members to join the team. Tap on ‘Team Settings’
       in the dashboard header above.
-    `.split(/\s/).filter((s) => s.length).join(' ')
+    `)
   },
   {
     status: ACTIVE,
     sortOrder: 1,
-    content: `
+    content: convertToRawDraftJSON(`
       Try a test run of an Action Meeting. Tap on ‘Meeting Lobby’ in
       the dashboard header above.
-    `.split(/\s/).filter((s) => s.length).join(' ')
+    `)
   },
   {
     status: FUTURE,
     sortOrder: 0,
-    content: `
+    content: convertToRawDraftJSON(`
       Make good teaming a habit! Schedule a weekly Action Meeting with your
       team. Pro-tip: include a link to the meeting lobby.
-    `.split(/\s/).filter((s) => s.length).join(' ')
+    `)
   }
 ];
 

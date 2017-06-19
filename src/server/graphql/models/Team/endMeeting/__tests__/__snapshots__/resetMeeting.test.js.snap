@@ -4,7 +4,7 @@ exports[`resetMeeting resets the meeting state back to the lobby after the meeti
 Object {
   "agendaItem": Array [
     Object {
-      "content": "Test Agenda Item[2]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 3,
       "id": 0,
@@ -16,7 +16,7 @@ Object {
       "updatedAt": 2017-01-01T06:59:59.998Z,
     },
     Object {
-      "content": "Test Agenda Item[1]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 1,
@@ -28,7 +28,7 @@ Object {
       "updatedAt": 2017-01-01T06:59:59.999Z,
     },
     Object {
-      "content": "Test Agenda Item[0]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 5,
       "id": 2,
@@ -43,13 +43,13 @@ Object {
   "project": Array [
     Object {
       "agendaId": 2,
-      "content": "Test Project[0]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 5,
       "id": 10,
       "status": "active",
       "tags": Array [
-        "#private",
+        "private",
       ],
       "teamId": 6,
       "teamMemberId": 9,
@@ -58,7 +58,7 @@ Object {
     },
     Object {
       "agendaId": 1,
-      "content": "Test Project[1]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 11,
@@ -70,13 +70,13 @@ Object {
     },
     Object {
       "agendaId": 0,
-      "content": "Test Project[2]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 3,
       "id": 12,
       "status": "active",
       "tags": Array [
-        "#private",
+        "private",
       ],
       "teamId": 6,
       "teamMemberId": 7,
@@ -85,7 +85,7 @@ Object {
     },
     Object {
       "agendaId": 0,
-      "content": "Test Project[3]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.996Z,
       "createdBy": 3,
       "id": 13,

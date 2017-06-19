@@ -1,1 +1,1 @@
-export default (tags) => tags.includes('#private');
+export default (tags) => tags.includes('private');

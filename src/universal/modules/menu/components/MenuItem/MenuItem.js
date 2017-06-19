@@ -3,9 +3,7 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import tinycolor from 'tinycolor2';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import {textOverflow} from 'universal/styles/helpers';
 
 const MenuItem = (props) => {
@@ -37,11 +35,10 @@ const MenuItem = (props) => {
   const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
   const titleStr = title || titleFallbackStr;
   const iconStyle = {
-    color: appTheme.palette.mid,
     fontSize: ui.iconSize,
     lineHeight: 'inherit',
     marginLeft: ui.menuGutterHorizontal,
-    marginRight: '.375rem',
+    marginRight: ui.menuGutterInner,
     textAlign: 'center',
     width: '1.25rem'
   };
@@ -72,15 +69,14 @@ MenuItem.propTypes = {
   title: PropTypes.string
 };
 
-const activeBackgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 85).toHexString();
 const hoverFocusStyles = {
-  backgroundColor: appTheme.palette.mid10l,
-  // for the blue focus outline
+  backgroundColor: ui.menuItemBackgroundColorHover,
+  color: ui.menuItemColorHoverActive,
   outline: 0
 };
+
 const activeHoverFocusStyles = {
-  backgroundColor: activeBackgroundColor,
-  styles: PropTypes.object
+  backgroundColor: ui.menuItemBackgroundColorActive
 };
 
 
@@ -88,6 +84,7 @@ const styleThunk = () => ({
   root: {
     alignItems: 'center',
     backgroundColor: ui.menuBackgroundColor,
+    color: ui.menuItemColor,
     cursor: 'pointer',
     display: 'flex',
     transition: `background-color ${ui.transitionFastest}`,
@@ -101,7 +98,8 @@ const styleThunk = () => ({
   },
 
   active: {
-    backgroundColor: activeBackgroundColor,
+    backgroundColor: ui.menuItemBackgroundColorActive,
+    color: ui.menuItemColorHoverActive,
     cursor: 'default',
 
     ':hover': {
@@ -114,11 +112,9 @@ const styleThunk = () => ({
 
   label: {
     ...textOverflow,
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: '1.5rem',
-    padding: `${ui.menuItemPaddingVertical} ${ui.menuItemPaddingHorizontal}`
+    fontSize: ui.menuItemFontSize,
+    lineHeight: ui.menuItemHeight,
+    padding: `0 ${ui.menuGutterHorizontal}`
   },
 
   labelWithIcon: {

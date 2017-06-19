@@ -58,7 +58,7 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
     .do(() => {
       return r.table('Project')
         .getAll(r.args(teamMemberIds), {index: 'teamMemberId'})
-        .filter((project) => project('tags').contains('#archived').not())
+        .filter((project) => project('tags').contains('archived').not())
         .update((project) => ({
           teamMemberId: r.table('TeamMember')
             .getAll(project('teamId'), {index: 'teamId'})
