@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
 import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {textTags} from 'universal/utils/constants';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
@@ -35,16 +34,6 @@ class ProjectEditor extends Component {
   };
 
   state = {};
-
-  componentDidMount() {
-    const {editorState} = this.props;
-    const text = editorState.getCurrentContent().getPlainText();
-
-    if (text === '') {
-      // don't pull it from this.props because react will mutate this.props to our advantage
-      setTimeout(() => this.props.editorRef.focus());
-    }
-  }
 
   blockStyleFn = (contentBlock) => {
     const {styles} = this.props;
@@ -91,6 +80,17 @@ class ProjectEditor extends Component {
     const {handleUpArrow} = this.props;
     if (handleUpArrow) {
       handleUpArrow(e);
+    }
+    // move to the end of the title
+    const {editorState, titleRef} = this.props;
+    const selectionState = editorState.getSelection();
+    if (selectionState.isCollapsed() && selectionState.getAnchorOffset() === 0 &&
+        selectionState.getAnchorKey() === editorState.getCurrentContent().getFirstBlock().getKey()) {
+      setTimeout(() => {
+        const pos = titleRef.value.length;
+        titleRef.focus();
+        titleRef.setSelectionRange(pos, pos);
+      });
     }
   };
 
@@ -179,6 +179,7 @@ class ProjectEditor extends Component {
           onEscape={this.handleEscape}
           onTab={this.handleTab}
           onUpArrow={this.handleUpArrow}
+          //placeholder="Add a description including links, user mentions, tags, etc."
           readOnly={isDragging}
           ref={setEditorRef}
         />
@@ -189,9 +190,6 @@ class ProjectEditor extends Component {
 }
 
 const styleThunk = () => ({
-  root: {
-    padding: `0 ${ui.cardPaddingBase}`
-  },
 
   editorBlockquote: {
     fontStyle: 'italic',

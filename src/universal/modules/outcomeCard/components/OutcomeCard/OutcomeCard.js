@@ -14,9 +14,13 @@ import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/Outc
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
+import ui from 'universal/styles/ui';
+import TitleInput from 'universal/modules/outcomeCard/components/TitleInput/TitleInput';
+
 
 const OutcomeCard = (props) => {
   const {
+    annouceEditing,
     area,
     editorRef,
     isAgenda,
@@ -30,9 +34,13 @@ const OutcomeCard = (props) => {
     outcome,
     setEditorRef,
     setEditorState,
+    setTitleRef,
+    setTitleValue,
     styles,
     teamMembers,
     editorState,
+    titleRef,
+    titleValue,
     unarchiveProject,
     isDragging
   } = props;
@@ -47,6 +55,7 @@ const OutcomeCard = (props) => {
     isArchived && styles.isArchived
   );
   const openContentMenu = openMenu('content');
+
   return (
     <div className={rootStyles} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
       {openArea === 'assign' &&
@@ -65,11 +74,21 @@ const OutcomeCard = (props) => {
         />
       }
       {openArea === 'content' &&
-        <div>
+        <div className={css(styles.content)}>
           <EditingStatusContainer
             isEditing={isEditing}
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
+          />
+          <TitleInput
+            annouceEditing={annouceEditing}
+            editorRef={editorRef}
+            handleCardUpdate={handleCardUpdate}
+            setTitleRef={setTitleRef}
+            setTitleValue={setTitleValue}
+            titleRef={titleRef}
+            titleValue={titleValue}
+
           />
           <ProjectEditor
             editorRef={editorRef}
@@ -79,6 +98,7 @@ const OutcomeCard = (props) => {
             setEditorRef={setEditorRef}
             setEditorState={setEditorState}
             teamMembers={teamMembers}
+            titleRef={titleRef}
           />
         </div>
       }
@@ -97,6 +117,7 @@ const OutcomeCard = (props) => {
 };
 
 OutcomeCard.propTypes = {
+  annouceEditing: PropTypes.func.isRequired,
   area: PropTypes.string,
   editorRef: PropTypes.any,
   editorState: PropTypes.object,
@@ -116,10 +137,14 @@ OutcomeCard.propTypes = {
     teamMemberId: PropTypes.string,
     updatedAt: PropTypes.instanceOf(Date)
   }),
+  setTitleRef: PropTypes.func.isRequired,
+  setTitleValue: PropTypes.func.isRequired,
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
   styles: PropTypes.object,
   teamMembers: PropTypes.array,
+  titleRef: PropTypes.any,
+  titleValue: PropTypes.string,
   unarchiveProject: PropTypes.func.isRequired
 };
 
@@ -161,6 +186,10 @@ const styleThunk = () => ({
   // TODO: Cards need block containers, not margin (TA)
   cardBlock: {
     marginBottom: '.5rem'
+  },
+
+  content: {
+    padding: `0 ${ui.cardPaddingBase}`
   },
 
   isPrivate: {

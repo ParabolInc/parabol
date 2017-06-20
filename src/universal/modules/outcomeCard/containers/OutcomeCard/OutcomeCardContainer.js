@@ -8,6 +8,7 @@ import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/Ou
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
+import filteredObj from 'universal/utils/filteredObj';
 
 const teamMembersQuery = `
 query {
@@ -35,24 +36,31 @@ const mapStateToProps = (state, props) => {
 class OutcomeCardContainer extends Component {
   constructor(props) {
     super(props);
-    const {outcome: {content}} = props;
+    const {outcome: {content, title}} = props;
     this.state = {
       hasHover: false,
       openArea: 'content',
       editorState: content ?
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
-        EditorState.createEmpty(editorDecorators)
+        EditorState.createEmpty(editorDecorators),
+      titleValue: title || ''
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    const {content: nextContent} = nextProps.outcome;
-    const {outcome: {content}} = this.props;
+    const {content: nextContent, title: nextTitle} = nextProps.outcome;
+    const {outcome: {content}, title} = this.props;
     if (content !== nextContent) {
       const {editorState} = this.state;
       const newContentState = mergeServerContent(editorState, convertFromRaw(JSON.parse(nextContent)));
       const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
       this.setEditorState(newEditorState);
+    }
+
+    if (title !== nextTitle) {
+      this.setState({
+        titleValue: nextTitle
+      });
     }
 
     if (!this.props.isDragging && nextProps.isDragging) {
@@ -63,14 +71,25 @@ class OutcomeCardContainer extends Component {
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
-    if (wasFocused !== isFocused) {
-      this.annouceEditing(isFocused);
+    if (!wasFocused && isFocused) {
+      this.annouceEditing(true);
     }
     this.setState({
       editorState
     });
   };
 
+  setTitleRef = (c) => {
+    this.setState({
+      titleRef: c
+    })
+  };
+
+  setTitleValue = (e) => {
+    this.setState({
+      titleValue: e.target.value
+    });
+  };
 
   setEditorRef = (c) => {
     this.setState({
@@ -79,21 +98,23 @@ class OutcomeCardContainer extends Component {
   };
 
   handleCardUpdate = () => {
-    const {editorState} = this.state;
-    const {outcome: {id: projectId, content}} = this.props;
+    const {editorState, titleValue} = this.state;
+    const {outcome: {id: projectId, content, title}} = this.props;
     const contentState = editorState.getCurrentContent();
-    if (contentState.getPlainText() === '') {
+    if (!titleValue && contentState.getPlainText() === '') {
       cashay.mutate('deleteProject', {variables: {projectId}});
     } else {
       const rawContentStr = JSON.stringify(convertToRaw(contentState));
-      if (rawContentStr !== content) {
+      const updatedProject = filteredObj({
+        id: projectId,
+        content: rawContentStr !== content ? rawContentStr : undefined,
+        title: titleValue !== title ? titleValue : undefined
+      });
+      if (Object.keys(updatedProject).length > 1) {
         cashay.mutate('updateProject', {
           ops: {},
           variables: {
-            updatedProject: {
-              id: projectId,
-              content: rawContentStr
-            }
+            updatedProject
           }
         });
       }
@@ -120,6 +141,7 @@ class OutcomeCardContainer extends Component {
   handleBlur = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       this.handleCardUpdate();
+      this.annouceEditing(false);
     }
   };
 
@@ -134,6 +156,7 @@ class OutcomeCardContainer extends Component {
   hoverOff = () => this.setState({hasHover: false});
 
   annouceEditing = (isEditing) => {
+    if (this.state.isEditing === isEditing) return;
     this.setState({
       isEditing
     });
@@ -148,11 +171,12 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {hasHover, isEditing, openArea, editorRef, editorState} = this.state;
+    const {hasHover, isEditing, openArea, editorRef, editorState, titleRef, titleValue} = this.state;
     const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
         <OutcomeCard
+          annouceEditing={this.annouceEditing}
           area={area}
           editorRef={editorRef}
           editorState={editorState}
@@ -168,7 +192,11 @@ class OutcomeCardContainer extends Component {
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
+          setTitleRef={this.setTitleRef}
+          setTitleValue={this.setTitleValue}
           teamMembers={teamMembers}
+          titleRef={titleRef}
+          titleValue={titleValue}
           unarchiveProject={this.unarchiveProject}
         />
       </div>

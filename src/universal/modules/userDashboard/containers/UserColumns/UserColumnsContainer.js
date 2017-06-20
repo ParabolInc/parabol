@@ -21,6 +21,7 @@ query {
       status
       tags
       teamMemberId
+      title
       updatedAt
       team @cached(type: "Team") {
         id
