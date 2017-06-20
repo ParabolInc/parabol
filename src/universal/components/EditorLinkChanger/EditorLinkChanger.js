@@ -184,7 +184,7 @@ const styleThunk = (theme, props) => ({
 });
 
 export default portal({closeAfter: 100})(
-  reduxForm({form: 'linkChanger', validate, shouldValidate, immutables: ['editorState', 'selectionState']})(
+  reduxForm({form: 'linkChanger', validate, shouldValidate, immutableProps: ['editorState', 'selectionState']})(
     boundedModal(
       withStyles(styleThunk)(EditorLinkChanger)
     )
