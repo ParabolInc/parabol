@@ -4,7 +4,10 @@ import emojiArray from 'universal/utils/emojiArray';
 
 export const resolveEmoji = async (query) => {
   if (!query) {
-    return emojiArray.slice(2, 8);
+    return emojiArray.slice(2, 8).map((obj, idx) => ({
+      ...obj,
+      id: idx
+    }))
   }
   return emojiArray.map((obj) => {
     const score = stringScore(obj.value, query);

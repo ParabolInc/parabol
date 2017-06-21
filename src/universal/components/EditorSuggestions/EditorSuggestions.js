@@ -45,7 +45,6 @@ const EditorSuggestions = (props) => {
     styles.mentionMenu,
     isClosing && styles.closing
   );
-
   return (
     <div style={menuStyle} className={menuStyles} ref={setRef}>
       {suggestions.map((suggestion, idx) => {
@@ -60,7 +59,7 @@ const EditorSuggestions = (props) => {
 };
 
 EditorSuggestions.propTypes = {
-  active: PropTypes.bool,
+  active: PropTypes.number,
   handleSelect: PropTypes.func.isRequired,
   isClosing: PropTypes.bool,
   left: PropTypes.number,

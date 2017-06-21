@@ -180,7 +180,7 @@ const withLinks = (ComposedComponent) => {
     initialize = () => {
       const {linkViewerData, linkChangerData} = this.state;
       if (linkViewerData || linkChangerData) {
-        const targetRect = getDraftCoords();
+        const targetRect = getDraftCoords(this.props.editorRef);
         if (targetRect) {
           this.left = targetRect.left;
           this.top = targetRect.top + ui.draftModalMargin;
@@ -234,10 +234,6 @@ const withLinks = (ComposedComponent) => {
     renderViewerModal = () => {
       const {linkViewerData} = this.state;
       const {editorState, setEditorState} = this.props;
-      const targetRect = getDraftCoords();
-      if (!targetRect) {
-        console.log('no target rect!');
-      }
       return (
         <EditorLinkViewer
           isOpen
