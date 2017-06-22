@@ -12,7 +12,7 @@ const getBlockTargetRect = () => {
     }
   }
   return undefined;
-}
+};
 
 const getDraftCoords = (editorRef) => {
   if (getBlockTargetRect()) {
