@@ -30,16 +30,15 @@ const getCtrlKSelection = (editorState) => {
     const entityKey = getEntityKeyAtCaret(editorState);
     if (entityKey) {
       return getFullLinkSelection(editorState);
-    } else {
-      const {block, anchorOffset} = getAnchorLocation(editorState);
-      const blockText = block.getText();
-      const {word, begin, end} = getWordAt(blockText, anchorOffset - 1);
-      if (word) {
-        return selectionState.merge({
-          anchorOffset: begin,
-          focusOffset: end
-        });
-      }
+    }
+    const {block, anchorOffset} = getAnchorLocation(editorState);
+    const blockText = block.getText();
+    const {word, begin, end} = getWordAt(blockText, anchorOffset - 1);
+    if (word) {
+      return selectionState.merge({
+        anchorOffset: begin,
+        focusOffset: end
+      });
     }
   }
   return selectionState;

@@ -1,5 +1,6 @@
 import {EditorState, Modifier} from 'draft-js';
 import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
+
 const removeLink = (editorState) => {
   const selectionState = editorState.getSelection();
   const linkSelection = selectionState.isCollapsed() ? getFullLinkSelection(editorState) : selectionState;
@@ -15,4 +16,3 @@ const removeLink = (editorState) => {
 };
 
 export default removeLink;
-
