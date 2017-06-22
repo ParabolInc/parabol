@@ -15,6 +15,7 @@ query {
     status
     tags
     teamMemberId
+    title
     updatedAt
     sortOrder
     teamMember @cached(type: "TeamMember") {

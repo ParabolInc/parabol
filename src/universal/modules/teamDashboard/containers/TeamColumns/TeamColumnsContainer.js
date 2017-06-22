@@ -18,6 +18,7 @@ query {
       status
       tags
       teamMemberId
+      title
       updatedAt
       sortOrder
       updatedAt

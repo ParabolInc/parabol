@@ -196,6 +196,7 @@ export default [
         status
         tags
         teamMemberId
+        title
         sortOrder
         updatedAt
       }

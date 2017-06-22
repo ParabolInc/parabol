@@ -64,6 +64,10 @@ export const Project = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team member assigned to this project, or the creator if content is null'
     },
+    title: {
+      type: GraphQLString,
+      description: 'The title of the project'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the project was updated'
@@ -83,8 +87,9 @@ export const ProjectInput = new GraphQLInputObjectType({
     content: {type: GraphQLString},
     name: {type: GraphQLString, description: 'The name of the team'},
     orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
-    teamMemberId: {type: GraphQLID},
     sortOrder: {type: GraphQLFloat},
-    status: {type: GraphQLString}
+    status: {type: GraphQLString},
+    teamMemberId: {type: GraphQLID},
+    title: {type: GraphQLString}
   })
 });
