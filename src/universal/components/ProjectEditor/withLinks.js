@@ -13,22 +13,36 @@ import splitBlock from 'universal/utils/draftjs/splitBlock';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
 import ui from 'universal/styles/ui';
+import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
+
+const getEntityKeyAtCaret = (editorState) => {
+  const selectionState = editorState.getSelection();
+  const contentState = editorState.getCurrentContent();
+  const anchorOffset = selectionState.getAnchorOffset();
+  const blockKey = selectionState.getAnchorKey();
+  const block = contentState.getBlockForKey(blockKey);
+  return block.getEntityAt(anchorOffset - 1);
+};
 
 const getCtrlKSelection = (editorState) => {
-  const selection = editorState.getSelection();
-  if (selection.isCollapsed()) {
-    const {block, anchorOffset} = getAnchorLocation(editorState);
-    const blockText = block.getText();
-    const {word, begin, end} = getWordAt(blockText, anchorOffset - 1);
-
-    if (word) {
-      return selection.merge({
-        anchorOffset: begin,
-        focusOffset: end
-      });
+  const selectionState = editorState.getSelection();
+  if (selectionState.isCollapsed()) {
+    const entityKey = getEntityKeyAtCaret(editorState);
+    if (entityKey) {
+      return getFullLinkSelection(editorState);
+    } else {
+      const {block, anchorOffset} = getAnchorLocation(editorState);
+      const blockText = block.getText();
+      const {word, begin, end} = getWordAt(blockText, anchorOffset - 1);
+      if (word) {
+        return selectionState.merge({
+          anchorOffset: begin,
+          focusOffset: end
+        });
+      }
     }
   }
-  return selection;
+  return selectionState;
 };
 
 const {hasCommandModifier} = KeyBindingUtil;
@@ -253,7 +267,7 @@ const withLinks = (ComposedComponent) => {
       const {editorState} = this.props;
       const selectionState = getCtrlKSelection(editorState);
       const text = getSelectionText(editorState, selectionState);
-      const link = text && getSelectionLink(editorState, selectionState);
+      const link = getSelectionLink(editorState, selectionState);
       this.setState({
         linkViewerData: undefined,
         linkChangerData: {

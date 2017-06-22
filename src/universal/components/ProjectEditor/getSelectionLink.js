@@ -17,7 +17,7 @@ const getSelectionLink = (editorState, selection) => {
     if (lastLinkChar) {
       return currentContent.getEntity(lastLinkChar.getEntity()).getData().href;
     }
-    // if (currentKey === startKey) return null;
+    if (currentKey === startKey) return null;
     currentKey = currentContent.getKeyBefore(currentKey);
     currentBlock = currentContent.getBlockForKey(currentKey);
     if (i >= 1000) {
