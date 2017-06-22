@@ -65,6 +65,9 @@ class OutcomeCardContainer extends Component {
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused !== isFocused) {
       this.annouceEditing(isFocused);
+      if (!isFocused) {
+        this.handleCardUpdate();
+      }
     }
     this.setState({
       editorState
@@ -78,11 +81,11 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-  handleCardUpdate = () => {
+  handleCardUpdate = (canDelete) => {
     const {editorState} = this.state;
     const {outcome: {id: projectId, content}} = this.props;
     const contentState = editorState.getCurrentContent();
-    if (contentState.getPlainText() === '') {
+    if (canDelete && contentState.getPlainText() === '') {
       cashay.mutate('deleteProject', {variables: {projectId}});
     } else {
       const rawContentStr = JSON.stringify(convertToRaw(contentState));
@@ -119,7 +122,7 @@ class OutcomeCardContainer extends Component {
 
   handleBlur = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      this.handleCardUpdate();
+      this.handleCardUpdate(true);
     }
   };
 
@@ -156,7 +159,6 @@ class OutcomeCardContainer extends Component {
           area={area}
           editorRef={editorRef}
           editorState={editorState}
-          handleCardUpdate={this.handleCardUpdate}
           hasHover={hasHover}
           hoverOff={this.hoverOff}
           hoverOn={this.hoverOn}
