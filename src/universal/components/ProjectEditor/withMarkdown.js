@@ -224,7 +224,7 @@ const withMarkdown = (ComposedComponent) => {
       const [phrase, text, link] = matchedLink;
       const selectionToRemove = selectionState.merge({
         anchorOffset: matchedLink.index,
-        focusOffset: phrase.length
+        focusOffset: matchedLink.index + phrase.length
       });
       const href = linkify.match(link)[0].url;
       const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', {href});
