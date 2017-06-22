@@ -3,8 +3,8 @@ import {List, Map, OrderedSet} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
-import addSpace from 'universal/components/ProjectEditor/operations/addSpace';
-import splitBlock from 'universal/components/ProjectEditor/operations/splitBlock';
+import addSpace from 'universal/utils/draftjs/addSpace';
+import splitBlock from 'universal/utils/draftjs/splitBlock';
 import linkify from 'universal/utils/linkify';
 
 const inlineMatchers = {

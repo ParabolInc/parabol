@@ -7,9 +7,9 @@ import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocat
 import getSelectionLink from 'universal/components/ProjectEditor/getSelectionLink';
 import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
-import addSpace from 'universal/components/ProjectEditor/operations/addSpace';
-import makeAddLink from 'universal/components/ProjectEditor/operations/makeAddLink';
-import splitBlock from 'universal/components/ProjectEditor/operations/splitBlock';
+import addSpace from 'universal/utils/draftjs/addSpace';
+import makeAddLink from 'universal/utils/draftjs/makeAddLink';
+import splitBlock from 'universal/utils/draftjs/splitBlock';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
 import ui from 'universal/styles/ui';

@@ -4,7 +4,7 @@ import portal from 'react-portal-hoc';
 import {Field, reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import PlainInputField from 'universal/components/PlainInputField/PlainInputField';
-import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
+import completeEntity from 'universal/utils/draftjs/completeEnitity';
 import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';

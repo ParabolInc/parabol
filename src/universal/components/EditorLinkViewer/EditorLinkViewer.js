@@ -2,9 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import React, {Component} from 'react';
 import portal from 'react-portal-hoc';
 import Button from 'universal/components/Button/Button';
-import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
-import getWordAt from 'universal/components/ProjectEditor/getWordAt';
-import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRemoveLink';
+import removeLink from 'universal/utils/draftjs/removeLink';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -40,12 +38,9 @@ class EditorLinkViewer extends Component {
       isClosing && styles.closing
     );
 
-    const removeLink = () => {
+    const handleRemove = () => {
       const {editorState, setEditorState, removeModal} = this.props;
-      const {block, anchorOffset} = getAnchorLocation(editorState);
-      const blockText = block.getText();
-      const {begin, end} = getWordAt(blockText, anchorOffset);
-      setEditorState(makeRemoveLink(block.getKey(), begin, end)(editorState));
+      setEditorState(removeLink(editorState));
       removeModal();
     };
 
@@ -59,7 +54,7 @@ class EditorLinkViewer extends Component {
           <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
         </span>
         <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Change" onClick={changeLink} />
-        <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Remove" onClick={removeLink} />
+        <Button buttonStyle="flat" size="smallest" colorPalette="cool" label="Remove" onClick={handleRemove} />
       </div>
     );
   }
