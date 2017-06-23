@@ -28,7 +28,7 @@ exports.up = async (r) => {
   md.use(emoji);
 
   const projects = await r.table('Project').pluck('id', 'content');
-  projects.map((project) => {
+  const updates = projects.map((project) => {
     const blocksFromHTML = convertFromHTML(md.render(project.content || ''));
     const contentState = ContentState.createFromBlockArray(
       blocksFromHTML.contentBlocks,
@@ -49,7 +49,7 @@ exports.up = async (r) => {
     return r.table('Project').get(project.id).update({content: rawString, tags}).run();
   });
   try {
-    await Promise.all(projects);
+    await Promise.all(updates);
   } catch (e) {
     console.log('ERR', e);
   }
@@ -66,15 +66,20 @@ exports.down = async (r) => {
   global.HTMLImageElement = dom.window.HTMLImageElement;
 
   const projects = await r.table('Project').pluck('id', 'content');
-  projects.map((project) => {
-    const raw = JSON.parse(project.content);
+  const updates = projects.map((project) => {
+    let raw;
+    try {
+      raw = JSON.parse(project.content);
+    } catch (e) {
+      return undefined;
+    }
     const contentState = convertFromRaw(raw);
     const html = stateToHTML(contentState);
     const markdown = toMarkdown(html);
     return r.table('Project').get(project.id).update({content: markdown}).run();
   });
   try {
-    await Promise.all(projects);
+    await Promise.all(updates);
   } catch (e) {
     // noop
   }
