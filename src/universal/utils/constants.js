@@ -127,12 +127,10 @@ export const PROJECT_MAX_CHARS = 51200;
 /* Action Tags */
 export const tags = [
   {
-    id: 'private',
     name: 'private',
     description: 'Only you will be able to see this project'
   },
   {
-    id: 'private',
     name: 'archived',
     description: 'Hidden from your main board'
   }

@@ -49,7 +49,8 @@ const EditorSuggestions = (props) => {
     <div style={menuStyle} className={menuStyles} ref={setRef}>
       {suggestions.map((suggestion, idx) => {
         return (
-          <div key={suggestion.id} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
+          // eslint-disable-next-line
+          <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
             <SuggestionItem active={active === idx} {...suggestion} />
           </div>
         );

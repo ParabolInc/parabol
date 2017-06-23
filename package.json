@@ -185,6 +185,7 @@
     "tinycolor2": "^1.4.1",
     "tlds": "^1.189.0",
     "to-markdown": "^3.0.4",
+    "unicode-substring": "^0.1.0",
     "webpack-s3-plugin": "^0.9.2"
   },
   "engines": {

@@ -1,4 +1,14 @@
 import {Modifier} from 'draft-js';
+import unicodeSubstring from 'unicode-substring';
+
+const getUTF16Range = (text, range) => {
+  const offset = unicodeSubstring(text, 0, range.offset).length;
+  return {
+    key: range.key,
+    offset,
+    length: offset + unicodeSubstring(text, offset, range.length).length
+  };
+};
 
 const removeAllRangesForEntity = (editorState, content, entityType, eqFn) => {
   const rawContent = JSON.parse(content);
@@ -19,7 +29,7 @@ const removeAllRangesForEntity = (editorState, content, entityType, eqFn) => {
     const {entityRanges, key: blockKey, text} = block;
     const removalRanges = [];
     for (let j = 0; j < entityRanges.length; j++) {
-      const range = entityRanges[j];
+      const range = getUTF16Range(text, entityRanges[j]);
       const entityKey = String(range.key);
       if (archivedTags.indexOf(entityKey) !== -1) {
         const offset = range.offset;
