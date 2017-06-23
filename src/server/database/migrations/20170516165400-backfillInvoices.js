@@ -17,8 +17,8 @@ const fetchAllInvoices = async () => {
 };
 
 exports.up = async (r) => {
-  if (process.env.NODE_ENV === 'test') {
-    console.warn('NODE_ENV is testing. Not backfilling invoices');
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('NODE_ENV is testing or devving. Not backfilling invoices');
     return;
   }
 
