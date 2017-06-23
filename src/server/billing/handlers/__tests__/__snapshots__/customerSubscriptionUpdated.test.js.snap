@@ -150,7 +150,7 @@ Object {
 }
 `;
 
-exports[`customerSubscriptionUpdated exits if it isn't a switch from trialing to active 1`] = `
+exports[`customerSubscriptionUpdated exits if it isn’t a switch from trialing to active 1`] = `
 Object {
   "notification": Array [],
   "organization": Object {
@@ -228,7 +228,7 @@ Object {
 }
 `;
 
-exports[`customerSubscriptionUpdated exits if it isn't a switch from trialing to active 2`] = `
+exports[`customerSubscriptionUpdated exits if it isn’t a switch from trialing to active 2`] = `
 Object {
   "subscriptions": Array [
     Object {

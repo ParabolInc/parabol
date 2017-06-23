@@ -1,3 +1,5 @@
+require('babel-core/register');
+require('babel-polyfill');
 const path = require('path');
 const resolve = require('resolve'); // eslint-disable-line import/no-extraneous-dependencies
 

@@ -23,7 +23,7 @@ const MeetingProject = new GraphQLObjectType({
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The description of the action created during the meeting'
+      description: 'The stringified Draft-js raw description of the action created during the meeting'
     },
     status: {
       type: ProjectStatus,

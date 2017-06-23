@@ -7,33 +7,33 @@ import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
-import OutcomeCardTextarea from 'universal/modules/outcomeCard/components/OutcomeCardTextarea/OutcomeCardTextarea';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
 import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
 import isProjectArchived from 'universal/utils/isProjectArchived';
+import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
 
 const OutcomeCard = (props) => {
   const {
     area,
+    editorRef,
     isAgenda,
     isEditing,
-    handleCardUpdate,
     hasHover,
     hoverOn,
     hoverOff,
     openArea,
     openMenu,
     outcome,
-    setEditing,
-    setValue,
+    setEditorRef,
+    setEditorState,
     styles,
     teamMembers,
-    textAreaValue,
+    editorState,
     unarchiveProject,
-    unsetEditing
+    isDragging
   } = props;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
@@ -47,7 +47,7 @@ const OutcomeCard = (props) => {
   );
   const openContentMenu = openMenu('content');
   return (
-    <div className={rootStyles} onMouseEnter={hoverOn} onMouseLeave={hoverOff} >
+    <div className={rootStyles} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
       {openArea === 'assign' &&
         <OutcomeCardAssignMenu
           onComplete={openContentMenu}
@@ -57,6 +57,7 @@ const OutcomeCard = (props) => {
       }
       {openArea === 'status' &&
         <OutcomeCardStatusMenu
+          editorState={editorState}
           isAgenda={isAgenda}
           onComplete={openContentMenu}
           outcome={outcome}
@@ -69,19 +70,13 @@ const OutcomeCard = (props) => {
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
           />
-          <OutcomeCardTextarea
-            cardHasHover={hasHover}
-            content={outcome.content}
-            handleCardUpdate={handleCardUpdate}
-            isArchived={isArchived}
-            isEditing={isEditing}
-            isPrivate={isPrivate}
-            name={outcome.id}
-            setEditing={setEditing}
-            setValue={setValue}
+          <ProjectEditor
+            editorRef={editorRef}
+            editorState={editorState}
+            isDragging={isDragging}
+            setEditorRef={setEditorRef}
+            setEditorState={setEditorState}
             teamMembers={teamMembers}
-            textAreaValue={textAreaValue}
-            unsetEditing={unsetEditing}
           />
         </div>
       }
@@ -101,39 +96,34 @@ const OutcomeCard = (props) => {
 
 OutcomeCard.propTypes = {
   area: PropTypes.string,
-  children: PropTypes.any,
-  isArchived: PropTypes.bool,
-  isAgenda: PropTypes.bool,
-  handleCardUpdate: PropTypes.func,
+  editorRef: PropTypes.any,
+  editorState: PropTypes.object,
   hasHover: PropTypes.bool,
   hoverOn: PropTypes.func,
   hoverOff: PropTypes.func,
+  isAgenda: PropTypes.bool,
+  isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
   openArea: PropTypes.string,
   openMenu: PropTypes.func,
-  styles: PropTypes.object,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string
+    teamMemberId: PropTypes.string,
+    updatedAt: PropTypes.instanceOf(Date)
   }),
-  editors: PropTypes.array,
-  hasOpenAssignMenu: PropTypes.bool,
-  hasOpenStatusMenu: PropTypes.bool,
-  owner: PropTypes.object,
-  setEditing: PropTypes.func,
-  setValue: PropTypes.func,
+  setEditorRef: PropTypes.func.isRequired,
+  setEditorState: PropTypes.func,
+  styles: PropTypes.object,
   teamMembers: PropTypes.array,
-  textAreaValue: PropTypes.string,
-  updatedAt: PropTypes.instanceOf(Date),
-  unarchiveProject: PropTypes.func.isRequired,
-  unsetEditing: PropTypes.func
+  unarchiveProject: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({
   root: {
     ...cardRootStyles,
+    outline: 'none',
     paddingTop: '.1875rem',
 
     '::after': {

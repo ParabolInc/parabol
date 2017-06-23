@@ -4,7 +4,7 @@ exports[`endMeeting generates a meeting summary and sets sort order 1`] = `
 Object {
   "agendaItem": Array [
     Object {
-      "content": "Test Agenda Item[2]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 3,
       "id": 0,
@@ -16,7 +16,7 @@ Object {
       "updatedAt": 2017-01-01T06:59:59.998Z,
     },
     Object {
-      "content": "Test Agenda Item[1]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 1,
@@ -28,7 +28,7 @@ Object {
       "updatedAt": 2017-01-01T06:59:59.999Z,
     },
     Object {
-      "content": "Test Agenda Item[0]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 5,
       "id": 2,
@@ -89,11 +89,11 @@ Object {
         "present": false,
         "projects": Array [
           Object {
-            "content": "Test Project[0]",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 20,
             "status": "active",
             "tags": Array [
-              "#private",
+              "private",
             ],
             "teamMemberId": 9,
           },
@@ -106,7 +106,7 @@ Object {
         "present": false,
         "projects": Array [
           Object {
-            "content": "Test Project[1]",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 21,
             "status": "active",
             "teamMemberId": 8,
@@ -120,17 +120,17 @@ Object {
         "present": false,
         "projects": Array [
           Object {
-            "content": "Test Project[3]",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 22,
             "status": "active",
             "teamMemberId": 7,
           },
           Object {
-            "content": "Test Project[2]",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 23,
             "status": "active",
             "tags": Array [
-              "#private",
+              "private",
             ],
             "teamMemberId": 7,
           },
@@ -140,32 +140,32 @@ Object {
     "meetingNumber": 1,
     "projects": Array [
       Object {
-        "content": "Test Project[3]",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 22,
         "status": "active",
         "teamMemberId": 7,
       },
       Object {
-        "content": "Test Project[2]",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 23,
         "status": "active",
         "tags": Array [
-          "#private",
+          "private",
         ],
         "teamMemberId": 7,
       },
       Object {
-        "content": "Test Project[1]",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 21,
         "status": "active",
         "teamMemberId": 8,
       },
       Object {
-        "content": "Test Project[0]",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 20,
         "status": "active",
         "tags": Array [
-          "#private",
+          "private",
         ],
         "teamMemberId": 9,
       },
@@ -178,14 +178,14 @@ Object {
   "project": Array [
     Object {
       "agendaId": 2,
-      "content": "Test Project[0]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 5,
       "id": 10,
       "sortOrder": 4,
       "status": "active",
       "tags": Array [
-        "#private",
+        "private",
       ],
       "teamId": 6,
       "teamMemberId": 9,
@@ -194,7 +194,7 @@ Object {
     },
     Object {
       "agendaId": 1,
-      "content": "Test Project[1]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 11,
@@ -207,14 +207,14 @@ Object {
     },
     Object {
       "agendaId": 0,
-      "content": "Test Project[2]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 3,
       "id": 12,
       "sortOrder": 2,
       "status": "active",
       "tags": Array [
-        "#private",
+        "private",
       ],
       "teamId": 6,
       "teamMemberId": 7,
@@ -223,7 +223,7 @@ Object {
     },
     Object {
       "agendaId": 0,
-      "content": "Test Project[3]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.996Z,
       "createdBy": 3,
       "id": 13,
@@ -358,7 +358,7 @@ exports[`endMeeting generates a meeting summary and sets sort order with pre-exi
 Object {
   "agendaItem": Array [
     Object {
-      "content": "Test Agenda Item[0]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 3,
       "id": 0,
@@ -370,7 +370,7 @@ Object {
       "updatedAt": 2017-01-01T07:00:00.000Z,
     },
     Object {
-      "content": "Test Agenda Item[1]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 1,
@@ -382,7 +382,7 @@ Object {
       "updatedAt": 2017-01-01T06:59:59.999Z,
     },
     Object {
-      "content": "Test Agenda Item[2]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 5,
       "id": 2,
@@ -443,11 +443,11 @@ Object {
         "present": false,
         "projects": Array [
           Object {
-            "content": "Test Project[1]",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 21,
             "status": "active",
             "tags": Array [
-              "#private",
+              "private",
             ],
             "teamMemberId": 7,
           },
@@ -460,7 +460,7 @@ Object {
         "present": false,
         "projects": Array [
           Object {
-            "content": "Test Project[2]",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 22,
             "status": "active",
             "teamMemberId": 8,
@@ -474,17 +474,17 @@ Object {
         "present": false,
         "projects": Array [
           Object {
-            "content": "Test Project[4]",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 23,
             "status": "active",
             "teamMemberId": 9,
           },
           Object {
-            "content": "Test Project[3]",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 24,
             "status": "active",
             "tags": Array [
-              "#private",
+              "private",
             ],
             "teamMemberId": 9,
           },
@@ -494,32 +494,32 @@ Object {
     "meetingNumber": 1,
     "projects": Array [
       Object {
-        "content": "Test Project[4]",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 23,
         "status": "active",
         "teamMemberId": 9,
       },
       Object {
-        "content": "Test Project[3]",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 24,
         "status": "active",
         "tags": Array [
-          "#private",
+          "private",
         ],
         "teamMemberId": 9,
       },
       Object {
-        "content": "Test Project[2]",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 22,
         "status": "active",
         "teamMemberId": 8,
       },
       Object {
-        "content": "Test Project[1]",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 21,
         "status": "active",
         "tags": Array [
-          "#private",
+          "private",
         ],
         "teamMemberId": 7,
       },
@@ -531,7 +531,7 @@ Object {
   },
   "project": Array [
     Object {
-      "content": "Test Project[0]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 3,
       "id": 10,
@@ -544,14 +544,14 @@ Object {
     },
     Object {
       "agendaId": 0,
-      "content": "Test Project[1]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 3,
       "id": 11,
       "sortOrder": 4,
       "status": "active",
       "tags": Array [
-        "#private",
+        "private",
       ],
       "teamId": 6,
       "teamMemberId": 7,
@@ -560,7 +560,7 @@ Object {
     },
     Object {
       "agendaId": 1,
-      "content": "Test Project[2]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 4,
       "id": 12,
@@ -573,14 +573,14 @@ Object {
     },
     Object {
       "agendaId": 2,
-      "content": "Test Project[3]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.996Z,
       "createdBy": 5,
       "id": 13,
       "sortOrder": 2,
       "status": "active",
       "tags": Array [
-        "#private",
+        "private",
       ],
       "teamId": 6,
       "teamMemberId": 9,
@@ -589,7 +589,7 @@ Object {
     },
     Object {
       "agendaId": 2,
-      "content": "Test Project[4]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.995Z,
       "createdBy": 5,
       "id": 14,

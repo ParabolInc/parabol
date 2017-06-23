@@ -8,22 +8,27 @@ import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
 import OutcomeCardMenuButton from 'universal/modules/outcomeCard/components/OutcomeCardMenuButton/OutcomeCardMenuButton';
+import {convertToRaw} from 'draft-js';
+import addTagToProject from 'universal/utils/draftjs/addTagToProject';
 
 const buttonArray = labels.projectStatus.slugs.slice(0);
 
 const OutcomeCardStatusMenu = (props) => {
-  const {onComplete, outcome, isAgenda, styles} = props;
+  const {onComplete, outcome, isAgenda, styles, editorState} = props;
   const {id: projectId, status} = outcome;
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
   const deleteOutcomeLabel = <span>De<u>l</u>ete this Project</span>;
 
   const archiveProject = () => {
+    const contentState = editorState.getCurrentContent();
+    const newContent = addTagToProject(contentState, '#archived');
+    const rawContentStr = JSON.stringify(convertToRaw(newContent));
     const options = {
       ops: {},
       variables: {
         updatedProject: {
           id: projectId,
-          content: `${outcome.content} #archived`
+          content: rawContentStr
         }
       }
     };
@@ -113,6 +118,7 @@ const OutcomeCardStatusMenu = (props) => {
 };
 
 OutcomeCardStatusMenu.propTypes = {
+  editorState: PropTypes.object,
   outcome: PropTypes.object,
   isAgenda: PropTypes.bool,
   onComplete: PropTypes.func,

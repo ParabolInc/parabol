@@ -58,8 +58,8 @@ export default {
       r.table('Project')
         .getAll(teamMemberId, {index: 'teamMemberId'})
         .filter((project) => project('tags')
-          .contains('#private').and(project('teamMemberId').ne(myTeamMemberId))
-          .or(project('tags').contains('#archived'))
+          .contains('private').and(project('teamMemberId').ne(myTeamMemberId))
+          .or(project('tags').contains('archived'))
           .not())
         .pluck(requestedFields)
         .changes({includeInitial: true})
@@ -87,9 +87,9 @@ export default {
       r.table('Project')
       // use a compound index so we can easily paginate later
         .between([teamId, oldestProject], [teamId, r.maxval], {index: 'teamIdCreatedAt'})
-        .filter((project) => project('tags').contains('#archived')
+        .filter((project) => project('tags').contains('archived')
           .and(r.branch(
-            project('tags').contains('#private'),
+            project('tags').contains('private'),
             project('teamMemberId').eq(teamMemberId),
             true
           )))

@@ -122,19 +122,25 @@ export const PAID = 'PAID';
 export const FAILED = 'FAILED';
 
 /* character limits */
-export const PROJECT_MAX_CHARS = 512;
+export const PROJECT_MAX_CHARS = 51200;
 
 /* Action Tags */
 export const tags = [
   {
-    value: 'private',
+    id: 'private',
+    name: 'private',
     description: 'Only you will be able to see this project'
   },
   {
-    value: 'archived',
+    id: 'private',
+    name: 'archived',
     description: 'Hidden from your main board'
   }
 ];
+
+export const textTags = ['#private', '#archived'];
+
+export const NEWLINE_REGEX = /\r\n?|\n/g;
 
 /* Integrations */
 export const GITHUB = 'github';

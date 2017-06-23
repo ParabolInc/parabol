@@ -10,7 +10,8 @@ import shortid from 'shortid';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import {handleSchemaErrors} from 'server/utils/utils';
 import updateProject from 'server/graphql/models/Project/updateProject/updateProject';
-import extractTags from 'universal/utils/extractTags';
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
+import {convertToRaw, ContentState} from 'draft-js';
 
 export default {
   updateProject,
@@ -41,12 +42,14 @@ export default {
       // RESOLUTION
       const now = new Date();
       const [userId] = validNewProject.teamMemberId.split('::');
+      const {content} = validNewProject;
+      const {entityMap} = content ? JSON.parse(content) : convertToRaw(ContentState.createFromText(''));
       const project = {
         ...validNewProject,
         userId,
         createdAt: now,
         createdBy: authToken.sub,
-        tags: extractTags(validNewProject.content),
+        tags: getTagsFromEntityMap(entityMap),
         teamId,
         updatedAt: now
       };

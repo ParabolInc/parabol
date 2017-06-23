@@ -58,6 +58,15 @@ class Legitity {
     return this;
   }
 
+  normalize(fn, msg) {
+    if (!this.error) {
+      this.value = this.value && fn(this.value);
+      if (this.value === null) {
+        this.error = msg;
+      }
+    }
+  }
+
   test(check) {
     if (!this.error) {
       this.error = check(this.value);

@@ -54,6 +54,7 @@ class ProjectCardContainer extends Component {
             area={area}
             outcome={project}
             myUserId={myUserId}
+            isDragging={isDragging}
           />
         </div>
       </div>

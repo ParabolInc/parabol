@@ -1,7 +1,7 @@
-import emojis from 'markdown-it-emoji/lib/data/full.json';
+import emojis from 'universal/utils/emojis.json';
 
-delete emojis.shit;
-delete emojis.fu;
+// delete emojis.shit;
+// delete emojis.fu;
 export default Object.keys(emojis).map((name) => {
   return {
     value: `:${name}:`,

@@ -7,7 +7,7 @@ exports[`updateProject throws when no websocket is present 1`] = `"{\\"_error\\"
 exports[`updateProject updates the content of the project 1`] = `
 Object {
   "project": Object {
-    "content": "Updated content",
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -21,7 +21,7 @@ Object {
   },
   "projectHistory": Array [
     Object {
-      "content": "Updated content",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "id": 4,
       "projectId": 0,
       "tags": Array [],
@@ -34,7 +34,7 @@ Object {
 exports[`updateProject updates the content of the project quickly and do not trigger a new history item 1`] = `
 Object {
   "project": Object {
-    "content": "Updated content",
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -48,7 +48,7 @@ Object {
   },
   "projectHistory": Array [
     Object {
-      "content": "Updated content",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "id": 4,
       "projectId": 0,
       "status": "active",
@@ -63,7 +63,7 @@ Object {
 exports[`updateProject updates the sortOrder without changing updatedAt or making a history item 1`] = `
 Object {
   "project": Object {
-    "content": "Test Project[0]",
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -81,7 +81,7 @@ Object {
 exports[`updateProject updates the status of the project 1`] = `
 Object {
   "project": Object {
-    "content": "Test Project[0]",
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -106,7 +106,7 @@ Object {
 exports[`updateProject updates the teamMember of the project slowly and trigger a new history item 1`] = `
 Object {
   "project": Object {
-    "content": "Test Project[0]",
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -119,7 +119,7 @@ Object {
   },
   "projectHistory": Array [
     Object {
-      "content": "Test Project[0]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "id": 5,
       "projectId": 0,
       "status": "active",
@@ -127,7 +127,7 @@ Object {
       "updatedAt": 2017-01-01T07:00:00.000Z,
     },
     Object {
-      "content": "Test Project[0]",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "id": 6,
       "projectId": 0,
       "status": "active",

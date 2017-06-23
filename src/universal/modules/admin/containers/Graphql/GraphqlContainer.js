@@ -1,13 +1,14 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import {css} from 'aphrodite-local-styles/no-important';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import withAsync from 'react-async-hoc';
 import {connect} from 'react-redux';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
-import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
+import withStyles from 'universal/styles/withStyles';
+import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
 
 const graphQLHost = getGraphQLHost();
 const graphQLProtocol = getGraphQLProtocol();
@@ -51,13 +52,17 @@ const styleThunk = () => ({
   }
 });
 
+const loadStylesCb = () => ({stylesLoaded: true});
+
 @connect(mapStateToProps)
 @withStyles(styleThunk)
 @requireAuthAndRole('su')
+@withAsync(undefined, {[graphiqlStylesheet]: loadStylesCb})
 export default class Graphiql extends Component {
   static propTypes = {
     authToken: PropTypes.string,
-    styles: PropTypes.object
+    styles: PropTypes.object,
+    stylesLoaded: PropTypes.bool
   };
 
   constructor(props) {
@@ -65,16 +70,10 @@ export default class Graphiql extends Component {
     this.state = {graphQLFetcher: null};
   }
 
-  componentDidMount() {
-    const {authToken} = this.props;
-    const linkElement = document.createElement('link');
-    linkElement.setAttribute('rel', 'stylesheet');
-    linkElement.setAttribute('type', 'text/css');
-    linkElement.setAttribute('href', graphiqlStylesheet);
-    document.head.appendChild(linkElement);
-    linkElement.onload = () => {
-      this.setState({graphQLFetcher: makeGraphQLFetcher(authToken)});
-    };
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.stylesLoaded) {
+      this.setState({graphQLFetcher: makeGraphQLFetcher(nextProps.authToken)});
+    }
   }
 
   render() {
