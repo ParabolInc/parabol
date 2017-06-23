@@ -73,6 +73,7 @@ exports.down = async (r) => {
     } catch (e) {
       return undefined;
     }
+    if (!raw) return undefined;
     const contentState = convertFromRaw(raw);
     const html = stateToHTML(contentState);
     const markdown = toMarkdown(html);
