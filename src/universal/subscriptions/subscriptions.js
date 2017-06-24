@@ -2,7 +2,7 @@ import {
   AGENDA,
   AGENDA_PROJECTS,
   ARCHIVED_PROJECTS,
-  INTEGRATIONS,
+  SLACK_INTEGRATIONS,
   INVITATIONS,
   NOTIFICATIONS,
   ORG_APPROVALS,
@@ -77,22 +77,22 @@ export default [
       }
     }`
   },
-  //{
-  //  channel: INTEGRATIONS,
-  //  string: `
-  //  subscription($teamMemberId: ID!) {
-  //    integrations(teamMemberId: $teamMemberId) {
-  //      id
-  //      accessToken
-  //      service
-  //      userId,
-  //      syncs {
-  //        id
-  //        slackChannelId
-  //      }
-  //    }
-  //  }`
-  //},
+  {
+    channel: SLACK_INTEGRATIONS,
+    string: `
+    subscription($teamMemberId: ID!) {
+      integrations(teamMemberId: $teamMemberId) {
+        id
+        accessToken
+        service
+        userId,
+        syncs {
+          id
+          slackChannelId
+        }
+      }
+    }`
+  },
   {
     channel: INVITATIONS,
     string: `

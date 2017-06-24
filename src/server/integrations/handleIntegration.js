@@ -1,13 +1,14 @@
 import queryIntegrator from '../utils/queryIntegrator';
 import {handleRethinkRemove} from '../utils/makeChangefeedHandler';
 import shortid from 'shortid';
+import {errorObj} from 'server/utils/utils';
 
 const handleIntegration = async (accessToken, exchange, service, teamMemberId) => {
-  const [userId] = teamMemberId.split('::');
+  const [userId, teamId] = teamMemberId.split('::');
   const channel = `providers/${teamMemberId}`;
   const id = shortid.generate();
   //console.log('handling integration', accessToken, service, teamMemberId);
-  const {data} = await queryIntegrator({
+  const {data, errors} = await queryIntegrator({
     action: 'addProvider',
     payload: {
       id,
@@ -16,6 +17,14 @@ const handleIntegration = async (accessToken, exchange, service, teamMemberId) =
       teamMemberId
     }
   });
+
+  if (errors) {
+    const error = errorObj({_error: errors[0]});
+    // TODO design how to send error down the pipe
+    //exchange.publish(channel, )
+    return;
+  }
+
   const oldToken = data && data.setToken;
   if (oldToken) {
     const clientDoc = handleRethinkRemove({id: oldToken});
@@ -28,6 +37,7 @@ const handleIntegration = async (accessToken, exchange, service, teamMemberId) =
       id,
       accessToken,
       service,
+      teamIds: [teamId],
       userId
     }
   });
