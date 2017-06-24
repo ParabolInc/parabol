@@ -1,13 +1,13 @@
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {requireSUOrSelf, requireSUOrTeamMember} from 'server/utils/authorization';
-import {Integration} from './integrationSchema';
+import Provider from './providerSchema';
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
 import {handleRethinkAdd} from '../../../utils/makeChangefeedHandler';
 
 export default {
-  integrations: {
-    type: new GraphQLList(Integration),
+  providers: {
+    type: new GraphQLList(Provider),
     args: {
       teamMemberId: {
         type: new GraphQLNonNull(GraphQLID),
@@ -22,7 +22,7 @@ export default {
 
       // RESOLUTION
       const {data, errors} = await queryIntegrator({
-        action: 'getIntegrations',
+        action: 'getProviders',
         payload: {
           teamMemberId
         }
@@ -31,7 +31,7 @@ export default {
         throw errorObj({_error: errors[0]});
       }
 
-      const channel = `integrations/${teamMemberId}`;
+      const channel = `providers/${teamMemberId}`;
       data.getIntegrations.forEach((doc) => {
         const feedDoc = handleRethinkAdd(doc);
         socket.emit(channel, feedDoc);

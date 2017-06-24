@@ -4,11 +4,11 @@ import shortid from 'shortid';
 
 const handleIntegration = async (accessToken, exchange, service, teamMemberId) => {
   const [userId] = teamMemberId.split('::');
-  const channel = `integrations/${teamMemberId}`;
+  const channel = `providers/${teamMemberId}`;
   const id = shortid.generate();
-  console.log('handling integration', accessToken, service, teamMemberId);
+  //console.log('handling integration', accessToken, service, teamMemberId);
   const {data} = await queryIntegrator({
-    action: 'setToken',
+    action: 'addProvider',
     payload: {
       id,
       accessToken,

@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql';
 import agenda from './models/AgendaItem/agendaItemSubscription';
-import integration from './models/Integration/integrationSubscription';
+import integration from './models/Provider/providerSubscription';
 import invitation from './models/Invitation/invitationSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
 import notification from './models/Notification/notificationSubscription';

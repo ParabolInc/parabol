@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql';
 import agenda from 'server/graphql/models/AgendaItem/agendaItemMutation';
-import integration from 'server/graphql/models/Integration/integrationMutation';
+import integration from 'providerMutation.js';
 import invitation from 'server/graphql/models/Invitation/invitationMutation';
 import meeting from 'server/graphql/models/Meeting/meetingMutation';
 import notification from 'server/graphql/models/Notification/notificationMutation';

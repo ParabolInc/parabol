@@ -9,9 +9,10 @@ import {
   ORGANIZATION,
   ORGANIZATIONS,
   OWNED_ORGANIZATIONS,
+  PROJECTS,
+  PROVIDERS,
   TEAM,
   TEAM_MEMBERS,
-  PROJECTS,
   UPCOMING_INVOICE,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
@@ -76,22 +77,22 @@ export default [
       }
     }`
   },
-  {
-    channel: INTEGRATIONS,
-    string: `
-    subscription($teamMemberId: ID!) {
-      integrations(teamMemberId: $teamMemberId) {
-        id
-        accessToken
-        service
-        userId,
-        syncs {
-          id
-          slackChannelId
-        }
-      }
-    }`
-  },
+  //{
+  //  channel: INTEGRATIONS,
+  //  string: `
+  //  subscription($teamMemberId: ID!) {
+  //    integrations(teamMemberId: $teamMemberId) {
+  //      id
+  //      accessToken
+  //      service
+  //      userId,
+  //      syncs {
+  //        id
+  //        slackChannelId
+  //      }
+  //    }
+  //  }`
+  //},
   {
     channel: INVITATIONS,
     string: `
@@ -198,6 +199,19 @@ export default [
         teamMemberId
         sortOrder
         updatedAt
+      }
+    }`
+  },
+  {
+    channel: PROVIDERS,
+    string: `
+    subscription($teamMemberId: ID!) {
+      providers(teamMemberId: $teamMemberId) {
+        id
+        accessToken
+        service
+        teamIds
+        userId
       }
     }`
   },
