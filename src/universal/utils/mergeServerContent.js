@@ -1,14 +1,8 @@
 const getBestFitSelection = (oldContentState, newContentState, oldKey, oldOffset) => {
-  let currentKey = oldKey;
-  let keyInNewContent = newContentState.getBlockForKey(currentKey);
-  while (!keyInNewContent && currentKey !== null) {
-    currentKey = oldContentState.getBlockBefore(currentKey);
-    keyInNewContent = newContentState.getBlockBefore(currentKey);
-  }
-  const contentBlock = keyInNewContent || newContentState.getFirstBlock();
+  const contentBlock = newContentState.getBlockForKey(oldKey) || newContentState.getFirstBlock();
   const key = contentBlock.getKey();
   const blockLength = contentBlock.getText().length;
-  const offset = currentKey === oldKey ? Math.min(blockLength, oldOffset) : blockLength;
+  const offset = key === oldKey ? Math.min(blockLength, oldOffset) : blockLength;
   return {key, offset};
 };
 
@@ -28,7 +22,7 @@ const getMergedSelection = (oldEditorState, newContentState) => {
     });
   }
   const {offset: endOffset, key: endKey} =
-      getBestFitSelection(oldContent, newContentState, oldSelection.getEndKey(), oldSelection.getEndOffset());
+    getBestFitSelection(oldContent, newContentState, oldSelection.getEndKey(), oldSelection.getEndOffset());
   return oldSelection.merge({
     anchorOffset: startOffset,
     focusOffset: endOffset,
