@@ -1,4 +1,5 @@
 import {convertFromRaw, Modifier, SelectionState} from 'draft-js';
+
 const MAX_BLOCKS = 5;
 const MAX_CHARS = 52;
 const ELLIPSIS = '...';

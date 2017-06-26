@@ -48,23 +48,23 @@ const Card = (props) => {
   return (
     <table style={ui.emailTableBase} width="100%">
       <tbody>
-      {/* card styled top border */}
-      <tr>
-        <td style={borderTopStyle}>
-          <EmptySpace height={4}/>
-        </td>
-      </tr>
-      {/* card body */}
-      <tr>
-        <td style={cellStyle}>
-          <div style={contentStyle}>
-            <Editor
-              readOnly
-              editorState={editorState}
-            />
-          </div>
-        </td>
-      </tr>
+        {/* card styled top border */}
+        <tr>
+          <td style={borderTopStyle}>
+            <EmptySpace height={4} />
+          </td>
+        </tr>
+        {/* card body */}
+        <tr>
+          <td style={cellStyle}>
+            <div style={contentStyle}>
+              <Editor
+                readOnly
+                editorState={editorState}
+              />
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
   );
