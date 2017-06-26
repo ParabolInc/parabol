@@ -65,7 +65,7 @@ export default {
     }
 
     // notify all the listeners that a mutation occurred
-    const channel = `integrations/${teamMemberId}`;
+    const channel = `providers/${teamMemberId}`;
     const payload = handleRethinkAdd(data.addSlackChannel);
     exchange.publish(channel, payload);
     return true;
