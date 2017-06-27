@@ -1,22 +1,16 @@
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  ensureUniqueId,
-  requireAuth
-} from 'server/utils/authorization';
-import {errorObj, handleSchemaErrors} from 'server/utils/utils';
-import {
-  GraphQLNonNull,
-  GraphQLID
-} from 'graphql';
-import {TeamInput} from '../teamSchema';
-import shortid from 'shortid';
-import addSeedProjects from './addSeedProjects';
-import createTeamAndLeader from './createTeamAndLeader';
-import tmsSignToken from 'server/utils/tmsSignToken';
-import createFirstTeamValidation from './createFirstTeamValidation';
-import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
+import {ensureUniqueId, requireAuth} from 'server/utils/authorization';
 import {TRIAL_EXPIRES_SOON_DELAY} from 'server/utils/serverConstants';
+import tmsSignToken from 'server/utils/tmsSignToken';
+import {errorObj, handleSchemaErrors} from 'server/utils/utils';
+import shortid from 'shortid';
+import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {TeamInput} from '../teamSchema';
+import addSeedProjects from './addSeedProjects';
+import createFirstTeamValidation from './createFirstTeamValidation';
+import createTeamAndLeader from './createTeamAndLeader';
 
 export default {
   // return the new JWT that has the new tms field
@@ -66,15 +60,15 @@ export default {
     const validNewTeam = {...data, orgId};
     const {id: teamId} = validNewTeam;
     const tms = [teamId];
+    const expiresSoonId = shortid.generate();
+    const orgName = `${user.preferredName}’s Org`;
+    const {periodEnd} = await createNewOrg(orgId, orgName, userId);
+    await createTeamAndLeader(userId, validNewTeam, true);
     // set up the team while the user is on step 3
     setTimeout(async () => {
-      const expiresSoonId = shortid.generate();
-      const orgName = `${user.preferredName}’s Org`;
-      const {periodEnd} = await createNewOrg(orgId, orgName, userId);
-      await createTeamAndLeader(userId, validNewTeam, true);
+      addSeedProjects(userId, teamId);
       // Asynchronously create seed projects for team leader:
       // TODO: remove me after more
-      addSeedProjects(userId, teamId);
       await r.table('Notification').insert({
         id: expiresSoonId,
         type: TRIAL_EXPIRES_SOON,
@@ -84,7 +78,9 @@ export default {
         // trialExpiresAt
         varList: [periodEnd]
       });
-      if (unitTestCb) { unitTestCb(); }
+      if (unitTestCb) {
+        unitTestCb();
+      }
     }, 0);
     return tmsSignToken(authToken, tms);
   }
