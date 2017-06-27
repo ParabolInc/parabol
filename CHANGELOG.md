@@ -6,6 +6,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## v0.19.1 - 26-Jun-2017
 ### Fixed
+- #914 improbable welcome wizard race condition
 - #1116 new cards during meeting shows incorrect owner
 - #1117 meeting summary cards not rendering to HTML
 
