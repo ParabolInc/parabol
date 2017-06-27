@@ -15,8 +15,8 @@ const meetingContainer = () => System.import('universal/modules/meeting/containe
 const SocketRoute = () => {
   return (
     <Switch>
-      <AsyncRoute path="(/me|/newteam|/team)" mod={dashWrapper}/>
-      <AsyncRoute bottom path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingContainer}/>
+      <AsyncRoute path="(/me|/newteam|/team)" mod={dashWrapper} />
+      <AsyncRoute bottom path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingContainer} />
     </Switch>
   );
 };
