@@ -25,6 +25,7 @@ class ProjectEditor extends Component {
     handleKeyCommand: PropTypes.func,
     handleTab: PropTypes.func,
     handleReturn: PropTypes.func,
+    isArchived: PropTypes.bool,
     isDragging: PropTypes.bool,
     keyBindingFn: PropTypes.func,
     renderModal: PropTypes.func,
@@ -161,7 +162,7 @@ class ProjectEditor extends Component {
   };
 
   render() {
-    const {editorState, renderModal, isDragging, styles, setEditorRef} = this.props;
+    const {editorState, renderModal, isArchived, isDragging, styles, setEditorRef} = this.props;
     // console.log('es', Editor.getClipboard())
     return (
       <div className={css(styles.root)}>
@@ -178,7 +179,7 @@ class ProjectEditor extends Component {
           onEscape={this.handleEscape}
           onTab={this.handleTab}
           onUpArrow={this.handleUpArrow}
-          readOnly={isDragging}
+          readOnly={isArchived || isDragging}
           ref={setEditorRef}
         />
         {renderModal && renderModal()}
