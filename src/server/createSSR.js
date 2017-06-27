@@ -2,6 +2,7 @@ import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {applyMiddleware, createStore} from 'redux';
 import thunkMiddleware from 'redux-thunk';
+import makeSegmentSnippet from '@segment/snippet';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 import makeReducer from 'universal/redux/makeReducer';
 import printStyles from 'universal/styles/theme/printStyles';
@@ -40,17 +41,32 @@ export default function createSSR(req, res) {
     }
     res.send(cachedPage);
   } else {
+    /*
+     * When segment.io is configured during development, load the segment
+     * snippet here. For production use, refer to the Html.js component.
+     */
+    const segKey = process.env.SEGMENT_WRITE_KEY;
+    const segmentSnippet = segKey && `
+    <script>
+      ${makeSegmentSnippet.min({
+        host: 'cdn.segment.com',
+        apiKey: segKey
+      })}
+    </script>
+    `;
+
     const devHtml = `
     <!DOCTYPE html>
     <html>
     <head>
       <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.css"/>
     </head>
-    <body> 
+    <body>
       <div id="root"></div>
       <script src="/static/vendors.dll.js"></script>
       <script src="/static/app.js"></script>
       <script>${clientKeyLoader}</script>
+      ${segmentSnippet}
     </body>
     </html>
     `;
