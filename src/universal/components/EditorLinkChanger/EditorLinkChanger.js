@@ -1,18 +1,18 @@
 import {css} from 'aphrodite-local-styles/no-important';
+import {EditorState} from 'draft-js';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import portal from 'react-portal-hoc';
 import {Field, reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import PlainInputField from 'universal/components/PlainInputField/PlainInputField';
-import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import completeEntity from 'universal/utils/draftjs/completeEnitity';
 import linkify from 'universal/utils/linkify';
 import shouldValidate from 'universal/validation/shouldValidate';
 import changerValidation from './changerValidation';
-import {EditorState} from 'draft-js';
-import PropTypes from 'prop-types';
 
 const validate = (values) => {
   const schema = changerValidation();
@@ -39,6 +39,14 @@ class EditorLinkChanger extends Component {
     }
   };
 
+  handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      const {editorRef, removeModal} = this.props;
+      removeModal(true);
+      setTimeout(() => editorRef.focus(), 0);
+    }
+  };
+
   render() {
     const {
       isClosing,
@@ -58,7 +66,14 @@ class EditorLinkChanger extends Component {
     );
     const label = text ? 'Update' : 'Add';
     return (
-      <div style={pos} className={menuStyles} onBlur={this.handleBlur} tabIndex={-1} ref={setRef}>
+      <div
+        style={pos}
+        className={menuStyles}
+        onBlur={this.handleBlur}
+        onKeyDown={this.handleKeyDown}
+        tabIndex={-1}
+        ref={setRef}
+      >
         <form onSubmit={handleSubmit(this.onSubmit)} className={css(styles.form)}>
           {text !== null &&
           <div className={css(styles.textBlock)}>
@@ -98,7 +113,6 @@ class EditorLinkChanger extends Component {
 }
 
 EditorLinkChanger.propTypes = {
-  addHyperlink: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   href: PropTypes.string,
   editorRef: PropTypes.any,
@@ -184,7 +198,7 @@ const styleThunk = (theme, props) => ({
 });
 
 export default portal({closeAfter: 100})(
-  reduxForm({form: 'linkChanger', validate, shouldValidate, immutables: ['editorState', 'selectionState']})(
+  reduxForm({form: 'linkChanger', validate, shouldValidate, immutableProps: ['editorState', 'selectionState']})(
     boundedModal(
       withStyles(styleThunk)(EditorLinkChanger)
     )

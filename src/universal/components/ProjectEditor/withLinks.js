@@ -7,28 +7,41 @@ import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocat
 import getSelectionLink from 'universal/components/ProjectEditor/getSelectionLink';
 import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
-import addSpace from 'universal/components/ProjectEditor/operations/addSpace';
-import makeAddLink from 'universal/components/ProjectEditor/operations/makeAddLink';
-import splitBlock from 'universal/components/ProjectEditor/operations/splitBlock';
+import addSpace from 'universal/utils/draftjs/addSpace';
+import makeAddLink from 'universal/utils/draftjs/makeAddLink';
+import splitBlock from 'universal/utils/draftjs/splitBlock';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
 import ui from 'universal/styles/ui';
+import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
+
+const getEntityKeyAtCaret = (editorState) => {
+  const selectionState = editorState.getSelection();
+  const contentState = editorState.getCurrentContent();
+  const anchorOffset = selectionState.getAnchorOffset();
+  const blockKey = selectionState.getAnchorKey();
+  const block = contentState.getBlockForKey(blockKey);
+  return block.getEntityAt(anchorOffset - 1);
+};
 
 const getCtrlKSelection = (editorState) => {
-  const selection = editorState.getSelection();
-  if (selection.isCollapsed()) {
+  const selectionState = editorState.getSelection();
+  if (selectionState.isCollapsed()) {
+    const entityKey = getEntityKeyAtCaret(editorState);
+    if (entityKey) {
+      return getFullLinkSelection(editorState);
+    }
     const {block, anchorOffset} = getAnchorLocation(editorState);
     const blockText = block.getText();
     const {word, begin, end} = getWordAt(blockText, anchorOffset - 1);
-
     if (word) {
-      return selection.merge({
+      return selectionState.merge({
         anchorOffset: begin,
         focusOffset: end
       });
     }
   }
-  return selection;
+  return selectionState;
 };
 
 const {hasCommandModifier} = KeyBindingUtil;
@@ -180,7 +193,7 @@ const withLinks = (ComposedComponent) => {
     initialize = () => {
       const {linkViewerData, linkChangerData} = this.state;
       if (linkViewerData || linkChangerData) {
-        const targetRect = getDraftCoords();
+        const targetRect = getDraftCoords(this.props.editorRef);
         if (targetRect) {
           this.left = targetRect.left;
           this.top = targetRect.top + ui.draftModalMargin;
@@ -234,10 +247,6 @@ const withLinks = (ComposedComponent) => {
     renderViewerModal = () => {
       const {linkViewerData} = this.state;
       const {editorState, setEditorState} = this.props;
-      const targetRect = getDraftCoords();
-      if (!targetRect) {
-        console.log('no target rect!');
-      }
       return (
         <EditorLinkViewer
           isOpen
@@ -257,7 +266,7 @@ const withLinks = (ComposedComponent) => {
       const {editorState} = this.props;
       const selectionState = getCtrlKSelection(editorState);
       const text = getSelectionText(editorState, selectionState);
-      const link = text && getSelectionLink(editorState, selectionState);
+      const link = getSelectionLink(editorState, selectionState);
       this.setState({
         linkViewerData: undefined,
         linkChangerData: {

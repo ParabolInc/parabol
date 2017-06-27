@@ -2,7 +2,7 @@ import {getVisibleSelectionRect} from 'draft-js';
 import React, {Component} from 'react';
 import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
-import completeEntity, {autoCompleteEmoji} from 'universal/components/ProjectEditor/operations/completeEnitity';
+import completeEntity, {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity';
 import resolvers from 'universal/components/ProjectEditor/resolvers';
 import getAnchorLocation from './getAnchorLocation';
 import stringScore from 'string-score';

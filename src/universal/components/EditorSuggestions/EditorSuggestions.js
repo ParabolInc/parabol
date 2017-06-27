@@ -45,12 +45,12 @@ const EditorSuggestions = (props) => {
     styles.mentionMenu,
     isClosing && styles.closing
   );
-
   return (
     <div style={menuStyle} className={menuStyles} ref={setRef}>
       {suggestions.map((suggestion, idx) => {
         return (
-          <div key={suggestion.id} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
+          // eslint-disable-next-line
+          <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
             <SuggestionItem active={active === idx} {...suggestion} />
           </div>
         );
@@ -60,7 +60,7 @@ const EditorSuggestions = (props) => {
 };
 
 EditorSuggestions.propTypes = {
-  active: PropTypes.bool,
+  active: PropTypes.number,
   handleSelect: PropTypes.func.isRequired,
   isClosing: PropTypes.bool,
   left: PropTypes.number,

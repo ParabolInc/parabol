@@ -21,7 +21,6 @@ const OutcomeCard = (props) => {
     editorRef,
     isAgenda,
     isEditing,
-    handleCardUpdate,
     hasHover,
     hoverOn,
     hoverOff,
@@ -74,7 +73,6 @@ const OutcomeCard = (props) => {
           <ProjectEditor
             editorRef={editorRef}
             editorState={editorState}
-            onBlur={handleCardUpdate}
             isDragging={isDragging}
             setEditorRef={setEditorRef}
             setEditorState={setEditorState}
@@ -100,7 +98,6 @@ OutcomeCard.propTypes = {
   area: PropTypes.string,
   editorRef: PropTypes.any,
   editorState: PropTypes.object,
-  handleCardUpdate: PropTypes.func,
   hasHover: PropTypes.bool,
   hoverOn: PropTypes.func,
   hoverOff: PropTypes.func,

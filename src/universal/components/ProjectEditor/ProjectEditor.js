@@ -28,7 +28,6 @@ class ProjectEditor extends Component {
     handleReturn: PropTypes.func,
     isDragging: PropTypes.bool,
     keyBindingFn: PropTypes.func,
-    onBlur: PropTypes.func,
     renderModal: PropTypes.func,
     removeModal: PropTypes.func,
     setEditorRef: PropTypes.func.isRequired,

@@ -10,8 +10,7 @@ export const resolveEmoji = async (query) => {
     const score = stringScore(obj.value, query);
     return {
       ...obj,
-      score,
-      id: score
+      score
     };
   })
     .sort((a, b) => a.score < b.score ? 1 : -1)

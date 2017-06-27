@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.19.0 - 22-Jun-2017
+### Added
+- Fancy new [draftjs](https://draftjs.org/)-based editor for
+  Project cards
+
+### Fixed
+- #1085 Migrations on deploy broken (regeneratorRuntime not found)
+
 ## v0.18.3 - 14-Jun-2017
 ### Added
 - #1070 Create segment event when meeting is automatically ended
