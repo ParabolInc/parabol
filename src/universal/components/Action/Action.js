@@ -24,15 +24,15 @@ const Action = (props) => {
       <Toast />
       <Switch>
         <Route exact path="/" component={LandingContainer} />
-        <AsyncRoute isPrivate path="(/me|/meeting|/newteam|/team)" mod={socketRoute} />
-        <AsyncRoute bottom isPrivate path="/invoice/:invoiceId" mod={invoice} />
-        <AsyncRoute bottom isPrivate path="/summary/:meetingId" mod={meetingSummary} />
-        <AsyncRoute bottom isPrivate path="/welcome" mod={welcome} />
-        <AsyncRoute bottom path="/admin/graphql" mod={graphql} />
-        <AsyncRoute bottom path="/admin/impersonate/:newUserId" mod={impersonate} />
-        <AsyncRoute bottom path="/invitation/:id" mod={invitation} />
-        <AsyncRoute bottom mod={signout} />
-        <AsyncRoute bottom mod={notFound} />
+        <AsyncRoute isAbstract isPrivate path="(/me|/meeting|/newteam|/team)" mod={socketRoute} />
+        <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />
+        <AsyncRoute isPrivate path="/summary/:meetingId" mod={meetingSummary} />
+        <AsyncRoute isPrivate path="/welcome" mod={welcome} />
+        <AsyncRoute path="/admin/graphql" mod={graphql} />
+        <AsyncRoute path="/admin/impersonate/:newUserId" mod={impersonate} />
+        <AsyncRoute path="/invitation/:id" mod={invitation} />
+        <AsyncRoute mod={signout} />
+        <AsyncRoute mod={notFound} />
       </Switch>
     </div>
   );

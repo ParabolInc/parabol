@@ -22,9 +22,9 @@ class Bundle extends Component {
   };
 
   static propTypes = {
-    bottom: PropTypes.bool,
     extraProps: PropTypes.object,
     history: PropTypes.object.isRequired,
+    isAbstractRoute: PropTypes.bool,
     isPrivate: PropTypes.bool,
     location: PropTypes.object.isRequired,
     match: PropTypes.object,
@@ -37,19 +37,19 @@ class Bundle extends Component {
 
   componentWillMount() {
     this.loadMod(this.props);
-    const {location: {pathname: nextPath}, bottom, match: {params}} = this.props;
-    if (bottom === true) {
+    const {location: {pathname: nextPath}, isAbstractRoute, match: {params}} = this.props;
+    if (!isAbstractRoute) {
       const {store: {dispatch}, previousLocation: {lastPath}} = this.context;
       updateAnalyticsPage(dispatch, lastPath, nextPath, params);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const {bottom, mod} = nextProps;
+    const {isAbstractRoute, mod} = nextProps;
     if (mod !== this.props.mod) {
       this.loadMod(nextProps);
     }
-    if (bottom === true) {
+    if (!isAbstractRoute) {
       const {location: {pathname: nextPath}, match: {params}} = nextProps;
       const {location: {pathname: lastPath}} = this.props;
       if (lastPath !== nextPath) {

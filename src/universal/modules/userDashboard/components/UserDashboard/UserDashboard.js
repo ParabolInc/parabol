@@ -15,11 +15,11 @@ const UserDashboard = (props) => {
   const {match} = props;
   return (
     <Switch>
-      <AsyncRoute bottom exact path={match.url} mod={userDashMain} />
-      <AsyncRoute bottom path={`${match.url}/settings`} mod={userSettings} />
-      <AsyncRoute bottom exact path={`${match.url}/organizations`} mod={organizations} />
-      <AsyncRoute bottom path={`${match.url}/organizations/:orgId/:orgArea?`} mod={organization} />
-      <AsyncRoute bottom path={`${match.url}/notifications`} mod={notifications} />
+      <AsyncRoute exact path={match.url} mod={userDashMain} />
+      <AsyncRoute path={`${match.url}/settings`} mod={userSettings} />
+      <AsyncRoute exact path={`${match.url}/organizations`} mod={organizations} />
+      <AsyncRoute path={`${match.url}/organizations/:orgId/:orgArea?`} mod={organization} />
+      <AsyncRoute path={`${match.url}/notifications`} mod={notifications} />
     </Switch>
   );
 };
