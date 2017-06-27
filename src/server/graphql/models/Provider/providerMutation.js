@@ -1,4 +1,4 @@
-import getRethink from 'server/database/rethinkDriver';
+//import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
@@ -7,13 +7,10 @@ import {
 } from 'graphql';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import queryIntegrator from 'server/utils/queryIntegrator';
-import addSlackChannel from '../SlackIntegration/addSlackChannel/addSlackChannel';
-import {GITHUB} from 'universal/utils/constants';
 import {handleRethinkRemove} from 'server/utils/makeChangefeedHandler';
 import {errorObj} from 'server/utils/utils';
 
 export default {
-  addSlackChannel,
   removeProvider: {
     type: GraphQLBoolean,
     description: 'Disconnect a team from a Provider token',

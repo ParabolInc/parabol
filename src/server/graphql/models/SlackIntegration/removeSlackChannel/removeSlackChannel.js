@@ -11,7 +11,7 @@ import {handleRethinkAdd} from '../../../../utils/makeChangefeedHandler';
 
 export default {
   type: GraphQLBoolean,
-  description: 'Add a slack channel where messages will be sent',
+  description: 'Remove a slack channel integration from a team',
   args: {
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -54,7 +54,7 @@ export default {
 
     // RESOLUTION
     const {data, errors} = await queryIntegrator({
-      action: 'addSlackChannel',
+      action: 'removeSlackChannel',
       payload: {
         slackChannelId,
         teamMemberId
