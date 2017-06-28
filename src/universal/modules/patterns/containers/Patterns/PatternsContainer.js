@@ -1,5 +1,5 @@
 import React from 'react';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import Spinner from 'universal/modules/spinner/components/Spinner/Spinner';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Button from 'universal/components/Button/Button';

@@ -1,13 +1,12 @@
-import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {segmentEventPage} from 'universal/redux/segmentActions';
 
-const updateAnalyticsPage = (dispatch, lastPath, nextPath, params) => {
+const updateAnalyticsPage = (dispatch, lastPath, nextPath, title, params) => {
   if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
-  const name = document && document.title || '';
   const properties = {
-    title: name,
+    title,
     referrer: lastPath,
     path: nextPath,
     params
@@ -17,8 +16,8 @@ const updateAnalyticsPage = (dispatch, lastPath, nextPath, params) => {
 
 class Bundle extends Component {
   static contextTypes = {
-    store: PropTypes.object,
-    previousLocation: PropTypes.object
+    analytics: PropTypes.object,
+    store: PropTypes.object
   };
 
   static propTypes = {
@@ -37,23 +36,37 @@ class Bundle extends Component {
 
   componentWillMount() {
     this.loadMod(this.props);
+  }
+
+  componentDidMount() {
     const {location: {pathname: nextPath}, isAbstractRoute, match: {params}} = this.props;
     if (!isAbstractRoute) {
-      const {store: {dispatch}, previousLocation: {lastPath}} = this.context;
-      updateAnalyticsPage(dispatch, lastPath, nextPath, params);
+      const {store: {dispatch}} = this.context;
+      // can't use setTimeout, since react rendering is not guaranteed sync
+      // use requestIdleCallback to ensure that rendering eg '/me' has completed
+      window.requestIdleCallback(() => {
+        const {analytics: {lastPath, title}} = this.context;
+        updateAnalyticsPage(dispatch, lastPath, nextPath, title, params);
+      });
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const {isAbstractRoute, mod} = nextProps;
+    const {mod} = nextProps;
     if (mod !== this.props.mod) {
       this.loadMod(nextProps);
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    // use cDU to allow helmet to update the document title for the subcomponents
+    const {isAbstractRoute} = this.props;
     if (!isAbstractRoute) {
-      const {location: {pathname: nextPath}, match: {params}} = nextProps;
-      const {location: {pathname: lastPath}} = this.props;
+      const {location: {pathname: nextPath}, match: {params}} = this.props;
+      const {location: {pathname: lastPath}} = prevProps;
       if (lastPath !== nextPath) {
-        updateAnalyticsPage(this.context.store.dispatch, lastPath, nextPath, params);
+        const {store: {dispatch}, analytics: {title}} = this.context;
+        updateAnalyticsPage(dispatch, lastPath, nextPath, title, params);
       }
     }
   }
@@ -76,7 +89,7 @@ class Bundle extends Component {
     const {Mod} = this.state;
     if (!Mod) return null;
     const {history, location, match, extraProps} = this.props;
-    return <Mod {...extraProps} history={history} location={location} match={match} />;
+    return <Mod {...extraProps} history={history} location={location} match={match}/>;
   }
 }
 

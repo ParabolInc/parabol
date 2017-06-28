@@ -7,7 +7,7 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
 import Panel from 'universal/components/Panel/Panel';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 
 const Notifications = (props) => {
   const {
