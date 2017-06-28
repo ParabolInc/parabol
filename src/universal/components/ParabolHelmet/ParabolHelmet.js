@@ -19,10 +19,9 @@ export default class ParabolHelmet extends Component {
     if (nextProps.title !== this.props.title) {
       this.context.analytics.title = nextProps.title;
     }
-
   }
 
   render() {
-    return <Helmet {...this.props} />
+    return <Helmet {...this.props} />;
   }
 }

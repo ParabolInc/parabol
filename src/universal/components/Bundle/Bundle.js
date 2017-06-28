@@ -89,7 +89,7 @@ class Bundle extends Component {
     const {Mod} = this.state;
     if (!Mod) return null;
     const {history, location, match, extraProps} = this.props;
-    return <Mod {...extraProps} history={history} location={location} match={match}/>;
+    return <Mod {...extraProps} history={history} location={location} match={match} />;
   }
 }
 

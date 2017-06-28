@@ -17,7 +17,6 @@ import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 
 const UserDashMain = (props) => {
   const {styles} = props;
-  console.log('User Dash main')
   return (
     <DashMain>
       <Helmet title="My Dashboard | Parabol" />
