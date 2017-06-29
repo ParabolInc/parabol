@@ -11,6 +11,7 @@ import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
+import './Draft.css';
 
 class ProjectEditor extends Component {
 

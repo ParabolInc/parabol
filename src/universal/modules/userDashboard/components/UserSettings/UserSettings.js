@@ -14,7 +14,7 @@ import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {

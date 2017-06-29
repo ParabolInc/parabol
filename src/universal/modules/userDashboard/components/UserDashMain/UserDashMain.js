@@ -13,7 +13,7 @@ import {
   makeDateString
 } from 'universal/components/Dashboard';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 
 const UserDashMain = (props) => {
   const {styles} = props;

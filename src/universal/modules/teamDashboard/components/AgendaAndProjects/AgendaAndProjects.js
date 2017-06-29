@@ -7,7 +7,7 @@ import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/Tea
 import TeamProjectsHeaderContainer from 'universal/modules/teamDashboard/containers/TeamProjectsHeader/TeamProjectsHeaderContainer';
 import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 
 const AgendaAndProjects = (props) => {
   const {hideAgenda, teamId, teamName, styles} = props;

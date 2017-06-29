@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Landing from 'universal/modules/landing/components/Landing/Landing';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';

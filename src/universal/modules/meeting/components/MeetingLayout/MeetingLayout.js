@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 

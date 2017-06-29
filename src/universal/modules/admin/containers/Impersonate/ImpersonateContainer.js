@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';

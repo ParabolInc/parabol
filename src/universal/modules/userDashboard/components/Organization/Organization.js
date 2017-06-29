@@ -18,7 +18,7 @@ import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 
 const inlineBlockStyle = {
   display: 'inline-block',
