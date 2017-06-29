@@ -21,7 +21,7 @@ query {
 `;
 
 const mapStateToProps = (state, props) => {
-  const {newOrgRoute} = props;
+  const {match: {params: {newOrgRoute}}} = props;
   const userId = state.auth.obj.sub;
   const {orgCount, organizations} = cashay.query(orgDropdownMenuItemsQuery, {
     op: 'newTeamFormContainer',
@@ -41,7 +41,7 @@ const mapStateToProps = (state, props) => {
     initialValues: {
       orgId
     },
-    isNewOrg: newOrgRoute
+    isNewOrg: Boolean(newOrgRoute)
   };
 };
 
