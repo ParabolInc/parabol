@@ -4,16 +4,17 @@ import DashSidebar from 'universal/components/Dashboard/DashSidebar';
 import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
+const userDashboard = () => System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
+const teamContainer = () => System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
+const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer');
+
 const DashboardWrapper = () => {
   return (
     <DashLayoutContainer>
       <DashSidebar />
-      <AsyncRoute path="/me" mod={() => System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard')} />
-      <AsyncRoute path="/team/:teamId" mod={() => System.import('universal/modules/teamDashboard/containers/Team/TeamContainer')} />
-      <AsyncRoute
-        path="/newteam/:newOrg?"
-        mod={() => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer')}
-      />
+      <AsyncRoute isAbstract path="/me" mod={userDashboard} />
+      <AsyncRoute isAbstract path="/team/:teamId" mod={teamContainer} />
+      <AsyncRoute path="/newteam/:newOrg?" mod={newTeam} />
     </DashLayoutContainer>
   );
 };

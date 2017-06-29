@@ -8,7 +8,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {Link} from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import Step1PreferredName from 'universal/modules/welcome/components/Step1PreferredName/Step1PreferredName';
 import Step2TeamName from 'universal/modules/welcome/components/Step2TeamName/Step2TeamName';
 import Step3InviteTeam from 'universal/modules/welcome/components/Step3InviteTeam/Step3InviteTeam';

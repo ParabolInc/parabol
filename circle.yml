@@ -16,6 +16,7 @@ stages:
       CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
+      GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
@@ -31,6 +32,8 @@ stages:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_PROD_URL
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_STAGING_URL
+          elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_DEV_URL
           fi
 
       - type: checkout
@@ -70,6 +73,8 @@ stages:
             export DEPLOY_ENV="production"
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
             export DEPLOY_ENV="staging"
+          elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+            export DEPLOY_ENV="development-server"
           else
             export DEPLOY_ENV="development"
           fi
@@ -91,6 +96,8 @@ stages:
             export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
             export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+          elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+            export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
           fi
           if [ -n "${GITHUB_REMOTE}" ]; then
             npm run build:deploy &&
@@ -110,6 +117,8 @@ stages:
             export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
             export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+          elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+            export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
           fi
           if [ -n "${GITHUB_REMOTE}" ]; then
             git remote add dokku $GITHUB_REMOTE

@@ -1,12 +1,14 @@
+import {Editor, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React from 'react';
+import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
-import {trimString} from 'universal/utils';
-import EmptySpace from '../EmptySpace/EmptySpace';
-import Markdown from '../../../../components/Markdown/Markdown';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import EmptySpace from '../EmptySpace/EmptySpace';
+import truncateCard from 'universal/utils/draftjs/truncateCard';
+
 
 const Card = (props) => {
   const {content, status, tags} = props;
@@ -40,6 +42,9 @@ const Card = (props) => {
     padding: 0
   };
 
+
+  const contentState = truncateCard(content);
+  const editorState = EditorState.createWithContent(contentState, editorDecorators);
   return (
     <table style={ui.emailTableBase} width="100%">
       <tbody>
@@ -53,7 +58,10 @@ const Card = (props) => {
         <tr>
           <td style={cellStyle}>
             <div style={contentStyle}>
-              <Markdown source={trimString(content, 52)} />
+              <Editor
+                readOnly
+                editorState={editorState}
+              />
             </div>
           </td>
         </tr>

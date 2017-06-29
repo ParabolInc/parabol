@@ -17,7 +17,7 @@ import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/Arc
 import ui from 'universal/styles/ui';
 import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
 import Type from 'universal/components/Type/Type';
-import Helmet from 'react-helmet';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamSettingsTabs from 'universal/modules/teamDashboard/components/TeamSettingsTabs/TeamSettingsTabs';
 
 const TeamSettings = (props) => {
