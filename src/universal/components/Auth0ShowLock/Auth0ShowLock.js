@@ -23,7 +23,8 @@ export function showLock(dispatch) {
     const lock = new Auth0Lock(auth0, auth0Domain);
     lock.show({
       authParams: {
-        scope: 'openid rol tms bet'
+        scope: 'openid rol tms bet',
+        prompt: 'select_account'
       }
     }, (error, profile, authToken) => {
       if (error) throw error;

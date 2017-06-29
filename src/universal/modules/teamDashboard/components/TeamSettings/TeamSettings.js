@@ -18,6 +18,7 @@ import ui from 'universal/styles/ui';
 import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
 import Type from 'universal/components/Type/Type';
 import Helmet from 'react-helmet';
+import TeamSettingsTabs from 'universal/modules/teamDashboard/components/TeamSettingsTabs/TeamSettingsTabs';
 
 const TeamSettings = (props) => {
   const {
@@ -114,6 +115,7 @@ const TeamSettings = (props) => {
   return (
     <div className={css(styles.root)}>
       <Helmet title={`${team.name} Settings | Parabol`} />
+      <TeamSettingsTabs/>
       <div className={css(styles.panels)}>
         <Panel label="Manage Team">
           <div className={css(styles.panelBorder)}>
@@ -159,19 +161,6 @@ const TeamSettings = (props) => {
             })}
           </div>
         </Panel>
-        {beta &&
-          <Panel label="Integrations">
-            <div className={css(styles.panelRow)}>
-              <Type width="auto" scale="s2">
-                <b>Note</b>: {'Integrations are an unlocked BETA feature.'}
-              </Type>
-            </div>
-            <IntegrationsContainer
-              teamMemberId={myTeamMember.id}
-              // toggle={<Button colorPalette="cool" label="Integrations" size="smallest" buttonStyle="solid" />}
-            />
-          </Panel>
-        }
         {myTeamMember.isLead &&
           <Panel label="Danger Zone">
             <div className={css(styles.panelRow)}>
@@ -186,6 +175,20 @@ const TeamSettings = (props) => {
     </div>
   );
 };
+//
+//{beta &&
+//<Panel label="Integrations">
+//  <div className={css(styles.panelRow)}>
+//    <Type width="auto" scale="s2">
+//      <b>Note</b>: {'Integrations are an unlocked BETA feature.'}
+//    </Type>
+//  </div>
+//  <IntegrationsContainer
+//    teamMemberId={myTeamMember.id}
+//    // toggle={<Button colorPalette="cool" label="Integrations" size="smallest" buttonStyle="solid" />}
+//  />
+//</Panel>
+//}
 
 TeamSettings.propTypes = {
   beta: PropTypes.number,
