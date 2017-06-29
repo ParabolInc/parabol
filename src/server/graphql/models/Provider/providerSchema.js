@@ -5,22 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLID
 } from 'graphql';
-
-//export const IntegrationSync = new GraphQLObjectType({
-//  name: 'IntegrationSync',
-//  description: 'A channel/repo/etc that is synced with the Parabol team',
-//  fields: () => ({
-//    id: {type: new GraphQLNonNull(GraphQLID), description: 'shortid'},
-//    slackChannelId: {
-//      type: GraphQLID,
-//      description: 'the sync id provided by the service, if available. Useful for fetching from their API'
-//    }
-//    // name: {
-//    //   type: GraphQLString,
-//    //   description: 'The name of the sync (repo, channel, etc)'
-//    // },
-//  })
-//});
+import GraphQLISO8601Type from 'graphql-custom-datetype';
 
 const Provider = new GraphQLObjectType({
   name: 'Provider',
@@ -34,22 +19,30 @@ const Provider = new GraphQLObjectType({
       description: 'The access token to the service. Not the ID because some tokens may be shared across teams (eg slack)',
       type: new GraphQLNonNull(GraphQLID)
     },
+    createdAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the provider was created'
+    },
+    providerUserId: {
+      type: GraphQLID,
+      description: '*The id for the user used by the provider, eg SlackUserId, GoogleUserId'
+    },
     service: {
       type: GraphQLString,
       description: 'The name of the service'
     },
     teamIds: {
       type: new GraphQLList(GraphQLID),
-      description: 'The teams that the token is linked to, if any'
+      description: '*The teams that the token is linked to, if any'
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the project was updated'
     },
     userId: {
       type: GraphQLID,
       description: 'The user that the access token is attached to'
-    },
-    //syncs: {
-    //  type: new GraphQLList(IntegrationSync),
-    //  description: 'A channel/repo/etc that is synced with the Parabol team'
-    //}
+    }
   })
 });
 

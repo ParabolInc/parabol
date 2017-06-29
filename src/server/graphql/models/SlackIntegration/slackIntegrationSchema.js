@@ -3,7 +3,8 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLID
+  GraphQLID,
+  GraphQLBoolean
 } from 'graphql';
 
 const SlackIntegration = new GraphQLObjectType({
@@ -26,13 +27,21 @@ const SlackIntegration = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The name of the channel. Shared with all, updated when the integration owner looks at it'
     },
+    isActive: {
+      type: GraphQLBoolean,
+      description: 'defaults to true. true if this is used to send notifications'
+    },
+    notifications: {
+      type: new GraphQLList(GraphQLString),
+      description: 'The types of notifications the team wishes to receive'
+    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The team that cares about these annoucements'
+      description: '*The team that cares about these annoucements'
     },
     userIds: {
       type: new GraphQLList(GraphQLID),
-      description: 'All the users that can provide this integration'
+      description: '*All the users that can provide this integration'
     }
   })
 });

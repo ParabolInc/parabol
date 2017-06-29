@@ -4,13 +4,13 @@ import {stringify} from 'querystring';
 import postOptions from 'server/utils/fetchOptions';
 import handleIntegration from './handleIntegration';
 import makeAppLink from 'server/utils/makeAppLink';
+import {SLACK} from 'universal/utils/constants';
 
 export default function (exchange) {
   return async (req, res) => {
     closeClientPage(res);
     const {query: {code, state}} = req;
     if (!code) return;
-    const service = 'slack';
     const queryParams = {
       client_id: process.env.SLACK_CLIENT_ID,
       client_secret: process.env.SLACK_CLIENT_SECRET,
@@ -22,6 +22,13 @@ export default function (exchange) {
     const json = await slackRes.json();
     // const {access_token: accessToken, team_name: slackTeamName, team_id: slackTeamId} = json;
     const {access_token: accessToken} = json;
-    handleIntegration(accessToken, exchange, service, state);
+    const userInfoUri = `https://slack.com/api/users.identity?token=${accessToken}`;
+    const userInfoRes = await fetch(userInfoUri, postOptions);
+    const userInfoJson = await userInfoRes.json();
+    const {ok, user} = userInfoJson;
+    // meh screw being nice, they must've tampered with the oauth request if !ok. fail silently
+    if (ok) {
+      handleIntegration(accessToken, exchange, SLACK, state, user.id);
+    }
   };
 }

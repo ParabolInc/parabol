@@ -1,29 +1,77 @@
 import getRethink from 'server/database/rethinkDriver';
-import queryIntegrator from '../../../../utils/queryIntegrator';
+import {SLACK} from 'universal/utils/constants';
 import makeAppLink from '../../../../utils/makeAppLink';
 
-const notifySlack = (text, teamId) => {
-  queryIntegrator({
-    action: 'notifySlack',
-    payload: {
-      text,
-      teamId
-    }
-  });
+const getIntegrationsForNotification = (teamId, notification) => {
+  const r = getRethink();
+  return r.table('SlackIntegration')
+    .getAll(teamId, {index: 'teamId'})
+    .filter((integration) => integration('notifications').contains(notification));
 };
+
+/* eslint-disable no-await-in-loop */
+const notifySlack = async (integrations, teamId, slackText) => {
+  const r = getRethink();
+  const providers = await r.table('Provider')
+    .getAll(teamId, {index: 'teamIds'})
+    .filter({service: SLACK});
+  // for each slack channel, find the appropriate user's token to use
+  for (let i = 0; i < integrations.length; i++) {
+    const integration = integrations[i];
+    const {channelId, userIds} = integration;
+    let success;
+    for (let t = 0; t < providers.length; t++) {
+      const provider = providers[t];
+      const {accessToken, userId} = provider;
+      if (!userIds.includes(userId)) continue;
+      const uri = `https://slack.com/api/chat.postMessage?token=${accessToken}&channel=${channelId}&text=${slackText}&unfurl_links=true`;
+      const res = await fetch(uri);
+      const resJson = await res.json();
+      const {ok, error} = resJson;
+      if (ok) {
+        success = true;
+        break;
+      } else if (error === 'channel_not_found') {
+        // break for no success
+        break;
+      } else if (error === 'not_in_channel' || error === 'invalid_auth') {
+        // remove user from integration and then try with the next
+        await r.table('SlackIntegration').get(integration.id)
+          .update((doc) => ({userIds: doc('userIds').difference([userId])}));
+      }
+    }
+    if (!success) {
+      await r.table('SlackIntegration').get(integration.id)
+        .update({
+          isActive: false,
+          userIds: []
+        });
+    }
+  }
+};
+/* eslint-enable */
 
 export const startSlackMeeting = async (teamId) => {
   const r = getRethink();
+
+  // get all slack channels that care about meeting:start
+  const integrations = await getIntegrationsForNotification(teamId, 'meeting:start');
+  if (integrations.length === 0) return;
+
   const team = await r.table('Team').get(teamId);
   const meetingUrl = makeAppLink(`meeting/${teamId}`);
   const slackText = `${team.name} has started a meeting!\n To join, click here: ${meetingUrl}`;
-  notifySlack(slackText, teamId);
+  notifySlack(integrations, teamId, slackText);
 };
 
 export const endSlackMeeting = async (meetingId, teamId) => {
   const r = getRethink();
+
+  const integrations = await getIntegrationsForNotification(teamId, 'meeting:end');
+  if (integrations.length === 0) return;
+
   const team = await r.table('Team').get(teamId);
   const summaryUrl = makeAppLink(`summary/${meetingId}`);
   const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`;
-  notifySlack(slackText, teamId);
+  notifySlack(integrations, teamId, slackText);
 };

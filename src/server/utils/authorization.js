@@ -11,6 +11,11 @@ export const isSuperUser = (authToken) => {
   return userId && authToken.rol === 'su';
 };
 
+export const getIsTeamLead = (teamMemberId) => {
+  const r = getRethink();
+  return r.table('TeamMember').get(teamMemberId)('isLead').run();
+};
+
 export const requireAuth = (authToken) => {
   const userId = getUserId(authToken);
   if (userId) return userId;
@@ -73,9 +78,8 @@ export const requireSUOrSelfOrLead = async (authToken, userId, teamId) => {
     return 'self';
   }
   const teamMemberId = `${authTokenUserId}::${teamId}`;
-  const r = getRethink();
-  const teamMember = await r.table('TeamMember').get(teamMemberId);
-  if (teamMember && teamMember.isLead) {
+  const isTeamLead = await getIsTeamLead(teamMemberId);
+  if (isTeamLead) {
     return 'lead';
   }
   throw errorObj({_error: 'Unauthorized. Only the team member or the leader can remove someone'});

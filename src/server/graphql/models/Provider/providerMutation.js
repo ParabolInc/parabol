@@ -1,13 +1,7 @@
-//import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLString
-} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import getRethink from 'server/database/rethinkDriver';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import queryIntegrator from 'server/utils/queryIntegrator';
-import {handleRethinkRemove} from 'server/utils/makeChangefeedHandler';
+import serviceToProvider from 'server/utils/serviceToProvider';
 import {errorObj} from 'server/utils/utils';
 
 export default {
@@ -24,43 +18,50 @@ export default {
         description: 'the teamId to disconnect from the token'
       }
     },
-    async resolve(source, {providerId, teamId}, {authToken, exchange, socket}) {
+    async resolve(source, {providerId, teamId}, {authToken, socket}) {
+      const r = getRethink();
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
+
       // RESOLUTION
 
-      const {data, errors} = await queryIntegrator({
-        action: 'removeToken',
-        payload: {
-          providerId,
-          teamId
+      // unlink the team from the user's token
+      const res = await r.table('Provider')
+        .get(providerId)
+        .update((user) => ({teamIds: user('teamIds').difference([teamId])}), {returnChanges: true});
+
+      if (res.skipped === 1) {
+        throw errorObj({_error: `Provider ${providerId} does not exist`});
+      }
+
+      // remove the user from every integration under the provider
+      const affectedServices = res.changes[0];
+      if (!affectedServices) return true;
+      const {service} = affectedServices.new_val;
+      const userId = getUserId(authToken);
+      const table = serviceToProvider[service];
+      const integrationChanges = await r.table(table)
+        .getAll(userId, {index: 'userIds'})
+        .update((user) => ({userIds: user('userIds').difference([userId])}), {returnChanges: true})('changes');
+      if (integrationChanges.length === 0) return true;
+
+      // remove the integration entirely if they were the last one on it
+      const promises = integrationChanges.map((integration) => {
+        const {id, userIds} = integration.new_val;
+        if (userIds.length === 0) {
+          return r.table(table).get(id)
+            .update({
+              isActive: false,
+              userIds: []
+            });
         }
+        return undefined;
       });
+      await Promise.all(promises);
+      return true;
 
-      // TODO refactor projects to hold an id like github's full_name for repos
-      //if (service === GITHUB) {
-      //  await r.table('Project')
-      //    .getAll(teamId, {index: 'teamId'})
-      //    .filter({
-      //      integrationId: 'foo'
-      //    })
-      //    .delete();
-      //}
-
-      if (errors) {
-        throw errorObj({_error: errors[0]});
-      }
-
-      const oldTokenId = data.removeToken;
-      if (oldTokenId) {
-        const payload = handleRethinkRemove({id: oldTokenId});
-        const userId = getUserId(authToken);
-        const teamMemberId = `${userId}::${teamId}`;
-        const channel = `providers/${teamMemberId}`;
-        exchange.publish(channel, payload);
-      }
     }
   }
 };
