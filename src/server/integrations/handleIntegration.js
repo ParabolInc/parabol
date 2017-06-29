@@ -1,11 +1,12 @@
 import getRethink from 'server/database/rethinkDriver';
-import shortid from 'shortid';
+import {makeIntegrationId} from 'universal/utils/integrationIds';
+
 
 const handleIntegration = async (accessToken, exchange, service, teamMemberId, providerUserId) => {
   const r = getRethink();
   const [userId, teamId] = teamMemberId.split('::');
   //const channel = `providers/${teamMemberId}`;
-  const id = shortid.generate();
+  const id = makeIntegrationId(service);
   const now = new Date();
   // upsert the token
   return r.table('Provider')

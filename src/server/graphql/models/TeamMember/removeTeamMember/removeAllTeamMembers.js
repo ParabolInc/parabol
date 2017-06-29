@@ -1,6 +1,8 @@
 import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getRethink from 'server/database/rethinkDriver';
+import serviceToProvider from 'server/utils/serviceToProvider';
+import {getServiceFromId} from 'universal/utils/integrationIds';
 
 export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange) {
   const r = getRethink();
@@ -89,5 +91,35 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
     const channel = `${USER_MEMO}/${userId}`;
     exchange.publish(channel, {type: KICK_OUT, teamId, teamName});
   });
+
+  // TODO on the frontend, pop a warning if this is the last guy
+  const changedIntegrations = await r.table('Provider')
+    .getAll(r.args(teamIds), {index: 'teamIds'})
+    .filter({userId})
+    .update((doc) => ({
+      teamIds: doc('teamIds').filter((teamId) => r.expr(teamIds).contains(teamId).not())
+    }), {returnChanges: true})('changes')
+    .forEach((change) => {
+      const table = r.expr(serviceToProvider)(change('new_val')('service'));
+      return r.table(table)
+        .getAll(userId, {index: 'userIds'})
+        .filter((doc) => r.expr(teamIds).contains(doc('teamId')))
+        .update((doc) => ({
+          userIds: doc('userIds').difference([userId]),
+          isActive: doc('userIds').count().ne(0)
+        }), {returnChanges: true})('changes');
+
+      // look for all integrations for this user for any of these teams
+    });
+  //changedIntegrations.forEach((integration) => {
+  //  const {id, isActive} = integration.new_val;
+  //  if (!isActive) {
+  //    const service = getServiceFromId(id);
+  //    if (service === GITHUB) {
+  //      // TODO archive all the things
+  //    }
+  //  }
+  //
+  //})
   return true;
 }

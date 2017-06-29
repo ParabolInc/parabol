@@ -12,7 +12,7 @@ const SlackIntegration = new GraphQLObjectType({
   description: 'An integration that sends start/end meeting messages to a specified slack channel',
   fields: () => ({
     id: {
-      description: 'shortid',
+      description: 'shortid prefixed with first 3 letters of the integration',
       type: new GraphQLNonNull(GraphQLID)
     },
     // if we ever need it...
