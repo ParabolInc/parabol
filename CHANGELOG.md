@@ -7,6 +7,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## v0.19.1 - 26-Jun-2017
 ### Fixed
 - #914 improbable welcome wizard race condition
+- #1047 refactor routing components to stop unnecessary rerenders
+- #1086 teamId/orgId missing from Segment page events
 - #1116 new cards during meeting shows incorrect owner
 - #1117 meeting summary cards not rendering to HTML
 
