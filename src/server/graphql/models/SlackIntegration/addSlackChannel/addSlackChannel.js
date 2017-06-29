@@ -71,6 +71,7 @@ export default {
     // for each existing provider, add their userId to the userIds
     await r.table('SlackIntegration').insert({
       id: shortid.generate(),
+      blackList: [],
       isActive: true,
       channelId: slackChannelId,
       channelName: name,

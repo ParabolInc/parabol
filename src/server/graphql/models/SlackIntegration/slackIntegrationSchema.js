@@ -19,6 +19,10 @@ const SlackIntegration = new GraphQLObjectType({
     //userData: {
     //  type: new GraphQLList(SlackUserData)
     //},
+    blackList: {
+      type: new GraphQLList(GraphQLID),
+      description: 'A list of userIds for users that explicitly do not want to be associated with this integration'
+    },
     channelId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'the id of the channel provided by the service, if available. Useful for fetching from their API'

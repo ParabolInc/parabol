@@ -6,6 +6,7 @@ const getIntegrationsForNotification = (teamId, notification) => {
   const r = getRethink();
   return r.table('SlackIntegration')
     .getAll(teamId, {index: 'teamId'})
+    .filter({isActive: true})
     .filter((integration) => integration('notifications').contains(notification));
 };
 
