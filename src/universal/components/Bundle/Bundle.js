@@ -11,7 +11,7 @@ const updateAnalyticsPage = (dispatch, lastPath, nextPath, title, params) => {
     path: nextPath,
     params
   };
-  dispatch(segmentEventPage(name, null, properties));
+  dispatch(segmentEventPage(title, null, properties));
 };
 
 class Bundle extends Component {
