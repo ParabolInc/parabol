@@ -5,6 +5,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import TeamSettingsTabs from 'universal/modules/teamDashboard/components/TeamSettingsTabs/TeamSettingsTabs';
 
 const overview = () => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer');
+const integrations = () => System.import('universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations');
 
 const TeamSettingsWrapper = (props) => {
   const {location: {pathname}, match} = props;
@@ -17,7 +18,7 @@ const TeamSettingsWrapper = (props) => {
         <AsyncRoute exact path={match.url} mod={overview} extraProps={{teamId}}/>
         {/*<AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/>*/}
         {/*<AsyncRoute exact path={`${match.url}/roles`} mod={overview} extraProps={{teamId}}/>*/}
-        <AsyncRoute path={`${match.url}/integrations`} mod={overview} extraProps={{teamId}}/>
+        <AsyncRoute path={`${match.url}/integrations`} mod={integrations} extraProps={{teamId}}/>
       </Switch>
     </div>
   );
