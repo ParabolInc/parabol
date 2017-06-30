@@ -47,7 +47,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const agendaProjects = () => System.import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer');
-const teamSettings = () => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer');
+const teamSettings = () => System.import('universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper');
 const archivedProjects = () => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer');
 
 const TeamContainer = (props) => {

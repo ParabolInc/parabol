@@ -115,7 +115,6 @@ const TeamSettings = (props) => {
   return (
     <div className={css(styles.root)}>
       <Helmet title={`${team.name} Settings | Parabol`} />
-      <TeamSettingsTabs/>
       <div className={css(styles.panels)}>
         <Panel label="Manage Team">
           <div className={css(styles.panelBorder)}>

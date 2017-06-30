@@ -12,31 +12,23 @@
  const iconStyle = {opacity: '.5'};
 
  const TeamSettingsTabs = (props) => {
-   const {notificationCount, history, styles} = props;
-   let currentPath = SETTINGS;
-   const makeOnClick = (path) => {
-     //const fullPath = `/me/${path}`;
-     //if (history.isActive(fullPath)) {
-     //  currentPath = path;
-     //  if (history.isActive(fullPath, true)) {
-     //    return undefined;
-     //  }
-     //}
-     //return () => {
-     //  history.push(fullPath);
-     //};
+   const {activeKey, notificationCount, history, styles, teamId} = props;
+   const makeOnClick = (area = '') => {
+     return area === activeKey ? undefined : () => {
+       history.push(`/team/${teamId}/settings/${area}`);
+     };
    };
-   const clickHandlers = settingsOrder.map((path) => makeOnClick(path));
-
    return (
-     <Tabs activeIdx={settingsOrder.indexOf(currentPath)}>
+     <Tabs activeKey={activeKey}>
        <Tab
+         key=""
          label="Overview"
-         onClick={clickHandlers[0]}
+         onClick={makeOnClick()}
        />
        <Tab
+         key="integrations"
          label="Integrations"
-         onClick={clickHandlers[1]}
+         onClick={makeOnClick('integrations')}
        />
      </Tabs>
    );

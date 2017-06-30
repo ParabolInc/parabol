@@ -1,34 +1,40 @@
-import PropTypes from 'prop-types';
-import React, { Children, cloneElement } from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import PropTypes from 'prop-types';
+import React, {Children, cloneElement} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
+import withStyles from 'universal/styles/withStyles';
 
 
 const Tabs = (props) => {
-  const {activeIdx, children, styles} = props;
+  const {activeKey, children, styles} = props;
   const tabWidth = 100 / Children.count(children);
+
+  let activeIdx = 0;
+  const properChildren = Children.map(children, (child, idx) => {
+    if (child.key === activeKey) {
+      activeIdx = idx;
+      return cloneElement(child, {isActive: true});
+    }
+    return child;
+  });
   const inkBarStyles = {
     width: `${tabWidth}%`,
     height: 2,
     background: appTheme.palette.cool,
     transform: `translate3d(${activeIdx * 100}%, 4px, 0)`
   };
-  const properChildren = Children.map(children, (child, idx) => cloneElement(child, {
-    isActive: idx === activeIdx
-  }));
   return (
     <div className={css(styles.tabsAndBar)}>
       <div className={css(styles.tabs)}>
         {properChildren}
       </div>
-      <div style={inkBarStyles} />
+      <div style={inkBarStyles}/>
     </div>
   );
 };
 
 Tabs.propTypes = {
-  activeIdx: PropTypes.number,
+  activeKey: PropTypes.string.isRequired,
   children: PropTypes.any,
   styles: PropTypes.object
 };
