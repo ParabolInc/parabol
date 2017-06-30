@@ -135,6 +135,7 @@
     "graphiql": "^0.9.3",
     "graphql": "^0.9.1",
     "graphql-custom-datetype": "^0.3.0",
+    "graphql-relay": "^0.5.2",
     "immutable": "^3.8.1",
     "ioredis": "^2.5.0",
     "isomorphic-fetch": "2.2.1",

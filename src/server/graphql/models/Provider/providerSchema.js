@@ -6,15 +6,16 @@ import {
   GraphQLID
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
+import {globalIdField} from 'graphql-relay';
+import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 
 const Provider = new GraphQLObjectType({
   name: 'Provider',
   description: 'A token for a user to be used on 1 or more teams',
+  interfaces: [nodeInterface],
   fields: () => ({
-    id: {
-      description: 'shortid',
-      type: new GraphQLNonNull(GraphQLID)
-    },
+    // shortid
+    id: globalIdField('Provider', ({id}) => id),
     accessToken: {
       description: 'The access token to the service. Not the ID because some tokens may be shared across teams (eg slack)',
       type: new GraphQLNonNull(GraphQLID)

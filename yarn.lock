@@ -3625,6 +3625,10 @@ graphql-custom-datetype@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/graphql-custom-datetype/-/graphql-custom-datetype-0.3.0.tgz#6849d8fa6f3d685110b93bec753e7561c7fc720f"
 
+graphql-relay@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.5.2.tgz#40ff714efd60c2cd89e0bcc79e2afa6d87fa8673"
+
 graphql@0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.7.1.tgz#3918e6b8a1f93c0e174573e51f705165294c43c6"
