@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import ProviderList from 'universal/modules/teamDashboard/components/ProviderList/ProviderList';
 
 const TeamIntegrations = (props) => {
   return (
     <div>
-      provider list
-      other stuff
+      <ProviderList/>
+      <div>
+        Notifications
+      </div>
     </div>
   );
 };
