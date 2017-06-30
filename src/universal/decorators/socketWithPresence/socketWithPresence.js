@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
+
 import {
   ADD_TO_TEAM,
   JOIN_TEAM,

@@ -6,6 +6,8 @@ import makeStore from './makeStore';
 import Root from './Root';
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
 import cashaySchema from 'cashay!../server/utils/getCashaySchema.js'; // eslint-disable-line
+import relayEnv from 'client/relayEnv';
+import {relayHTTP} from 'client/relayFetchQuery';
 
 // const {routing} = window.__INITIAL_STATE__;
 const initialState = {};
@@ -19,6 +21,9 @@ const initialState = {};
     schema: cashaySchema,
     httpTransport: new ActionHTTPTransport(persistedToken)
   });
+  // create the relay singleton
+  relayEnv.setHTTP(relayHTTP(persistedToken));
+
   if (__PRODUCTION__) {
     StyleSheet.rehydrate(window.__APHRODITE__);
     render(
