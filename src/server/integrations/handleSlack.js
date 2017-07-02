@@ -34,7 +34,11 @@ export default function (exchange) {
     }
     const r = getRethink();
     const [userId, teamId] = teamMemberId;
-    handleIntegration(accessToken, exchange, SLACK, teamMemberId, user.id);
+    const cachedFields = {
+      providerUserName: user.name,
+      providerUserId: user.id
+    };
+    handleIntegration(accessToken, exchange, SLACK, teamMemberId, cachedFields);
 
     // add this guy to all the other existing integrations as long as he didn't blacklist himself & has permission
     const integrations = r.table('SlackIntegration')

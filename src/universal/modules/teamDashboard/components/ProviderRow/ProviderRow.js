@@ -1,35 +1,39 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import Avatar from 'universal/components/Avatar/Avatar';
+import {graphql, createFragmentContainer} from 'react-relay';
 import Row from 'universal/components/Row/Row';
-import Tag from 'universal/components/Tag/Tag';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
+import appTheme from 'universal/styles/theme/appTheme';
 import github from 'universal/styles/theme/images/graphics/GitHub-Mark-120px-plus.png';
 import slack from 'universal/styles/theme/images/graphics/Slack_Mark.svg';
+import withStyles from 'universal/styles/withStyles';
 
 const imageLookup = {
   github,
   slack
 };
 
-const OrgUserRow = (props) => {
+const defaultDetails = {
+  userCount: 0,
+  integrationCount: 0
+};
+
+const ProviderRow = (props) => {
   const {
     name,
-    provider: {
-      accessToken,
-      userCount,
-      integrationCount,
-      providerUserName
-    },
+    providerDetails,
     styles
   } = props;
+  const {
+    accessToken,
+    userCount,
+    integrationCount,
+    providerUserName
+  } = providerDetails || defaultDetails;
   return (
     <Row>
       <div className={css(styles.providerAvatar)}>
-        <img className={css(styles.avatarImg)} height={50} width={50} src={imageLookup[name]} />
+        <img className={css(styles.avatarImg)} height={50} width={50} src={imageLookup[name]}/>
       </div>
       <div className={css(styles.userInfo)}>
         <div className={css(styles.nameAndTags)}>
@@ -42,7 +46,8 @@ const OrgUserRow = (props) => {
   );
 };
 
-OrgUserRow.propTypes = {
+
+ProviderRow.propTypes = {
   actions: PropTypes.any,
   orgUser: PropTypes.shape({
     email: PropTypes.string,
@@ -105,4 +110,11 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OrgUserRow);
+export default createFragmentContainer(
+  withStyles(styleThunk)(ProviderRow),
+  graphql`
+    fragment ProviderRow_providerDetails on ProviderRow {
+      accessToken
+    }
+  `
+);

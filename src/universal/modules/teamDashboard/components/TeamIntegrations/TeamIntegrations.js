@@ -3,9 +3,10 @@ import React from 'react';
 import ProviderList from 'universal/modules/teamDashboard/components/ProviderList/ProviderList';
 
 const TeamIntegrations = (props) => {
+  const {providerMap} = props;
   return (
     <div>
-      <ProviderList/>
+      <ProviderList providerMap={providerMap}/>
       <div>
         Notifications
       </div>

@@ -39,7 +39,9 @@
     "lint": "eslint 'src/**/*.js' 'webpack/*.js'",
     "lint:fix": "eslint --fix 'src/**/*.js' 'webpack/*.js' ",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
-    "snyk-protect": "snyk protect"
+    "relay": "relay-compiler --src ./src --schema build/schema.graphql --watch",
+    "snyk-protect": "snyk protect",
+    "update-schema": "node ./src/server/utils/updateSchema.babel.js"
   },
   "pre-commit": [],
   "devDependencies": {

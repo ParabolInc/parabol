@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {makeIntegrationId} from 'universal/utils/integrationIds';
 
 
-const handleIntegration = async (accessToken, exchange, service, teamMemberId, providerUserId) => {
+const handleIntegration = async (accessToken, exchange, service, teamMemberId, cachedFields) => {
   const r = getRethink();
   const [userId, teamId] = teamMemberId.split('::');
   //const channel = `providers/${teamMemberId}`;
@@ -20,10 +20,10 @@ const handleIntegration = async (accessToken, exchange, service, teamMemberId, p
       return r.branch(
         doc.eq(null),
         {
+          ...cachedFields,
           id,
           accessToken,
           createdAt: now,
-          providerUserId,
           service,
           teamIds: [teamId],
           updatedAt: now,

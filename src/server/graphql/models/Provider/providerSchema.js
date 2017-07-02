@@ -18,7 +18,7 @@ const ProviderRow = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The access token attached to the userId. null if user does not have a token for the provider'
     },
-    linkedUserCount: {
+    userCount: {
       type: GraphQLInt,
       description: 'The count of all the people on the team that have linked their account to the provider'
     },
@@ -33,8 +33,8 @@ const ProviderRow = new GraphQLObjectType({
   })
 });
 
-export const ProviderList = new GraphQLObjectType({
-  name: 'ProviderList',
+export const ProviderMap = new GraphQLObjectType({
+  name: 'ProviderMap',
   description: 'A token for a user to be used on 1 or more teams',
   fields: () => ({
     slack: {

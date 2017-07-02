@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
+import {createFragmentContainer} from 'react-relay';
 
 const providerRow = {
   github: {
@@ -12,15 +13,29 @@ const providerRow = {
 };
 
 const ProviderList = (props) => {
+  const {providerMap} = props;
   return (
     <div>
-      <ProviderRow name="github" provider={providerRow.github}/>
+      <ProviderRow name="github" providerDetails={providerMap.github}/>
     </div>
   );
 };
 
 ProviderList.propTypes = {
-  providers: PropTypes.array.isRequired
+  providerMap: PropTypes.object.isRequired
 };
 
-export default ProviderList;
+
+export default createFragmentContainer(
+  ProviderList,
+  graphql`
+    fragment ProviderList_providerMap on ProviderMap {
+      github {
+        ...ProviderRow_providerDetails
+      }
+      slack {
+        ...ProviderRow_providerDetails
+      }
+    }
+  `
+);

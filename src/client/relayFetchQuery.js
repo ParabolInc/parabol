@@ -1,5 +1,5 @@
 export const relayHTTP = (authToken) => (operation, variables, cacheConfig, uploadables) => {
-  return fetch('/relay', {
+  return fetch('/graphql', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -20,7 +20,7 @@ export const relayWS = (socket) => (operation, variables, cacheConfig, uploadabl
       query: operation.text,
       variables
     };
-    socket.emit('relay', request, (error, response) => {
+    socket.emit('graphql', request, (error, response) => {
       resolve(response);
     });
   });
