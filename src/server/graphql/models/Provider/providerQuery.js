@@ -4,6 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import Provider, {ProviderMap} from 'server/graphql/models/Provider/providerSchema';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import serviceToProvider from 'server/utils/serviceToProvider';
+import {SLACK} from 'universal/utils/constants';
 
 const {connectionType: ProviderConnectionType} = connectionDefinitions({
   name: 'Provider',
@@ -65,22 +66,30 @@ export default {
 
       const providerMap = allProviders.reduce((map, obj) => {
         const service = obj.group;
-        const userCount = obj.reduction.length;
-        const userDoc = obj.reduction.find((doc) => doc.userId === userId);
-        const accessToken = userDoc ? userDoc.accessToken : undefined;
-        const providerUserName = userDoc ? userDoc.providerUserName : undefined;
-        map[service] = {
-          userCount,
-          accessToken,
-          providerUserName
-        };
+        if (service === SLACK) {
+          const teamProvider = obj.reduction[0];
+          const {accessToken} = teamProvider;
+          map[service] = {
+            accessToken
+          };
+        } else {
+          const userCount = obj.reduction.length;
+          const userDoc = obj.reduction.find((doc) => doc.userId === userId);
+          const accessToken = userDoc ? userDoc.accessToken : undefined;
+          const providerUserName = userDoc ? userDoc.providerUserName : undefined;
+          map[service] = {
+            userCount,
+            accessToken,
+            providerUserName
+          };
+        }
         return map;
       }, {});
       const services = Object.keys(providerMap);
       const promises = services.map((service) => {
         const table = serviceToProvider[service];
         return r.table(table)
-          .getAll(teamId, {index: teamId})
+          .getAll(teamId, {index: 'teamId'})
           .count();
       });
 

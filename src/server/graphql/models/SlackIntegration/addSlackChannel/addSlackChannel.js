@@ -54,7 +54,7 @@ export default {
       throw errorObj({_error: channelInfoJson.error});
     }
 
-    const {is_member: isMember, is_archived: isArchived, members, name} = channel;
+    const {is_member: isMember, is_archived: isArchived, name} = channel;
     if (!isMember) {
       throw errorObj({_error: `You are not a member of slack channel ${name}`});
     }
@@ -65,20 +65,20 @@ export default {
     // RESOLUTION
 
     // find all other team members that can access the channel
-    const userIds = r.table('Provider')
-      .getAll(r.args(members), {index: 'providerUserId'})('userId');
+    //const userIds = r.table('Provider')
+    //  .getAll(r.args(members), {index: 'providerUserId'})('userId');
 
     // for each existing provider, add their userId to the userIds
-    await r.table('SlackIntegration').insert({
-      id: shortid.generate(),
-      blackList: [],
-      isActive: true,
-      channelId: slackChannelId,
-      channelName: name,
-      notifications: ['meeting:end', 'meeting:start'],
-      teamId,
-      userIds
-    });
+    //await r.table('SlackIntegration').insert({
+    //  id: shortid.generate(),
+    //  blackList: [],
+    //  isActive: true,
+    //  channelId: slackChannelId,
+    //  channelName: name,
+    //  notifications: ['meeting:end', 'meeting:start'],
+    //  teamId,
+    //  userIds
+    //});
     return true;
   }
 };

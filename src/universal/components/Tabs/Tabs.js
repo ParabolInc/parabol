@@ -1,8 +1,8 @@
 import {css} from 'aphrodite-local-styles/no-important';
+import withStyles from 'universal/styles/withStyles';
 import PropTypes from 'prop-types';
 import React, {Children, cloneElement} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
-import withStyles from 'universal/styles/withStyles';
 
 
 const Tabs = (props) => {

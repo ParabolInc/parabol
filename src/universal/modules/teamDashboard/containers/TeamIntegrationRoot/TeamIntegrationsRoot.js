@@ -5,8 +5,8 @@ import {graphql, QueryRenderer} from 'react-relay';
 import TeamIntegrations from 'universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations';
 import {connect} from 'react-redux';
 
-const teamIntegrationsQuery = graphql`
-  query TeamIntegrationsRootQuery($teamMemberId: ID!) {
+const teamIntegrationQuery = graphql`
+  query TeamIntegrationRootQuery($teamMemberId: ID!, $service: String!) {
     providerMap(teamMemberId: $teamMemberId) {
       ...ProviderList_providerMap    
     }
@@ -19,11 +19,11 @@ const mapStateToProps = (state) => {
   };
 };
 
-const TeamIntegrationsRoot = ({jwt, teamMemberId}) => {
+const TeamIntegrationRoot = ({jwt, teamMemberId}) => {
   return (
     <QueryRenderer
       environment={relayEnv.get()}
-      query={teamIntegrationsQuery}
+      query={teamIntegrationQuery}
       render={({error, props}) => {
         console.log('renderer', error, props)
         if (error) {
@@ -40,8 +40,8 @@ const TeamIntegrationsRoot = ({jwt, teamMemberId}) => {
 };
 
 
-TeamIntegrationsRoot.propTypes = {
+TeamIntegrationRoot.propTypes = {
   teamMemberId: PropTypes.string.isRequired
 };
 
-export default connect(mapStateToProps)(TeamIntegrationsRoot);
+export default connect(mapStateToProps)(TeamIntegrationRoot);

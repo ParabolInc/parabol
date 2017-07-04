@@ -57,7 +57,7 @@ const Provider = new GraphQLObjectType({
     // shortid
     id: globalIdField('Provider', ({id}) => id),
     accessToken: {
-      description: 'The access token to the service. Not the ID because some tokens may be shared across teams (eg slack)',
+      description: 'The access token to the service',
       type: new GraphQLNonNull(GraphQLID)
     },
     createdAt: {

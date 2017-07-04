@@ -11,8 +11,7 @@ exports.up = async (r) => {
   const indices = [
     r.table('Provider').indexCreate('teamIds', {multi: true}),
     r.table('Provider').indexCreate('providerUserId'),
-    r.table('SlackIntegration').indexCreate('teamId'),
-    r.table('SlackIntegration').indexCreate('userIds', {multi: true})
+    r.table('SlackIntegration').indexCreate('teamId')
   ];
   try {
     await Promise.all(indices);
