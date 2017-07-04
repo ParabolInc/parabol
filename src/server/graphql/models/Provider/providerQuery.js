@@ -1,19 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
-import {connectionArgs, connectionDefinitions, connectionFromArray} from 'graphql-relay';
+import {connectionArgs, connectionFromArray} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import Provider, {ProviderMap} from 'server/graphql/models/Provider/providerSchema';
+import {Provider, ProviderMap, ProviderConnection} from 'server/graphql/models/Provider/providerSchema';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import serviceToProvider from 'server/utils/serviceToProvider';
 import {SLACK} from 'universal/utils/constants';
 
-const {connectionType: ProviderConnectionType} = connectionDefinitions({
-  name: 'Provider',
-  nodeType: Provider
-});
-
 export default {
-  providers: {
-    type: ProviderConnectionType,
+  providerList: {
+    type: ProviderConnection,
     description: 'paginated list of providers',
     args: {
       ...connectionArgs,

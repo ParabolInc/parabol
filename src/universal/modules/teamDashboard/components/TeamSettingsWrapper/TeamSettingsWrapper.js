@@ -6,7 +6,7 @@ import TeamSettingsTabs from 'universal/modules/teamDashboard/components/TeamSet
 
 const overview = () => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer');
 const providers = () => System.import('universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot');
-const integrations = () => System.import('universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot');
+const slackIntegrations = () => System.import('universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot');
 
 const TeamSettingsWrapper = (props) => {
   const {location: {pathname}, match, teamMemberId} = props;
@@ -19,8 +19,8 @@ const TeamSettingsWrapper = (props) => {
         <AsyncRoute exact path={match.url} mod={overview} extraProps={{teamId}}/>
         {/*<AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/>*/}
         {/*<AsyncRoute exact path={`${match.url}/roles`} mod={overview} extraProps={{teamId}}/>*/}
-        <AsyncRoute path={`${match.url}/integrations/:service`} mod={integrations} extraProps={{teamMemberId}}/>
-        <AsyncRoute path={`${match.url}/integrations`} mod={providers} extraProps={{teamMemberId}}/>
+        <AsyncRoute path={`${match.url}/integrations/slack`} mod={slackIntegrations} extraProps={{teamMemberId}}/>
+        <AsyncRoute exact path={`${match.url}/integrations`} mod={providers} extraProps={{teamMemberId}}/>
       </Switch>
     </div>
   );

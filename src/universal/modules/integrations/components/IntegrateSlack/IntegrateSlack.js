@@ -22,14 +22,13 @@ class IntegrateSlack extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.props.service && nextProps.service) {
-      this.getChannelList(nextProps.service);
+    if (!this.props.accessToken && nextProps.accessToken) {
+      this.getChannelList(nextProps.accessToken);
     }
   }
 
-  async getChannelList(service = {}) {
+  async getChannelList(accessToken) {
     const now = new Date();
-    const {accessToken} = service;
     if (accessToken && now - this.lastUpdated > ms('30s')) {
       this.lastUpdated = now;
       const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
@@ -45,7 +44,7 @@ class IntegrateSlack extends Component {
   }
 
   dropdownMapper = async () => {
-    const channels = await this.getChannelList(this.props.service);
+    const channels = await this.getChannelList(this.props.accessToken);
     this.setState({
       options: channels.map((channel) => ({id: channel.id, label: channel.name}))
     });

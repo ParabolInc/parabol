@@ -14,6 +14,8 @@ import TeamMember from '../TeamMember/teamMemberSchema';
 import getRethink from 'server/database/rethinkDriver';
 import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import slackChannels from 'server/graphql/models/SlackIntegration/slackChannels';
+import integrationProvider from 'server/graphql/models/Provider/integrationProvider';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -178,6 +180,8 @@ export const User = new GraphQLObjectType({
           .run();
       }
     },
+    slackChannels,
+    integrationProvider,
     jwt: {
       type: GraphQLID,
       description: 'a refreshed JWT'

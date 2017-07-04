@@ -23,7 +23,7 @@ const makeGraphQLFetcher = (authToken) => {
       return undefined;
     }
     const variables = graphQLParams.variables ?
-      JSON.parse(graphQLParams.variables) : undefined;
+      graphQLParams.variables : undefined;
     const res = await fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {
       method: 'post',
       headers: {

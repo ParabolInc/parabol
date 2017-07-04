@@ -20,6 +20,7 @@ export const relayWS = (socket) => (operation, variables, cacheConfig, uploadabl
       query: operation.text,
       variables
     };
+    console.log('req', request)
     socket.emit('graphql', request, (error, response) => {
       resolve(response);
     });

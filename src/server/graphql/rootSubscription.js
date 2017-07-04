@@ -28,6 +28,6 @@ const rootFields = Object.assign({},
 );
 
 export default new GraphQLObjectType({
-  name: 'RootSubscription',
+  name: 'Subscription',
   fields: () => rootFields
 });

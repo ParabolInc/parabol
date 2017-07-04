@@ -1,18 +1,15 @@
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLID
-} from 'graphql';
-import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {SLACK} from 'universal/utils/constants';
-import {errorObj} from 'server/utils/utils';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {mutationWithClientMutationId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
+import {SlackIntegrationEdge} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
+import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
+import {SLACK} from 'universal/utils/constants';
 
-export default {
-  type: GraphQLBoolean,
-  description: 'Add a slack channel where messages will be sent',
-  args: {
+export default mutationWithClientMutationId({
+  name: 'AddSlackChannel',
+  inputFields: {
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the teamMember calling it.'
@@ -22,7 +19,19 @@ export default {
       description: 'the slack channel that wants our messages'
     }
   },
-  async resolve(source, {teamMemberId, slackChannelId}, {authToken, exchange, socket}) {
+  outputFields: {
+    newChannel: {
+      type: SlackIntegrationEdge,
+      description: 'Add a slack channel where messages will be sent',
+      resolve: (node) => {
+        return {
+          //cursor: foo
+          node
+        };
+      }
+    }
+  },
+  mutateAndGetPayload: async ({teamMemberId, slackChannelId}, {authToken, exchange, socket}) => {
     const r = getRethink();
 
     // AUTH
@@ -36,7 +45,7 @@ export default {
     // get the user's token
     const provider = await r.table('Provider')
       .getAll(teamId, {index: 'teamIds'})
-      .filter({service: SLACK, userId})
+      .filter({service: SLACK})
       .nth(0)
       .default(null);
 
@@ -63,23 +72,17 @@ export default {
     }
 
     // RESOLUTION
-
-    // find all other team members that can access the channel
-    //const userIds = r.table('Provider')
-    //  .getAll(r.args(members), {index: 'providerUserId'})('userId');
-
-    // for each existing provider, add their userId to the userIds
-    //await r.table('SlackIntegration').insert({
-    //  id: shortid.generate(),
-    //  blackList: [],
-    //  isActive: true,
-    //  channelId: slackChannelId,
-    //  channelName: name,
-    //  notifications: ['meeting:end', 'meeting:start'],
-    //  teamId,
-    //  userIds
-    //});
-    return true;
+    const res = await r.table('SlackIntegration').insert({
+      id: shortid.generate(),
+      blackList: [],
+      isActive: true,
+      channelId: slackChannelId,
+      channelName: name,
+      notifications: ['meeting:end', 'meeting:start'],
+      teamId
+    }, {returnChanges: true})('changes')(0)('new_val');
+    console.log('sending res', res);
+    return res;
   }
-};
+});
 

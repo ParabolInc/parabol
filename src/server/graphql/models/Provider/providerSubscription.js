@@ -1,6 +1,6 @@
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {requireSUOrSelf, requireSUOrTeamMember} from 'server/utils/authorization';
-import Provider from './providerSchema';
+import {Provider} from './providerSchema';
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
 import {handleRethinkAdd} from '../../../utils/makeChangefeedHandler';

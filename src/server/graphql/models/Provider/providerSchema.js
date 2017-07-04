@@ -7,7 +7,7 @@ import {
   GraphQLInt
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {globalIdField} from 'graphql-relay';
+import {connectionDefinitions, globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 
 const ProviderRow = new GraphQLObjectType({
@@ -16,7 +16,10 @@ const ProviderRow = new GraphQLObjectType({
   fields: () => ({
     accessToken: {
       type: GraphQLID,
-      description: 'The access token attached to the userId. null if user does not have a token for the provider'
+      description: 'The access token attached to the userId. null if user does not have a token for the provider',
+      resolve: async(source, args, {authToken}) => {
+        return 'FOO'
+      }
     },
     userCount: {
       type: GraphQLInt,
@@ -91,4 +94,13 @@ const Provider = new GraphQLObjectType({
   })
 });
 
-export default Provider;
+const {connectionType: ProviderConnection, edgeType: ProviderEdge} = connectionDefinitions({
+  name: 'Provider',
+  nodeType: Provider
+});
+
+export {
+  ProviderConnection,
+  ProviderEdge,
+  Provider
+}
