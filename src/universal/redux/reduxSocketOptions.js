@@ -2,7 +2,6 @@ import {cashay, Transport} from 'cashay';
 import socketCluster from 'socketcluster-client';
 import subscriber from 'universal/subscriptions/subscriber';
 import AuthEngine from './AuthEngine';
-import {relayWS} from 'client/relayFetchQuery';
 import relayEnv from 'client/relayEnv';
 
 const onConnect = (options, hocOptions, socket) => {
@@ -16,7 +15,7 @@ const onConnect = (options, hocOptions, socket) => {
     };
     const priorityTransport = new Transport(sendToServer);
     cashay.create({priorityTransport, subscriber});
-    relayEnv.setWS(relayWS(socket));
+    relayEnv.setWS(socket);
   }
 };
 

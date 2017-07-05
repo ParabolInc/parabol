@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {QueryRenderer, graphql} from 'react-relay';
-import relayEnv from 'client/relayEnv';
 
 //const providerListQuery = graphql`
 //  query getProviders {

@@ -71,7 +71,12 @@ const SlackIntegrations = (props) => {
       <Panel label="Channels">
         <div className={css(styles.addChannel)}>
           {accessToken &&
-            <AddSlackChannel accessToken={accessToken} teamMemberId={teamMemberId} viewerId={viewer.id} />
+            <AddSlackChannel
+              accessToken={accessToken}
+              teamMemberId={teamMemberId}
+              viewerId={viewer.id}
+              subbedChannels={slackChannels.edges}
+            />
           }
           {slackChannels.edges.map((channel) => {
             return (

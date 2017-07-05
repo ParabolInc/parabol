@@ -15,6 +15,7 @@ const mutation = graphql`
     }
   }
 `;
+
 let tempId = 0;
 
 const sharedUpdater = (store, viewerId, teamId, newEdge) => {

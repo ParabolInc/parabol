@@ -6,8 +6,6 @@ import Button from 'universal/components/Button/Button';
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
 import addSlackChannelMutation from 'universal/mutations/addSlackChannelMutation';
 
-
-let tempID = 0;
 class AddSlackChannel extends Component {
   constructor(props) {
     super(props);
@@ -61,8 +59,13 @@ class AddSlackChannel extends Component {
 
   dropdownMapper = async () => {
     const channels = await this.getChannelList(this.props.accessToken);
+    // filter out channels that have already been added
+    const {subbedChannels} = this.props;
+    const subbedChannelIds = subbedChannels.map(channel => channel.node.channelId);
+    const options = channels.filter((channel) => !subbedChannelIds.includes(channel.id))
+      .map((channel) => ({id: channel.id, label: channel.name}));
     this.setState({
-      options: channels.map((channel) => ({id: channel.id, label: channel.name}))
+      options
     });
   };
 
