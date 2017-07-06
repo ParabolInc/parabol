@@ -68,9 +68,10 @@ class Step1PreferredName extends Component {
 
   render() {
     const {error, handleSubmit, preferredName, styles, submitting} = this.props;
+    const copy = <span>{'What do you prefer your teammates to call you?'}</span>;
     return (
-      <div>
-        <WelcomeHeading copy={<span>Please type in your name:</span>} />
+      <div style={{width: '100%'}}>
+        <WelcomeHeading copy={copy} />
         {error && <div className={css(styles.error)}>{error}</div>}
         <form className={css(styles.formBlock)} onSubmit={handleSubmit(this.onPreferredNameSubmit)}>
           <Field
@@ -95,9 +96,14 @@ const styleThunk = () => ({
   error: {
     ...formError
   },
+
   formBlock: {
     alignItems: 'baseline',
-    display: 'flex'
+    display: 'flex',
+    margin: '0 auto',
+    maxWidth: '24rem',
+    paddingLeft: '2.5rem',
+    width: '100%'
   }
 });
 

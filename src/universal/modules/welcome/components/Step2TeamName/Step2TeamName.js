@@ -45,13 +45,13 @@ const Step2TeamName = (props) => {
     dispatch(segmentEventTrack('Welcome Step2 Completed'));
   };
   return (
-    <div>
+    <div style={{width: '100%'}}>
       <Type align="center" italic scale="s6">
         Nice to meet you, {preferredName}!
       </Type>
       <WelcomeHeading copy={<span>Please type in your team name:</span>} />
+      {error && <div className={css(styles.error)}>{error}</div>}
       <form className={css(styles.formBlock)} onSubmit={handleSubmit(onTeamNameSubmit)}>
-        {error && <div className={css(styles.error)}>{error}</div>}
         <Field
           autoFocus
           component={InputField}
@@ -89,7 +89,11 @@ const styleThunk = () => ({
 
   formBlock: {
     alignItems: 'baseline',
-    display: 'flex'
+    display: 'flex',
+    margin: '0 auto',
+    maxWidth: '30rem',
+    paddingLeft: '2.5rem',
+    width: '100%'
   }
 });
 

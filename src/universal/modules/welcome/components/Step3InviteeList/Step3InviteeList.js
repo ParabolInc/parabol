@@ -95,7 +95,8 @@ const Step3InviteeList = (props) => {
           segmentEventTrack('Welcome Step3 Completed', {inviteeCount: 0})
         );
       }}
-      title="I'll invite them later"
+      style={{margin: '1rem auto', maxWidth: '45.5rem', padding: '0 2.5rem'}}
+      title="I’ll invite them later"
     >
       Not yet, I just want to kick the tires
     </Link>

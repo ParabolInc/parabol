@@ -14,16 +14,14 @@ const FieldBlock = (props) => {
 
 FieldBlock.propTypes = {
   children: PropTypes.any,
-  maxWidth: PropTypes.string,
-  styles: PropTypes.object,
-  width: PropTypes.string
+  styles: PropTypes.object
 };
 
-const styleThunk = (custom, {maxWidth, width}) => ({
+const styleThunk = () => ({
   fieldBlock: {
     margin: '0 auto',
-    maxWidth: maxWidth || '20rem',
-    width: width || '100%'
+    maxWidth: '100%',
+    width: '100%'
   }
 });
 

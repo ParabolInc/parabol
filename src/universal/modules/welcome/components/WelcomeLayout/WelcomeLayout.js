@@ -26,7 +26,8 @@ const styleThunk = () => ({
     justifyContent: 'center',
     margin: '0',
     minHeight: '100vh',
-    padding: '0'
+    padding: '0',
+    width: '100%'
   }
 });
 

@@ -11,8 +11,8 @@ const ProgressDots = (props) => {
     const dotStyle = css(
       styles.progressDot,
       numCompleted + 1 >= dotNumber && styles.canClick,
-      dotNumber === currentDot && styles.progressDotCurrent,
       dotNumber <= numCompleted && styles.progressDotCompleted,
+      dotNumber === currentDot && styles.progressDotCurrent
     );
     return (
       <a
