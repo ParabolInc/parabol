@@ -10,7 +10,7 @@ import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
   let editingStatus = null;
   // no one else is editing
-  const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Edited ';
+  const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated ';
   if (editors.length === 0) {
     editingStatus = isEditing ? <span>editing<Ellipsis /></span> : `${timestampLabel} ${fromNow(timestamp)}`;
   } else {
