@@ -10,9 +10,6 @@ const TeamIntegrations = (props) => {
   return (
     <div className={css(styles.listAndAnnoucements)}>
       <ProviderList providerMap={providerMap} jwt={jwt} teamMemberId={teamMemberId}/>
-      <div>
-        Notifications
-      </div>
     </div>
   );
 };

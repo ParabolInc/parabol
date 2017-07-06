@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {matchPath, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
-import TeamSettingsTabs from 'universal/modules/teamDashboard/components/TeamSettingsTabs/TeamSettingsTabs';
+import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav';
+import ui from 'universal/styles/ui';
 
 const overview = () => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer');
 const providers = () => System.import('universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot');
@@ -13,8 +14,8 @@ const TeamSettingsWrapper = (props) => {
   const {params: {teamId}} = match;
   const areaMatch = matchPath(pathname, {path: `${match.url}/:area?`});
   return (
-    <div>
-      <TeamSettingsTabs activeKey={areaMatch.params.area || ''} teamId={teamId}/>
+    <div style={{padding: `0 ${ui.settingsGutter}`}}>
+      <TeamSettingsToggleNav activeKey={areaMatch.params.area || ''} teamId={teamId}/>
       <Switch>
         <AsyncRoute exact path={match.url} mod={overview} extraProps={{teamId}}/>
         {/*<AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/>*/}

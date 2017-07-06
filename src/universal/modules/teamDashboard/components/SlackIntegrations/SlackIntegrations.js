@@ -4,10 +4,15 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {commitMutation, createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
-import Row from 'universal/components/Row/Row';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import appTheme from 'universal/styles/theme/appTheme'; import Panel from 'universal/components/Panel/Panel'; import Button from 'universal/components/Button/Button'; import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput'; import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
+import appTheme from 'universal/styles/theme/appTheme';
+import goBackLabel from 'universal/styles/helpers/goBackLabel';
+import Panel from 'universal/components/Panel/Panel';
+import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
+import Button from 'universal/components/Button/Button';
+import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
+import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
 import relayEnv from 'client/relayEnv';
 
 const inlineBlockStyle = {
@@ -26,7 +31,7 @@ const removeSlackChannel = graphql`
 const SlackIntegrations = (props) => {
   const {styles, teamId, teamMemberId, viewer} = props;
   const {slackChannels, integrationProvider} = viewer;
-  const handleRemove = (channelId) => () => {
+  const handleRemove = (channelId, channelName) => () => {
     commitMutation(
       relayEnv.get(),
       {
@@ -49,43 +54,55 @@ const SlackIntegrations = (props) => {
     <div className={css(styles.slackIntegrations)}>
       <Link className={css(styles.link)} to={`/team/${teamId}/settings/integrations`} title="Back to Integrations">
         <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
-        <div style={inlineBlockStyle}>Back to Integrations</div>
+        <div style={inlineBlockStyle}>Back to <b>Integrations</b></div>
       </Link>
-      {/* TODO: see if we can share this with ProviderRow even though it has a Link component */}
-      <Row>
-        <div className={css(styles.providerAvatar)} style={{backgroundColor: 'blue'}}>
+      {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
+      <div className={css(styles.providerDetails)}>
+        <div className={css(styles.providerAvatar)}>
           <FontAwesome name="slack" className={css(styles.providerIcon)}/>
-          {/*<img className={css(styles.avatarImg)} height={50} width={50} src={image}/>*/}
         </div>
-        <div className={css(styles.userInfo)}>
+        <div className={css(styles.providerInfo)}>
           <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              Slack
+            <div className={css(styles.providerName)}>
+              {ui.providers.slack.providerName}
             </div>
-            <div className={css(styles.subHeader)}>
-              Notify channels when meetings begin and end for this team
+            <div className={css(styles.subHeading)}>
+              {ui.providers.slack.description}
             </div>
           </div>
         </div>
-      </Row>
+      </div>
       <Panel label="Channels">
-        <div className={css(styles.addChannel)}>
-          {accessToken &&
-            <AddSlackChannel
-              accessToken={accessToken}
-              teamMemberId={teamMemberId}
-              viewerId={viewer.id}
-              subbedChannels={slackChannels.edges}
-            />
+        <div className={css(styles.integrations)}>
+          <div className={css(styles.addChannel)}>
+            {accessToken &&
+              <AddSlackChannel
+                accessToken={accessToken}
+                teamMemberId={teamMemberId}
+                viewerId={viewer.id}
+                subbedChannels={slackChannels.edges}
+              />
+            }
+          </div>
+          {slackChannels &&
+            <div className={css(styles.integrationsList)}>
+              {slackChannels.edges.map((channel) => {
+                const {channelId, channelName} = channel.node;
+                return (
+                  <IntegrationRow key={`${channelId}-row`}>
+                    <div className={css(styles.channelName)}>{channelName}</div>
+                    <Button
+                      buttonStyle="flat"
+                      colorPalette="dark"
+                      label="Remove"
+                      onClick={handleRemove(channelId, channelName)}
+                      size="smallest"
+                    />
+                  </IntegrationRow>
+                );
+              })}
+            </div>
           }
-          {slackChannels.edges.map((channel) => {
-            return (
-              <div>
-                {channel.node.channelName}
-                <span onlick={handleRemove(channel.node.channelId)}>Remove</span>
-              </div>
-            );
-          })}
         </div>
       </Panel>
     </div>
@@ -98,34 +115,61 @@ SlackIntegrations.propTypes = {
 };
 
 const styleThunk = () => ({
-  list: {
-    border: '3px solid gray',
-    borderRadius: '4px'
+  slackIntegrations: {
+    maxWidth: ui.settingsPanelMaxWidth,
+    width: '100%'
   },
+
+  link: {
+    ...goBackLabel,
+    display: 'block',
+    margin: '1rem 0'
+  },
+
+  providerDetails: {
+    display: 'flex'
+  },
+
   providerAvatar: {
-    //height: 50,
-    //width: 50,
-    borderRadius: '8px'
-    // Define
+    backgroundColor: ui.providers.slack.color,
+    borderRadius: ui.providerIconBorderRadius
   },
+
+  providerName: {
+    ...ui.providerName
+  },
+
   providerIcon: {
     alignItems: 'center',
     color: '#fff',
     display: 'flex !important',
     fontSize: `${ui.iconSize2x} !important`,
-    height: 50,
+    height: ui.providerIconSize,
     justifyContent: 'center',
-    width: 50
+    width: ui.providerIconSize
   },
 
-  userInfo: {
+  providerInfo: {
     paddingLeft: '1rem'
   },
-  subHeader: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
+
+  subHeading: {
+    ...ui.rowSubheading
+  },
+
+  addChannel: {
+    borderTop: `1px solid ${ui.rowBorderColor}`,
+    display: 'flex',
+    padding: ui.rowGutter
+  },
+
+  integrationsList: {
+    paddingLeft: ui.rowGutter
+  },
+
+  channelName: {
+    color: ui.palette.cool,
     fontWeight: 700,
-    lineHeight: appTheme.typography.s4
   }
 });
 

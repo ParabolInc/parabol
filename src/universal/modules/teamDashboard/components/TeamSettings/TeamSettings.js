@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -15,10 +15,7 @@ import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import Panel from 'universal/components/Panel/Panel';
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import ui from 'universal/styles/ui';
-import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
-import Type from 'universal/components/Type/Type';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import TeamSettingsTabs from 'universal/modules/teamDashboard/components/TeamSettingsTabs/TeamSettingsTabs';
 
 const TeamSettings = (props) => {
   const {
@@ -202,7 +199,6 @@ TeamSettings.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: '#fff',
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
@@ -210,8 +206,7 @@ const styleThunk = () => ({
   },
 
   panels: {
-    maxWidth: '48rem',
-    padding: '0 1rem'
+    maxWidth: ui.settingsPanelMaxWidth
   },
 
   actionLinkBlock: {

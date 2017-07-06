@@ -32,7 +32,7 @@ class ServiceDropdownInput extends Component {
     const {dropdownMapper, handleItemClick, options, styles} = this.props;
     const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper} />;
     return (
-      <FieldBlock>
+      <FieldBlock maxWidth="none">
         <div className={css(styles.inputBlock)}>
           <span>{this.state.dropdownText}</span>
           <Menu

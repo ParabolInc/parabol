@@ -13,16 +13,10 @@ import {Link} from 'react-router-dom';
 
 const providerLookup = {
   [GITHUB]: {
-    description: 'Sync issues and PRs',
-    color: 'black',
-    icon: 'github',
-    providerName: 'GitHub'
+    ...ui.providers.github
   },
   [SLACK]: {
-    description: 'Get meeting notifications',
-    color: 'blue',
-    icon: 'slack',
-    providerName: 'Slack',
+    ...ui.providers.slack,
     makeUri: (jwt, teamMemberId) => {
       const redirect = makeHref('/auth/slack');
       const [, teamId] = teamMemberId.split('::');
@@ -63,20 +57,23 @@ const ProviderRow = (props) => {
     window.open(uri);
   };
   const [,teamId] = teamMemberId.split('::');
+  const linkStyle = {
+    display: 'block',
+    textDecoration: 'none'
+  };
   return (
     <Row>
-      <Link to={`/team/${teamId}/settings/integrations/${name}`}>
-      <div className={css(styles.providerAvatar)} style={{backgroundColor: color}}>
-        <FontAwesome name={icon} className={css(styles.providerIcon)}/>
-        {/*<img className={css(styles.avatarImg)} height={50} width={50} src={image}/>*/}
-      </div>
+      <Link to={`/team/${teamId}/settings/integrations/${name}`} style={linkStyle}>
+        <div className={css(styles.providerAvatar)} style={{backgroundColor: color}}>
+          <FontAwesome name={icon} className={css(styles.providerIcon)}/>
+        </div>
       </Link>
       <div className={css(styles.userInfo)}>
         <div className={css(styles.nameAndTags)}>
-          <div className={css(styles.preferredName)}>
+          <div className={css(styles.providerName)}>
             {providerName}
           </div>
-          <div className={css(styles.subHeader)}>
+          <div className={css(styles.subHeading)}>
             {description}
           </div>
         </div>
@@ -105,19 +102,17 @@ ProviderRow.propTypes = {
 
 const styleThunk = () => ({
   providerAvatar: {
-    //height: 50,
-    //width: 50,
-    borderRadius: '8px'
-    // Define
+    borderRadius: ui.providerIconBorderRadius
   },
+
   providerIcon: {
     alignItems: 'center',
     color: '#fff',
     display: 'flex !important',
     fontSize: `${ui.iconSize2x} !important`,
-    height: 50,
+    height: ui.providerIconSize,
     justifyContent: 'center',
-    width: 50
+    width: ui.providerIconSize
   },
 
   userInfo: {
@@ -135,11 +130,9 @@ const styleThunk = () => ({
     // Define
   },
 
-  preferredName: {
-    color: appTheme.palette.dark,
+  providerName: {
+    ...ui.providerName,
     display: 'inline-block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
     verticalAlign: 'middle'
   },
 
@@ -175,11 +168,8 @@ const styleThunk = () => ({
       textDecoration: 'underline'
     }
   },
-  subHeader: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: appTheme.typography.s4
+  subHeading: {
+    ...ui.rowSubheading
   }
 });
 

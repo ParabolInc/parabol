@@ -52,14 +52,14 @@ Panel.defaultProps = {
 
 const styleThunk = () => ({
   panel: {
-    display: 'flex',
-    margin: '1.5rem 0',
     backgroundColor: '#fff',
     border: `1px solid ${ui.panelBorderColor}`,
     borderRadius: ui.cardBorderRadius,
+    display: 'flex',
     flexDirection: 'column',
     fontSize: appTheme.typography.s3,
     lineHeight: appTheme.typography.s5,
+    margin: `${ui.panelMarginVertical} 0`,
     paddingTop: '.1875rem',
     position: 'relative',
     width: '100%',
