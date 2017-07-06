@@ -30,7 +30,7 @@ const CreateCard = (props) => {
   return (
     <div className={cardStyles}>
       {hasControls &&
-        <div className={css(styles.controlsBlock)} onClick={handleAddProject} title="Add a New Project (just press “p”)">
+        <div className={css(styles.controlsBlock)} onClick={handleAddProject} title="Add a Project or Task (just press “p”)">
           <FontAwesome
             name="plus-square-o"
             style={iconStyle}
