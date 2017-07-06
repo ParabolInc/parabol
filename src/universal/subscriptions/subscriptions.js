@@ -42,6 +42,7 @@ export default [
     subscription($teamMemberId: ID!) {
       archivedProjects(teamMemberId: $teamMemberId) {
         content
+        createdAt
         id
         status
         tags

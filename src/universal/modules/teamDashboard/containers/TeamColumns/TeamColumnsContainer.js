@@ -14,6 +14,7 @@ query {
     projects @live {
       id
       content
+      createdAt
       createdBy
       status
       tags

@@ -199,6 +199,7 @@ OutcomeCardContainer.propTypes = {
   owner: PropTypes.object,
   teamMembers: PropTypes.array,
   tags: PropTypes.array,
+  createdAt: PropTypes.instanceOf(Date),
   updatedAt: PropTypes.instanceOf(Date)
 };
 
