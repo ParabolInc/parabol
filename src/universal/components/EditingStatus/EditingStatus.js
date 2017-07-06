@@ -32,7 +32,7 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 
 const EditingStatus = (props) => {
   const {editors, handleClick, isEditing, timestamp, timestampType, styles} = props;
-  const title = isEditing ? 'isEditing' : 'Tap to toggle Created/Updated';
+  const title = isEditing ? 'editing…' : 'Tap to toggle Created/Updated';
   return (
     <div className={css(styles.timestamp)} onClick={handleClick} title={title}>
       {makeEditingStatus(editors, isEditing, timestamp, timestampType)}

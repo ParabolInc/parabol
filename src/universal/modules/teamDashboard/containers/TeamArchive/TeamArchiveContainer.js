@@ -9,6 +9,7 @@ query {
   archivedProjects(teamMemberId: $teamMemberId) @live {
     id
     content
+    createdAt
     status
     tags
     teamMemberId

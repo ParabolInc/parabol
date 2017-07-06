@@ -53,7 +53,6 @@ export default class EditingStatusContainer extends Component {
     isEditing: PropTypes.bool,
     editors: PropTypes.any,
     outcomeId: PropTypes.string,
-    timestampType: PropTypes.bool,
     createdAt: PropTypes.instanceOf(Date),
     updatedAt: PropTypes.instanceOf(Date)
   };
