@@ -16,6 +16,7 @@ query {
     projects @live {
       id
       content
+      createdAt
       createdBy
       sortOrder
       status

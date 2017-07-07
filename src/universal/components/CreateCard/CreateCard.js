@@ -30,14 +30,14 @@ const CreateCard = (props) => {
   return (
     <div className={cardStyles}>
       {hasControls &&
-        <div className={css(styles.controlsBlock)} onClick={handleAddProject} title="Add a New Project">
+        <div className={css(styles.controlsBlock)} onClick={handleAddProject} title="Add a Project or Task (just press “p”)">
           <FontAwesome
             name="plus-square-o"
             style={iconStyle}
           />
           <span>
-            <b>{'Add a New Project'}</b><br />
-            {'(or just press '}<b>{'‘‘p’’'}</b>{')'}
+            <b>{'Add a Project or Task'}</b><br />
+            {'(tag '}<b>{'#private'}</b>{' for personal Tasks)'}
           </span>
         </div>
       }

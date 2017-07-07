@@ -11,6 +11,7 @@ query {
   projects(teamMemberId: $teamMemberId) @live {
     id
     content
+    createdAt
     createdBy
     status
     tags

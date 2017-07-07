@@ -82,7 +82,11 @@ Step3RawInvitees.propTypes = {
 const styleThunk = () => ({
   formBlock: {
     alignItems: 'baseline',
-    display: 'flex'
+    display: 'flex',
+    margin: '0 auto',
+    maxWidth: '100%',
+    paddingLeft: '2.5rem',
+    width: '45.5rem'
   }
 });
 

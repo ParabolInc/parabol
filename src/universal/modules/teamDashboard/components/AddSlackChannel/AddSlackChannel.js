@@ -6,6 +6,8 @@ import Button from 'universal/components/Button/Button';
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
 import addSlackChannelMutation from 'universal/mutations/addSlackChannelMutation';
 
+import ui from 'universal/styles/ui';
+
 class AddSlackChannel extends Component {
   constructor(props) {
     super(props);
@@ -73,7 +75,7 @@ class AddSlackChannel extends Component {
     const {options} = this.state;
     const {accessToken} = this.props;
     return (
-      <div>
+      <div style={{display: 'flex', width: '100%'}}>
         <ServiceDropdownInput
           accessToken={accessToken}
           dropdownMapper={this.dropdownMapper}
@@ -81,12 +83,14 @@ class AddSlackChannel extends Component {
           handleItemClick={this.updateDropdownItem}
           options={options}
         />
-        <Button
-          colorPalette="cool"
-          label="Add Channel"
-          size="smallest"
-          onClick={this.handleAddChannel}
-        />
+        <div style={{paddingLeft: ui.rowGutter}}>
+          <Button
+            colorPalette="cool"
+            label="Add Channel"
+            size="small"
+            onClick={this.handleAddChannel}
+          />
+        </div>
       </div>
     )
   }

@@ -30,7 +30,6 @@ const MeetingAgendaItems = (props) => {
     return <LoadingView />;
   }
   const heading = <span>{currentTeamMember.preferredName}: <i style={{color: ui.palette.warm}}>“{agendaItem.content}”</i></span>;
-  const helpText = <span><b>{'Projects'}</b>{': tracked outcomes – Tag with '}<b>{'#private'}</b>{' for quick personal tasks'}</span>;
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -41,7 +40,6 @@ const MeetingAgendaItems = (props) => {
                 avatar={currentTeamMember.picture}
                 heading={heading}
                 subHeading={'What do you need?'}
-                helpText={helpText}
               />
             </div>
             <div className={css(styles.nav)}>

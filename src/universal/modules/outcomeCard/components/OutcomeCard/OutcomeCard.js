@@ -68,6 +68,7 @@ const OutcomeCard = (props) => {
           <EditingStatusContainer
             isEditing={isEditing}
             outcomeId={outcome.id}
+            createdAt={outcome.createdAt}
             updatedAt={outcome.updatedAt}
           />
           <ProjectEditor
@@ -112,6 +113,7 @@ OutcomeCard.propTypes = {
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),
     teamMemberId: PropTypes.string,
+    createdAt: PropTypes.instanceOf(Date),
     updatedAt: PropTypes.instanceOf(Date)
   }),
   setEditorRef: PropTypes.func.isRequired,

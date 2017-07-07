@@ -7,14 +7,18 @@ import ProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/
 import withStyles from 'universal/styles/withStyles';
 import providerAddedSubscription from 'universal/subscriptions/providerAddedSubscription';
 import {GITHUB, SLACK} from 'universal/utils/constants';
+import ui from 'universal/styles/ui';
+import Panel from 'universal/components/Panel/Panel';
 
 const ProviderList = (props) => {
   const {jwt, viewer, styles, teamMemberId} = props;
   const {providerMap: {github, slack}} = viewer;
   return (
-    <div className={css(styles.list)}>
-      <ProviderRow name={GITHUB} providerDetails={github} teamMemberId={teamMemberId}/>
-      <ProviderRow name={SLACK} providerDetails={slack} jwt={jwt} teamMemberId={teamMemberId}/>
+    <div className={css(styles.providerList)}>
+      <Panel hasHeader={false}>
+        <ProviderRow name={GITHUB} providerDetails={github} teamMemberId={teamMemberId} />
+        <ProviderRow name={SLACK} providerDetails={slack} jwt={jwt} teamMemberId={teamMemberId} />
+      </Panel>
     </div>
   );
 };
@@ -25,9 +29,9 @@ ProviderList.propTypes = {
 };
 
 const styleThunk = () => ({
-  list: {
-    border: '3px solid gray',
-    borderRadius: '4px'
+  providerList: {
+    maxWidth: ui.settingsPanelMaxWidth,
+    width: '100%'
   }
 });
 

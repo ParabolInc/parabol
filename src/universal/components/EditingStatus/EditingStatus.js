@@ -7,12 +7,12 @@ import ui from 'universal/styles/ui';
 import fromNow from 'universal/utils/fromNow';
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 
-const makeEditingStatus = (editors, isEditing, updatedAt) => {
+const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
   let editingStatus = null;
   // no one else is editing
+  const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated ';
   if (editors.length === 0) {
-    editingStatus = isEditing ? <span>editing<Ellipsis /></span> :
-      fromNow(updatedAt);
+    editingStatus = isEditing ? <span>editing<Ellipsis /></span> : `${timestampLabel} ${fromNow(timestamp)}`;
   } else {
     const editorNames = editors.map((e) => e.teamMember.preferredName);
     // one other is editing
@@ -31,23 +31,30 @@ const makeEditingStatus = (editors, isEditing, updatedAt) => {
 };
 
 const EditingStatus = (props) => {
-  const {editors, isEditing, updatedAt, styles} = props;
-  return <div className={css(styles.timestamp)}>{makeEditingStatus(editors, isEditing, updatedAt)}</div>;
+  const {editors, handleClick, isEditing, timestamp, timestampType, styles} = props;
+  const title = isEditing ? 'editing…' : 'Tap to toggle Created/Updated';
+  return (
+    <div className={css(styles.timestamp)} onClick={handleClick} title={title}>
+      {makeEditingStatus(editors, isEditing, timestamp, timestampType)}
+    </div>
+  );
 };
 
 EditingStatus.propTypes = {
   editors: PropTypes.array,
   isEditing: PropTypes.bool,
-  updatedAt: PropTypes.instanceOf(Date),
+  timestamp: PropTypes.instanceOf(Date),
+  timestampType: PropTypes.string,
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
+const styleThunk = (custom, {isEditing}) => ({
   timestamp: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s1,
-    fontWeight: 700,
-    lineHeight: appTheme.typography.s3,
+    color: appTheme.palette.dark80l,
+    cursor: isEditing ? 'default' : 'pointer',
+    fontSize: appTheme.typography.s2,
+    fontWeight: 400,
+    lineHeight: appTheme.typography.s4,
     padding: `.25rem ${ui.cardPaddingBase}`,
     textAlign: 'right'
   }

@@ -32,34 +32,36 @@ class ServiceDropdownInput extends Component {
     const {dropdownMapper, handleItemClick, options, styles} = this.props;
     const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper} />;
     return (
-      <FieldBlock>
-        <div className={css(styles.inputBlock)}>
-          <span>{this.state.dropdownText}</span>
-          <Menu
-            menuWidth="20rem"
-            originAnchor={originAnchor}
-            targetAnchor={targetAnchor}
-            toggle={toggle}
-          >
-            {options.map((option) => {
-              const onClick = (e) => {
-                this.setState({
-                  dropdownText: option.label
-                });
-                handleItemClick(option)(e);
-              };
-              return (
-                <MenuItem
-                  isActive={false}
-                  key={`serviceDropdownMenuItem${option.id}`}
-                  label={option.label}
-                  onClick={onClick}
-                />
-              );
-            })}
-          </Menu>
-        </div>
-      </FieldBlock>
+      <div className={css(styles.dropdownBlock)}>
+        <FieldBlock>
+          <div className={css(styles.inputBlock)}>
+            <span>{this.state.dropdownText}</span>
+            <Menu
+              menuWidth="20rem"
+              originAnchor={originAnchor}
+              targetAnchor={targetAnchor}
+              toggle={toggle}
+            >
+              {options.map((option) => {
+                const onClick = (e) => {
+                  this.setState({
+                    dropdownText: option.label
+                  });
+                  handleItemClick(option)(e);
+                };
+                return (
+                  <MenuItem
+                    isActive={false}
+                    key={`serviceDropdownMenuItem${option.id}`}
+                    label={option.label}
+                    onClick={onClick}
+                  />
+                );
+              })}
+            </Menu>
+          </div>
+        </FieldBlock>
+      </div>
     )
       ;
   }
@@ -74,6 +76,10 @@ ServiceDropdownInput.propTypes = {
 };
 
 const styleThunk = () => ({
+  dropdownBlock: {
+    width: '100%'
+  },
+
   downButton: {
     cursor: 'pointer',
     fontSize: `${ui.iconSize} !important`,
