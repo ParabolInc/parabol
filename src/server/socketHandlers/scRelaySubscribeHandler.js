@@ -1,5 +1,5 @@
 import {parse, subscribe} from 'graphql';
-import {createAsyncIterator, forAwaitEach} from 'iterall';
+import {forAwaitEach} from 'iterall';
 import Schema from 'server/graphql/rootSchema';
 
 export default function scRelaySubscribeHandler(exchange, socket) {
@@ -7,11 +7,7 @@ export default function scRelaySubscribeHandler(exchange, socket) {
   return async function relaySubscribeHandler(body) {
     const {opId, query, variables} = body;
     const authToken = socket.getAuthToken();
-    const context = {
-      authToken,
-      //exchange,
-      //socket
-    };
+    const context = {authToken};
     const document = parse(query);
     console.log('calling subscribe');
     const asyncIterator = subscribe(Schema, document, {}, context, variables);
@@ -20,9 +16,9 @@ export default function scRelaySubscribeHandler(exchange, socket) {
       console.log('emitting gqlData', value)
       socket.emit('gqlData', value);
     }
-
     await forAwaitEach(asyncIterator, iterableCb);
     console.log('kicking out');
     socket.emit('gqlKickout');
+
   };
 }
