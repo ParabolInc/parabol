@@ -27,16 +27,12 @@ export default function scConnectionHandler(exchange) {
     //   if (message === '#2') return;
     //   console.log('SOCKET SAYS:', message);
     // });
-    // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
     const graphQLHandler = scGraphQLHandler(exchange, socket);
     const relaySubscribeHandler = scRelaySubscribeHandler(exchange,socket);
-    const relayUnsubscribeHandler = (opId) => {
-      console.log('opId to unsub', opId)
-      unsubscribeRelaySub(socket.subs, opId);
-    }
     socket.on('message', (message) => {
+      // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
       if (isObject(message) && message.event === '#authenticate') {
         const decodedToken = jwtDecode(message.data);
         const serverToken = socket.getAuthToken();
@@ -46,10 +42,12 @@ export default function scConnectionHandler(exchange) {
       }
     });
     socket.on('graphql', graphQLHandler);
-    socket.on('gqlSub', relaySubscribeHandler);
-    socket.on('gqlUnsub', relayUnsubscribeHandler);
     socket.on('subscribe', subscribeHandler);
     socket.on('unsubscribe', unsubscribeHandler);
+    socket.on('gqlSub', relaySubscribeHandler);
+    socket.on('gqlUnsub', (opId) => {
+      unsubscribeRelaySub(socket.subs, opId);
+    });
     socket.on('disconnect', () => {
       if (socket.subs) {
         Object.keys(socket.subs).forEach((opId) => {

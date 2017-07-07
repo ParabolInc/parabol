@@ -64,7 +64,7 @@ export default function (exchange) {
         accessToken
       }
     };
-    getPubSub().publish('providerAdded', {providerAdded: providerMap, teamId});
+    getPubSub().publish(`providerAdded.${teamId}`, {providerAdded: providerMap});
     //const [userId, teamId] = teamMemberId;
     //const cachedFields = {
     //  providerUserName: user.name,

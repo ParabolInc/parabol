@@ -14,11 +14,16 @@ export default function scRelaySubscribeHandler(exchange, socket) {
     socket.subs[opId] = asyncIterator;
     const iterableCb = (value) => {
       console.log('emitting gqlData', value)
-      socket.emit('gqlData', value);
+      socket.emit(`gqlData.${opId}`, value);
     }
     await forAwaitEach(asyncIterator, iterableCb);
-    console.log('kicking out');
-    socket.emit('gqlKickout');
+
+     /*
+      * tell the client it won't receive any more messages for that op
+      * if the client initiated the unsub, then it'll have stopped listening before this is sent
+      *
+      */
+    socket.emit(`gqlData.${opId}`);
 
   };
 }

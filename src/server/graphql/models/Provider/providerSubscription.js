@@ -54,7 +54,8 @@ export default {
 
       // RESOLUTION
       const channelName = `providerAdded.${teamId}`;
-      const filterFn = (value) => value.userId !== authToken.sub;
+      const filterFn = (value) => true;
+      //const filterFn = (value) => value.userId !== authToken.sub;
       return makeSubscribeIter(channelName, filterFn);
 
 

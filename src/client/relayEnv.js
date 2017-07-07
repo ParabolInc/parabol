@@ -72,16 +72,23 @@ class RelayEnv {
     if (!key) {
       throw new Error(`No key found for ${text} ${variables}`);
     }
-    const request = {
+    this.socket.on(`gqlData.${opId}`, (gqlResponse) => {
+      if (gqlResponse) {
+        observer.onNext(gqlResponse);
+      } else {
+        // the server kicked us out
+        this.unsubscribe(key, true);
+        // the sub might wanna pop a toast or do something fancy
+        if (observer.onCompleted) {
+          observer.onCompleted();
+        }
+      }
+    });
+    this.socket.emit('gqlSub', {
       query: text,
       variables,
-      // used as a per-client UID for unsubbing & preventing dupes
       opId
-    };
-    this.socket.on('gqlData', (gqlResponse) => {
-      observer.onNext(gqlResponse);
     });
-    this.socket.emit('gqlSub', request);
   };
 
   ensureSubscription(config) {
@@ -96,10 +103,13 @@ class RelayEnv {
     return () => this.unsubscribe(key);
   }
 
-  unsubscribe = (key) => {
+  unsubscribe = (key, serverInitiated) => {
     const opId = this.idLookup[key];
-    this.socket.emit('gqlUnsub', opId);
+    this.socket.off(`gqlData.${opId}`);
     delete this.idLookup[key];
+    if (!serverInitiated) {
+      this.socket.emit('gqlUnsub', opId);
+    }
   };
 
   clear(env) {
