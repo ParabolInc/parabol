@@ -1,4 +1,4 @@
-import {requestSubscription} from 'react-relay';
+import {commitMutation, requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 
 const getKey = (text, variables) => {
@@ -101,6 +101,10 @@ class RelayEnv {
       requestSubscription(this.wsEnv, config);
     }
     return () => this.unsubscribe(key);
+  }
+
+  mutate(config) {
+    return commitMutation(this.get(), config);
   }
 
   unsubscribe = (key, serverInitiated) => {

@@ -2,18 +2,16 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
-import {commitMutation, createFragmentContainer} from 'react-relay';
+import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
+import Button from 'universal/components/Button/Button';
+import Panel from 'universal/components/Panel/Panel';
+import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
+import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
+import removeSlackChannelMutation from 'universal/mutations/removeSlackChannelMutation';
+import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import appTheme from 'universal/styles/theme/appTheme';
-import goBackLabel from 'universal/styles/helpers/goBackLabel';
-import Panel from 'universal/components/Panel/Panel';
-import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
-import Button from 'universal/components/Button/Button';
-import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
-import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
-import relayEnv from 'client/relayEnv';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -22,32 +20,12 @@ const inlineBlockStyle = {
   verticalAlign: 'middle'
 };
 
-const removeSlackChannel = graphql`
-  mutation SlackIntegrationsMutation($slackChannelId: ID!) {
-    removeSlackChannel(slackChannelId: $slackChannelId)
-  }
-`;
 
 const SlackIntegrations = (props) => {
   const {styles, teamId, teamMemberId, viewer} = props;
-  const {slackChannels, integrationProvider} = viewer;
-  const handleRemove = (channelId, channelName) => () => {
-    commitMutation(
-      relayEnv.get(),
-      {
-        mutation: removeSlackChannel,
-        variables: {slackChannelId: channelId},
-        optimisticResponse: {
-          addSlackChannel: {
-            channelId,
-            channelName
-          }
-        },
-        onError: (err) => {
-          console.log('err', err)
-        }
-      }
-    )
+  const {id: viewerId, slackChannels, integrationProvider} = viewer;
+  const handleRemove = (slackGlobalId) => () => {
+    removeSlackChannelMutation(slackGlobalId, teamId, viewerId);
   }
   const accessToken = integrationProvider && integrationProvider.accessToken;
   return (
@@ -76,32 +54,32 @@ const SlackIntegrations = (props) => {
         <div className={css(styles.integrations)}>
           <div className={css(styles.addChannel)}>
             {accessToken &&
-              <AddSlackChannel
-                accessToken={accessToken}
-                teamMemberId={teamMemberId}
-                viewerId={viewer.id}
-                subbedChannels={slackChannels.edges}
-              />
+            <AddSlackChannel
+              accessToken={accessToken}
+              teamMemberId={teamMemberId}
+              viewerId={viewer.id}
+              subbedChannels={slackChannels.edges}
+            />
             }
           </div>
           {slackChannels &&
-            <div className={css(styles.integrationsList)}>
-              {slackChannels.edges.map((channel) => {
-                const {channelId, channelName} = channel.node;
-                return (
-                  <IntegrationRow key={`${channelId}-row`}>
-                    <div className={css(styles.channelName)}>{channelName}</div>
-                    <Button
-                      buttonStyle="flat"
-                      colorPalette="dark"
-                      label="Remove"
-                      onClick={handleRemove(channelId, channelName)}
-                      size="smallest"
-                    />
-                  </IntegrationRow>
-                );
-              })}
-            </div>
+          <div className={css(styles.integrationsList)}>
+            {slackChannels.edges.map((channel) => {
+              const {id, channelId, channelName} = channel.node;
+              return (
+                <IntegrationRow key={`${channelId}-row`}>
+                  <div className={css(styles.channelName)}>{channelName}</div>
+                  <Button
+                    buttonStyle="flat"
+                    colorPalette="dark"
+                    label="Remove"
+                    onClick={handleRemove(id)}
+                    size="smallest"
+                  />
+                </IntegrationRow>
+              );
+            })}
+          </div>
           }
         </div>
       </Panel>
@@ -169,7 +147,7 @@ const styleThunk = () => ({
 
   channelName: {
     color: ui.palette.cool,
-    fontWeight: 700,
+    fontWeight: 700
   }
 });
 

@@ -1,40 +1,49 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {fromGlobalId, mutationWithClientMutationId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
 
-export default {
-  type: GraphQLBoolean,
-  description: 'Remove a slack channel integration from a team',
-  args: {
-    //teamMemberId: {
-    //  type: new GraphQLNonNull(GraphQLID),
-    //  description: 'The id of the teamMember calling it.'
-    //},
-    slackChannelId: {
+export default mutationWithClientMutationId({
+  name: 'RemoveSlackChannel',
+  inputFields: {
+    slackGlobalId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'the unique id for this slack integration'
+      description: 'Remove a slack channel integration from a team'
     }
   },
-  async resolve(source, {slackChannelId}, {authToken, socket}) {
+  outputFields: {
+    deletedIntegrationId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of SlackIntegration that got removed',
+      resolve: ({id}) => {
+        console.log('resolving deletedIntegrationId', id);
+        return id;
+      }
+    }
+  },
+  mutateAndGetPayload: async ({slackGlobalId}, {authToken, socket}) => {
     const r = getRethink();
-
+    const {id} = fromGlobalId(slackGlobalId);
     // AUTH
-    const integration = await r.table('SlackIntegration').get(slackChannelId);
+    const integration = await r.table('SlackIntegration').get(id);
+    if (!integration) {
+      throw errorObj({_error: `${slackGlobalId} does not exist`});
+    }
     const {teamId, isActive} = integration;
     requireSUOrTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
     // VALIDATION
     if (!isActive) {
-      throw errorObj({_error: `${slackChannelId} has already been removed`});
+      throw errorObj({_error: `${slackGlobalId} has already been removed`});
     }
     // RESOLUTION
-    await r.table('SlackIntegration').get(slackChannelId)
+
+    await r.table('SlackIntegration').get(id)
       .update({
         isActive: false
       });
-    return true;
+    return {id: slackGlobalId};
   }
-};
-
+});

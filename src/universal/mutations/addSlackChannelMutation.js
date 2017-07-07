@@ -1,7 +1,6 @@
 import relayEnv from 'client/relayEnv';
-import {commitMutation} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
-import {insertEdgeBefore} from 'universal/utils/insertEdge';
+import {insertEdgeBefore} from 'universal/utils/relay/insertEdge';
 //import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 
 const mutation = graphql`
@@ -31,41 +30,38 @@ const sharedUpdater = (store, viewerId, teamId, newEdge) => {
 };
 
 const addSlackChannelMutation = (slackChannelId, slackChannelName, teamMemberId, viewerId) => {
-  return commitMutation(
-    relayEnv.get(),
-    {
-      mutation,
-      variables: {
-        input: {
-          slackChannelId,
-          teamMemberId
-        }
-      },
-      updater: (store) => {
-        const payload = store.getRootField('addSlackChannel');
-        const newEdge = payload.getLinkedRecord('newChannel');
-        const [, teamId] = teamMemberId.split('::');
-        sharedUpdater(store, viewerId, teamId, newEdge);
-      },
-      optimisticUpdater: (store) => {
-        const id = `client:newChannel:${tempId++}`;
-        const node = store.create(id, 'Provider');
-        node.setValue(slackChannelId, 'channelId');
-        node.setValue(slackChannelName, 'channelName');
-        const newEdge = store.create(
-          'client:newEdge:' + tempId++,
-          'SlackIntegrationEdge'
-        );
-        newEdge.setLinkedRecord(node, 'node');
-        const [, teamId] = teamMemberId.split('::');
-        sharedUpdater(store, viewerId, teamId, newEdge);
-
-      },
-      onError: (err) => {
-        console.log('err', err)
+  return relayEnv.mutate({
+    mutation,
+    variables: {
+      input: {
+        slackChannelId,
+        teamMemberId
       }
+    },
+    updater: (store) => {
+      const payload = store.getRootField('addSlackChannel');
+      const newEdge = payload.getLinkedRecord('newChannel');
+      const [, teamId] = teamMemberId.split('::');
+      sharedUpdater(store, viewerId, teamId, newEdge);
+    },
+    optimisticUpdater: (store) => {
+      const id = `client:newChannel:${tempId++}`;
+      const node = store.create(id, 'Provider');
+      node.setValue(slackChannelId, 'channelId');
+      node.setValue(slackChannelName, 'channelName');
+      const newEdge = store.create(
+        'client:newEdge:' + tempId++,
+        'SlackIntegrationEdge'
+      );
+      newEdge.setLinkedRecord(node, 'node');
+      const [, teamId] = teamMemberId.split('::');
+      sharedUpdater(store, viewerId, teamId, newEdge);
+
+    },
+    onError: (err) => {
+      console.log('err', err)
     }
-  )
+  })
 };
 
 export default addSlackChannelMutation;

@@ -62,10 +62,7 @@ export default mutationWithClientMutationId({
       throw errorObj({_error: channelInfoJson.error});
     }
 
-    const {is_member: isMember, is_archived: isArchived, name} = channel;
-    if (!isMember) {
-      throw errorObj({_error: `You are not a member of slack channel ${name}`});
-    }
+    const {is_archived: isArchived, name} = channel;
     if (isArchived) {
       throw errorObj({_error: `Slack channel ${name} is archived!`});
     }
