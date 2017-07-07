@@ -1,6 +1,7 @@
 import relayEnv from 'client/relayEnv';
 import {commitMutation} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
+import {insertEdgeBefore} from 'universal/utils/insertEdge';
 //import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 
 const mutation = graphql`
@@ -26,7 +27,7 @@ const sharedUpdater = (store, viewerId, teamId, newEdge) => {
       teamId
     }
   );
-  ConnectionHandler.insertEdgeBefore(conn, newEdge);
+  insertEdgeBefore(conn, newEdge, 'channelName');
 };
 
 const addSlackChannelMutation = (slackChannelId, slackChannelName, teamMemberId, viewerId) => {

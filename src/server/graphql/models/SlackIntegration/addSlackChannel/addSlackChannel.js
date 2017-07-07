@@ -25,7 +25,6 @@ export default mutationWithClientMutationId({
       description: 'Add a slack channel where messages will be sent',
       resolve: (node) => {
         return {
-          //cursor: foo
           node
         };
       }
