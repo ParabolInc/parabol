@@ -8,6 +8,7 @@ import {SLACK} from 'universal/utils/constants';
 import {verify} from 'jsonwebtoken';
 import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import shortid from 'shortid';
+import getPubSub from 'server/graphql/pubsub';
 
 export default function (exchange) {
   return async (req, res) => {
@@ -28,20 +29,11 @@ export default function (exchange) {
     const uri = `https://slack.com/api/oauth.access?${stringify(queryParams)}`;
     const slackRes = await fetch(uri, postOptions);
     const json = await slackRes.json();
-    // const {access_token: accessToken, team_name: slackTeamName, team_id: slackTeamId} = json;
     const {access_token: accessToken} = json;
-    //const userInfoUri = `https://slack.com/api/users.identity?token=${accessToken}`;
-    //const userInfoRes = await fetch(userInfoUri, postOptions);
-    //const userInfoJson = await userInfoRes.json();
-    //const {ok: infoOK, user} = userInfoJson;
-    //// meh screw being nice, they must've tampered with the oauth request if !ok. fail silently
-    //if (!infoOK) {
-    //  console.log('bad info', userInfoJson);
-    //  return;
-    //}
+
     const now = new Date();
     const r = getRethink();
-    r.table('Provider')
+    const slackProvider = await r.table('Provider')
       .getAll(teamId, {index: 'teamIds'})
       .filter({service: SLACK})
       .nth(0)('id')
@@ -65,8 +57,14 @@ export default function (exchange) {
               updatedAt: now
             })
         );
-      })
-      .run();
+      });
+
+    const providerMap = {
+      slack: {
+        accessToken
+      }
+    };
+    getPubSub().publish('providerAdded', {providerAdded: providerMap, teamId});
     //const [userId, teamId] = teamMemberId;
     //const cachedFields = {
     //  providerUserName: user.name,

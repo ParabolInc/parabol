@@ -1,33 +1,26 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
 import {createFragmentContainer} from 'react-relay';
-import {css} from 'aphrodite-local-styles/no-important';
+import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
+import ProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
 import withStyles from 'universal/styles/withStyles';
-import {SLACK, GITHUB} from 'universal/utils/constants';
-
-const providerRow = {
-  github: {
-    accessToken: 'foo',
-    userCount: 2,
-    integrationCount: 3,
-    providerUserName: 'ackernaut'
-  }
-};
+import providerAddedSubscription from 'universal/subscriptions/providerAddedSubscription';
+import {GITHUB, SLACK} from 'universal/utils/constants';
 
 const ProviderList = (props) => {
-  const {jwt, providerMap, styles, teamMemberId} = props;
-  console.log('map', providerMap)
+  const {jwt, viewer, styles, teamMemberId} = props;
+  const {providerMap: {github, slack}} = viewer;
   return (
     <div className={css(styles.list)}>
-      <ProviderRow name={GITHUB} providerDetails={providerMap.github} teamMemberId={teamMemberId}/>
-      <ProviderRow name={SLACK} providerDetails={providerMap.slack} jwt={jwt} teamMemberId={teamMemberId}/>
+      <ProviderRow name={GITHUB} providerDetails={github} teamMemberId={teamMemberId}/>
+      <ProviderRow name={SLACK} providerDetails={slack} jwt={jwt} teamMemberId={teamMemberId}/>
     </div>
   );
 };
 
 ProviderList.propTypes = {
-  providerMap: PropTypes.object.isRequired,
+  viewer: PropTypes.object.isRequired,
   styles: PropTypes.object
 };
 
@@ -38,16 +31,22 @@ const styleThunk = () => ({
   }
 });
 
+const subscriptionThunk = (props) => providerAddedSubscription(props.teamMemberId, props.viewer.id);
+
 export default createFragmentContainer(
-  withStyles(styleThunk)(ProviderList),
+  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(ProviderList)),
   graphql`
-    fragment ProviderList_providerMap on ProviderMap {
-      github {
-        ...ProviderRow_providerDetails
+    fragment ProviderList_viewer on User {
+      id
+      providerMap(teamMemberId: $teamMemberId) {
+        github {
+          ...ProviderRow_providerDetails
+        }
+        slack {
+          ...ProviderRow_providerDetails
+        }
       }
-      slack {
-        ...ProviderRow_providerDetails
-      }
+
     }
   `
 );

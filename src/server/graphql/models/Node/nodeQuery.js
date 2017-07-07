@@ -22,8 +22,4 @@ const nodeDefs = nodeDefinitions(
   globalTypeResolver
 );
 
-export const {nodeInterface} = nodeDefs;
-
-export default {
-  node: nodeDefs.nodeField
-};
+export const {nodeInterface, nodeField} = nodeDefs;

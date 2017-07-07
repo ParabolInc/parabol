@@ -5,11 +5,11 @@ import {css} from 'aphrodite-local-styles/no-important';
 import withStyles from 'universal/styles/withStyles';
 
 const TeamIntegrations = (props) => {
-  const {jwt, providerMap, styles, teamMemberId} = props;
+  const {jwt, viewer, styles, teamMemberId} = props;
 
   return (
     <div className={css(styles.listAndAnnoucements)}>
-      <ProviderList providerMap={providerMap} jwt={jwt} teamMemberId={teamMemberId}/>
+      <ProviderList viewer={viewer} jwt={jwt} teamMemberId={teamMemberId}/>
       <div>
         Notifications
       </div>
@@ -18,7 +18,7 @@ const TeamIntegrations = (props) => {
 };
 
 TeamIntegrations.propTypes = {
-  providerMap: PropTypes.object.isRequired,
+  viewer: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamMemberId: PropTypes.string.isRequired
 };

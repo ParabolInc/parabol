@@ -12,7 +12,7 @@ import {connectionDefinitions, globalIdField} from 'graphql-relay';
 const SlackIntegration = new GraphQLObjectType({
   name: 'SlackIntegration',
   description: 'An integration that sends start/end meeting messages to a specified slack channel',
-  interfaces: [nodeInterface],
+  interfaces: () => [nodeInterface],
   fields: () => ({
     // shortid
     id: globalIdField('SlackIntegration', ({id}) => id),

@@ -1,21 +1,22 @@
 import {
   GraphQLBoolean,
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLList,
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLInt,
-  GraphQLInputObjectType
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql';
-import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import TeamMember from '../TeamMember/teamMemberSchema';
 import getRethink from 'server/database/rethinkDriver';
 import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema';
-import {BILLING_LEADER} from 'universal/utils/constants';
-import slackChannels from 'server/graphql/models/SlackIntegration/slackChannels';
 import integrationProvider from 'server/graphql/models/Provider/integrationProvider';
+import providerMap from 'server/graphql/models/Provider/providerMap';
+import slackChannels from 'server/graphql/models/SlackIntegration/slackChannels';
+import {BILLING_LEADER} from 'universal/utils/constants';
+import {GraphQLEmailType, GraphQLURLType} from '../../types';
+import TeamMember from '../TeamMember/teamMemberSchema';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -180,6 +181,7 @@ export const User = new GraphQLObjectType({
           .run();
       }
     },
+    providerMap,
     slackChannels,
     integrationProvider,
     jwt: {

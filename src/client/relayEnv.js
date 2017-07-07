@@ -78,10 +78,11 @@ class RelayEnv {
       // used as a per-client UID for unsubbing & preventing dupes
       opId
     };
-    this.socket.emit('gqlSub', request, (error, data) => {
-      observer.onNext({data});
+    this.socket.on('gqlData', (gqlResponse) => {
+      observer.onNext(gqlResponse);
     });
-  }
+    this.socket.emit('gqlSub', request);
+  };
 
   ensureSubscription(config) {
     const {subscription, variables} = config;
@@ -92,11 +93,13 @@ class RelayEnv {
       this.idLookup[key] = this.generateId();
       requestSubscription(this.wsEnv, config);
     }
-    return () => this.unsubscribe(opId);
+    return () => this.unsubscribe(key);
   }
 
-  unsubscribe = (id) => {
-    this.socket.emit('gqlUnsub', id);
+  unsubscribe = (key) => {
+    const opId = this.idLookup[key];
+    this.socket.emit('gqlUnsub', opId);
+    delete this.idLookup[key];
   };
 
   clear(env) {

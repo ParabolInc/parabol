@@ -28,7 +28,6 @@ const providerLookup = {
       const [, teamId] = teamMemberId.split('::');
       // state is useful for CSRF, but we jwt to make sure the person isn't overwriting the int for another team
       const state = `${teamId}::${jwt}`;
-      console.log('state', state)
       // eslint-disable-next-line
       return `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=channels:read,chat:write:bot&state=${state}&redirect_uri=${redirect}`;
     }
@@ -55,7 +54,6 @@ const ProviderRow = (props) => {
     providerUserName
   } = providerDetails || defaultDetails;
   const {color, icon, description, makeUri, providerName} = providerLookup[name];
-  console.log('provD', providerDetails)
   const openOauth = () => {
     const {teamMemberId} = props;
     //const team =

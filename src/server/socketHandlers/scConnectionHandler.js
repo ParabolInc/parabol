@@ -8,6 +8,8 @@ import jwtDecode from 'jwt-decode';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import packageJSON from '../../../package.json';
+import scRelaySubscribeHandler from 'server/socketHandlers/scRelaySubscribeHandler';
+import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 
 const APP_VERSION = packageJSON.version;
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
@@ -18,6 +20,7 @@ const isTmsValid = (tmsFromDB, tmsFromToken) => {
   }
   return true;
 };
+
 export default function scConnectionHandler(exchange) {
   return async function connectionHandler(socket) {
     // socket.on('message', message => {
@@ -28,6 +31,11 @@ export default function scConnectionHandler(exchange) {
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
     const graphQLHandler = scGraphQLHandler(exchange, socket);
+    const relaySubscribeHandler = scRelaySubscribeHandler(exchange,socket);
+    const relayUnsubscribeHandler = (opId) => {
+      console.log('opId to unsub', opId)
+      unsubscribeRelaySub(socket.subs, opId);
+    }
     socket.on('message', (message) => {
       if (isObject(message) && message.event === '#authenticate') {
         const decodedToken = jwtDecode(message.data);
@@ -38,10 +46,16 @@ export default function scConnectionHandler(exchange) {
       }
     });
     socket.on('graphql', graphQLHandler);
+    socket.on('gqlSub', relaySubscribeHandler);
+    socket.on('gqlUnsub', relayUnsubscribeHandler);
     socket.on('subscribe', subscribeHandler);
     socket.on('unsubscribe', unsubscribeHandler);
     socket.on('disconnect', () => {
-      console.log('Client disconnected:', socket.id);
+      if (socket.subs) {
+        Object.keys(socket.subs).forEach((opId) => {
+          unsubscribeRelaySub(socket.subs, opId);
+        });
+      }
     });
 
     // the async part should come last so there isn't a race

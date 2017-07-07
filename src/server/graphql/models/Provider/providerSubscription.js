@@ -1,9 +1,11 @@
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {requireSUOrSelf, requireSUOrTeamMember} from 'server/utils/authorization';
-import {Provider} from './providerSchema';
+import {Provider, ProviderMap} from './providerSchema';
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
 import {handleRethinkAdd} from '../../../utils/makeChangefeedHandler';
+import {withFilter} from 'graphql-subscriptions';
+import getPubSub from 'server/graphql/pubsub';
 
 export default {
   providers: {
@@ -37,5 +39,21 @@ export default {
         socket.emit(channel, feedDoc);
       });
     }
+  },
+  providerAdded: {
+    type: ProviderMap,
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID)
+      }
+    },
+    // TODO insecure, anyone could sub!
+    subscribe: withFilter(
+      () => getPubSub().asyncIterator('providerAdded'),
+      (payload, args, context) => {
+        console.log('subbing!', payload, args);
+        return payload.teamId === args.teamId
+      }
+    )
   }
 };

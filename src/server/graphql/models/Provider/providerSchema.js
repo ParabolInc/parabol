@@ -1,10 +1,10 @@
 import {
-  GraphQLList,
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
   GraphQLID,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {connectionDefinitions, globalIdField} from 'graphql-relay';
@@ -16,10 +16,10 @@ const ProviderRow = new GraphQLObjectType({
   fields: () => ({
     accessToken: {
       type: GraphQLID,
-      description: 'The access token attached to the userId. null if user does not have a token for the provider',
-      resolve: async(source, args, {authToken}) => {
-        return 'FOO'
-      }
+      description: 'The access token attached to the userId. null if user does not have a token for the provider'
+      //resolve: async(source, args, {authToken}) => {
+      //  return 'FOO'
+      //}
     },
     userCount: {
       type: GraphQLInt,
@@ -55,7 +55,7 @@ export const ProviderMap = new GraphQLObjectType({
 const Provider = new GraphQLObjectType({
   name: 'Provider',
   description: 'A token for a user to be used on 1 or more teams',
-  interfaces: [nodeInterface],
+  interfaces: () => [nodeInterface],
   fields: () => ({
     // shortid
     id: globalIdField('Provider', ({id}) => id),
@@ -95,7 +95,6 @@ const Provider = new GraphQLObjectType({
 });
 
 const {connectionType: ProviderConnection, edgeType: ProviderEdge} = connectionDefinitions({
-  name: 'Provider',
   nodeType: Provider
 });
 

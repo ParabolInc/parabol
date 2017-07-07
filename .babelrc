@@ -11,7 +11,8 @@
       "presets": ["es2015", "stage-0", "react"],
       "plugins": [
         ["relay", {"schema": "./build/schema.graphql"}],
-        ["transform-decorators-legacy"]
+        ["transform-decorators-legacy"],
+        ["transform-async-generator-functions"]
       ]
     },
     "test": {

@@ -1,17 +1,22 @@
 import relayEnv from 'client/relayEnv';
 import PropTypes from 'prop-types';
-import React from 'react';
-import {graphql, QueryRenderer} from 'react-relay';
-import TeamIntegrations from 'universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import {graphql, QueryRenderer} from 'react-relay';
+import {ConnectionHandler} from 'relay-runtime';
+import TeamIntegrations from 'universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations';
+//import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 
 const teamIntegrationsQuery = graphql`
   query TeamIntegrationsRootQuery($teamMemberId: ID!) {
-    providerMap(teamMemberId: $teamMemberId) {
-      ...ProviderList_providerMap    
+    viewer {
+      ...ProviderList_viewer
     }
+    
   }
 `;
+
+
 
 const mapStateToProps = (state) => {
   return {
@@ -19,24 +24,24 @@ const mapStateToProps = (state) => {
   };
 };
 
-const TeamIntegrationsRoot = ({jwt, teamMemberId}) => {
-  return (
-    <QueryRenderer
-      environment={relayEnv.get()}
-      query={teamIntegrationsQuery}
-      render={({error, props}) => {
-        console.log('renderer', error, props)
-        if (error) {
-          return <div>{error.message}</div>
-        } else if (props) {
-          return <TeamIntegrations {...props} jwt={jwt} teamMemberId={teamMemberId} />;
-        } else {
-          return <div>Loading...</div>
-        }
-      }}
-      variables={{teamMemberId}}
-    />
-  );
+const TeamIntegrationsRoot = (props) => {
+    const {jwt, teamMemberId} = props;
+    return (
+      <QueryRenderer
+        environment={relayEnv.get()}
+        query={teamIntegrationsQuery}
+        render={({error, props}) => {
+          if (error) {
+            return <div>{error.message}</div>
+          } else if (props) {
+            return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamMemberId={teamMemberId}/>;
+          } else {
+            return <div>Loading...</div>
+          }
+        }}
+        variables={{teamMemberId}}
+      />
+    );
 };
 
 
