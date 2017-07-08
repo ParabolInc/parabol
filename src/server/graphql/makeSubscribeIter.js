@@ -1,7 +1,9 @@
 import {$$asyncIterator} from 'iterall';
 import getPubSub from 'server/graphql/pubsub';
 
-const makeSubscribeIter = (channelName, filterFn) => {
+const defaultFilterFn = () => true;
+
+const makeSubscribeIter = (channelName, filterFn = defaultFilterFn) => {
   const asyncIterator = getPubSub().asyncIterator(channelName);
   const getNextPromise = async () => {
     const nextRes = await asyncIterator.next();

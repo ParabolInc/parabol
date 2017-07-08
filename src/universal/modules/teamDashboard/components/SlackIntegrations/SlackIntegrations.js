@@ -12,6 +12,8 @@ import removeSlackChannelMutation from 'universal/mutations/removeSlackChannelMu
 import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
+import slackChannelSubscription from 'universal/subscriptions/slackChannelSubscription';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -151,9 +153,10 @@ const styleThunk = () => ({
   }
 });
 
-//export default withStyles(styleThunk)(SlackIntegrations);
+const subscriptionThunk = (props) => slackChannelSubscription(props.teamId, props.viewer.id);
+
 export default createFragmentContainer(
-  withStyles(styleThunk)(SlackIntegrations),
+  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(SlackIntegrations)),
   graphql`
     fragment SlackIntegrations_viewer on User {
       id

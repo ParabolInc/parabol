@@ -18,7 +18,7 @@ const mutation = graphql`
 
 let tempId = 0;
 
-const sharedUpdater = (store, viewerId, teamId, newEdge) => {
+export const addSlackChannelUpdater = (store, viewerId, teamId, newEdge) => {
   const conn = ConnectionHandler.getConnection(
     store.get(viewerId),
     'SlackIntegrations_slackChannels',
@@ -42,7 +42,7 @@ const addSlackChannelMutation = (slackChannelId, slackChannelName, teamMemberId,
       const payload = store.getRootField('addSlackChannel');
       const newEdge = payload.getLinkedRecord('newChannel');
       const [, teamId] = teamMemberId.split('::');
-      sharedUpdater(store, viewerId, teamId, newEdge);
+      addSlackChannelUpdater(store, viewerId, teamId, newEdge);
     },
     optimisticUpdater: (store) => {
       const id = `client:newChannel:${tempId++}`;
@@ -55,7 +55,7 @@ const addSlackChannelMutation = (slackChannelId, slackChannelName, teamMemberId,
       );
       newEdge.setLinkedRecord(node, 'node');
       const [, teamId] = teamMemberId.split('::');
-      sharedUpdater(store, viewerId, teamId, newEdge);
+      addSlackChannelUpdater(store, viewerId, teamId, newEdge);
 
     },
     onError: (err) => {

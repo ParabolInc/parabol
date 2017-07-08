@@ -3,8 +3,9 @@ import {fromGlobalId, mutationWithClientMutationId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
+import getPubSub from 'server/graphql/pubsub';
 
-export default mutationWithClientMutationId({
+const removeSlackChannel = mutationWithClientMutationId({
   name: 'RemoveSlackChannel',
   inputFields: {
     slackGlobalId: {
@@ -44,6 +45,12 @@ export default mutationWithClientMutationId({
       .update({
         isActive: false
       });
+    console.log('publishing removal', slackGlobalId)
+    getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved: {deletedIntegrationId: slackGlobalId}, mutatorId: socket.id});
     return {id: slackGlobalId};
   }
 });
+
+export default removeSlackChannel;
+
+export const RemoveSlackChannelPayload = removeSlackChannel.type;

@@ -11,7 +11,7 @@ const mutation = graphql`
   }
 `;
 
-const sharedUpdater = (store, viewerId, teamId, deletedId) => {
+export const removeSlackChannelUpdater = (store, viewerId, teamId, deletedId) => {
   const conn = ConnectionHandler.getConnection(
     store.get(viewerId),
     'SlackIntegrations_slackChannels',
@@ -33,10 +33,10 @@ const removeSlackChannelMutation = (slackGlobalId, teamId, viewerId) => {
     updater: (store) => {
       const payload = store.getRootField('removeSlackChannel');
       const deletedId = payload.getValue('deletedIntegrationId');
-      sharedUpdater(store, viewerId, teamId, deletedId);
+      removeSlackChannelUpdater(store, viewerId, teamId, deletedId);
     },
     optimisticUpdater: (store) => {
-      sharedUpdater(store, viewerId, teamId, slackGlobalId);
+      removeSlackChannelUpdater(store, viewerId, teamId, slackGlobalId);
     },
     onError: (err) => {
       console.log('err', err)

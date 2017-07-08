@@ -7,7 +7,7 @@ export default function scRelaySubscribeHandler(exchange, socket) {
   return async function relaySubscribeHandler(body) {
     const {opId, query, variables} = body;
     const authToken = socket.getAuthToken();
-    const context = {authToken};
+    const context = {authToken, socketId: socket.id};
     const document = parse(query);
     console.log('calling subscribe');
     const asyncIterator = subscribe(Schema, document, {}, context, variables);

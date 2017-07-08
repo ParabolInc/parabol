@@ -6,6 +6,8 @@ import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/u
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {SLACK} from 'universal/utils/constants';
+//import getPubSub from 'server/utils/getPubSub';
+import getPubSub from 'server/graphql/pubsub';
 
 export default mutationWithClientMutationId({
   name: 'AddSlackChannel',
@@ -77,7 +79,7 @@ export default mutationWithClientMutationId({
       notifications: ['meeting:end', 'meeting:start'],
       teamId
     }, {returnChanges: true})('changes')(0)('new_val');
-    console.log('sending res', res);
+    getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded: {node: res}, mutatorId: socket.id});
     return res;
   }
 });

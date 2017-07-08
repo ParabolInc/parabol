@@ -47,16 +47,14 @@ export default {
         type: new GraphQLNonNull(GraphQLID)
       }
     },
-    // TODO insecure, anyone could sub!
-    subscribe: (source, {teamId}, {authToken}) => {
+    subscribe: (source, {teamId}, {authToken, socketId}) => {
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
 
       // RESOLUTION
       const channelName = `providerAdded.${teamId}`;
-      const filterFn = (value) => true;
-      //const filterFn = (value) => value.userId !== authToken.sub;
-      return makeSubscribeIter(channelName, filterFn);
+      const filterFn = (value) => value.mutatorId !== socketId;
+      return makeSubscribeIter(channelName);
 
 
     }
