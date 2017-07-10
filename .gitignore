@@ -7,6 +7,7 @@ dll/
 dump.rdb
 node_modules/
 npm-debug.log
+package-lock.json
 yarn-error.log
 rethinkdb_data/
 rethinkdb_dump_*
