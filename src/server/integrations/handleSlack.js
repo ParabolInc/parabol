@@ -1,14 +1,14 @@
+import {verify} from 'jsonwebtoken';
 import fetch from 'node-fetch';
 import {stringify} from 'querystring';
 import getRethink from 'server/database/rethinkDriver';
+import getPubSub from 'server/graphql/pubsub';
+import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import closeClientPage from 'server/utils/closeClientPage';
 import postOptions from 'server/utils/fetchOptions';
 import makeAppLink from 'server/utils/makeAppLink';
-import {SLACK} from 'universal/utils/constants';
-import {verify} from 'jsonwebtoken';
-import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import shortid from 'shortid';
-import getPubSub from 'server/graphql/pubsub';
+import {SLACK} from 'universal/utils/constants';
 
 export default function (exchange) {
   return async (req, res) => {
@@ -59,12 +59,11 @@ export default function (exchange) {
         );
       });
 
-    const providerMap = {
-      slack: {
-        accessToken
-      }
+    const providerUpdated = {
+      accessToken,
+      service: SLACK
     };
-    getPubSub().publish(`providerAdded.${teamId}`, {providerAdded: providerMap});
+    getPubSub().publish(`providerUpdated.${teamId}`, {providerUpdated});
     //const [userId, teamId] = teamMemberId;
     //const cachedFields = {
     //  providerUserName: user.name,

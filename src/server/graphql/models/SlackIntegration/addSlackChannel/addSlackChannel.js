@@ -25,11 +25,7 @@ export default mutationWithClientMutationId({
     newChannel: {
       type: SlackIntegrationEdge,
       description: 'Add a slack channel where messages will be sent',
-      resolve: (node) => {
-        return {
-          node
-        };
-      }
+      resolve: (edge) => edge
     }
   },
   mutateAndGetPayload: async ({teamMemberId, slackChannelId}, {authToken, exchange, socket}) => {
@@ -70,7 +66,7 @@ export default mutationWithClientMutationId({
     }
 
     // RESOLUTION
-    const res = await r.table('SlackIntegration').insert({
+    const node = await r.table('SlackIntegration').insert({
       id: shortid.generate(),
       blackList: [],
       isActive: true,
@@ -79,8 +75,9 @@ export default mutationWithClientMutationId({
       notifications: ['meeting:end', 'meeting:start'],
       teamId
     }, {returnChanges: true})('changes')(0)('new_val');
-    getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded: {node: res}, mutatorId: socket.id});
-    return res;
+    const slackChannelAdded = {node};
+    getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded, mutatorId: socket.id});
+    return slackChannelAdded;
   }
 });
 

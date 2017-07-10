@@ -1,23 +1,25 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {BrowserRouter as Router} from 'react-router-dom';
 import {Provider} from 'react-redux';
-// import routesFactory from 'universal/routes/index';
+import {BrowserRouter as Router} from 'react-router-dom';
+import AtmosphereProvider from 'universal/components/AtmosphereProvider/AtmosphereProvider';
 import ActionContainer from 'universal/containers/Action/ActionContainer';
 
-export default function Root({store}) {
-  // const routes = routesFactory(store);
+export default function Root({store, atmosphere}) {
   return (
     <Provider store={store}>
       <div>
-        <Router>
-          <ActionContainer />
-        </Router>
+        <AtmosphereProvider atmosphere={atmosphere}>
+          <Router>
+            <ActionContainer />
+          </Router>
+        </AtmosphereProvider>
       </div>
     </Provider>
   );
 }
 
 Root.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   store: PropTypes.object.isRequired
 };

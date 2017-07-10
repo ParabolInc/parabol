@@ -1,24 +1,44 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import getDisplayName from 'universal/utils/getDisplayName';
 
-export default (subscribeThunk) => (ComposedComponent) => {
+export default (subscribeThunk, options = {}) => (ComposedComponent) => {
   class WithSubscriptions extends Component {
     static contextTypes = {
-      store: PropTypes.object
+      atmosphere: PropTypes.object
     };
     static displayName = `WithSubscriptions(${getDisplayName(ComposedComponent)})`;
+    static timeouts = {};
 
     componentDidMount() {
-      this.unsubscribe = subscribeThunk(this.props);
+      const {unsubDelay, unsubKey} = options;
+      if (unsubDelay) {
+        const {displayName, timeouts} = WithSubscriptions;
+        const key = unsubKey ? unsubKey(this.props) : displayName;
+        clearTimeout(timeouts[key]);
+        delete timeouts[key];
+      }
+      const {atmosphere} = this.context;
+      this.unsubscribe = subscribeThunk(this.props)(atmosphere.ensureSubscription);
     }
 
     componentWillUnmount() {
-      console.log('unmounting', this.unsubscribe)
-      this.unsubscribe();
+      // by default, never unsub! Keeping a little extra state on the server is far cheaper than a refetch
+      const {unsubDelay, unsubKey} = options;
+
+      // setTimeout has a signed 32bit max
+      if (unsubDelay <= 2147483647) {
+        const {displayName, timeouts} = WithSubscriptions;
+        const key = unsubKey ? unsubKey(this.props) : displayName;
+        timeouts[key] = setTimeout(() => {
+          this.unsubscribe();
+          delete timeouts[key];
+        }, unsubDelay);
+      }
     }
+
     render() {
-      return <ComposedComponent {...this.props} unsubscribe={this.unsubscribe} />;
+      return <ComposedComponent {...this.props} unsubscribe={this.unsubscribe}/>;
     }
   }
   return WithSubscriptions;

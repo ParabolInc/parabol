@@ -1,0 +1,50 @@
+import {ConnectionHandler} from 'relay-runtime';
+//import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
+import {addSlackChannelUpdater} from 'universal/mutations/AddSlackChannelMutation';
+import {removeSlackChannelUpdater} from 'universal/mutations/RemoveSlackChannelMutation';
+import composeSubs from 'universal/utils/relay/composeSubs';
+
+const AddedSubscription = graphql`
+  subscription SlackChannelAddedSubscription($teamId: ID!) {
+    slackChannelAdded(teamId: $teamId) {
+      node {
+        id
+        channelId
+        channelName
+      }
+    }
+
+  }
+`;
+
+const RemovedSubscription = graphql`
+  subscription SlackChannelRemovedSubscription($teamId: ID!) {
+    slackChannelRemoved(teamId: $teamId) {
+      deletedIntegrationId
+    }
+  }
+`;
+
+const SlackChannel = (teamId, viewerId) => (ensureSubscription) => {
+  return composeSubs(
+    ensureSubscription({
+      subscription: AddedSubscription,
+      variables: {teamId},
+      updater: (store) => {
+        const newEdge = store.getRootField('slackChannelAdded');
+        addSlackChannelUpdater(store, viewerId, teamId, newEdge);
+      }
+    }),
+    ensureSubscription({
+      subscription: RemovedSubscription,
+      variables: {teamId},
+      updater: (store) => {
+        const removedChannel = store.getRootField('slackChannelRemoved');
+        const deletedId = removedChannel.getValue('deletedIntegrationId');
+        removeSlackChannelUpdater(store, viewerId, teamId, deletedId);
+      }
+    })
+  );
+};
+
+export default SlackChannel;

@@ -32,11 +32,15 @@ const ProviderRow = new GraphQLObjectType({
     providerUserName: {
       type: GraphQLString,
       description: 'The username according to the provider'
-    }
+    },
+    service: {
+      type: GraphQLString,
+      description: 'The name of the service'
+    },
   })
 });
 
-export const ProviderMap = new GraphQLObjectType({
+const ProviderMap = new GraphQLObjectType({
   name: 'ProviderMap',
   description: 'A token for a user to be used on 1 or more teams',
   fields: () => ({
@@ -101,5 +105,7 @@ const {connectionType: ProviderConnection, edgeType: ProviderEdge} = connectionD
 export {
   ProviderConnection,
   ProviderEdge,
-  Provider
+  Provider,
+  ProviderMap,
+  ProviderRow
 }

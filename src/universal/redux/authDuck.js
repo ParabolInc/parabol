@@ -4,7 +4,6 @@ import {selectSegmentTraits} from 'universal/redux/segmentActions';
 import raven from 'raven-js';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
 import {segmentEventIdentify, segmentEventReset} from 'universal/redux/segmentActions';
-import relayEnv from 'client/relayEnv';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -79,7 +78,6 @@ export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME)
     }
 
     cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
-    relayEnv.setHTTPAuth(authToken);
     if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
       /*
        * Sentry error reporting meta-information. Raven object is set via SSR.

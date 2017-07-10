@@ -10,7 +10,7 @@
     "development": {
       "presets": ["es2015", "stage-0", "react"],
       "plugins": [
-        ["relay", {"schema": "./build/schema.graphql"}],
+        ["relay"],
         ["transform-decorators-legacy"],
         ["transform-async-generator-functions"]
       ]

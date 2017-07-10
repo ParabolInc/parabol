@@ -6,7 +6,7 @@ import makeStore from './makeStore';
 import Root from './Root';
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
 import cashaySchema from 'cashay!../server/utils/getCashaySchema.js'; // eslint-disable-line
-import relayEnv from 'client/relayEnv';
+import Atmosphere from 'client/Atmosphere';
 
 // const {routing} = window.__INITIAL_STATE__;
 const initialState = {};
@@ -20,13 +20,14 @@ const initialState = {};
     schema: cashaySchema,
     httpTransport: new ActionHTTPTransport(persistedToken)
   });
-  // create the relay singleton
-  relayEnv.setHTTPAuth(persistedToken);
+
+  // Relay store
+  const atmosphere = new Atmosphere();
 
   if (__PRODUCTION__) {
     StyleSheet.rehydrate(window.__APHRODITE__);
     render(
-      <Root store={store} />,
+      <Root atmosphere={atmosphere} store={store} />,
       document.getElementById('root')
     );
   } else {
@@ -37,7 +38,7 @@ const initialState = {};
     // whyDidYouUpdate(React);
     render(
       <AppContainer>
-        <Root store={store} />
+        <Root atmosphere={atmosphere} store={store}/>
       </AppContainer>,
       document.getElementById('root')
     );
@@ -48,7 +49,7 @@ const initialState = {};
         const Root = require('./Root').default;
         render(
           <AppContainer>
-            <Root store={store} />
+            <Root atmosphere={atmosphere} store={store} />
           </AppContainer>,
           document.getElementById('root')
         );

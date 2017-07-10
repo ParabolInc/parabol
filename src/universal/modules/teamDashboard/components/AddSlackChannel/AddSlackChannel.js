@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 
 import Button from 'universal/components/Button/Button';
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
-import addSlackChannelMutation from 'universal/mutations/addSlackChannelMutation';
+import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation';
 
 import ui from 'universal/styles/ui';
 
@@ -28,10 +28,9 @@ class AddSlackChannel extends Component {
   }
 
   handleAddChannel = () => {
-    const {teamMemberId, viewerId} = this.props;
+    const {environment, teamMemberId, viewerId} = this.props;
     const {selectedChannel: {channelId, channelName}} = this.state;
-    const [userId, teamId] = teamMemberId.split('::');
-    addSlackChannelMutation(channelId, channelName, teamMemberId, viewerId);
+    AddSlackChannelMutation(environment, channelId, channelName, teamMemberId, viewerId);
   };
 
   updateDropdownItem = (option) => () => {

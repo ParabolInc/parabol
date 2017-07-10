@@ -1,9 +1,9 @@
-import relayEnv from 'client/relayEnv';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {graphql, QueryRenderer} from 'react-relay';
 import SlackIntegrations from 'universal/modules/teamDashboard/components/SlackIntegrations/SlackIntegrations';
 import {SLACK} from 'universal/utils/constants';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const slackChannelQuery = graphql`
   query SlackIntegrationsRootQuery($teamId: ID!, $teamMemberId: ID!, $service: ID!) {
@@ -13,14 +13,14 @@ const slackChannelQuery = graphql`
   }
 `;
 
-const SlackIntegrationsRoot = ({teamMemberId}) => {
+const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
   const [, teamId] = teamMemberId.split('::');
+  const cacheConfig = {sub: atmosphere.constructor.getKey('SlackChannelAddedSubscription', {teamId})};
   return (
     <QueryRenderer
-      environment={relayEnv.get()}
+      environment={atmosphere}
       query={slackChannelQuery}
       render={({error, props}) => {
-        console.log('renderer', error, props)
         if (error) {
           return <div>{error.message}</div>
         } else if (props) {
@@ -41,7 +41,8 @@ const SlackIntegrationsRoot = ({teamMemberId}) => {
 
 
 SlackIntegrationsRoot.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   teamMemberId: PropTypes.string.isRequired
 };
 
-export default SlackIntegrationsRoot;
+export default withAtmosphere(SlackIntegrationsRoot);

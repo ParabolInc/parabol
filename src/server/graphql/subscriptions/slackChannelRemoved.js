@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {SlackIntegrationEdge} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import {RemoveSlackChannelPayload} from 'server/graphql/models/SlackIntegration/removeSlackChannel/removeSlackChannel';
 

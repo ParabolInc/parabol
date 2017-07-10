@@ -1,10 +1,9 @@
-import relayEnv from 'client/relayEnv';
 import {ConnectionHandler} from 'relay-runtime';
 //import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
-
+import {commitMutation} from 'react-relay';
 
 const mutation = graphql`
-  mutation removeSlackChannelMutation($input: RemoveSlackChannelInput!) {
+  mutation RemoveSlackChannelMutation($input: RemoveSlackChannelInput!) {
     removeSlackChannel(input: $input) {
       deletedIntegrationId
     }
@@ -22,8 +21,8 @@ export const removeSlackChannelUpdater = (store, viewerId, teamId, deletedId) =>
   ConnectionHandler.deleteNode(conn, deletedId);
 };
 
-const removeSlackChannelMutation = (slackGlobalId, teamId, viewerId) => {
-  return relayEnv.mutate({
+const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId, viewerId) => {
+  return commitMutation(environment, {
     mutation,
     variables: {
       input: {
@@ -44,4 +43,4 @@ const removeSlackChannelMutation = (slackGlobalId, teamId, viewerId) => {
   })
 };
 
-export default removeSlackChannelMutation;
+export default RemoveSlackChannelMutation;

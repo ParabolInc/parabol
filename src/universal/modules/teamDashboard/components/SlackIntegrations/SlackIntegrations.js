@@ -8,12 +8,12 @@ import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
-import removeSlackChannelMutation from 'universal/mutations/removeSlackChannelMutation';
+import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation';
 import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
-import slackChannelSubscription from 'universal/subscriptions/slackChannelSubscription';
+import SlackChannelSubscription from 'universal/subscriptions/SlackChannel';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -24,10 +24,10 @@ const inlineBlockStyle = {
 
 
 const SlackIntegrations = (props) => {
-  const {styles, teamId, teamMemberId, viewer} = props;
+  const {relay: {environment}, styles, teamId, teamMemberId, viewer} = props;
   const {id: viewerId, slackChannels, integrationProvider} = viewer;
   const handleRemove = (slackGlobalId) => () => {
-    removeSlackChannelMutation(slackGlobalId, teamId, viewerId);
+    RemoveSlackChannelMutation(environment, slackGlobalId, teamId, viewerId);
   }
   const accessToken = integrationProvider && integrationProvider.accessToken;
   return (
@@ -58,6 +58,7 @@ const SlackIntegrations = (props) => {
             {accessToken &&
             <AddSlackChannel
               accessToken={accessToken}
+              environment={environment}
               teamMemberId={teamMemberId}
               viewerId={viewer.id}
               subbedChannels={slackChannels.edges}
@@ -90,6 +91,7 @@ const SlackIntegrations = (props) => {
 };
 
 SlackIntegrations.propTypes = {
+  relay: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired,
   styles: PropTypes.object
 };
@@ -153,7 +155,7 @@ const styleThunk = () => ({
   }
 });
 
-const subscriptionThunk = (props) => slackChannelSubscription(props.teamId, props.viewer.id);
+const subscriptionThunk = ({teamId, viewer: {id}}) => SlackChannelSubscription(teamId, id);
 
 export default createFragmentContainer(
   withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(SlackIntegrations)),

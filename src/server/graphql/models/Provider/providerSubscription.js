@@ -3,7 +3,7 @@ import {requireSUOrSelf, requireSUOrTeamMember} from 'server/utils/authorization
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
 import {handleRethinkAdd} from '../../../utils/makeChangefeedHandler';
-import {Provider, ProviderMap} from './providerSchema';
+import {Provider, ProviderRow} from './providerSchema';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 
 
@@ -40,8 +40,8 @@ export default {
       });
     }
   },
-  providerAdded: {
-    type: ProviderMap,
+  providerUpdated: {
+    type: ProviderRow,
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID)
@@ -52,9 +52,9 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
 
       // RESOLUTION
-      const channelName = `providerAdded.${teamId}`;
+      const channelName = `providerUpdated.${teamId}`;
       const filterFn = (value) => value.mutatorId !== socketId;
-      return makeSubscribeIter(channelName);
+      return makeSubscribeIter(channelName, filterFn);
 
 
     }

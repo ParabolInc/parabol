@@ -1,30 +1,27 @@
+import {cashay, Transport} from 'cashay';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import {matchPath, withRouter} from 'react-router-dom';
 import {reduxSocket} from 'redux-socket-cluster';
-import {cashay} from 'cashay';
-import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-
+import socketCluster from 'socketcluster-client';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import AuthEngine from 'universal/redux/AuthEngine';
 import {
   ADD_TO_TEAM,
   JOIN_TEAM,
   KICK_OUT,
-  REJOIN_TEAM,
-  USER_MEMO,
   NOTIFICATIONS,
   PRESENCE,
-  TEAM_MEMBERS
+  REJOIN_TEAM,
+  TEAM_MEMBERS,
+  USER_MEMO
 } from 'universal/subscriptions/constants';
-import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
+import subscriber from 'universal/subscriptions/subscriber';
+import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import parseChannel from 'universal/utils/parseChannel';
-import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
-import {matchPath, withRouter} from 'react-router-dom';
-import {
-  APP_VERSION_KEY,
-  APP_UPGRADE_PENDING_KEY,
-  APP_UPGRADE_PENDING_RELOAD
-} from 'universal/utils/constants';
 
 const getTeamName = (teamId) => {
   const cashayState = cashay.store.getState().cashay;
@@ -42,6 +39,31 @@ const mapStateToProps = (state) => {
 const tmsSubs = [];
 
 export default (ComposedComponent) => {
+  const reduxSocketOptions = (props) => ({
+    AuthEngine,
+    socketCluster,
+    onConnect: (options, hocOptions, socket) => {
+      if (!cashay.priorityTransport) {
+        const sendToServer = (request) => {
+          return new Promise((resolve) => {
+            socket.emit('graphql', request, (error, response) => {
+              resolve(response);
+            });
+          });
+        };
+        const priorityTransport = new Transport(sendToServer);
+        cashay.create({priorityTransport, subscriber});
+        props.atmosphere.setSocket(socket);
+      }
+    },
+    onDisconnect: () => {
+      cashay.create({priorityTransport: null});
+      props.atmosphere.socket = null;
+    },
+    keepAlive: 3000
+  });
+
+  @withAtmosphere
   @reduxSocket({}, reduxSocketOptions)
   @connect(mapStateToProps)
   @withRouter
@@ -68,6 +90,7 @@ export default (ComposedComponent) => {
       this.watchForKickout();
       this.listenForVersion();
     }
+
     componentWillReceiveProps(nextProps) {
       this.subscribeToPresence(this.props, nextProps);
     }

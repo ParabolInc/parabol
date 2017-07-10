@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay';
 import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 import ProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
 import withStyles from 'universal/styles/withStyles';
-import providerAddedSubscription from 'universal/subscriptions/providerAddedSubscription';
+import ProviderSubscription from 'universal/subscriptions/Provider';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import ui from 'universal/styles/ui';
 import Panel from 'universal/components/Panel/Panel';
@@ -35,7 +35,7 @@ const styleThunk = () => ({
   }
 });
 
-const subscriptionThunk = (props) => providerAddedSubscription(props.teamMemberId, props.viewer.id);
+const subscriptionThunk = (props) => ProviderSubscription(props.teamMemberId, props.viewer.id);
 
 export default createFragmentContainer(
   withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(ProviderList)),

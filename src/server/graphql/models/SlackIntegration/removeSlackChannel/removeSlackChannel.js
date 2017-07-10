@@ -17,10 +17,7 @@ const removeSlackChannel = mutationWithClientMutationId({
     deletedIntegrationId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of SlackIntegration that got removed',
-      resolve: ({id}) => {
-        console.log('resolving deletedIntegrationId', id);
-        return id;
-      }
+      resolve: ({id}) => id
     }
   },
   mutateAndGetPayload: async ({slackGlobalId}, {authToken, socket}) => {
@@ -45,9 +42,10 @@ const removeSlackChannel = mutationWithClientMutationId({
       .update({
         isActive: false
       });
-    console.log('publishing removal', slackGlobalId)
-    getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved: {deletedIntegrationId: slackGlobalId}, mutatorId: socket.id});
-    return {id: slackGlobalId};
+    console.log('publishing removal', slackGlobalId);
+    const slackChannelRemoved = {id: slackGlobalId};
+    getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved, mutatorId: socket.id});
+    return slackChannelRemoved;
   }
 });
 
