@@ -14,7 +14,7 @@ export const RemoveSlackChannelPayload = new GraphQLObjectType({
   })
 });
 
-const removeSlackChannel = {
+export default {
   name: 'RemoveSlackChannel',
   description: 'Remove a slack channel integration from a team',
   type: RemoveSlackChannelPayload,
@@ -45,11 +45,8 @@ const removeSlackChannel = {
       .update({
         isActive: false
       });
-    console.log('publishing removal', slackGlobalId);
     const slackChannelRemoved = {deletedId: slackGlobalId};
     getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved, mutatorId: socket.id});
     return slackChannelRemoved;
   }
 };
-
-export default removeSlackChannel;

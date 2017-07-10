@@ -3,9 +3,7 @@ import {requireSUOrSelf, requireSUOrTeamMember} from 'server/utils/authorization
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
 import {handleRethinkAdd} from '../../../utils/makeChangefeedHandler';
-import {Provider, ProviderRow} from './providerSchema';
-import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-
+import {Provider} from './providerSchema';
 
 export default {
   providers: {
@@ -38,25 +36,6 @@ export default {
         const feedDoc = handleRethinkAdd(doc);
         socket.emit(channel, feedDoc);
       });
-    }
-  },
-  providerUpdated: {
-    type: ProviderRow,
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID)
-      }
-    },
-    subscribe: (source, {teamId}, {authToken, socketId}) => {
-      // AUTH
-      requireSUOrTeamMember(authToken, teamId);
-
-      // RESOLUTION
-      const channelName = `providerUpdated.${teamId}`;
-      const filterFn = (value) => value.mutatorId !== socketId;
-      return makeSubscribeIter(channelName, filterFn);
-
-
     }
   }
 };

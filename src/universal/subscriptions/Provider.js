@@ -3,8 +3,10 @@
 const subscription = graphql`
   subscription ProviderSubscription($teamId: ID!) {
     providerUpdated(teamId: $teamId) {
-      service
-      accessToken
+      providerRow {
+        service
+        accessToken
+      }
     }
   }
 `;
@@ -15,7 +17,8 @@ const Provider = (teamMemberId, viewerId) => (ensureSubscription) => {
     subscription,
     variables: {teamId},
     updater: (store) => {
-      const newProviderRow = store.getRootField('providerUpdated');
+      const payload = store.getRootField('providerUpdated');
+      const newProviderRow = payload.getLinkedRecord('providerRow');
       const service = newProviderRow.getValue('service');
       const viewer = store.get(viewerId);
       const providerMap = viewer.getLinkedRecord('providerMap', {teamMemberId});

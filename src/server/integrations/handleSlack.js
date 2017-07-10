@@ -60,8 +60,10 @@ export default function (exchange) {
       });
 
     const providerUpdated = {
-      accessToken,
-      service: SLACK
+      providerRow: {
+        accessToken,
+        service: SLACK
+      }
     };
     getPubSub().publish(`providerUpdated.${teamId}`, {providerUpdated});
     //const [userId, teamId] = teamMemberId;
