@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
-import {graphql, QueryRenderer} from 'react-relay';
+import {graphql} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamIntegrations from 'universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 
 //import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 

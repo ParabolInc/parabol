@@ -129,19 +129,23 @@ class ReactRelayQueryRenderer extends React.Component {
   }
 
   componentWillUnmount() {
-    const {cacheConfig, query, variables, lookup} = this.props;
+    const {cacheConfig, query, variables, environment} = this.props;
     const {sub, ttl} = cacheConfig || {};
-    if (lookup) {
+    const isCacheable = sub || ttl;
+    if (isCacheable) {
+      const pendingFetch = this._pendingFetch;
+      const rootSubscription = this._rootSubscription;
+      const selectionReference = this._selectionReference;
       const release = () => {
-        this._pendingFetch && this._pendingFetch.dispose();
-        this._rootSubscription && this._rootSubscription.dispose();
-        this._selectionReference && this._selectionReference.dispose();
+        pendingFetch && pendingFetch.dispose();
+        rootSubscription && rootSubscription.dispose();
+        selectionReference && selectionReference.dispose();
       };
       if (sub) {
-        lookup.subs[sub] = release;
+        environment.gcSubs[sub] = release;
       } else if (ttl) {
         const exp = Date.now() + ttl;
-        lookup.exp[exp] = release;
+        enviroment.gcTTL[exp] = release;
       }
     }
     this._release();
