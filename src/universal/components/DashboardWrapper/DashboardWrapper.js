@@ -14,7 +14,7 @@ const DashboardWrapper = () => {
       <DashSidebar />
       <AsyncRoute isAbstract path="/me" mod={userDashboard} />
       <AsyncRoute isAbstract path="/team/:teamId" mod={teamContainer} />
-      <AsyncRoute path="/newteam/:newOrg?" mod={newTeam} />
+      <AsyncRoute path="/newteam/:newOrgRoute?" mod={newTeam} />
     </DashLayoutContainer>
   );
 };

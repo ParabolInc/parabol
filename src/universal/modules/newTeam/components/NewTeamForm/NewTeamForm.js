@@ -14,7 +14,6 @@ import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
-import shouldValidate from 'universal/validation/shouldValidate';
 import {MONTHLY_PRICE} from 'universal/utils/constants';
 import StripeTokenField from 'universal/modules/newTeam/components/NewTeamForm/StripeTokenField';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
@@ -228,7 +227,7 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'newTeam', shouldValidate, validate})(
+export default reduxForm({form: 'newTeam', validate})(
   withStyles(styleThunk)(
     NewTeamForm)
 );

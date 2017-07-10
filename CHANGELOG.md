@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.19.2 - 29-Jun-2017
+### Fixed
+- #1131 broken new team validation accepts blank name on client
+- #1132 handle shouldValidate and handleSubmit on new team form
+
 ## v0.19.1 - 26-Jun-2017
 ### Fixed
 - #914 improbable welcome wizard race condition
