@@ -4,6 +4,7 @@ import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/u
 import serviceToProvider from 'server/utils/serviceToProvider';
 import {errorObj} from 'server/utils/utils';
 
+// Will use this when GH comes
 export default {
   type: GraphQLBoolean,
   description: 'Remove a user from an integration',

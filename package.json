@@ -183,7 +183,6 @@
     "redux-storage-engine-localstorage": "^1.1.4",
     "redux-storage-whitelist-fn": "^4.0.1",
     "redux-thunk": "2.2.0",
-    "relay-query-lookup-renderer": "^1.0.1",
     "rethinkdbdash": "^2.3.29",
     "serve-favicon": "^2.4.1",
     "shortid": "^2.2.8",

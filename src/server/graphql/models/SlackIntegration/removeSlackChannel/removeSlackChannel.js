@@ -1,26 +1,29 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import {fromGlobalId, mutationWithClientMutationId} from 'graphql-relay';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
+import getPubSub from 'server/graphql/pubsub';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
-import getPubSub from 'server/graphql/pubsub';
 
-const removeSlackChannel = mutationWithClientMutationId({
+export const RemoveSlackChannelPayload = new GraphQLObjectType({
+  name: 'RemoveSlackChannelPayload',
+  fields: () => ({
+    deletedId: {
+      type: new GraphQLNonNull(GraphQLID)
+    }
+  })
+});
+
+const removeSlackChannel = {
   name: 'RemoveSlackChannel',
-  inputFields: {
+  description: 'Remove a slack channel integration from a team',
+  type: RemoveSlackChannelPayload,
+  args: {
     slackGlobalId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'Remove a slack channel integration from a team'
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
-  outputFields: {
-    deletedIntegrationId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of SlackIntegration that got removed',
-      resolve: ({id}) => id
-    }
-  },
-  mutateAndGetPayload: async ({slackGlobalId}, {authToken, socket}) => {
+  resolve: async (source, {slackGlobalId}, {authToken, socket}) => {
     const r = getRethink();
     const {id} = fromGlobalId(slackGlobalId);
     // AUTH
@@ -43,12 +46,10 @@ const removeSlackChannel = mutationWithClientMutationId({
         isActive: false
       });
     console.log('publishing removal', slackGlobalId);
-    const slackChannelRemoved = {id: slackGlobalId};
+    const slackChannelRemoved = {deletedId: slackGlobalId};
     getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved, mutatorId: socket.id});
     return slackChannelRemoved;
   }
-});
+};
 
 export default removeSlackChannel;
-
-export const RemoveSlackChannelPayload = removeSlackChannel.type;

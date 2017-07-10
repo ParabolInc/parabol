@@ -11,8 +11,7 @@
       "presets": ["es2015", "stage-0", "react"],
       "plugins": [
         ["relay"],
-        ["transform-decorators-legacy"],
-        ["transform-async-generator-functions"]
+        ["transform-decorators-legacy"]
       ]
     },
     "test": {

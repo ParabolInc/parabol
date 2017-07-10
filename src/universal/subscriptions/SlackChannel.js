@@ -20,7 +20,7 @@ const AddedSubscription = graphql`
 const RemovedSubscription = graphql`
   subscription SlackChannelRemovedSubscription($teamId: ID!) {
     slackChannelRemoved(teamId: $teamId) {
-      deletedIntegrationId
+      deletedId
     }
   }
 `;
@@ -40,7 +40,7 @@ const SlackChannel = (teamId, viewerId) => (ensureSubscription) => {
       variables: {teamId},
       updater: (store) => {
         const removedChannel = store.getRootField('slackChannelRemoved');
-        const deletedId = removedChannel.getValue('deletedIntegrationId');
+        const deletedId = removedChannel.getValue('deletedId');
         removeSlackChannelUpdater(store, viewerId, teamId, deletedId);
       }
     })

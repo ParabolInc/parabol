@@ -1,11 +1,10 @@
 import {ConnectionHandler} from 'relay-runtime';
-//import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 import {commitMutation} from 'react-relay';
 
 const mutation = graphql`
-  mutation RemoveSlackChannelMutation($input: RemoveSlackChannelInput!) {
-    removeSlackChannel(input: $input) {
-      deletedIntegrationId
+  mutation RemoveSlackChannelMutation($slackGlobalId: ID!) {
+    removeSlackChannel(slackGlobalId: $slackGlobalId) {
+      deletedId
     }
   }
 `;
@@ -24,14 +23,10 @@ export const removeSlackChannelUpdater = (store, viewerId, teamId, deletedId) =>
 const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId, viewerId) => {
   return commitMutation(environment, {
     mutation,
-    variables: {
-      input: {
-        slackGlobalId
-      }
-    },
+    variables: {slackGlobalId},
     updater: (store) => {
       const payload = store.getRootField('removeSlackChannel');
-      const deletedId = payload.getValue('deletedIntegrationId');
+      const deletedId = payload.getValue('deletedId');
       removeSlackChannelUpdater(store, viewerId, teamId, deletedId);
     },
     optimisticUpdater: (store) => {

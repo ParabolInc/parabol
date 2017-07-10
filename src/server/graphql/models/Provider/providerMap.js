@@ -25,8 +25,6 @@ export default {
 
 
     // RESOLUTION
-
-    // TODO write this once i have some sample data. abstract stuff is hard
     const allProviders = await r.table('Provider')
       .getAll(teamId, {index: 'teamIds'})
       .group('service');

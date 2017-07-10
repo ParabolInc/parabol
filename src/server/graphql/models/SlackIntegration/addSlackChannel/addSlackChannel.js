@@ -1,18 +1,17 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import {mutationWithClientMutationId} from 'graphql-relay';
+import {GraphQLID, GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
+import {base64} from 'graphql-relay/lib/utils/base64';
 import getRethink from 'server/database/rethinkDriver';
 import {SlackIntegrationEdge} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
+//import getPubSub from 'server/utils/getPubSub';
+import getPubSub from 'server/graphql/pubsub';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {SLACK} from 'universal/utils/constants';
-//import getPubSub from 'server/utils/getPubSub';
-import getPubSub from 'server/graphql/pubsub';
-import {base64} from 'graphql-relay/lib/utils/base64';
 
-export default mutationWithClientMutationId({
-  name: 'AddSlackChannel',
-  inputFields: {
+const AddSlackChannelInput = new GraphQLInputObjectType({
+  name: 'AddSlackChannelInput',
+  fields: () => ({
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the teamMember calling it.'
@@ -21,15 +20,18 @@ export default mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLID),
       description: 'the slack channel that wants our messages'
     }
-  },
-  outputFields: {
-    newChannel: {
-      type: SlackIntegrationEdge,
-      description: 'Add a slack channel where messages will be sent',
-      resolve: (edge) => edge
+  })
+});
+
+export default {
+  name: 'AddSlackChannel',
+  type: new GraphQLNonNull(SlackIntegrationEdge),
+  args: {
+    input: {
+      type: new GraphQLNonNull(AddSlackChannelInput)
     }
   },
-  mutateAndGetPayload: async ({teamMemberId, slackChannelId}, {authToken, exchange, socket}) => {
+  resolve: async (source, {input: {teamMemberId, slackChannelId}}, {authToken, socket}) => {
     const r = getRethink();
 
     // AUTH
@@ -83,5 +85,5 @@ export default mutationWithClientMutationId({
     getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded, mutatorId: socket.id});
     return slackChannelAdded;
   }
-});
+};
 

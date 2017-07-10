@@ -1,6 +1,7 @@
 import {fromGlobalId, nodeDefinitions} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 
+// very much still a WIP. It'll be useful for list/detail views
 const globalIdFetcher = (globalId) => {
   const { type, id } = fromGlobalId(globalId);
   const r = getRethink();

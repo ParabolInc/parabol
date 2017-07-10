@@ -1,17 +1,15 @@
+import {commitMutation} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
 import {insertEdgeBefore} from 'universal/utils/relay/insertEdge';
-import {commitMutation} from 'react-relay';
 //import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 
 const mutation = graphql`
   mutation AddSlackChannelMutation($input: AddSlackChannelInput!) {
     addSlackChannel(input: $input) {
-      newChannel {
-        cursor
-        node {
-          channelId
-          channelName
-        }
+      cursor
+      node {
+        channelId
+        channelName
       }
     }
   }
@@ -40,8 +38,7 @@ const AddSlackChannelMutation = (environment, slackChannelId, slackChannelName, 
       }
     },
     updater: (store) => {
-      const payload = store.getRootField('addSlackChannel');
-      const newEdge = payload.getLinkedRecord('newChannel');
+      const newEdge = store.getRootField('addSlackChannel');
       const [, teamId] = teamMemberId.split('::');
       addSlackChannelUpdater(store, viewerId, teamId, newEdge);
     },
