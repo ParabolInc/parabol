@@ -15,6 +15,10 @@ export default function scRelaySubscribeHandler(exchange, socket) {
       console.log('emitting gqlData', value)
       socket.emit(`gqlData.${opId}`, value);
     }
+    //setTimeout(() => {
+    //  asyncIterator.return();
+    //  console.log('sub ended', opId)
+    //}, 5000)
     await forAwaitEach(asyncIterator, iterableCb);
 
      /*

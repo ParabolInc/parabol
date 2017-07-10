@@ -36,7 +36,6 @@ const TeamIntegrationsRoot = (props) => {
       query={teamIntegrationsQuery}
       render={({error, props}) => {
         if (error) {
-          debugger
           return <div>{error.message}</div>
         } else if (props) {
           return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamMemberId={teamMemberId}/>;

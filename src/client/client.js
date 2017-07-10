@@ -7,7 +7,6 @@ import Root from './Root';
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
 import cashaySchema from 'cashay!../server/utils/getCashaySchema.js'; // eslint-disable-line
 import Atmosphere from 'client/Atmosphere';
-import 'client/requestIdleCallbackShim';
 
 // const {routing} = window.__INITIAL_STATE__;
 const initialState = {};

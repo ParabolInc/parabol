@@ -1,6 +1,7 @@
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
+import {requestIdleCallback} from 'universal/utils/requestIdleCallback';
 
 
 export default class Atmosphere extends Environment {
@@ -111,6 +112,12 @@ export default class Atmosphere extends Environment {
     const opId = this.subLookup[subKey];
     this.socket.off(`gqlData.${opId}`);
     delete this.subLookup[subKey];
+    const dispose = this.gcSubs[subKey];
+    if (dispose) {
+      requestIdleCallback(() => {
+        dispose();
+      })
+    }
     if (!serverInitiated) {
       this.socket.emit('gqlUnsub', opId);
     }

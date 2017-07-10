@@ -8,6 +8,7 @@ import shortid from 'shortid';
 import {SLACK} from 'universal/utils/constants';
 //import getPubSub from 'server/utils/getPubSub';
 import getPubSub from 'server/graphql/pubsub';
+import {base64} from 'graphql-relay/lib/utils/base64';
 
 export default mutationWithClientMutationId({
   name: 'AddSlackChannel',
@@ -75,7 +76,10 @@ export default mutationWithClientMutationId({
       notifications: ['meeting:end', 'meeting:start'],
       teamId
     }, {returnChanges: true})('changes')(0)('new_val');
-    const slackChannelAdded = {node};
+    const slackChannelAdded = {
+      cursor: base64(node.id),
+      node
+    };
     getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded, mutatorId: socket.id});
     return slackChannelAdded;
   }

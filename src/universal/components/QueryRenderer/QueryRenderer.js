@@ -2,20 +2,15 @@ import deepFreeze from 'deep-freeze';
 import areEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
+import Atmosphere from 'client/Atmosphere';
 
-/**
- * Taken from react-relay QueryRenderer with one addition.
- * - lookup prop will check the relay store for data first and if present will
- * immediately call `render` with props.
- *
- * This will not be necessary if this PR is merged:
- * https://github.com/facebook/relay/pull/1760
- */
-class ReactRelayQueryRenderer extends React.Component {
+const isCacheable = (cacheConfig = {}) => cacheConfig.force === false || cacheConfig.sub || cacheConfig.ttl;
+// cacheable logic borrowed from https://github.com/robrichard/relay-query-lookup-renderer
+export default class ReactRelayQueryRenderer extends React.Component {
   constructor(props, context) {
     super(props, context);
-    let {query, variables, lookup} = props;
-    const environment = props.environment;
+    let {query, variables} = props;
+    const {cacheConfig, environment} = props;
     let operation = null;
     if (query) {
       const {
@@ -37,26 +32,7 @@ class ReactRelayQueryRenderer extends React.Component {
     this._rootSubscription = null;
     this._selectionReference = null;
 
-    if (operation) {
-      if (lookup && environment.check(operation.root)) {
-        // data is available in the store, render without making any requests
-        const snapshot = environment.lookup(operation.fragment);
-        this.state = {
-          readyState: {
-            error: null,
-            props: snapshot.data,
-            retry: () => {
-              this._fetch(operation, props.cacheConfig);
-            }
-          }
-        };
-      } else {
-        this.state = {
-          readyState: getDefaultState()
-        };
-        this._fetch(operation, props.cacheConfig);
-      }
-    } else {
+    if (!query) {
       this.state = {
         readyState: {
           error: null,
@@ -64,7 +40,34 @@ class ReactRelayQueryRenderer extends React.Component {
           retry: null
         }
       };
+    } else if (operation) {
+      if (isCacheable(cacheConfig) && environment.check(operation.root)) {
+        // data is available in the store, render without making any requests
+        const snapshot = environment.lookup(operation.fragment);
+        const key = Atmosphere.getKey()
+        this.state = {
+          readyState: {
+            error: null,
+            props: snapshot.data,
+            retry: null
+          }
+        };
+      } else {
+        this.state = {
+          readyState: getDefaultState()
+        };
+        this._fetch(operation, cacheConfig);
+      }
     }
+    // any time we change routes, let's remove the stale data
+    requestIdleCallback(() => {
+      const expirations = Object.keys(environment.gcTTL).filter((exp) => exp < Date.now());
+      for (let i = 0; i < expirations.length; i++) {
+        const exp = expirations[i];
+        environment.gcTTL[exp]();
+        delete environment.gcTTL[exp];
+      }
+    });
   }
 
   componentDidMount() {
@@ -72,13 +75,12 @@ class ReactRelayQueryRenderer extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const {cacheConfig, environment, query, variables} = nextProps;
     if (
-      nextProps.query !== this.props.query ||
-      nextProps.environment !== this.props.environment ||
-      !areEqual(nextProps.variables, this.props.variables)
+      query !== this.props.query ||
+      environment !== this.props.environment ||
+      !areEqual(variables, this.props.variables)
     ) {
-      const {query, variables} = nextProps;
-      const environment = nextProps.environment;
       if (query) {
         const {
           createOperationSelector,
@@ -93,19 +95,11 @@ class ReactRelayQueryRenderer extends React.Component {
           environment,
           variables: operation.variables
         };
-        if (nextProps.lookup && environment.check(operation.root)) {
+        if (isCacheable(cacheConfig) && environment.check(operation.root)) {
           const snapshot = environment.lookup(operation.fragment);
-          this.setState({
-            readyState: {
-              error: null,
-              props: snapshot.data,
-              retry: () => {
-                this._fetch(operation, nextProps.cacheConfig);
-              }
-            }
-          });
+          this._onChange(snapshot);
         } else {
-          this._fetch(operation, nextProps.cacheConfig);
+          this._fetch(operation, cacheConfig);
           this.setState({
             readyState: getDefaultState()
           });
@@ -129,27 +123,28 @@ class ReactRelayQueryRenderer extends React.Component {
   }
 
   componentWillUnmount() {
-    const {cacheConfig, query, variables, environment} = this.props;
+    this._mounted = false;
+    const {cacheConfig, environment} = this.props;
     const {sub, ttl} = cacheConfig || {};
-    const isCacheable = sub || ttl;
-    if (isCacheable) {
+    if (sub || ttl) {
       const pendingFetch = this._pendingFetch;
       const rootSubscription = this._rootSubscription;
       const selectionReference = this._selectionReference;
       const release = () => {
-        pendingFetch && pendingFetch.dispose();
-        rootSubscription && rootSubscription.dispose();
-        selectionReference && selectionReference.dispose();
+        if (pendingFetch) pendingFetch.dispose();
+        if (rootSubscription) rootSubscription.dispose();
+        if (selectionReference) selectionReference.dispose();
       };
       if (sub) {
         environment.gcSubs[sub] = release;
-      } else if (ttl) {
-        const exp = Date.now() + ttl;
-        enviroment.gcTTL[exp] = release;
       }
+      if (ttl) {
+        const exp = Date.now() + ttl;
+        environment.gcTTL[exp] = release;
+      }
+    } else {
+      this._release();
     }
-    this._release();
-    this._mounted = false;
   }
 
   shouldComponentUpdate(nextProps, nextState) {

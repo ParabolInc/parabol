@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {segmentEventPage} from 'universal/redux/segmentActions';
+import {requestIdleCallback} from 'universal/utils/requestIdleCallback';
 
 const updateAnalyticsPage = (dispatch, lastPath, nextPath, title, params) => {
   if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
@@ -44,7 +45,7 @@ class Bundle extends Component {
       const {store: {dispatch}} = this.context;
       // can't use setTimeout, since react rendering is not guaranteed sync
       // use requestIdleCallback to ensure that rendering eg '/me' has completed
-      window.requestIdleCallback(() => {
+      requestIdleCallback(() => {
         const {analytics: {lastPath, title}} = this.context;
         updateAnalyticsPage(dispatch, lastPath, nextPath, title, params);
       });

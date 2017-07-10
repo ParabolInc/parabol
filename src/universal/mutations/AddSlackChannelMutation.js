@@ -7,6 +7,7 @@ const mutation = graphql`
   mutation AddSlackChannelMutation($input: AddSlackChannelInput!) {
     addSlackChannel(input: $input) {
       newChannel {
+        cursor
         node {
           channelId
           channelName
