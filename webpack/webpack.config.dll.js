@@ -12,8 +12,8 @@ module.exports = {
       'cashay',
       'core-js',
       'email-addresses',
-       'graphiql',
-       'graphql',
+      'graphiql',
+      'graphql',
       'html-entities', // server
       'markdown-it',
       'react',
