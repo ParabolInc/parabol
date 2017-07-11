@@ -1,14 +1,14 @@
-//import {PubSub} from 'graphql-subscriptions';
+// import {PubSub} from 'graphql-subscriptions';
 //
-//let pubsub;
+// let pubsub;
 //
-//// TODO replace with redis
-//const getPubSub = () => {
+// // TODO replace with redis
+// const getPubSub = () => {
 //  if (!pubsub) {
 //    pubsub = new PubSub();
 //  }
 //  return pubsub;
-//};
+// };
 //
-//export default getPubSub;
+// export default getPubSub;
 //

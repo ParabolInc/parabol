@@ -13,7 +13,7 @@ export const removeSlackChannelUpdater = (store, viewerId, teamId, deletedId) =>
   const slackChannels = viewer.getLinkedRecords('slackChannels', {teamId});
   const idxToDelete = slackChannels.findIndex((channel) => channel.getValue('id') === deletedId);
   if (idxToDelete !== -1) {
-    const newNodes = [...slackChannels.slice(0, idxToDelete), ...slackChannels.slice(idxToDelete+1)];
+    const newNodes = [...slackChannels.slice(0, idxToDelete), ...slackChannels.slice(idxToDelete + 1)];
     viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
   }
 };
