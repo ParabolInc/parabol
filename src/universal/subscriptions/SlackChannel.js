@@ -12,7 +12,6 @@ const AddedSubscription = graphql`
         channelName
       }
     }
-
   }
 `;
 

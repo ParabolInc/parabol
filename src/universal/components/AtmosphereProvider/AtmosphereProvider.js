@@ -36,7 +36,6 @@ class AtmosphereProvider extends Component {
   }
 
   render() {
-    console.log('rendering', this.props.atmosphere);
     return Children.only(this.props.children);
   }
 }

@@ -16,7 +16,6 @@ export default async (req, res) => {
   if (!code) return;
   const [teamId, jwt] = state.split('::');
   if (!teamId || !jwt) return;
-  console.log('jwt', jwt);
   const authToken = verify(jwt, Buffer.from(auth0ClientSecret, 'base64'));
   if (!authToken || !Array.isArray(authToken.tms) || !authToken.tms.includes(teamId)) return;
   const queryParams = {

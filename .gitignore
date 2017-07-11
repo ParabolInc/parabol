@@ -14,4 +14,4 @@ rethinkdb_dump_*
 stats.json
 test-report.xml
 webpack-assets.json
-__generated__/
+*/__generated__/

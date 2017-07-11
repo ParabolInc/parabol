@@ -2,7 +2,6 @@ import {
   AGENDA,
   AGENDA_PROJECTS,
   ARCHIVED_PROJECTS,
-  SLACK_INTEGRATIONS,
   INVITATIONS,
   NOTIFICATIONS,
   ORG_APPROVALS,
@@ -10,7 +9,6 @@ import {
   ORGANIZATIONS,
   OWNED_ORGANIZATIONS,
   PROJECTS,
-  PROVIDERS,
   TEAM,
   TEAM_MEMBERS,
   UPCOMING_INVOICE,
@@ -75,22 +73,6 @@ export default [
         inactive
         picture
         preferredName
-      }
-    }`
-  },
-  {
-    channel: SLACK_INTEGRATIONS,
-    string: `
-    subscription($teamMemberId: ID!) {
-      integrations(teamMemberId: $teamMemberId) {
-        id
-        accessToken
-        service
-        userId,
-        syncs {
-          id
-          slackChannelId
-        }
       }
     }`
   },
@@ -174,17 +156,6 @@ export default [
       }
     }`
   },
-  // {
-  //   channel: PRESENCE,
-  //   string: `
-  //   subscription($teamId: ID!) {
-  //     presence(teamId: $teamId) {
-  //       id
-  //       userId
-  //       editing
-  //     }
-  //   }`
-  // },
   {
     channel: PROJECTS,
     string: `
@@ -200,19 +171,6 @@ export default [
         teamMemberId
         sortOrder
         updatedAt
-      }
-    }`
-  },
-  {
-    channel: PROVIDERS,
-    string: `
-    subscription($teamMemberId: ID!) {
-      providers(teamMemberId: $teamMemberId) {
-        id
-        accessToken
-        service
-        teamIds
-        userId
       }
     }`
   },

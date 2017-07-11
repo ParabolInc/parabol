@@ -13,7 +13,6 @@ const teamIntegrationsQuery = graphql`
     viewer {
       ...ProviderList_viewer
     }
-
   }
 `;
 

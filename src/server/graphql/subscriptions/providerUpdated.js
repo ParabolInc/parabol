@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
-import {RemoveProviderPayload} from 'server/graphql/models/Provider/providerMutation';
+import {RemoveProviderPayload} from 'server/graphql/mutations/removeProvider';
 
 export default {
   type: new GraphQLNonNull(RemoveProviderPayload),

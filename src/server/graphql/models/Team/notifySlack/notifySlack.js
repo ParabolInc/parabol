@@ -13,43 +13,31 @@ const getIntegrationsForNotification = (teamId, notification) => {
 /* eslint-disable no-await-in-loop */
 const notifySlack = async (integrations, teamId, slackText) => {
   const r = getRethink();
-  const providers = await r.table('Provider')
+  const provider = await r.table('Provider')
     .getAll(teamId, {index: 'teamIds'})
-    .filter({service: SLACK});
-  // for each slack channel, find the appropriate user's token to use
+    .filter({service: SLACK})
+    .nth(0);
+  // for each slack channel, send a notification
   for (let i = 0; i < integrations.length; i++) {
     const integration = integrations[i];
-    const {channelId, userIds} = integration;
-    let success;
-    for (let t = 0; t < providers.length; t++) {
-      const provider = providers[t];
-      const {accessToken, userId} = provider;
-      if (!userIds.includes(userId)) continue;
-      const uri = `https://slack.com/api/chat.postMessage?token=${accessToken}&channel=${channelId}&text=${slackText}&unfurl_links=true`;
-      const res = await fetch(uri);
-      const resJson = await res.json();
-      const {ok, error} = resJson;
-      if (ok) {
-        success = true;
-        break;
-      } else if (error === 'channel_not_found') {
-        // break for no success
-        break;
-      } else if (error === 'not_in_channel' || error === 'invalid_auth') {
-        // remove user from integration and then try with the next
-        await r.table('SlackIntegration').get(integration.id)
-          .update((doc) => ({userIds: doc('userIds').difference([userId])}));
-      }
-    }
-    if (!success) {
+    const {channelId} = integration;
+    const {accessToken} = provider;
+    const uri = `https://slack.com/api/chat.postMessage?token=${accessToken}&channel=${channelId}&text=${slackText}&unfurl_links=true`;
+    const res = await fetch(uri);
+    const resJson = await res.json();
+    const {error} = resJson;
+    if (error === 'channel_not_found') {
       await r.table('SlackIntegration').get(integration.id)
         .update({
-          isActive: false,
-          userIds: []
+          isActive: false
         });
+      // break for no success
+    } else if (error === 'not_in_channel' || error === 'invalid_auth') {
+      console.log('ERRRR', error);
     }
   }
 };
+
 /* eslint-enable */
 
 export const startSlackMeeting = async (teamId) => {

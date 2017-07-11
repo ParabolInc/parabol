@@ -13,7 +13,6 @@ export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 // CHANNELS
 export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
-export const SLACK_INTEGRATIONS = 'slackIntegrations';
 export const INVITATIONS = 'invitations';
 export const NOTIFICATIONS = 'notifications';
 export const ORG_APPROVALS = 'orgApprovals';
@@ -22,7 +21,6 @@ export const ORGANIZATIONS = 'organizations';
 export const OWNED_ORGANIZATIONS = 'ownedOrganizations';
 export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
-export const PROVIDERS = 'providers';
 export const AGENDA_PROJECTS = 'agendaProjects';
 export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';
