@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
-import {base64} from 'graphql-relay/lib/utils/base64';
 import getRethink from 'server/database/rethinkDriver';
-import {SlackIntegrationEdge} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
-// import getPubSub from 'server/utils/getPubSub';
-import getPubSub from 'server/graphql/pubsub';
+import {SlackIntegration} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
+import getPubSub from 'server/utils/getPubSub';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -25,7 +23,7 @@ const AddSlackChannelInput = new GraphQLInputObjectType({
 
 export default {
   name: 'AddSlackChannel',
-  type: new GraphQLNonNull(SlackIntegrationEdge),
+  type: new GraphQLNonNull(SlackIntegration),
   args: {
     input: {
       type: new GraphQLNonNull(AddSlackChannelInput)
@@ -69,19 +67,14 @@ export default {
     }
 
     // RESOLUTION
-    const node = await r.table('SlackIntegration').insert({
+    const slackChannelAdded = await r.table('SlackIntegration').insert({
       id: shortid.generate(),
-      blackList: [],
       isActive: true,
       channelId: slackChannelId,
       channelName: name,
       notifications: ['meeting:end', 'meeting:start'],
       teamId
     }, {returnChanges: true})('changes')(0)('new_val');
-    const slackChannelAdded = {
-      cursor: base64(node.id),
-      node
-    };
     getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded, mutatorId: socket.id});
     return slackChannelAdded;
   }

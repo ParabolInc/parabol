@@ -1,4 +1,3 @@
-import {ConnectionHandler} from 'relay-runtime';
 import {commitMutation} from 'react-relay';
 
 const mutation = graphql`
@@ -10,14 +9,13 @@ const mutation = graphql`
 `;
 
 export const removeSlackChannelUpdater = (store, viewerId, teamId, deletedId) => {
-  const conn = ConnectionHandler.getConnection(
-    store.get(viewerId),
-    'SlackIntegrations_slackChannels',
-    {
-      teamId
-    }
-  );
-  ConnectionHandler.deleteNode(conn, deletedId);
+  const viewer = store.get(viewerId);
+  const slackChannels = viewer.getLinkedRecords('slackChannels', {teamId});
+  const idxToDelete = slackChannels.findIndex((channel) => channel.getValue('id') === deletedId);
+  if (idxToDelete !== -1) {
+    const newNodes = [...slackChannels.slice(0, idxToDelete), ...slackChannels.slice(idxToDelete+1)];
+    viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
+  }
 };
 
 const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId, viewerId) => {

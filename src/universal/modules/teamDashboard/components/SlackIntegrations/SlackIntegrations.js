@@ -6,13 +6,13 @@ import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
+import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation';
 import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 import SlackChannelSubscription from 'universal/subscriptions/SlackChannel';
 
 const inlineBlockStyle = {
@@ -33,13 +33,13 @@ const SlackIntegrations = (props) => {
   return (
     <div className={css(styles.slackIntegrations)}>
       <Link className={css(styles.link)} to={`/team/${teamId}/settings/integrations`} title="Back to Integrations">
-        <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
+        <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
         <div style={inlineBlockStyle}>Back to <b>Integrations</b></div>
       </Link>
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <div className={css(styles.providerDetails)}>
         <div className={css(styles.providerAvatar)}>
-          <FontAwesome name="slack" className={css(styles.providerIcon)} />
+          <FontAwesome name="slack" className={css(styles.providerIcon)}/>
         </div>
         <div className={css(styles.providerInfo)}>
           <div className={css(styles.nameAndTags)}>
@@ -61,14 +61,14 @@ const SlackIntegrations = (props) => {
               environment={environment}
               teamMemberId={teamMemberId}
               viewerId={viewer.id}
-              subbedChannels={slackChannels.edges}
+              subbedChannels={slackChannels}
             />
             }
           </div>
           {slackChannels &&
           <div className={css(styles.integrationsList)}>
-            {slackChannels.edges.map((channel) => {
-              const {id, channelId, channelName} = channel.node;
+            {slackChannels.map((channel) => {
+              const {id, channelId, channelName} = channel;
               return (
                 <IntegrationRow key={`${channelId}-row`}>
                   <div className={css(styles.channelName)}>{channelName}</div>
@@ -95,7 +95,7 @@ SlackIntegrations.propTypes = {
   viewer: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired,
-  teamMemberId: PropTypes.stringisRequired
+  teamMemberId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({
@@ -167,14 +167,10 @@ export default createFragmentContainer(
       integrationProvider(teamMemberId: $teamMemberId, service: $service) {
         accessToken
       }
-      slackChannels(first: 100, teamId: $teamId) @connection(key: "SlackIntegrations_slackChannels", filters: ["teamId"]) {
-        edges {
-          node {
-            id
-            channelId
-            channelName
-          }
-        }
+      slackChannels(teamId: $teamId) {
+        id
+        channelId
+        channelName
       }
     }
   `

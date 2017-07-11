@@ -6,11 +6,9 @@ import composeSubs from 'universal/utils/relay/composeSubs';
 const AddedSubscription = graphql`
   subscription SlackChannelAddedSubscription($teamId: ID!) {
     slackChannelAdded(teamId: $teamId) {
-      node {
-        id
-        channelId
-        channelName
-      }
+      id
+      channelId
+      channelName
     }
   }
 `;
@@ -29,8 +27,8 @@ const SlackChannel = (teamId, viewerId) => (ensureSubscription) => {
       subscription: AddedSubscription,
       variables: {teamId},
       updater: (store) => {
-        const newEdge = store.getRootField('slackChannelAdded');
-        addSlackChannelUpdater(store, viewerId, teamId, newEdge);
+        const newNode = store.getRootField('slackChannelAdded');
+        addSlackChannelUpdater(store, viewerId, teamId, newNode);
       }
     }),
     ensureSubscription({

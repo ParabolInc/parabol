@@ -1,5 +1,5 @@
 import {$$asyncIterator} from 'iterall';
-import getPubSub from 'server/graphql/pubsub';
+import getPubSub from 'server/utils/getPubSub';
 
 const defaultFilterFn = () => true;
 

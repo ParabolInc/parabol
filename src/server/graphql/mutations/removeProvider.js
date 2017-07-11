@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {ProviderRow} from 'server/graphql/models/Provider/providerSchema';
-import getPubSub from 'server/graphql/pubsub';
+import getPubSub from 'server/utils/getPubSub';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
 import {SLACK} from 'universal/utils/constants';

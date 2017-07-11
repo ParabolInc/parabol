@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import getPubSub from 'server/graphql/pubsub';
+import getPubSub from 'server/utils/getPubSub';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
 

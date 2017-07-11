@@ -2,7 +2,7 @@ import {verify} from 'jsonwebtoken';
 import fetch from 'node-fetch';
 import {stringify} from 'querystring';
 import getRethink from 'server/database/rethinkDriver';
-import getPubSub from 'server/graphql/pubsub';
+import getPubSub from 'server/utils/getPubSub';
 import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import closeClientPage from 'server/utils/closeClientPage';
 import postOptions from 'server/utils/fetchOptions';

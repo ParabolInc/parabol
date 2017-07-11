@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {SlackIntegrationEdge} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
+import {SlackIntegration} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {
-  type: SlackIntegrationEdge,
+  type: SlackIntegration,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

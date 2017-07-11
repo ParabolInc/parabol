@@ -76,7 +76,7 @@ class AddSlackChannel extends Component {
     const channels = await this.getChannelList(this.props.accessToken);
     // filter out channels that have already been added
     const {subbedChannels} = this.props;
-    const subbedChannelIds = subbedChannels.map((channel) => channel.node.channelId);
+    const subbedChannelIds = subbedChannels.map((channel) => channel.channelId);
     const options = channels.filter((channel) => !subbedChannelIds.includes(channel.id))
       .map((channel) => ({id: channel.id, label: channel.name}));
     this.setState({
