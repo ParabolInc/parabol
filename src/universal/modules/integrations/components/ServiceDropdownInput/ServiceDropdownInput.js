@@ -11,12 +11,12 @@ import withStyles from 'universal/styles/withStyles';
 
 const originAnchor = {
   vertical: 'bottom',
-  horizontal: 'right'
+  horizontal: 'left'
 };
 
 const targetAnchor = {
   vertical: 'top',
-  horizontal: 'right'
+  horizontal: 'left'
 };
 
 const ServiceDropdownInput = (props) => {
@@ -28,7 +28,7 @@ const ServiceDropdownInput = (props) => {
         <div className={css(styles.inputBlock)}>
           <span>{dropdownText}</span>
           <Menu
-            menuWidth="20rem"
+            menuWidth="28.875rem"
             originAnchor={originAnchor}
             targetAnchor={targetAnchor}
             toggle={toggle}
@@ -70,10 +70,10 @@ const styleThunk = () => ({
     lineHeight: '2.25rem !important',
     padding: '0 1rem 0 0',
     position: 'absolute',
-    right: 0,
+    left: '-1px',
+    right: '-1px',
     textAlign: 'right',
-    top: 0,
-    width: '100%'
+    top: 0
   },
 
   inputBlock: {

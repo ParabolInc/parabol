@@ -2,7 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import Button from 'universal/components/Button/Button';
 import Row from 'universal/components/Row/Row';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 
@@ -34,7 +36,14 @@ const OrganizationRow = (props) => {
         </div>
       </div>
       <div className={css(styles.orgActions)}>
-        <span onClick={onRowClick}>Settings and Billing</span>
+        <Button
+          buttonStyle="flat"
+          colorPalette="dark"
+          label="Settings and Billing"
+          sansPaddingX
+          onClick={onRowClick}
+          size="smallest"
+        />
       </div>
     </Row>
   );
@@ -63,13 +72,9 @@ const styleThunk = () => ({
   },
 
   orgActions: {
-    color: appTheme.palette.dark,
     flex: 1,
-    fontWeight: 700,
-    marginRight: '1rem',
-    cursor: 'pointer',
-    textAlign: 'right',
-    textDecoration: 'underline'
+    marginLeft: ui.rowGutter,
+    textAlign: 'right'
   },
 
   nameAndTags: {
@@ -86,30 +91,28 @@ const styleThunk = () => ({
   },
 
   invitedAt: {
-    color: appTheme.palette.mid,
+    color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4
   },
 
   infoLink: {
-    color: appTheme.palette.mid,
+    color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4,
 
     ':hover': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
+      color: appTheme.palette.dark
     },
     ':focus': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
+      color: appTheme.palette.dark
     }
   },
 
   subHeader: {
-    color: appTheme.palette.mid,
+    color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4

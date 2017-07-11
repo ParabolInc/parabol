@@ -64,6 +64,7 @@ const Button = (props) => {
     onClick,
     onMouseEnter,
     raised,
+    sansPaddingX,
     size,
     styles,
     title,
@@ -77,6 +78,7 @@ const Button = (props) => {
     styles.base,
     raised && styles.raised,
     compact && styles.compact,
+    sansPaddingX && styles.sansPaddingX,
     isBlock && styles.isBlock,
     styles.propColors,
     disabled && styles.disabled
@@ -151,6 +153,7 @@ Button.propTypes = {
     'flat'
   ]),
   raised: PropTypes.bool,
+  sansPaddingX: PropTypes.bool,
   styles: PropTypes.object,
   textTransform: PropTypes.oneOf([
     'none',
@@ -187,6 +190,11 @@ const styleThunk = (theme, props) => ({
   compact: {
     paddingLeft: ui.buttonPaddingHorizontalCompact,
     paddingRight: ui.buttonPaddingHorizontalCompact
+  },
+
+  sansPaddingX: {
+    paddingLeft: 0,
+    paddingRight: 0
   },
 
   raised: {

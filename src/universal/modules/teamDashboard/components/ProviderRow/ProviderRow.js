@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
+import Button from 'universal/components/Button/Button';
 import Row from 'universal/components/Row/Row';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -85,8 +86,24 @@ const ProviderRow = (props) => {
       {!comingSoon &&
         <div className={css(styles.providerActions)}>
           {accessToken ?
-            <span className={css(styles.providerAction)} onClick={() => history.push(to)}>Team Settings</span> :
-            <span className={css(styles.providerAction)} onClick={openOauth}>Link my account</span>
+            <Button
+              buttonStyle="solid"
+              colorPalette="gray"
+              isBlock
+              key="teamSettings"
+              label="Team Settings"
+              onClick={() => history.push(to)}
+              size="smallest"
+            /> :
+            <Button
+              buttonStyle="solid"
+              colorPalette="cool"
+              isBlock
+              key="linkAccount"
+              label="Link My Account"
+              onClick={openOauth}
+              size="smallest"
+            />
           }
         </div>
       }
@@ -143,22 +160,21 @@ const styleThunk = () => ({
     ...ui.providerName,
     display: 'inline-block',
     verticalAlign: 'middle',
+
     ':hover': {
-      textDecoration: 'none'
+      color: ui.providerName.color
+    },
+    ':focus': {
+      color: ui.providerName.color
     }
   },
 
-  providerAction: {
-    cursor: 'pointer'
-  },
-
   providerActions: {
-    color: appTheme.palette.dark,
     flex: 1,
-    fontWeight: 700,
-    marginRight: '1rem',
+    marginLeft: 'auto',
+    paddingLeft: ui.rowGutter,
     textAlign: 'right',
-    textDecoration: 'underline'
+    maxWidth: '10rem'
   },
 
   invitedAt: {

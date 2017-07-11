@@ -96,9 +96,10 @@ class AddSlackChannel extends Component {
           handleItemClick={this.updateDropdownItem}
           options={options}
         />
-        <div style={{paddingLeft: ui.rowGutter}}>
+        <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
           <Button
             colorPalette="cool"
+            isBlock
             label="Add Channel"
             size="small"
             onClick={this.handleAddChannel}

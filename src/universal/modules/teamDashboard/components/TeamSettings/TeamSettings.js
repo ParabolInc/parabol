@@ -82,7 +82,7 @@ const TeamSettings = (props) => {
           <PromoteTeamMemberModal
             toggle={
               <div className={css(styles.actionLink)}>
-              Promote {teamMember.preferredName} to Team Lead
+                Promote {teamMember.preferredName} to Team Lead
               </div>
             }
             preferredName={preferredName}
@@ -207,7 +207,6 @@ const styleThunk = () => ({
     fontWeight: 700,
     lineHeight: appTheme.typography.s5,
     marginLeft: '1.25rem',
-    textDecoration: 'underline',
     verticalAlign: 'middle',
 
     ':hover': {

@@ -38,7 +38,7 @@ export default {
 
   'a:hover, a:focus': {
     color: ui.linkColorHover,
-    textDecoration: 'underline'
+    textDecoration: 'none'
   },
 
   input: {

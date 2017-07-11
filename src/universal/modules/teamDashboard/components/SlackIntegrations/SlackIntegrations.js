@@ -51,38 +51,59 @@ const SlackIntegrations = (props) => {
             </div>
           </div>
         </div>
+        {accessToken &&
+          <div className={css(styles.providerActions)}>
+            <Button
+              buttonStyle="flat"
+              colorPalette="warm"
+              label="Remove Slack"
+              onClick={() => console.log('Remove Slack (and all channels)')}
+              sansPaddingX
+              size="smallest"
+            />
+          </div>
+        }
       </div>
       <Panel label="Channels">
         <div className={css(styles.integrations)}>
-          <div className={css(styles.addChannel)}>
-            {accessToken &&
-            <AddSlackChannel
-              accessToken={accessToken}
-              environment={environment}
-              teamMemberId={teamMemberId}
-              viewerId={viewer.id}
-              subbedChannels={slackChannels}
-            />
-            }
-          </div>
+          {accessToken ?
+            <div className={css(styles.addChannel)}>
+              <AddSlackChannel
+                accessToken={accessToken}
+                environment={environment}
+                teamMemberId={teamMemberId}
+                viewerId={viewer.id}
+                subbedChannels={slackChannels}
+              />
+            </div> :
+            <div className={css(styles.addSlack)}>
+              <Button
+                buttonStyle="solid"
+                colorPalette="cool"
+                label="Authorize Slack to Add a Channel"
+                onClick={() => console.log('Authorize Slack to Add a Channel')}
+                size="medium"
+              />
+            </div>
+          }
           {slackChannels &&
-          <div className={css(styles.integrationsList)}>
-            {slackChannels.map((channel) => {
-              const {id, channelId, channelName} = channel;
-              return (
-                <IntegrationRow key={`${channelId}-row`}>
-                  <div className={css(styles.channelName)}>{channelName}</div>
-                  <Button
-                    buttonStyle="flat"
-                    colorPalette="dark"
-                    label="Remove"
-                    onClick={handleRemove(id)}
-                    size="smallest"
-                  />
-                </IntegrationRow>
-              );
-            })}
-          </div>
+            <div className={css(styles.integrationsList)}>
+              {slackChannels.map((channel) => {
+                const {id, channelId, channelName} = channel;
+                return (
+                  <IntegrationRow key={`${channelId}-row`}>
+                    <div className={css(styles.channelName)}>{channelName}</div>
+                    <Button
+                      buttonStyle="flat"
+                      colorPalette="dark"
+                      label="Remove"
+                      onClick={handleRemove(id)}
+                      size="smallest"
+                    />
+                  </IntegrationRow>
+                );
+              })}
+            </div>
           }
         </div>
       </Panel>
@@ -111,6 +132,7 @@ const styleThunk = () => ({
   },
 
   providerDetails: {
+    alignItems: 'center',
     display: 'flex'
   },
 
@@ -134,11 +156,22 @@ const styleThunk = () => ({
   },
 
   providerInfo: {
-    paddingLeft: '1rem'
+    paddingLeft: ui.rowGutter
+  },
+
+  providerActions: {
+    flex: 1,
+    paddingLeft: ui.rowGutter,
+    textAlign: 'right'
   },
 
   subHeading: {
     ...ui.rowSubheading
+  },
+
+  addSlack: {
+    paddingBottom: ui.rowGutter,
+    textAlign: 'center'
   },
 
   addChannel: {
