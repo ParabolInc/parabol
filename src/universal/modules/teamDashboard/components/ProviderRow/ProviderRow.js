@@ -9,7 +9,8 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
-import {Link} from 'react-router-dom';
+import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink';
+import {withRouter} from 'react-router-dom';
 
 const providerLookup = {
   [GITHUB]: {
@@ -35,6 +36,8 @@ const defaultDetails = {
 
 const ProviderRow = (props) => {
   const {
+    comingSoon,
+    history,
     jwt,
     name,
     providerDetails,
@@ -59,29 +62,36 @@ const ProviderRow = (props) => {
     display: 'block',
     textDecoration: 'none'
   };
+  const to = `/team/${teamId}/settings/integrations/${name}`;
   return (
-    <Row>
-      <Link to={`/team/${teamId}/settings/integrations/${name}`} style={linkStyle}>
+    <Row style={{justifyContent: 'flex-start'}}>
+      <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
         <div className={css(styles.providerAvatar)} style={{backgroundColor: color}}>
           <FontAwesome name={icon} className={css(styles.providerIcon)}/>
         </div>
-      </Link>
+      </ConditionalLink>
       <div className={css(styles.userInfo)}>
         <div className={css(styles.nameAndTags)}>
-          <div className={css(styles.providerName)}>
+
+          <ConditionalLink isLink={!comingSoon} to={to} className={css(styles.providerName)}>
             {providerName}
-          </div>
+          </ConditionalLink>
           <div className={css(styles.subHeading)}>
+            {comingSoon &&
+              <span className={css(styles.comingSoon)}>Coming Soon! </span>
+            }
             {description}
           </div>
         </div>
       </div>
-      <div className={css(styles.providerActions)}>
-        {accessToken ?
-          <span>Team Settings</span> :
-          <span onClick={openOauth}>Link my account</span>
-        }
-      </div>
+      {!comingSoon &&
+        <div className={css(styles.providerActions)}>
+          {accessToken ?
+            <span className={css(styles.providerAction)} onClick={() => history.push(to)}>Team Settings</span> :
+            <span className={css(styles.providerAction)} onClick={openOauth}>Link my account</span>
+          }
+        </div>
+      }
     </Row>
   );
 };
@@ -99,6 +109,9 @@ ProviderRow.propTypes = {
 };
 
 const styleThunk = () => ({
+  comingSoon: {
+    fontWeight: 800
+  },
   providerAvatar: {
     borderRadius: ui.providerIconBorderRadius
   },
@@ -131,7 +144,14 @@ const styleThunk = () => ({
   providerName: {
     ...ui.providerName,
     display: 'inline-block',
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    ':hover': {
+      textDecoration: 'none'
+    }
+  },
+
+  providerAction: {
+    cursor: 'pointer'
   },
 
   providerActions: {
@@ -139,7 +159,6 @@ const styleThunk = () => ({
     flex: 1,
     fontWeight: 700,
     marginRight: '1rem',
-    cursor: 'pointer',
     textAlign: 'right',
     textDecoration: 'underline'
   },
@@ -172,7 +191,7 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withStyles(styleThunk)(ProviderRow),
+  withRouter(withStyles(styleThunk)(ProviderRow)),
   graphql`
     fragment ProviderRow_providerDetails on ProviderRow {
       accessToken

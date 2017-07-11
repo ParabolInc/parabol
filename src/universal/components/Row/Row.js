@@ -7,11 +7,12 @@ import ui from 'universal/styles/ui';
 const Row = (props) => {
   const {
     children,
+    style,
     styles
   } = props;
 
   return (
-    <div className={css(styles.row)}>
+    <div className={css(styles.row)} style={style}>
       {children}
     </div>
   );
@@ -19,6 +20,7 @@ const Row = (props) => {
 
 Row.propTypes = {
   children: PropTypes.any,
+  style: PropTypes.object,
   styles: PropTypes.object
 };
 

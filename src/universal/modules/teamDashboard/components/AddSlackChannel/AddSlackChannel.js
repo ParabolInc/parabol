@@ -1,4 +1,3 @@
-
 import ms from 'ms';
 import React, {Component} from 'react';
 
@@ -8,16 +7,20 @@ import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation
 
 import ui from 'universal/styles/ui';
 
+const defaultSelectedChannel = () => ({
+  channelId: undefined,
+  channelName: 'Select a Slack channel'
+});
+
 class AddSlackChannel extends Component {
   constructor(props) {
     super(props);
     this.state = {
       options: [],
       channelList: [],
-      selectedChannel: undefined
+      selectedChannel:defaultSelectedChannel()
     };
     this.lastUpdated = 0;
-    console.log('asc', props)
     this.getChannelList(props.accessToken);
   }
 
@@ -30,7 +33,11 @@ class AddSlackChannel extends Component {
   handleAddChannel = () => {
     const {environment, teamMemberId, viewerId} = this.props;
     const {selectedChannel: {channelId, channelName}} = this.state;
+    if (!channelId) return;
     AddSlackChannelMutation(environment, channelId, channelName, teamMemberId, viewerId);
+    this.setState({
+      selectedChannel: defaultSelectedChannel()
+    });
   };
 
   updateDropdownItem = (option) => () => {
@@ -42,7 +49,7 @@ class AddSlackChannel extends Component {
     });
   };
 
-  async getChannelList(accessToken ) {
+  async getChannelList(accessToken) {
     const now = new Date();
     if (accessToken && now - this.lastUpdated > ms('30s')) {
       this.lastUpdated = now;
@@ -71,14 +78,14 @@ class AddSlackChannel extends Component {
   };
 
   render() {
-    const {options} = this.state;
+    const {options, selectedChannel: {channelName}} = this.state;
     const {accessToken} = this.props;
     return (
       <div style={{display: 'flex', width: '100%'}}>
         <ServiceDropdownInput
           accessToken={accessToken}
           dropdownMapper={this.dropdownMapper}
-          dropdownText="Select a Slack channel"
+          dropdownText={channelName}
           handleItemClick={this.updateDropdownItem}
           options={options}
         />

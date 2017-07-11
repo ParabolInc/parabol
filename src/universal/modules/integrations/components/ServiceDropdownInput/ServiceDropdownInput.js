@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import PropTypes from 'prop-types';
+import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
-import ui from 'universal/styles/ui';
+import {Menu, MenuItem} from 'universal/modules/menu';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
-import {Menu, MenuItem} from 'universal/modules/menu';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -19,52 +19,35 @@ const targetAnchor = {
   horizontal: 'right'
 };
 
-class ServiceDropdownInput extends Component {
-  constructor(props) {
-    super(props);
-    const {dropdownText} = props;
-    this.state = {
-      dropdownText
-    };
-  }
-
-  render() {
-    const {dropdownMapper, handleItemClick, options, styles} = this.props;
-    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper} />;
-    return (
-      <div className={css(styles.dropdownBlock)}>
-        <FieldBlock>
-          <div className={css(styles.inputBlock)}>
-            <span>{this.state.dropdownText}</span>
-            <Menu
-              menuWidth="20rem"
-              originAnchor={originAnchor}
-              targetAnchor={targetAnchor}
-              toggle={toggle}
-            >
-              {options.map((option) => {
-                const onClick = (e) => {
-                  this.setState({
-                    dropdownText: option.label
-                  });
-                  handleItemClick(option)(e);
-                };
-                return (
-                  <MenuItem
-                    isActive={false}
-                    key={`serviceDropdownMenuItem${option.id}`}
-                    label={option.label}
-                    onClick={onClick}
-                  />
-                );
-              })}
-            </Menu>
-          </div>
-        </FieldBlock>
-      </div>
-    )
-      ;
-  }
+const ServiceDropdownInput = (props) => {
+  const {dropdownMapper, dropdownText, handleItemClick, options, styles} = props;
+  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper}/>;
+  return (
+    <div className={css(styles.dropdownBlock)}>
+      <FieldBlock>
+        <div className={css(styles.inputBlock)}>
+          <span>{dropdownText}</span>
+          <Menu
+            menuWidth="20rem"
+            originAnchor={originAnchor}
+            targetAnchor={targetAnchor}
+            toggle={toggle}
+          >
+            {options.map((option) => {
+              return (
+                <MenuItem
+                  isActive={false}
+                  key={`serviceDropdownMenuItem${option.id}`}
+                  label={option.label}
+                  onClick={handleItemClick(option)}
+                />
+              );
+            })}
+          </Menu>
+        </div>
+      </FieldBlock>
+    </div>
+  );
 }
 
 ServiceDropdownInput.propTypes = {
