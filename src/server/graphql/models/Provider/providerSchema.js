@@ -17,9 +17,9 @@ const ProviderRow = new GraphQLObjectType({
     accessToken: {
       type: GraphQLID,
       description: 'The access token attached to the userId. null if user does not have a token for the provider'
-      //resolve: async(source, args, {authToken}) => {
+      // resolve: async(source, args, {authToken}) => {
       //  return 'FOO'
-      //}
+      // }
     },
     userCount: {
       type: GraphQLInt,
@@ -36,7 +36,7 @@ const ProviderRow = new GraphQLObjectType({
     service: {
       type: GraphQLString,
       description: 'The name of the service'
-    },
+    }
   })
 });
 
@@ -108,4 +108,4 @@ export {
   Provider,
   ProviderMap,
   ProviderRow
-}
+};

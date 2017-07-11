@@ -93,6 +93,7 @@
     "__PRODUCTION__": true,
     "__CLIENT__": true,
     "__WEBPACK__": true,
-    "socket": true
+    "socket": true,
+    "graphql": true
   }
 }

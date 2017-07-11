@@ -12,13 +12,13 @@ export default function scRelaySubscribeHandler(exchange, socket) {
     const asyncIterator = subscribe(Schema, document, {}, context, variables);
     socket.subs[opId] = asyncIterator;
     const iterableCb = (value) => {
-      console.log('emitting gqlData', value)
+      console.log('emitting gqlData', value);
       socket.emit(`gqlData.${opId}`, value);
-    }
-    //setTimeout(() => {
+    };
+    // setTimeout(() => {
     //  asyncIterator.return();
     //  console.log('sub ended', opId)
-    //}, 5000)
+    // }, 5000)
     await forAwaitEach(asyncIterator, iterableCb);
 
      /*
@@ -27,6 +27,5 @@ export default function scRelaySubscribeHandler(exchange, socket) {
       *
       */
     socket.emit(`gqlData.${opId}`);
-
   };
 }

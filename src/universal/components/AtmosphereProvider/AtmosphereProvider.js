@@ -1,5 +1,5 @@
-import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
+import {Children, Component} from 'react';
 import {connect} from 'react-redux';
 
 const mapStateToProps = (state) => ({authToken: state.auth.obj.sub});
@@ -30,12 +30,13 @@ class AtmosphereProvider extends Component {
 
   componentWillReceiveProps(nextProps) {
     const {atmosphere, authToken} = nextProps;
-    if (this.props.authToken !== authToken){
+    if (this.props.authToken !== authToken) {
       atmosphere.setAuthToken(authToken);
     }
   }
 
   render() {
+    console.log('rendering', this.props.atmosphere);
     return Children.only(this.props.children);
   }
 }

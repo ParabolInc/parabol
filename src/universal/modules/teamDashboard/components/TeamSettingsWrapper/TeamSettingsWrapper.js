@@ -15,19 +15,20 @@ const TeamSettingsWrapper = (props) => {
   const areaMatch = matchPath(pathname, {path: `${match.url}/:area?`});
   return (
     <div style={{padding: `0 ${ui.settingsGutter}`}}>
-      <TeamSettingsToggleNav activeKey={areaMatch.params.area || ''} teamId={teamId}/>
+      <TeamSettingsToggleNav activeKey={areaMatch.params.area || ''} teamId={teamId} />
       <Switch>
-        <AsyncRoute exact path={match.url} mod={overview} extraProps={{teamId}}/>
-        {/*<AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/>*/}
-        {/*<AsyncRoute exact path={`${match.url}/roles`} mod={overview} extraProps={{teamId}}/>*/}
-        <AsyncRoute path={`${match.url}/integrations/slack`} mod={slackIntegrations} extraProps={{teamMemberId}}/>
-        <AsyncRoute exact path={`${match.url}/integrations`} mod={providers} extraProps={{teamMemberId}}/>
+        <AsyncRoute exact path={match.url} mod={overview} extraProps={{teamId}} />
+        {/* <AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/>*/}
+        {/* <AsyncRoute exact path={`${match.url}/roles`} mod={overview} extraProps={{teamId}}/>*/}
+        <AsyncRoute path={`${match.url}/integrations/slack`} mod={slackIntegrations} extraProps={{teamMemberId}} />
+        <AsyncRoute exact path={`${match.url}/integrations`} mod={providers} extraProps={{teamMemberId}} />
       </Switch>
     </div>
   );
 };
 
 TeamSettingsWrapper.propTypes = {
+  location: PropTypes.object,
   match: PropTypes.object.isRequired,
   teamMemberId: PropTypes.string.isRequired
 };

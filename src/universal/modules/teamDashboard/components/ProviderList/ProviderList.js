@@ -24,8 +24,10 @@ const ProviderList = (props) => {
 };
 
 ProviderList.propTypes = {
+  jwt: PropTypes.string,
   viewer: PropTypes.object.isRequired,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  teamMemberId: PropTypes.string
 };
 
 const styleThunk = () => ({

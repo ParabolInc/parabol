@@ -5,7 +5,7 @@ import {makeIntegrationId} from 'universal/utils/integrationIds';
 const handleIntegration = async (accessToken, exchange, service, teamMemberId, cachedFields) => {
   const r = getRethink();
   const [userId, teamId] = teamMemberId.split('::');
-  //const channel = `providers/${teamMemberId}`;
+  // const channel = `providers/${teamMemberId}`;
   const id = makeIntegrationId(service);
   const now = new Date();
   // upsert the token
@@ -38,8 +38,8 @@ const handleIntegration = async (accessToken, exchange, service, teamMemberId, c
     .run();
 
   //
-  //// tell the subs that something new has arrived
-  //exchange.publish(channel, {
+  // // tell the subs that something new has arrived
+  // exchange.publish(channel, {
   //  type: 'add',
   //  fields: {
   //    id,
@@ -48,7 +48,7 @@ const handleIntegration = async (accessToken, exchange, service, teamMemberId, c
   //    teamIds: [teamId],
   //    userId
   //  }
-  //});
+  // });
 };
 
 export default handleIntegration;

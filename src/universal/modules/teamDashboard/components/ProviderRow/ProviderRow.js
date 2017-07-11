@@ -45,19 +45,17 @@ const ProviderRow = (props) => {
     teamMemberId
   } = props;
   const {
-    accessToken,
-    userCount,
-    integrationCount,
-    providerUserName
+    accessToken
+    // userCount,
+    // integrationCount,
+    // providerUserName
   } = providerDetails || defaultDetails;
   const {color, icon, description, makeUri, providerName} = providerLookup[name];
   const openOauth = () => {
-    const {teamMemberId} = props;
-    //const team =
     const uri = makeUri(jwt, teamMemberId);
     window.open(uri);
   };
-  const [,teamId] = teamMemberId.split('::');
+  const [, teamId] = teamMemberId.split('::');
   const linkStyle = {
     display: 'block',
     textDecoration: 'none'
@@ -67,7 +65,7 @@ const ProviderRow = (props) => {
     <Row style={{justifyContent: 'flex-start'}}>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
         <div className={css(styles.providerAvatar)} style={{backgroundColor: color}}>
-          <FontAwesome name={icon} className={css(styles.providerIcon)}/>
+          <FontAwesome name={icon} className={css(styles.providerIcon)} />
         </div>
       </ConditionalLink>
       <div className={css(styles.userInfo)}>
@@ -99,12 +97,12 @@ const ProviderRow = (props) => {
 
 ProviderRow.propTypes = {
   actions: PropTypes.any,
-  orgUser: PropTypes.shape({
-    email: PropTypes.string,
-    inactive: PropTypes.bool,
-    picture: PropTypes.string,
-    preferredName: PropTypes.string
-  }),
+  comingSoon: PropTypes.bool,
+  history: PropTypes.object,
+  jwt: PropTypes.string,
+  name: PropTypes.string,
+  providerDetails: PropTypes.object,
+  teamMemberId: PropTypes.string.isRequired,
   styles: PropTypes.object
 };
 

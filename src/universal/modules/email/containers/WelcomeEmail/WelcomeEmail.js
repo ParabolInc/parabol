@@ -11,12 +11,6 @@ import Footer from '../../components/Footer/Footer';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
-const imageStyle = {
-  border: 0,
-  borderRadius: '100%',
-  display: 'block'
-};
-
 const ruleStyle = {
   backgroundColor: ui.emailRuleColor,
   border: 0,

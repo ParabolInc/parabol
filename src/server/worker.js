@@ -94,7 +94,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   // integration setup callbacks
   app.get('/auth/github', handleGitHub(exchange));
-  app.get('/auth/slack', handleSlack(exchange));
+  app.get('/auth/slack', handleSlack);
 
   // server-side rendering
   app.get('*', createSSR);

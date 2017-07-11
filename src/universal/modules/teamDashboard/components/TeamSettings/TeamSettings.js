@@ -19,7 +19,6 @@ import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 
 const TeamSettings = (props) => {
   const {
-    beta,
     dispatch,
     invitations,
     orgApprovals,
@@ -171,20 +170,6 @@ const TeamSettings = (props) => {
     </div>
   );
 };
-//
-//{beta &&
-//<Panel label="Integrations">
-//  <div className={css(styles.panelRow)}>
-//    <Type width="auto" scale="s2">
-//      <b>Note</b>: {'Integrations are an unlocked BETA feature.'}
-//    </Type>
-//  </div>
-//  <IntegrationsContainer
-//    teamMemberId={myTeamMember.id}
-//    // toggle={<Button colorPalette="cool" label="Integrations" size="smallest" buttonStyle="solid" />}
-//  />
-//</Panel>
-//}
 
 TeamSettings.propTypes = {
   beta: PropTypes.number,

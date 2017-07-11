@@ -29,6 +29,11 @@ export default class Atmosphere extends Environment {
     this.gcTTL = {};
   }
 
+  use = (networkName) => {
+    // TODO build this out when we start hitting github directly
+    return this.environments[networkName];
+  };
+
   addNet = (name, network) => {
     this.networks[name] = network;
     this.setNet(name);
@@ -38,7 +43,7 @@ export default class Atmosphere extends Environment {
     this._network = this.networks[name];
   };
 
-  fetchHTTP = async (operation, variables, cacheConfig) => {
+  fetchHTTP = async (operation, variables) => {
     const res = await fetch('/graphql', {
       method: 'POST',
       headers: {
@@ -53,12 +58,12 @@ export default class Atmosphere extends Environment {
     return res.json();
   };
 
-  fetchWS = async (operation, variables, cacheConfig) => {
+  fetchWS = async (operation, variables) => {
     return new Promise((resolve) => {
       this.socket.emit('graphql', {query: operation.text, variables}, (err, response) => {
         resolve(response);
       });
-    })
+    });
   };
 
   setAuthToken = (authToken) => {
@@ -116,10 +121,10 @@ export default class Atmosphere extends Environment {
     if (dispose) {
       requestIdleCallback(() => {
         dispose();
-      })
+      });
     }
     if (!serverInitiated) {
       this.socket.emit('gqlUnsub', opId);
     }
   };
-};
+}

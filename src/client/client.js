@@ -38,7 +38,7 @@ const initialState = {};
     // whyDidYouUpdate(React);
     render(
       <AppContainer>
-        <Root atmosphere={atmosphere} store={store}/>
+        <Root atmosphere={atmosphere} store={store} />
       </AppContainer>,
       document.getElementById('root')
     );

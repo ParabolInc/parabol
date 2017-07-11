@@ -11,6 +11,7 @@ export const insertEdgeBefore = (connection, newEdge, propName) => {
   connection.setLinkedRecords(nextEdges, 'edges');
 };
 
-export const insertEdgeAfter = (edges, newEdge, propName) => {
+// will build when needed
+export const insertEdgeAfter = () => {
 
 };

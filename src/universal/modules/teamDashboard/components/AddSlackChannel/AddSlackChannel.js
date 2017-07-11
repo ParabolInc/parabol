@@ -1,6 +1,6 @@
 import ms from 'ms';
 import React, {Component} from 'react';
-
+import PropTypes from 'prop-types';
 import Button from 'universal/components/Button/Button';
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
 import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation';
@@ -13,41 +13,29 @@ const defaultSelectedChannel = () => ({
 });
 
 class AddSlackChannel extends Component {
+  static propTypes = {
+    accessToken: PropTypes.string,
+    environment: PropTypes.object,
+    teamMemberId: PropTypes.string,
+    viewerId: PropTypes.string
+  }
   constructor(props) {
     super(props);
     this.state = {
       options: [],
       channelList: [],
-      selectedChannel:defaultSelectedChannel()
+      selectedChannel: defaultSelectedChannel()
     };
     this.lastUpdated = 0;
     this.getChannelList(props.accessToken);
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.props.accessToken !== nextProps.accessToken) {
-      this.getChannelList(nextProps.accessToken);
+    const {accessToken} = nextProps;
+    if (!this.props.accessToken !== accessToken) {
+      this.getChannelList(accessToken);
     }
   }
-
-  handleAddChannel = () => {
-    const {environment, teamMemberId, viewerId} = this.props;
-    const {selectedChannel: {channelId, channelName}} = this.state;
-    if (!channelId) return;
-    AddSlackChannelMutation(environment, channelId, channelName, teamMemberId, viewerId);
-    this.setState({
-      selectedChannel: defaultSelectedChannel()
-    });
-  };
-
-  updateDropdownItem = (option) => () => {
-    this.setState({
-      selectedChannel: {
-        channelId: option.id,
-        channelName: option.label
-      }
-    });
-  };
 
   async getChannelList(accessToken) {
     const now = new Date();
@@ -65,11 +53,30 @@ class AddSlackChannel extends Component {
     return this.state.channelList;
   }
 
+  updateDropdownItem = (option) => () => {
+    this.setState({
+      selectedChannel: {
+        channelId: option.id,
+        channelName: option.label
+      }
+    });
+  };
+
+  handleAddChannel = () => {
+    const {environment, teamMemberId, viewerId} = this.props;
+    const {selectedChannel: {channelId, channelName}} = this.state;
+    if (!channelId) return;
+    AddSlackChannelMutation(environment, channelId, channelName, teamMemberId, viewerId);
+    this.setState({
+      selectedChannel: defaultSelectedChannel()
+    });
+  };
+
   dropdownMapper = async () => {
     const channels = await this.getChannelList(this.props.accessToken);
     // filter out channels that have already been added
     const {subbedChannels} = this.props;
-    const subbedChannelIds = subbedChannels.map(channel => channel.node.channelId);
+    const subbedChannelIds = subbedChannels.map((channel) => channel.node.channelId);
     const options = channels.filter((channel) => !subbedChannelIds.includes(channel.id))
       .map((channel) => ({id: channel.id, label: channel.name}));
     this.setState({
@@ -98,7 +105,7 @@ class AddSlackChannel extends Component {
           />
         </div>
       </div>
-    )
+    );
   }
 }
 

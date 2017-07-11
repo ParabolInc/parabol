@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {Provider, ProviderMap} from 'server/graphql/models/Provider/providerSchema';
+import {ProviderMap} from 'server/graphql/models/Provider/providerSchema';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import serviceToProvider from 'server/utils/serviceToProvider';
 import {SLACK} from 'universal/utils/constants';
@@ -65,4 +65,4 @@ export default {
     });
     return providerMap;
   }
-}
+};

@@ -1,4 +1,4 @@
-//import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
+// import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 
 const subscription = graphql`
   subscription ProviderSubscription($teamId: ID!) {
@@ -31,7 +31,7 @@ const Provider = (teamMemberId, viewerId) => (ensureSubscription) => {
       }
       //
     }
-  })
+  });
 };
 
 export default Provider;

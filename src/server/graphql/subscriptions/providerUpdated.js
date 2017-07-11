@@ -19,4 +19,4 @@ export default {
     const filterFn = (value) => value.mutatorId !== socketId;
     return makeSubscribeIter(channelName, filterFn);
   }
-}
+};

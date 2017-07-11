@@ -50,52 +50,55 @@ export default {
 
       // remove the user from every integration under the provider
       const updatedProvider = res.changes[0];
-      if (updatedProvider) {
-        const {service} = updatedProvider.new_val;
-        if (service === SLACK) {
-          const providerUpdated = {
-            providerRow: {
-              accessToken: null,
-              service: SLACK
-            }
-          };
-          getPubSub().publish(`providerUpdated.${teamId}`, {providerUpdated});
-          const removedSlackChannels = await r.table('SlackIntegration')
-            .getAll(teamId, {index: 'teamId'})
-            .update({
-              isActive: false
-            }, {returnChanges: true})('changes');
-
-          removedSlackChannels.forEach((change) => {
-            const slackChannelRemoved = {deletedId: change.new_val.id};
-            // TODO add in the mutatorId and just remove all the records on the client?
-            getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved});
-          });
-          return providerUpdated;
-        }
-        // TODO rewrite
-        //const userId = getUserId(authToken);
-        //const table = serviceToProvider[service];
-        //const integrationChanges = await r.table(table)
-        //  .getAll(userId, {index: 'userIds'})
-        //  .update((user) => ({userIds: user('userIds').difference([userId])}), {returnChanges: true})('changes');
-        //if (integrationChanges.length === 0) return true;
-        //
-        //// remove the integration entirely if they were the last one on it
-        //const promises = integrationChanges.map((integration) => {
-        //  const {id, userIds} = integration.new_val;
-        //  if (userIds.length === 0) {
-        //    return r.table(table).get(id)
-        //      .update({
-        //        isActive: false,
-        //        userIds: []
-        //      });
-        //  }
-        //  return undefined;
-        //});
-        //await Promise.all(promises);
-
+      if (!updatedProvider) {
+        throw errorObj({_error: `Provider ${providerId} did not contain ${teamId}`});
       }
+      const {service} = updatedProvider.new_val;
+      if (service === SLACK) {
+        const providerUpdated = {
+          providerRow: {
+            accessToken: null,
+            service: SLACK
+          }
+        };
+        getPubSub().publish(`providerUpdated.${teamId}`, {providerUpdated});
+        const removedSlackChannels = await r.table('SlackIntegration')
+          .getAll(teamId, {index: 'teamId'})
+          .update({
+            isActive: false
+          }, {returnChanges: true})('changes');
+
+        removedSlackChannels.forEach((change) => {
+          const slackChannelRemoved = {deletedId: change.new_val.id};
+          // TODO add in the mutatorId and just remove all the records on the client?
+          getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved});
+        });
+        return providerUpdated;
+      }
+      // will never hit this
+      return undefined;
+
+      // TODO rewrite
+      // const userId = getUserId(authToken);
+      // const table = serviceToProvider[service];
+      // const integrationChanges = await r.table(table)
+      //  .getAll(userId, {index: 'userIds'})
+      //  .update((user) => ({userIds: user('userIds').difference([userId])}), {returnChanges: true})('changes');
+      // if (integrationChanges.length === 0) return true;
+      //
+      // // remove the integration entirely if they were the last one on it
+      // const promises = integrationChanges.map((integration) => {
+      //  const {id, userIds} = integration.new_val;
+      //  if (userIds.length === 0) {
+      //    return r.table(table).get(id)
+      //      .update({
+      //        isActive: false,
+      //        userIds: []
+      //      });
+      //  }
+      //  return undefined;
+      // });
+      // await Promise.all(promises);
     }
   }
 };

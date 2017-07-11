@@ -64,14 +64,14 @@ export default class EditingStatusContainer extends Component {
     };
   }
 
+  componentWillUnmount() {
+    this.resetTimeout();
+  }
+
   toggleTimestamp = () => {
     const timestampType = this.state.timestampType === 'createdAt' ? 'updatedAt' : 'createdAt';
     this.setState({timestampType});
   };
-
-  componentWillUnmount() {
-    this.resetTimeout();
-  }
 
   resetTimeout() {
     clearTimeout(this.refreshTimer);

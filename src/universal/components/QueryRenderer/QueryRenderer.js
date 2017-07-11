@@ -2,11 +2,24 @@ import deepFreeze from 'deep-freeze';
 import areEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Atmosphere from 'client/Atmosphere';
+
+const getStateWithProps = (props = null) => ({
+  error: null,
+  props,
+  retry: null
+});
 
 const isCacheable = (cacheConfig = {}) => cacheConfig.force === false || cacheConfig.sub || cacheConfig.ttl;
 // cacheable logic borrowed from https://github.com/robrichard/relay-query-lookup-renderer
 export default class ReactRelayQueryRenderer extends React.Component {
+  static propTypes = {
+    cacheConfig: PropTypes.object,
+    environment: PropTypes.object,
+    query: PropTypes.func,
+    render: PropTypes.func.isRequired,
+    variables: PropTypes.object
+  }
+
   constructor(props, context) {
     super(props, context);
     let {query, variables} = props;
@@ -21,9 +34,6 @@ export default class ReactRelayQueryRenderer extends React.Component {
       operation = createOperationSelector(query, variables);
       variables = operation.variables;
     }
-
-    this._mounted = false;
-    this._operation = operation;
     this._pendingFetch = null;
     this._relayContext = {
       environment,
@@ -33,28 +43,17 @@ export default class ReactRelayQueryRenderer extends React.Component {
     this._selectionReference = null;
 
     if (!query) {
-      this.state = {
-        readyState: {
-          error: null,
-          props: {},
-          retry: null
-        }
-      };
+      this.state = getStateWithProps({});
     } else if (operation) {
       if (isCacheable(cacheConfig) && environment.check(operation.root)) {
         // data is available in the store, render without making any requests
         const snapshot = environment.lookup(operation.fragment);
-        const key = Atmosphere.getKey()
         this.state = {
-          readyState: {
-            error: null,
-            props: snapshot.data,
-            retry: null
-          }
+          readyState: getStateWithProps(snapshot.data)
         };
       } else {
         this.state = {
-          readyState: getDefaultState()
+          readyState: getStateWithProps()
         };
         this._fetch(operation, cacheConfig);
       }
@@ -70,8 +69,10 @@ export default class ReactRelayQueryRenderer extends React.Component {
     });
   }
 
-  componentDidMount() {
-    this._mounted = true;
+  getChildContext() {
+    return {
+      relay: this._relayContext
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -101,7 +102,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
         } else {
           this._fetch(operation, cacheConfig);
           this.setState({
-            readyState: getDefaultState()
+            readyState: getStateWithProps()
           });
         }
       } else {
@@ -111,19 +112,19 @@ export default class ReactRelayQueryRenderer extends React.Component {
           variables
         };
         this._release();
-        this.setState({
-          readyState: {
-            error: null,
-            props: {},
-            retry: null
-          }
-        });
+        this.setState(getStateWithProps({}));
       }
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextProps.render !== this.props.render ||
+      nextState.readyState !== this.state.readyState
+    );
+  }
+
   componentWillUnmount() {
-    this._mounted = false;
     const {cacheConfig, environment} = this.props;
     const {sub, ttl} = cacheConfig || {};
     if (sub || ttl) {
@@ -145,13 +146,6 @@ export default class ReactRelayQueryRenderer extends React.Component {
     } else {
       this._release();
     }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      nextProps.render !== this.props.render ||
-      nextState.readyState !== this.state.readyState
-    );
   }
 
   _release() {
@@ -179,12 +173,12 @@ export default class ReactRelayQueryRenderer extends React.Component {
     // loading records from disk cache).
     const nextReference = environment.retain(operation.root);
 
-    let readyState = getDefaultState();
+    let readyState = getStateWithProps();
     let snapshot; // results of the root fragment
     const onCompleted = () => {
       this._pendingFetch = null;
     };
-    const onError = error => {
+    const onError = (error) => {
       readyState = {
         error,
         props: null,
@@ -253,12 +247,6 @@ export default class ReactRelayQueryRenderer extends React.Component {
     });
   };
 
-  getChildContext() {
-    return {
-      relay: this._relayContext
-    };
-  }
-
   render() {
     // Note that the root fragment results in `readyState.props` is already
     // frozen by the store; this call is to freeze the readyState object and
@@ -274,10 +262,3 @@ ReactRelayQueryRenderer.childContextTypes = {
   relay: PropTypes.object.isRequired
 };
 
-function getDefaultState() {
-  return {
-    error: null,
-    props: null,
-    retry: null
-  };
-}

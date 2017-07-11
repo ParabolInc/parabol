@@ -1,6 +1,6 @@
 const shimRIC = (cb) => {
   const start = Date.now();
-  return setTimeout(function () {
+  return setTimeout(() => {
     cb({
       didTimeout: false,
       timeRemaining: () => Math.max(0, 50 - (Date.now() - start))

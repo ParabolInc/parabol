@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
 import {insertEdgeBefore} from 'universal/utils/relay/insertEdge';
-//import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
+// import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 
 const mutation = graphql`
   mutation AddSlackChannelMutation($input: AddSlackChannelInput!) {
@@ -48,18 +48,17 @@ const AddSlackChannelMutation = (environment, slackChannelId, slackChannelName, 
       node.setValue(slackChannelId, 'channelId');
       node.setValue(slackChannelName, 'channelName');
       const newEdge = store.create(
-        'client:newEdge:' + tempId++,
+        `client:newEdge:${tempId++}`,
         'SlackIntegrationEdge'
       );
       newEdge.setLinkedRecord(node, 'node');
       const [, teamId] = teamMemberId.split('::');
       addSlackChannelUpdater(store, viewerId, teamId, newEdge);
-
     },
     onError: (err) => {
-      console.log('err', err)
+      console.log('err', err);
     }
-  })
+  });
 };
 
 export default AddSlackChannelMutation;

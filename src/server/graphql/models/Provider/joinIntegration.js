@@ -44,7 +44,7 @@ export default {
     }
 
     if (change.new_val.userIds.length === change.old_val.userIds.length) {
-      throw errorObj({_error: `${userId} is already on the integration ${integrationId}`})
+      throw errorObj({_error: `${userId} is already on the integration ${integrationId}`});
     }
 
     return true;

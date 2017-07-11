@@ -424,7 +424,7 @@ const ui = {
       description: 'Notify channels when meetings begin and end for this team',
       color: '#6ecadc',
       icon: 'slack',
-      providerName: 'Slack',
+      providerName: 'Slack'
     }
   },
   providerIconBorderRadius: '.5rem', // 8px
@@ -444,7 +444,7 @@ const ui = {
   rowSubheading: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s5,
+    lineHeight: appTheme.typography.s5
   },
 
   // Settings

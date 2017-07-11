@@ -14,7 +14,7 @@ const getPubSub = () => {
         host: hostname,
         port
       }
-    })
+    });
   }
   return pubsub;
 };

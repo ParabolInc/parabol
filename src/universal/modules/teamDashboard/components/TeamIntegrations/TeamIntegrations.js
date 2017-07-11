@@ -9,12 +9,13 @@ const TeamIntegrations = (props) => {
 
   return (
     <div className={css(styles.listAndAnnoucements)}>
-      <ProviderList viewer={viewer} jwt={jwt} teamMemberId={teamMemberId}/>
+      <ProviderList viewer={viewer} jwt={jwt} teamMemberId={teamMemberId} />
     </div>
   );
 };
 
 TeamIntegrations.propTypes = {
+  jwt: PropTypes.string,
   viewer: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamMemberId: PropTypes.string.isRequired

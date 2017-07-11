@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
 import {base64} from 'graphql-relay/lib/utils/base64';
 import getRethink from 'server/database/rethinkDriver';
 import {SlackIntegrationEdge} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
-//import getPubSub from 'server/utils/getPubSub';
+// import getPubSub from 'server/utils/getPubSub';
 import getPubSub from 'server/graphql/pubsub';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';

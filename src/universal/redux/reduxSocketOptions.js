@@ -1,10 +1,10 @@
-//import {cashay, Transport} from 'cashay';
-//import socketCluster from 'socketcluster-client';
-//import subscriber from 'universal/subscriptions/subscriber';
-//import AuthEngine from './AuthEngine';
-//import relayEnv from 'makeRelaid.js';
+// import {cashay, Transport} from 'cashay';
+// import socketCluster from 'socketcluster-client';
+// import subscriber from 'universal/subscriptions/subscriber';
+// import AuthEngine from './AuthEngine';
+// import relayEnv from 'makeRelaid.js';
 //
-//const onConnect = (options, hocOptions, socket) => {
+// const onConnect = (options, hocOptions, socket) => {
 //  if (!cashay.priorityTransport) {
 //    const sendToServer = (request) => {
 //      return new Promise((resolve) => {
@@ -17,10 +17,10 @@
 //    cashay.create({priorityTransport, subscriber});
 //    relayEnv.setWS(socket);
 //  }
-//};
+// };
 //
-//const onDisconnect = () => {
+// const onDisconnect = () => {
 //  cashay.create({priorityTransport: null});
 //  relayEnv.clear('wsEnv');
-//};
-//export default ({AuthEngine, socketCluster, onConnect, onDisconnect, keepAlive: 3000});
+// };
+// export default ({AuthEngine, socketCluster, onConnect, onDisconnect, keepAlive: 3000});

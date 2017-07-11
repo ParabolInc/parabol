@@ -28,18 +28,18 @@ const SlackIntegrations = (props) => {
   const {id: viewerId, slackChannels, integrationProvider} = viewer;
   const handleRemove = (slackGlobalId) => () => {
     RemoveSlackChannelMutation(environment, slackGlobalId, teamId, viewerId);
-  }
+  };
   const accessToken = integrationProvider && integrationProvider.accessToken;
   return (
     <div className={css(styles.slackIntegrations)}>
       <Link className={css(styles.link)} to={`/team/${teamId}/settings/integrations`} title="Back to Integrations">
-        <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
+        <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
         <div style={inlineBlockStyle}>Back to <b>Integrations</b></div>
       </Link>
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <div className={css(styles.providerDetails)}>
         <div className={css(styles.providerAvatar)}>
-          <FontAwesome name="slack" className={css(styles.providerIcon)}/>
+          <FontAwesome name="slack" className={css(styles.providerIcon)} />
         </div>
         <div className={css(styles.providerInfo)}>
           <div className={css(styles.nameAndTags)}>
@@ -93,7 +93,9 @@ const SlackIntegrations = (props) => {
 SlackIntegrations.propTypes = {
   relay: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  teamId: PropTypes.string.isRequired,
+  teamMemberId: PropTypes.stringisRequired
 };
 
 const styleThunk = () => ({

@@ -10,6 +10,6 @@ const jsonPath = path.join(__dirname, '../../../build/schema.json');
   const result = await graphql(schema, introspectionQuery);
   fs.writeFileSync(schemaPath, printSchema(schema));
   // use json for IDE plugins
-  fs.writeFileSync(jsonPath, JSON.stringify(result, null, 2))
+  fs.writeFileSync(jsonPath, JSON.stringify(result, null, 2));
   console.log('Schema updated!');
 })();

@@ -21,7 +21,7 @@ const targetAnchor = {
 
 const ServiceDropdownInput = (props) => {
   const {dropdownMapper, dropdownText, handleItemClick, options, styles} = props;
-  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper}/>;
+  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper} />;
   return (
     <div className={css(styles.dropdownBlock)}>
       <FieldBlock>
@@ -48,7 +48,7 @@ const ServiceDropdownInput = (props) => {
       </FieldBlock>
     </div>
   );
-}
+};
 
 ServiceDropdownInput.propTypes = {
   dropdownMapper: PropTypes.func.isRequired,

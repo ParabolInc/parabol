@@ -24,17 +24,16 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
       query={slackChannelQuery}
       render={({error, props}) => {
         if (error) {
-          return <div>{error.message}</div>
+          return <div>{error.message}</div>;
         } else if (props) {
           const {viewer} = props;
-          return <SlackIntegrations
+          return (<SlackIntegrations
             viewer={viewer}
             teamId={teamId}
             teamMemberId={teamMemberId}
-          />;
-        } else {
-          return <div>Loading...</div>
+          />);
         }
+        return <div>Loading...</div>;
       }}
       variables={{teamId, teamMemberId, service: SLACK}}
     />
@@ -44,7 +43,8 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
 
 SlackIntegrationsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  teamMemberId: PropTypes.string.isRequired
+  teamMemberId: PropTypes.string.isRequired,
+  viewer: PropTypes.object
 };
 
 export default withAtmosphere(SlackIntegrationsRoot);

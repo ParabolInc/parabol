@@ -9,7 +9,7 @@ const ConditionalLink = (props) => {
     to,
     ...elementProps
   } = props;
-  return isLink ? <Link {...elementProps} to={to} replace={replace}/> : <div {...elementProps}/>
+  return isLink ? <Link {...elementProps} to={to} replace={replace} /> : <div {...elementProps} />;
 };
 
 

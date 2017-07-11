@@ -38,7 +38,7 @@ export default (subscribeThunk, options = {}) => (ComposedComponent) => {
     }
 
     render() {
-      return <ComposedComponent {...this.props} unsubscribe={this.unsubscribe}/>;
+      return <ComposedComponent {...this.props} unsubscribe={this.unsubscribe} />;
     }
   }
   return WithSubscriptions;

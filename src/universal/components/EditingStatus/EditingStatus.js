@@ -42,6 +42,7 @@ const EditingStatus = (props) => {
 
 EditingStatus.propTypes = {
   editors: PropTypes.array,
+  handleClick: PropTypes.func,
   isEditing: PropTypes.bool,
   timestamp: PropTypes.instanceOf(Date),
   timestampType: PropTypes.string,
