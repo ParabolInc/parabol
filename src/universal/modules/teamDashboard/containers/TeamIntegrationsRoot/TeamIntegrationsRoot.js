@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {graphql} from 'react-relay';
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamIntegrations from 'universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-
-// import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 
 const teamIntegrationsQuery = graphql`
   query TeamIntegrationsRootQuery($teamMemberId: ID!) {
@@ -15,7 +15,6 @@ const teamIntegrationsQuery = graphql`
     }
   }
 `;
-
 
 const mapStateToProps = (state) => {
   return {
@@ -31,15 +30,17 @@ const TeamIntegrationsRoot = ({jwt, atmosphere, teamMemberId}) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={teamIntegrationsQuery}
+      variables={{teamMemberId}}
       render={({error, props}) => {
         if (error) {
-          return <div>{error.message}</div>;
-        } else if (props) {
-          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamMemberId={teamMemberId} />;
+          return <ErrorComponent height={'14rem'} errorMessage={error.message}/>;
         }
-        return <div>Loading...</div>;
+        if (props) {
+          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamMemberId={teamMemberId}/>;
+        }
+        return <LoadingComponent height={'14rem'}/>
       }}
-      variables={{teamMemberId}}
+
     />
   );
 };

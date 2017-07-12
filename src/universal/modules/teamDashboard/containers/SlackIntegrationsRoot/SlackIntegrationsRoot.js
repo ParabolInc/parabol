@@ -5,6 +5,8 @@ import SlackIntegrations from 'universal/modules/teamDashboard/components/SlackI
 import {SLACK} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 
 const slackChannelQuery = graphql`
   query SlackIntegrationsRootQuery($teamId: ID!, $teamMemberId: ID!, $service: ID!) {
@@ -24,7 +26,7 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
       query={slackChannelQuery}
       render={({error, props}) => {
         if (error) {
-          return <div>{error.message}</div>;
+          return <ErrorComponent height={'14rem'} errorMessage={error.message}/>;
         } else if (props) {
           const {viewer} = props;
           return (<SlackIntegrations
@@ -33,7 +35,7 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
             teamMemberId={teamMemberId}
           />);
         }
-        return <div>Loading...</div>;
+        return <LoadingComponent height={'14rem'}/>
       }}
       variables={{teamId, teamMemberId, service: SLACK}}
     />
