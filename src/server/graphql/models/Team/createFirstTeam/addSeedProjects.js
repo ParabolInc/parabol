@@ -36,6 +36,14 @@ const SEED_PROJECTS = [
       Make good teaming a habit! Schedule a weekly Action Meeting with your
       team. Pro-tip: include a link to the meeting lobby.
     `)
+  },
+  {
+    status: FUTURE,
+    sortOrder: 1,
+    content: convertToRawDraftJSON(`
+      Add integrations (like Slack, GitHub…) for your team.
+      See the Integrations tab under Team Settings
+    `)
   }
 ];
 
