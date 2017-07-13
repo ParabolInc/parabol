@@ -9,9 +9,6 @@ const ProviderRow = new GraphQLObjectType({
     accessToken: {
       type: GraphQLID,
       description: 'The access token attached to the userId. null if user does not have a token for the provider'
-      // resolve: async(source, args, {authToken}) => {
-      //  return 'FOO'
-      // }
     },
     userCount: {
       type: GraphQLInt,

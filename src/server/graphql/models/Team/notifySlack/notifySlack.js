@@ -31,9 +31,8 @@ const notifySlack = async (integrations, teamId, slackText) => {
         .update({
           isActive: false
         });
-      // break for no success
     } else if (error === 'not_in_channel' || error === 'invalid_auth') {
-      console.log('ERRRR', error);
+      console.log('Slack Channel Notification Error:', error);
     }
   }
 };
