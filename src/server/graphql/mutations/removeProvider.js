@@ -50,7 +50,7 @@ export default {
         .getAll(teamId, {index: 'teamId'})
         .update({
           isActive: false
-        }, {returnChanges: true})('changes');
+        }, {returnChanges: true})('changes').default([]);
       const deletedIntegrationIds = channelChanges.map((change) => toGlobalId('SlackIntegration', change.new_val.id));
       const providerRemoved = {
         providerRow: {
