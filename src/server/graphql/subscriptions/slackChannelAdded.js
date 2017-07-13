@@ -4,7 +4,7 @@ import {requireSUOrTeamMember} from 'server/utils/authorization';
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
 
 export default {
-  type: AddSlackChannelPayload,
+  type: new GraphQLNonNull(AddSlackChannelPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

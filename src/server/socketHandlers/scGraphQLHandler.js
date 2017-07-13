@@ -27,10 +27,12 @@ export default function wsGraphQLHandler(exchange, socket) {
     const result = await graphql(Schema, query, {}, context, variables);
     if (result.errors) {
       console.log('DEBUG GraphQL Error:', result.errors);
+      cb(null, result)
+    } else {
+      const resolvedQueries = Object.keys(result.data);
+      const firstQuery = resolvedQueries[0];
+      const clientValue = blacklist.includes(firstQuery) ? true : result;
+      cb(null, clientValue);
     }
-    const resolvedQueries = Object.keys(result.data);
-    const firstQuery = resolvedQueries[0];
-    const clientValue = blacklist.includes(firstQuery) ? true : result;
-    cb(null, clientValue);
   };
 }

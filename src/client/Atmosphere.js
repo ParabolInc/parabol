@@ -2,7 +2,12 @@ import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
 import {requestIdleCallback} from 'universal/utils/requestIdleCallback';
+import tryParse from 'universal/utils/tryParse';
 
+const makeErrorObj = (errors) => {
+  const firstError = errors[0].message;
+  return tryParse(firstError) || {_error: firstError};
+};
 
 export default class Atmosphere extends Environment {
   static getKey = (name, variables) => {
@@ -55,13 +60,23 @@ export default class Atmosphere extends Environment {
         variables
       })
     });
-    return res.json();
+    const resJson = res.json();
+    const {errors} = resJson;
+    if (!errors) return resJson;
+    const errorObj = makeErrorObj(errors);
+    return Promise.reject(errorObj);
   };
 
   fetchWS = async (operation, variables) => {
-    return new Promise((resolve) => {
-      this.socket.emit('graphql', {query: operation.text, variables}, (err, response) => {
-        resolve(response);
+    return new Promise((resolve, reject) => {
+      this.socket.emit('graphql', {query: operation.text, variables}, (_, response) => {
+        const {errors} = response;
+        if (errors) {
+          const errorObj = makeErrorObj(errors);
+          reject(errorObj);
+        } else {
+          resolve(response);
+        }
       });
     });
   };

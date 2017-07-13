@@ -1,11 +1,13 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import ms from 'ms';
-import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import Button from 'universal/components/Button/Button';
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
 import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation';
-
+import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const defaultSelectedChannel = () => ({
   channelId: undefined,
@@ -19,6 +21,7 @@ class AddSlackChannel extends Component {
     teamMemberId: PropTypes.string,
     viewerId: PropTypes.string
   }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -64,9 +67,21 @@ class AddSlackChannel extends Component {
 
   handleAddChannel = () => {
     const {environment, teamMemberId, viewerId} = this.props;
-    const {selectedChannel: {channelId, channelName}} = this.state;
-    if (!channelId) return;
-    AddSlackChannelMutation(environment, channelId, channelName, teamMemberId, viewerId);
+    const {selectedChannel} = this.state;
+    if (!selectedChannel.channelId) return;
+    const onError = ({_error}) => {
+      this.setState({
+        error: _error
+      })
+    };
+    const onCompleted = () => {
+      if (this.state.error) {
+        this.setState({
+          error: null
+        })
+      }
+    }
+    AddSlackChannelMutation(environment, selectedChannel, teamMemberId, viewerId, onError, onCompleted);
     this.setState({
       selectedChannel: defaultSelectedChannel()
     });
@@ -86,16 +101,21 @@ class AddSlackChannel extends Component {
 
   render() {
     const {options, selectedChannel: {channelName}} = this.state;
-    const {accessToken} = this.props;
+    const {accessToken, styles} = this.props;
     return (
-      <div style={{display: 'flex', width: '100%'}}>
-        <ServiceDropdownInput
-          accessToken={accessToken}
-          dropdownMapper={this.dropdownMapper}
-          dropdownText={channelName}
-          handleItemClick={this.updateDropdownItem}
-          options={options}
-        />
+      <div className={css(styles.addChannel)}>
+        <div className={css(styles.dropdownAndError)}>
+          <ServiceDropdownInput
+            accessToken={accessToken}
+            dropdownMapper={this.dropdownMapper}
+            dropdownText={channelName}
+            handleItemClick={this.updateDropdownItem}
+            options={options}
+          />
+          <div className={css(styles.error)}>
+            {this.state.error}
+          </div>
+        </div>
         <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
           <Button
             colorPalette="cool"
@@ -106,8 +126,26 @@ class AddSlackChannel extends Component {
           />
         </div>
       </div>
+
     );
   }
 }
 
-export default AddSlackChannel;
+const styleThunk = () => ({
+  addChannel: {
+    display: 'flex',
+    width: '100%'
+  },
+  dropdownAndError: {
+    display: 'flex',
+    width: '100%',
+    flexDirection: 'column'
+  },
+  error: {
+    ...formError,
+    textAlign: 'right'
+  }
+});
+
+
+export default withStyles(styleThunk)(AddSlackChannel);

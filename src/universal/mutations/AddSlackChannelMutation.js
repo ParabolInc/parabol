@@ -21,12 +21,13 @@ export const addSlackChannelUpdater = (store, viewerId, teamId, newNode) => {
   viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
 };
 
-const AddSlackChannelMutation = (environment, slackChannelId, slackChannelName, teamMemberId, viewerId) => {
+const AddSlackChannelMutation = (environment, payload, teamMemberId, viewerId, onError, onCompleted) => {
+  const {channelId, channelName} = payload;
   return commitMutation(environment, {
     mutation,
     variables: {
       input: {
-        slackChannelId,
+        slackChannelId: channelId,
         teamMemberId
       }
     },
@@ -38,14 +39,13 @@ const AddSlackChannelMutation = (environment, slackChannelId, slackChannelName, 
     optimisticUpdater: (store) => {
       const id = `client:channel:${tempId++}`;
       const node = store.create(id, 'SlackIntegration');
-      node.setValue(slackChannelId, 'channelId');
-      node.setValue(slackChannelName, 'channelName');
+      node.setValue(channelId, 'channelId');
+      node.setValue(channelName, 'channelName');
       const [, teamId] = teamMemberId.split('::');
       addSlackChannelUpdater(store, viewerId, teamId, node);
     },
-    onError: (err) => {
-      console.log('err', err);
-    }
+    onCompleted,
+    onError
   });
 };
 

@@ -7,6 +7,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
+import {connect} from 'react-redux';
 
 const slackChannelQuery = graphql`
   query SlackIntegrationsRootQuery($teamId: ID!, $service: ID!) {
@@ -16,7 +17,13 @@ const slackChannelQuery = graphql`
   }
 `;
 
-const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
+const mapStateToProps = (state) => {
+  return {
+    jwt: state.auth.token
+  };
+};
+
+const SlackIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
   const [, teamId] = teamMemberId.split('::');
   const cacheConfig = {sub: atmosphere.constructor.getKey('SlackChannelAddedSubscription', {teamId})};
   return (
@@ -31,6 +38,7 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
         } else if (props) {
           const {viewer} = props;
           return (<SlackIntegrations
+            jwt={jwt}
             viewer={viewer}
             teamId={teamId}
             teamMemberId={teamMemberId}
@@ -50,4 +58,4 @@ SlackIntegrationsRoot.propTypes = {
   viewer: PropTypes.object
 };
 
-export default withAtmosphere(SlackIntegrationsRoot);
+export default withAtmosphere(connect(mapStateToProps)(SlackIntegrationsRoot));

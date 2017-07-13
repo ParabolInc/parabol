@@ -10,6 +10,7 @@ import makeAppLink from 'server/utils/makeAppLink';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {SLACK} from 'universal/utils/constants';
+import {getUserId} from 'server/utils/authorization';
 
 
 export default {
@@ -46,7 +47,7 @@ export default {
     if (!authToken || !Array.isArray(authToken.tms) || !authToken.tms.includes(teamId)) {
       throw errorObj({_error: 'Bad auth token'});
     }
-
+    const userId = getUserId(authToken);
     if (service === SLACK) {
       const queryParams = {
         client_id: process.env.SLACK_CLIENT_ID,
@@ -82,7 +83,8 @@ export default {
                 providerUserName,
                 service: SLACK,
                 teamIds: [teamId],
-                updatedAt: now
+                updatedAt: now,
+                userId
               }, {returnChanges: true})('changes')(0)('new_val'),
             r.table('Provider')
               .get(providerId)

@@ -19,6 +19,7 @@ import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemoved
 import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
+import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -27,14 +28,19 @@ const inlineBlockStyle = {
   verticalAlign: 'middle'
 };
 
+const {makeUri} = providerLookup[SLACK];
 
 const SlackIntegrations = (props) => {
-  const {relay: {environment}, styles, teamId, teamMemberId, viewer} = props;
+  const {relay: {environment}, jwt, styles, teamId, teamMemberId, viewer} = props;
   const {id: viewerId, slackChannels, integrationProvider} = viewer;
   const handleRemoveChannel = (slackGlobalId) => () => {
     RemoveSlackChannelMutation(environment, slackGlobalId, teamId, viewerId);
   };
   const accessToken = integrationProvider && integrationProvider.accessToken;
+  const openOauth = () => {
+    const uri = makeUri(jwt, teamId);
+    window.open(uri);
+  };
   return (
     <div className={css(styles.slackIntegrations)}>
       <Link className={css(styles.link)} to={`/team/${teamId}/settings/integrations`} title="Back to Integrations">
@@ -86,7 +92,7 @@ const SlackIntegrations = (props) => {
                 buttonStyle="solid"
                 colorPalette="cool"
                 label="Authorize Slack to Add a Channel"
-                onClick={() => console.log('Authorize Slack to Add a Channel')}
+                onClick={openOauth}
                 size="medium"
               />
             </div>

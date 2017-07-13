@@ -5,7 +5,7 @@ import {requireSUOrTeamMember} from 'server/utils/authorization';
 
 
 export default {
-  type: AddProviderPayload,
+  type: new GraphQLNonNull(AddProviderPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

@@ -9,7 +9,7 @@ import {errorObj} from 'server/utils/utils';
 export default {
   name: 'RemoveSlackChannel',
   description: 'Remove a slack channel integration from a team',
-  type: RemoveSlackChannelPayload,
+  type: new GraphQLNonNull(RemoveSlackChannelPayload),
   args: {
     slackGlobalId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -21,7 +21,8 @@ export default {
     // AUTH
     const integration = await r.table('SlackIntegration').get(id);
     if (!integration) {
-      throw errorObj({_error: `${slackGlobalId} does not exist`});
+      // no UI for this
+      throw new Error(`${slackGlobalId} does not exist`);
     }
     const {teamId, isActive} = integration;
     requireSUOrTeamMember(authToken, teamId);
@@ -29,7 +30,8 @@ export default {
 
     // VALIDATION
     if (!isActive) {
-      throw errorObj({_error: `${slackGlobalId} has already been removed`});
+      // no UI for this
+      throw new Error(`${slackGlobalId} has already been removed`);
     }
     // RESOLUTION
 

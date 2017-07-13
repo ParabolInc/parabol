@@ -4,7 +4,7 @@ import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {
-  type: RemoveProviderPayload,
+  type: new GraphQLNonNull(RemoveProviderPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

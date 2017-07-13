@@ -3,7 +3,6 @@ import getRethink from 'server/database/rethinkDriver';
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
 import getPubSub from 'server/utils/getPubSub';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {SLACK} from 'universal/utils/constants';
 
@@ -23,7 +22,7 @@ const AddSlackChannelInput = new GraphQLInputObjectType({
 
 export default {
   name: 'AddSlackChannel',
-  type: AddSlackChannelPayload,
+  type: new GraphQLNonNull(AddSlackChannelPayload),
   args: {
     input: {
       type: new GraphQLNonNull(AddSlackChannelInput)
@@ -47,8 +46,8 @@ export default {
       .nth(0)
       .default(null);
 
-    if (!provider) {
-      throw errorObj({_error: `No token found for ${teamMemberId}`});
+    if (!provider || !provider.accessToken) {
+      throw new Error('No Slack Provider found! Try refreshing your token');
     }
 
     // see if the slackChannelId is legit
@@ -58,12 +57,12 @@ export default {
     const channelInfoJson = await channelInfo.json();
     const {ok, channel} = channelInfoJson;
     if (!ok) {
-      throw errorObj({_error: channelInfoJson.error});
+      throw new Error(channelInfoJson.error);
     }
 
     const {is_archived: isArchived, name} = channel;
     if (isArchived) {
-      throw errorObj({_error: `Slack channel ${name} is archived!`});
+      throw new Error(`Slack channel ${name} is archived!`)
     }
 
     // RESOLUTION

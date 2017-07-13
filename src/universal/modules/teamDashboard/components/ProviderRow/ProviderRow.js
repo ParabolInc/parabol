@@ -13,7 +13,7 @@ import makeHref from 'universal/utils/makeHref';
 import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink';
 import {withRouter} from 'react-router-dom';
 
-const providerLookup = {
+export const providerLookup = {
   [GITHUB]: {
     ...ui.providers.github
   },

@@ -4,7 +4,7 @@ import {requireSUOrTeamMember} from 'server/utils/authorization';
 import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload';
 
 export default {
-  type: RemoveSlackChannelPayload,
+  type: new GraphQLNonNull(RemoveSlackChannelPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
