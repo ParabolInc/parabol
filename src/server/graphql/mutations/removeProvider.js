@@ -1,13 +1,10 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLList} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {fromGlobalId, toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import ProviderRow from 'server/graphql/types/ProviderRow';
-import getPubSub from 'server/utils/getPubSub';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {errorObj} from 'server/utils/utils';
-import {SLACK} from 'universal/utils/constants';
-import {toGlobalId} from 'graphql-relay';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
-import {fromGlobalId} from 'graphql-relay';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {SLACK} from 'universal/utils/constants';
 
 export default {
   name: 'RemoveProvider',
@@ -39,13 +36,13 @@ export default {
       .update((user) => ({teamIds: user('teamIds').difference([teamId])}), {returnChanges: true});
 
     if (res.skipped === 1) {
-      throw errorObj({_error: `Provider ${providerId} does not exist`});
+      throw new Error(`Provider ${providerId} does not exist`);
     }
 
     // remove the user from every integration under the provider
     const updatedProvider = res.changes[0];
     if (!updatedProvider) {
-      throw errorObj({_error: `Provider ${providerId} did not contain ${teamId}`});
+      throw new Error(`Provider ${providerId} did not contain ${teamId}`);
     }
     const {service} = updatedProvider.new_val;
     if (service === SLACK) {

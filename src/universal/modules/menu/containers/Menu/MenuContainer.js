@@ -24,6 +24,7 @@ const calculateMenuPosX = (originWidth, originLeft, orientation, targetOrientati
 
 export default class MenuContainer extends Component {
   static propTypes = {
+    isLoaded: PropTypes.bool,
     originAnchor: PropTypes.object,
     targetAnchor: PropTypes.object,
     toggle: PropTypes.object

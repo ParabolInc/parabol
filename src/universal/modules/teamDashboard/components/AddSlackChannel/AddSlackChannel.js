@@ -26,34 +26,17 @@ class AddSlackChannel extends Component {
     super(props);
     this.state = {
       options: [],
-      channelList: [],
       selectedChannel: defaultSelectedChannel()
     };
     this.lastUpdated = 0;
-    this.getChannelList(props.accessToken);
+    this.fetchOptions(props.accessToken);
   }
 
   componentWillReceiveProps(nextProps) {
     const {accessToken} = nextProps;
     if (!this.props.accessToken !== accessToken) {
-      this.getChannelList(accessToken);
+      this.fetchOptions(accessToken);
     }
-  }
-
-  async getChannelList(accessToken) {
-    const now = new Date();
-    if (accessToken && now - this.lastUpdated > ms('30s')) {
-      this.lastUpdated = now;
-      const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
-      const res = await fetch(uri);
-      const resJson = await res.json();
-      if (resJson && resJson.ok) {
-        this.setState({
-          channelList: resJson.channels
-        });
-      }
-    }
-    return this.state.channelList;
   }
 
   updateDropdownItem = (option) => () => {
@@ -61,7 +44,8 @@ class AddSlackChannel extends Component {
       selectedChannel: {
         channelId: option.id,
         channelName: option.label
-      }
+      },
+      options: this.state.options.filter((row) => row.id !== option.id)
     });
   };
 
@@ -87,30 +71,42 @@ class AddSlackChannel extends Component {
     });
   };
 
-  dropdownMapper = async () => {
-    const channels = await this.getChannelList(this.props.accessToken);
-    // filter out channels that have already been added
-    const {subbedChannels} = this.props;
-    const subbedChannelIds = subbedChannels.map((channel) => channel.channelId);
-    const options = channels.filter((channel) => !subbedChannelIds.includes(channel.id))
-      .map((channel) => ({id: channel.id, label: channel.name}));
-    this.setState({
-      options
-    });
+  fetchOptions = async (accessToken) => {
+    const now = new Date();
+    const isStale = now - this.lastUpdated > ms('30s');
+    if (accessToken && isStale) {
+      this.lastUpdated = now;
+      const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
+      const res = await fetch(uri);
+      const resJson = await res.json();
+      const {ok, channels, error} = resJson;
+      if (!ok) {
+        throw new Error(error);
+      }
+      const {subbedChannels} = this.props;
+      const subbedChannelIds = subbedChannels.map((channel) => channel.channelId);
+      const options = channels.filter((channel) => !subbedChannelIds.includes(channel.id))
+        .map((channel) => ({id: channel.id, label: channel.name}));
+      this.setState({
+        isLoaded: true,
+        options
+      });
+    }
   };
 
   render() {
-    const {options, selectedChannel: {channelName}} = this.state;
+    const {isLoaded, options, selectedChannel: {channelName}} = this.state;
     const {accessToken, styles} = this.props;
     return (
       <div className={css(styles.addChannel)}>
         <div className={css(styles.dropdownAndError)}>
           <ServiceDropdownInput
             accessToken={accessToken}
-            dropdownMapper={this.dropdownMapper}
+            fetchOptions={this.fetchOptions}
             dropdownText={channelName}
             handleItemClick={this.updateDropdownItem}
             options={options}
+            isLoaded={isLoaded}
           />
           <div className={css(styles.error)}>
             {this.state.error}

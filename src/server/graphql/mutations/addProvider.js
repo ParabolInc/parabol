@@ -7,7 +7,6 @@ import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import postOptions from 'server/utils/fetchOptions';
 import getPubSub from 'server/utils/getPubSub';
 import makeAppLink from 'server/utils/makeAppLink';
-import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {SLACK} from 'universal/utils/constants';
 import {getUserId} from 'server/utils/authorization';
@@ -34,18 +33,17 @@ export default {
 
     // AUTH
     if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
-      throw errorObj({_error: 'Don\'t be rude.'});
+      throw new Error('Don\'t be rude.')
     }
 
-    console.log('adding provider')
     // RESOLUTION
     const [teamId, jwt] = state.split('::');
     if (!teamId || !jwt) {
-      throw errorObj({_error: 'Bad state'});
+      throw new Error('Bad state');
     }
     const authToken = verify(jwt, Buffer.from(auth0ClientSecret, 'base64'));
     if (!authToken || !Array.isArray(authToken.tms) || !authToken.tms.includes(teamId)) {
-      throw errorObj({_error: 'Bad auth token'});
+      throw new Error('Bad auth token');
     }
     const userId = getUserId(authToken);
     if (service === SLACK) {
@@ -60,12 +58,11 @@ export default {
       const json = await slackRes.json();
       const {ok, error, access_token: accessToken, scope, team_id: providerUserId, team_name: providerUserName} = json;
       if (!ok) {
-        throw errorObj({_error: error});
+        throw new Error(error);
       }
       if (scope !== 'identify,incoming-webhook,channels:read,chat:write:bot') {
-        throw errorObj({_error: `bad scope: ${scope}`})
+        throw new Error(`bad scope: ${scope}`);
       }
-      console.log('json', json)
       const provider = await r.table('Provider')
         .getAll(teamId, {index: 'teamIds'})
         .filter({service: SLACK})

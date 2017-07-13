@@ -20,14 +20,15 @@ const targetAnchor = {
 };
 
 const ServiceDropdownInput = (props) => {
-  const {dropdownMapper, dropdownText, handleItemClick, options, styles} = props;
-  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper} />;
+  const {isLoaded, fetchOptions, dropdownText, handleItemClick, options, styles} = props;
+  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={fetchOptions} />;
   return (
     <div className={css(styles.dropdownBlock)}>
       <FieldBlock>
         <div className={css(styles.inputBlock)}>
           <span>{dropdownText}</span>
           <Menu
+            isLoaded={isLoaded}
             menuWidth="28.875rem"
             originAnchor={originAnchor}
             targetAnchor={targetAnchor}
@@ -51,7 +52,8 @@ const ServiceDropdownInput = (props) => {
 };
 
 ServiceDropdownInput.propTypes = {
-  dropdownMapper: PropTypes.func.isRequired,
+  isLoaded: PropTypes.bool,
+  fetchOptions: PropTypes.func.isRequired,
   dropdownText: PropTypes.string.isRequired,
   handleItemClick: PropTypes.func.isRequired,
   options: PropTypes.array.isRequired,
