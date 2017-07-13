@@ -24,6 +24,19 @@ const emailLink = {
   textDecoration: 'none'
 };
 
+const imageStyle = {
+  border: 0,
+  display: 'block',
+  margin: '0 auto'
+};
+
+const emailHeaderStyle = {
+  backgroundColor: appTheme.palette.dark,
+  paddingBottom: '20px',
+  paddingTop: '20px',
+  textAlign: 'center'
+};
+
 const WelcomeEmail = (props) => {
   const {email} = props;
 
@@ -33,8 +46,13 @@ const WelcomeEmail = (props) => {
       <table width="100%">
         <tbody>
           <tr>
-            <td style={{backgroundColor: appTheme.palette.warm}}>
-              <EmptySpace height={16} />
+            <td align="center" style={emailHeaderStyle}>
+              <img
+                height={56}
+                src="/static/images/email/email-header-branding/email-header-branding@2x.png"
+                style={imageStyle}
+                width={262}
+              />
             </td>
           </tr>
         </tbody>
