@@ -10,7 +10,7 @@ const LoadingComponent = (props) => {
 
   return (
     <div className={css(styles.loadingComponent)}>
-      <Spinner fillColor="cool" width={spinnerSize}/>
+      <Spinner fillColor="cool" width={spinnerSize} />
     </div>
   );
 };

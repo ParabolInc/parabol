@@ -125,11 +125,11 @@ export default class Atmosphere extends Environment {
       this.subLookup[key] = {
         opId: this.index++,
         instances: 1
-      }
+      };
       requestSubscription(this, config);
     } else {
       // another component cares about this subscription. if it tries to unsub, don't do it until both want to
-      opManager.instances++
+      opManager.instances++;
     }
     return () => this.socketUnsubscribe(key);
   }

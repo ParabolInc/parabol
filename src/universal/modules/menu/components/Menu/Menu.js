@@ -70,6 +70,7 @@ Menu.propTypes = {
   children: PropTypes.any,
   closePortal: PropTypes.func,
   coords: PropTypes.object,
+  isLoaded: PropTypes.bool,
   isOpen: PropTypes.bool,
   itemFactory: PropTypes.func,
   label: PropTypes.string,

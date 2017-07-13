@@ -72,6 +72,14 @@ const SlackIntegrations = (props) => {
               sansPaddingX
               size="smallest"
             />
+            <Button
+              buttonStyle="flat"
+              colorPalette="cool"
+              label="Refresh Token"
+              onClick={openOauth}
+              sansPaddingX
+              size="smallest"
+            />
           </div>
         }
       </div>
@@ -123,6 +131,7 @@ const SlackIntegrations = (props) => {
 };
 
 SlackIntegrations.propTypes = {
+  jwt: PropTypes.string.isRequired,
   relay: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired,
   styles: PropTypes.object,
@@ -171,6 +180,8 @@ const styleThunk = () => ({
   },
 
   providerActions: {
+    display: 'flex',
+    justifyContent: 'space-around',
     flex: 1,
     paddingLeft: ui.rowGutter,
     textAlign: 'right'
@@ -208,7 +219,7 @@ const subscriptionThunk = ({teamId, viewer: {id}}) => {
     ProviderRemovedSubscription(teamId, id),
     ProviderAddedSubscription(teamId, id)
   ];
-}
+};
 export default createFragmentContainer(
   withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(SlackIntegrations)),
   graphql`

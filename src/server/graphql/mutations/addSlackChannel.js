@@ -62,7 +62,7 @@ export default {
 
     const {is_archived: isArchived, name} = channel;
     if (isArchived) {
-      throw new Error(`Slack channel ${name} is archived!`)
+      throw new Error(`Slack channel ${name} is archived!`);
     }
 
     // RESOLUTION

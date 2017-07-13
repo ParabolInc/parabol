@@ -1,4 +1,4 @@
-//import {updateProviderMapUpdater} from 'universal/mutations/RemoveProviderMutation';
+// import {updateProviderMapUpdater} from 'universal/mutations/RemoveProviderMutation';
 
 const subscription = graphql`
   subscription ProviderAddedSubscription($teamId: ID!) {

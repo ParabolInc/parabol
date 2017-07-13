@@ -1,14 +1,13 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Spinner from 'universal/modules/spinner/components/Spinner/Spinner';
-import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const defaultMessage = 'An error has occurred! We\'ll alert the developers. Try refreshing the page';
 const LoadingComponent = (props) => {
   const {error, styles} = props;
-  throw error;
+  console.error(error);
   return (
     <div className={css(styles.errorComponent)}>
       <div>{defaultMessage}</div>

@@ -34,7 +34,7 @@ const SlackIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
       variables={{teamId, service: SLACK}}
       render={({error, props}) => {
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error}/>;
+          return <ErrorComponent height={'14rem'} error={error} />;
         } else if (props) {
           const {viewer} = props;
           return (<SlackIntegrations
@@ -44,7 +44,7 @@ const SlackIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
             teamMemberId={teamMemberId}
           />);
         }
-        return <LoadingComponent height={'14rem'}/>
+        return <LoadingComponent height={'14rem'} />;
       }}
 
     />
@@ -54,6 +54,7 @@ const SlackIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
 
 SlackIntegrationsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  jwt: PropTypes.string.isRequired,
   teamMemberId: PropTypes.string.isRequired,
   viewer: PropTypes.object
 };

@@ -1,20 +1,20 @@
-//import {StyleSheetTestUtils} from 'aphrodite-local-styles';
-//import {EditorState} from 'draft-js';
-//import {mount} from 'enzyme';
-//import React from 'react';
-//// import ProjectEditor from '../ProjectEditor';
+// import {StyleSheetTestUtils} from 'aphrodite-local-styles';
+// import {EditorState} from 'draft-js';
+// import {mount} from 'enzyme';
+// import React from 'react';
+// // import ProjectEditor from '../ProjectEditor';
 //
-//console.error = jest.fn();
+// console.error = jest.fn();
 //
-//// https://github.com/Khan/aphrodite/issues/62
-//afterEach(() => {
+// // https://github.com/Khan/aphrodite/issues/62
+// afterEach(() => {
 //  return new Promise((resolve) => {
 //    StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
 //    return process.nextTick(resolve);
 //  });
-//});
+// });
 //
-//class EditorProps {
+// class EditorProps {
 //  constructor() {
 //    this.editorRef = undefined;
 //    this.editorState = EditorState.createEmpty();
@@ -34,7 +34,7 @@
 //  setEditorState = (es) => {
 //    this.editorState = es;
 //  }
-//}
+// }
 
 describe('ProjectEditor', () => {
   test('gains focus when clicked', () => {

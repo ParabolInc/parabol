@@ -33,12 +33,12 @@ const TeamIntegrationsRoot = ({jwt, atmosphere, teamMemberId}) => {
       variables={{teamId}}
       render={({error, props}) => {
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error}/>;
+          return <ErrorComponent height={'14rem'} error={error} />;
         }
         if (props) {
-          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamId={teamId}/>;
+          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamId={teamId} />;
         }
-        return <LoadingComponent height={'14rem'}/>
+        return <LoadingComponent height={'14rem'} />;
       }}
 
     />

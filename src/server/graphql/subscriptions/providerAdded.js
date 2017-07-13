@@ -11,13 +11,13 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken, socketId}) => {
+  subscribe: (source, {teamId}, {authToken}) => {
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `providerAdded.${teamId}`;
-    //const resolve = (value) => {
+    // const resolve = (value) => {
     //  // we know what the providerMap for slack will look like because everyone uses the same token
     //  if (value.provider.service === SLACK) {
     //    return value;
@@ -26,7 +26,7 @@ export default {
     //  // wait for GH to add this logic, it involves a per-user query
     //  //const userId = getUserId(authToken);
     //  //return providerMapResolution(userId, teamId)
-    //}
+    // }
     return makeSubscribeIter(channelName);
   }
 };

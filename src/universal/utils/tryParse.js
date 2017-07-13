@@ -6,4 +6,4 @@ const tryParse = (str) => {
   }
 };
 
-export default tryParse
+export default tryParse;

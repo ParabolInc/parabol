@@ -9,7 +9,6 @@ const mutation = graphql`
 `;
 
 export const removeSlackChannelUpdater = (viewer, teamId, deletedId) => {
-
   const slackChannels = viewer.getLinkedRecords('slackChannels', {teamId});
   const idxToDelete = slackChannels.findIndex((channel) => channel.getValue('id') === deletedId);
   if (idxToDelete !== -1) {

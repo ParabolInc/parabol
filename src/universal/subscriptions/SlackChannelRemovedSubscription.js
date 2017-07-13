@@ -18,7 +18,7 @@ const SlackChannelRemovedSubscription = (teamId, viewerId) => (ensureSubscriptio
       const deletedId = removedChannel.getValue('deletedId');
       removeSlackChannelUpdater(viewer, teamId, deletedId);
     }
-  })
+  });
 };
 
 export default SlackChannelRemovedSubscription;

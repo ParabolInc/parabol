@@ -6,10 +6,10 @@ const AddSlackChannelPayload = new GraphQLObjectType({
   fields: () => ({
     channel: {
       type: new GraphQLNonNull(SlackIntegration)
-    },
-    //provider: {
+    }
+    // provider: {
     //  type: new GraphQLNonNull(Provider)
-    //}
+    // }
   })
 });
 

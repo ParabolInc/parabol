@@ -1,6 +1,5 @@
 import {commitMutation} from 'react-relay';
 import {SLACK} from 'universal/utils/constants';
-import {removeSlackChannelUpdater} from 'universal/mutations/RemoveSlackChannelMutation';
 
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {

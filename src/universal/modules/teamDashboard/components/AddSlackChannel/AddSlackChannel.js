@@ -18,6 +18,7 @@ class AddSlackChannel extends Component {
   static propTypes = {
     accessToken: PropTypes.string,
     environment: PropTypes.object,
+    styles: PropTypes.object,
     teamMemberId: PropTypes.string,
     viewerId: PropTypes.string
   }
@@ -56,15 +57,15 @@ class AddSlackChannel extends Component {
     const onError = ({_error}) => {
       this.setState({
         error: _error
-      })
+      });
     };
     const onCompleted = () => {
       if (this.state.error) {
         this.setState({
           error: null
-        })
+        });
       }
-    }
+    };
     AddSlackChannelMutation(environment, selectedChannel, teamMemberId, viewerId, onError, onCompleted);
     this.setState({
       selectedChannel: defaultSelectedChannel()

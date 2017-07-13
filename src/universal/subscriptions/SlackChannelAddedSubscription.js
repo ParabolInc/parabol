@@ -21,7 +21,7 @@ const SlackChannelAddedSubscription = (teamId, viewerId) => (ensureSubscription)
       const newNode = store.getRootField('slackChannelAdded').getLinkedRecord('channel');
       addSlackChannelUpdater(store, viewerId, teamId, newNode);
     }
-  })
+  });
 };
 
 export default SlackChannelAddedSubscription;

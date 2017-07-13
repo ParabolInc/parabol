@@ -43,7 +43,7 @@ const subscriptionThunk = ({teamId, viewer: {id}}) => {
     ProviderRemovedSubscription(teamId, id),
     ProviderAddedSubscription(teamId, id)
   ];
-}
+};
 
 export default createFragmentContainer(
   withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(ProviderList)),
