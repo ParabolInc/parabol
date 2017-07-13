@@ -47,6 +47,18 @@ stages:
           apt-get update && apt-get -yq install build-essential
           yarn
 
+      - type: shell
+        name: Install watchman (temp fix)
+        command: |
+          cd /tmp
+          git clone https://github.com/facebook/watchman.git
+          cd watchman
+          git checkout v4.7.0
+          ./autogen.sh
+          ./configure --enable-statedir=/tmp
+          make
+          sudo make install || true
+
       - type: cache-save
         key: action-{{ checksum "yarn.lock" }}
         paths:
