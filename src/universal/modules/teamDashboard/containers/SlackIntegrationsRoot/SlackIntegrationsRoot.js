@@ -9,7 +9,7 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 
 const slackChannelQuery = graphql`
-  query SlackIntegrationsRootQuery($teamId: ID!, $teamMemberId: ID!, $service: ID!) {
+  query SlackIntegrationsRootQuery($teamId: ID!, $service: ID!) {
     viewer {
       ...SlackIntegrations_viewer
     }
@@ -24,9 +24,10 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={slackChannelQuery}
+      variables={{teamId, service: SLACK}}
       render={({error, props}) => {
         if (error) {
-          return <ErrorComponent height={'14rem'} errorMessage={error.message}/>;
+          return <ErrorComponent height={'14rem'} error={error}/>;
         } else if (props) {
           const {viewer} = props;
           return (<SlackIntegrations
@@ -37,7 +38,7 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
         }
         return <LoadingComponent height={'14rem'}/>
       }}
-      variables={{teamId, teamMemberId, service: SLACK}}
+
     />
   );
 };

@@ -4,8 +4,10 @@ import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
 const mutation = graphql`
   mutation AddSlackChannelMutation($input: AddSlackChannelInput!) {
     addSlackChannel(input: $input) {
-      channelId
-      channelName
+      channel {
+        channelId
+        channelName
+      }
     }
   }
 `;
@@ -29,12 +31,12 @@ const AddSlackChannelMutation = (environment, slackChannelId, slackChannelName, 
       }
     },
     updater: (store) => {
-      const node = store.getRootField('addSlackChannel');
+      const node = store.getRootField('addSlackChannel').getLinkedRecord('channel');
       const [, teamId] = teamMemberId.split('::');
       addSlackChannelUpdater(store, viewerId, teamId, node);
     },
     optimisticUpdater: (store) => {
-      const id = `client:newChannel:${tempId++}`;
+      const id = `client:channel:${tempId++}`;
       const node = store.create(id, 'SlackIntegration');
       node.setValue(slackChannelId, 'channelId');
       node.setValue(slackChannelName, 'channelName');

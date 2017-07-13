@@ -7,18 +7,18 @@ import ui from 'universal/styles/ui';
 
 const defaultMessage = 'An error has occurred! We\'ll alert the developers. Try refreshing the page';
 const LoadingComponent = (props) => {
-  const {errorMessage, styles} = props;
-
+  const {error, styles} = props;
+  throw error;
   return (
     <div className={css(styles.errorComponent)}>
       <div>{defaultMessage}</div>
-      <div>Error: {errorMessage}</div>
+      <div>Error: {error.message}</div>
     </div>
   );
 };
 
 LoadingComponent.propTypes = {
-  errorMessage: PropTypes.string,
+  error: PropTypes.object,
   height: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string
@@ -36,7 +36,7 @@ const styleThunk = (theme, {width = ui.settingsPanelMaxWidth, height = '20rem'})
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height,
+    minHeight: height,
     width
   }
 });

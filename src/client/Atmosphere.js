@@ -78,7 +78,7 @@ export default class Atmosphere extends Environment {
   socketSubscribe = (operation, variables, cacheConfig, observer) => {
     const {name, text} = operation;
     const key = Atmosphere.getKey(name, variables);
-    const opId = this.subLookup[key];
+    const {opId} = this.subLookup[key];
     if (!key) {
       throw new Error(`No key found for ${name} ${variables}`);
     }
@@ -105,26 +105,35 @@ export default class Atmosphere extends Environment {
     const {subscription, variables} = config;
     const {name} = subscription();
     const key = Atmosphere.getKey(name, variables);
-    const opId = this.subLookup[key];
-    if (opId === undefined) {
-      this.subLookup[key] = this.index++;
+    const opManager = this.subLookup[key];
+    if (opManager === undefined) {
+      this.subLookup[key] = {
+        opId: this.index++,
+        instances: 1
+      }
       requestSubscription(this, config);
+    } else {
+      // another component cares about this subscription. if it tries to unsub, don't do it until both want to
+      opManager.instances++
     }
     return () => this.socketUnsubscribe(key);
   }
 
   socketUnsubscribe = (subKey, serverInitiated) => {
-    const opId = this.subLookup[subKey];
-    this.socket.off(`gqlData.${opId}`);
-    delete this.subLookup[subKey];
-    const dispose = this.gcSubs[subKey];
-    if (dispose) {
-      requestIdleCallback(() => {
-        dispose();
-      });
-    }
-    if (!serverInitiated) {
-      this.socket.emit('gqlUnsub', opId);
+    const opManager = this.subLookup[subKey];
+    if (--opManager.instances === 0 || serverInitiated) {
+      const {opId} = opManager;
+      this.socket.off(`gqlData.${opId}`);
+      delete this.subLookup[subKey];
+      const dispose = this.gcSubs[subKey];
+      if (dispose) {
+        requestIdleCallback(() => {
+          dispose();
+        });
+      }
+      if (!serverInitiated) {
+        this.socket.emit('gqlUnsub', opId);
+      }
     }
   };
 }

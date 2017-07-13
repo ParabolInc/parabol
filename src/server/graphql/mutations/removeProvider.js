@@ -1,19 +1,13 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLList} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {ProviderRow} from 'server/graphql/models/Provider/providerSchema';
+import ProviderRow from 'server/graphql/types/ProviderRow';
 import getPubSub from 'server/utils/getPubSub';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
 import {SLACK} from 'universal/utils/constants';
-
-export const RemoveProviderPayload = new GraphQLObjectType({
-  name: 'RemoveProviderPayload',
-  fields: () => ({
-    providerRow: {
-      type: new GraphQLNonNull(ProviderRow)
-    }
-  })
-});
+import {toGlobalId} from 'graphql-relay';
+import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
+import {fromGlobalId} from 'graphql-relay';
 
 export default {
   name: 'RemoveProvider',
@@ -23,10 +17,10 @@ export default {
   args: {
     providerId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the provider to remove'
+      description: 'The relay id of the provider to remove'
     },
     teamId: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the teamId to disconnect from the token'
     }
   },
@@ -38,10 +32,10 @@ export default {
     requireWebsocket(socket);
 
     // RESOLUTION
-
+    const {id: dbProviderId} = fromGlobalId(providerId);
     // unlink the team from the user's token
     const res = await r.table('Provider')
-      .get(providerId)
+      .get(dbProviderId)
       .update((user) => ({teamIds: user('teamIds').difference([teamId])}), {returnChanges: true});
 
     if (res.skipped === 1) {
@@ -55,25 +49,23 @@ export default {
     }
     const {service} = updatedProvider.new_val;
     if (service === SLACK) {
-      const providerUpdated = {
-        providerRow: {
-          accessToken: null,
-          service: SLACK
-        }
-      };
-      getPubSub().publish(`providerUpdated.${teamId}`, {providerUpdated});
-      const removedSlackChannels = await r.table('SlackIntegration')
+      const channelChanges = await r.table('SlackIntegration')
         .getAll(teamId, {index: 'teamId'})
         .update({
           isActive: false
         }, {returnChanges: true})('changes');
+      const deletedIntegrationIds = channelChanges.map((change) => toGlobalId('SlackIntegration', change.new_val.id));
+      const providerRemoved = {
+        providerRow: {
+          accessToken: null,
+          service: SLACK,
+          teamId
+        },
+        deletedIntegrationIds
+      };
 
-      removedSlackChannels.forEach((change) => {
-        const slackChannelRemoved = {deletedId: change.new_val.id};
-        // TODO add in the mutatorId and just remove all the records on the client?
-        getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved});
-      });
-      return providerUpdated;
+      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
+      return providerRemoved;
     }
     // will never hit this
     return undefined;

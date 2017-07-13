@@ -8,8 +8,8 @@ const mutation = graphql`
   }
 `;
 
-export const removeSlackChannelUpdater = (store, viewerId, teamId, deletedId) => {
-  const viewer = store.get(viewerId);
+export const removeSlackChannelUpdater = (viewer, teamId, deletedId) => {
+
   const slackChannels = viewer.getLinkedRecords('slackChannels', {teamId});
   const idxToDelete = slackChannels.findIndex((channel) => channel.getValue('id') === deletedId);
   if (idxToDelete !== -1) {
@@ -23,12 +23,14 @@ const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId, viewerId
     mutation,
     variables: {slackGlobalId},
     updater: (store) => {
+      const viewer = store.get(viewerId);
       const payload = store.getRootField('removeSlackChannel');
       const deletedId = payload.getValue('deletedId');
-      removeSlackChannelUpdater(store, viewerId, teamId, deletedId);
+      removeSlackChannelUpdater(viewer, teamId, deletedId);
     },
     optimisticUpdater: (store) => {
-      removeSlackChannelUpdater(store, viewerId, teamId, slackGlobalId);
+      const viewer = store.get(viewerId);
+      removeSlackChannelUpdater(viewer, teamId, slackGlobalId);
     },
     onError: (err) => {
       console.log('err', err);

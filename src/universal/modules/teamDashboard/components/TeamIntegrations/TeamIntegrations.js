@@ -5,11 +5,11 @@ import {css} from 'aphrodite-local-styles/no-important';
 import withStyles from 'universal/styles/withStyles';
 
 const TeamIntegrations = (props) => {
-  const {jwt, viewer, styles, teamMemberId} = props;
+  const {jwt, viewer, styles, teamId} = props;
 
   return (
     <div className={css(styles.listAndAnnoucements)}>
-      <ProviderList viewer={viewer} jwt={jwt} teamMemberId={teamMemberId} />
+      <ProviderList viewer={viewer} jwt={jwt} teamId={teamId} />
     </div>
   );
 };
@@ -18,7 +18,7 @@ TeamIntegrations.propTypes = {
   jwt: PropTypes.string,
   viewer: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  teamMemberId: PropTypes.string.isRequired
+  teamId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({

@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
-import {RemoveSlackChannelPayload} from 'server/graphql/mutations/removeSlackChannel';
+import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload';
 
 export default {
   type: RemoveSlackChannelPayload,

@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {ProviderMap} from 'server/graphql/models/Provider/providerSchema';
-import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import ProviderMap from 'server/graphql/types/ProviderMap';
+import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import serviceToProvider from 'server/utils/serviceToProvider';
 import {SLACK} from 'universal/utils/constants';
 
@@ -9,17 +9,16 @@ export default {
   type: ProviderMap,
   description: 'The list of providers as seen on the integrations page',
   args: {
-    teamMemberId: {
+    teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The unique team member Id'
     }
   },
-  resolve: async (source, {teamMemberId}, {authToken, socket}) => {
+  resolve: async (source, {teamId}, {authToken, socket}) => {
     const r = getRethink();
 
     // AUTH
-    const [userId, teamId] = teamMemberId.split('::');
-    requireSUOrSelf(authToken, userId);
+    const userId = getUserId(authToken);
     requireSUOrTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
@@ -35,7 +34,8 @@ export default {
         const teamProvider = obj.reduction[0];
         const {accessToken} = teamProvider;
         map[service] = {
-          accessToken
+          accessToken,
+          teamId
         };
       } else {
         const userCount = obj.reduction.length;
@@ -63,6 +63,9 @@ export default {
     services.forEach((service, idx) => {
       providerMap[service].integrationCount = integrationCounts[idx];
     });
+
+    // add teamId so the resolver can generate an ID for easy updates
+    providerMap.teamId = teamId;
     return providerMap;
   }
 };

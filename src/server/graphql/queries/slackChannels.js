@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLList} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {SlackIntegration} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
+import SlackIntegration from 'server/graphql/types/SlackIntegration';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {

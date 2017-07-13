@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {SlackIntegration} from 'server/graphql/models/SlackIntegration/slackIntegrationSchema';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
+import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
 
 export default {
-  type: SlackIntegration,
+  type: AddSlackChannelPayload,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

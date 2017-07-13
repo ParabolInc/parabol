@@ -19,9 +19,8 @@ const providerLookup = {
   },
   [SLACK]: {
     ...ui.providers.slack,
-    makeUri: (jwt, teamMemberId) => {
+    makeUri: (jwt, teamId) => {
       const redirect = makeHref('/auth/slack');
-      const [, teamId] = teamMemberId.split('::');
       // state is useful for CSRF, but we jwt to make sure the person isn't overwriting the int for another team
       const state = `${teamId}::${jwt}`;
       // eslint-disable-next-line
@@ -43,7 +42,7 @@ const ProviderRow = (props) => {
     name,
     providerDetails,
     styles,
-    teamMemberId
+    teamId
   } = props;
   const {
     accessToken
@@ -53,10 +52,9 @@ const ProviderRow = (props) => {
   } = providerDetails || defaultDetails;
   const {color, icon, description, makeUri, providerName} = providerLookup[name];
   const openOauth = () => {
-    const uri = makeUri(jwt, teamMemberId);
+    const uri = makeUri(jwt, teamId);
     window.open(uri);
   };
-  const [, teamId] = teamMemberId.split('::');
   const linkStyle = {
     display: 'block',
     textDecoration: 'none'
@@ -119,7 +117,7 @@ ProviderRow.propTypes = {
   jwt: PropTypes.string,
   name: PropTypes.string,
   providerDetails: PropTypes.object,
-  teamMemberId: PropTypes.string.isRequired,
+  teamId: PropTypes.string.isRequired,
   styles: PropTypes.object
 };
 

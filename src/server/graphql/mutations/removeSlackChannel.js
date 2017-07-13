@@ -1,18 +1,10 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import getPubSub from 'server/utils/getPubSub';
+import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
-
-export const RemoveSlackChannelPayload = new GraphQLObjectType({
-  name: 'RemoveSlackChannelPayload',
-  fields: () => ({
-    deletedId: {
-      type: new GraphQLNonNull(GraphQLID)
-    }
-  })
-});
 
 export default {
   name: 'RemoveSlackChannel',
@@ -45,7 +37,9 @@ export default {
       .update({
         isActive: false
       });
-    const slackChannelRemoved = {deletedId: slackGlobalId};
+    const slackChannelRemoved = {
+      deletedId: slackGlobalId
+    };
     getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved, mutatorId: socket.id});
     return slackChannelRemoved;
   }

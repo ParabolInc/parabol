@@ -13,7 +13,12 @@ import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMu
 import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import SlackChannelSubscription from 'universal/subscriptions/SlackChannel';
+import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
+import {SLACK} from 'universal/utils/constants';
+import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
+import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
+import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
+import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -26,7 +31,7 @@ const inlineBlockStyle = {
 const SlackIntegrations = (props) => {
   const {relay: {environment}, styles, teamId, teamMemberId, viewer} = props;
   const {id: viewerId, slackChannels, integrationProvider} = viewer;
-  const handleRemove = (slackGlobalId) => () => {
+  const handleRemoveChannel = (slackGlobalId) => () => {
     RemoveSlackChannelMutation(environment, slackGlobalId, teamId, viewerId);
   };
   const accessToken = integrationProvider && integrationProvider.accessToken;
@@ -57,7 +62,7 @@ const SlackIntegrations = (props) => {
               buttonStyle="flat"
               colorPalette="warm"
               label="Remove Slack"
-              onClick={() => console.log('Remove Slack (and all channels)')}
+              onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId, viewerId)}
               sansPaddingX
               size="smallest"
             />
@@ -97,7 +102,7 @@ const SlackIntegrations = (props) => {
                       buttonStyle="flat"
                       colorPalette="dark"
                       label="Remove"
-                      onClick={handleRemove(id)}
+                      onClick={handleRemoveChannel(id)}
                       size="smallest"
                     />
                   </IntegrationRow>
@@ -190,14 +195,21 @@ const styleThunk = () => ({
   }
 });
 
-const subscriptionThunk = ({teamId, viewer: {id}}) => SlackChannelSubscription(teamId, id);
-
+const subscriptionThunk = ({teamId, viewer: {id}}) => {
+  return [
+    SlackChannelAddedSubscription(teamId, id),
+    SlackChannelRemovedSubscription(teamId, id),
+    ProviderRemovedSubscription(teamId, id),
+    ProviderAddedSubscription(teamId, id)
+  ];
+}
 export default createFragmentContainer(
   withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(SlackIntegrations)),
   graphql`
     fragment SlackIntegrations_viewer on User {
       id
-      integrationProvider(teamMemberId: $teamMemberId, service: $service) {
+      integrationProvider(teamId: $teamId, service: $service) {
+        id
         accessToken
       }
       slackChannels(teamId: $teamId) {

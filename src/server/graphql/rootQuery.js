@@ -5,7 +5,6 @@ import meeting from './models/Meeting/meetingQuery';
 import {nodeField} from './models/Node/nodeQuery';
 import organization from './models/Organization/organizationQuery';
 import project from './models/Project/projectQuery';
-import provider from './models/Provider/providerQuery';
 import team from './models/Team/teamQuery';
 import teamMember from './models/TeamMember/teamMemberQuery';
 import user from './models/User/userQuery';
@@ -27,7 +26,6 @@ export default new GraphQLObjectType({
     ...meeting,
     ...organization,
     ...project,
-    ...provider,
     ...team,
     ...teamMember,
     ...user

@@ -9,7 +9,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamIntegrations from 'universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations';
 
 const teamIntegrationsQuery = graphql`
-  query TeamIntegrationsRootQuery($teamMemberId: ID!) {
+  query TeamIntegrationsRootQuery($teamId: ID!) {
     viewer {
       ...ProviderList_viewer
     }
@@ -30,13 +30,13 @@ const TeamIntegrationsRoot = ({jwt, atmosphere, teamMemberId}) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={teamIntegrationsQuery}
-      variables={{teamMemberId}}
+      variables={{teamId}}
       render={({error, props}) => {
         if (error) {
-          return <ErrorComponent height={'14rem'} errorMessage={error.message}/>;
+          return <ErrorComponent height={'14rem'} error={error}/>;
         }
         if (props) {
-          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamMemberId={teamMemberId}/>;
+          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamId={teamId}/>;
         }
         return <LoadingComponent height={'14rem'}/>
       }}

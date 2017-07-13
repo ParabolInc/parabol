@@ -13,6 +13,7 @@ import user from 'server/graphql/models/User/userMutation';
 import addSlackChannel from 'server/graphql/mutations/addSlackChannel';
 import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel';
 import removeProvider from 'server/graphql/mutations/removeProvider';
+import addProvider from 'server/graphql/mutations/addProvider';
 
 const rootFields = Object.assign({},
   agenda,
@@ -32,6 +33,7 @@ export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     ...rootFields,
+    addProvider,
     addSlackChannel,
     removeProvider,
     removeSlackChannel

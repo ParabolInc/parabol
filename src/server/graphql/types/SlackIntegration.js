@@ -1,13 +1,6 @@
-import {
-  GraphQLList,
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLBoolean
-} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
-import {connectionDefinitions, globalIdField} from 'graphql-relay';
 
 const SlackIntegration = new GraphQLObjectType({
   name: 'SlackIntegration',
@@ -39,13 +32,5 @@ const SlackIntegration = new GraphQLObjectType({
   })
 });
 
-const {connectionType, edgeType} = connectionDefinitions({
-  name: 'SlackIntegration',
-  nodeType: SlackIntegration
-});
+export default SlackIntegration;
 
-export {
-  connectionType as SlackIntegrationConnection,
-  edgeType as SlackIntegrationEdge,
-  SlackIntegration
-};

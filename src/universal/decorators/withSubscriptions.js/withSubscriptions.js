@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import getDisplayName from 'universal/utils/getDisplayName';
 
-export default (subscribeThunk, options = {}) => (ComposedComponent) => {
+export default (subThunk, options = {}) => (ComposedComponent) => {
   class WithSubscriptions extends Component {
     static contextTypes = {
       atmosphere: PropTypes.object
@@ -19,7 +19,10 @@ export default (subscribeThunk, options = {}) => (ComposedComponent) => {
         delete timeouts[key];
       }
       const {atmosphere} = this.context;
-      this.unsubscribe = subscribeThunk(this.props)(atmosphere.ensureSubscription);
+      const maybeThunkArray = subThunk(this.props);
+      const thunkArray = Array.isArray(maybeThunkArray) ? maybeThunkArray : [maybeThunkArray];
+      const unsubArray = thunkArray.map((sub) => sub(atmosphere.ensureSubscription));
+      this.unsubscribe = () => unsubArray.forEach((unsub) => unsub());
     }
 
     componentWillUnmount() {
