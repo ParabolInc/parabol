@@ -54,11 +54,11 @@ stages:
           git clone https://github.com/facebook/watchman.git
           cd watchman
           git checkout v4.7.0
-          sudo apt-get install -y autoconf automake build-essential python-dev
+          apt-get install -y autoconf automake build-essential python-dev
           ./autogen.sh
           ./configure --enable-statedir=/tmp
           make
-          sudo make install || true
+          make install
 
       - type: cache-save
         key: action-{{ checksum "yarn.lock" }}
