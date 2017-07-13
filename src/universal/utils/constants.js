@@ -143,7 +143,7 @@ export const NEWLINE_REGEX = /\r\n?|\n/g;
 /* Integrations */
 export const GITHUB = 'github';
 export const SLACK = 'slack';
-export const CURRENT_PROVIDERS = [GITHUB, SLACK];
+export const CURRENT_PROVIDERS = [SLACK];
 
 /* JavaScript specifics */
 export const MAX_TIMEOUT = 2147483647;

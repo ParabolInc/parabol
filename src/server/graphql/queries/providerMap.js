@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import ProviderMap from 'server/graphql/types/ProviderMap';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import serviceToProvider from 'server/utils/serviceToProvider';
-import {SLACK} from 'universal/utils/constants';
+import {SLACK, CURRENT_PROVIDERS} from 'universal/utils/constants';
 
 export default {
   type: ProviderMap,
@@ -28,6 +28,15 @@ export default {
       .getAll(teamId, {index: 'teamIds'})
       .group('service');
 
+    const defaultMap = CURRENT_PROVIDERS.reduce((obj, service) => {
+      obj[service] = {
+        accessToken: null,
+        service,
+        teamId
+      };
+      return obj;
+    }, {});
+
     const providerMap = allProviders.reduce((map, obj) => {
       const service = obj.group;
       if (service === SLACK) {
@@ -35,6 +44,7 @@ export default {
         const {accessToken} = teamProvider;
         map[service] = {
           accessToken,
+          service,
           teamId
         };
       } else {
@@ -45,11 +55,13 @@ export default {
         map[service] = {
           userCount,
           accessToken,
-          providerUserName
+          providerUserName,
+          service,
+          teamId
         };
       }
       return map;
-    }, {});
+    }, defaultMap);
     const services = Object.keys(providerMap);
     const promises = services.map((service) => {
       const table = serviceToProvider[service];
