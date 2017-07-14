@@ -102,8 +102,7 @@ class AddSlackChannel extends Component {
       <div className={css(styles.addChannel)}>
         <div className={css(styles.dropdownAndError)}>
           <ServiceDropdownInput
-            accessToken={accessToken}
-            fetchOptions={this.fetchOptions}
+            fetchOptions={() => this.fetchOptions(accessToken)}
             dropdownText={channelName}
             handleItemClick={this.updateDropdownItem}
             options={options}

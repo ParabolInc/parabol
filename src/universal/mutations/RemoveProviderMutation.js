@@ -33,8 +33,7 @@ const RemoveProviderMutation = (environment, providerId, service, teamId, viewer
       removeProviderUpdater(viewer, teamId, service);
 
       // remove the integrations that depend on this provider
-      const deletedIntegrationIds = payload.getValue('deletedIntegrationIds');
-      console.log('deletedIds', deletedIntegrationIds);
+      //const deletedIntegrationIds = payload.getValue('deletedIntegrationIds');
 
       if (service === SLACK) {
         viewer.setLinkedRecords([], 'slackChannels', {teamId});
