@@ -2,16 +2,15 @@ import {
   AGENDA,
   AGENDA_PROJECTS,
   ARCHIVED_PROJECTS,
-  INTEGRATIONS,
   INVITATIONS,
   NOTIFICATIONS,
   ORG_APPROVALS,
   ORGANIZATION,
   ORGANIZATIONS,
   OWNED_ORGANIZATIONS,
+  PROJECTS,
   TEAM,
   TEAM_MEMBERS,
-  PROJECTS,
   UPCOMING_INVOICE,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
@@ -41,6 +40,7 @@ export default [
     subscription($teamMemberId: ID!) {
       archivedProjects(teamMemberId: $teamMemberId) {
         content
+        createdAt
         id
         status
         tags
@@ -73,22 +73,6 @@ export default [
         inactive
         picture
         preferredName
-      }
-    }`
-  },
-  {
-    channel: INTEGRATIONS,
-    string: `
-    subscription($teamMemberId: ID!) {
-      integrations(teamMemberId: $teamMemberId) {
-        id
-        accessToken
-        service
-        userId,
-        syncs {
-          id
-          slackChannelId
-        }
       }
     }`
   },
@@ -172,17 +156,6 @@ export default [
       }
     }`
   },
-  // {
-  //   channel: PRESENCE,
-  //   string: `
-  //   subscription($teamId: ID!) {
-  //     presence(teamId: $teamId) {
-  //       id
-  //       userId
-  //       editing
-  //     }
-  //   }`
-  // },
   {
     channel: PROJECTS,
     string: `

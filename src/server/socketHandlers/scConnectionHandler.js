@@ -8,6 +8,8 @@ import jwtDecode from 'jwt-decode';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import packageJSON from '../../../package.json';
+import scRelaySubscribeHandler from 'server/socketHandlers/scRelaySubscribeHandler';
+import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 
 const APP_VERSION = packageJSON.version;
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
@@ -18,17 +20,19 @@ const isTmsValid = (tmsFromDB, tmsFromToken) => {
   }
   return true;
 };
+
 export default function scConnectionHandler(exchange) {
   return async function connectionHandler(socket) {
     // socket.on('message', message => {
     //   if (message === '#2') return;
     //   console.log('SOCKET SAYS:', message);
     // });
-    // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
     const graphQLHandler = scGraphQLHandler(exchange, socket);
+    const relaySubscribeHandler = scRelaySubscribeHandler(exchange, socket);
     socket.on('message', (message) => {
+      // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
       if (isObject(message) && message.event === '#authenticate') {
         const decodedToken = jwtDecode(message.data);
         const serverToken = socket.getAuthToken();
@@ -40,8 +44,16 @@ export default function scConnectionHandler(exchange) {
     socket.on('graphql', graphQLHandler);
     socket.on('subscribe', subscribeHandler);
     socket.on('unsubscribe', unsubscribeHandler);
+    socket.on('gqlSub', relaySubscribeHandler);
+    socket.on('gqlUnsub', (opId) => {
+      unsubscribeRelaySub(socket.subs, opId);
+    });
     socket.on('disconnect', () => {
-      console.log('Client disconnected:', socket.id);
+      if (socket.subs) {
+        Object.keys(socket.subs).forEach((opId) => {
+          unsubscribeRelaySub(socket.subs, opId);
+        });
+      }
     });
 
     // the async part should come last so there isn't a race

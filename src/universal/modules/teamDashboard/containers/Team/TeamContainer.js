@@ -32,6 +32,7 @@ query {
 const mapStateToProps = (state, props) => {
   const {match: {params: {teamId}}} = props;
   const {hasDashAlert} = state.dash;
+  const userId = state.auth.obj.sub;
   const teamContainer = cashay.query(teamContainerSub, {
     op: 'teamContainer',
     key: teamId,
@@ -42,12 +43,13 @@ const mapStateToProps = (state, props) => {
   return {
     hasDashAlert,
     team,
-    teamMembers
+    teamMembers,
+    teamMemberId: `${userId}::${teamId}`
   };
 };
 
 const agendaProjects = () => System.import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer');
-const teamSettings = () => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer');
+const teamSettings = () => System.import('universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper');
 const archivedProjects = () => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer');
 
 const TeamContainer = (props) => {
@@ -56,7 +58,8 @@ const TeamContainer = (props) => {
     match,
     hasDashAlert,
     team,
-    teamMembers
+    teamMembers,
+    teamMemberId
   } = props;
   if (!team.id) {
     return <LoadingView />;
@@ -75,7 +78,7 @@ const TeamContainer = (props) => {
       <Switch>
         {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539*/}
         <AsyncRoute exact path={match.path} extraProps={{teamName: team.name}} mod={agendaProjects} />
-        <AsyncRoute path={`${match.path}/settings`} mod={teamSettings} />
+        <AsyncRoute path={`${match.path}/settings`} mod={teamSettings} extraProps={{teamMemberId}} />
         <AsyncRoute path={`${match.path}/archive`} extraProps={{teamName: team.name}} mod={archivedProjects} />
       </Switch>
     </Team>
@@ -89,7 +92,8 @@ TeamContainer.propTypes = {
   }),
   match: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired
+  teamMembers: PropTypes.array.isRequired,
+  teamMemberId: PropTypes.string.isRequired
 };
 
 export default withReducer({teamDashboard: teamDashReducer})(

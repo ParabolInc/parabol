@@ -28,6 +28,7 @@ module.exports = {
       'react-notification-system',
       'react-portal-hoc',
       'react-redux',
+      'react-relay',
       'react-router',
       'react-router-dom',
       'redbox-react',

@@ -107,25 +107,23 @@ const styleThunk = () => ({
   },
 
   invitedAt: {
-    color: appTheme.palette.mid,
+    color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4
   },
 
   infoLink: {
-    color: appTheme.palette.mid,
+    color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4,
 
     ':hover': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
+      color: appTheme.palette.dark
     },
     ':focus': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
+      color: appTheme.palette.dark
     }
   }
 });

@@ -26,7 +26,8 @@ const styleThunk = () => ({
     margin: '0 auto',
     maxWidth: '64rem',
     padding: '4rem',
-    position: 'relative'
+    position: 'relative',
+    width: '100%'
   }
 });
 

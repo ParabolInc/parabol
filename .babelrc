@@ -3,18 +3,21 @@
     "production": {
       "presets": ["es2015", "stage-0", "react"],
       "plugins": [
+        ["relay"],
         ["transform-decorators-legacy"]
       ]
     },
     "development": {
       "presets": ["es2015", "stage-0", "react"],
       "plugins": [
+        ["relay"],
         ["transform-decorators-legacy"]
       ]
     },
     "test": {
       "presets": ["react"],
       "plugins": [
+        ["relay"],
         ["transform-class-properties"],
         ["transform-export-extensions"],
         ["transform-object-rest-spread"],

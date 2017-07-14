@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
+import getDisplayName from 'universal/utils/getDisplayName';
 
 const contextMap = new WeakMap();
 
@@ -21,6 +22,8 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
     static contextTypes = {
       userTheme: PropTypes.object
     };
+
+    static displayName = `WithStyles(${getDisplayName(WrappedComponent)}`;
 
     constructor(props, context) {
       super(props, context);

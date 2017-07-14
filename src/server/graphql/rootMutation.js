@@ -1,20 +1,22 @@
 import {GraphQLObjectType} from 'graphql';
 import agenda from 'server/graphql/models/AgendaItem/agendaItemMutation';
-import integration from 'server/graphql/models/Integration/integrationMutation';
 import invitation from 'server/graphql/models/Invitation/invitationMutation';
 import meeting from 'server/graphql/models/Meeting/meetingMutation';
 import notification from 'server/graphql/models/Notification/notificationMutation';
-import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import organization from 'server/graphql/models/Organization/organizationMutation';
+import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import presence from 'server/graphql/models/Presence/presenceMutation';
 import project from 'server/graphql/models/Project/projectMutation';
 import team from 'server/graphql/models/Team/teamMutation';
 import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
+import addSlackChannel from 'server/graphql/mutations/addSlackChannel';
+import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel';
+import removeProvider from 'server/graphql/mutations/removeProvider';
+import addProvider from 'server/graphql/mutations/addProvider';
 
 const rootFields = Object.assign({},
   agenda,
-  integration,
   invitation,
   meeting,
   notification,
@@ -28,6 +30,12 @@ const rootFields = Object.assign({},
 );
 
 export default new GraphQLObjectType({
-  name: 'RootMutation',
-  fields: () => rootFields
+  name: 'Mutation',
+  fields: () => ({
+    ...rootFields,
+    addProvider,
+    addSlackChannel,
+    removeProvider,
+    removeSlackChannel
+  })
 });

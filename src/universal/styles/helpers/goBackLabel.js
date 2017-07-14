@@ -10,23 +10,19 @@ const inlineBlockStyle = {
 
 const link = {
   ...inlineBlockStyle,
-  color: appTheme.palette.mid,
+  color: appTheme.palette.dark,
   fontSize: appTheme.typography.s3,
   fontWeight: 700,
   height: ui.dashSectionHeaderLineHeight,
   paddingTop: '1px',
 
   ':hover': {
-    color: appTheme.palette.dark
+    color: appTheme.palette.dark,
+    opacity: '.5'
   },
   ':focus': {
-    color: appTheme.palette.dark
-  },
-  ':hover > div': {
-    textDecoration: 'underline'
-  },
-  ':focus > div': {
-    textDecoration: 'underline'
+    color: appTheme.palette.dark,
+    opacity: '.5'
   }
 };
 

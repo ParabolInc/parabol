@@ -1,0 +1,17 @@
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import ProviderRow from 'server/graphql/types/ProviderRow';
+import Provider from 'server/graphql/types/Provider';
+
+const AddProviderPayload = new GraphQLObjectType({
+  name: 'AddProviderPayload',
+  fields: () => ({
+    providerRow: {
+      type: new GraphQLNonNull(ProviderRow)
+    },
+    provider: {
+      type: new GraphQLNonNull(Provider)
+    }
+  })
+});
+
+export default AddProviderPayload;

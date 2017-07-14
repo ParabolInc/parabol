@@ -3,6 +3,7 @@ import React from 'react';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
+import {withRouter} from 'react-router-dom';
 
 const dashNavListQuery = `
 query {
@@ -40,4 +41,5 @@ DashNavListContainer.propTypes = {
   teams: PropTypes.array
 };
 
-export default connect(mapStateToProps)(DashNavListContainer);
+// withRouter is required to keep navlinks up to date
+export default withRouter(connect(mapStateToProps)(DashNavListContainer));

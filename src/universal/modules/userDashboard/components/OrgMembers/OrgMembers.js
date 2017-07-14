@@ -105,10 +105,11 @@ const OrgMembers = (props) => {
         // pop toast until we do find a way to display locally?
       }
     };
+    const toggleLabel = inactive ? 'Inactive' : 'Active';
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.toggleBlock)}>
-          <Toggle active={!inactive} block label="Active" onClick={toggleHandler} />
+          <Toggle active={!inactive} block label={toggleLabel} onClick={toggleHandler} />
         </div>
         <div className={css(styles.menuToggleBlock)}>
           <Menu

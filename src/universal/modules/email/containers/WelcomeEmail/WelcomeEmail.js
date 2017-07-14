@@ -11,12 +11,6 @@ import Footer from '../../components/Footer/Footer';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
-const imageStyle = {
-  border: 0,
-  borderRadius: '100%',
-  display: 'block'
-};
-
 const ruleStyle = {
   backgroundColor: ui.emailRuleColor,
   border: 0,
@@ -30,6 +24,19 @@ const emailLink = {
   textDecoration: 'none'
 };
 
+const imageStyle = {
+  border: 0,
+  display: 'block',
+  margin: '0 auto'
+};
+
+const emailHeaderStyle = {
+  backgroundColor: appTheme.palette.dark,
+  paddingBottom: '20px',
+  paddingTop: '20px',
+  textAlign: 'center'
+};
+
 const WelcomeEmail = (props) => {
   const {email} = props;
 
@@ -39,12 +46,12 @@ const WelcomeEmail = (props) => {
       <table width="100%">
         <tbody>
           <tr>
-            <td align="center" style={{backgroundColor: appTheme.palette.warm}}>
+            <td align="center" style={emailHeaderStyle}>
               <img
+                height={56}
+                src="/static/images/email/email-header-branding/email-header-branding@2x.png"
                 style={imageStyle}
-                src="/static/images/email/action-email-header@2x.png"
-                height="128"
-                width="600"
+                width={262}
               />
             </td>
           </tr>

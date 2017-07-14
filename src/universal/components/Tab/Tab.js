@@ -41,7 +41,8 @@ const styleThunk = () => ({
     flexDirection: 'column',
     flexGrow: 1,
     fontSize: appTheme.typography.s3,
-    padding: '0 0 .1875rem'
+    padding: '0 0 .1875rem',
+    userSelect: 'none'
   },
 
   canClick: {

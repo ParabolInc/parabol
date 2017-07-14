@@ -12,6 +12,7 @@ query {
     content
     createdAt
     createdBy
+    updatedAt
     status
     tags
     teamMember @cached(type: "TeamMember") {

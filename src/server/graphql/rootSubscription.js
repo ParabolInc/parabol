@@ -1,11 +1,16 @@
 import {GraphQLObjectType} from 'graphql';
+// and thus begins a new era of folder hierarchy
+import slackChannelAdded from 'server/graphql/subscriptions/slackChannelAdded';
+import slackChannelRemoved from 'server/graphql/subscriptions/slackChannelRemoved';
+import providerAdded from 'server/graphql/subscriptions/providerAdded';
+import providerRemoved from 'server/graphql/subscriptions/providerRemoved';
+
 import agenda from './models/AgendaItem/agendaItemSubscription';
-import integration from './models/Integration/integrationSubscription';
 import invitation from './models/Invitation/invitationSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
 import notification from './models/Notification/notificationSubscription';
-import orgApproval from './models/OrgApproval/orgApprovalSubscription';
 import organization from './models/Organization/organizationSubscription';
+import orgApproval from './models/OrgApproval/orgApprovalSubscription';
 import presence from './models/Presence/presenceSubscription';
 import project from './models/Project/projectSubscription';
 import team from './models/Team/teamSubscription';
@@ -14,7 +19,6 @@ import user from './models/User/userSubscription';
 
 const rootFields = Object.assign({},
   agenda,
-  integration,
   invitation,
   invoice,
   notification,
@@ -28,6 +32,12 @@ const rootFields = Object.assign({},
 );
 
 export default new GraphQLObjectType({
-  name: 'RootSubscription',
-  fields: () => rootFields
+  name: 'Subscription',
+  fields: () => ({
+    slackChannelAdded,
+    slackChannelRemoved,
+    providerAdded,
+    providerRemoved,
+    ...rootFields
+  })
 });

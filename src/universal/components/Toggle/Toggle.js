@@ -46,7 +46,7 @@ Toggle.defaultProps = {
   label: 'Off'
 };
 
-const borderWidth = '.125rem';
+const gutter = 3;
 const size = '2rem';
 const innerSize = '1.625rem';
 
@@ -61,7 +61,7 @@ const styleThunk = () => ({
     height: size,
     lineHeight: size,
     paddingLeft: size,
-    paddingRight: borderWidth,
+    paddingRight: gutter,
     position: 'relative',
     textAlign: 'center',
     userSelect: 'none',
@@ -73,9 +73,9 @@ const styleThunk = () => ({
       display: 'block',
       content: '""',
       height: innerSize,
-      left: 3,
+      left: gutter,
       position: 'absolute',
-      top: 3,
+      top: gutter,
       width: innerSize
     }
   },
@@ -83,12 +83,12 @@ const styleThunk = () => ({
   // NOTE: modifies 'toggle'
   active: {
     backgroundColor: appTheme.palette.cool,
-    paddingLeft: borderWidth,
+    paddingLeft: gutter,
     paddingRight: size,
 
     ':after': {
       left: 'auto',
-      right: 3
+      right: gutter
     }
   },
 

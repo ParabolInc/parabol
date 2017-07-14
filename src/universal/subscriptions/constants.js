@@ -13,7 +13,6 @@ export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 // CHANNELS
 export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
-export const INTEGRATIONS = 'integrations';
 export const INVITATIONS = 'invitations';
 export const NOTIFICATIONS = 'notifications';
 export const ORG_APPROVALS = 'orgApprovals';

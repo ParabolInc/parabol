@@ -33,7 +33,7 @@ query {
 }`;
 
 const mapStateToProps = (state, props) => {
-  const {match: {params: {teamId}}} = props;
+  const {teamId} = props;
   const teamMemberId = `${state.auth.obj.sub}::${teamId}`;
   const {invitations, orgApprovals, team, teamMembers} = cashay.query(teamSettingsQuery, {
     op: 'teamSettingsContainer',

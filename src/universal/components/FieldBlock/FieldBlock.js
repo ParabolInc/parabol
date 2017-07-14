@@ -21,7 +21,7 @@ const styleThunk = () => ({
   fieldBlock: {
     margin: '0 auto',
     maxWidth: '100%',
-    minWidth: '20rem'
+    width: '100%'
   }
 });
 

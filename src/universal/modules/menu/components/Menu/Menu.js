@@ -15,6 +15,7 @@ const menuStyle = {boxShadow};
 
 const Menu = (props) => {
   const {
+    isLoaded,
     closePortal,
     children,
     itemFactory,
@@ -48,7 +49,7 @@ const Menu = (props) => {
             transitionAppearTimeout={300}
           >
             {
-              kids.length === 0 &&
+              kids.length === 0 && !isLoaded &&
               <div key="spinner" className={css(styles.spinner)}>
                 <Spinner fillColor="cool" width={40} />
               </div>
@@ -69,6 +70,7 @@ Menu.propTypes = {
   children: PropTypes.any,
   closePortal: PropTypes.func,
   coords: PropTypes.object,
+  isLoaded: PropTypes.bool,
   isOpen: PropTypes.bool,
   itemFactory: PropTypes.func,
   label: PropTypes.string,
