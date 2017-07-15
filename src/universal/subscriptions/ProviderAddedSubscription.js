@@ -18,6 +18,7 @@ const subscription = graphql`
 
 const addProviderUpdater = (viewer, teamId, payload) => {
   const newIntegrationProvider = payload.getLinkedRecord('provider');
+  if (!newIntegrationProvider) return;
   const service = newIntegrationProvider.getValue('service');
   const oldIntegrationProvider = viewer.getLinkedRecord('integrationProvider', {teamId, service});
   if (oldIntegrationProvider) {

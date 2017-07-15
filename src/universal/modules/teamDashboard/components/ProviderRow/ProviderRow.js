@@ -3,19 +3,24 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
+import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
+import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink';
 import Row from 'universal/components/Row/Row';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {GITHUB, SLACK} from 'universal/utils/constants';
+import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
-import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink';
-import {withRouter} from 'react-router-dom';
 
 export const providerLookup = {
   [GITHUB]: {
-    ...ui.providers.github
+    ...ui.providers.github,
+    makeUri: (jwt, teamId) => {
+      const redirect = makeHref('/auth/github');
+      const state = `${teamId}::${jwt}`;
+      return `https://github.com/login/oauth/authorize?client_id=${window.__ACTION__.github}&scope=${GITHUB_SCOPE}&state=${state}&redirect_uri=${redirect}`
+    }
   },
   [SLACK]: {
     ...ui.providers.slack,
@@ -24,7 +29,7 @@ export const providerLookup = {
       // state is useful for CSRF, but we jwt to make sure the person isn't overwriting the int for another team
       const state = `${teamId}::${jwt}`;
       // eslint-disable-next-line
-      return `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=channels:read,chat:write:bot&state=${state}&redirect_uri=${redirect}`;
+      return `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=${SLACK_SCOPE}&state=${state}&redirect_uri=${redirect}`;
     }
   }
 };
@@ -45,9 +50,9 @@ const ProviderRow = (props) => {
     teamId
   } = props;
   const {
-    accessToken
-    // userCount,
-    // integrationCount,
+    accessToken,
+    userCount,
+    integrationCount
     // providerUserName
   } = providerDetails || defaultDetails;
   const {color, icon, description, makeUri, providerName} = providerLookup[name];
@@ -64,46 +69,46 @@ const ProviderRow = (props) => {
     <Row style={{justifyContent: 'flex-start'}}>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
         <div className={css(styles.providerAvatar)} style={{backgroundColor: color}}>
-          <FontAwesome name={icon} className={css(styles.providerIcon)} />
+          <FontAwesome name={icon} className={css(styles.providerIcon)}/>
         </div>
       </ConditionalLink>
       <div className={css(styles.userInfo)}>
         <div className={css(styles.nameAndTags)}>
 
           <ConditionalLink isLink={!comingSoon} to={to} className={css(styles.providerName)}>
-            {providerName}
+            {providerName} - {integrationCount} - {userCount}
           </ConditionalLink>
           <div className={css(styles.subHeading)}>
             {comingSoon &&
-              <span className={css(styles.comingSoon)}>Coming Soon! </span>
+            <span className={css(styles.comingSoon)}>Coming Soon! </span>
             }
             {description}
           </div>
         </div>
       </div>
       {!comingSoon &&
-        <div className={css(styles.providerActions)}>
-          {accessToken ?
-            <Button
-              buttonStyle="solid"
-              colorPalette="gray"
-              isBlock
-              key="teamSettings"
-              label="Team Settings"
-              onClick={() => history.push(to)}
-              size="smallest"
-            /> :
-            <Button
-              buttonStyle="solid"
-              colorPalette="cool"
-              isBlock
-              key="linkAccount"
-              label="Link My Account"
-              onClick={openOauth}
-              size="smallest"
-            />
-          }
-        </div>
+      <div className={css(styles.providerActions)}>
+        {accessToken ?
+          <Button
+            buttonStyle="solid"
+            colorPalette="gray"
+            isBlock
+            key="teamSettings"
+            label="Team Settings"
+            onClick={() => history.push(to)}
+            size="smallest"
+          /> :
+          <Button
+            buttonStyle="solid"
+            colorPalette="cool"
+            isBlock
+            key="linkAccount"
+            label="Link My Account"
+            onClick={openOauth}
+            size="smallest"
+          />
+        }
+      </div>
       }
     </Row>
   );
@@ -207,6 +212,8 @@ export default createFragmentContainer(
   graphql`
     fragment ProviderRow_providerDetails on ProviderRow {
       accessToken
+      integrationCount
+      userCount
     }
   `
 );

@@ -9,7 +9,7 @@ const AddProviderPayload = new GraphQLObjectType({
       type: new GraphQLNonNull(ProviderRow)
     },
     provider: {
-      type: new GraphQLNonNull(Provider)
+      type: Provider
     }
   })
 });
