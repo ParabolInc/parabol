@@ -8,6 +8,7 @@ import ui from 'universal/styles/ui';
 const overview = () => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer');
 const providers = () => System.import('universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot');
 const slackIntegrations = () => System.import('universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot');
+const githubIntegrations = () => System.import('universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot');
 
 const TeamSettingsWrapper = (props) => {
   const {location: {pathname}, match, teamMemberId} = props;
@@ -21,6 +22,7 @@ const TeamSettingsWrapper = (props) => {
         {/* <AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/>*/}
         {/* <AsyncRoute exact path={`${match.url}/roles`} mod={overview} extraProps={{teamId}}/>*/}
         <AsyncRoute path={`${match.url}/integrations/slack`} mod={slackIntegrations} extraProps={{teamMemberId}} />
+        <AsyncRoute path={`${match.url}/integrations/github`} mod={githubIntegrations} extraProps={{teamMemberId}} />
         <AsyncRoute exact path={`${match.url}/integrations`} mod={providers} extraProps={{teamMemberId}} />
       </Switch>
     </div>

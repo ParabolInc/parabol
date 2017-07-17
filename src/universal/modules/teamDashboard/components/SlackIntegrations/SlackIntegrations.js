@@ -3,14 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import {Link} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation';
-import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
@@ -20,13 +18,7 @@ import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubs
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
 import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
-
-const inlineBlockStyle = {
-  display: 'inline-block',
-  lineHeight: ui.dashSectionHeaderLineHeight,
-  marginRight: '.5rem',
-  verticalAlign: 'middle'
-};
+import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
 
 const {makeUri} = providerLookup[SLACK];
 
@@ -43,10 +35,7 @@ const SlackIntegrations = (props) => {
   };
   return (
     <div className={css(styles.slackIntegrations)}>
-      <Link className={css(styles.link)} to={`/team/${teamId}/settings/integrations`} title="Back to Integrations">
-        <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
-        <div style={inlineBlockStyle}>Back to <b>Integrations</b></div>
-      </Link>
+      <IntegrationsNavigateBack teamId={teamId}/>
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <div className={css(styles.providerDetails)}>
         <div className={css(styles.providerAvatar)}>
@@ -143,12 +132,6 @@ const styleThunk = () => ({
   slackIntegrations: {
     maxWidth: ui.settingsPanelMaxWidth,
     width: '100%'
-  },
-
-  link: {
-    ...goBackLabel,
-    display: 'block',
-    margin: '1rem 0'
   },
 
   providerDetails: {

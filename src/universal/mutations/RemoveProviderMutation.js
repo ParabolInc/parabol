@@ -1,5 +1,7 @@
 import {commitMutation} from 'react-relay';
-import {SLACK} from 'universal/utils/constants';
+import {GITHUB, SLACK} from 'universal/utils/constants';
+import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
+import getUserIdFromViewerId from 'universal/utils/relay/getUserIdFromViewerId';
 
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {
@@ -7,8 +9,11 @@ const mutation = graphql`
       providerRow {
         service
         accessToken
+        userCount
+        integrationCount
       }
       deletedIntegrationIds
+      userId
     }
   }
 `;
@@ -16,8 +21,50 @@ const mutation = graphql`
 export const removeProviderUpdater = (viewer, teamId, service) => {
   const integrationProvider = viewer.getLinkedRecord('integrationProvider', {teamId, service});
   if (integrationProvider) {
-    // TODO necessary check on intProvider?
     viewer.setValue(null, 'integrationProvider', {teamId, service});
+  }
+};
+
+export const updateProviderMap = (viewer, teamId, service, payload) => {
+  const userId = getUserIdFromViewerId(viewer.getDataID());
+  // update the providerMap if we have a matching viewerId
+  const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
+  const oldProviderRow = oldProviderMap.getLinkedRecord(service);
+
+  const newProviderRow = payload.getLinkedRecord('providerRow');
+  const mutatorUserId = payload.getValue('userId');
+  if (userId !== mutatorUserId) {
+    newProviderRow.setValue(oldProviderRow.getValue('accessToken'), 'accessToken');
+  }
+  oldProviderMap.setLinkedRecord(newProviderRow, service);
+};
+
+export const removeIntegrations = (viewer, teamId, service, deletedIntegrationIds) => {
+  if (service === SLACK) {
+    viewer.setLinkedRecords([], 'slackChannels', {teamId});
+  } else if (service === GITHUB) {
+    const repos = viewer.getLinkedRecords('githubRepos', {teamId});
+    if (!repos) return;
+    const newNodes = getArrayWithoutIds(repos, deletedIntegrationIds);
+    viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
+  }
+};
+
+
+const getLocalIdsToRemove = (viewer, teamId, service) => {
+  const userId = getUserIdFromViewerId(viewer.getDataID());
+  if (service === SLACK) {
+    // this is ignored anyways
+    return [];
+  } else if (service === GITHUB) {
+    const repos = viewer.getLinkedRecords('githubRepos', {teamId}) || [];
+    return repos.reduce((arr, repo) => {
+      const userIds = repo.getValue('userIds');
+      if (userIds.length === 1 && userIds[0] === userId) {
+        arr.push(repo.getDataId());
+      }
+      return arr;
+    }, []);
   }
 };
 
@@ -27,28 +74,45 @@ const RemoveProviderMutation = (environment, providerId, service, teamId, viewer
     variables: {providerId, teamId},
     updater: (store) => {
       const viewer = store.get(viewerId);
+      const payload = store.getRootField('removeProvider');
 
       // remove the accessToken from the provider
       removeProviderUpdater(viewer, teamId, service);
 
-      // remove the integrations that depend on this provider
-      // const payload = store.getRootField('removeProvider');
-      // const deletedIntegrationIds = payload.getValue('deletedIntegrationIds');
+      // update the userCount & integrationCount (and access token if mutator == viewer)
+      updateProviderMap(viewer, teamId, service, payload);
 
-      if (service === SLACK) {
-        viewer.setLinkedRecords([], 'slackChannels', {teamId});
-      }
+      // update the integrations that exclusively belonged to this provider
+      const deletedIntegrationIds = payload.getValue('deletedIntegrationIds');
+      removeIntegrations(viewer, teamId, service, deletedIntegrationIds);
     },
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId);
 
-      //
+      // remove the accessToken from the provider
       removeProviderUpdater(viewer, teamId, service);
 
-      // if the service is slack, we know this'll nuke all the integrations. if not, we'll need more info
-      if (service === SLACK) {
-        viewer.setLinkedRecords([], 'slackChannels', {teamId});
-      }
+      // update the integrations that exclusively belonged to this provider
+      const deletedIntegrationIds = getLocalIdsToRemove(viewer, teamId, service);
+      removeIntegrations(viewer, teamId, service, deletedIntegrationIds);
+
+      // update the userCount & integrationCount (and access token if mutator == viewer)
+      const userId = getUserIdFromViewerId(viewer.getDataID());
+      const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
+      if (!oldProviderMap) return;
+      const oldProviderRow = oldProviderMap.getLinkedRecord(service);
+      const oldUserCount = oldProviderRow.getValue('userCount') || 1;
+      const oldIntegrationCount = oldProviderRow.getValue('integrationCount') || deletedIntegrationIds.length;
+      const payload = {
+        userId,
+        providerRow: {
+          service,
+          accessToken: null,
+          userCount: oldUserCount - 1,
+          integrationCount: oldIntegrationCount - deletedIntegrationIds.length
+        }
+      };
+      updateProviderMap(viewer, teamId, service, payload);
     },
     onError: (err) => {
       console.log('err', err);

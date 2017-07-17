@@ -36,8 +36,8 @@ export default {
       .group('service')
       .ungroup()
       .merge((row) => ({
-        integrationCount: r.db('actionDevelopment')
-          .table(r.expr(serviceToProvider)(row('group')))
+        integrationCount: r.table(r.expr(serviceToProvider)(row('group')))
+          .getAll(teamId, {index: 'teamId'})
           .filter({isActive: true})
           .count()
       }));

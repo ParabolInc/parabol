@@ -9,6 +9,10 @@ const RemoveProviderPayload = new GraphQLObjectType({
     },
     deletedIntegrationIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLID))
+    },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The userId of the person who removed the provider'
     }
   })
 });

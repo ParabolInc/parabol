@@ -6,6 +6,7 @@ import getPubSub from 'server/utils/getPubSub';
 import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {SLACK, SLACK_SCOPE} from 'universal/utils/constants';
+import getProviderRowData from 'server/safeQueries/getProviderRowData';
 
 const addProviderSlack = async (code, teamId, userId) => {
   const r = getRethink();
@@ -55,9 +56,13 @@ const addProviderSlack = async (code, teamId, userId) => {
       );
     });
 
+  // need to fetch this because it could be a refresh
+  const rowDetails = await getProviderRowData(SLACK, teamId);
+
   const providerAdded = {
     provider,
     providerRow: {
+      ...rowDetails,
       accessToken,
       service: SLACK,
       teamId

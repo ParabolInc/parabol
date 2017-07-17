@@ -2,9 +2,10 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId, toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {SLACK} from 'universal/utils/constants';
+import {GITHUB, SLACK} from 'universal/utils/constants';
+import getProviderRowData from 'server/safeQueries/getProviderRowData';
 
 export default {
   name: 'RemoveProvider',
@@ -45,24 +46,57 @@ export default {
       throw new Error(`Provider ${providerId} did not contain ${teamId}`);
     }
     const {service} = updatedProvider.new_val;
+    const userId = getUserId(authToken);
     if (service === SLACK) {
       const channelChanges = await r.table('SlackIntegration')
         .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
         .update({
           isActive: false
         }, {returnChanges: true})('changes').default([]);
       const deletedIntegrationIds = channelChanges.map((change) => toGlobalId('SlackIntegration', change.new_val.id));
+      const rowDetails = await getProviderRowData(SLACK, teamId);
       const providerRemoved = {
         providerRow: {
+          ...rowDetails,
           accessToken: null,
           service: SLACK,
           teamId
         },
-        deletedIntegrationIds
+        deletedIntegrationIds,
+        userId
       };
 
       getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
       return providerRemoved;
+    } else if (service === GITHUB) {
+      const repoChanges = await r.table('GitHubIntegration')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({
+          isActive: true
+        })
+        // if they're the last one, remove the integration
+        .filter((repo) => repo('userIds').count().eq(1)
+          .and(repo('userIds').contains(userId))
+        )
+        .update({
+          isActive: false
+        }, {returnChanges: true})('changes').default([]);
+      const deletedIntegrationIds = repoChanges.map((change) => toGlobalId('GitHubIntegration', change.new_val.id));
+      const rowDetails = await getProviderRowData(GITHUB, teamId);
+      const providerRemoved = {
+        providerRow: {
+          ...rowDetails,
+          accessToken: null,
+          service: SLACK,
+          teamId
+        },
+        deletedIntegrationIds,
+        userId
+      };
+
+      // TODO remove the cards that belong to the deletedIntegrationIds
+      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
     }
     // will never hit this
     return undefined;

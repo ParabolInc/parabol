@@ -6,6 +6,7 @@ import getPubSub from 'server/utils/getPubSub';
 import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
+import getProviderRowData from 'server/safeQueries/getProviderRowData';
 
 const profileQuery = `
 query { 
@@ -80,15 +81,18 @@ const addProviderGitHub = async (code, teamId, userId) => {
       );
     });
 
+  const rowDetails = await getProviderRowData(GITHUB, teamId);
+
   const providerAdded = {
     provider,
     providerRow: {
+      ...rowDetails,
       accessToken,
       service: GITHUB,
       teamId
-    }
+    },
   };
   getPubSub().publish(`providerAdded.${teamId}`, {providerAdded});
 };
 
-export default addProviderGitHub
+export default addProviderGitHub;

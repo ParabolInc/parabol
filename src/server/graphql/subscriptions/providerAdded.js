@@ -20,18 +20,20 @@ export default {
     // RESOLUTION
     const channelName = `providerAdded.${teamId}`;
     const resolve = (value) => {
-      const {providerAdded: {provider: {service, userId}}} = value;
-      // we know what the providerMap for slack will look like because everyone uses the same token
+      const {providerAdded} = value;
+      const {provider: {service, userId}, providerRow} = providerAdded;
+      // we know what the providerRow for slack will look like because everyone uses the same token
       if (service === SLACK || subscriberUserId === userId) {
         return value;
-      } else {
-        // TODO we'll use this when we add in user count && integration count
-        // wait for GH to add this logic, it involves a per-user query
-        //const userId = getUserId(authToken);
-        //return providerMapResolution(userId, teamId)
       }
-      return undefined;
+      value.providerAdded = {
+        providerRow: {
+          ...providerRow,
+          accessToken: null
+        }
+      };
+      return value;
     }
-    return makeSubscribeIter(channelName);
+    return makeSubscribeIter(channelName, undefined, resolve);
   }
 };
