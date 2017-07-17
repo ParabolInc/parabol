@@ -84,21 +84,23 @@ const ProviderRow = (props) => {
             <div className={css(styles.providerName)}>
               {providerName}
             </div>
+          </div>
+          {accessToken ?
             <div className={css(styles.providerMeta)}>
-              <div className={css(styles.providerMetaItem)}>
-                <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
-              </div>
               <div className={css(styles.providerMetaItem)}>
                 <FontAwesome name="user-circle" style={metaIconStyle} /> {userCount}
               </div>
+              <div className={css(styles.providerMetaItem)}>
+                <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
+              </div>
+            </div> :
+            <div className={css(styles.subHeading)}>
+              {comingSoon &&
+                <span className={css(styles.comingSoon)}>Coming Soon! </span>
+              }
+              {description}
             </div>
-          </div>
-          <div className={css(styles.subHeading)}>
-            {comingSoon &&
-              <span className={css(styles.comingSoon)}>Coming Soon! </span>
-            }
-            {description}
-          </div>
+          }
         </ConditionalLink>
       </div>
       {!comingSoon &&
