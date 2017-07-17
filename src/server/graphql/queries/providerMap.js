@@ -46,7 +46,9 @@ export default {
       obj[service] = {
         accessToken: null,
         service,
-        teamId
+        teamId,
+        userCount: 0,
+        integrationCount: 0
       };
       return obj;
     }, {});

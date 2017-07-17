@@ -24,6 +24,7 @@ const addProviderSlack = async (code, teamId, userId) => {
   if (!ok) {
     throw new Error(error);
   }
+  console.log('json', json)
   if (scope !== SLACK_SCOPE) {
     throw new Error(`bad scope: ${scope}`);
   }
@@ -65,7 +66,8 @@ const addProviderSlack = async (code, teamId, userId) => {
       ...rowDetails,
       accessToken,
       service: SLACK,
-      teamId
+      // tell relay to not automatically merge the new value as a sink
+      teamId: `_${teamId}`
     }
   };
   getPubSub().publish(`providerAdded.${teamId}`, {providerAdded});

@@ -12,6 +12,7 @@ const subscription = graphql`
         integrationCount
       }
       deletedIntegrationIds
+      userId
     }
   }
 `;

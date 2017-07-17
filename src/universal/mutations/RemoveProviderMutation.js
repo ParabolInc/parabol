@@ -29,6 +29,7 @@ export const updateProviderMap = (viewer, teamId, service, payload) => {
   const userId = getUserIdFromViewerId(viewer.getDataID());
   // update the providerMap if we have a matching viewerId
   const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
+  if (!oldProviderMap) return;
   const oldProviderRow = oldProviderMap.getLinkedRecord(service);
 
   const newProviderRow = payload.getLinkedRecord('providerRow');
@@ -53,10 +54,7 @@ export const removeIntegrations = (viewer, teamId, service, deletedIntegrationId
 
 const getLocalIdsToRemove = (viewer, teamId, service) => {
   const userId = getUserIdFromViewerId(viewer.getDataID());
-  if (service === SLACK) {
-    // this is ignored anyways
-    return [];
-  } else if (service === GITHUB) {
+  if (service === GITHUB) {
     const repos = viewer.getLinkedRecords('githubRepos', {teamId}) || [];
     return repos.reduce((arr, repo) => {
       const userIds = repo.getValue('userIds');
@@ -66,8 +64,11 @@ const getLocalIdsToRemove = (viewer, teamId, service) => {
       return arr;
     }, []);
   }
+  // removeIntegrations ignores the value for SLACK, since it'll remove all
+  return [];
 };
 
+let tempId = 0;
 const RemoveProviderMutation = (environment, providerId, service, teamId, viewerId) => {
   return commitMutation(environment, {
     mutation,
@@ -103,15 +104,14 @@ const RemoveProviderMutation = (environment, providerId, service, teamId, viewer
       const oldProviderRow = oldProviderMap.getLinkedRecord(service);
       const oldUserCount = oldProviderRow.getValue('userCount') || 1;
       const oldIntegrationCount = oldProviderRow.getValue('integrationCount') || deletedIntegrationIds.length;
-      const payload = {
-        userId,
-        providerRow: {
-          service,
-          accessToken: null,
-          userCount: oldUserCount - 1,
-          integrationCount: oldIntegrationCount - deletedIntegrationIds.length
-        }
-      };
+      const providerRow = store.create(`client:ProviderRow:${tempId++}`, 'ProviderRow');
+      providerRow.setValue(service, 'service');
+      providerRow.setValue(null, 'accessToken');
+      providerRow.setValue(oldUserCount - 1, 'userCount');
+      providerRow.setValue(oldIntegrationCount - deletedIntegrationIds.length, 'integrationCount');
+      const payload = store.create(`client:removeProvider:${tempId++}`, 'RemoveProviderPayload');
+      payload.setValue(userId, 'userId');
+      payload.setLinkedRecord(providerRow, 'providerRow');
       updateProviderMap(viewer, teamId, service, payload);
     },
     onError: (err) => {

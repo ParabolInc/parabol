@@ -75,6 +75,7 @@ export default class Atmosphere extends Environment {
           const errorObj = makeErrorObj(errors);
           reject(errorObj);
         } else {
+          //setTimeout(() => resolve(response), 5000);
           resolve(response);
         }
       });

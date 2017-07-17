@@ -48,7 +48,6 @@ const addProviderGitHub = async (code, teamId, userId) => {
   if (!gqlRes.data) {
     console.error('GitHub error: ', gqlRes)
   }
-  console.log('res', gqlRes)
   const {data: {viewer: {login: providerUserName, id: providerUserId}}} = gqlRes;
   const provider = await r.table('Provider')
     .getAll(teamId, {index: 'teamIds'})
