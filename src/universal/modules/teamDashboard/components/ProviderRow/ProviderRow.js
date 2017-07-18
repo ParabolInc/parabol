@@ -66,26 +66,42 @@ const ProviderRow = (props) => {
     textDecoration: 'none'
   };
   const to = `/team/${teamId}/settings/integrations/${name}`;
+  const metaIconStyle = {
+    display: 'inline-block',
+    fontSize: ui.iconSize,
+    fontWeight: 400
+  };
   return (
     <Row style={{justifyContent: 'flex-start'}}>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
         <div className={css(styles.providerAvatar)} style={{backgroundColor: color}}>
-          <FontAwesome name={icon} className={css(styles.providerIcon)}/>
+          <FontAwesome name={icon} className={css(styles.providerIcon)} />
         </div>
       </ConditionalLink>
       <div className={css(styles.userInfo)}>
-        <div className={css(styles.nameAndTags)}>
-
-          <ConditionalLink isLink={!comingSoon} to={to} className={css(styles.providerName)}>
-            {providerName} - {integrationCount} - {userCount}
-          </ConditionalLink>
-          <div className={css(styles.subHeading)}>
-            {comingSoon &&
-            <span className={css(styles.comingSoon)}>Coming Soon! </span>
-            }
-            {description}
+        <ConditionalLink isLink={!comingSoon} to={to} className={css(styles.providerRowContent)}>
+          <div className={css(styles.nameAndMeta)}>
+            <div className={css(styles.providerName)}>
+              {providerName}
+            </div>
           </div>
-        </div>
+          {accessToken ?
+            <div className={css(styles.providerMeta)}>
+              <div className={css(styles.providerMetaItem)}>
+                <FontAwesome name="user-circle" style={metaIconStyle} /> {userCount}
+              </div>
+              <div className={css(styles.providerMetaItem)}>
+                <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
+              </div>
+            </div> :
+            <div className={css(styles.subHeading)}>
+              {comingSoon &&
+                <span className={css(styles.comingSoon)}>Coming Soon! </span>
+              }
+              {description}
+            </div>
+          }
+        </ConditionalLink>
       </div>
       {!comingSoon &&
       <div className={css(styles.providerActions)}>
@@ -156,14 +172,8 @@ const styleThunk = () => ({
     justifyContent: 'flex-end'
   },
 
-  nameAndTags: {
-    // Define
-  },
-
-  providerName: {
-    ...ui.providerName,
-    display: 'inline-block',
-    verticalAlign: 'middle',
+  providerRowContent: {
+    color: ui.providerName.color,
 
     ':hover': {
       color: ui.providerName.color
@@ -171,6 +181,30 @@ const styleThunk = () => ({
     ':focus': {
       color: ui.providerName.color
     }
+  },
+
+  nameAndMeta: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+
+  providerMeta: {
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s3
+  },
+
+  providerMetaItem: {
+    display: 'inline-block',
+    fontSize: appTheme.typography.sBase,
+    fontWeight: 700,
+    marginRight: ui.rowGutter
+  },
+
+  providerName: {
+    ...ui.providerName,
+    display: 'inline-block',
+    marginRight: ui.rowGutter,
+    verticalAlign: 'middle',
   },
 
   providerActions: {
