@@ -9,9 +9,10 @@ import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {GITHUB_ENDPOINT} from 'universal/utils/constants';
+
 const defaultSelectedRepo = () => ({
   repoId: undefined,
-  repoName: 'Select a GitHub repo'
+  nameWithOwner: 'Select a GitHub repo'
 });
 
 const getReposQuery = `
@@ -68,7 +69,7 @@ class AddGitHubRepo extends Component {
     this.setState({
       selectedRepo: {
         repoId: option.id,
-        repoName: option.label
+        nameWithOwner: option.label
       },
       options: this.state.options.filter((row) => row.id !== option.id)
     });
@@ -76,7 +77,7 @@ class AddGitHubRepo extends Component {
 
   handleAddRepo = () => {
     const {environment, teamId, viewerId} = this.props;
-    const {selectedRepo: {repoId, repoName}} = this.state;
+    const {selectedRepo: {repoId, nameWithOwner}} = this.state;
     if (!repoId) return;
     const onError = ({_error}) => {
       this.setState({
@@ -90,7 +91,7 @@ class AddGitHubRepo extends Component {
         });
       }
     };
-    AddGitHubRepoMutation(environment, repoName, teamId, viewerId, onError, onCompleted);
+    AddGitHubRepoMutation(environment, nameWithOwner, teamId, viewerId, onError, onCompleted);
     this.setState({
       selectedRepo: defaultSelectedRepo()
     });
@@ -129,9 +130,9 @@ class AddGitHubRepo extends Component {
       }, []);
 
       const {subbedRepos} = this.props;
-      const subbedRepoIds = subbedRepos.map(({id}) => id);
+      const subbedRepoIds = subbedRepos.map(({nameWithOwner}) => nameWithOwner);
       const oneMonthAgo = Date.now() - ms('30d');
-      const options = repos.filter((repo) => !subbedRepoIds.includes(repo.id) && new Date(repo.updatedAt) > oneMonthAgo)
+      const options = repos.filter((repo) => !subbedRepoIds.includes(repo.nameWithOwner) && new Date(repo.updatedAt) > oneMonthAgo)
         .map((repo) => ({id: repo.nameWithOwner, label: repo.nameWithOwner}));
       this.setState({
         isLoaded: true,
@@ -141,14 +142,14 @@ class AddGitHubRepo extends Component {
   };
 
   render() {
-    const {isLoaded, options, selectedRepo: {repoName}} = this.state;
+    const {isLoaded, options, selectedRepo: {nameWithOwner}} = this.state;
     const {accessToken, styles} = this.props;
     return (
       <div className={css(styles.addRepo)}>
         <div className={css(styles.dropdownAndError)}>
           <ServiceDropdownInput
             fetchOptions={() => this.fetchOptions(accessToken)}
-            dropdownText={repoName}
+            dropdownText={nameWithOwner}
             handleItemClick={this.updateDropdownItem}
             options={options}
             isLoaded={isLoaded}

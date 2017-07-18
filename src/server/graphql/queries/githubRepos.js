@@ -22,6 +22,6 @@ export default {
     return r.table('GitHubIntegration')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
-      .orderBy('repoName');
+      .orderBy('nameWithOwner');
   }
 };

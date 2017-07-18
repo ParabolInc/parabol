@@ -3,6 +3,7 @@ import {globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 import {User} from 'server/graphql/models/User/userSchema';
 import getRethink from 'server/database/rethinkDriver';
+import GraphQLISO8601Type from 'graphql-custom-datetype';
 
 const GitHubIntegration = new GraphQLObjectType({
   name: 'GitHubIntegration',
@@ -11,9 +12,13 @@ const GitHubIntegration = new GraphQLObjectType({
   fields: () => ({
     // shortid
     id: globalIdField('GitHubIntegration', ({id}) => id),
-    blackList: {
-      type: new GraphQLList(GraphQLID),
-      description: 'A list of all the userIds that do not want to be associated with this repo'
+    //blackList: {
+    //  type: new GraphQLList(GraphQLID),
+    //  description: 'A list of all the userIds that do not want to be associated with this repo'
+    //},
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the integration was created'
     },
     nameWithOwner: {
       type: GraphQLString,
@@ -30,6 +35,10 @@ const GitHubIntegration = new GraphQLObjectType({
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The team that is linked to this integration'
+    },
+    updatedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the integration was updated'
     },
     users: {
       type: new GraphQLList(User),

@@ -7,6 +7,11 @@ const AddedSubscription = graphql`
       repo {
         id
         nameWithOwner
+        users {
+          id
+          preferredName
+          picture
+        }
       }
     }
   }

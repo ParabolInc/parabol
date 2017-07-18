@@ -26,8 +26,9 @@ const {makeUri} = providerLookup[GITHUB];
 const GitHubIntegrations = (props) => {
   const {relay: {environment}, jwt, styles, teamId, viewer} = props;
   const {id: viewerId, githubRepos, integrationProvider} = viewer;
-  const handleRemoveRepo = (githubGlobalId) => () => {
-    RemoveGitHubRepoMutation(environment, githubGlobalId, teamId, viewerId);
+  const handleUnlinkMe = (githubGlobalId) => () => {
+
+    //RemoveGitHubRepoMutation(environment, githubGlobalId, teamId, viewerId);
   };
   const accessToken = integrationProvider && integrationProvider.accessToken;
   const openOauth = () => {
@@ -105,15 +106,15 @@ const GitHubIntegrations = (props) => {
                   {
                     users.map((user) => {
                       return (
-                        <Avatar{...user} size="smaller"/>
+                        <Avatar key={user.id} {...user} size="smaller"/>
                       )
                     })
                   }
                   <Button
                     buttonStyle="flat"
                     colorPalette="dark"
-                    label="Remove"
-                    onClick={handleRemoveRepo(id)}
+                    label="Unlink Me"
+                    onClick={handleUnlinkMe(id)}
                     size="smallest"
                   />
                 </IntegrationRow>
@@ -223,6 +224,7 @@ export default createFragmentContainer(
         id
         nameWithOwner
         users {
+          id
           preferredName
           picture
         }

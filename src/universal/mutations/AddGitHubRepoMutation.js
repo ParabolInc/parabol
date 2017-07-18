@@ -5,7 +5,13 @@ const mutation = graphql`
   mutation AddGitHubRepoMutation($nameWithOwner: String!, $teamId: ID!) {
     addGitHubRepo(nameWithOwner: $nameWithOwner, teamId: $teamId) {
       repo {
+        id
         nameWithOwner
+        users {
+          id
+          preferredName
+          picture
+        }
       }
     }
   }
@@ -29,9 +35,14 @@ const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, viewerId, onE
       addGitHubRepoUpdater(store, viewerId, teamId, node);
     },
     optimisticUpdater: (store) => {
-      const id = `client:repo:${tempId++}`;
-      const node = store.create(id, 'GitHubIntegration');
+      const userNode = store.create(`client:users:${tempId++}`, 'User');
+      // TODO use real values
+      userNode.setValue(null, 'picture');
+      userNode.setValue('Me', 'preferredName');
+      userNode.setValue(`client:userId:${tempId++}`, 'id');
+      const node = store.create(`client:repo:${tempId++}`, 'GitHubIntegration');
       node.setValue(nameWithOwner, 'nameWithOwner');
+      node.setLinkedRecords([userNode], 'users');
       addGitHubRepoUpdater(store, viewerId, teamId, node);
     },
     onCompleted,
