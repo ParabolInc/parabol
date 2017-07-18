@@ -1,6 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
+import {User} from 'server/graphql/models/User/userSchema';
+import getRethink from 'server/database/rethinkDriver';
 
 const GitHubIntegration = new GraphQLObjectType({
   name: 'GitHubIntegration',
@@ -28,6 +30,16 @@ const GitHubIntegration = new GraphQLObjectType({
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The team that is linked to this integration'
+    },
+    users: {
+      type: new GraphQLList(User),
+      description: 'The users that can CRUD this integration',
+      resolve: async ({userIds}) => {
+        const r = getRethink();
+        return r.table('User')
+          .getAll(r.args(userIds), {index: 'id'})
+          .pluck('preferredName', 'picture', 'id');
+      }
     }
   })
 });

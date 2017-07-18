@@ -3,22 +3,23 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
+import Avatar from 'universal/components/Avatar/Avatar';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
+import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo';
+import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
 import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
-import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
 import RemoveGitHubRepoMutation from 'universal/mutations/RemoveGitHubRepoMutation';
+import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
+import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
+import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import {GITHUB} from 'universal/utils/constants';
-import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
-import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo';
 
 const {makeUri} = providerLookup[GITHUB];
 
@@ -97,10 +98,17 @@ const GitHubIntegrations = (props) => {
           {githubRepos &&
           <div className={css(styles.integrationsList)}>
             {githubRepos.map((repo) => {
-              const {id, nameWithOwner} = repo;
+              const {id, nameWithOwner, users} = repo;
               return (
                 <IntegrationRow key={`${nameWithOwner}-row`}>
                   <div className={css(styles.nameWithOwner)}>{nameWithOwner}</div>
+                  {
+                    users.map((user) => {
+                      return (
+                        <Avatar{...user} size="smaller"/>
+                      )
+                    })
+                  }
                   <Button
                     buttonStyle="flat"
                     colorPalette="dark"
@@ -203,7 +211,6 @@ const subscriptionThunk = ({teamId, viewer: {id}}) => {
   ];
 };
 export default createFragmentContainer(
-
   withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(GitHubIntegrations)),
   graphql`
     fragment GitHubIntegrations_viewer on User {
@@ -215,6 +222,10 @@ export default createFragmentContainer(
       githubRepos(teamId: $teamId) {
         id
         nameWithOwner
+        users {
+          preferredName
+          picture
+        }
       }
     }
   `
