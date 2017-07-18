@@ -6,24 +6,24 @@ import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
-//import AddGitHubRepo from 'universal/modules/teamDashboard/components/AddGitHubRepo/AddGitHubRepo';
-//import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
 import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
-//import RemoveGitHubRepoMutation from 'universal/mutations/RemoveGitHubRepoMutation';
+import RemoveGitHubRepoMutation from 'universal/mutations/RemoveGitHubRepoMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
-//import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
-//import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
+import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
+import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
 import {GITHUB} from 'universal/utils/constants';
+import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
+import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo';
 
 const {makeUri} = providerLookup[GITHUB];
 
 const GitHubIntegrations = (props) => {
-  const {relay: {environment}, jwt, styles, teamId, teamMemberId, viewer} = props;
+  const {relay: {environment}, jwt, styles, teamId, viewer} = props;
   const {id: viewerId, githubRepos, integrationProvider} = viewer;
   const handleRemoveRepo = (githubGlobalId) => () => {
     RemoveGitHubRepoMutation(environment, githubGlobalId, teamId, viewerId);
@@ -73,47 +73,47 @@ const GitHubIntegrations = (props) => {
         }
       </div>
       <Panel label="Repositories">
-        {/*<div className={css(styles.integrations)}>*/}
-          {/*{accessToken ?*/}
-            {/*<div className={css(styles.addRepo)}>*/}
-              {/*<AddGitHubRepo*/}
-                {/*accessToken={accessToken}*/}
-                {/*environment={environment}*/}
-                {/*teamMemberId={teamMemberId}*/}
-                {/*viewerId={viewer.id}*/}
-                {/*subbedRepos={githubRepos}*/}
-              {/*/>*/}
-            {/*</div> :*/}
-            {/*<div className={css(styles.addGitHub)}>*/}
-              {/*<Button*/}
-                {/*buttonStyle="solid"*/}
-                {/*colorPalette="cool"*/}
-                {/*label="Authorize GitHub to Add a Repo"*/}
-                {/*onClick={openOauth}*/}
-                {/*size="medium"*/}
-              {/*/>*/}
-            {/*</div>*/}
-          {/*}*/}
-          {/*{githubRepos &&*/}
-          {/*<div className={css(styles.integrationsList)}>*/}
-            {/*{githubRepos.map((channel) => {*/}
-              {/*const {id, channelId, channelName} = channel;*/}
-              {/*return (*/}
-                {/*<IntegrationRow key={`${channelId}-row`}>*/}
-                  {/*<div className={css(styles.channelName)}>{channelName}</div>*/}
-                  {/*<Button*/}
-                    {/*buttonStyle="flat"*/}
-                    {/*colorPalette="dark"*/}
-                    {/*label="Remove"*/}
-                    {/*onClick={handleRemoveRepo(id)}*/}
-                    {/*size="smallest"*/}
-                  {/*/>*/}
-                {/*</IntegrationRow>*/}
-              {/*);*/}
-            {/*})}*/}
-          {/*</div>*/}
-          {/*}*/}
-        {/*</div>*/}
+        <div className={css(styles.integrations)}>
+          {accessToken ?
+            <div className={css(styles.addRepo)}>
+              <AddGitHubRepo
+                accessToken={accessToken}
+                environment={environment}
+                teamId={teamId}
+                viewerId={viewer.id}
+                subbedRepos={githubRepos}
+              />
+            </div> :
+            <div className={css(styles.addGitHub)}>
+              <Button
+                buttonStyle="solid"
+                colorPalette="cool"
+                label="Authorize GitHub to Add a Repo"
+                onClick={openOauth}
+                size="medium"
+              />
+            </div>
+          }
+          {githubRepos &&
+          <div className={css(styles.integrationsList)}>
+            {githubRepos.map((repo) => {
+              const {id, nameWithOwner} = repo;
+              return (
+                <IntegrationRow key={`${nameWithOwner}-row`}>
+                  <div className={css(styles.nameWithOwner)}>{nameWithOwner}</div>
+                  <Button
+                    buttonStyle="flat"
+                    colorPalette="dark"
+                    label="Remove"
+                    onClick={handleRemoveRepo(id)}
+                    size="smallest"
+                  />
+                </IntegrationRow>
+              );
+            })}
+          </div>
+          }
+        </div>
       </Panel>
     </div>
   );
@@ -124,8 +124,7 @@ GitHubIntegrations.propTypes = {
   relay: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  teamId: PropTypes.string.isRequired,
-  teamMemberId: PropTypes.string.isRequired
+  teamId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({
@@ -189,7 +188,7 @@ const styleThunk = () => ({
     paddingLeft: ui.rowGutter
   },
 
-  channelName: {
+  nameWithOwner: {
     color: ui.palette.cool,
     fontWeight: 700
   }
@@ -197,8 +196,8 @@ const styleThunk = () => ({
 
 const subscriptionThunk = ({teamId, viewer: {id}}) => {
   return [
-    //GitHubRepoAddedSubscription(teamId, id),
-    //GitHubRepoRemovedSubscription(teamId, id),
+    GitHubRepoAddedSubscription(teamId, id),
+    GitHubRepoRemovedSubscription(teamId, id),
     ProviderRemovedSubscription(teamId, id),
     ProviderAddedSubscription(teamId, id)
   ];
@@ -213,12 +212,11 @@ export default createFragmentContainer(
         id
         accessToken
       }
+      githubRepos(teamId: $teamId) {
+        id
+        nameWithOwner
+      }
     }
   `
 );
 
-//githubRepos(teamId: $teamId) {
-//  id
-//  channelId
-//  channelName
-//}

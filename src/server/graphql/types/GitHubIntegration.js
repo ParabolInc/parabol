@@ -13,17 +13,13 @@ const GitHubIntegration = new GraphQLObjectType({
       type: new GraphQLList(GraphQLID),
       description: 'A list of all the userIds that do not want to be associated with this repo'
     },
-    repoId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'the id of the repo provided by the service, if available. Useful for fetching from their API'
-    },
-    repoName: {
+    nameWithOwner: {
       type: GraphQLString,
-      description: 'The name of the repo. Shared with all, updated when the integration owner looks at it'
+      description: 'The name of the repo. Follows format of OWNER/NAME'
     },
     isActive: {
       type: GraphQLBoolean,
-      description: 'defaults to true. true if this is used to send notifications'
+      description: 'defaults to true. true if this is used'
     },
     userIds: {
       type: new GraphQLList(GraphQLID),
@@ -31,7 +27,7 @@ const GitHubIntegration = new GraphQLObjectType({
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: '*The team that cares about these annoucements'
+      description: '*The team that is linked to this integration'
     }
   })
 });

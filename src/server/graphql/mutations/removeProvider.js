@@ -84,7 +84,8 @@ export default {
           .and(repo('userIds').contains(userId))
         )
         .update({
-          isActive: false
+          isActive: false,
+          userIds: []
         }, {returnChanges: true})('changes').default([]);
       const providerRemoved = await getPayload(service, repoChanges, teamId, userId);
       getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});

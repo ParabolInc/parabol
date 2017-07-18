@@ -6,6 +6,7 @@ import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/u
 import {SLACK} from 'universal/utils/constants';
 import insertSlackChannel from 'server/safeMutations/insertSlackChannel';
 
+// TODO get rid of input and only request teamId not teamMemberId
 const AddSlackChannelInput = new GraphQLInputObjectType({
   name: 'AddSlackChannelInput',
   fields: () => ({

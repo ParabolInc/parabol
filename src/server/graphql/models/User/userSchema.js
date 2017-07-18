@@ -14,6 +14,7 @@ import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema
 import integrationProvider from 'server/graphql/queries/integrationProvider';
 import providerMap from 'server/graphql/queries/providerMap';
 import slackChannels from 'server/graphql/queries/slackChannels';
+import githubRepos from 'server/graphql/queries/githubRepos';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import TeamMember from '../TeamMember/teamMemberSchema';
@@ -184,6 +185,7 @@ export const User = new GraphQLObjectType({
     providerMap,
     slackChannels,
     integrationProvider,
+    githubRepos,
     jwt: {
       type: GraphQLID,
       description: 'a refreshed JWT'

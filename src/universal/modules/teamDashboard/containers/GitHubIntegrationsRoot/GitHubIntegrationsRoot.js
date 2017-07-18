@@ -41,7 +41,6 @@ const GitHubIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
             jwt={jwt}
             viewer={viewer}
             teamId={teamId}
-            teamMemberId={teamMemberId}
           />);
         }
         return <LoadingComponent height={'14rem'} />;
