@@ -1,10 +1,15 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 
 const LeaveIntegrationPayload = new GraphQLObjectType({
   name: 'LeaveIntegrationPayload',
   fields: () => ({
-    deletedId: {
-      type: new GraphQLNonNull(GraphQLID)
+    integrationId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The globalId of the integration with a removed member'
+    },
+    userId: {
+      type: GraphQLID,
+      description: 'The global userId of the viewer that left. if null, remove the entire integration'
     }
   })
 });

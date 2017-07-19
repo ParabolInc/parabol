@@ -4,6 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
 import {getIsTeamLead, getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import removeRepoGitHub from 'server/safeMutations/removeRepoGitHub';
 
 export default {
   name: 'RemoveGitHubRepo',
@@ -43,16 +44,6 @@ export default {
     }
 
     // RESOLUTION
-    await r.table('GitHubIntegration').get(id)
-      .update({
-        isActive: false,
-        userIds: []
-      });
-    // TODO remove all the GH cards, too
-    const githubRepoRemoved = {
-      deletedId: githubGlobalId
-    };
-    getPubSub().publish(`githubRepoRemoved.${teamId}`, {githubRepoRemoved, mutatorId: socket.id});
-    return githubRepoRemoved;
+    return removeRepoGitHub(id, githubGlobalId, teamId, socket.id);
   }
 };

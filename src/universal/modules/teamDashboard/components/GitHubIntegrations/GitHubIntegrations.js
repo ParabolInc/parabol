@@ -223,7 +223,7 @@ export default createFragmentContainer(
       githubRepos(teamId: $teamId) {
         id
         nameWithOwner
-        users {
+        teamMembers {
           id
           preferredName
           picture

@@ -35,7 +35,7 @@ export default {
     const table = serviceToProvider[service];
     const change = await r.table(table).get(integrationId)
       .update((doc) => ({
-        blackList: doc('blackList').difference([userId]).default([]),
+        //blackList: doc('blackList').difference([userId]).default([]),
         userIds: doc('userIds').append(userId).distinct()
       }), {returnChanges: true})('changes')(0);
 

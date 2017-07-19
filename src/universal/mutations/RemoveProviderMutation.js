@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
-import getUserIdFromViewerId from 'universal/utils/relay/getUserIdFromViewerId';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {
@@ -26,7 +26,7 @@ export const removeProviderUpdater = (viewer, teamId, service) => {
 };
 
 export const updateProviderMap = (viewer, teamId, service, payload) => {
-  const userId = getUserIdFromViewerId(viewer.getDataID());
+  const {id: userId} = fromGlobalId(viewer.getDataID());
   // update the providerMap if we have a matching viewerId
   const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
   if (!oldProviderMap) return;
@@ -53,7 +53,7 @@ export const removeIntegrations = (viewer, teamId, service, deletedIntegrationId
 
 
 const getLocalIdsToRemove = (viewer, teamId, service) => {
-  const userId = getUserIdFromViewerId(viewer.getDataID());
+  const {id: userId} = fromGlobalId(viewer.getDataID());
   if (service === GITHUB) {
     const repos = viewer.getLinkedRecords('githubRepos', {teamId}) || [];
     return repos.reduce((arr, repo) => {
@@ -98,7 +98,7 @@ const RemoveProviderMutation = (environment, providerId, service, teamId, viewer
       removeIntegrations(viewer, teamId, service, deletedIntegrationIds);
 
       // update the userCount & integrationCount (and access token if mutator == viewer)
-      const userId = getUserIdFromViewerId(viewer.getDataID());
+      const {id: userId} = fromGlobalId(viewer.getDataID());
       const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
       if (!oldProviderMap) return;
       const oldProviderRow = oldProviderMap.getLinkedRecord(service);

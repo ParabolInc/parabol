@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
-import {User} from 'server/graphql/models/User/userSchema';
+import TeamMember from 'server/graphql/models/TeamMember/teamMemberSchema';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 
@@ -40,14 +40,17 @@ const GitHubIntegration = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the integration was updated'
     },
-    users: {
-      type: new GraphQLList(User),
+    teamMembers: {
+      type: new GraphQLList(TeamMember),
       description: 'The users that can CRUD this integration',
-      resolve: async ({userIds}) => {
+      resolve: async ({userIds, teamId}) => {
+        // TODO if we wanna build a cache in front of our DB, this is a great place to start
+
+        // no auth needed because everything returning a GitHubIntegration has already checked for teamId
+        const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
         const r = getRethink();
-        return r.table('User')
-          .getAll(r.args(userIds), {index: 'id'})
-          .pluck('preferredName', 'picture', 'id');
+        return r.table('TeamMember')
+          .getAll(r.args(teamMemberIds), {index: 'id'});
       }
     }
   })
