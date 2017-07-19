@@ -1,176 +1,11 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
 import {css} from 'aphrodite-local-styles/no-important';
 import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
 import textOverflow from 'universal/styles/helpers/textOverflow';
-
-const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid', opacity = '.65') => {
-  const buttonColor = buttonStyle === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
-  const color = buttonStyle === 'inverted' ? tinycolor.mix(textColor, '#000', 10).toHexString() : textColor;
-
-  return {
-    backgroundColor: buttonColor,
-    borderColor: buttonColor,
-    color,
-
-    ':hover': {
-      color,
-      opacity
-    },
-    ':focus': {
-      color,
-      opacity
-    }
-  };
-};
-
-const makeFlatTheme = (buttonStyle, color, opacity = '.5') => ({
-  backgroundColor: 'transparent',
-  borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
-  color,
-
-  ':hover': {
-    color,
-    opacity
-  },
-  ':focus': {
-    color,
-    opacity
-  }
-});
-
-const makePropColors = (buttonStyle, colorPalette) => {
-  const color = ui.palette[colorPalette];
-  const baseTextColor = buttonStyle === 'inverted' ? color : ui.palette.white;
-  const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ?
-    ui.palette.dark : baseTextColor;
-  if (buttonStyle === 'flat' || buttonStyle === 'outlined') {
-    return makeFlatTheme(buttonStyle, color);
-  }
-  return makeSolidTheme(color, textColor, buttonStyle);
-};
-
-const Button = (props) => {
-  const {
-    compact,
-    disabled,
-    icon,
-    iconPlacement,
-    isBlock,
-    label,
-    onClick,
-    onMouseEnter,
-    raised,
-    sansPaddingX,
-    size,
-    styles,
-    title,
-    type
-  } = props;
-
-  const buttonTitle = title || label;
-  const iconOnly = !label;
-
-  const buttonStyles = css(
-    styles.base,
-    raised && styles.raised,
-    compact && styles.compact,
-    sansPaddingX && styles.sansPaddingX,
-    isBlock && styles.isBlock,
-    styles.propColors,
-    disabled && styles.disabled
-  );
-
-  const makeIconLabel = () => {
-    const defaultIconPlacement = icon && label ? 'left' : '';
-    const thisIconPlacement = iconPlacement || defaultIconPlacement;
-    const iconPlacementStyle = css(
-      thisIconPlacement === 'left' && styles.iconLeft,
-      thisIconPlacement === 'right' && styles.iconRight,
-    );
-    const iconMargin = iconOnly ? '' : iconPlacementStyle;
-    const iconStyle = {
-      fontSize: ui.buttonIconSize[size],
-      lineHeight: 'inherit',
-      verticalAlign: 'middle'
-    };
-    const makeIcon = () =>
-      <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
-    return (
-      <span className={css(styles.buttonInner)}>
-        {iconOnly ?
-          makeIcon() :
-          <span className={css(styles.buttonInner)}>
-            {thisIconPlacement === 'left' && makeIcon()}
-            <span className={css(styles.label)}>{label}</span>
-            {thisIconPlacement === 'right' && makeIcon()}
-          </span>
-        }
-      </span>
-    );
-  };
-
-  return (
-    <button
-      className={buttonStyles}
-      disabled={disabled}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
-      title={buttonTitle}
-      type={type}
-    >
-      {icon ?
-        makeIconLabel() :
-        <span className={css(styles.buttonInner)}>
-          <span className={css(styles.label)}>{label}</span>
-        </span>
-      }
-    </button>
-  );
-};
-
-Button.propTypes = {
-  colorPalette: PropTypes.oneOf(ui.paletteOptions),
-  compact: PropTypes.bool,
-  disabled: PropTypes.bool,
-  icon: PropTypes.string,
-  iconPlacement: PropTypes.oneOf([
-    'left',
-    'right'
-  ]),
-  isBlock: PropTypes.bool,
-  label: PropTypes.string,
-  onClick: PropTypes.func,
-  onMouseEnter: PropTypes.func,
-  size: PropTypes.oneOf(ui.buttonSizes),
-  buttonStyle: PropTypes.oneOf([
-    'solid',
-    'outlined',
-    'inverted',
-    'flat'
-  ]),
-  raised: PropTypes.bool,
-  sansPaddingX: PropTypes.bool,
-  styles: PropTypes.object,
-  textTransform: PropTypes.oneOf([
-    'none',
-    'uppercase'
-  ]),
-  title: PropTypes.string,
-  type: PropTypes.oneOf([
-    'button',
-    'menu',
-    'reset',
-    'submit'
-  ])
-};
-
-Button.defaultProps = {
-  type: 'button'
-};
 
 const styleThunk = (theme, props) => ({
   // Button base
@@ -232,7 +67,188 @@ const styleThunk = (theme, props) => ({
     lineHeight: ui.buttonLineHeight,
     maxWidth: '100%',
     verticalAlign: 'middle'
+  },
+
+  hasMouseDown: {
+    backgroundColor: 'black !important',
+    transform: 'translate(0, .25rem)'
   }
 });
 
-export default withStyles(styleThunk)(Button);
+const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid', opacity = '.65') => {
+  const buttonColor = buttonStyle === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
+  const color = buttonStyle === 'inverted' ? tinycolor.mix(textColor, '#000', 10).toHexString() : textColor;
+
+  return {
+    backgroundColor: buttonColor,
+    borderColor: buttonColor,
+    color,
+
+    ':hover': {
+      color,
+      opacity
+    },
+    ':focus': {
+      color,
+      opacity
+    }
+  };
+};
+
+const makeFlatTheme = (buttonStyle, color, opacity = '.5') => ({
+  backgroundColor: 'transparent',
+  borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
+  color,
+
+  ':hover': {
+    color,
+    opacity
+  },
+  ':focus': {
+    color,
+    opacity
+  }
+});
+
+const makePropColors = (buttonStyle, colorPalette) => {
+  const color = ui.palette[colorPalette];
+  const baseTextColor = buttonStyle === 'inverted' ? color : ui.palette.white;
+  const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ?
+    ui.palette.dark : baseTextColor;
+  if (buttonStyle === 'flat' || buttonStyle === 'outlined') {
+    return makeFlatTheme(buttonStyle, color);
+  }
+  return makeSolidTheme(color, textColor, buttonStyle);
+};
+
+@withStyles(styleThunk)
+export default class LabeledFieldArray extends Component {
+  static propTypes = {
+    colorPalette: PropTypes.oneOf(ui.paletteOptions),
+    compact: PropTypes.bool,
+    disabled: PropTypes.bool,
+    icon: PropTypes.string,
+    iconPlacement: PropTypes.oneOf([
+      'left',
+      'right'
+    ]),
+    isBlock: PropTypes.bool,
+    label: PropTypes.string,
+    onClick: PropTypes.func,
+    onMouseEnter: PropTypes.func,
+    size: PropTypes.oneOf(ui.buttonSizes),
+    buttonStyle: PropTypes.oneOf([
+      'solid',
+      'outlined',
+      'inverted',
+      'flat'
+    ]),
+    raised: PropTypes.bool,
+    sansPaddingX: PropTypes.bool,
+    styles: PropTypes.object,
+    textTransform: PropTypes.oneOf([
+      'none',
+      'uppercase'
+    ]),
+    title: PropTypes.string,
+    type: PropTypes.oneOf([
+      'button',
+      'menu',
+      'reset',
+      'submit'
+    ])
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasMouseDown: null
+    };
+  }
+
+  onMouseDown = () => { console.log('onMouseDown') && this.setState({ hasMouseDown: true }) && console.log(`${this.state.hasMouseDown}`) };
+  onMouseUp = () => { console.log('onMouseUp') && this.setState({ hasMouseDown: false }) && console.log(`${this.state.hasMouseDown}`) };
+
+  render() {
+    const {
+      compact,
+      disabled,
+      icon,
+      iconPlacement,
+      isBlock,
+      label,
+      onClick,
+      onMouseEnter,
+      raised,
+      sansPaddingX,
+      size,
+      styles,
+      title,
+      type
+    } = this.props;
+
+    const {hasMouseDown} = this.state;
+    const buttonTitle = title || label;
+    const iconOnly = !label;
+
+    const buttonStyles = css(
+      styles.base,
+      raised && styles.raised,
+      compact && styles.compact,
+      sansPaddingX && styles.sansPaddingX,
+      isBlock && styles.isBlock,
+      styles.propColors,
+      disabled && styles.disabled,
+      hasMouseDown && styles.hasMouseDown
+    );
+
+    const makeIconLabel = () => {
+      const defaultIconPlacement = icon && label ? 'left' : '';
+      const thisIconPlacement = iconPlacement || defaultIconPlacement;
+      const iconPlacementStyle = css(
+        thisIconPlacement === 'left' && styles.iconLeft,
+        thisIconPlacement === 'right' && styles.iconRight,
+      );
+      const iconMargin = iconOnly ? '' : iconPlacementStyle;
+      const iconStyle = {
+        fontSize: ui.buttonIconSize[size],
+        lineHeight: 'inherit',
+        verticalAlign: 'middle'
+      };
+      const makeIcon = () =>
+        <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
+      return (
+        <span className={css(styles.buttonInner)}>
+          {iconOnly ?
+            makeIcon() :
+            <span className={css(styles.buttonInner)}>
+              {thisIconPlacement === 'left' && makeIcon()}
+              <span className={css(styles.label)}>{label}</span>
+              {thisIconPlacement === 'right' && makeIcon()}
+            </span>
+          }
+        </span>
+      );
+    };
+
+    return (
+      <button
+        className={buttonStyles}
+        disabled={disabled}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseDown={this.onMouseDown}
+        onMouseUp={this.onMouseUp}
+        title={buttonTitle}
+        type={type || 'button'}
+      >
+        {icon ?
+          makeIconLabel() :
+          <span className={css(styles.buttonInner)}>
+            <span className={css(styles.label)}>{label}</span>
+          </span>
+        }
+      </button>
+    );
+  }
+};
