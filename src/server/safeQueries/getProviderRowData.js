@@ -1,11 +1,9 @@
 import getRethink from 'server/database/rethinkDriver';
-import serviceToProvider from 'server/utils/serviceToProvider';
 
 const getProviderRowData = (service, teamId) => {
-  const integrationTable = serviceToProvider[service];
   const r = getRethink();
   return r.expr({
-    integrationCount: r.table(integrationTable)
+    integrationCount: r.table(service)
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .count(),

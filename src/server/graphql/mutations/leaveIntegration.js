@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
 import {getUserId, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {integrationNames} from 'server/utils/serviceToProvider';
+import {GITHUB} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(LeaveIntegrationPayload),
@@ -17,12 +17,12 @@ export default {
   },
   async resolve(source, {globalId}, {authToken, socket}) {
     const r = getRethink();
-    const {id, type: table} = fromGlobalId(globalId);
+    const {id, type: service} = fromGlobalId(globalId);
     // AUTH
     const userId = getUserId(authToken);
     requireWebsocket(socket);
 
-    const integration = await r.table(table).get(id);
+    const integration = await r.table(service).get(id);
     // VALIDATION
     if (!integration) {
       throw new Error('That integration does not exist');
@@ -37,7 +37,7 @@ export default {
     }
 
     // RESOLUTION
-    const updatedIntegration = await r.table(table).get(id)
+    const updatedIntegration = await r.table(service).get(id)
       .update((doc) => ({
         //blackList: doc('blackList').append(userId).distinct(),
         userIds: doc('userIds').difference([userId]),
@@ -53,12 +53,11 @@ export default {
       userId
     };
 
-    if (table === 'GitHubIntegration') {
+    if (service === GITHUB) {
       if (updatedIntegration.isActive === false) {
         // TODO get rid of the cards, etc
       }
     }
-    const {service} = integrationNames.find((name) => name.table === table);
     getPubSub().publish(`integrationLeft.${teamId}.${service}`, {leaveIntegration, mutatorId: socket.id});
     return leaveIntegration;
   }

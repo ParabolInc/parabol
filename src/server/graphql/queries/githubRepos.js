@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLList} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import GitHubIntegration from 'server/graphql/types/GitHubIntegration';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {GITHUB} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLList(GitHubIntegration),
@@ -19,7 +20,7 @@ export default {
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
-    return r.table('GitHubIntegration')
+    return r.table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .orderBy('nameWithOwner');

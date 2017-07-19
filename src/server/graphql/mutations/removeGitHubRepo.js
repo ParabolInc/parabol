@@ -5,6 +5,7 @@ import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayloa
 import {getIsTeamLead, getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import removeRepoGitHub from 'server/safeMutations/removeRepoGitHub';
+import {GITHUB} from 'universal/utils/constants';
 
 export default {
   name: 'RemoveGitHubRepo',
@@ -21,7 +22,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    const integration = await r.table('GitHubIntegration').get(id);
+    const integration = await r.table(GITHUB).get(id);
     if (!integration) {
       // no UI for this
       throw new Error(`${githubGlobalId} does not exist`);

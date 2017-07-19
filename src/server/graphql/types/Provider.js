@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {connectionDefinitions, globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
+import {IntegrationService} from 'server/graphql/types/IntegrationService';
 
 const Provider = new GraphQLObjectType({
   name: 'Provider',
@@ -27,7 +28,7 @@ const Provider = new GraphQLObjectType({
       description: 'The username (or email) attached to the provider'
     },
     service: {
-      type: GraphQLString,
+      type: IntegrationService,
       description: 'The name of the service'
     },
     teamIds: {

@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import serviceToProvider from 'server/utils/serviceToProvider';
 import {errorObj} from 'server/utils/utils';
+import {IntegrationService} from 'server/graphql/types/IntegrationService';
 
 // Will use this when GH comes
 export default {
@@ -18,7 +18,7 @@ export default {
       description: 'the id of the integration to remove'
     },
     service: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(IntegrationService),
       description: 'The name of the service like slack or github'
     }
   },
@@ -32,8 +32,7 @@ export default {
     requireWebsocket(socket);
 
     // RESOLUTION
-    const table = serviceToProvider[service];
-    const change = await r.table(table).get(integrationId)
+    const change = await r.table(service).get(integrationId)
       .update((doc) => ({
         //blackList: doc('blackList').difference([userId]).default([]),
         userIds: doc('userIds').append(userId).distinct()

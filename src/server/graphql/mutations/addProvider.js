@@ -5,6 +5,7 @@ import addProviderSlack from 'server/safeMutations/addProviderSlack';
 import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import {GITHUB, SLACK} from 'universal/utils/constants';
+import {IntegrationService} from 'server/graphql/types/IntegrationService';
 
 
 export default {
@@ -19,7 +20,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     },
     service: {
-      type: new GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(IntegrationService)
     }
   },
   resolve: async (source, {code, state, service}, {serverSecret}) => {

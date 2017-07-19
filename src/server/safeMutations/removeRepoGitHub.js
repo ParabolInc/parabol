@@ -1,9 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
 import getPubSub from 'server/utils/getPubSub';
+import {GITHUB} from 'universal/utils/constants';
 
 const removeRepoGitHub = async (integrationId, githubGlobalId, teamId, mutatorId) => {
   const r = getRethink();
-  await r.table('GitHubIntegration').get(integrationId)
+  await r.table(GITHUB).get(integrationId)
     .update({
       isActive: false,
       userIds: []

@@ -5,13 +5,11 @@ import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import serviceToProvider from 'server/utils/serviceToProvider';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 
 
 const getPayload = async (service, integrationChanges, teamId, userId) => {
-  const provider = serviceToProvider[service];
-  const deletedIntegrationIds = integrationChanges.map((change) => toGlobalId(provider, change.new_val.id));
+  const deletedIntegrationIds = integrationChanges.map((change) => toGlobalId(service, change.new_val.id));
   const rowDetails = await getProviderRowData(service, teamId);
   return {
     providerRow: {
@@ -33,7 +31,7 @@ export default {
   args: {
     providerId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The relay id of the provider to remove'
+      description: 'The relay id of the service to remove'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -58,7 +56,7 @@ export default {
       throw new Error(`Provider ${providerId} does not exist`);
     }
 
-    // remove the user from every integration under the provider
+    // remove the user from every integration under the service
     const updatedProvider = res.changes[0];
     if (!updatedProvider) {
       throw new Error(`Provider ${providerId} did not contain ${teamId}`);
@@ -66,7 +64,7 @@ export default {
     const {service} = updatedProvider.new_val;
     const userId = getUserId(authToken);
     if (service === SLACK) {
-      const channelChanges = await r.table('SlackIntegration')
+      const channelChanges = await r.table(SLACK)
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .update({
@@ -76,7 +74,7 @@ export default {
       getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
       return providerRemoved;
     } else if (service === GITHUB) {
-      const repoChanges = await r.table('GitHubIntegration')
+      const repoChanges = await r.table(GITHUB)
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         // if they're the last one, remove the integration

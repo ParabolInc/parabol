@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLList} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import SlackIntegration from 'server/graphql/types/SlackIntegration';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {SLACK} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLList(SlackIntegration),
@@ -19,7 +20,7 @@ export default {
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
-    return r.table('SlackIntegration')
+    return r.table(SLACK)
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .orderBy('channelName');

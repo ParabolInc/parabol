@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay';
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
+import {GITHUB} from 'universal/utils/constants';
 
 const mutation = graphql`
   mutation AddGitHubRepoMutation($nameWithOwner: String!, $teamId: ID!) {
@@ -40,7 +41,7 @@ const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, viewerId, onE
       teamMemberNode.setValue(null, 'picture');
       teamMemberNode.setValue('Me', 'preferredName');
       teamMemberNode.setValue(`client:userId:${tempId++}`, 'id');
-      const node = store.create(`client:repo:${tempId++}`, 'GitHubIntegration');
+      const node = store.create(`client:repo:${tempId++}`, GITHUB);
       node.setValue(nameWithOwner, 'nameWithOwner');
       node.setLinkedRecords([teamMemberNode], 'teamMembers');
       addGitHubRepoUpdater(store, viewerId, teamId, node);

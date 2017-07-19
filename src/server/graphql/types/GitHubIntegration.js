@@ -4,14 +4,15 @@ import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 import TeamMember from 'server/graphql/models/TeamMember/teamMemberSchema';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
+import {GITHUB} from 'universal/utils/constants';
 
 const GitHubIntegration = new GraphQLObjectType({
-  name: 'GitHubIntegration',
+  name: GITHUB,
   description: 'An integration that connects github issues & PRs to Parabol projects',
   interfaces: () => [nodeInterface],
   fields: () => ({
     // shortid
-    id: globalIdField('GitHubIntegration', ({id}) => id),
+    id: globalIdField(GITHUB, ({id}) => id),
     //blackList: {
     //  type: new GraphQLList(GraphQLID),
     //  description: 'A list of all the userIds that do not want to be associated with this repo'

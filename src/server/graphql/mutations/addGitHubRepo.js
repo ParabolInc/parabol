@@ -87,7 +87,7 @@ export default {
     }, []);
 
     // RESOLUTION
-    const newRepo = await r.table('GitHubIntegration')
+    const newRepo = await r.table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({nameWithOwner})
       .nth(0)('id')
@@ -95,7 +95,7 @@ export default {
       .do((integrationId) => {
         return r.branch(
           integrationId.eq(null),
-          r.table('GitHubIntegration')
+          r.table(GITHUB)
             .insert({
               id: shortid.generate(),
               createdAt: now,
@@ -105,7 +105,7 @@ export default {
               teamId,
               userIds
             }, {returnChanges: true})('changes')(0)('new_val'),
-          r.table('GitHubIntegration')
+          r.table(GITHUB)
             .get(integrationId)
             .update({
               isActive: true,

@@ -1,9 +1,10 @@
 import shortid from 'shortid';
 import getRethink from 'server/database/rethinkDriver';
+import {SLACK} from 'universal/utils/constants';
 
 const insertSlackChannel = (channelId, channelName, teamId) => {
   const r = getRethink();
-  return r.table('SlackIntegration').insert({
+  return r.table(SLACK).insert({
     id: shortid.generate(),
     isActive: true,
     channelId,

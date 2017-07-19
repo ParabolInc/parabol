@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ProviderMap from 'server/graphql/types/ProviderMap';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import serviceToProvider from 'server/utils/serviceToProvider';
 import {CURRENT_PROVIDERS, SLACK} from 'universal/utils/constants';
 
 const getUserReduction = (service, reduction, userId) => {
@@ -36,7 +35,7 @@ export default {
       .group('service')
       .ungroup()
       .merge((row) => ({
-        integrationCount: r.table(r.expr(serviceToProvider)(row('group')))
+        integrationCount: r.table(row('group'))
           .getAll(teamId, {index: 'teamId'})
           .filter({isActive: true})
           .count()

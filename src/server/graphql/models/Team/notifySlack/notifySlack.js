@@ -4,7 +4,7 @@ import makeAppLink from '../../../../utils/makeAppLink';
 
 const getIntegrationsForNotification = (teamId, notification) => {
   const r = getRethink();
-  return r.table('SlackIntegration')
+  return r.table(SLACK)
     .getAll(teamId, {index: 'teamId'})
     .filter({isActive: true})
     .filter((integration) => integration('notifications').contains(notification));
@@ -27,7 +27,7 @@ const notifySlack = async (integrations, teamId, slackText) => {
     const resJson = await res.json();
     const {error} = resJson;
     if (error === 'channel_not_found') {
-      await r.table('SlackIntegration').get(integration.id)
+      await r.table(SLACK).get(integration.id)
         .update({
           isActive: false
         });

@@ -141,8 +141,8 @@ export const textTags = ['#private', '#archived'];
 export const NEWLINE_REGEX = /\r\n?|\n/g;
 
 /* Integrations */
-export const GITHUB = 'github';
-export const SLACK = 'slack';
+export const GITHUB = 'GitHubIntegration';
+export const SLACK = 'SlackIntegration';
 export const CURRENT_PROVIDERS = [GITHUB, SLACK];
 export const GITHUB_SCOPE = 'repo,user:email,write:repo_hook';
 export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:bot';
