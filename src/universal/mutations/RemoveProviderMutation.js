@@ -23,7 +23,7 @@ export const removeProviderUpdater = (viewer, teamId, service) => {
   if (integrationProvider) {
     viewer.setValue(null, 'integrationProvider', {teamId, service});
   }
-};f
+};
 
 export const updateProviderMap = (viewer, teamId, service, payload) => {
   const {id: userId} = fromGlobalId(viewer.getDataID());

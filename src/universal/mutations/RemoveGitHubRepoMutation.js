@@ -11,8 +11,10 @@ const mutation = graphql`
 
 export const removeGitHubRepoUpdater = (viewer, teamId, deletedId) => {
   const githubRepos = viewer.getLinkedRecords('githubRepos', {teamId});
-  const newNodes = getArrayWithoutIds(githubRepos, deletedId);
-  viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
+  if (githubRepos) {
+    const newNodes = getArrayWithoutIds(githubRepos, deletedId);
+    viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
+  }
 };
 
 const RemoveGitHubRepoMutation = (environment, githubGlobalId, teamId, viewerId) => {

@@ -16,6 +16,7 @@ import makeHref from 'universal/utils/makeHref';
 export const providerLookup = {
   [GITHUB]: {
     ...ui.providers.github,
+    route: 'github',
     makeUri: (jwt, teamId) => {
       const redirect = makeHref('/auth/github');
       const state = `${teamId}::${jwt}`;
@@ -25,6 +26,7 @@ export const providerLookup = {
   },
   [SLACK]: {
     ...ui.providers.slack,
+    route: 'slack',
     makeUri: (jwt, teamId) => {
       const redirect = makeHref('/auth/slack');
       // state is useful for CSRF, but we jwt to make sure the person isn't overwriting the int for another team
@@ -56,7 +58,7 @@ const ProviderRow = (props) => {
     integrationCount
     // providerUserName
   } = providerDetails || defaultDetails;
-  const {color, icon, description, makeUri, providerName} = providerLookup[name];
+  const {color, icon, description, makeUri, providerName, route} = providerLookup[name];
   const openOauth = () => {
     const uri = makeUri(jwt, teamId);
     window.open(uri);
@@ -65,7 +67,7 @@ const ProviderRow = (props) => {
     display: 'block',
     textDecoration: 'none'
   };
-  const to = `/team/${teamId}/settings/integrations/${name}`;
+  const to = `/team/${teamId}/settings/integrations/${route}`;
   const metaIconStyle = {
     display: 'inline-block',
     fontSize: ui.iconSize,

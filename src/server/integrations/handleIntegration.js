@@ -3,12 +3,12 @@ import schema from 'server/graphql/rootSchema';
 import closeClientPage from 'server/utils/closeClientPage';
 
 const query = `
-  mutation AddProviderMutation($code: ID! $state: ID! $service: String!) {
+  mutation AddProviderMutation($code: ID! $state: ID! $service: IntegrationService!) {
     addProvider(code: $code, state: $state, service: $service)
   }
 `;
 
-export default  (service) => async (req, res) => {
+export default (service) => async (req, res) => {
   closeClientPage(res);
   const {query: {code, state}} = req;
   const variables = {code, state, service};

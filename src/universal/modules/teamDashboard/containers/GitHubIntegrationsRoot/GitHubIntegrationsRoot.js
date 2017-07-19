@@ -10,7 +10,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import {connect} from 'react-redux';
 
 const githubRepoQuery = graphql`
-  query GitHubIntegrationsRootQuery($teamId: ID!, $service: ID!) {
+  query GitHubIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
     viewer {
       ...GitHubIntegrations_viewer
     }

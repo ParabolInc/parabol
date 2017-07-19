@@ -13,12 +13,12 @@ import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemoved
 
 const ProviderList = (props) => {
   const {jwt, viewer, styles, teamId} = props;
-  const {providerMap: {github, slack}} = viewer;
+  const {providerMap} = viewer;
   return (
     <div className={css(styles.providerList)}>
       <Panel hasHeader={false}>
-        <ProviderRow name={GITHUB} providerDetails={github} jwt={jwt} teamId={teamId} />
-        <ProviderRow name={SLACK} providerDetails={slack} jwt={jwt} teamId={teamId} />
+        <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} jwt={jwt} teamId={teamId} />
+        <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} jwt={jwt} teamId={teamId} />
       </Panel>
     </div>
   );
@@ -51,10 +51,10 @@ export default createFragmentContainer(
     fragment ProviderList_viewer on User {
       id
       providerMap(teamId: $teamId) {
-        github {
+        GitHubIntegration {
           ...ProviderRow_providerDetails
         }
-        slack {
+        SlackIntegration {
           ...ProviderRow_providerDetails
         }
       }

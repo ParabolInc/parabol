@@ -99,12 +99,12 @@ const GitHubIntegrations = (props) => {
           {githubRepos &&
           <div className={css(styles.integrationsList)}>
             {githubRepos.map((repo) => {
-              const {id, nameWithOwner, users} = repo;
+              const {id, nameWithOwner, teamMembers} = repo;
               return (
                 <IntegrationRow key={`${nameWithOwner}-row`}>
                   <div className={css(styles.nameWithOwner)}>{nameWithOwner}</div>
                   {
-                    users.map((user) => {
+                    teamMembers.map((user) => {
                       return (
                         <Avatar key={user.id} {...user} size="smaller"/>
                       )

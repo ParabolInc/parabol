@@ -10,7 +10,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import {connect} from 'react-redux';
 
 const slackChannelQuery = graphql`
-  query SlackIntegrationsRootQuery($teamId: ID!, $service: ID!) {
+  query SlackIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
     viewer {
       ...SlackIntegrations_viewer
     }
