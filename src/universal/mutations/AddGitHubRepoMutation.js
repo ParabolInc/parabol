@@ -43,6 +43,7 @@ const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, viewerId, onE
       teamMemberNode.setValue(`client:userId:${tempId++}`, 'id');
       const node = store.create(`client:repo:${tempId++}`, GITHUB);
       node.setValue(nameWithOwner, 'nameWithOwner');
+      node.setValue(`client:repoId:${tempId++}`, 'id');
       node.setLinkedRecords([teamMemberNode], 'teamMembers');
       addGitHubRepoUpdater(store, viewerId, teamId, node);
     },

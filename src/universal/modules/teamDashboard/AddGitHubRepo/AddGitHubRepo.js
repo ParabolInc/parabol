@@ -9,6 +9,7 @@ import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {GITHUB_ENDPOINT} from 'universal/utils/constants';
+import {setError, clearError} from 'universal/utils/relay/mutationCallbacks';
 
 const defaultSelectedRepo = () => ({
   repoId: undefined,
@@ -79,19 +80,8 @@ class AddGitHubRepo extends Component {
     const {environment, teamId, viewerId} = this.props;
     const {selectedRepo: {repoId, nameWithOwner}} = this.state;
     if (!repoId) return;
-    const onError = ({_error}) => {
-      this.setState({
-        error: _error
-      });
-    };
-    const onCompleted = () => {
-      if (this.state.error) {
-        this.setState({
-          error: null
-        });
-      }
-    };
-    AddGitHubRepoMutation(environment, nameWithOwner, teamId, viewerId, onError, onCompleted);
+
+    AddGitHubRepoMutation(environment, nameWithOwner, teamId, viewerId, setError.bind(this), clearError.bind(this));
     this.setState({
       selectedRepo: defaultSelectedRepo()
     });

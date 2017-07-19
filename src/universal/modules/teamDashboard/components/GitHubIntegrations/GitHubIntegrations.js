@@ -3,16 +3,16 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import Avatar from 'universal/components/Avatar/Avatar';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo';
-import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
+import GitHubRepoRow from 'universal/modules/teamDashboard/components/GItHubRepoRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
 import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation';
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
+import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
@@ -98,28 +98,15 @@ const GitHubIntegrations = (props) => {
           }
           {githubRepos &&
           <div className={css(styles.integrationsList)}>
-            {githubRepos.map((repo) => {
-              const {id, nameWithOwner, teamMembers} = repo;
-              return (
-                <IntegrationRow key={`${nameWithOwner}-row`}>
-                  <div className={css(styles.nameWithOwner)}>{nameWithOwner}</div>
-                  {
-                    teamMembers.map((user) => {
-                      return (
-                        <Avatar key={user.id} {...user} size="smaller"/>
-                      )
-                    })
-                  }
-                  <Button
-                    buttonStyle="flat"
-                    colorPalette="dark"
-                    label="Unlink Me"
-                    onClick={handleUnlinkMe(id)}
-                    size="smallest"
-                  />
-                </IntegrationRow>
-              );
-            })}
+            {githubRepos.map((repo) => (
+              <GitHubRepoRow
+                key={repo.id}
+                repo={repo}
+                environment={environment}
+                viewerId={viewerId}
+                teamId={teamId}
+              />
+            ))}
           </div>
           }
         </div>

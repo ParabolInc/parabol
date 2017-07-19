@@ -16,12 +16,8 @@ const mutation = graphql`
 export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
   const integrationId = payload.getValue('integrationId');
   const userId = payload.getValue('userId');
-  const {type, id} = fromGlobalId(integrationId);
-  if (!userId) {
-    if (type === GITHUB) {
-      removeGitHubRepoUpdater(viewer, teamId, integrationId);
-    }
-  } else {
+  const {type} = fromGlobalId(integrationId);
+  if (userId) {
     const integration = store.get(integrationId);
     if (integration) {
       const teamMembers = integration.getLinkedRecords('teamMembers');
@@ -29,6 +25,8 @@ export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
       const newNodes = getArrayWithoutIds(teamMembers, teamMemberId);
       integration.setLinkedRecords(newNodes, 'teamMembers');
     }
+  } else if (type === GITHUB) {
+    removeGitHubRepoUpdater(viewer, teamId, integrationId);
   }
 
 };

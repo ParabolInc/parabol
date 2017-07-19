@@ -341,6 +341,19 @@ const ui = {
   iconSize2x,
   iconSize3x,
 
+  // Integrations
+  // ---------------------------------------------------------------------------
+  //integrationRow: {
+  //  alignItems: 'center',
+  //  borderTop: `1px solid ${appTheme.palette.mid20l}`,
+  //  display: 'flex',
+  //  justifyContent: 'space-between',
+  //  padding: '1rem',
+  //  paddingLeft: 0,
+  //  paddingRight: '1px',
+  //  width: '100%'
+  //},
+
   // Invoice
   // ---------------------------------------------------------------------------
   invoiceBorderColor: appTheme.palette.mid40l,
