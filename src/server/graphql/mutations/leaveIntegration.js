@@ -41,7 +41,7 @@ export default {
       .update((doc) => ({
         //blackList: doc('blackList').append(userId).distinct(),
         userIds: doc('userIds').difference([userId]),
-        isActive: doc('userIds').count().ne(0)
+        isActive: doc('userIds').eq([userId]).not()
       }), {returnChanges: true})('changes')(0)('new_val').default(null);
 
     if (!updatedIntegration) {
@@ -50,7 +50,7 @@ export default {
 
     const leaveIntegration = {
       integrationId: globalId,
-      userId
+      userId: updatedIntegration.isActive ? userId : null
     };
 
     if (service === GITHUB) {

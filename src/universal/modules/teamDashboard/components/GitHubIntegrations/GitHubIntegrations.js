@@ -11,7 +11,7 @@ import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitH
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
 import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
-import RemoveGitHubRepoMutation from 'universal/mutations/RemoveGitHubRepoMutation';
+import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation';
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -28,7 +28,7 @@ const GitHubIntegrations = (props) => {
   const {id: viewerId, githubRepos, integrationProvider} = viewer;
   const handleUnlinkMe = (githubGlobalId) => () => {
 
-    //RemoveGitHubRepoMutation(environment, githubGlobalId, teamId, viewerId);
+    LeaveIntegrationMutation(environment, githubGlobalId, teamId, viewerId);
   };
   const accessToken = integrationProvider && integrationProvider.accessToken;
   const openOauth = () => {

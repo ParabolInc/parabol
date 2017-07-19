@@ -13,39 +13,43 @@ const mutation = graphql`
   }
 `;
 
-export const leaveIntegrationUpdater = (viewer, teamId, payload) => {
+export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
   const integrationId = payload.getValue('integrationId');
   const userId = payload.getValue('userId');
   const {type, id} = fromGlobalId(integrationId);
-  if (type === GITHUB) {
-    if (!userId) {
+  if (!userId) {
+    if (type === GITHUB) {
       removeGitHubRepoUpdater(viewer, teamId, integrationId);
-    } else {
-      const githubRepos = viewer.getLinkedRecords('githubRepos', {teamId});
-      if (githubRepos) {
-        const newNodes = getArrayWithoutIds(githubRepos, deletedId);
-
-      }
     }
   } else {
-
+    const integration = store.get(integrationId);
+    if (integration) {
+      const teamMembers = integration.getLinkedRecords('teamMembers');
+      const teamMemberId = `${userId}::${teamId}`;
+      const newNodes = getArrayWithoutIds(teamMembers, teamMemberId);
+      integration.setLinkedRecords(newNodes, 'teamMembers');
+    }
   }
 
-  viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
 };
 
-const LeaveIntegrationMutation = (environment, githubGlobalId, teamId, viewerId) => {
+let tempId = 0;
+const LeaveIntegrationMutation = (environment, globalId, teamId, viewerId) => {
   return commitMutation(environment, {
     mutation,
-    variables: {githubGlobalId},
+    variables: {globalId},
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('leaveIntegration');
-      leaveIntegrationUpdater(viewer, teamId, payload);
+      leaveIntegrationUpdater(store, viewer, teamId, payload);
     },
     optimisticUpdater: (store) => {
+      const {id: userId} = fromGlobalId(viewerId);
+      const leaveIntegration = store.create(`client:leaveIntegration:${tempId++}`, 'LeaveIntegrationPayload');
+      leaveIntegration.setValue(userId, 'userId');
+      leaveIntegration.setValue(globalId, 'integrationId');
       const viewer = store.get(viewerId);
-      leaveIntegrationUpdater(viewer, teamId, githubGlobalId);
+      leaveIntegrationUpdater(store, viewer, teamId, leaveIntegration);
     },
     onError: (err) => {
       console.log('err', err);
