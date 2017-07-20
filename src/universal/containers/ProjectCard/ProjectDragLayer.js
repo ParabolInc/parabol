@@ -11,7 +11,7 @@ const layerStyles = {
   pointerEvents: 'none',
   position: 'fixed',
   top: 0,
-  zIndex: ui.zCard
+  zIndex: ui.ziCardDragLayer
 };
 
 function getItemStyles(props) {

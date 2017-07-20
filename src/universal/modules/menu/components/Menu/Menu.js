@@ -93,7 +93,7 @@ const styleThunk = (theme, {maxHeight}) => ({
   root: {
     display: 'inline-block',
     position: 'relative',
-    zIndex: ui.zMenu
+    zIndex: ui.ziMenu
   },
 
   toggle: {
@@ -111,7 +111,7 @@ const styleThunk = (theme, {maxHeight}) => ({
   menuBlock: {
     paddingTop: '.25rem',
     position: 'absolute',
-    zIndex: ui.zMenu
+    zIndex: ui.ziMenu
   },
 
   menu: {

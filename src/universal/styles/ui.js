@@ -131,34 +131,20 @@ const ui = {
     display: 'inline-block',
     fontFamily: appTheme.typography.sansSerif,
     fontWeight: 700,
-    // lineHeight: '1.25em',
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
-    transition: `opacity ${transitionFastest}`,
+    transition: `transform ${transitionFastest}`,
     userSelect: 'none',
     verticalAlign: 'middle',
     ':hover': {
+      boxShadow: shadow[0],
       textDecoration: 'none'
     },
     ':focus': {
+      boxShadow: shadow[1],
       textDecoration: 'none'
     }
-    // ':active': {
-    //   animationDuration: '.1s',
-    //   animationName: {
-    //     '0%': {
-    //       transform: 'translate(0, 0)'
-    //     },
-    //     '50%': {
-    //       transform: 'translate(0, .25rem)'
-    //     },
-    //     '100%': {
-    //       transform: 'translate(0)'
-    //     }
-    //   },
-    //   animationTimingFunction: 'ease-in'
-    // }
   },
   buttonBlockStyles: {
     display: 'block',
@@ -215,7 +201,11 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
-  cardBoxShadow: '0 1px 2px rgba(103, 107, 139, .75)',
+  cardBoxShadow: [
+    '0 1px 2px rgba(103, 107, 139, .75)',
+    '0 2px 4px rgba(103, 107, 139, .75)',
+    '0 4px 8px rgba(103, 107, 139, .75)'
+  ],
   cardMaxWidth: '17.5rem',
   cardMinHeight: '8.1875rem',
   cardPaddingBase: '.5rem',
@@ -223,9 +213,9 @@ const ui = {
     backgroundColor: appTheme.palette.light10l,
     borderColor: appTheme.palette.mid70l,
     borderRadius: borderRadiusMedium,
-    boxShadow: '0 6px 12px rgba(0, 0, 0, .25)'
+    // boxShadow: '0 6px 12px rgba(0, 0, 0, .25)'
+    boxShadow: '0 8px 16px rgba(103, 107, 139, .75)'
   },
-  zCard: zIndexScale(6),
 
   // CTA Panels
   // ---------------------------------------------------------------------------
@@ -392,7 +382,6 @@ const ui = {
   menuItemColorHoverActive: appTheme.palette.dark50d,
   menuItemHeight: '2rem',
   menuItemFontSize: '.9375rem',
-  zMenu: zIndexScale(4),
 
   // Modals
   // ---------------------------------------------------------------------------
@@ -490,15 +479,21 @@ const ui = {
 
   // Generic zIndex scale
   // ---------------------------------------------------------------------------
-  z1: zIndexScale(1),
-  z2: zIndexScale(2),
-  z3: zIndexScale(4),
-  z5: zIndexScale(5),
-  z6: zIndexScale(6),
-  z7: zIndexScale(7),
-  z8: zIndexScale(8),
-  z9: zIndexScale(9),
-  z10: zIndexScale(10)
+  zi1: zIndexScale(1),
+  zi2: zIndexScale(2),
+  zi3: zIndexScale(3),
+  zi4: zIndexScale(4),
+  zi5: zIndexScale(5),
+  zi6: zIndexScale(6),
+  zi7: zIndexScale(7),
+  zi8: zIndexScale(8),
+  zi9: zIndexScale(9),
+  zi10: zIndexScale(10),
+
+  // …and then component-specific constants:
+
+  ziMenu: zIndexScale(4),
+  ziCardDragLayer: zIndexScale(6)
 };
 
 export default ui;

@@ -3,6 +3,7 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {cardRootStyles} from 'universal/styles/helpers';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH} from 'universal/utils/constants';
@@ -14,16 +15,20 @@ import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/Outc
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
+import FontAwesome from 'react-fontawesome';
 
 const OutcomeCard = (props) => {
   const {
     area,
+    cardHasFocus,
+    cardHasHover,
     editorRef,
     isAgenda,
     isEditing,
-    hasHover,
-    hoverOn,
-    hoverOff,
+    handleCardBlur,
+    handleCardFocus,
+    handleCardMouseEnter,
+    handleCardMouseLeave,
     openArea,
     openMenu,
     outcome,
@@ -43,66 +48,86 @@ const OutcomeCard = (props) => {
     styles.cardBlock,
     styles[status],
     isPrivate && styles.isPrivate,
-    isArchived && styles.isArchived
+    isArchived && styles.isArchived,
+    // hover before focus, it matters
+    cardHasHover && styles.cardHasHover,
+    cardHasFocus && styles.cardHasFocus,
   );
   const openContentMenu = openMenu('content');
   return (
-    <div className={rootStyles} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
-      {openArea === 'assign' &&
-        <OutcomeCardAssignMenu
-          onComplete={openContentMenu}
-          outcome={outcome}
+    <div
+      className={rootStyles}
+      onBlur={handleCardBlur}
+      onFocus={handleCardFocus}
+      onMouseEnter={handleCardMouseEnter}
+      onMouseLeave={handleCardMouseLeave}
+      tabIndex="-1"
+    >
+      <div className={css(styles.watermarkBlock)} style={{position: 'absolute', zIndex: ui.ziMenu - 2}}>
+        <FontAwesome name="github" className={css(styles.watermark)} />
+      </div>
+      <div style={{position: 'relative', zIndex: ui.ziMenu - 1}}>
+        <EditingStatusContainer
+          isEditing={isEditing}
+          outcomeId={outcome.id}
+          createdAt={outcome.createdAt}
+          updatedAt={outcome.updatedAt}
+        />
+        <ProjectEditor
+          editorRef={editorRef}
+          editorState={editorState}
+          isArchived={isArchived}
+          isDragging={isDragging}
+          setEditorRef={setEditorRef}
+          setEditorState={setEditorState}
           teamMembers={teamMembers}
         />
-      }
-      {openArea === 'status' &&
-        <OutcomeCardStatusMenu
+        <OutcomeCardFooter
+          cardHasHover={cardHasHover}
+          cardHasFocus={cardHasFocus}
           editorState={editorState}
+          hasOpenStatusMenu={openArea === 'status'}
           isAgenda={isAgenda}
-          onComplete={openContentMenu}
+          isPrivate={isPrivate}
           outcome={outcome}
+          showTeam={area === USER_DASH}
+          teamMembers={teamMembers}
+          toggleAssignMenu={openMenu('assign')}
+          toggleStatusMenu={openMenu('status')}
+          unarchiveProject={unarchiveProject}
         />
-      }
-      {openArea === 'content' &&
-        <div>
-          <EditingStatusContainer
-            isEditing={isEditing}
-            outcomeId={outcome.id}
-            createdAt={outcome.createdAt}
-            updatedAt={outcome.updatedAt}
-          />
-          <ProjectEditor
-            editorRef={editorRef}
-            editorState={editorState}
-            isArchived={isArchived}
-            isDragging={isDragging}
-            setEditorRef={setEditorRef}
-            setEditorState={setEditorState}
-            teamMembers={teamMembers}
-          />
-        </div>
-      }
-      <OutcomeCardFooter
-        cardHasHover={hasHover}
-        hasOpenStatusMenu={openArea === 'status'}
-        isPrivate={isPrivate}
-        outcome={outcome}
-        showTeam={area === USER_DASH}
-        toggleAssignMenu={openMenu('assign')}
-        toggleStatusMenu={openMenu('status')}
-        unarchiveProject={unarchiveProject}
-      />
+      </div>
     </div>
   );
 };
+
+// {openArea === 'assign' &&
+//   <OutcomeCardAssignMenu
+//     onComplete={openContentMenu}
+//     outcome={outcome}
+//     teamMembers={teamMembers}
+//   />
+// }
+
+// {openArea === 'status' &&
+// <OutcomeCardStatusMenu
+// editorState={editorState}
+// isAgenda={isAgenda}
+// onComplete={openContentMenu}
+// outcome={outcome}
+// />
+// }
 
 OutcomeCard.propTypes = {
   area: PropTypes.string,
   editorRef: PropTypes.any,
   editorState: PropTypes.object,
-  hasHover: PropTypes.bool,
-  hoverOn: PropTypes.func,
-  hoverOff: PropTypes.func,
+  cardHasHover: PropTypes.bool,
+  cardHasFocus: PropTypes.bool,
+  handleCardBlur: PropTypes.func,
+  handleCardFocus: PropTypes.func,
+  handleCardMouseEnter: PropTypes.func,
+  handleCardMouseLeave: PropTypes.func,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
@@ -158,6 +183,16 @@ const styleThunk = () => ({
     }
   },
 
+  // hover before focus, it matters
+
+  cardHasHover: {
+    boxShadow: ui.cardBoxShadow[1],
+  },
+
+  cardHasFocus: {
+    boxShadow: ui.cardBoxShadow[2],
+  },
+
   // TODO: Cards need block containers, not margin (TA)
   cardBlock: {
     marginBottom: '.5rem'
@@ -171,6 +206,30 @@ const styleThunk = () => ({
     '::after': {
       color: labels.archived.color
     }
+  },
+
+  watermarkBlock: {
+    bottom: 0,
+    left: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    textAlign: 'center',
+    top: 0,
+    verticalAlign: 'middle'
+  },
+
+  watermark: {
+    bottom: 0,
+    color: ui.palette.dark,
+    fontSize: '7rem',
+    height: '8rem',
+    lineHeight: '8rem',
+    margin: 'auto -1.5rem -1.5rem auto',
+    opacity: .12,
+    position: 'absolute',
+    right: 0,
+    width: '8rem',
   }
 });
 

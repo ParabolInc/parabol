@@ -164,7 +164,7 @@ const styleThunk = (theme, props) => ({
     outline: 'none',
     padding: '.5rem .5rem .5rem 1rem',
     position: 'absolute',
-    zIndex: 1
+    zIndex: ui.ziMenu
   },
 
   closing: {

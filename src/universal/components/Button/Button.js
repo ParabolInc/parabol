@@ -70,8 +70,7 @@ const styleThunk = (theme, props) => ({
   },
 
   hasMouseDown: {
-    backgroundColor: 'black !important',
-    transform: 'translate(0, .25rem)'
+    transform: 'translate(0, .125rem)'
   }
 });
 
@@ -84,14 +83,8 @@ const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid', o
     borderColor: buttonColor,
     color,
 
-    ':hover': {
-      color,
-      opacity
-    },
-    ':focus': {
-      color,
-      opacity
-    }
+    ':hover': { color },
+    ':focus': { color }
   };
 };
 
@@ -100,14 +93,8 @@ const makeFlatTheme = (buttonStyle, color, opacity = '.5') => ({
   borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
   color,
 
-  ':hover': {
-    color,
-    opacity
-  },
-  ':focus': {
-    color,
-    opacity
-  }
+  ':hover': { color },
+  ':focus': { color }
 });
 
 const makePropColors = (buttonStyle, colorPalette) => {
@@ -120,6 +107,8 @@ const makePropColors = (buttonStyle, colorPalette) => {
   }
   return makeSolidTheme(color, textColor, buttonStyle);
 };
+
+// Look out, we have state! But no lifecycle methods, just DOM events for UI. :) (TA)
 
 @withStyles(styleThunk)
 export default class LabeledFieldArray extends Component {
@@ -166,8 +155,13 @@ export default class LabeledFieldArray extends Component {
     };
   }
 
-  onMouseDown = () => { console.log('onMouseDown') && this.setState({ hasMouseDown: true }) && console.log(`${this.state.hasMouseDown}`) };
-  onMouseUp = () => { console.log('onMouseUp') && this.setState({ hasMouseDown: false }) && console.log(`${this.state.hasMouseDown}`) };
+  onMouseDown = () => this.setState({ hasMouseDown: true });
+
+  onMouseUp = (e) => {
+    this.setState({ hasMouseDown: false });
+    // We don’t want 'focus' styles to linger after the click (TA)
+    e.currentTarget.blur();
+  }
 
   render() {
     const {
@@ -188,7 +182,6 @@ export default class LabeledFieldArray extends Component {
     } = this.props;
 
     const {hasMouseDown} = this.state;
-    const buttonTitle = title || label;
     const iconOnly = !label;
 
     const buttonStyles = css(
@@ -239,7 +232,7 @@ export default class LabeledFieldArray extends Component {
         onMouseEnter={onMouseEnter}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
-        title={buttonTitle}
+        title={title || label}
         type={type || 'button'}
       >
         {icon ?
