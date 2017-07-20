@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
-import TeamMember from 'server/graphql/models/TeamMember/teamMemberSchema';
+import TeamMember from 'server/graphql/types/TeamMember';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GITHUB} from 'universal/utils/constants';

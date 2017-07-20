@@ -1,52 +1,64 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {errorObj} from 'server/utils/utils';
-import {IntegrationService} from 'server/graphql/types/IntegrationService';
+import JoinIntegrationPayload from 'server/graphql/types/JoinIntegrationPayload';
+import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
 
-// Will use this when GH comes
 export default {
-  type: GraphQLBoolean,
+  type: new GraphQLNonNull(JoinIntegrationPayload),
   description: 'Remove a user from an integration',
   args: {
-    teamMemberId: {
+    globalId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the teamMember calling it.'
-    },
-    integrationId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'the id of the integration to remove'
-    },
-    service: {
-      type: new GraphQLNonNull(IntegrationService),
-      description: 'The name of the service like slack or github'
+      description: 'The global id of the integration to join'
     }
   },
-  async resolve(source, {teamMemberId, integrationId, service}, {authToken, socket}) {
+  async resolve(source, {globalId}, {authToken, socket}) {
     const r = getRethink();
 
     // AUTH
-    const [userId, teamId] = teamMemberId.split('::');
-    requireSUOrSelf(authToken, userId);
-    requireSUOrTeamMember(authToken, teamId);
     requireWebsocket(socket);
+    const userId = getUserId(authToken);
+    const {id: localId, type: service} = fromGlobalId(globalId);
+    const integration = await r.table(service).get(localId);
+    if (!integration) {
+      throw new Error('That integration does not exist');
+    }
+    const {teamId, userIds} = integration;
+    requireSUOrTeamMember(authToken, teamId);
+
+    // VALIDATION
+    if (!authToken.tms.includes(teamId)) {
+      throw new Error('You must be a part of the team to join the team');
+    }
+
+    if (userIds.includes(userId)) {
+      throw new Error('You are already a part of this integration');
+    }
 
     // RESOLUTION
-    const change = await r.table(service).get(integrationId)
+    const updatedIntegration = await r.table(service).get(localId)
       .update((doc) => ({
-        //blackList: doc('blackList').difference([userId]).default([]),
         userIds: doc('userIds').append(userId).distinct()
-      }), {returnChanges: true})('changes')(0);
+      }), {returnChanges: true})('changes')(0)('new_val').default(null);
 
-    if (!change) {
-      throw errorObj({_error: `${integrationId} does not exist for ${service}`});
+    if (!updatedIntegration) {
+      throw new Error('Integration was already updated');
+    }
+    const teamMemberId = `${userId}::${teamId}`;
+    const teamMember = await r.table('TeamMember').get(teamMemberId);
+    if (!teamMember) {
+      throw new Error('Team member not found!');
     }
 
-    if (change.new_val.userIds.length === change.old_val.userIds.length) {
-      throw errorObj({_error: `${userId} is already on the integration ${integrationId}`});
-    }
+    const integrationJoined = {
+      globalId,
+      teamMember
+    };
 
-    return true;
+    getPubSub().publish(`integrationJoined.${teamId}.${service}`, {integrationJoined, mutatorId: socket.id});
+    return integrationJoined;
   }
 };
 

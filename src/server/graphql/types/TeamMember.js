@@ -6,17 +6,19 @@ import {
   GraphQLString,
   GraphQLInt
 } from 'graphql';
-import {GraphQLEmailType, GraphQLURLType} from '../../types';
-import {Team} from '../Team/teamSchema';
-import {User} from '../User/userSchema';
-import {Project} from '../Project/projectSchema';
+import {GraphQLEmailType, GraphQLURLType} from '../types';
+import {Team} from '../models/Team/teamSchema';
+import {User} from '../models/User/userSchema';
+import {Project} from '../models/Project/projectSchema';
 import getRethink from 'server/database/rethinkDriver';
+import {globalIdField} from 'graphql-relay';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
   description: 'A member of a team team',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
+    id: globalIdField('TeamMember', ({id}) => id),
+    //id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
     isNotRemoved: {type: GraphQLBoolean, description: 'true if the user is a part of the team, false if they no longer are'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},

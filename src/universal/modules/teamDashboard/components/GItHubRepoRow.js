@@ -8,6 +8,9 @@ import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutati
 import formError from 'universal/styles/helpers/formError';
 import withStyles from 'universal/styles/withStyles';
 import {setError, clearError} from 'universal/utils/relay/mutationCallbacks';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import toGlobalId from 'universal/utils/relay/toGlobalId';
+import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation';
 
 class GitHubRepoRow extends Component {
   state = {};
@@ -15,8 +18,17 @@ class GitHubRepoRow extends Component {
   render() {
     const {environment, styles, viewerId, teamId, repo} = this.props;
     const {id, nameWithOwner, teamMembers} = repo;
-    const handleUnlinkMe = (githubGlobalId) => () => {
-      LeaveIntegrationMutation(environment, githubGlobalId, teamId, viewerId, setError.bind(this), clearError.bind(this));
+
+    const {id: userId} = fromGlobalId(viewerId);
+    const teamMemberId = `${userId}::${teamId}`;
+    const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
+    const viewerInIntegration = Boolean(teamMembers.find((teamMember) => teamMember.id === globalTeamMemberId));
+    const toggleIntegrationMembership = (githubGlobalId) => () => {
+      if (viewerInIntegration) {
+        LeaveIntegrationMutation(environment, githubGlobalId, teamId, viewerId, setError.bind(this), clearError.bind(this));
+      } else {
+        JoinIntegrationMutation(environment, githubGlobalId, teamId, viewerId, setError.bind(this), clearError.bind(this));
+      }
     };
     const {error} = this.state;
     return (
@@ -27,8 +39,8 @@ class GitHubRepoRow extends Component {
           <Button
             buttonStyle="flat"
             colorPalette="dark"
-            label="Unlink Me"
-            onClick={handleUnlinkMe(id)}
+            label={viewerInIntegration ? 'Unlink Me' : 'Link Me'}
+            onClick={toggleIntegrationMembership(id)}
             size="smallest"
           />
         </IntegrationRow>

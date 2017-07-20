@@ -1,6 +1,7 @@
 import {commitMutation} from 'react-relay';
-import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
 import {GITHUB} from 'universal/utils/constants';
+import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMember';
+import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
 
 const mutation = graphql`
   mutation AddGitHubRepoMutation($nameWithOwner: String!, $teamId: ID!) {
@@ -36,16 +37,13 @@ const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, viewerId, onE
       addGitHubRepoUpdater(store, viewerId, teamId, node);
     },
     optimisticUpdater: (store) => {
-      const teamMemberNode = store.create(`client:users:${tempId++}`, 'User');
-      // TODO use real values
-      teamMemberNode.setValue(null, 'picture');
-      teamMemberNode.setValue('Me', 'preferredName');
-      teamMemberNode.setValue(`client:userId:${tempId++}`, 'id');
-      const node = store.create(`client:repo:${tempId++}`, GITHUB);
-      node.setValue(nameWithOwner, 'nameWithOwner');
-      node.setValue(`client:repoId:${tempId++}`, 'id');
-      node.setLinkedRecords([teamMemberNode], 'teamMembers');
-      addGitHubRepoUpdater(store, viewerId, teamId, node);
+      const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId);
+      const repoId = `addGitHubRepo:${tempId++}`;
+      const repo = store.create(repoId, GITHUB)
+        .setValue(nameWithOwner, 'nameWithOwner')
+        .setValue(repoId, 'id')
+        .setLinkedRecords([teamMemberNode], 'teamMembers');
+      addGitHubRepoUpdater(store, viewerId, teamId, repo);
     },
     onCompleted,
     onError

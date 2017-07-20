@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay';
 import {GITHUB, SLACK} from 'universal/utils/constants';
-import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
 
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {
@@ -104,14 +104,14 @@ const RemoveProviderMutation = (environment, providerId, service, teamId, viewer
       const oldProviderRow = oldProviderMap.getLinkedRecord(service);
       const oldUserCount = oldProviderRow.getValue('userCount') || 1;
       const oldIntegrationCount = oldProviderRow.getValue('integrationCount') || deletedIntegrationIds.length;
-      const providerRow = store.create(`client:ProviderRow:${tempId++}`, 'ProviderRow');
-      providerRow.setValue(service, 'service');
-      providerRow.setValue(null, 'accessToken');
-      providerRow.setValue(oldUserCount - 1, 'userCount');
-      providerRow.setValue(oldIntegrationCount - deletedIntegrationIds.length, 'integrationCount');
-      const payload = store.create(`client:removeProvider:${tempId++}`, 'RemoveProviderPayload');
-      payload.setValue(userId, 'userId');
-      payload.setLinkedRecord(providerRow, 'providerRow');
+      const providerRow = store.create(`client:ProviderRow:${tempId++}`, 'ProviderRow')
+        .setValue(service, 'service')
+        .setValue(null, 'accessToken')
+        .setValue(oldUserCount - 1, 'userCount')
+        .setValue(oldIntegrationCount - deletedIntegrationIds.length, 'integrationCount');
+      const payload = store.create(`client:removeProvider:${tempId++}`, 'RemoveProviderPayload')
+        .setValue(userId, 'userId')
+        .setLinkedRecord(providerRow, 'providerRow');
       updateProviderMap(viewer, teamId, service, payload);
     },
     onError: (err) => {

@@ -3,7 +3,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'grap
 const LeaveIntegrationPayload = new GraphQLObjectType({
   name: 'LeaveIntegrationPayload',
   fields: () => ({
-    integrationId: {
+    globalId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The globalId of the integration with a removed member'
     },

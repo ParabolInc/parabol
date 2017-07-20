@@ -10,9 +10,7 @@ import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitH
 import GitHubRepoRow from 'universal/modules/teamDashboard/components/GItHubRepoRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
 import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
-import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation';
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
-import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
@@ -20,16 +18,14 @@ import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRem
 import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import {GITHUB} from 'universal/utils/constants';
+import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription';
+import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
 
 const {makeUri} = providerLookup[GITHUB];
 
 const GitHubIntegrations = (props) => {
   const {relay: {environment}, jwt, styles, teamId, viewer} = props;
   const {id: viewerId, githubRepos, integrationProvider} = viewer;
-  const handleUnlinkMe = (githubGlobalId) => () => {
-
-    LeaveIntegrationMutation(environment, githubGlobalId, teamId, viewerId);
-  };
   const accessToken = integrationProvider && integrationProvider.accessToken;
   const openOauth = () => {
     const uri = makeUri(jwt, teamId);
@@ -195,9 +191,12 @@ const subscriptionThunk = ({teamId, viewer: {id}}) => {
     GitHubRepoAddedSubscription(teamId, id),
     GitHubRepoRemovedSubscription(teamId, id),
     ProviderRemovedSubscription(teamId, id),
-    ProviderAddedSubscription(teamId, id)
+    ProviderAddedSubscription(teamId, id),
+    IntegrationJoinedSubscription(GITHUB, teamId, id),
+    IntegrationLeftSubscription(GITHUB, teamId, id)
   ];
 };
+
 export default createFragmentContainer(
   withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(GitHubIntegrations)),
   graphql`

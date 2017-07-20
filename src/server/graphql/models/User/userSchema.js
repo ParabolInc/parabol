@@ -17,7 +17,7 @@ import slackChannels from 'server/graphql/queries/slackChannels';
 import githubRepos from 'server/graphql/queries/githubRepos';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {GraphQLEmailType, GraphQLURLType} from '../../types';
-import TeamMember from '../TeamMember/teamMemberSchema';
+import TeamMember from 'server/graphql/types/TeamMember';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',

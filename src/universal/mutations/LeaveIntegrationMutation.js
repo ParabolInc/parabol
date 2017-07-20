@@ -3,36 +3,39 @@ import {removeGitHubRepoUpdater} from 'universal/mutations/RemoveGitHubRepoMutat
 import {GITHUB} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
+import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
   mutation LeaveIntegrationMutation($globalId: ID!) {
     leaveIntegration(globalId: $globalId) {
-      integrationId
+      globalId
       userId
     }
   }
 `;
 
 export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
-  const integrationId = payload.getValue('integrationId');
+  const globalId = payload.getValue('globalId');
   const userId = payload.getValue('userId');
-  const {type} = fromGlobalId(integrationId);
+  const {type} = fromGlobalId(globalId);
+  // a null userId is interpreted as removing the whole repo
   if (userId) {
-    const integration = store.get(integrationId);
+    const integration = store.get(globalId);
     if (integration) {
       const teamMembers = integration.getLinkedRecords('teamMembers');
       const teamMemberId = `${userId}::${teamId}`;
-      const newNodes = getArrayWithoutIds(teamMembers, teamMemberId);
+      const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
+      const newNodes = getArrayWithoutIds(teamMembers, globalTeamMemberId);
       integration.setLinkedRecords(newNodes, 'teamMembers');
     }
   } else if (type === GITHUB) {
-    removeGitHubRepoUpdater(viewer, teamId, integrationId);
+    removeGitHubRepoUpdater(viewer, teamId, globalId);
   }
 
 };
 
 let tempId = 0;
-const LeaveIntegrationMutation = (environment, globalId, teamId, viewerId) => {
+const LeaveIntegrationMutation = (environment, globalId, teamId, viewerId, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {globalId},
@@ -43,15 +46,14 @@ const LeaveIntegrationMutation = (environment, globalId, teamId, viewerId) => {
     },
     optimisticUpdater: (store) => {
       const {id: userId} = fromGlobalId(viewerId);
-      const leaveIntegration = store.create(`client:leaveIntegration:${tempId++}`, 'LeaveIntegrationPayload');
-      leaveIntegration.setValue(userId, 'userId');
-      leaveIntegration.setValue(globalId, 'integrationId');
+      const leaveIntegration = store.create(`client:leaveIntegration:${tempId++}`, 'LeaveIntegrationPayload')
+        .setValue(userId, 'userId')
+        .setValue(globalId, 'globalId');
       const viewer = store.get(viewerId);
       leaveIntegrationUpdater(store, viewer, teamId, leaveIntegration);
     },
-    onError: (err) => {
-      console.log('err', err);
-    }
+    onError,
+    onCompleted
   });
 };
 

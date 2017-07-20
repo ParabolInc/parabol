@@ -17,6 +17,8 @@ import project from './models/Project/projectSubscription';
 import team from './models/Team/teamSubscription';
 import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
+import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
+import integrationJoined from 'server/graphql/subscriptions/integrationJoined';
 
 const rootFields = Object.assign({},
   agenda,
@@ -37,6 +39,8 @@ export default new GraphQLObjectType({
   fields: () => ({
     githubRepoAdded,
     githubRepoRemoved,
+    integrationJoined,
+    integrationLeft,
     slackChannelAdded,
     slackChannelRemoved,
     providerAdded,

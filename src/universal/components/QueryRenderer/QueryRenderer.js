@@ -2,6 +2,7 @@ import deepFreeze from 'deep-freeze';
 import areEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {requestIdleCallback} from 'universal/utils/requestIdleCallback';
 
 const getStateWithProps = (props = null) => ({
   error: null,
