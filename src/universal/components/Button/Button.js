@@ -70,7 +70,6 @@ const styleThunk = (theme, props) => ({
   },
 
   hasMouseDown: {
-    // boxShadow: ui.shadow[2],
     transform: 'translate(0, .125rem)'
   }
 });
@@ -84,31 +83,18 @@ const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid', o
     borderColor: buttonColor,
     color,
 
-    ':hover': {
-      color,
-      // opacity
-    },
-    ':focus': {
-      color,
-      // opacity
-    }
+    ':hover': { color },
+    ':focus': { color }
   };
 };
 
 const makeFlatTheme = (buttonStyle, color, opacity = '.5') => ({
   backgroundColor: 'transparent',
   borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
-  // boxShadow: 'none !important',
   color,
 
-  ':hover': {
-    color,
-    // opacity
-  },
-  ':focus': {
-    color,
-    // opacity
-  }
+  ':hover': { color },
+  ':focus': { color }
 });
 
 const makePropColors = (buttonStyle, colorPalette) => {
@@ -167,12 +153,11 @@ export default class LabeledFieldArray extends Component {
     };
   }
 
-  onMouseDown = () => {
-    this.setState({ hasMouseDown: true });
-  }
+  onMouseDown = () => this.setState({ hasMouseDown: true });
 
   onMouseUp = (e) => {
     this.setState({ hasMouseDown: false });
+    // We don’t want 'focus' styles to linger after the click (TA)
     e.currentTarget.blur();
   }
 

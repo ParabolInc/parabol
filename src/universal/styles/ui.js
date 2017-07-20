@@ -134,7 +134,7 @@ const ui = {
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
-    transition: `opacity ${transitionFastest}, transform ${transitionFastest}`,
+    transition: `transform ${transitionFastest}`,
     userSelect: 'none',
     verticalAlign: 'middle',
     ':hover': {
@@ -144,22 +144,6 @@ const ui = {
     ':focus': {
       boxShadow: shadow[1],
       textDecoration: 'none'
-    },
-    ':active': {
-      opacity: '1 !important'
-      // animationDuration: '.1s',
-      // animationName: {
-      //   '0%': {
-      //     transform: 'translate(0, 0)'
-      //   },
-      //   '50%': {
-      //     transform: 'translate(0, .25rem)'
-      //   },
-      //   '100%': {
-      //     transform: 'translate(0)'
-      //   }
-      // }
-      // animationTimingFunction: 'ease-in'
     }
   },
   buttonBlockStyles: {
