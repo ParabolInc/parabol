@@ -79,7 +79,6 @@ const addProviderGitHub = async (code, teamId, userId) => {
           }, {returnChanges: true})('changes')(0)('new_val')
       );
     });
-
   const rowDetails = await getProviderRowData(GITHUB, teamId);
 
   const providerAdded = {
@@ -88,7 +87,8 @@ const addProviderGitHub = async (code, teamId, userId) => {
       ...rowDetails,
       accessToken,
       service: GITHUB,
-      teamId
+      // tell relay to not automatically merge the new value as a sink. changed teamId changes globalId
+      teamId: `_${teamId}`
     },
   };
   getPubSub().publish(`providerAdded.${teamId}`, {providerAdded});

@@ -30,7 +30,7 @@ const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId, viewerId
       removeSlackChannelUpdater(viewer, teamId, slackGlobalId);
     },
     onError: (err) => {
-      console.log('err', err);
+      console.error('err', err);
     }
   });
 };

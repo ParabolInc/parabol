@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
+import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {
@@ -39,7 +40,7 @@ export const updateProviderMap = (viewer, teamId, service, payload) => {
   }
   oldProviderMap.setLinkedRecord(newProviderRow, service);
 };
-``
+
 export const removeIntegrations = (viewer, teamId, service, deletedIntegrationIds) => {
   if (service === SLACK) {
     viewer.setLinkedRecords([], 'slackChannels', {teamId});
@@ -52,14 +53,16 @@ export const removeIntegrations = (viewer, teamId, service, deletedIntegrationId
 };
 
 
-const getLocalIdsToRemove = (viewer, teamId, service) => {
+const getIntegrationIdsToRemove = (viewer, teamId, service) => {
   const {id: userId} = fromGlobalId(viewer.getDataID());
+  const teamMemberId = `${userId}::${teamId}`;
+  const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
   if (service === GITHUB) {
     const repos = viewer.getLinkedRecords('githubRepos', {teamId}) || [];
     return repos.reduce((arr, repo) => {
-      const userIds = repo.getValue('userIds');
-      if (userIds.length === 1 && userIds[0] === userId) {
-        arr.push(repo.getDataId());
+      const teamMembers = repo.getLinkedRecords('teamMembers');
+      if (teamMembers.length === 1 && teamMembers[0].getValue('id') === globalTeamMemberId) {
+        arr.push(repo.getDataID());
       }
       return arr;
     }, []);
@@ -80,7 +83,7 @@ const RemoveProviderMutation = (environment, providerId, service, teamId, viewer
       // remove the accessToken from the provider
       removeProviderUpdater(viewer, teamId, service);
 
-      // update the userCount & integrationCount (and access token if mutator == viewer)
+      // update the userCount & integrationCount (and accessToken if mutator == viewer)
       updateProviderMap(viewer, teamId, service, payload);
 
       // update the integrations that exclusively belonged to this provider
@@ -94,7 +97,7 @@ const RemoveProviderMutation = (environment, providerId, service, teamId, viewer
       removeProviderUpdater(viewer, teamId, service);
 
       // update the integrations that exclusively belonged to this provider
-      const deletedIntegrationIds = getLocalIdsToRemove(viewer, teamId, service);
+      const deletedIntegrationIds = getIntegrationIdsToRemove(viewer, teamId, service);
       removeIntegrations(viewer, teamId, service, deletedIntegrationIds);
 
       // update the userCount & integrationCount (and access token if mutator == viewer)
@@ -115,7 +118,7 @@ const RemoveProviderMutation = (environment, providerId, service, teamId, viewer
       updateProviderMap(viewer, teamId, service, payload);
     },
     onError: (err) => {
-      console.log('err', err);
+      console.error('err', err);
     }
   });
 };

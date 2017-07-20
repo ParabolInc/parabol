@@ -32,7 +32,7 @@ const RemoveGitHubRepoMutation = (environment, githubGlobalId, teamId, viewerId)
       removeGitHubRepoUpdater(viewer, teamId, githubGlobalId);
     },
     onError: (err) => {
-      console.log('err', err);
+      console.error('err', err);
     }
   });
 };

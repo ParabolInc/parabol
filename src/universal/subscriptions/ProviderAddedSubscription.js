@@ -33,7 +33,7 @@ const addProviderUpdater = (viewer, teamId, payload) => {
     newProviderRow.setValue(oldProviderRow.getValue('accessToken'), 'accessToken');
   }
   if (oldProviderMap) {
-    oldProviderMap.setLinkedRecord(newProviderRow, service);
+    oldProviderMap.getLinkedRecord(service).copyFieldsFrom(newProviderRow);
   }
 };
 

@@ -26,14 +26,16 @@ export default {
       if (service === SLACK || subscriberUserId === userId) {
         return value;
       }
-      value.providerAdded = {
-        providerRow: {
-          ...providerRow,
-          accessToken: null
+      // IMPORTANT! value should not be mutated, it is reused for every listener in the async iterator
+      return {
+        providerAdded: {
+          providerRow: {
+            ...providerRow,
+            accessToken: null
+          }
         }
       };
-      return value;
-    }
+    };
     return makeSubscribeIter(channelName, undefined, resolve);
   }
 };

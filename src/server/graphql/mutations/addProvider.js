@@ -39,7 +39,6 @@ export default {
       throw new Error('Bad auth token');
     }
     const userId = getUserId(authToken);
-    console.log('adding prov', service)
     if (service === SLACK) {
       addProviderSlack(code, teamId, userId);
     } else if (service === GITHUB) {
