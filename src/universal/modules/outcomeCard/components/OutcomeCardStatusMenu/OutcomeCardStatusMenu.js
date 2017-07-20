@@ -3,21 +3,28 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
+import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 import OutcomeCardMenuButton from 'universal/modules/outcomeCard/components/OutcomeCardMenuButton/OutcomeCardMenuButton';
 import {convertToRaw} from 'draft-js';
 import addTagToProject from 'universal/utils/draftjs/addTagToProject';
+import {textOverflow} from 'universal/styles/helpers';
+import {Menu, MenuItem} from 'universal/modules/menu';
+import FontAwesome from 'react-fontawesome';
 
 const buttonArray = labels.projectStatus.slugs.slice(0);
 
 const OutcomeCardStatusMenu = (props) => {
   const {onComplete, outcome, isAgenda, styles, editorState} = props;
   const {id: projectId, status} = outcome;
-  const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
-  const deleteOutcomeLabel = <span>De<u>l</u>ete this Project</span>;
+
+  const privateLabel = <div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>;
+  const archiveLabel = <div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>;
+  const deleteOutcomeLabel = <div className={css(styles.label)}>De<u>l</u>ete this Project</div>;
 
   const archiveProject = () => {
     const contentState = editorState.getCurrentContent();
@@ -66,55 +73,78 @@ const OutcomeCardStatusMenu = (props) => {
     }
   };
 
-  const makeButton = (newStatus, icon, label) => {
-    const title = `Set status to ${upperFirst(newStatus)}`;
-    const handleProjectUpdate = handleProjectUpdateFactory(newStatus);
-    return (
-      <OutcomeCardMenuButton
-        disabled={status === newStatus}
-        icon={icon}
-        label={label}
-        onClick={handleProjectUpdate}
-        status={newStatus}
-        title={title}
+  const originAnchor = {
+    vertical: 'bottom',
+    horizontal: 'right'
+  };
+
+  const targetAnchor = {
+    vertical: 'top',
+    horizontal: 'right'
+  };
+
+  const toggle = <OutcomeCardFooterButton icon="ellipsis-v" />;
+
+  const itemFactory = () => {
+    const listItems = [];
+    buttonArray.map((btn, idx) => {
+      const itemStatus = labels.projectStatus[btn];
+      const {color, icon, label, slug} = itemStatus;
+      const handleProjectUpdate = handleProjectUpdateFactory(slug);
+      const labelBlock = <div className={css(styles.label)}>{'Move to '}<b style={{color}}>{label}</b></div>;
+      listItems.push(
+        <MenuItem
+          icon={icon}
+          iconColor={color}
+          isActive={status === itemStatus.slug}
+          key={btn}
+          label={labelBlock}
+          onClick={handleProjectUpdate}
+        />
+      );
+    })
+    listItems.push(
+      <MenuItem
+        hr="before"
+        icon="lock"
+        key="private"
+        label={privateLabel}
+        onClick={console.log('private!')}
       />
     );
+    {!isAgenda &&
+      listItems.push(
+        <MenuItem
+          icon="archive"
+          key="archive"
+          label={archiveLabel}
+          onClick={archiveProject}
+        />
+      );
+    }
+    {isAgenda &&
+      listItems.push(
+        <MenuItem
+          icon="times"
+          key="delete"
+          label={deleteOutcomeLabel}
+          onClick={deleteOutcome}
+        />
+      );
+    }
+    return listItems;
   };
 
   return (
-    <div className={css(styles.root)}>
-      {buttonArray.map((btn, idx) => {
-        const btnStatus = labels.projectStatus[btn];
-        return (
-          <div className={css(styles.column)} key={btn}>
-            {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel, idx)}
-          </div>
-        );
-      })}
-      {!isAgenda &&
-        <div className={css(styles.buttonBlock)}>
-          <OutcomeCardMenuButton
-            icon="archive"
-            label={notArchivedLabel}
-            onClick={archiveProject}
-            status="archive"
-            title="Move to archive"
-          />
-        </div>
-      }
-      {isAgenda &&
-        <div className={css(styles.buttonBlock)}>
-          <OutcomeCardMenuButton
-            icon="times"
-            label={deleteOutcomeLabel}
-            onClick={deleteOutcome}
-            status="archive"
-            title="Delete this Project"
-          />
-        </div>
-      }
-    </div>
+    <Menu
+      itemFactory={itemFactory}
+      maxHeight="14.0625rem"
+      originAnchor={originAnchor}
+      targetAnchor={targetAnchor}
+      toggle={toggle}
+    />
   );
+
 };
 
 OutcomeCardStatusMenu.propTypes = {
@@ -192,7 +222,14 @@ const styleThunk = () => ({
   },
   archived: {
     color: labels.archived.color
-  }
+  },
+
+  label: {
+    ...textOverflow,
+    fontSize: ui.menuItemFontSize,
+    lineHeight: ui.menuItemHeight,
+    padding: `0 ${ui.menuGutterHorizontal} 0 0`
+  },
 });
 
 export default withStyles(styleThunk)(OutcomeCardStatusMenu);

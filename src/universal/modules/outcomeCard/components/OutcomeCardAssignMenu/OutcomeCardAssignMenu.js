@@ -3,10 +3,21 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
-import Avatar from 'universal/components/Avatar/Avatar';
+import {Menu, MenuItem} from 'universal/modules/menu';
+import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const OutcomeCardAssignMenu = (props) => {
-  const {onComplete, outcome, styles, teamMembers} = props;
+  const {
+    cardHasFocus,
+    cardHasHover,
+    onComplete,
+    outcome,
+    owner,
+    styles,
+    team,
+    teamMembers
+  } = props;
   const {teamMemberId: currentOwner, id: outcomeId} = outcome;
 
   const handleProjectUpdate = (newOwner) => {
@@ -28,43 +39,83 @@ const OutcomeCardAssignMenu = (props) => {
     }
   };
 
+  // !isArchived && !showTeam
+
+  const avatarStyles = css(
+    styles.avatar,
+    cardHasHover && styles.avatarCardHasHover,
+    cardHasFocus && styles.avatarCardHasFocus
+  );
+  const toggleButton = () =>
+    <img
+      alt={owner.preferredName}
+      className={avatarStyles}
+      src={owner.picture}
+      tabIndex="0"
+    />;
+
+  const toggle = toggleButton();
+
+  const itemFactory = () => {
+    const items = [];
+    teamMembers.map((teamMember) => {
+      const isClickable = currentOwner !== teamMember.id;
+      console.log(teamMember);
+      items.push(
+        <MenuItem
+          avatar={teamMember.picture}
+          isActive={!isClickable}
+          label={teamMember.preferredName}
+          onClick={() => handleProjectUpdate(teamMember.id)}
+        />
+      );
+    });
+    return items;
+  };
+
+  const originAnchor = {
+    vertical: 'bottom',
+    horizontal: 'left'
+  };
+
+  const targetAnchor = {
+    vertical: 'top',
+    horizontal: 'left'
+  };
+
   return (
     <div className={css(styles.root)}>
-      {
-        teamMembers.map((teamMember) => {
-          const isClickable = currentOwner !== teamMember.id;
-          const menuItemStyles = css(styles.menuItem, isClickable && styles.menuItemClickable);
-          return (
-            <div className={menuItemStyles} key={`menuItem${teamMember.id}`}>
-              <Avatar
-                {...teamMember}
-                isClickable={isClickable}
-                hasBadge={false}
-                onClick={() => handleProjectUpdate(teamMember.id)}
-                size="smallest"
-              />
-            </div>
-          );
-        })
-      }
+      <Menu
+        itemFactory={itemFactory}
+        maxHeight="9rem"
+        originAnchor={originAnchor}
+        targetAnchor={targetAnchor}
+        toggle={toggle}
+      />
+      <div className={css(styles.teamName)}>
+        {team}
+      </div>
     </div>
   );
 };
 
 OutcomeCardAssignMenu.propTypes = {
+  cardHasFocus: PropTypes.bool,
+  cardHasHover: PropTypes.bool,
   onComplete: PropTypes.func,
   outcome: PropTypes.object,
+  owner: PropTypes.object,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array
+  teamMembers: PropTypes.array,
+  team: PropTypes.string
 };
 
 const styleThunk = () => ({
   root: {
-    fontSize: 0,
-    minHeight: '75px', // based on 120px
-    padding: '.5rem',
-    textAlign: 'center',
-    width: '100%'
+    alignItems: 'center',
+    color: ui.palette.dark,
+    display: 'flex',
+    fontSize: '13px'
   },
 
   menuItem: {
@@ -83,6 +134,38 @@ const styleThunk = () => ({
     ':focus': {
       opacity: '.5'
     }
+  },
+
+  avatar: {
+    borderRadius: '100%',
+    border: '.125rem solid transparent',
+    cursor: 'pointer',
+    height: '1.75rem',
+    marginLeft: '-.125rem',
+    outline: 'none',
+    position: 'relative',
+    top: '.125rem',
+    width: '1.75rem',
+    ':hover': {
+      borderColor: ui.palette.dark
+    },
+    ':focus': {
+      borderColor: ui.palette.dark
+    }
+  },
+
+  avatarCardHasHover: {
+    borderColor: appTheme.palette.mid50l
+  },
+
+  avatarCardHasFocus: {
+    borderColor: appTheme.palette.mid50l
+  },
+
+  teamName: {
+    display: 'inline-block',
+    fontWeight: 700,
+    marginLeft: '.5rem'
   }
 });
 

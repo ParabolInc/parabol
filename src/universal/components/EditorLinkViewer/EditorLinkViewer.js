@@ -31,7 +31,8 @@ class EditorLinkViewer extends Component {
     const linkViewer = {
       left,
       top,
-      position: 'absolute'
+      position: 'absolute',
+      zIndex: ui.ziMenu
     };
     const menuStyles = css(
       styles.modal,

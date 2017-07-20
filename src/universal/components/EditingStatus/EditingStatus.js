@@ -12,19 +12,19 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
   // no one else is editing
   const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated ';
   if (editors.length === 0) {
-    editingStatus = isEditing ? <span>editing<Ellipsis /></span> : `${timestampLabel} ${fromNow(timestamp)}`;
+    editingStatus = isEditing ? <span>{'Editing'}<Ellipsis /></span> : `${timestampLabel} ${fromNow(timestamp)}`;
   } else {
     const editorNames = editors.map((e) => e.teamMember.preferredName);
     // one other is editing
     if (editors.length === 1) {
       const editor = editorNames[0];
-      editingStatus = <span>{editor} editing{isEditing ? ' too' : ''}<Ellipsis /></span>;
+      editingStatus = <span>{editor}{' editing'}{isEditing ? ' too' : ''}<Ellipsis /></span>;
     } else if (editors.length === 2) {
       editingStatus = isEditing ?
         <span>several are editing<Ellipsis /></span> :
         <span>{`${editorNames[0]} and ${editorNames[1]} editing`}<Ellipsis /></span>;
     } else {
-      editingStatus = <span>several are editing<Ellipsis /></span>;
+      editingStatus = <span>{'Several are editing'}<Ellipsis /></span>;
     }
   }
   return editingStatus;
@@ -32,7 +32,7 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 
 const EditingStatus = (props) => {
   const {editors, handleClick, isEditing, timestamp, timestampType, styles} = props;
-  const title = isEditing ? 'editing…' : 'Tap to toggle Created/Updated';
+  const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated';
   return (
     <div className={css(styles.timestamp)} onClick={handleClick} title={title}>
       {makeEditingStatus(editors, isEditing, timestamp, timestampType)}

@@ -37,7 +37,9 @@ class OutcomeCardContainer extends Component {
     super(props);
     const {outcome: {content}} = props;
     this.state = {
-      hasHover: false,
+      cardHasHover: false,
+      // cardHasFocus means some element within the card has focus
+      cardHasFocus: false,
       openArea: 'content',
       editorState: content ?
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
@@ -132,9 +134,11 @@ class OutcomeCardContainer extends Component {
     this.setState({openArea: newOpenArea});
   };
 
-  hoverOn = () => this.setState({hasHover: true});
+  handleCardMouseEnter = () => this.setState({cardHasHover: true});
+  handleCardMouseLeave = () => this.setState({cardHasHover: false});
 
-  hoverOff = () => this.setState({hasHover: false});
+  handleCardBlur = () => this.setState({cardHasFocus: false});
+  handleCardFocus = () => this.setState({cardHasFocus: true});
 
   annouceEditing = (isEditing) => {
     this.setState({
@@ -151,7 +155,7 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {hasHover, isEditing, openArea, editorRef, editorState} = this.state;
+    const {cardHasFocus, cardHasHover, isEditing, openArea, editorRef, editorState} = this.state;
     const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
@@ -159,9 +163,12 @@ class OutcomeCardContainer extends Component {
           area={area}
           editorRef={editorRef}
           editorState={editorState}
-          hasHover={hasHover}
-          hoverOff={this.hoverOff}
-          hoverOn={this.hoverOn}
+          cardHasHover={cardHasHover}
+          cardHasFocus={cardHasFocus}
+          handleCardBlur={this.handleCardBlur}
+          handleCardFocus={this.handleCardFocus}
+          handleCardMouseLeave={this.handleCardMouseLeave}
+          handleCardMouseEnter={this.handleCardMouseEnter}
           isAgenda={isAgenda}
           isDragging={isDragging}
           isEditing={isEditing}

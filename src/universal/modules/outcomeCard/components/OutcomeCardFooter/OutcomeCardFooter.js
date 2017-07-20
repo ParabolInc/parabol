@@ -6,6 +6,9 @@ import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import isProjectArchived from 'universal/utils/isProjectArchived';
+import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
+import OutcomeCardAssignMenu from '../OutcomeCardAssignMenu/OutcomeCardAssignMenu';
+import OutcomeCardStatusMenu from '../OutcomeCardStatusMenu/OutcomeCardStatusMenu';
 
 const avatarSize = '1.5rem';
 const faStyle = {
@@ -14,22 +17,28 @@ const faStyle = {
 };
 const OutcomeCardFooter = (props) => {
   const {
+    cardHasFocus,
     cardHasHover,
+    editorState,
     hasOpenStatusMenu,
+    isAgenda,
     isPrivate,
     outcome,
     showTeam,
     styles,
+    teamMembers,
     toggleAssignMenu,
     toggleStatusMenu,
     unarchiveProject
   } = props;
   const {teamMember: owner} = outcome;
+  console.log(outcome);
   const isArchived = isProjectArchived(outcome.tags);
   // AVATAR
   // -------
   const avatarImage = owner.picture;
   const avatarName = showTeam ? outcome.team.name : owner.preferredName;
+  const teamName = outcome.team.name;
   // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
   const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
   let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
@@ -46,49 +55,74 @@ const OutcomeCardFooter = (props) => {
     isPrivate && styles.privateButton,
     showFully && (isPrivate ? styles.privateButtonShowFully : styles.projectButtonShowFully)
   );
+
+  const buttonBlockStyles = css(
+    styles.buttonBlock,
+    cardHasFocus && styles.showBlock,
+    cardHasHover && styles.showBlock
+  );
+
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.avatarLayout)}>
-        <button disabled={isArchived} className={avatarBlockStyle} onClick={!isArchived && !showTeam && toggleAssignMenu}>
-          {!showTeam &&
-            <img
-              alt={avatarName}
-              className={css(styles.avatar)}
-              src={avatarImage}
-            />
-          }
-          <div className={css(styles.name)}>{avatarName}</div>
-          {!isArchived && !showTeam &&
-            <FontAwesome
-              className={css(styles.menuHint)}
-              name="ellipsis-v"
-              style={menuHintStyle}
-            />
-          }
-        </button>
+        <OutcomeCardAssignMenu
+          cardHasHover={cardHasHover}
+          cardHasFocus={cardHasFocus}
+          outcome={outcome}
+          owner={owner}
+          team={teamName}
+          teamMembers={teamMembers}
+        />
       </div>
-      <div className={css(styles.buttonBlock)}>
-        <button className={buttonStyles} onClick={isArchived ? unarchiveProject : toggleStatusMenu}>
-          <FontAwesome name={buttonIcon} style={faStyle} />
-        </button>
+      <div className={buttonBlockStyles}>
+        {isArchived ?
+          <OutcomeCardFooterButton onClick={unarchiveProject} icon="reply" /> :
+          <div>
+            <OutcomeCardFooterButton onClick={() => console.log('GitHub!')} icon="github" />
+            <OutcomeCardStatusMenu
+              editorState={editorState}
+              isAgenda={isAgenda}
+              outcome={outcome}
+            />
+          </div>
+        }
       </div>
     </div>
   );
 };
 
+// <button disabled={isArchived} className={avatarBlockStyle} onClick={!isArchived && !showTeam && toggleAssignMenu}>
+//   {!showTeam &&
+//     <img
+//       alt={avatarName}
+//       className={css(styles.avatar)}
+//       src={avatarImage}
+//     />
+//   }
+//   <div className={css(styles.name)}>{avatarName}</div>
+//   {!isArchived && !showTeam &&
+//     <FontAwesome
+//       className={css(styles.menuHint)}
+//       name="ellipsis-v"
+//       style={menuHintStyle}
+//     />
+//   }
+// </button>
 
 OutcomeCardFooter.propTypes = {
+  cardHasFocus: PropTypes.bool,
   cardHasHover: PropTypes.bool,
+  editorState: PropTypes.object,
   toggleAssignMenu: PropTypes.func,
   toggleStatusMenu: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
+  isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
   isPrivate: PropTypes.bool,
   outcome: PropTypes.object,
-  owner: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
-  team: PropTypes.object,
+  teamMembers: PropTypes.array,
   unarchiveProject: PropTypes.func.isRequired
 };
 const buttonShowFully = {
@@ -178,14 +212,14 @@ const styleThunk = () => ({
     borderRadius: '.125rem'
   },
 
-  name: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: avatarSize,
-    verticalAlign: 'middle'
-  },
+  // name: {
+  //   color: appTheme.palette.dark,
+  //   display: 'inline-block',
+  //   fontSize: appTheme.typography.s2,
+  //   fontWeight: 700,
+  //   lineHeight: avatarSize,
+  //   verticalAlign: 'middle'
+  // },
 
   menuHint: {
     color: appTheme.palette.dark,
@@ -195,7 +229,7 @@ const styleThunk = () => ({
   },
 
   buttonBlock: {
-    // Define
+    opacity: 0
   },
 
   buttonBase: {
@@ -217,6 +251,10 @@ const styleThunk = () => ({
 
   privateButtonShowFully: {
     ...privateButtonShowFully
+  },
+
+  showBlock: {
+    opacity: 1
   }
 });
 

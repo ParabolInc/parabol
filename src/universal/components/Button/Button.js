@@ -108,6 +108,8 @@ const makePropColors = (buttonStyle, colorPalette) => {
   return makeSolidTheme(color, textColor, buttonStyle);
 };
 
+// Look out, we have state! But no lifecycle methods, just DOM events for UI. :) (TA)
+
 @withStyles(styleThunk)
 export default class LabeledFieldArray extends Component {
   static propTypes = {
