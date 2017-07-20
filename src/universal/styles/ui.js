@@ -143,22 +143,22 @@ const ui = {
     },
     ':focus': {
       textDecoration: 'none'
-    },
-    ':active': {
-      animationDuration: '.1s',
-      animationName: {
-        '0%': {
-          transform: 'translate(0, 0)'
-        },
-        '50%': {
-          transform: 'translate(0, .25rem)'
-        },
-        '100%': {
-          transform: 'translate(0)'
-        }
-      },
-      animationTimingFunction: 'ease-in'
     }
+    // ':active': {
+    //   animationDuration: '.1s',
+    //   animationName: {
+    //     '0%': {
+    //       transform: 'translate(0, 0)'
+    //     },
+    //     '50%': {
+    //       transform: 'translate(0, .25rem)'
+    //     },
+    //     '100%': {
+    //       transform: 'translate(0)'
+    //     }
+    //   },
+    //   animationTimingFunction: 'ease-in'
+    // }
   },
   buttonBlockStyles: {
     display: 'block',
