@@ -19,8 +19,8 @@ export default class LabeledFieldArray extends Component {
     };
   }
 
-  onHoverRow = (index) => { this.setState({ hoverRow: index }); };
-  onLeaveRow = () => { this.setState({ hoverRow: null }); };
+  onHoverRow = (index) => this.setState({ hoverRow: index });
+  onLeaveRow = () => this.setState({ hoverRow: null });
 
   render() {
     const {existingInvites, labelSource} = this.props;

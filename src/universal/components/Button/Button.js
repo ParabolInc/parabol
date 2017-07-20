@@ -70,8 +70,8 @@ const styleThunk = (theme, props) => ({
   },
 
   hasMouseDown: {
-    backgroundColor: 'black !important',
-    transform: 'translate(0, .25rem)'
+    // boxShadow: ui.shadow[2],
+    transform: 'translate(0, .125rem)'
   }
 });
 
@@ -86,11 +86,11 @@ const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid', o
 
     ':hover': {
       color,
-      opacity
+      // opacity
     },
     ':focus': {
       color,
-      opacity
+      // opacity
     }
   };
 };
@@ -98,15 +98,16 @@ const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid', o
 const makeFlatTheme = (buttonStyle, color, opacity = '.5') => ({
   backgroundColor: 'transparent',
   borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
+  // boxShadow: 'none !important',
   color,
 
   ':hover': {
     color,
-    opacity
+    // opacity
   },
   ':focus': {
     color,
-    opacity
+    // opacity
   }
 });
 
@@ -166,8 +167,14 @@ export default class LabeledFieldArray extends Component {
     };
   }
 
-  onMouseDown = () => { console.log('onMouseDown') && this.setState({ hasMouseDown: true }) && console.log(`${this.state.hasMouseDown}`) };
-  onMouseUp = () => { console.log('onMouseUp') && this.setState({ hasMouseDown: false }) && console.log(`${this.state.hasMouseDown}`) };
+  onMouseDown = () => {
+    this.setState({ hasMouseDown: true });
+  }
+
+  onMouseUp = (e) => {
+    this.setState({ hasMouseDown: false });
+    e.currentTarget.blur();
+  }
 
   render() {
     const {
@@ -188,7 +195,6 @@ export default class LabeledFieldArray extends Component {
     } = this.props;
 
     const {hasMouseDown} = this.state;
-    const buttonTitle = title || label;
     const iconOnly = !label;
 
     const buttonStyles = css(
@@ -239,7 +245,7 @@ export default class LabeledFieldArray extends Component {
         onMouseEnter={onMouseEnter}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
-        title={buttonTitle}
+        title={title || label}
         type={type || 'button'}
       >
         {icon ?

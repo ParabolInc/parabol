@@ -131,34 +131,36 @@ const ui = {
     display: 'inline-block',
     fontFamily: appTheme.typography.sansSerif,
     fontWeight: 700,
-    // lineHeight: '1.25em',
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
-    transition: `opacity ${transitionFastest}`,
+    transition: `opacity ${transitionFastest}, transform ${transitionFastest}`,
     userSelect: 'none',
     verticalAlign: 'middle',
     ':hover': {
+      boxShadow: shadow[0],
       textDecoration: 'none'
     },
     ':focus': {
+      boxShadow: shadow[1],
       textDecoration: 'none'
+    },
+    ':active': {
+      opacity: '1 !important'
+      // animationDuration: '.1s',
+      // animationName: {
+      //   '0%': {
+      //     transform: 'translate(0, 0)'
+      //   },
+      //   '50%': {
+      //     transform: 'translate(0, .25rem)'
+      //   },
+      //   '100%': {
+      //     transform: 'translate(0)'
+      //   }
+      // }
+      // animationTimingFunction: 'ease-in'
     }
-    // ':active': {
-    //   animationDuration: '.1s',
-    //   animationName: {
-    //     '0%': {
-    //       transform: 'translate(0, 0)'
-    //     },
-    //     '50%': {
-    //       transform: 'translate(0, .25rem)'
-    //     },
-    //     '100%': {
-    //       transform: 'translate(0)'
-    //     }
-    //   },
-    //   animationTimingFunction: 'ease-in'
-    // }
   },
   buttonBlockStyles: {
     display: 'block',
