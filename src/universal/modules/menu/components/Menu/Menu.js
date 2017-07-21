@@ -9,20 +9,16 @@ import portal from 'react-portal-hoc';
 import Spinner from '../../../spinner/components/Spinner/Spinner';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-// TODO: Make a UI constant (TA)
-const boxShadow = '0 3px 6px rgba(0, 0, 0, .35)';
-const menuStyle = {boxShadow};
-
 const Menu = (props) => {
   const {
-    isLoaded,
-    closePortal,
     children,
+    closePortal,
+    coords,
+    isLoaded,
     itemFactory,
     label,
     menuWidth,
-    styles,
-    coords
+    styles
   } = props;
   const menuBlockStyle = {
     width: menuWidth,
@@ -30,32 +26,27 @@ const Menu = (props) => {
   };
   const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
   return (
-    <div>
-      <div className={css(styles.menuBlock)} style={menuBlockStyle}>
-        <div
-          className={css(styles.menu)}
-          style={menuStyle}
+    <div className={css(styles.menuBlock)} style={menuBlockStyle}>
+      <div className={css(styles.menu)}>
+        {label && <div className={css(styles.label)}>{label}</div>}
+        {kids}
+        <ReactCSSTransitionGroup
+          transitionName={{
+            appear: css(styles.spinnerAppear),
+            appearActive: css(styles.spinnerAppearActive)
+          }}
+          transitionAppear
+          transitionEnter={false}
+          transitionLeave={false}
+          transitionAppearTimeout={300}
         >
-          {label && <div className={css(styles.label)}>{label}</div>}
-          {kids}
-          <ReactCSSTransitionGroup
-            transitionName={{
-              appear: css(styles.spinnerAppear),
-              appearActive: css(styles.spinnerAppearActive)
-            }}
-            transitionAppear
-            transitionEnter={false}
-            transitionLeave={false}
-            transitionAppearTimeout={300}
-          >
-            {
-              kids.length === 0 && !isLoaded &&
-              <div key="spinner" className={css(styles.spinner)}>
-                <Spinner fillColor="cool" width={40} />
-              </div>
-            }
-          </ReactCSSTransitionGroup>
-        </div>
+          {
+            kids.length === 0 && !isLoaded &&
+            <div key="spinner" className={css(styles.spinner)}>
+              <Spinner fillColor="cool" width={40} />
+            </div>
+          }
+        </ReactCSSTransitionGroup>
       </div>
     </div>
   );
@@ -71,7 +62,6 @@ Menu.propTypes = {
   closePortal: PropTypes.func,
   coords: PropTypes.object,
   isLoaded: PropTypes.bool,
-  isOpen: PropTypes.bool,
   itemFactory: PropTypes.func,
   label: PropTypes.string,
   menuOrientation: PropTypes.oneOf([
@@ -90,24 +80,6 @@ Menu.propTypes = {
 };
 
 const styleThunk = (theme, {maxHeight}) => ({
-  root: {
-    display: 'inline-block',
-    position: 'relative',
-    zIndex: ui.ziMenu
-  },
-
-  toggle: {
-    cursor: 'pointer',
-    userSelect: 'none',
-
-    ':hover': {
-      opacity: '.5'
-    },
-    ':focus': {
-      opacity: '.5'
-    }
-  },
-
   menuBlock: {
     paddingTop: '.25rem',
     position: 'absolute',
@@ -117,6 +89,7 @@ const styleThunk = (theme, {maxHeight}) => ({
   menu: {
     backgroundColor: ui.menuBackgroundColor,
     borderRadius: ui.menuBorderRadius,
+    boxShadow: ui.menuBoxShadow,
     maxHeight: maxHeight || '10rem',
     outline: 0,
     overflowY: 'auto',

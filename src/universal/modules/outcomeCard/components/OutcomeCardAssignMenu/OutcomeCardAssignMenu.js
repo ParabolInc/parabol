@@ -4,7 +4,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
 import {Menu, MenuItem} from 'universal/modules/menu';
-import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const OutcomeCardAssignMenu = (props) => {
@@ -15,10 +14,10 @@ const OutcomeCardAssignMenu = (props) => {
     outcome,
     owner,
     styles,
-    team,
     teamMembers
   } = props;
   const {teamMemberId: currentOwner, id: outcomeId} = outcome;
+  const teamName = outcome.team.name;
 
   const handleProjectUpdate = (newOwner) => {
     if (newOwner === currentOwner) {
@@ -39,7 +38,7 @@ const OutcomeCardAssignMenu = (props) => {
     }
   };
 
-  // !isArchived && !showTeam
+  // !isArchived
 
   const avatarStyles = css(
     styles.avatar,
@@ -60,7 +59,6 @@ const OutcomeCardAssignMenu = (props) => {
     const items = [];
     teamMembers.map((teamMember) => {
       const isClickable = currentOwner !== teamMember.id;
-      console.log(teamMember);
       items.push(
         <MenuItem
           avatar={teamMember.picture}
@@ -93,7 +91,7 @@ const OutcomeCardAssignMenu = (props) => {
         toggle={toggle}
       />
       <div className={css(styles.teamName)}>
-        {team}
+        {teamName}
       </div>
     </div>
   );
@@ -106,34 +104,15 @@ OutcomeCardAssignMenu.propTypes = {
   outcome: PropTypes.object,
   owner: PropTypes.object,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array,
-  team: PropTypes.string
+  teamMembers: PropTypes.array
 };
 
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
-    color: ui.palette.dark,
+    color: appTheme.palette.dark,
     display: 'flex',
     fontSize: '13px'
-  },
-
-  menuItem: {
-    display: 'inline-block',
-    fontSize: '1rem',
-    margin: '.5rem',
-    opacity: '.65'
-  },
-
-  menuItemClickable: {
-    opacity: 1,
-
-    ':hover': {
-      opacity: '.5'
-    },
-    ':focus': {
-      opacity: '.5'
-    }
   },
 
   avatar: {
@@ -147,10 +126,10 @@ const styleThunk = () => ({
     top: '.125rem',
     width: '1.75rem',
     ':hover': {
-      borderColor: ui.palette.dark
+      borderColor: appTheme.palette.dark
     },
     ':focus': {
-      borderColor: ui.palette.dark
+      borderColor: appTheme.palette.dark
     }
   },
 
@@ -163,6 +142,7 @@ const styleThunk = () => ({
   },
 
   teamName: {
+    color: appTheme.palette.dark,
     display: 'inline-block',
     fontWeight: 700,
     marginLeft: '.5rem'

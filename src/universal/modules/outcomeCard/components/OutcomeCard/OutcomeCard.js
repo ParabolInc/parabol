@@ -30,8 +30,6 @@ const OutcomeCard = (props) => {
     handleCardFocus,
     handleCardMouseEnter,
     handleCardMouseLeave,
-    openArea,
-    openMenu,
     outcome,
     setEditorRef,
     setEditorState,
@@ -55,7 +53,6 @@ const OutcomeCard = (props) => {
     cardHasHover && styles.cardHasHover,
     cardHasFocus && styles.cardHasFocus,
   );
-  const openContentMenu = openMenu('content');
   return (
     <div
       className={rootStyles}
@@ -95,38 +92,18 @@ const OutcomeCard = (props) => {
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
           editorState={editorState}
-          hasOpenStatusMenu={openArea === 'status'}
           isAgenda={isAgenda}
           isPrivate={isPrivate}
           outcome={outcome}
           setIntegrationStyles={setIntegrationStyles}
           showTeam={area === USER_DASH}
           teamMembers={teamMembers}
-          toggleAssignMenu={openMenu('assign')}
-          toggleStatusMenu={openMenu('status')}
           unarchiveProject={unarchiveProject}
         />
       </div>
     </div>
   );
 };
-
-// {openArea === 'assign' &&
-//   <OutcomeCardAssignMenu
-//     onComplete={openContentMenu}
-//     outcome={outcome}
-//     teamMembers={teamMembers}
-//   />
-// }
-
-// {openArea === 'status' &&
-// <OutcomeCardStatusMenu
-// editorState={editorState}
-// isAgenda={isAgenda}
-// onComplete={openContentMenu}
-// outcome={outcome}
-// />
-// }
 
 OutcomeCard.propTypes = {
   area: PropTypes.string,
@@ -142,8 +119,6 @@ OutcomeCard.propTypes = {
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
-  openArea: PropTypes.string,
-  openMenu: PropTypes.func,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
