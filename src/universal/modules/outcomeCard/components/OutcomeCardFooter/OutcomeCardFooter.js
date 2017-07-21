@@ -82,6 +82,7 @@ OutcomeCardFooter.propTypes = {
 const styleThunk = () => ({
   root: {
     display: 'flex',
+    height: '2.5rem',
     padding: ui.cardPaddingBase
   },
 

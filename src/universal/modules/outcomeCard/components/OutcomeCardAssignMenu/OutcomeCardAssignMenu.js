@@ -46,12 +46,13 @@ const OutcomeCardAssignMenu = (props) => {
     cardHasFocus && styles.avatarCardHasFocus
   );
   const toggleButton = () =>
-    <img
-      alt={owner.preferredName}
-      className={avatarStyles}
-      src={owner.picture}
-      tabIndex="0"
-    />;
+    <div className={avatarStyles} tabIndex="0">
+      <img
+        alt={owner.preferredName}
+        className={css(styles.avatarImg)}
+        src={owner.picture}
+      />
+    </div>;
 
   const toggle = toggleButton();
 
@@ -112,19 +113,21 @@ const styleThunk = () => ({
     alignItems: 'center',
     color: appTheme.palette.dark,
     display: 'flex',
+    height: '1.5rem',
     fontSize: '13px'
   },
 
   avatar: {
     borderRadius: '100%',
-    border: '.125rem solid transparent',
+    border: '.0625rem solid transparent',
     cursor: 'pointer',
     height: '1.75rem',
     marginLeft: '-.125rem',
     outline: 'none',
+    padding: '.0625rem',
     position: 'relative',
-    top: '.125rem',
     width: '1.75rem',
+
     ':hover': {
       borderColor: appTheme.palette.dark
     },
@@ -139,6 +142,12 @@ const styleThunk = () => ({
 
   avatarCardHasFocus: {
     borderColor: appTheme.palette.mid50l
+  },
+
+  avatarImg: {
+    borderRadius: '100%',
+    height: '1.5rem',
+    width: '1.5rem'
   },
 
   teamName: {
