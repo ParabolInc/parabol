@@ -154,7 +154,7 @@ class OutcomeCardContainer extends Component {
 
   render() {
     const {cardHasFocus, cardHasHover, cardHasIntegration, isEditing, editorRef, editorState} = this.state;
-    const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
+    const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
         <OutcomeCard
@@ -168,6 +168,7 @@ class OutcomeCardContainer extends Component {
           handleCardFocus={this.handleCardFocus}
           handleCardMouseLeave={this.handleCardMouseLeave}
           handleCardMouseEnter={this.handleCardMouseEnter}
+          hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
           isEditing={isEditing}
@@ -197,6 +198,7 @@ OutcomeCardContainer.propTypes = {
   focus: PropTypes.func,
   form: PropTypes.string,
   handleSubmit: PropTypes.func,
+  hasDragStyles: PropTypes.bool,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isAgenda: PropTypes.bool,

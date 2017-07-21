@@ -24,21 +24,22 @@ const OutcomeCard = (props) => {
     cardHasHover,
     cardHasIntegration,
     editorRef,
+    editorState,
     isAgenda,
+    isDragging,
     isEditing,
     handleCardBlur,
     handleCardFocus,
     handleCardMouseEnter,
     handleCardMouseLeave,
+    hasDragStyles,
     outcome,
     setEditorRef,
     setEditorState,
     setIntegrationStyles,
     styles,
     teamMembers,
-    editorState,
-    unarchiveProject,
-    isDragging
+    unarchiveProject
   } = props;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
@@ -52,6 +53,7 @@ const OutcomeCard = (props) => {
     // hover before focus, it matters
     cardHasHover && styles.cardHasHover,
     cardHasFocus && styles.cardHasFocus,
+    hasDragStyles && styles.hasDragStyles
   );
   return (
     <div
@@ -116,6 +118,7 @@ OutcomeCard.propTypes = {
   handleCardFocus: PropTypes.func,
   handleCardMouseEnter: PropTypes.func,
   handleCardMouseLeave: PropTypes.func,
+  hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
@@ -178,6 +181,10 @@ const styleThunk = () => ({
 
   cardHasFocus: {
     boxShadow: ui.cardBoxShadow[2],
+  },
+
+  hasDragStyles: {
+    boxShadow: 'none'
   },
 
   // TODO: Cards need block containers, not margin (TA)

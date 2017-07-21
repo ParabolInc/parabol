@@ -5,6 +5,7 @@ import tinycolor from 'tinycolor2';
 import {css} from 'aphrodite-local-styles/no-important';
 import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const styleThunk = (theme, props) => ({
@@ -94,8 +95,14 @@ const makeFlatTheme = (buttonStyle, color, opacity = '.5') => ({
   boxShadow: 'none !important',
   color,
 
-  ':hover': { color },
-  ':focus': { color }
+  ':hover': {
+    backgroundColor: appTheme.palette.mid10a,
+    color
+  },
+  ':focus': {
+    backgroundColor: appTheme.palette.mid10a,
+    color
+  }
 });
 
 const makePropColors = (buttonStyle, colorPalette) => {
