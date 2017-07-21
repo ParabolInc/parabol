@@ -40,6 +40,7 @@ class OutcomeCardContainer extends Component {
       cardHasHover: false,
       // cardHasFocus means some element within the card has focus
       cardHasFocus: false,
+      cardHasIntegration: false,
       openArea: 'content',
       editorState: content ?
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
@@ -140,6 +141,11 @@ class OutcomeCardContainer extends Component {
   handleCardBlur = () => this.setState({cardHasFocus: false});
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
+  setIntegrationStyles = () => {
+    this.setState({cardHasIntegration: true});
+    console.log('setIntegrationStyles');
+  };
+
   annouceEditing = (isEditing) => {
     this.setState({
       isEditing
@@ -155,7 +161,7 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, isEditing, openArea, editorRef, editorState} = this.state;
+    const {cardHasFocus, cardHasHover, cardHasIntegration, isEditing, openArea, editorRef, editorState} = this.state;
     const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
@@ -165,6 +171,7 @@ class OutcomeCardContainer extends Component {
           editorState={editorState}
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
+          cardHasIntegration={cardHasIntegration}
           handleCardBlur={this.handleCardBlur}
           handleCardFocus={this.handleCardFocus}
           handleCardMouseLeave={this.handleCardMouseLeave}
@@ -172,6 +179,7 @@ class OutcomeCardContainer extends Component {
           isAgenda={isAgenda}
           isDragging={isDragging}
           isEditing={isEditing}
+          setIntegrationStyles={this.setIntegrationStyles}
           openArea={openArea}
           openMenu={this.openMenu}
           outcome={outcome}

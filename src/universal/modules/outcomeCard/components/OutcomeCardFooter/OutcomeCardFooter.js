@@ -9,6 +9,7 @@ import isProjectArchived from 'universal/utils/isProjectArchived';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 import OutcomeCardAssignMenu from '../OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from '../OutcomeCardStatusMenu/OutcomeCardStatusMenu';
+import OutcomeCardGitHubMenu from '../OutcomeCardGitHubMenu/OutcomeCardGitHubMenu';
 
 const avatarSize = '1.5rem';
 const faStyle = {
@@ -24,6 +25,7 @@ const OutcomeCardFooter = (props) => {
     isAgenda,
     isPrivate,
     outcome,
+    setIntegrationStyles,
     showTeam,
     styles,
     teamMembers,
@@ -78,7 +80,12 @@ const OutcomeCardFooter = (props) => {
         {isArchived ?
           <OutcomeCardFooterButton onClick={unarchiveProject} icon="reply" /> :
           <div>
-            <OutcomeCardFooterButton onClick={() => console.log('GitHub!')} icon="github" />
+            <OutcomeCardGitHubMenu
+              editorState={editorState}
+              isAgenda={isAgenda}
+              outcome={outcome}
+              setIntegrationStyles={setIntegrationStyles}
+            />
             <OutcomeCardStatusMenu
               editorState={editorState}
               isAgenda={isAgenda}
@@ -120,6 +127,7 @@ OutcomeCardFooter.propTypes = {
   isArchived: PropTypes.bool,
   isPrivate: PropTypes.bool,
   outcome: PropTypes.object,
+  setIntegrationStyles: PropTypes.func,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
   teamMembers: PropTypes.array,

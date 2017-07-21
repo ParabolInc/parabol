@@ -22,6 +22,7 @@ const OutcomeCard = (props) => {
     area,
     cardHasFocus,
     cardHasHover,
+    cardHasIntegration,
     editorRef,
     isAgenda,
     isEditing,
@@ -34,6 +35,7 @@ const OutcomeCard = (props) => {
     outcome,
     setEditorRef,
     setEditorState,
+    setIntegrationStyles,
     styles,
     teamMembers,
     editorState,
@@ -63,9 +65,11 @@ const OutcomeCard = (props) => {
       onMouseLeave={handleCardMouseLeave}
       tabIndex="-1"
     >
-      <div className={css(styles.watermarkBlock)} style={{position: 'absolute', zIndex: ui.ziMenu - 2}}>
-        <FontAwesome name="github" className={css(styles.watermark)} />
-      </div>
+      {cardHasIntegration &&
+        <div className={css(styles.watermarkBlock)} style={{position: 'absolute', zIndex: ui.ziMenu - 2}}>
+          <FontAwesome name="github" className={css(styles.watermark)} />
+        </div>
+      }
       <div style={{position: 'relative', zIndex: ui.ziMenu - 1}}>
         <EditingStatusContainer
           isEditing={isEditing}
@@ -82,6 +86,11 @@ const OutcomeCard = (props) => {
           setEditorState={setEditorState}
           teamMembers={teamMembers}
         />
+        {cardHasIntegration &&
+          <a className={css(styles.demoLink)} href="#" title="action issue #1158 on GitHub">
+            {'action #1158'}
+          </a>
+        }
         <OutcomeCardFooter
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
@@ -90,6 +99,7 @@ const OutcomeCard = (props) => {
           isAgenda={isAgenda}
           isPrivate={isPrivate}
           outcome={outcome}
+          setIntegrationStyles={setIntegrationStyles}
           showTeam={area === USER_DASH}
           teamMembers={teamMembers}
           toggleAssignMenu={openMenu('assign')}
@@ -124,6 +134,7 @@ OutcomeCard.propTypes = {
   editorState: PropTypes.object,
   cardHasHover: PropTypes.bool,
   cardHasFocus: PropTypes.bool,
+  cardHasIntegration: PropTypes.bool,
   handleCardBlur: PropTypes.func,
   handleCardFocus: PropTypes.func,
   handleCardMouseEnter: PropTypes.func,
@@ -143,6 +154,7 @@ OutcomeCard.propTypes = {
   }),
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
+  setIntegrationStyles: PropTypes.func,
   styles: PropTypes.object,
   teamMembers: PropTypes.array,
   unarchiveProject: PropTypes.func.isRequired
@@ -230,6 +242,15 @@ const styleThunk = () => ({
     position: 'absolute',
     right: 0,
     width: '8rem',
+  },
+
+  demoLink: {
+    color: ui.palette.cool,
+    display: 'block',
+    fontWeight: 700,
+    fontSize: '1rem',
+    lineHeight: '1.25rem',
+    padding: '0 .5rem'
   }
 });
 

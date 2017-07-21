@@ -191,6 +191,8 @@ class ProjectEditor extends Component {
 
 const styleThunk = () => ({
   root: {
+    fontSize: '1rem',
+    lineHeight: '1.25rem',
     padding: `0 ${ui.cardPaddingBase}`
   },
 
