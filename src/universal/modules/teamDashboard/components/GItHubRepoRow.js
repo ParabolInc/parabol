@@ -1,22 +1,21 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Button from 'universal/components/Button/Button';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
+import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation';
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation';
 import formError from 'universal/styles/helpers/formError';
 import withStyles from 'universal/styles/withStyles';
-import {setError, clearError} from 'universal/utils/relay/mutationCallbacks';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import toGlobalId from 'universal/utils/relay/toGlobalId';
-import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation';
 
 class GitHubRepoRow extends Component {
   state = {};
 
   render() {
-    const {environment, styles, viewerId, teamId, repo} = this.props;
+    const {accessToken, environment, styles, viewerId, teamId, repo} = this.props;
     const {id, nameWithOwner, teamMembers} = repo;
 
     const {id: userId} = fromGlobalId(viewerId);
@@ -36,13 +35,15 @@ class GitHubRepoRow extends Component {
         <IntegrationRow>
           <div className={css(styles.nameWithOwner)}>{nameWithOwner}</div>
           {teamMembers.map((user) => <Avatar key={user.id} {...user} size="smaller"/>)}
-          <Button
-            buttonStyle="flat"
-            colorPalette="dark"
-            label={viewerInIntegration ? 'Unlink Me' : 'Link Me'}
-            onClick={toggleIntegrationMembership(id)}
-            size="smallest"
-          />
+          {accessToken &&
+            <Button
+              buttonStyle="flat"
+              colorPalette="dark"
+              label={viewerInIntegration ? 'Unlink Me' : 'Link Me'}
+              onClick={toggleIntegrationMembership(id)}
+              size="smallest"
+            />
+          }
         </IntegrationRow>
         {error && <div className={css(styles.errorRow)}>{error}</div>}
       </div>

@@ -7,6 +7,8 @@ import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
+import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
+import {toGlobalId} from 'graphql-relay';
 
 const profileQuery = `
 query { 
@@ -15,6 +17,40 @@ query {
     id
   }
 }`;
+
+const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId) => {
+  const r = getRethink();
+  if (integrationCount > 0) {
+    const allIntegrations = await r.table(GITHUB)
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isActive: true});
+    const permissionPromises = allIntegrations.map((integration) => {
+      return tokenCanAccessRepo(accessToken, integration.nameWithOwner);
+    });
+    const permissionArray = await Promise.all(permissionPromises);
+    const integrationIdsToJoin = permissionArray.reduce((integrationArr, githubRes, idx) => {
+      if (!githubRes.errors) {
+        integrationArr.push(allIntegrations[idx].id);
+      }
+      return integrationArr;
+    }, []);
+    await r.table(GITHUB)
+      .getAll(r.args(integrationIdsToJoin), {index: 'id'})
+      .update((doc) => ({
+        userIds: doc('userIds').append(userId).distinct()
+      }));
+    return integrationIdsToJoin.map((id) => toGlobalId(GITHUB, id));
+  }
+  return [];
+};
+
+const getTeamMember = async (joinedIntegrationIds, teamMemberId) => {
+  if (joinedIntegrationIds.length > 0) {
+    const r = getRethink();
+    return r.table('TeamMember').get(teamMemberId).pluck('id', 'preferredName', 'picture');
+  }
+  return undefined;
+};
 
 const addProviderGitHub = async (code, teamId, userId) => {
   const r = getRethink();
@@ -80,7 +116,9 @@ const addProviderGitHub = async (code, teamId, userId) => {
       );
     });
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-
+  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId);
+  const teamMemberId = `${userId}::${teamId}`;
+  const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
   const providerAdded = {
     provider,
     providerRow: {
@@ -90,6 +128,8 @@ const addProviderGitHub = async (code, teamId, userId) => {
       // tell relay to not automatically merge the new value as a sink. changed teamId changes globalId
       teamId: `_${teamId}`
     },
+    joinedIntegrationIds,
+    teamMember
   };
   getPubSub().publish(`providerAdded.${teamId}`, {providerAdded});
 };

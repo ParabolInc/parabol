@@ -29,6 +29,8 @@ export default {
       // IMPORTANT! value should not be mutated, it is reused for every listener in the async iterator
       return {
         providerAdded: {
+          ...providerAdded,
+          provider: null,
           providerRow: {
             ...providerRow,
             accessToken: null

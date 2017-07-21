@@ -96,6 +96,7 @@ const GitHubIntegrations = (props) => {
           <div className={css(styles.integrationsList)}>
             {githubRepos.map((repo) => (
               <GitHubRepoRow
+                accessToken={accessToken}
                 key={repo.id}
                 repo={repo}
                 environment={environment}

@@ -9,7 +9,7 @@ import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {GITHUB_ENDPOINT} from 'universal/utils/constants';
-import {setError, clearError} from 'universal/utils/relay/mutationCallbacks';
+import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 
 const defaultSelectedRepo = () => ({
   repoId: undefined,
@@ -63,6 +63,7 @@ class AddGitHubRepo extends Component {
     const {accessToken} = nextProps;
     if (!this.props.accessToken !== accessToken) {
       this.fetchOptions(accessToken);
+      clearError.call(this);
     }
   }
 
@@ -105,10 +106,14 @@ class AddGitHubRepo extends Component {
       };
       const res = await fetch(GITHUB_ENDPOINT, authedPostOptions);
       const resJson = await res.json();
-      const {data, errors} = resJson;
-      if (errors) {
-        console.error(errors);
-        throw new Error(errors[0].message);
+      const {data, errors, message} = resJson;
+      if (errors || message) {
+        if (errors) {
+          setError.call(this, {_error: errors[0].message})
+          throw errors;
+        }
+        setError.call(this, {_error: `GitHub Error: ${message}. Try refreshing your token`});
+        throw message;
       }
       const {viewer: {organizations: {nodes}, repositories}} = data;
       nodes.unshift({

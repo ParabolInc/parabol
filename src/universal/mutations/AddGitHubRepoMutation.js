@@ -22,10 +22,20 @@ const mutation = graphql`
 let tempId = 0;
 
 export const addGitHubRepoUpdater = (store, viewerId, teamId, newNode) => {
+  // update the integration list
   const viewer = store.get(viewerId);
   const githubRepos = viewer.getLinkedRecords('githubRepos', {teamId});
-  const newNodes = insertNodeBefore(githubRepos, newNode, 'nameWithOwner');
-  viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
+  if (githubRepos) {
+    const newNodes = insertNodeBefore(githubRepos, newNode, 'nameWithOwner');
+    viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
+  }
+
+  // update the providerMap
+  const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
+  if (oldProviderMap) {
+    const oldProviderRow = oldProviderMap.getLinkedRecord(GITHUB);
+    oldProviderRow.setValue(oldProviderRow.getValue('integrationCount') + 1, 'integrationCount');
+  }
 };
 
 const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, viewerId, onError, onCompleted) => {

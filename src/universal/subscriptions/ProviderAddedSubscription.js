@@ -1,5 +1,4 @@
 // import {updateProviderMapUpdater} from 'universal/mutations/RemoveProviderMutation';
-
 const subscription = graphql`
   subscription ProviderAddedSubscription($teamId: ID!) {
     providerAdded(teamId: $teamId) {
@@ -14,12 +13,17 @@ const subscription = graphql`
         accessToken
         service
       }
-
+      joinedIntegrationIds
+      teamMember {
+        id
+        preferredName
+        picture
+      }
     }
   }
 `;
 
-const addProviderUpdater = (viewer, teamId, payload) => {
+const addProviderUpdater = (store, viewer, teamId, payload) => {
   const newIntegrationProvider = payload.getLinkedRecord('provider');
   const newProviderRow = payload.getLinkedRecord('providerRow');
   const service = newProviderRow.getValue('service');
@@ -35,6 +39,18 @@ const addProviderUpdater = (viewer, teamId, payload) => {
   if (oldProviderMap) {
     oldProviderMap.getLinkedRecord(service).copyFieldsFrom(newProviderRow);
   }
+
+  // join the existing integrations
+  const joinedIntegrationIds = payload.getValue('joinedIntegrationIds');
+  if (joinedIntegrationIds && joinedIntegrationIds.length > 0) {
+    joinedIntegrationIds.forEach((globalId) => {
+      const integration = store.get(globalId);
+      if (!integration) return;
+      const teamMembers = integration.getLinkedRecords('teamMembers');
+      teamMembers.push(payload.getLinkedRecord('teamMember'));
+      integration.setLinkedRecords(teamMembers, 'teamMembers');
+    });
+  }
 };
 
 const ProviderAddedSubscription = (teamId, viewerId) => (ensureSubscription) => {
@@ -44,7 +60,7 @@ const ProviderAddedSubscription = (teamId, viewerId) => (ensureSubscription) => 
     updater: (store) => {
       const payload = store.getRootField('providerAdded');
       const viewer = store.get(viewerId);
-      addProviderUpdater(viewer, teamId, payload);
+      addProviderUpdater(store, viewer, teamId, payload);
     }
   });
 };

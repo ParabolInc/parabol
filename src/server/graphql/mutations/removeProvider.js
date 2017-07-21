@@ -77,14 +77,11 @@ export default {
       const repoChanges = await r.table(GITHUB)
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
-        // if they're the last one, remove the integration
-        .filter((repo) => repo('userIds').count().eq(1)
-          .and(repo('userIds').contains(userId))
-        )
-        .update({
-          isActive: false,
-          userIds: []
-        }, {returnChanges: true})('changes').default([]);
+        .update((doc) => ({
+          userIds: doc('userIds').difference([userId]),
+          // if they're the last one, remove the integration
+          isActive: doc('userIds').eq([userId]).not()
+        }), {returnChanges: true})('changes').default([]);
       const providerRemoved = await getPayload(service, repoChanges, teamId, userId);
       getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
       // TODO remove the cards that belong to the deletedIntegrationIds

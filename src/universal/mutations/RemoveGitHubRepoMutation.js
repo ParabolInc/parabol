@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay';
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
+import {GITHUB} from 'universal/utils/constants';
 
 const mutation = graphql`
   mutation RemoveGitHubRepoMutation($githubGlobalId: ID!) {
@@ -14,6 +15,13 @@ export const removeGitHubRepoUpdater = (viewer, teamId, deletedId) => {
   if (githubRepos) {
     const newNodes = getArrayWithoutIds(githubRepos, deletedId);
     viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
+  }
+
+  // update the providerMap
+  const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
+  if (oldProviderMap) {
+    const oldProviderRow = oldProviderMap.getLinkedRecord(GITHUB);
+    oldProviderRow.setValue(oldProviderRow.getValue('integrationCount') - 1, 'integrationCount');
   }
 };
 

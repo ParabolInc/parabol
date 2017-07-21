@@ -1,36 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddGitHubRepoPayload from 'server/graphql/types/AddGitHubRepoPayload';
+import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
-import {GITHUB, GITHUB_ENDPOINT} from 'universal/utils/constants';
-
-const getRepoQuery = `
-query getRepo($name: String! $owner: String!) {
-  repository(name: $name, owner: $owner) {
-    nameWithOwner
-  }
-}`;
-
-const tokenCanAccessRepo = async (accessToken, nameWithOwner) => {
-  const [owner, name] = nameWithOwner.split('/');
-  // see if the githubRepoId is legit
-  const authedPostOptions = {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`
-    },
-    body: JSON.stringify({
-      query: getRepoQuery,
-      variables: {name, owner}
-    })
-  };
-  const ghProfile = await fetch(GITHUB_ENDPOINT, authedPostOptions);
-  return ghProfile.json();
-};
+import {GITHUB} from 'universal/utils/constants';
 
 export default {
   name: 'AddGitHubRepo',
@@ -79,11 +54,11 @@ export default {
       return tokenCanAccessRepo(prov.accessToken, nameWithOwner);
     });
     const permissionArray = await Promise.all(permissionPromises);
-    const userIds = permissionArray.reduce((userIdArr, prov, idx) => {
-      if (!permissionArray.errors) {
+    const userIds = permissionArray.reduce((userIdArr, githubRes, idx) => {
+      if (!githubRes.errors) {
         userIdArr.push(allTeamProviders[idx].userId);
-        return userIdArr;
       }
+      return userIdArr;
     }, []);
 
     // RESOLUTION
