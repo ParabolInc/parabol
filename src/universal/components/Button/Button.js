@@ -91,6 +91,7 @@ const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid', o
 const makeFlatTheme = (buttonStyle, color, opacity = '.5') => ({
   backgroundColor: 'transparent',
   borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
+  boxShadow: 'none !important',
   color,
 
   ':hover': { color },
