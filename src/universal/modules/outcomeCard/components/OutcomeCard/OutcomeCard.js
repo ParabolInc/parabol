@@ -24,23 +24,22 @@ const OutcomeCard = (props) => {
     cardHasHover,
     cardHasIntegration,
     editorRef,
+    editorState,
     isAgenda,
+    isDragging,
     isEditing,
     handleCardBlur,
     handleCardFocus,
     handleCardMouseEnter,
     handleCardMouseLeave,
-    openArea,
-    openMenu,
+    hasDragStyles,
     outcome,
     setEditorRef,
     setEditorState,
     setIntegrationStyles,
     styles,
     teamMembers,
-    editorState,
-    unarchiveProject,
-    isDragging
+    unarchiveProject
   } = props;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
@@ -54,8 +53,8 @@ const OutcomeCard = (props) => {
     // hover before focus, it matters
     cardHasHover && styles.cardHasHover,
     cardHasFocus && styles.cardHasFocus,
+    hasDragStyles && styles.hasDragStyles
   );
-  const openContentMenu = openMenu('content');
   return (
     <div
       className={rootStyles}
@@ -95,38 +94,18 @@ const OutcomeCard = (props) => {
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
           editorState={editorState}
-          hasOpenStatusMenu={openArea === 'status'}
           isAgenda={isAgenda}
           isPrivate={isPrivate}
           outcome={outcome}
           setIntegrationStyles={setIntegrationStyles}
           showTeam={area === USER_DASH}
           teamMembers={teamMembers}
-          toggleAssignMenu={openMenu('assign')}
-          toggleStatusMenu={openMenu('status')}
           unarchiveProject={unarchiveProject}
         />
       </div>
     </div>
   );
 };
-
-// {openArea === 'assign' &&
-//   <OutcomeCardAssignMenu
-//     onComplete={openContentMenu}
-//     outcome={outcome}
-//     teamMembers={teamMembers}
-//   />
-// }
-
-// {openArea === 'status' &&
-// <OutcomeCardStatusMenu
-// editorState={editorState}
-// isAgenda={isAgenda}
-// onComplete={openContentMenu}
-// outcome={outcome}
-// />
-// }
 
 OutcomeCard.propTypes = {
   area: PropTypes.string,
@@ -139,11 +118,10 @@ OutcomeCard.propTypes = {
   handleCardFocus: PropTypes.func,
   handleCardMouseEnter: PropTypes.func,
   handleCardMouseLeave: PropTypes.func,
+  hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
-  openArea: PropTypes.string,
-  openMenu: PropTypes.func,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
@@ -203,6 +181,10 @@ const styleThunk = () => ({
 
   cardHasFocus: {
     boxShadow: ui.cardBoxShadow[2],
+  },
+
+  hasDragStyles: {
+    boxShadow: 'none'
   },
 
   // TODO: Cards need block containers, not margin (TA)

@@ -4,19 +4,14 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
-import upperFirst from 'universal/utils/upperFirst';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
-import OutcomeCardMenuButton from 'universal/modules/outcomeCard/components/OutcomeCardMenuButton/OutcomeCardMenuButton';
 import {convertToRaw} from 'draft-js';
 import addTagToProject from 'universal/utils/draftjs/addTagToProject';
 import {textOverflow} from 'universal/styles/helpers';
 import {Menu, MenuItem} from 'universal/modules/menu';
-import FontAwesome from 'react-fontawesome';
 
-const buttonArray = labels.projectStatus.slugs.slice(0);
+const statusItems = labels.projectStatus.slugs.slice(0);
 
 const OutcomeCardStatusMenu = (props) => {
   const {onComplete, outcome, isAgenda, styles, editorState} = props;
@@ -24,7 +19,7 @@ const OutcomeCardStatusMenu = (props) => {
 
   const privateLabel = <div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>;
   const archiveLabel = <div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>;
-  const deleteOutcomeLabel = <div className={css(styles.label)}>De<u>l</u>ete this Project</div>;
+  const deleteOutcomeLabel = <div className={css(styles.label)}>{'Delete this Project'}</div>;
 
   const archiveProject = () => {
     const contentState = editorState.getCurrentContent();
@@ -87,7 +82,7 @@ const OutcomeCardStatusMenu = (props) => {
 
   const itemFactory = () => {
     const listItems = [];
-    buttonArray.map((btn, idx) => {
+    statusItems.map((btn, idx) => {
       const itemStatus = labels.projectStatus[btn];
       const {color, icon, label, slug} = itemStatus;
       const handleProjectUpdate = handleProjectUpdateFactory(slug);
@@ -109,7 +104,7 @@ const OutcomeCardStatusMenu = (props) => {
         icon="lock"
         key="private"
         label={privateLabel}
-        onClick={console.log('private!')}
+        onClick={console.log('add #private tag!')}
       />
     );
     {!isAgenda &&
@@ -155,81 +150,13 @@ OutcomeCardStatusMenu.propTypes = {
   styles: PropTypes.object
 };
 
-const buttonHF = {
-  backgroundColor: 'transparent',
-  borderColor: appTheme.palette.mid50l
-};
-
 const styleThunk = () => ({
-  root: {
-    alignItems: 'center',
-    fontSize: 0,
-    justifyContent: 'center',
-    margin: '0 auto',
-    maxWidth: '12rem',
-    minHeight: '5.1875rem',
-    padding: '.125rem',
-    textAlign: 'center',
-    width: '100%'
-  },
-
-  column: {
-    display: 'inline-block',
-    fontSize: '1rem',
-    padding: '.25rem',
-    width: '50%'
-  },
-
-  button: {
-    backgroundColor: 'transparent',
-    border: `1px solid ${appTheme.palette.mid30l}`,
-    borderRadius: '.25rem',
-    color: appTheme.palette.dark,
-    cursor: 'pointer',
-    margin: 0,
-    outline: 'none',
-    padding: '.25rem .5rem',
-    width: '100%',
-
-    ':hover': {
-      ...buttonHF
-    },
-    ':focus': {
-      ...buttonHF,
-      borderColor: appTheme.palette.dark90d
-    }
-  },
-
-  buttonBlock: {
-    padding: '.25rem',
-    width: '100%'
-  },
-
-  label: {
-    fontWeight: 700,
-    textTransform: 'uppercase'
-  },
-
-  disabled: {
-    cursor: 'not-allowed',
-    opacity: '.35'
-  },
-
-  ...projectStatusStyles('color'),
-
-  archive: {
-    color: labels.archive.color
-  },
-  archived: {
-    color: labels.archived.color
-  },
-
   label: {
     ...textOverflow,
     fontSize: ui.menuItemFontSize,
     lineHeight: ui.menuItemHeight,
     padding: `0 ${ui.menuGutterHorizontal} 0 0`
-  },
+  }
 });
 
 export default withStyles(styleThunk)(OutcomeCardStatusMenu);

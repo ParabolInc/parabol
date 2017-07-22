@@ -4,7 +4,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
 import {Menu, MenuItem} from 'universal/modules/menu';
-import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const OutcomeCardAssignMenu = (props) => {
@@ -15,10 +14,10 @@ const OutcomeCardAssignMenu = (props) => {
     outcome,
     owner,
     styles,
-    team,
     teamMembers
   } = props;
   const {teamMemberId: currentOwner, id: outcomeId} = outcome;
+  const teamName = outcome.team.name;
 
   const handleProjectUpdate = (newOwner) => {
     if (newOwner === currentOwner) {
@@ -39,7 +38,7 @@ const OutcomeCardAssignMenu = (props) => {
     }
   };
 
-  // !isArchived && !showTeam
+  // !isArchived
 
   const avatarStyles = css(
     styles.avatar,
@@ -47,12 +46,13 @@ const OutcomeCardAssignMenu = (props) => {
     cardHasFocus && styles.avatarCardHasFocus
   );
   const toggleButton = () =>
-    <img
-      alt={owner.preferredName}
-      className={avatarStyles}
-      src={owner.picture}
-      tabIndex="0"
-    />;
+    <div className={avatarStyles} tabIndex="0">
+      <img
+        alt={owner.preferredName}
+        className={css(styles.avatarImg)}
+        src={owner.picture}
+      />
+    </div>;
 
   const toggle = toggleButton();
 
@@ -60,7 +60,6 @@ const OutcomeCardAssignMenu = (props) => {
     const items = [];
     teamMembers.map((teamMember) => {
       const isClickable = currentOwner !== teamMember.id;
-      console.log(teamMember);
       items.push(
         <MenuItem
           avatar={teamMember.picture}
@@ -93,7 +92,7 @@ const OutcomeCardAssignMenu = (props) => {
         toggle={toggle}
       />
       <div className={css(styles.teamName)}>
-        {team}
+        {teamName}
       </div>
     </div>
   );
@@ -106,51 +105,34 @@ OutcomeCardAssignMenu.propTypes = {
   outcome: PropTypes.object,
   owner: PropTypes.object,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array,
-  team: PropTypes.string
+  teamMembers: PropTypes.array
 };
 
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
-    color: ui.palette.dark,
+    color: appTheme.palette.dark,
     display: 'flex',
+    height: '1.5rem',
     fontSize: '13px'
-  },
-
-  menuItem: {
-    display: 'inline-block',
-    fontSize: '1rem',
-    margin: '.5rem',
-    opacity: '.65'
-  },
-
-  menuItemClickable: {
-    opacity: 1,
-
-    ':hover': {
-      opacity: '.5'
-    },
-    ':focus': {
-      opacity: '.5'
-    }
   },
 
   avatar: {
     borderRadius: '100%',
-    border: '.125rem solid transparent',
+    border: '.0625rem solid transparent',
     cursor: 'pointer',
     height: '1.75rem',
     marginLeft: '-.125rem',
     outline: 'none',
+    padding: '.0625rem',
     position: 'relative',
-    top: '.125rem',
     width: '1.75rem',
+
     ':hover': {
-      borderColor: ui.palette.dark
+      borderColor: appTheme.palette.dark
     },
     ':focus': {
-      borderColor: ui.palette.dark
+      borderColor: appTheme.palette.dark
     }
   },
 
@@ -162,7 +144,14 @@ const styleThunk = () => ({
     borderColor: appTheme.palette.mid50l
   },
 
+  avatarImg: {
+    borderRadius: '100%',
+    height: '1.5rem',
+    width: '1.5rem'
+  },
+
   teamName: {
+    color: appTheme.palette.dark,
     display: 'inline-block',
     fontWeight: 700,
     marginLeft: '.5rem'

@@ -38,10 +38,8 @@ class OutcomeCardContainer extends Component {
     const {outcome: {content}} = props;
     this.state = {
       cardHasHover: false,
-      // cardHasFocus means some element within the card has focus
       cardHasFocus: false,
       cardHasIntegration: false,
-      openArea: 'content',
       editorState: content ?
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
         EditorState.createEmpty(editorDecorators)
@@ -129,12 +127,6 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-  openMenu = (nextArea) => () => {
-    const {openArea} = this.state;
-    const newOpenArea = nextArea === openArea ? 'content' : nextArea;
-    this.setState({openArea: newOpenArea});
-  };
-
   handleCardMouseEnter = () => this.setState({cardHasHover: true});
   handleCardMouseLeave = () => this.setState({cardHasHover: false});
 
@@ -161,8 +153,8 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, cardHasIntegration, isEditing, openArea, editorRef, editorState} = this.state;
-    const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
+    const {cardHasFocus, cardHasHover, cardHasIntegration, isEditing, editorRef, editorState} = this.state;
+    const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
         <OutcomeCard
@@ -176,12 +168,11 @@ class OutcomeCardContainer extends Component {
           handleCardFocus={this.handleCardFocus}
           handleCardMouseLeave={this.handleCardMouseLeave}
           handleCardMouseEnter={this.handleCardMouseEnter}
+          hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
           isEditing={isEditing}
           setIntegrationStyles={this.setIntegrationStyles}
-          openArea={openArea}
-          openMenu={this.openMenu}
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
@@ -207,6 +198,7 @@ OutcomeCardContainer.propTypes = {
   focus: PropTypes.func,
   form: PropTypes.string,
   handleSubmit: PropTypes.func,
+  hasDragStyles: PropTypes.bool,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isAgenda: PropTypes.bool,

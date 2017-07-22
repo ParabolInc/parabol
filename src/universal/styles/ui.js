@@ -84,11 +84,11 @@ const transitionSlowest = '3200ms ease-in';
 
 // Shadows
 const shadow = [
-  '0 2px 2px rgba(0, 0, 0, .2), 0 1px 1px rgba(0, 0, 0, .2), 0 0 1px rgba(0, 0, 0, .35)',
-  '0 4px 4px rgba(0, 0, 0, .2), 0 2px 2px rgba(0, 0, 0, .2), 0 0 2px rgba(0, 0, 0, .35)',
-  '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
-  '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
-  '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)'
+  '0 1px 2px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)',
+  '0 2px 4px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)',
+  '0 4px 8px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)',
+  '0 8px 16px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)',
+  '0 16px 22px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)'
 ];
 
 // -----------------------------------------------------------------------------
@@ -201,20 +201,17 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
+  // boxShadow color with some mid hue rgba(103, 107, 139, .75) for reference (TA)
   cardBoxShadow: [
-    '0 1px 2px rgba(103, 107, 139, .75)',
-    '0 2px 4px rgba(103, 107, 139, .75)',
-    '0 4px 8px rgba(103, 107, 139, .75)'
+    shadow[0],
+    shadow[1],
+    shadow[2]
   ],
   cardMaxWidth: '17.5rem',
   cardMinHeight: '8.1875rem',
   cardPaddingBase: '.5rem',
   cardDragStyle: {
-    backgroundColor: appTheme.palette.light10l,
-    borderColor: appTheme.palette.mid70l,
-    borderRadius: borderRadiusMedium,
-    // boxShadow: '0 6px 12px rgba(0, 0, 0, .25)'
-    boxShadow: '0 8px 16px rgba(103, 107, 139, .75)'
+    boxShadow: shadow[3]
   },
 
   // CTA Panels
@@ -241,6 +238,7 @@ const ui = {
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
   draftModalMargin: 32,
+
   // Email
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
@@ -333,16 +331,6 @@ const ui = {
 
   // Integrations
   // ---------------------------------------------------------------------------
-  //integrationRow: {
-  //  alignItems: 'center',
-  //  borderTop: `1px solid ${appTheme.palette.mid20l}`,
-  //  display: 'flex',
-  //  justifyContent: 'space-between',
-  //  padding: '1rem',
-  //  paddingLeft: 0,
-  //  paddingRight: '1px',
-  //  width: '100%'
-  //},
 
   // Invoice
   // ---------------------------------------------------------------------------
@@ -372,7 +360,7 @@ const ui = {
   menuBackgroundColor: '#fff',
   menuBorderColor: appTheme.palette.mid30l,
   menuBorderRadius: borderRadiusSmall,
-  menuBoxShadow: shadow[1],
+  menuBoxShadow: shadow[2],
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',
   menuGutterVertical: '.5rem',
