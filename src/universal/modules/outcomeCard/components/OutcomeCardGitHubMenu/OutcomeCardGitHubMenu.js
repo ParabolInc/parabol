@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
-import {Menu, MenuItem} from 'universal/modules/menu';
-import withStyles from 'universal/styles/withStyles';
+import {Menu} from 'universal/modules/menu';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
 import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import {GITHUB} from 'universal/utils/constants';
+import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -22,11 +22,11 @@ const targetAnchor = {
 };
 
 
-
 const OutcomeCardGitHubMenu = (props) => {
   const {viewer} = props;
   const githubRepos = viewer && viewer.githubRepos;
-  console.log("repos", githubRepos)
+  console.log('repos', githubRepos)
+  if (!githubRepos) return null;
   return (
     <Menu
       isLoaded={!githubRepos}
@@ -35,7 +35,7 @@ const OutcomeCardGitHubMenu = (props) => {
       originAnchor={originAnchor}
       targetAnchor={targetAnchor}
     >
-      {githubRepos && githubRepos.map((repo) => {
+      {githubRepos.map((repo) => {
         return (
           <MenuItem
             isActive={false}
@@ -48,12 +48,13 @@ const OutcomeCardGitHubMenu = (props) => {
     </Menu>
   );
 
-};
+}
+  ;
 
-OutcomeCardGitHubMenu.propTypes = {
-  outcome: PropTypes.object,
-  setIntegrationStyles: PropTypes.func
-};
+  OutcomeCardGitHubMenu.propTypes = {
+    outcome: PropTypes.object,
+    setIntegrationStyles: PropTypes.func
+  };
 
   const subscriptionThunk = ({teamId, viewer: {id}}) => [
     GitHubRepoAddedSubscription(teamId, id),
@@ -63,15 +64,15 @@ OutcomeCardGitHubMenu.propTypes = {
     IntegrationLeftSubscription(GITHUB, teamId, id)
   ];
 
-export default createFragmentContainer(
-  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(OutcomeCardGitHubMenu)),
-  graphql`
-    fragment OutcomeCardGitHubMenu_viewer on User {
-      id
-      githubRepos(teamId: $teamId) {
+  export default createFragmentContainer(
+    withSubscriptions(subscriptionThunk)(OutcomeCardGitHubMenu),
+    graphql`
+      fragment OutcomeCardGitHubMenu_viewer on User {
         id
-        nameWithOwner
+        githubRepos(teamId: $teamId) {
+          id
+          nameWithOwner
+        }
       }
-    }
-  `
-);
+    `
+  );
