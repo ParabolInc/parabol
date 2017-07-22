@@ -10,6 +10,8 @@ import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFoote
 import OutcomeCardAssignMenu from '../OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from '../OutcomeCardStatusMenu/OutcomeCardStatusMenu';
 import OutcomeCardGitHubMenu from '../OutcomeCardGitHubMenu/OutcomeCardGitHubMenu';
+import GitHubReposMenuRoot from 'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot';
+import MakeGitHubProjectButton from 'universal/components/MakeGitHubProjectButton';
 
 const avatarSize = '1.5rem';
 const faStyle = {
@@ -80,11 +82,9 @@ const OutcomeCardFooter = (props) => {
         {isArchived ?
           <OutcomeCardFooterButton onClick={unarchiveProject} icon="reply" /> :
           <div>
-            <OutcomeCardGitHubMenu
-              editorState={editorState}
-              isAgenda={isAgenda}
-              outcome={outcome}
-              setIntegrationStyles={setIntegrationStyles}
+            <MakeGitHubProjectButton
+              projectId={outcome.id}
+              teamId={outcome.team.id}
             />
             <OutcomeCardStatusMenu
               editorState={editorState}

@@ -6,7 +6,7 @@ import {GITHUB} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLList(GitHubIntegration),
-  description: 'paginated list of slackChannels',
+  description: 'list of git hub repos available to the viewer',
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

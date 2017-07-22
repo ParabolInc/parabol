@@ -15,6 +15,7 @@ const OutcomeCardFooterButton = (props) => {
   const {
     icon,
     onClick,
+    onMouseEnter,
     styles
   } = props;
 
@@ -28,7 +29,7 @@ const OutcomeCardFooterButton = (props) => {
   };
 
   return (
-    <button className={buttonStyles} onClick={onClick}>
+    <button className={buttonStyles} onClick={onClick} onMouseEnter={onMouseEnter}>
       <FontAwesome name={icon} style={faStyle} />
     </button>
   );

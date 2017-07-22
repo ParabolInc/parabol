@@ -1,132 +1,56 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
-import ui from 'universal/styles/ui';
+import {createFragmentContainer} from 'react-relay';
+import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
+import {Menu, MenuItem} from 'universal/modules/menu';
+import {textOverflow} from 'universal/styles/helpers';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
-import upperFirst from 'universal/utils/upperFirst';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
+import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
+import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
+import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
+import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
+import {GITHUB} from 'universal/utils/constants';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
-import OutcomeCardMenuButton from 'universal/modules/outcomeCard/components/OutcomeCardMenuButton/OutcomeCardMenuButton';
-import {convertToRaw} from 'draft-js';
-import addTagToProject from 'universal/utils/draftjs/addTagToProject';
-import {textOverflow} from 'universal/styles/helpers';
-import {Menu, MenuItem} from 'universal/modules/menu';
-import FontAwesome from 'react-fontawesome';
 
-const buttonArray = labels.projectStatus.slugs.slice(0);
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
+
+
 
 const OutcomeCardGitHubMenu = (props) => {
-  const {onComplete, outcome, isAgenda, styles, editorState, setIntegrationStyles} = props;
-  const {id: projectId, status} = outcome;
-
-  const privateLabel = <div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>;
-  const archiveLabel = <div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>;
-  const deleteOutcomeLabel = <div className={css(styles.label)}>De<u>l</u>ete this Project</div>;
-
-  const archiveProject = () => {
-    const contentState = editorState.getCurrentContent();
-    const newContent = addTagToProject(contentState, '#archived');
-    const rawContentStr = JSON.stringify(convertToRaw(newContent));
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id: projectId,
-          content: rawContentStr
-        }
-      }
-    };
-    cashay.mutate('updateProject', options);
-  };
-
-  const deleteOutcome = () => {
-    const options = {
-      variables: {
-        projectId
-      }
-    };
-    cashay.mutate('deleteProject', options);
-    if (onComplete) {
-      onComplete();
-    }
-  };
-
-  const handleProjectUpdateFactory = (newStatus) => () => {
-    if (newStatus === status) {
-      return;
-    }
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id: projectId,
-          status: newStatus
-        }
-      }
-    };
-    cashay.mutate('updateProject', options);
-    if (onComplete) {
-      onComplete();
-    }
-  };
-
-  const originAnchor = {
-    vertical: 'bottom',
-    horizontal: 'right'
-  };
-
-  const targetAnchor = {
-    vertical: 'top',
-    horizontal: 'right'
-  };
-
-  const toggle = <OutcomeCardFooterButton icon="github" />;
-
-  const handleMenuItemClick = () => setIntegrationStyles();
-
-  const itemFactory = () => {
-    const listItems = [];
-    listItems.push(
-      <MenuItem
-        key="github1"
-        label="mattkrick/cashay"
-        onClick={setIntegrationStyles}
-      />,
-      <MenuItem
-        key="github2"
-        label="parabolinc/action"
-        onClick={handleMenuItemClick}
-      />,
-      <MenuItem
-        key="github3"
-        label="parabolinc/chronos"
-        onClick={setIntegrationStyles}
-      />,
-      <MenuItem
-        key="github4"
-        label="parabolinc/integrations"
-        onClick={setIntegrationStyles}
-      />,
-      <MenuItem
-        key="github5"
-        label="parabolinc/services"
-        onClick={setIntegrationStyles}
-      />
-    );
-    return listItems;
-  };
-
+  const {viewer} = props;
+  const githubRepos = viewer && viewer.githubRepos;
+  console.log("repos", githubRepos)
   return (
     <Menu
-      itemFactory={itemFactory}
+      isLoaded={!githubRepos}
       maxHeight="14.0625rem"
       originAnchor={originAnchor}
       targetAnchor={targetAnchor}
-      toggle={toggle}
-    />
+    >
+      {githubRepos && githubRepos.map((repo) => {
+        return (
+          <MenuItem
+            isActive={false}
+            key={`githubReposMenItem${repo.id}`}
+            label={repo.nameWithOwner}
+            onClick={() => console.log('click')}
+          />
+        );
+      })}
+    </Menu>
   );
 
 };
@@ -137,7 +61,7 @@ OutcomeCardGitHubMenu.propTypes = {
   isAgenda: PropTypes.bool,
   onComplete: PropTypes.func,
   styles: PropTypes.object,
-  setIntegrationStyles: PropTypes.func,
+  setIntegrationStyles: PropTypes.func
 };
 
 const buttonHF = {
@@ -214,7 +138,26 @@ const styleThunk = () => ({
     fontSize: ui.menuItemFontSize,
     lineHeight: ui.menuItemHeight,
     padding: `0 ${ui.menuGutterHorizontal} 0 0`
-  },
+  }
 });
 
-export default withStyles(styleThunk)(OutcomeCardGitHubMenu);
+const subscriptionThunk = ({teamId, viewer: {id}}) => [
+  GitHubRepoAddedSubscription(teamId, id),
+  GitHubRepoRemovedSubscription(teamId, id),
+  ProviderRemovedSubscription(teamId, id),
+  ProviderAddedSubscription(teamId, id),
+  IntegrationLeftSubscription(GITHUB, teamId, id)
+];
+
+export default createFragmentContainer(
+  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(OutcomeCardGitHubMenu)),
+  graphql`
+    fragment OutcomeCardGitHubMenu_viewer on User {
+      id
+      githubRepos(teamId: $teamId) {
+        id
+        nameWithOwner
+      }
+    }
+  `
+);
