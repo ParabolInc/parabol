@@ -23,7 +23,11 @@ const OutcomeCardMessage = (props) => {
       <div className={messageInnerStyles}>
         {message}
         {hasClose &&
-          <div className={css(styles.messageClose)} tabIndex="0">
+          <div
+            className={css(styles.messageClose)}
+            onClick={() => console.log('Close that card message!')}
+            tabIndex="0"
+          >
             <FontAwesome
               className={css(styles.messageCloseIcon)}
               name="times-circle"
