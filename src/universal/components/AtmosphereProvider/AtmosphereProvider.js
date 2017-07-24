@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import {Children, Component} from 'react';
 import {connect} from 'react-redux';
 
-const mapStateToProps = (state) => ({authToken: state.auth.obj.sub});
+const mapStateToProps = (state) => ({authToken: state.auth.token});
 
 class AtmosphereProvider extends Component {
   static childContextTypes = {
