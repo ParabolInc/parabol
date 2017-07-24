@@ -67,11 +67,11 @@ const OutcomeCard = (props) => {
       tabIndex="-1"
     >
       {cardHasIntegration &&
-        <div className={css(styles.watermarkBlock)} style={{position: 'absolute', zIndex: ui.ziMenu - 2}}>
+        <div className={css(styles.watermarkBlock)}>
           <FontAwesome name="github" className={css(styles.watermark)} />
         </div>
       }
-      <div style={{position: 'relative', zIndex: ui.ziMenu - 1}}>
+      <div className={css(styles.contentBlock)}>
         <EditingStatusContainer
           isEditing={isEditing}
           outcomeId={outcome.id}
@@ -210,6 +210,11 @@ const styleThunk = () => ({
     }
   },
 
+  contentBlock: {
+    position: 'relative',
+    zIndex: ui.ziMenu - 1
+  },
+
   watermarkBlock: {
     bottom: 0,
     left: 0,
@@ -218,7 +223,8 @@ const styleThunk = () => ({
     right: 0,
     textAlign: 'center',
     top: 0,
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    zIndex: ui.ziMenu - 2
   },
 
   watermark: {
