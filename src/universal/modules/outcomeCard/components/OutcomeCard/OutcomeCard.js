@@ -10,6 +10,7 @@ import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH} from 'universal/utils/constants'
 import {cardBorderTop} from 'universal/styles/helpers';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
+import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
 import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
@@ -41,6 +42,7 @@ const OutcomeCard = (props) => {
     teamMembers,
     unarchiveProject
   } = props;
+  const cardHasMessage = true;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
   const {status} = outcome;
@@ -102,6 +104,12 @@ const OutcomeCard = (props) => {
           teamMembers={teamMembers}
           unarchiveProject={unarchiveProject}
         />
+        {cardHasMessage &&
+          <OutcomeCardMessage
+            hasClose
+            message="Looks like there was an issue. We’re working on it!"
+          />
+        }
       </div>
     </div>
   );

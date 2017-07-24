@@ -29,7 +29,7 @@ class MakeGitHubProjectButton extends Component {
   render() {
     const {Mod, showMenu} = this.state;
     return (
-      <div>
+      <div style={{display: 'inline-block'}}>
         <OutcomeCardFooterButton icon="github" onClick={this.handleClick} onMouseEnter={this.ensureMod}/>
         {Mod && showMenu && <Mod {...this.props}/>}
       </div>
