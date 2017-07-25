@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay';
 import {GITHUB} from 'universal/utils/constants';
 import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMember';
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
+import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount';
 
 const mutation = graphql`
   mutation AddGitHubRepoMutation($nameWithOwner: String!, $teamId: ID!) {
@@ -30,12 +31,7 @@ export const addGitHubRepoUpdater = (store, viewerId, teamId, newNode) => {
     viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
   }
 
-  // update the providerMap
-  const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
-  if (oldProviderMap) {
-    const oldProviderRow = oldProviderMap.getLinkedRecord(GITHUB);
-    oldProviderRow.setValue(oldProviderRow.getValue('integrationCount') + 1, 'integrationCount');
-  }
+  incrementIntegrationCount(viewer, teamId, GITHUB, 1);
 };
 
 const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, onError, onCompleted) => {

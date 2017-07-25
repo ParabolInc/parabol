@@ -1,5 +1,7 @@
 import {commitMutation} from 'react-relay';
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
+import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount';
+import {SLACK} from 'universal/utils/constants';
 
 const mutation = graphql`
   mutation RemoveSlackChannelMutation($slackGlobalId: ID!) {
@@ -13,6 +15,7 @@ export const removeSlackChannelUpdater = (viewer, teamId, deletedId) => {
   const slackChannels = viewer.getLinkedRecords('slackChannels', {teamId});
   const newNodes = getArrayWithoutIds(slackChannels, deletedId);
   viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
+  incrementIntegrationCount(viewer, teamId, SLACK, -1);
 };
 
 const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId) => {

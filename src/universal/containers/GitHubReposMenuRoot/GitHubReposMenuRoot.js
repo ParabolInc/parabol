@@ -11,6 +11,7 @@ import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAdded
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
 import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
+import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 
 const githubRepoQuery = graphql`
   query GitHubReposMenuRootQuery($teamId: ID!) {

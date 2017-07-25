@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay';
 import {SLACK} from 'universal/utils/constants';
+import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount';
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
 
 const mutation = graphql`
@@ -18,8 +19,12 @@ let tempId = 0;
 export const addSlackChannelUpdater = (store, viewerId, teamId, newSlackIntegration) => {
   const viewer = store.get(viewerId);
   const slackChannels = viewer.getLinkedRecords('slackChannels', {teamId});
-  const newNodes = insertNodeBefore(slackChannels, newSlackIntegration, 'channelName');
-  viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
+  if (slackChannels) {
+    const newNodes = insertNodeBefore(slackChannels, newSlackIntegration, 'channelName');
+    viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
+  }
+
+  incrementIntegrationCount(viewer, teamId, SLACK, 1);
 };
 
 const AddSlackChannelMutation = (environment, payload, teamMemberId, onError, onCompleted) => {

@@ -7,11 +7,13 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamIntegrations from 'universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations';
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
+import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
+import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
+import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
+import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 
 const teamIntegrationsQuery = graphql`
@@ -33,6 +35,8 @@ const subscriptions = [
   ProviderAddedSubscription,
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
+  SlackChannelAddedSubscription,
+  SlackChannelRemovedSubscription,
   // if they're the last ones to leave, it'll remove the repo
   IntegrationLeftSubscription(GITHUB)
 ];
@@ -50,12 +54,12 @@ const TeamIntegrationsRoot = ({jwt, atmosphere, teamMemberId}) => {
       subscriptions={subscriptions}
       render={({error, props}) => {
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error} />;
+          return <ErrorComponent height={'14rem'} error={error}/>;
         }
         if (props) {
-          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamId={teamId} />;
+          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamId={teamId}/>;
         }
-        return <LoadingComponent height={'14rem'} />;
+        return <LoadingComponent height={'14rem'}/>;
       }}
 
     />
