@@ -92,7 +92,8 @@ export const removeUserFromIntegrations = (viewer, teamId, service, userId) => {
 };
 
 let tempId = 0;
-const RemoveProviderMutation = (environment, providerId, service, teamId, viewerId) => {
+const RemoveProviderMutation = (environment, providerId, service, teamId) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {providerId, teamId},

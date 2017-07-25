@@ -41,7 +41,6 @@ export default createFragmentContainer(
   withStyles(styleThunk)(ProviderList),
   graphql`
     fragment ProviderList_viewer on User {
-      id
       providerMap(teamId: $teamId) {
         GitHubIntegration {
           ...ProviderRow_providerDetails

@@ -25,7 +25,8 @@ export const removeGitHubRepoUpdater = (viewer, teamId, deletedId) => {
   }
 };
 
-const RemoveGitHubRepoMutation = (environment, githubGlobalId, teamId, viewerId) => {
+const RemoveGitHubRepoMutation = (environment, githubGlobalId, teamId) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {githubGlobalId},

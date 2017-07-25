@@ -24,7 +24,8 @@ export const joinIntegrationUpdater = (store, viewer, teamId, payload) => {
 };
 
 let tempId = 0;
-const JoinIntegrationMutation = (environment, globalId, teamId, viewerId, onError, onCompleted) => {
+const JoinIntegrationMutation = (environment, globalId, teamId, onError, onCompleted) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {globalId},

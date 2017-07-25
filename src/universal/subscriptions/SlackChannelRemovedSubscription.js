@@ -8,7 +8,9 @@ const RemovedSubscription = graphql`
   }
 `;
 
-const SlackChannelRemovedSubscription = (teamId, viewerId) => (ensureSubscription) => {
+const SlackChannelRemovedSubscription = (environment, queryVariables) => {
+  const {ensureSubscription, viewerId} = environment;
+  const {teamId} = queryVariables;
   return ensureSubscription({
     subscription: RemovedSubscription,
     variables: {teamId},

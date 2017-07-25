@@ -18,7 +18,7 @@ const {makeUri} = providerLookup[GITHUB];
 
 const GitHubIntegrations = (props) => {
   const {relay: {environment}, jwt, styles, teamId, viewer} = props;
-  const {id: viewerId, githubRepos, integrationProvider} = viewer;
+  const {githubRepos, integrationProvider} = viewer;
   const accessToken = integrationProvider && integrationProvider.accessToken;
   const openOauth = () => {
     const uri = makeUri(jwt, teamId);
@@ -48,7 +48,7 @@ const GitHubIntegrations = (props) => {
             buttonStyle="flat"
             colorPalette="warm"
             label="Remove GitHub"
-            onClick={() => RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId, viewerId)}
+            onClick={() => RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId)}
             sansPaddingX
             size="smallest"
           />
@@ -71,7 +71,6 @@ const GitHubIntegrations = (props) => {
                 accessToken={accessToken}
                 environment={environment}
                 teamId={teamId}
-                viewerId={viewer.id}
                 subbedRepos={githubRepos}
               />
             </div> :
@@ -93,7 +92,6 @@ const GitHubIntegrations = (props) => {
                 key={repo.id}
                 repo={repo}
                 environment={environment}
-                viewerId={viewerId}
                 teamId={teamId}
               />
             ))}
@@ -184,7 +182,6 @@ export default createFragmentContainer(
   withStyles(styleThunk)(GitHubIntegrations),
   graphql`
     fragment GitHubIntegrations_viewer on User {
-      id
       integrationProvider(teamId: $teamId, service: $service) {
         id
         accessToken

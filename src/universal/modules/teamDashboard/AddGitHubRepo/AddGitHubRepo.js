@@ -46,7 +46,6 @@ class AddGitHubRepo extends Component {
     environment: PropTypes.object,
     styles: PropTypes.object,
     teamMemberId: PropTypes.string,
-    viewerId: PropTypes.string
   }
 
   constructor(props) {
@@ -78,11 +77,11 @@ class AddGitHubRepo extends Component {
   };
 
   handleAddRepo = () => {
-    const {environment, teamId, viewerId} = this.props;
+    const {environment, teamId} = this.props;
     const {selectedRepo: {repoId, nameWithOwner}} = this.state;
     if (!repoId) return;
 
-    AddGitHubRepoMutation(environment, nameWithOwner, teamId, viewerId, setError.bind(this), clearError.bind(this));
+    AddGitHubRepoMutation(environment, nameWithOwner, teamId, setError.bind(this), clearError.bind(this));
     this.setState({
       selectedRepo: defaultSelectedRepo()
     });

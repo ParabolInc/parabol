@@ -35,7 +35,8 @@ export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
 };
 
 let tempId = 0;
-const LeaveIntegrationMutation = (environment, globalId, teamId, viewerId, onError, onCompleted) => {
+const LeaveIntegrationMutation = (environment, globalId, teamId, onError, onCompleted) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {globalId},

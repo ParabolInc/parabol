@@ -15,7 +15,8 @@ export const removeSlackChannelUpdater = (viewer, teamId, deletedId) => {
   viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
 };
 
-const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId, viewerId) => {
+const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {slackGlobalId},

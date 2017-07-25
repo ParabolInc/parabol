@@ -52,7 +52,6 @@ export default createFragmentContainer(
   OutcomeCardGitHubMenu,
   graphql`
     fragment OutcomeCardGitHubMenu_viewer on User {
-      id
       githubRepos(teamId: $teamId) {
         id
         nameWithOwner

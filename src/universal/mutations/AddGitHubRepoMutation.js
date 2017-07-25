@@ -38,7 +38,8 @@ export const addGitHubRepoUpdater = (store, viewerId, teamId, newNode) => {
   }
 };
 
-const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, viewerId, onError, onCompleted) => {
+const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, onError, onCompleted) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {nameWithOwner, teamId},

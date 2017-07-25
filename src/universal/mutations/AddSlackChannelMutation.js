@@ -22,7 +22,8 @@ export const addSlackChannelUpdater = (store, viewerId, teamId, newSlackIntegrat
   viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
 };
 
-const AddSlackChannelMutation = (environment, payload, teamMemberId, viewerId, onError, onCompleted) => {
+const AddSlackChannelMutation = (environment, payload, teamMemberId, onError, onCompleted) => {
+  const {viewerId} = environment;
   const {channelId, channelName} = payload;
   return commitMutation(environment, {
     mutation,
