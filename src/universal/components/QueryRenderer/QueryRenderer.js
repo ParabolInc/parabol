@@ -3,6 +3,7 @@ import deepFreeze from 'deep-freeze';
 import areEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {MAX_TIMEOUT} from 'universal/utils/constants';
 
 const getStateWithProps = (props = null) => ({
   error: null,
@@ -144,7 +145,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
     });
     // if the client is unlikely to return after X, the subscription has a TTL of X
     // when that time has be reached, then we unsub
-    if (ttl !== undefined && ttl <= 2147483647) {
+    if (ttl !== undefined && ttl <= MAX_TIMEOUT) {
       const {timeouts} = ReactRelayQueryRenderer;
       timeouts[this._queryKey] = setTimeout(() => {
         this.release();

@@ -195,16 +195,9 @@ const styleThunk = () => ({
   }
 });
 
-const subscriptionThunk = ({teamId, viewer: {id}}) => {
-  return [
-    SlackChannelAddedSubscription(teamId, id),
-    SlackChannelRemovedSubscription(teamId, id),
-    ProviderRemovedSubscription(teamId, id),
-    ProviderAddedSubscription(teamId, id)
-  ];
-};
+
 export default createFragmentContainer(
-  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(SlackIntegrations)),
+  withStyles(styleThunk)(SlackIntegrations),
   graphql`
     fragment SlackIntegrations_viewer on User {
       id
