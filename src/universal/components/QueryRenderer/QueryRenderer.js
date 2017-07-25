@@ -22,7 +22,8 @@ export default class ReactRelayQueryRenderer extends React.Component {
     render: PropTypes.func.isRequired,
     variables: PropTypes.object,
     subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired).isRequired
-  }
+  };
+  static timeouts = {};
 
   constructor(props, context) {
     super(props, context);
@@ -40,6 +41,9 @@ export default class ReactRelayQueryRenderer extends React.Component {
     }
     const operationName = operation ? operation.name : 'queryless';
     this._queryKey = Atmosphere.getKey(operationName, variables);
+    clearTimeout(ReactRelayQueryRenderer.timeouts[this._queryKey]);
+    delete ReactRelayQueryRenderer.timeouts[this._queryKe];
+
     this._pendingFetch = null;
     this._relayContext = {
       environment,
@@ -48,6 +52,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
     this._rootSubscription = null;
     this._selectionReference = null;
     this.releaseOnUnmount = !subscriptions;
+    this._mounted = true;
     if (!query) {
       this.state = getStateWithProps({});
     } else if (operation) {
@@ -98,7 +103,10 @@ export default class ReactRelayQueryRenderer extends React.Component {
           const snapshot = environment.lookup(operation.fragment);
           this._onChange(snapshot);
         } else {
+          this.release();
           this._fetch(operation, cacheConfig);
+          // Note: cannot change the subscription array without changing vars
+          this._subscribe(subscriptions);
           this.setState({
             readyState: getStateWithProps()
           });
@@ -111,13 +119,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
         this.release();
         this.setState(getStateWithProps({}));
       }
-      // Note: cannot change the subscription array without changing vars
-      if (this.unsubscribe) this.unsubscribe();
-      if (subscriptions) {
-        this._subscribe(subscriptions);
-      }
     }
-
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -130,36 +132,32 @@ export default class ReactRelayQueryRenderer extends React.Component {
   componentWillUnmount() {
     const {cacheConfig, environment} = this.props;
     const {ttl} = cacheConfig || {};
+    this._mounted = false;
     if (this.releaseOnUnmount) {
       this.release();
-      environment.unregisterQuery(this._queryKey);
       return;
     }
-
     environment.querySubscriptions.forEach((querySub) => {
       if (querySub.queryKey === this._queryKey) {
-
+        querySub.handleKickout = this.unsubscribe;
       }
-    })
-    // if the subscription is still going, then GC the query when the subscription ends
-    this.subKeys.forEach((subKey) => {
-      environment.subLookup[subKey].unsubListeners.push(this.release);
     });
-
     // if the client is unlikely to return after X, the subscription has a TTL of X
     // when that time has be reached, then we unsub
-    if (ttl) {
-      setTimeout(() => {
-        if (this.unsubscribe) this.unsubscribe();
+    if (ttl !== undefined && ttl <= 2147483647) {
+      const {timeouts} = ReactRelayQueryRenderer;
+      timeouts[this._queryKey] = setTimeout(() => {
+        this.release();
+        delete timeouts[this._queryKey];
       }, ttl);
     }
   }
 
-  setReleaseOnUnmount = () => {
-    this.releaseOnUnmount = true;
-  };
-
   release = () => {
+    const {environment} = this._relayContext;
+    // remove from listeners
+    environment.unregisterQuery(this._queryKey);
+
     if (this._pendingFetch) {
       this._pendingFetch.dispose();
       this._pendingFetch = null;
@@ -179,35 +177,19 @@ export default class ReactRelayQueryRenderer extends React.Component {
       const {environment, variables} = this._relayContext;
       // subscribe to each new sub, or return the subKey of an already existing sub
       const subscriptionKeys = subscriptions.map((sub) => sub(environment, variables));
-      // when unsubscribe gets called on a sub, the query is stale, so make sure it gets GC'd on unmount
-      subscriptionKeys.forEach((subKey) => {
-        environment.querySubscriptions.push({
-          queryKey: this._queryKey,
-          subKey,
-          release: this.setReleaseOnUnmount
-        });
-      });
       // provide an unsub prop to the component so we can unsub whenever we want
       // when we call unsub we want to:
       //   release immediately if component is unmounted
-      //   set releaseOnUnmount to true
+      //   set releaseOnUnmount to true if component is still mounted
+      //
       this.unsubscribe = () => {
-        // get all the subs for this particular query
-        environment.querySubscriptions
-          .filter((querySub) => querySub.querySub === this._queryKey)
-          .forEach((querySub) => {
-            // release it
-            querySub.release();
-            // if this is the only query that cares about that sub, unsubscribe
-            const queriesForSub = environment.querySubscriptions.filter((qs) => qs.subKey === querySub.subKey);
-            if (queriesForSub.length === 1) {
-              environment.socketUnsubscribe(querySub.subKey);
-            }
-          });
-        // remove from listeners
-        environment.unregisterQuery(this._queryKey);
-        this.unsubscribe = undefined;
+        if (this._mounted) {
+          this.releaseOnUnmount = true;
+        } else {
+          this.release();
+        }
       };
+      environment.registerQuery(this._queryKey, subscriptionKeys, this.unsubscribe);
     }
   }
 

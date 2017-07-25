@@ -39,7 +39,24 @@ export default class Atmosphere extends Environment {
     return this.environments[networkName];
   };
 
+  registerQuery = (queryKey, subKeys, handleKickout) => {
+    subKeys.forEach((subKey) => {
+      this.querySubscriptions.push({
+        queryKey,
+        subKey,
+        handleKickout
+      });
+    });
+  };
+
   unregisterQuery = (queryKey) => {
+    // unsubscribe from all subs that are no longer needed
+    this.querySubscriptions.forEach((querySub) => {
+      if (querySub.queryKey === queryKey) {
+        this.safeSocketUnsubscribe(querySub.subKey);
+      }
+    });
+    // remove all records relating to this query
     this.querySubscriptions = this.querySubscriptions.filter((querySub) => querySub.queryKey !== queryKey);
   };
 
@@ -140,6 +157,15 @@ export default class Atmosphere extends Environment {
     return subKey;
   };
 
+  safeSocketUnsubscribe = (subKey) => {
+    // if this is the only query that cares about that sub, unsubscribe
+    const queriesForSub = this.querySubscriptions.filter((qs) => qs.subKey === subKey);
+    // the subLookup will be empty if this was a kickout
+    if (queriesForSub.length === 1 && this.subLookup[subKey]) {
+      this.socketUnsubscribe(subKey);
+    }
+  };
+
   socketUnsubscribe = (subKey, isKickout) => {
     const opManager = this.subLookup[subKey];
     if (!opManager) {
@@ -148,7 +174,13 @@ export default class Atmosphere extends Environment {
     const {opId} = opManager;
     this.socket.off(`gqlData.${opId}`);
     delete this.subLookup[subKey];
-    if (!isKickout) {
+    if (isKickout) {
+      this.querySubscriptions.forEach((querySub) => {
+        if (querySub.subKey === subKey) {
+          querySub.handleKickout();
+        }
+      })
+    } else {
       this.socket.emit('gqlUnsub', opId);
     }
   };
