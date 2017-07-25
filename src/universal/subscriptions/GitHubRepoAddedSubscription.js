@@ -17,7 +17,9 @@ const AddedSubscription = graphql`
   }
 `;
 
-const GitHubRepoAddedSubscription = (teamId, viewerId) => (ensureSubscription) => {
+const GitHubRepoAddedSubscription = (environment, queryVariables) => {
+  const {ensureSubscription, viewerId} = environment;
+  const {teamId} = queryVariables;
   return ensureSubscription({
     subscription: AddedSubscription,
     variables: {teamId},
@@ -25,7 +27,7 @@ const GitHubRepoAddedSubscription = (teamId, viewerId) => (ensureSubscription) =
       const newNode = store.getRootField('githubRepoAdded').getLinkedRecord('repo');
       addGitHubRepoUpdater(store, viewerId, teamId, newNode);
     }
-  });
+  })
 };
 
 export default GitHubRepoAddedSubscription;

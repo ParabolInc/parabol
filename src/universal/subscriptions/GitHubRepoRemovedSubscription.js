@@ -8,7 +8,9 @@ const RemovedSubscription = graphql`
   }
 `;
 
-const GitHubRepoRemovedSubscription = (teamId, viewerId) => (ensureSubscription) => {
+const GitHubRepoRemovedSubscription = (environment, queryVariables) => {
+  const {ensureSubscription, viewerId} = environment;
+  const {teamId} = queryVariables;
   return ensureSubscription({
     subscription: RemovedSubscription,
     variables: {teamId},

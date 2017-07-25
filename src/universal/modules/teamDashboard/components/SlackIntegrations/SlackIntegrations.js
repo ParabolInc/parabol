@@ -24,9 +24,9 @@ const {makeUri} = providerLookup[SLACK];
 
 const SlackIntegrations = (props) => {
   const {relay: {environment}, jwt, styles, teamId, teamMemberId, viewer} = props;
-  const {id: viewerId, slackChannels, integrationProvider} = viewer;
+  const {slackChannels, integrationProvider} = viewer;
   const handleRemoveChannel = (slackGlobalId) => () => {
-    RemoveSlackChannelMutation(environment, slackGlobalId, teamId, viewerId);
+    RemoveSlackChannelMutation(environment, slackGlobalId, teamId);
   };
   const accessToken = integrationProvider && integrationProvider.accessToken;
   const openOauth = () => {
@@ -57,7 +57,7 @@ const SlackIntegrations = (props) => {
               buttonStyle="flat"
               colorPalette="warm"
               label="Remove Slack"
-              onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId, viewerId)}
+              onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)}
               sansPaddingX
               size="smallest"
             />
@@ -80,7 +80,6 @@ const SlackIntegrations = (props) => {
                 accessToken={accessToken}
                 environment={environment}
                 teamMemberId={teamMemberId}
-                viewerId={viewer.id}
                 subbedChannels={slackChannels}
               />
             </div> :
@@ -195,19 +194,11 @@ const styleThunk = () => ({
   }
 });
 
-const subscriptionThunk = ({teamId, viewer: {id}}) => {
-  return [
-    SlackChannelAddedSubscription(teamId, id),
-    SlackChannelRemovedSubscription(teamId, id),
-    ProviderRemovedSubscription(teamId, id),
-    ProviderAddedSubscription(teamId, id)
-  ];
-};
+
 export default createFragmentContainer(
-  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(SlackIntegrations)),
+  withStyles(styleThunk)(SlackIntegrations),
   graphql`
     fragment SlackIntegrations_viewer on User {
-      id
       integrationProvider(teamId: $teamId, service: $service) {
         id
         accessToken

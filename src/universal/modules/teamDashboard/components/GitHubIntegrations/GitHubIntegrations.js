@@ -5,7 +5,6 @@ import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
-import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo';
 import GitHubRepoRow from 'universal/modules/teamDashboard/components/GItHubRepoRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
@@ -13,19 +12,13 @@ import {providerLookup} from 'universal/modules/teamDashboard/components/Provide
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
-import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
-import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription';
-import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import {GITHUB} from 'universal/utils/constants';
 
 const {makeUri} = providerLookup[GITHUB];
 
 const GitHubIntegrations = (props) => {
   const {relay: {environment}, jwt, styles, teamId, viewer} = props;
-  const {id: viewerId, githubRepos, integrationProvider} = viewer;
+  const {githubRepos, integrationProvider} = viewer;
   const accessToken = integrationProvider && integrationProvider.accessToken;
   const openOauth = () => {
     const uri = makeUri(jwt, teamId);
@@ -55,7 +48,7 @@ const GitHubIntegrations = (props) => {
             buttonStyle="flat"
             colorPalette="warm"
             label="Remove GitHub"
-            onClick={() => RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId, viewerId)}
+            onClick={() => RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId)}
             sansPaddingX
             size="smallest"
           />
@@ -78,7 +71,6 @@ const GitHubIntegrations = (props) => {
                 accessToken={accessToken}
                 environment={environment}
                 teamId={teamId}
-                viewerId={viewer.id}
                 subbedRepos={githubRepos}
               />
             </div> :
@@ -100,7 +92,6 @@ const GitHubIntegrations = (props) => {
                 key={repo.id}
                 repo={repo}
                 environment={environment}
-                viewerId={viewerId}
                 teamId={teamId}
               />
             ))}
@@ -187,20 +178,10 @@ const styleThunk = () => ({
   }
 });
 
-const subscriptionThunk = ({teamId, viewer: {id}}) => [
-  GitHubRepoAddedSubscription(teamId, id),
-  GitHubRepoRemovedSubscription(teamId, id),
-  ProviderRemovedSubscription(teamId, id),
-  ProviderAddedSubscription(teamId, id),
-  IntegrationJoinedSubscription(GITHUB, teamId, id),
-  IntegrationLeftSubscription(GITHUB, teamId, id)
-];
-
 export default createFragmentContainer(
-  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(GitHubIntegrations)),
+  withStyles(styleThunk)(GitHubIntegrations),
   graphql`
     fragment GitHubIntegrations_viewer on User {
-      id
       integrationProvider(teamId: $teamId, service: $service) {
         id
         accessToken

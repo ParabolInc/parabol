@@ -20,7 +20,6 @@ class AddSlackChannel extends Component {
     environment: PropTypes.object,
     styles: PropTypes.object,
     teamMemberId: PropTypes.string,
-    viewerId: PropTypes.string
   }
 
   constructor(props) {
@@ -51,7 +50,7 @@ class AddSlackChannel extends Component {
   };
 
   handleAddChannel = () => {
-    const {environment, teamMemberId, viewerId} = this.props;
+    const {environment, teamMemberId} = this.props;
     const {selectedChannel} = this.state;
     if (!selectedChannel.channelId) return;
     const onError = ({_error}) => {
@@ -66,7 +65,7 @@ class AddSlackChannel extends Component {
         });
       }
     };
-    AddSlackChannelMutation(environment, selectedChannel, teamMemberId, viewerId, onError, onCompleted);
+    AddSlackChannelMutation(environment, selectedChannel, teamMemberId, onError, onCompleted);
     this.setState({
       selectedChannel: defaultSelectedChannel()
     });

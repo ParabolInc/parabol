@@ -19,7 +19,9 @@ const subscription = graphql`
   }
 `;
 
-const ProviderRemovedSubscription = (teamId, viewerId) => (ensureSubscription) => {
+const ProviderRemovedSubscription = (environment, queryVariables) => {
+  const {ensureSubscription, viewerId} = environment;
+  const {teamId} = queryVariables;
   return ensureSubscription({
     subscription,
     variables: {teamId},

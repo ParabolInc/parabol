@@ -9,7 +9,9 @@ const AddedSubscription = graphql`
   }
 `;
 
-const IntegrationLeftSubscription = (service, teamId, viewerId) => (ensureSubscription) => {
+const IntegrationLeftSubscription = (service) => (environment, queryVariables) => {
+  const {ensureSubscription, viewerId} = environment;
+  const {teamId} = queryVariables;
   return ensureSubscription({
     subscription: AddedSubscription,
     variables: {service, teamId},

@@ -1,3 +1,4 @@
+import ms from 'ms';
 /**
  * Big stuff:
  */
@@ -141,6 +142,7 @@ export const textTags = ['#private', '#archived'];
 export const NEWLINE_REGEX = /\r\n?|\n/g;
 
 /* Integrations */
+export const DEFAULT_TTL = ms('5m');
 export const GITHUB = 'GitHubIntegration';
 export const SLACK = 'SlackIntegration';
 export const CURRENT_PROVIDERS = [GITHUB, SLACK];

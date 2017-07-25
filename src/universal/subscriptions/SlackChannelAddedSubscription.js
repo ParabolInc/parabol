@@ -13,7 +13,9 @@ const AddedSubscription = graphql`
   }
 `;
 
-const SlackChannelAddedSubscription = (teamId, viewerId) => (ensureSubscription) => {
+const SlackChannelAddedSubscription = (environment, queryVariables) => {
+  const {ensureSubscription, viewerId} = environment;
+  const {teamId} = queryVariables;
   return ensureSubscription({
     subscription: AddedSubscription,
     variables: {teamId},

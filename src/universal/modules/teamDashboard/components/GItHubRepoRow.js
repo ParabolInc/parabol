@@ -15,18 +15,18 @@ class GitHubRepoRow extends Component {
   state = {};
 
   render() {
-    const {accessToken, environment, styles, viewerId, teamId, repo} = this.props;
+    const {accessToken, environment, styles, teamId, repo} = this.props;
     const {id, nameWithOwner, teamMembers} = repo;
 
-    const {id: userId} = fromGlobalId(viewerId);
+    const {id: userId} = fromGlobalId(environment.viewerId);
     const teamMemberId = `${userId}::${teamId}`;
     const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
     const viewerInIntegration = Boolean(teamMembers.find((teamMember) => teamMember.id === globalTeamMemberId));
     const toggleIntegrationMembership = (githubGlobalId) => () => {
       if (viewerInIntegration) {
-        LeaveIntegrationMutation(environment, githubGlobalId, teamId, viewerId, setError.bind(this), clearError.bind(this));
+        LeaveIntegrationMutation(environment, githubGlobalId, teamId, setError.bind(this), clearError.bind(this));
       } else {
-        JoinIntegrationMutation(environment, githubGlobalId, teamId, viewerId, setError.bind(this), clearError.bind(this));
+        JoinIntegrationMutation(environment, githubGlobalId, teamId, setError.bind(this), clearError.bind(this));
       }
     };
     const {error} = this.state;
