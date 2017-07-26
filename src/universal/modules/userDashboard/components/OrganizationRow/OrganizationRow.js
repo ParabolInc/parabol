@@ -40,7 +40,6 @@ const OrganizationRow = (props) => {
           buttonStyle="flat"
           colorPalette="dark"
           label="Settings and Billing"
-          sansPaddingX
           onClick={onRowClick}
           size="smallest"
         />

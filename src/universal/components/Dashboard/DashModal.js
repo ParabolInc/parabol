@@ -140,16 +140,16 @@ const styleThunk = (theme, props) => ({
   },
 
   modal: {
-    background: '#fff',
-    border: `.125rem solid ${appTheme.palette.mid30a}`,
-    boxShadow: ui.modalBoxShadow,
-    borderRadius: ui.modalBorderRadius,
-    overflow: 'hidden',
-    padding: '1.25rem',
-    width: '30rem',
+    animationDuration: '200ms',
     animationIterationCount: 1,
     animationName: animateIn,
-    animationDuration: '200ms'
+    background: '#fff',
+    border: ui.modalBorder,
+    borderRadius: ui.modalBorderRadius,
+    boxShadow: ui.modalBoxShadow,
+    overflow: 'hidden',
+    padding: '1.25rem',
+    width: '30rem'
   }
 });
 
