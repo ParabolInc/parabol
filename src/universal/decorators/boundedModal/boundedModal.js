@@ -21,11 +21,12 @@ export default (ComposedComponent) => {
     }
 
     setPos = (props) => {
+      // here, height refers to line height
       const {height, left, top} = props;
       if (left !== this.state.left || top !== this.state.top) {
         const rect = this.ref.getBoundingClientRect();
         const maxLeft = window.innerWidth - rect.width;
-        const isBelow = top + rect.height < window.innerHeight;
+        const isBelow = top + rect.height < window.innerHeight + window.scrollY;
         this.setState({
           left: Math.min(left, maxLeft),
           top: isBelow ? top : top - ui.draftModalMargin - height - rect.height

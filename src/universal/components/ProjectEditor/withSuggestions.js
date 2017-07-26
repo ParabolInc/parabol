@@ -188,8 +188,8 @@ const withSuggestions = (ComposedComponent) => {
           active={active}
           suggestions={suggestions}
           suggestionType={suggestionType}
-          top={targetRect && targetRect.top + ui.draftModalMargin}
-          left={targetRect && targetRect.left}
+          top={targetRect && window.scrollY + targetRect.top + ui.draftModalMargin}
+          left={targetRect && window.scrollX + targetRect.left}
           height={targetRect && targetRect.height}
           editorState={editorState}
           setEditorState={setEditorState}

@@ -26,12 +26,17 @@ class MakeGitHubProjectButton extends Component {
     })
   };
 
+  // just show the menu with a toggle
+  // the menu should take in a queryRenderer child
+  // the queryRenderer should be passed in as Mod
+  // before it loads, we should show the loading
+
   render() {
     const {Mod, showMenu} = this.state;
+    const toggle = <OutcomeCardFooterButton icon="github" onClick={this.handleClick} onMouseEnter={this.ensureMod}/>;
     return (
       <div style={{display: 'inline-block'}}>
-        <OutcomeCardFooterButton icon="github" onClick={this.handleClick} onMouseEnter={this.ensureMod}/>
-        {Mod && showMenu && <Mod {...this.props}/>}
+        {Mod && showMenu ? <Mod {...this.props} toggle={toggle}/> : toggle}
       </div>
     );
   }

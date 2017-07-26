@@ -16,7 +16,7 @@ const targetAnchor = {
 
 
 const OutcomeCardGitHubMenu = (props) => {
-  const {viewer} = props;
+  const {toggle, viewer} = props;
   const githubRepos = viewer && viewer.githubRepos;
   console.log('repos', githubRepos)
   if (!githubRepos) return null;
@@ -27,8 +27,10 @@ const OutcomeCardGitHubMenu = (props) => {
       maxHeight="14.0625rem"
       originAnchor={originAnchor}
       targetAnchor={targetAnchor}
+      toggle={toggle}
     >
       {githubRepos.map((repo) => {
+        console.log('repo', repo)
         return (
           <MenuItem
             isActive={false}
