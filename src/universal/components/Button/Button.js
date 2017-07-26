@@ -28,11 +28,6 @@ const styleThunk = (theme, props) => ({
     paddingRight: ui.buttonPaddingHorizontalCompact
   },
 
-  sansPaddingX: {
-    paddingLeft: 0,
-    paddingRight: 0
-  },
-
   raised: {
     boxShadow: '0 2px 4px rgba(0, 0, 0, .3)'
   },
@@ -141,7 +136,6 @@ export default class LabeledFieldArray extends Component {
       'flat'
     ]),
     raised: PropTypes.bool,
-    sansPaddingX: PropTypes.bool,
     styles: PropTypes.object,
     textTransform: PropTypes.oneOf([
       'none',
@@ -182,7 +176,6 @@ export default class LabeledFieldArray extends Component {
       onClick,
       onMouseEnter,
       raised,
-      sansPaddingX,
       size,
       styles,
       title,
@@ -196,7 +189,6 @@ export default class LabeledFieldArray extends Component {
       styles.base,
       raised && styles.raised,
       compact && styles.compact,
-      sansPaddingX && styles.sansPaddingX,
       isBlock && styles.isBlock,
       styles.propColors,
       disabled && styles.disabled,

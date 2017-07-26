@@ -10,6 +10,7 @@ import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlack
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
 import {SLACK} from 'universal/utils/constants';
@@ -58,7 +59,6 @@ const SlackIntegrations = (props) => {
               colorPalette="warm"
               label="Remove Slack"
               onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)}
-              sansPaddingX
               size="smallest"
             />
             <Button
@@ -66,7 +66,6 @@ const SlackIntegrations = (props) => {
               colorPalette="cool"
               label="Refresh Token"
               onClick={openOauth}
-              sansPaddingX
               size="smallest"
             />
           </div>
@@ -162,9 +161,8 @@ const styleThunk = () => ({
   },
 
   providerActions: {
-    display: 'flex',
-    justifyContent: 'space-around',
     flex: 1,
+    marginLeft: 'auto',
     paddingLeft: ui.rowGutter,
     textAlign: 'right'
   },
@@ -190,6 +188,7 @@ const styleThunk = () => ({
 
   channelName: {
     color: ui.palette.cool,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700
   }
 });

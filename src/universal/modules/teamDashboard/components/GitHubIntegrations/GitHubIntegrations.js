@@ -49,7 +49,6 @@ const GitHubIntegrations = (props) => {
             colorPalette="warm"
             label="Remove GitHub"
             onClick={() => RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId)}
-            sansPaddingX
             size="smallest"
           />
           <Button
@@ -57,7 +56,6 @@ const GitHubIntegrations = (props) => {
             colorPalette="cool"
             label="Refresh Token"
             onClick={openOauth}
-            sansPaddingX
             size="smallest"
           />
         </div>
@@ -146,9 +144,10 @@ const styleThunk = () => ({
   },
 
   providerActions: {
-    display: 'flex',
-    justifyContent: 'space-around',
+    // display: 'flex',
+    // justifyContent: 'space-around',
     flex: 1,
+    marginLeft: 'auto',
     paddingLeft: ui.rowGutter,
     textAlign: 'right'
   },
@@ -198,4 +197,3 @@ export default createFragmentContainer(
     }
   `
 );
-

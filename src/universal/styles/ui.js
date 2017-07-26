@@ -411,7 +411,7 @@ const ui = {
       providerName: 'GitHub'
     },
     slack: {
-      description: 'Notify channels when meetings begin and end for this team',
+      description: 'Notify channels when meetings begin and end',
       color: '#6ecadc',
       icon: 'slack',
       providerName: 'Slack'

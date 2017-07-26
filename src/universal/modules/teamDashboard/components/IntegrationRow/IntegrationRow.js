@@ -30,7 +30,6 @@ const styleThunk = () => ({
     justifyContent: 'space-between',
     padding: ui.rowGutter,
     paddingLeft: 0,
-    paddingRight: '1px',
     width: '100%'
   }
 });
