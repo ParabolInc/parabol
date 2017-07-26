@@ -84,11 +84,11 @@ const transitionSlowest = '3200ms ease-in';
 
 // Shadows
 const shadow = [
-  '0 1px 2px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)',
-  '0 2px 4px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)',
-  '0 4px 8px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)',
-  '0 8px 16px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)',
-  '0 16px 22px rgba(0, 0, 0, .25), 0 0 1px rgba(0, 0, 0, .15)'
+  '0 .0625rem .125rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
+  '0 .125rem .25rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
+  '0 .25rem .5rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
+  '0 .5rem 1rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
+  '0 1rem 2rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)'
 ];
 
 // -----------------------------------------------------------------------------
@@ -373,8 +373,9 @@ const ui = {
 
   // Modals
   // ---------------------------------------------------------------------------
+  modalBorder: '.0625rem solid rgba(0, 0, 0, .2)',
   modalBorderRadius: borderRadiusLarge,
-  modalBoxShadow: '0 .25rem .5rem 0 rgba(0, 0, 0, .35)',
+  modalBoxShadow: shadow[3],
   modalButtonSize: BUTTON_SIZE_MEDIUM,
   modalLayoutMain: MODAL_LAYOUT_MAIN,
   modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
