@@ -1,140 +1,36 @@
-import PropTypes from 'prop-types';
-import React, { Children, cloneElement } from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import PropTypes from 'prop-types';
+import React from 'react';
+import portal from 'react-portal-hoc';
+import boundedModal from 'universal/decorators/boundedModal/boundedModal';
+import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import {textOverflow} from 'universal/styles/helpers';
-import portal from 'react-portal-hoc';
-import Spinner from '../../../spinner/components/Spinner/Spinner';
+import withStyles from 'universal/styles/withStyles';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import Spinner from 'universal/modules/spinner/components/Spinner/Spinner';
 
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import Menu from 'universal/modules/menu/components/Menu/Menu';
-
-const calculateMenuPosY = (originHeight, originTop, orientation, targetOrientation) => {
-  let topOffset = originTop + window.scrollY;
-  if (orientation === 'center') {
-    topOffset += originHeight / 2;
-  } else if (orientation === 'bottom') {
-    topOffset += originHeight;
-  }
-  return targetOrientation === 'bottom' ? document.body.clientHeight - topOffset : topOffset;
-};
-
-const calculateMenuPosX = (originWidth, originLeft, orientation, targetOrientation) => {
-  let leftOffset = originLeft + window.scrollX;
-  if (orientation === 'center') {
-    leftOffset += originWidth / 2;
-  } else if (orientation === 'right') {
-    leftOffset += originWidth;
-  }
-  return targetOrientation === 'right' ? document.body.clientWidth - leftOffset : leftOffset;
-};
-
-export default class MenuContainer extends Component {
-  static propTypes = {
-    isLoaded: PropTypes.bool,
-    originAnchor: PropTypes.object,
-    targetAnchor: PropTypes.object,
-    toggle: PropTypes.object
-  };
-
-  constructor() {
-    super();
-    this.state = {};
-  }
-
-  makeSmartToggle = () => {
-    const {toggle, originAnchor, targetAnchor, toggleMargin, maxWidth, maxHeight} = this.props;
-    return React.cloneElement(toggle, {
-      onClick: (e) => {
-        // always set coords, otherwise we'd have to intercept all calls to closePortal to keep coords at null & window resize events
-        // figure out where to put the menu
-        const rect = e.target.getBoundingClientRect();
-        const {vertical: originY, horizontal: originX} = originAnchor;
-        const {height, width, left, top} = rect;
-        let left = window.scrollY
-        if (targetAnchor.horizontal === 'left') {
-          if (originAnchor.horizontal === 'left') {
-            left = rect.left;
-          } else if (originAnchor.horizontal === 'center') {
-            left = rect.left + rect.width / 2;
-          } else if (originAnchor.horizontal === 'right') {
-            left = rect.left + rect.width;
-          }
-        } else if (targetAnchor.horizontal === 'center') {
-          if (originAnchor.horizontal === 'left') {
-            left = rect.left - maxWidth / 2
-          } else if (originAnchor.horizontal === 'center') {
-            left = rect.left + rect.width / 2 - maxWidth / 2
-          } else if (originAnchor.horizontal === 'right') {
-            left = rect.left + rect.width - maxWidth / 2
-          }
-        } else if (targetAnchor.horizontal === 'right') {
-          if (originAnchor.horizontal === 'left') {
-            left = rect.left - maxWidth
-          } else if (originAnchor.horizontal === 'center') {
-            left = rect.left + rect.width / 2 - maxWidth
-          } else if (originAnchor.horizontal === 'right') {
-            left = rect.left + rect.width - maxWidth
-          }
-        }
-        this.setState({
-          left:
-          coords: {
-            [targetAnchor.vertical]: calculateMenuPosY(height, top, originY, targetAnchor.vertical),
-            [targetAnchor.horizontal]: calculateMenuPosX(width, left, originX, targetAnchor.horizontal)
-          }
-        });
-        const {onClick} = toggle.props;
-        if (onClick) {
-          // if the menu was gonna do something, do it
-          onClick(e);
-        }
-      }
-    });
-  }
-  render() {
-    const {originAnchor, targetAnchor, toggle} = this.props;
-    console.log('render menu', toggle);
-
-    return (
-      <Menu
-        {...this.props}
-        coords={this.state.coords}
-        toggle={smartToggle}
-      />
-    );
-  }
-}
-
-
-const Menu = (props) => {
+const AsyncMenu = (props) => {
   const {
-    children,
     closePortal,
-    coords,
-    isLoaded,
-    itemFactory,
-    label,
-    menuWidth,
-    styles
+    left,
+    loading,
+    top,
+    Mod,
+    setLoading,
+    setMenuRef,
+    styles,
+    queryVars
   } = props;
+
   const menuBlockStyle = {
-    width: menuWidth,
-    ...coords
+    left,
+    top
   };
-  console.log('render innerMenu');
-  const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
-  console.log('getkids', kids)
   return (
-    <div className={css(styles.menuBlock)} style={menuBlockStyle}>
+    <div className={css(styles.menuBlock)} style={menuBlockStyle} ref={setMenuRef}>
       <div className={css(styles.menu)}>
-        {label && <div className={css(styles.label)}>{label}</div>}
-        {kids}
+        {Mod && <Mod closePortal={closePortal} setLoading={setLoading} {...queryVars} />}
         <ReactCSSTransitionGroup
           transitionName={{
             appear: css(styles.spinnerAppear),
@@ -146,9 +42,9 @@ const Menu = (props) => {
           transitionAppearTimeout={300}
         >
           {
-            kids.length === 0 && !isLoaded &&
+            loading &&
             <div key="spinner" className={css(styles.spinner)}>
-              <Spinner fillColor="cool" width={40} />
+              <Spinner fillColor="cool" width={40}/>
             </div>
           }
         </ReactCSSTransitionGroup>
@@ -157,35 +53,17 @@ const Menu = (props) => {
   );
 };
 
-Menu.defaultProps = {
+AsyncMenu.defaultProps = {
   menuOrientation: 'left',
   verticalAlign: 'middle'
 };
 
-Menu.propTypes = {
-  children: PropTypes.any,
-  closePortal: PropTypes.func,
-  coords: PropTypes.object,
-  isLoaded: PropTypes.bool,
-  itemFactory: PropTypes.func,
-  label: PropTypes.string,
-  menuOrientation: PropTypes.oneOf([
-    'left',
-    'right'
-  ]),
-  maxHeight: PropTypes.string,
-  menuWidth: PropTypes.string,
-  styles: PropTypes.object,
-  toggle: PropTypes.any,
-  verticalAlign: PropTypes.oneOf([
-    'middle',
-    'top'
-  ]),
-  zIndex: PropTypes.string
+AsyncMenu.propTypes = {
 };
 
-const styleThunk = (theme, {maxHeight}) => ({
+const styleThunk = (theme, {maxHeight, maxWidth}) => ({
   menuBlock: {
+    maxWidth,
     paddingTop: '.25rem',
     position: 'absolute',
     zIndex: ui.ziMenu
@@ -195,7 +73,7 @@ const styleThunk = (theme, {maxHeight}) => ({
     backgroundColor: ui.menuBackgroundColor,
     borderRadius: ui.menuBorderRadius,
     boxShadow: ui.menuBoxShadow,
-    maxHeight: maxHeight || '10rem',
+    maxHeight,
     outline: 0,
     overflowY: 'auto',
     paddingBottom: ui.menuGutterVertical,
@@ -220,6 +98,7 @@ const styleThunk = (theme, {maxHeight}) => ({
     display: 'flex',
     justifyContent: 'center',
     minHeight: '3rem',
+    minWidth: maxWidth,
     width: '100%'
   },
 
@@ -235,4 +114,8 @@ const styleThunk = (theme, {maxHeight}) => ({
   }
 });
 
-export default portal({escToClose: true, clickToClose: true})(withStyles(styleThunk)(Menu));
+export default portal({escToClose: true, clickToClose: true})(
+  boundedModal(
+    withStyles(styleThunk)(AsyncMenu)
+  )
+);

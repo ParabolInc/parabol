@@ -6,10 +6,20 @@ import ui from 'universal/styles/ui';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 import OutcomeCardAssignMenu from '../OutcomeCardAssignMenu/OutcomeCardAssignMenu';
-import OutcomeCardGitHubMenu from '../OutcomeCardGitHubMenu/OutcomeCardGitHubMenu';
-import GitHubReposMenuRoot from 'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot';
-import MakeGitHubProjectButton from 'universal/components/MakeGitHubProjectButton';
 import OutcomeCardStatusMenu from '../OutcomeCardStatusMenu/OutcomeCardStatusMenu';
+import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+
+const fetchMenu = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
+
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
 
 const OutcomeCardFooter = (props) => {
   const {
@@ -49,9 +59,17 @@ const OutcomeCardFooter = (props) => {
         {isArchived ?
           <OutcomeCardFooterButton onClick={unarchiveProject} icon="reply" /> :
           <div>
-            <MakeGitHubProjectButton
-              projectId={outcome.id}
-              teamId={outcome.team.id}
+            <AsyncMenuContainer
+              fetchMenu={fetchMenu}
+              maxWidth={350}
+              maxHeight={150}
+              originAnchor={originAnchor}
+              queryVars={{
+                projectId: outcome.id,
+                teamId: outcome.team.id
+              }}
+              targetAnchor={targetAnchor}
+              toggle={<OutcomeCardFooterButton icon="github" />}
             />
             <OutcomeCardStatusMenu
               editorState={editorState}

@@ -1,25 +1,27 @@
 /* eslint-disable no-undef */
 import PropTypes from 'prop-types';
-import React from 'react';
+import React,{Component} from 'react';
 import {graphql} from 'react-relay';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import OutcomeCardGitHubMenu from 'universal/modules/outcomeCard/components/OutcomeCardGitHubMenu/OutcomeCardGitHubMenu';
-import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
+import GitHubRepoListMenu from 'universal/modules/outcomeCard/components/GitHubRepoListMenu/GitHubRepoListMenu';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
+import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
+import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
+import SetLoading from 'universal/components/SetLoading';
 
 const githubRepoQuery = graphql`
   query GitHubReposMenuRootQuery($teamId: ID!) {
     viewer {
       ...OutcomeCardGitHubMenu_viewer
-    } 
+    }
   }
 `;
+
 
 const subscriptions = [
   GitHubRepoAddedSubscription,
@@ -30,7 +32,7 @@ const subscriptions = [
 ];
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const GitHubReposMenuRoot = ({atmosphere, teamId, projectId}) => {
+const GitHubReposMenuRoot = ({atmosphere, teamId, projectId, closePortal, setLoading}) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -43,14 +45,18 @@ const GitHubReposMenuRoot = ({atmosphere, teamId, projectId}) => {
         if (error) {
           return <ErrorComponent height={'14rem'} error={error}/>;
         }
-        const viewer = props && props.viewer;
-        return (<OutcomeCardGitHubMenu
-          viewer={viewer}
-          teamId={teamId}
-          projectId={projectId}
-        />);
+        if (props) {
+          return (<GitHubRepoListMenu
+            viewer={props.viewer}
+            teamId={teamId}
+            projectId={projectId}
+            closePortal={closePortal}
+            setLoading={setLoading}
+          />);
+        } else {
+          return <SetLoading setLoading={setLoading}/>
+        }
       }}
-
     />
   );
 };

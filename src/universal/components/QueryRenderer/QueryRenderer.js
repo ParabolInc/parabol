@@ -154,6 +154,13 @@ export default class ReactRelayQueryRenderer extends React.Component {
     }
   }
 
+  safelySetState(stateObj) {
+    // make sure the component didn't unmount before the fetch returned
+    if (this._mounted) {
+      this.setState(stateObj);
+    }
+  }
+
   release = () => {
     const {environment} = this._relayContext;
     // remove from listeners
@@ -222,7 +229,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
       }
       this._pendingFetch = null;
       this._selectionReference = nextReference;
-      this.setState({readyState});
+      this.safelySetState({readyState});
     };
     const onNext = () => {
       // `onNext` can be called multiple times by network layers that support
@@ -245,7 +252,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
       }
       this._rootSubscription = environment.subscribe(snapshot, this._onChange);
       this._selectionReference = nextReference;
-      this.setState({readyState});
+      this.safelySetState({readyState});
     };
 
     if (this._pendingFetch) {
@@ -270,7 +277,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
   }
 
   _onChange = (snapshot) => {
-    this.setState({
+    this.safelySetState({
       readyState: {
         ...this.state.readyState,
         props: snapshot.data
