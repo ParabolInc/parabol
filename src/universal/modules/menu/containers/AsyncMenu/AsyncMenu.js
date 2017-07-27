@@ -62,7 +62,6 @@ export default class AsyncMenuContainer extends Component {
         const originTopOffset = getOffset(originAnchor.vertical, this.toggleCoords.height);
         const targetTopOffset = getOffset(targetAnchor.vertical, height);
         const top = window.scrollY + this.toggleCoords.top + originTopOffset - targetTopOffset + toggleMargin;
-        console.log('setting left', left, menuCoords.width, width)
         this.setState({
           left,
           top

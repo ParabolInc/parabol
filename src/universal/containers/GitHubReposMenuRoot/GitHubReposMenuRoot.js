@@ -17,7 +17,7 @@ import SetLoading from 'universal/components/SetLoading';
 const githubRepoQuery = graphql`
   query GitHubReposMenuRootQuery($teamId: ID!) {
     viewer {
-      ...OutcomeCardGitHubMenu_viewer
+      ...GitHubRepoListMenu_viewer
     }
   }
 `;

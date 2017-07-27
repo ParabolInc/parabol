@@ -2562,6 +2562,12 @@ draft-js-export-html@^0.5.4:
   dependencies:
     draft-js-utils "^0.1.5"
 
+draft-js-export-markdown@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/draft-js-export-markdown/-/draft-js-export-markdown-0.3.0.tgz#86390e03ceaf1d347fc616867ab7f535eb76bf42"
+  dependencies:
+    draft-js-utils ">=0.2.0"
+
 draft-js-import-element@^0.4.0:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/draft-js-import-element/-/draft-js-import-element-0.4.3.tgz#785381a2e0323a9836cfa856c442e9013bd482a4"
@@ -2575,6 +2581,10 @@ draft-js-import-markdown@^0.2.1:
   dependencies:
     draft-js-import-element "^0.4.0"
     synthetic-dom "^0.2.0"
+
+draft-js-utils@>=0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-0.2.0.tgz#2403a314a055f73952517ef96a7cc4ccdf132c4f"
 
 draft-js-utils@^0.1.5:
   version "0.1.7"

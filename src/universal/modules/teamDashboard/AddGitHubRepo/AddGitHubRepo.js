@@ -10,6 +10,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {GITHUB_ENDPOINT} from 'universal/utils/constants';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
+import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 const defaultSelectedRepo = () => ({
   repoId: undefined,
@@ -92,18 +93,8 @@ class AddGitHubRepo extends Component {
     const isStale = now - this.lastUpdated > ms('30s');
     if (accessToken && isStale) {
       this.lastUpdated = now;
-      const authedPostOptions = {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
-          query: getReposQuery
-        })
-      };
-      const res = await fetch(GITHUB_ENDPOINT, authedPostOptions);
+      const postOptions = makeGitHubPostOptions(accessToken, {query: getReposQuery});
+      const res = await fetch(GITHUB_ENDPOINT, postOptions);
       const resJson = await res.json();
       const {data, errors, message} = resJson;
       if (errors || message) {

@@ -29,17 +29,9 @@ const GitHubIntegration = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'defaults to true. true if this is used'
     },
-    userIds: {
-      type: new GraphQLList(GraphQLID),
-      description: '*The userIds connected to the repo so they can CRUD things under their own name'
-    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The team that is linked to this integration'
-    },
-    updatedAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The datetime the integration was updated'
     },
     teamMembers: {
       type: new GraphQLList(TeamMember),
@@ -53,6 +45,14 @@ const GitHubIntegration = new GraphQLObjectType({
         return r.table('TeamMember')
           .getAll(r.args(teamMemberIds), {index: 'id'});
       }
+    },
+    updatedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the integration was updated'
+    },
+    userIds: {
+      type: new GraphQLList(GraphQLID),
+      description: '*The userIds connected to the repo so they can CRUD things under their own name'
     }
   })
 });
