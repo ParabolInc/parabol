@@ -18,7 +18,7 @@ const projectSource = {
   }
 };
 
-const importantProps = ['content', 'status', 'teamMemberId', 'sortOrder'];
+const importantProps = ['content', 'status', 'teamMemberId', 'sortOrder', 'integration'];
 
 class ProjectCardContainer extends Component {
   componentDidMount() {

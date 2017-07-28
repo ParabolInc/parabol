@@ -6,7 +6,7 @@ import {cardRootStyles} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
-import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH} from 'universal/utils/constants';
+import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH, GITHUB} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
@@ -17,6 +17,8 @@ import isProjectPrivate from 'universal/utils/isProjectPrivate';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
 import FontAwesome from 'react-fontawesome';
+import ProjectWatermark from 'universal/components/ProjectWatermark';
+import ProjectIntegrationLink from 'universal/components/ProjectIntegrationLink';
 
 const OutcomeCard = (props) => {
   const {
@@ -55,6 +57,8 @@ const OutcomeCard = (props) => {
     cardHasFocus && styles.cardHasFocus,
     hasDragStyles && styles.hasDragStyles
   );
+  const {integration} = outcome;
+  const {service} = integration || {};
   return (
     <div
       className={rootStyles}
@@ -64,11 +68,7 @@ const OutcomeCard = (props) => {
       onMouseLeave={handleCardMouseLeave}
       tabIndex="-1"
     >
-      {cardHasIntegration &&
-        <div className={css(styles.watermarkBlock)}>
-          <FontAwesome name="github" className={css(styles.watermark)} />
-        </div>
-      }
+      <ProjectWatermark service={service}/>
       <div className={css(styles.contentBlock)}>
         <EditingStatusContainer
           isEditing={isEditing}
@@ -85,11 +85,7 @@ const OutcomeCard = (props) => {
           setEditorState={setEditorState}
           teamMembers={teamMembers}
         />
-        {cardHasIntegration &&
-          <a className={css(styles.demoLink)} href="#" title="action issue #1158 on GitHub">
-            {'action #1158'}
-          </a>
-        }
+        <ProjectIntegrationLink integration={integration}/>
         <OutcomeCardFooter
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
@@ -201,40 +197,6 @@ const styleThunk = () => ({
     position: 'relative',
     zIndex: ui.ziMenu - 1
   },
-
-  watermarkBlock: {
-    bottom: 0,
-    left: 0,
-    overflow: 'hidden',
-    position: 'absolute',
-    right: 0,
-    textAlign: 'center',
-    top: 0,
-    verticalAlign: 'middle',
-    zIndex: ui.ziMenu - 2
-  },
-
-  watermark: {
-    bottom: 0,
-    color: ui.palette.dark,
-    fontSize: '7rem',
-    height: '8rem',
-    lineHeight: '8rem',
-    margin: 'auto -1.5rem -1.5rem auto',
-    opacity: .12,
-    position: 'absolute',
-    right: 0,
-    width: '8rem',
-  },
-
-  demoLink: {
-    color: ui.palette.cool,
-    display: 'block',
-    fontWeight: 700,
-    fontSize: '1rem',
-    lineHeight: '1.25rem',
-    padding: '0 .5rem'
-  }
 });
 
 export default withStyles(styleThunk)(OutcomeCard);

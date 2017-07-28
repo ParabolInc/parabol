@@ -18,6 +18,11 @@ query {
       content
       createdAt
       createdBy
+      integration {
+        service
+        nameWithOwner
+        issueNumber
+      }
       sortOrder
       status
       tags

@@ -166,6 +166,11 @@ export default [
         createdAt
         createdBy
         id
+        integration {
+          service
+          nameWithOwner
+          issueNumber
+        }
         status
         tags
         teamMemberId

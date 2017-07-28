@@ -3,6 +3,7 @@ import {stateToMarkdown} from 'draft-js-export-markdown';
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {GITHUB} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 export default {
@@ -32,10 +33,14 @@ export default {
     if (!project) {
       throw new Error('That project no longer exists');
     }
+    if (project.integration && project.integration.service) {
+      throw new Error(`That project is already linked to ${project.integration.service}`);
+    }
     const [repoOwner, repoName] = nameWithOwner.split('/');
     if (!repoOwner || !repoName) {
       throw new Error(`${nameWithOwner} is not a valid repository`);
     }
+
     // RESOLUTION
     const {teamMemberId: assignee, content: rawContentStr} = project;
     const [assigneeUserId] = assignee.split('::');
@@ -93,8 +98,17 @@ export default {
       // this means it's our bad:
       throw new Error(`GitHub: ${message}.`);
     }
-    
-    console.log('res', res, postOptions)
+
+    const {number: issueNumber} = res;
+    await r.table('Project').get(projectId)
+      .update({
+        integration: {
+          service: GITHUB,
+          issueNumber,
+          nameWithOwner
+        }
+      });
+
     return true;
   }
 };

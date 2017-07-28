@@ -64,7 +64,8 @@ class OutcomeCardFooter extends Component {
       styles,
       teamMembers,
     } = this.props;
-    const {teamMember: owner} = outcome;
+    const {teamMember: owner, integration} = outcome;
+    const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
 
     const buttonBlockStyles = css(
@@ -90,6 +91,7 @@ class OutcomeCardFooter extends Component {
             {isArchived ?
               <OutcomeCardFooterButton onClick={this.unarchiveProject} icon="reply"/> :
               <div>
+                {!service &&
                 <AsyncMenuContainer
                   fetchMenu={fetchMenu}
                   maxWidth={350}
@@ -103,6 +105,7 @@ class OutcomeCardFooter extends Component {
                   targetAnchor={targetAnchor}
                   toggle={<OutcomeCardFooterButton icon="github"/>}
                 />
+                }
                 <OutcomeCardStatusMenu
                   editorState={editorState}
                   isAgenda={isAgenda}

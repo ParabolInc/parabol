@@ -146,7 +146,6 @@ class OutcomeCardContainer extends Component {
           editorState={editorState}
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
-          cardHasIntegration={cardHasIntegration}
           handleCardBlur={this.handleCardBlur}
           handleCardFocus={this.handleCardFocus}
           handleCardMouseLeave={this.handleCardMouseLeave}
