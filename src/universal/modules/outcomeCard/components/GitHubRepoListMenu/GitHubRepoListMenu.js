@@ -38,7 +38,7 @@ class GitHubRepoListMenu extends Component {
             closePortal={closePortal}
           />
         </div>
-      )
+      );
     }
     return (
       <div>
@@ -57,7 +57,7 @@ class GitHubRepoListMenu extends Component {
       </div>
     );
   }
-};
+}
 
 GitHubRepoListMenu.propTypes = {};
 

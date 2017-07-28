@@ -67,7 +67,7 @@ export default class AsyncMenuContainer extends Component {
           top
         });
       }
-    })
+    });
   }
 
   ensureMod = async () => {

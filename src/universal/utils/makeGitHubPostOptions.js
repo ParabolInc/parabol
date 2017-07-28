@@ -11,6 +11,6 @@ const makeGitHubPostOptions = (accessToken, body) => {
     options.body = JSON.stringify(body);
   }
   return options;
-}
+};
 
 export default makeGitHubPostOptions;

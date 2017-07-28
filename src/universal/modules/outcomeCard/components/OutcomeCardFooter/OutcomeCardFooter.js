@@ -62,7 +62,7 @@ class OutcomeCardFooter extends Component {
       isAgenda,
       outcome,
       styles,
-      teamMembers,
+      teamMembers
     } = this.props;
     const {teamMember: owner, integration} = outcome;
     const {service} = integration || {};
@@ -89,7 +89,7 @@ class OutcomeCardFooter extends Component {
           </div>
           <div className={buttonBlockStyles}>
             {isArchived ?
-              <OutcomeCardFooterButton onClick={this.unarchiveProject} icon="reply"/> :
+              <OutcomeCardFooterButton onClick={this.unarchiveProject} icon="reply" /> :
               <div>
                 {!service &&
                 <AsyncMenuContainer
@@ -103,7 +103,7 @@ class OutcomeCardFooter extends Component {
                     clearError: this.clearError
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="github"/>}
+                  toggle={<OutcomeCardFooterButton icon="github" />}
                 />
                 }
                 <OutcomeCardStatusMenu
@@ -124,7 +124,7 @@ class OutcomeCardFooter extends Component {
       </div>
     );
   }
-};
+}
 
 OutcomeCardFooter.propTypes = {
   cardHasFocus: PropTypes.bool,
@@ -135,7 +135,7 @@ OutcomeCardFooter.propTypes = {
   outcome: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array,
+  teamMembers: PropTypes.array
 };
 
 const styleThunk = () => ({

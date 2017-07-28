@@ -244,4 +244,4 @@ export default class LabeledFieldArray extends Component {
       </button>
     );
   }
-};
+}

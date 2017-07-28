@@ -97,7 +97,7 @@ const OutcomeCardStatusMenu = (props) => {
           onClick={handleProjectUpdate}
         />
       );
-    })
+    });
     listItems.push(
       <MenuItem
         hr="before"
@@ -107,7 +107,7 @@ const OutcomeCardStatusMenu = (props) => {
         onClick={console.log('add #private tag!')}
       />
     );
-    {!isAgenda &&
+    { !isAgenda &&
       listItems.push(
         <MenuItem
           icon="archive"
@@ -117,7 +117,7 @@ const OutcomeCardStatusMenu = (props) => {
         />
       );
     }
-    {isAgenda &&
+    { isAgenda &&
       listItems.push(
         <MenuItem
           icon="times"
@@ -139,7 +139,6 @@ const OutcomeCardStatusMenu = (props) => {
       toggle={toggle}
     />
   );
-
 };
 
 OutcomeCardStatusMenu.propTypes = {

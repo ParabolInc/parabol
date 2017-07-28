@@ -14,7 +14,7 @@ class MakeGitHubProjectButton extends Component {
       this.loading = false;
       this.setState({
         Mod: res.default
-      })
+      });
     }
   };
 
@@ -23,7 +23,7 @@ class MakeGitHubProjectButton extends Component {
     if (this.loading) return;
     this.setState({
       showMenu: !this.state.showMenu
-    })
+    });
   };
 
   // just show the menu with a toggle
@@ -33,10 +33,10 @@ class MakeGitHubProjectButton extends Component {
 
   render() {
     const {Mod, showMenu} = this.state;
-    const toggle = <OutcomeCardFooterButton icon="github" onClick={this.handleClick} onMouseEnter={this.ensureMod}/>;
+    const toggle = <OutcomeCardFooterButton icon="github" onClick={this.handleClick} onMouseEnter={this.ensureMod} />;
     return (
       <div style={{display: 'inline-block'}}>
-        {Mod && showMenu ? <Mod {...this.props} toggle={toggle}/> : toggle}
+        {Mod && showMenu ? <Mod {...this.props} toggle={toggle} /> : toggle}
       </div>
     );
   }

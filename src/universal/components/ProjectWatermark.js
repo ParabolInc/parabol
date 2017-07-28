@@ -9,7 +9,7 @@ const ProjectWatermark = (props) => {
   if (!service) return null;
   return (
     <div className={css(styles.watermarkBlock)}>
-      <FontAwesome name="github" className={css(styles.watermark)}/>
+      <FontAwesome name="github" className={css(styles.watermark)} />
     </div>
   );
 };

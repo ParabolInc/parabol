@@ -46,7 +46,8 @@ class AddGitHubRepo extends Component {
     accessToken: PropTypes.string,
     environment: PropTypes.object,
     styles: PropTypes.object,
-    teamMemberId: PropTypes.string,
+    teamId: PropTypes.string,
+    teamMemberId: PropTypes.string
   }
 
   constructor(props) {
@@ -104,7 +105,7 @@ class AddGitHubRepo extends Component {
       const {data, errors, message} = resJson;
       if (errors || message) {
         if (errors) {
-          setError.call(this, {_error: errors[0].message})
+          setError.call(this, {_error: errors[0].message});
           throw errors;
         }
         setError.call(this, {_error: `GitHub Error: ${message}. Try refreshing your token`});

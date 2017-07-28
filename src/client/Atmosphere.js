@@ -96,7 +96,7 @@ export default class Atmosphere extends Environment {
           const errorObj = makeErrorObj(errors);
           reject(errorObj);
         } else {
-          //setTimeout(() => resolve(response), 2000);
+          // setTimeout(() => resolve(response), 2000);
           resolve(response);
         }
       });
@@ -169,7 +169,7 @@ export default class Atmosphere extends Environment {
   socketUnsubscribe = (subKey, isKickout) => {
     const opManager = this.subLookup[subKey];
     if (!opManager) {
-      throw new Error(`${subKey} does not exist. socketUnsubscribe was probably already called.`)
+      throw new Error(`${subKey} does not exist. socketUnsubscribe was probably already called.`);
     }
     const {opId} = opManager;
     this.socket.off(`gqlData.${opId}`);
@@ -179,7 +179,7 @@ export default class Atmosphere extends Environment {
         if (querySub.subKey === subKey) {
           querySub.handleKickout();
         }
-      })
+      });
     } else {
       this.socket.emit('gqlUnsub', opId);
     }

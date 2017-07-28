@@ -4,7 +4,7 @@ const fromGlobalId = (globalId) => {
   return {
     id: compoundKey.substring(delimiterIdx + 1),
     type: compoundKey.substring(0, delimiterIdx)
-  }
+  };
 };
 
 export default fromGlobalId;

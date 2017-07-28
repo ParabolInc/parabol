@@ -13,10 +13,10 @@ const GitHubIntegration = new GraphQLObjectType({
   fields: () => ({
     // shortid
     id: globalIdField(GITHUB, ({id}) => id),
-    //blackList: {
+    // blackList: {
     //  type: new GraphQLList(GraphQLID),
     //  description: 'A list of all the userIds that do not want to be associated with this repo'
-    //},
+    // },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the integration was created'

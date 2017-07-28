@@ -19,7 +19,7 @@ class AddSlackChannel extends Component {
     accessToken: PropTypes.string,
     environment: PropTypes.object,
     styles: PropTypes.object,
-    teamMemberId: PropTypes.string,
+    teamMemberId: PropTypes.string
   }
 
   constructor(props) {

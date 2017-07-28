@@ -82,7 +82,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
   const ghProfile = await fetch(GITHUB_ENDPOINT, authedPostOptions);
   const gqlRes = await ghProfile.json();
   if (!gqlRes.data) {
-    console.error('GitHub error: ', gqlRes)
+    console.error('GitHub error: ', gqlRes);
   }
   const {data: {viewer: {login: providerUserName, id: providerUserId}}} = gqlRes;
   const provider = await r.table('Provider')

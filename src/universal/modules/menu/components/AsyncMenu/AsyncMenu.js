@@ -44,7 +44,7 @@ const AsyncMenu = (props) => {
           {
             loading &&
             <div key="spinner" className={css(styles.spinner)}>
-              <Spinner fillColor="cool" width={40}/>
+              <Spinner fillColor="cool" width={40} />
             </div>
           }
         </ReactCSSTransitionGroup>

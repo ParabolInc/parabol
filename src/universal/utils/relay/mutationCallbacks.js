@@ -4,10 +4,10 @@ export function clearError() {
       error: null
     });
   }
-};
+}
 
 export function setError({_error}) {
   this.setState({
     error: _error
   });
-};
+}

@@ -7,7 +7,6 @@ import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
-import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
 
 const teamMembersQuery = `
 query {
@@ -116,11 +115,6 @@ class OutcomeCardContainer extends Component {
   handleCardBlur = () => this.setState({cardHasFocus: false});
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
-  setIntegrationStyles = () => {
-    this.setState({cardHasIntegration: true});
-    console.log('setIntegrationStyles');
-  };
-
   annouceEditing = (isEditing) => {
     this.setState({
       isEditing
@@ -136,7 +130,7 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, cardHasIntegration, isEditing, editorRef, editorState} = this.state;
+    const {cardHasFocus, cardHasHover, isEditing, editorRef, editorState} = this.state;
     const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
@@ -154,7 +148,6 @@ class OutcomeCardContainer extends Component {
           isAgenda={isAgenda}
           isDragging={isDragging}
           isEditing={isEditing}
-          setIntegrationStyles={this.setIntegrationStyles}
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}

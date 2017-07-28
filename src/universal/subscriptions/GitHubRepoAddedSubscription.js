@@ -27,7 +27,7 @@ const GitHubRepoAddedSubscription = (environment, queryVariables) => {
       const newNode = store.getRootField('githubRepoAdded').getLinkedRecord('repo');
       addGitHubRepoUpdater(store, viewerId, teamId, newNode);
     }
-  })
+  });
 };
 
 export default GitHubRepoAddedSubscription;

@@ -1,31 +1,24 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {cardRootStyles} from 'universal/styles/helpers';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import labels from 'universal/styles/theme/labels';
-import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH, GITHUB} from 'universal/utils/constants';
-import {cardBorderTop} from 'universal/styles/helpers';
+import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
+import ProjectIntegrationLink from 'universal/components/ProjectIntegrationLink';
+import ProjectWatermark from 'universal/components/ProjectWatermark';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
-import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
-import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
-import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu';
-import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import {cardBorderTop, cardRootStyles} from 'universal/styles/helpers';
+import appTheme from 'universal/styles/theme/appTheme';
+import labels from 'universal/styles/theme/labels';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import isProjectArchived from 'universal/utils/isProjectArchived';
-import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
-import FontAwesome from 'react-fontawesome';
-import ProjectWatermark from 'universal/components/ProjectWatermark';
-import ProjectIntegrationLink from 'universal/components/ProjectIntegrationLink';
+import isProjectPrivate from 'universal/utils/isProjectPrivate';
 
 const OutcomeCard = (props) => {
   const {
-    area,
     cardHasFocus,
     cardHasHover,
-    cardHasIntegration,
     editorRef,
     editorState,
     isAgenda,
@@ -39,9 +32,8 @@ const OutcomeCard = (props) => {
     outcome,
     setEditorRef,
     setEditorState,
-    setIntegrationStyles,
     styles,
-    teamMembers,
+    teamMembers
   } = props;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
@@ -123,9 +115,8 @@ OutcomeCard.propTypes = {
   }),
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
-  setIntegrationStyles: PropTypes.func,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array,
+  teamMembers: PropTypes.array
 };
 
 const styleThunk = () => ({
@@ -166,11 +157,11 @@ const styleThunk = () => ({
   // hover before focus, it matters
 
   cardHasHover: {
-    boxShadow: ui.cardBoxShadow[1],
+    boxShadow: ui.cardBoxShadow[1]
   },
 
   cardHasFocus: {
-    boxShadow: ui.cardBoxShadow[2],
+    boxShadow: ui.cardBoxShadow[2]
   },
 
   hasDragStyles: {
@@ -195,7 +186,7 @@ const styleThunk = () => ({
   contentBlock: {
     position: 'relative',
     zIndex: ui.ziMenu - 1
-  },
+  }
 });
 
 export default withStyles(styleThunk)(OutcomeCard);

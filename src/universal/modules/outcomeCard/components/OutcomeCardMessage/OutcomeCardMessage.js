@@ -78,7 +78,7 @@ const styleThunk = (theme, {colorPalette}) => ({
     cursor: 'pointer',
     fontSize: 0,
     outline: 'none',
-    padding: `.25rem`,
+    padding: '.25rem',
     position: 'absolute',
     right: 0,
     textShadow,

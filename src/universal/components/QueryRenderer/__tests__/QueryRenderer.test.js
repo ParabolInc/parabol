@@ -7,160 +7,160 @@ import QueryRenderer from '../QueryRenderer';
 QueryRenderer._fetch = jest.fn();
 
 const query = () => ({
-  "fragment": {
-    "argumentDefinitions": [],
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "GitHubIntegrationsRootQuery",
-    "selections": [
+  fragment: {
+    argumentDefinitions: [],
+    kind: 'Fragment',
+    metadata: null,
+    name: 'GitHubIntegrationsRootQuery',
+    selections: [
       {
-        "kind": "LinkedField",
-        "alias": null,
-        "args": null,
-        "concreteType": "User",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
+        kind: 'LinkedField',
+        alias: null,
+        args: null,
+        concreteType: 'User',
+        name: 'viewer',
+        plural: false,
+        selections: [
           {
-            "kind": "ScalarField",
-            "alias": null,
-            "args": null,
-            "name": "preferredName",
-            "storageKey": null
+            kind: 'ScalarField',
+            alias: null,
+            args: null,
+            name: 'preferredName',
+            storageKey: null
           }
         ],
-        "storageKey": null
+        storageKey: null
       }
     ],
-    "type": "Query"
+    type: 'Query'
   },
-  "id": null,
-  "kind": "Batch",
-  "metadata": {},
-  "name": "GitHubIntegrationsRootQuery",
-  "query": {
-    "argumentDefinitions": [],
-    "kind": "Root",
-    "name": "GitHubIntegrationsRootQuery",
-    "operation": "query",
-    "selections": [
+  id: null,
+  kind: 'Batch',
+  metadata: {},
+  name: 'GitHubIntegrationsRootQuery',
+  query: {
+    argumentDefinitions: [],
+    kind: 'Root',
+    name: 'GitHubIntegrationsRootQuery',
+    operation: 'query',
+    selections: [
       {
-        "kind": "LinkedField",
-        "alias": null,
-        "args": null,
-        "concreteType": "User",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
+        kind: 'LinkedField',
+        alias: null,
+        args: null,
+        concreteType: 'User',
+        name: 'viewer',
+        plural: false,
+        selections: [
           {
-            "kind": "ScalarField",
-            "alias": null,
-            "args": null,
-            "name": "preferredName",
-            "storageKey": null
+            kind: 'ScalarField',
+            alias: null,
+            args: null,
+            name: 'preferredName',
+            storageKey: null
           },
           {
-            "kind": "ScalarField",
-            "alias": null,
-            "args": null,
-            "name": "id",
-            "storageKey": null
+            kind: 'ScalarField',
+            alias: null,
+            args: null,
+            name: 'id',
+            storageKey: null
           }
         ],
-        "storageKey": null
+        storageKey: null
       }
     ]
   },
-  "text": "query GitHubIntegrationsRootQuery {\n  viewer {\n    preferredName\n    id\n  }\n}\n"
+  text: 'query GitHubIntegrationsRootQuery {\n  viewer {\n    preferredName\n    id\n  }\n}\n'
 });
 
 const sub = () => ({
-  "fragment": {
-    "argumentDefinitions": [
+  fragment: {
+    argumentDefinitions: [
       {
-        "kind": "LocalArgument",
-        "name": "teamId",
-        "type": "ID!",
-        "defaultValue": null
+        kind: 'LocalArgument',
+        name: 'teamId',
+        type: 'ID!',
+        defaultValue: null
       }
     ],
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "GitHubRepoRemovedSubscription",
-    "selections": [
+    kind: 'Fragment',
+    metadata: null,
+    name: 'GitHubRepoRemovedSubscription',
+    selections: [
       {
-        "kind": "LinkedField",
-        "alias": null,
-        "args": [
+        kind: 'LinkedField',
+        alias: null,
+        args: [
           {
-            "kind": "Variable",
-            "name": "teamId",
-            "variableName": "teamId",
-            "type": "ID!"
+            kind: 'Variable',
+            name: 'teamId',
+            variableName: 'teamId',
+            type: 'ID!'
           }
         ],
-        "concreteType": "RemoveGitHubRepoPayload",
-        "name": "githubRepoRemoved",
-        "plural": false,
-        "selections": [
+        concreteType: 'RemoveGitHubRepoPayload',
+        name: 'githubRepoRemoved',
+        plural: false,
+        selections: [
           {
-            "kind": "ScalarField",
-            "alias": null,
-            "args": null,
-            "name": "deletedId",
-            "storageKey": null
+            kind: 'ScalarField',
+            alias: null,
+            args: null,
+            name: 'deletedId',
+            storageKey: null
           }
         ],
-        "storageKey": null
+        storageKey: null
       }
     ],
-    "type": "Subscription"
+    type: 'Subscription'
   },
-  "id": null,
-  "kind": "Batch",
-  "metadata": {},
-  "name": "GitHubRepoRemovedSubscription",
-  "query": {
-    "argumentDefinitions": [
+  id: null,
+  kind: 'Batch',
+  metadata: {},
+  name: 'GitHubRepoRemovedSubscription',
+  query: {
+    argumentDefinitions: [
       {
-        "kind": "LocalArgument",
-        "name": "teamId",
-        "type": "ID!",
-        "defaultValue": null
+        kind: 'LocalArgument',
+        name: 'teamId',
+        type: 'ID!',
+        defaultValue: null
       }
     ],
-    "kind": "Root",
-    "name": "GitHubRepoRemovedSubscription",
-    "operation": "subscription",
-    "selections": [
+    kind: 'Root',
+    name: 'GitHubRepoRemovedSubscription',
+    operation: 'subscription',
+    selections: [
       {
-        "kind": "LinkedField",
-        "alias": null,
-        "args": [
+        kind: 'LinkedField',
+        alias: null,
+        args: [
           {
-            "kind": "Variable",
-            "name": "teamId",
-            "variableName": "teamId",
-            "type": "ID!"
+            kind: 'Variable',
+            name: 'teamId',
+            variableName: 'teamId',
+            type: 'ID!'
           }
         ],
-        "concreteType": "RemoveGitHubRepoPayload",
-        "name": "githubRepoRemoved",
-        "plural": false,
-        "selections": [
+        concreteType: 'RemoveGitHubRepoPayload',
+        name: 'githubRepoRemoved',
+        plural: false,
+        selections: [
           {
-            "kind": "ScalarField",
-            "alias": null,
-            "args": null,
-            "name": "deletedId",
-            "storageKey": null
+            kind: 'ScalarField',
+            alias: null,
+            args: null,
+            name: 'deletedId',
+            storageKey: null
           }
         ],
-        "storageKey": null
+        storageKey: null
       }
     ]
   },
-  "text": "subscription GitHubRepoRemovedSubscription(\n  $teamId: ID!\n) {\n  githubRepoRemoved(teamId: $teamId) {\n    deletedId\n  }\n}\n"
+  text: 'subscription GitHubRepoRemovedSubscription(\n  $teamId: ID!\n) {\n  githubRepoRemoved(teamId: $teamId) {\n    deletedId\n  }\n}\n'
 });
 
 describe('ReactRelayQueryRenderer', () => {
@@ -173,19 +173,19 @@ describe('ReactRelayQueryRenderer', () => {
   let variables;
   beforeEach(() => {
     jest.resetModules();
-    //expect.extend({
+    // expect.extend({
     //  toBeRendered(readyState) {
     //    const calls = render.mock.calls;
     //    expect(calls.length).toBe(1);
     //    expect(calls[0][0]).toEqual(readyState);
     //    return {pass: true};
     //  },
-    //});
+    // });
     environment = new Atmosphere();
     environment.setSocket(clientSocket);
 
     store = environment.getStore();
-    render = jest.fn(() => <div/>);
+    render = jest.fn(() => <div />);
     variables = {teamId: 1};
   });
 

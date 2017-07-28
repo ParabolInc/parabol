@@ -12,10 +12,16 @@ import appTheme from 'universal/styles/theme/appTheme';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import toGlobalId from 'universal/utils/relay/toGlobalId';
+import PropTypes from 'prop-types';
 
 class GitHubRepoRow extends Component {
   state = {};
 
+  constructor(props) {
+    super(props);
+    this.setError = setError.bind(this);
+    this.clearError = clearError.bind(this);
+  }
   render() {
     const {accessToken, environment, styles, teamId, repo} = this.props;
     const {id, nameWithOwner, teamMembers} = repo;
@@ -26,9 +32,9 @@ class GitHubRepoRow extends Component {
     const viewerInIntegration = Boolean(teamMembers.find((teamMember) => teamMember.id === globalTeamMemberId));
     const toggleIntegrationMembership = (githubGlobalId) => () => {
       if (viewerInIntegration) {
-        LeaveIntegrationMutation(environment, githubGlobalId, teamId, setError.bind(this), clearError.bind(this));
+        LeaveIntegrationMutation(environment, githubGlobalId, teamId, this.setError, this.clearError);
       } else {
-        JoinIntegrationMutation(environment, githubGlobalId, teamId, setError.bind(this), clearError.bind(this));
+        JoinIntegrationMutation(environment, githubGlobalId, teamId, this.setError, this.clearError);
       }
     };
     const {error} = this.state;
@@ -38,13 +44,14 @@ class GitHubRepoRow extends Component {
           <a
             className={css(styles.nameWithOwner)}
             href={`https://github.com/${nameWithOwner}`}
+            rel="noopener noreferrer"
             target="_blank"
             title={nameWithOwner}
           >
             {nameWithOwner}
             <FontAwesome name="external-link-square" style={{marginLeft: '.5rem'}} />
           </a>
-          {teamMembers.map((user) => <Avatar key={user.id} {...user} size="smallest"/>)}
+          {teamMembers.map((user) => <Avatar key={user.id} {...user} size="smallest" />)}
           {accessToken &&
             <Button
               buttonStyle="flat"
@@ -59,9 +66,15 @@ class GitHubRepoRow extends Component {
       </div>
     );
   }
+}
 
-};
-
+GitHubRepoRow.propTypes = {
+  accessToken: PropTypes.string,
+  environment: PropTypes.object,
+  styles: PropTypes.object,
+  teamId: PropTypes.string,
+  repo: PropTypes.object
+}
 
 const styleThunk = () => ({
   errorRow: {
@@ -83,4 +96,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(GitHubRepoRow)
+export default withStyles(styleThunk)(GitHubRepoRow);

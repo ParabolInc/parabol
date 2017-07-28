@@ -5,21 +5,16 @@ import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
-import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
-import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import withStyles from 'universal/styles/withStyles';
-import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
-import {SLACK} from 'universal/utils/constants';
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
-import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
-import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
-import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
+import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
+import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
+import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {SLACK} from 'universal/utils/constants';
 
 const {makeUri} = providerLookup[SLACK];
 
@@ -40,7 +35,7 @@ const SlackIntegrations = (props) => {
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <div className={css(styles.providerDetails)}>
         <div className={css(styles.providerAvatar)}>
-          <FontAwesome name="slack" className={css(styles.providerIcon)} />
+          <FontAwesome name="slack" className={css(styles.providerIcon)}/>
         </div>
         <div className={css(styles.providerInfo)}>
           <div className={css(styles.nameAndTags)}>
@@ -53,22 +48,22 @@ const SlackIntegrations = (props) => {
           </div>
         </div>
         {accessToken &&
-          <div className={css(styles.providerActions)}>
-            <Button
-              buttonStyle="flat"
-              colorPalette="warm"
-              label="Remove Slack"
-              onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)}
-              size="smallest"
-            />
-            <Button
-              buttonStyle="flat"
-              colorPalette="cool"
-              label="Refresh Token"
-              onClick={openOauth}
-              size="smallest"
-            />
-          </div>
+        <div className={css(styles.providerActions)}>
+          <Button
+            buttonStyle="flat"
+            colorPalette="warm"
+            label="Remove Slack"
+            onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)}
+            size="smallest"
+          />
+          <Button
+            buttonStyle="flat"
+            colorPalette="cool"
+            label="Refresh Token"
+            onClick={openOauth}
+            size="smallest"
+          />
+        </div>
         }
       </div>
       <Panel label="Channels">
@@ -93,23 +88,23 @@ const SlackIntegrations = (props) => {
             </div>
           }
           {slackChannels &&
-            <div className={css(styles.integrationsList)}>
-              {slackChannels.map((channel) => {
-                const {id, channelId, channelName} = channel;
-                return (
-                  <IntegrationRow key={`${channelId}-row`}>
-                    <div className={css(styles.channelName)}>{channelName}</div>
-                    <Button
-                      buttonStyle="flat"
-                      colorPalette="dark"
-                      label="Remove"
-                      onClick={handleRemoveChannel(id)}
-                      size="smallest"
-                    />
-                  </IntegrationRow>
-                );
-              })}
-            </div>
+          <div className={css(styles.integrationsList)}>
+            {slackChannels.map((channel) => {
+              const {id, channelId, channelName} = channel;
+              return (
+                <IntegrationRow key={`${channelId}-row`}>
+                  <div className={css(styles.channelName)}>{channelName}</div>
+                  <Button
+                    buttonStyle="flat"
+                    colorPalette="dark"
+                    label="Remove"
+                    onClick={handleRemoveChannel(id)}
+                    size="smallest"
+                  />
+                </IntegrationRow>
+              );
+            })}
+          </div>
           }
         </div>
       </Panel>

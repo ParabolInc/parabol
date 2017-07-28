@@ -84,7 +84,7 @@ export const removeUserFromIntegrations = (viewer, teamId, service, userId) => {
       const teamMembers = repo.getLinkedRecords('teamMembers');
       const removedTeamMemberIdx = teamMembers.findIndex((teamMember) => teamMember.getValue('id') === globalTeamMemberId);
       if (removedTeamMemberIdx !== -1) {
-        const updatedTeamMembers = [...teamMembers.slice(0, removedTeamMemberIdx), ...teamMembers.slice(removedTeamMemberIdx + 1)]
+        const updatedTeamMembers = [...teamMembers.slice(0, removedTeamMemberIdx), ...teamMembers.slice(removedTeamMemberIdx + 1)];
         repo.setLinkedRecords(updatedTeamMembers, 'teamMembers');
       }
     });

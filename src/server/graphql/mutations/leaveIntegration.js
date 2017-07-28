@@ -31,7 +31,7 @@ export default {
 
     // VALIDATION
     if (!authToken.tms.includes(teamId)) {
-      throw new Error('You must be a part of the team to leave the team')
+      throw new Error('You must be a part of the team to leave the team');
     }
 
     if (!userIds.includes(userId)) {

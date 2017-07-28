@@ -45,15 +45,15 @@ export default async (initialState) => {
   } else {
     const devtoolsExt = global.__REDUX_DEVTOOLS_EXTENSION__ && global.__REDUX_DEVTOOLS_EXTENSION__({ maxAge: 50 });
     // removing for now, it kinda pollutes the console when debugging browser-specific bugs
-    //if (!devtoolsExt) {
+    // if (!devtoolsExt) {
       // We don't have the Redux extension in the browser, show the Redux logger
-      //const {createLogger} = require('redux-logger'); // eslint-disable-line global-require
-      //const logger = createLogger({
+      // const {createLogger} = require('redux-logger'); // eslint-disable-line global-require
+      // const logger = createLogger({
       //  level: 'info',
       //  collapsed: true
-      //});
-      //middlewares.push(logger);
-    //}
+      // });
+      // middlewares.push(logger);
+    // }
     store = createStore(reducer, initialState, compose(
       applyMiddleware(...middlewares),
       devtoolsExt || ((f) => f),

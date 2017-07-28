@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import PropTypes from 'prop-types';
-import React,{Component} from 'react';
+import React, {Component} from 'react';
 import {graphql} from 'react-relay';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
@@ -44,7 +44,7 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
       render={({error, props}) => {
         // TODO handle the error within the menu
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error}/>;
+          return <ErrorComponent height={'14rem'} error={error} />;
         }
         if (props) {
           return (<GitHubRepoListMenu
@@ -56,9 +56,8 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
             clearError={clearError}
             setLoading={setLoading}
           />);
-        } else {
-          return <SetLoading setLoading={setLoading}/>
         }
+        return <SetLoading setLoading={setLoading} />;
       }}
     />
   );

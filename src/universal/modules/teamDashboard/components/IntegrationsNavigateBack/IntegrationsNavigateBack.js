@@ -17,10 +17,10 @@ const inlineBlockStyle = {
 const IntegrationsNavigateBack = ({styles, teamId}) => {
   return (
     <Link className={css(styles.link)} to={`/team/${teamId}/settings/integrations`} title="Back to Integrations">
-      <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
+      <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
       <div style={inlineBlockStyle}>Back to <b>Integrations</b></div>
     </Link>
-  )
+  );
 };
 
 IntegrationsNavigateBack.propTypes = {

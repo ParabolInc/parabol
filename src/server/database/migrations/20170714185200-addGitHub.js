@@ -20,7 +20,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   const tables = [
-    r.tableDrop('GitHubIntegration'),
+    r.tableDrop('GitHubIntegration')
   ];
   try {
     await Promise.all(tables);

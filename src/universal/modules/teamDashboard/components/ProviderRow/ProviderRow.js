@@ -206,7 +206,7 @@ const styleThunk = () => ({
     ...ui.providerName,
     display: 'inline-block',
     marginRight: ui.rowGutter,
-    verticalAlign: 'middle',
+    verticalAlign: 'middle'
   },
 
   providerActions: {
