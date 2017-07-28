@@ -64,10 +64,7 @@ const OutcomeCardFooter = (props) => {
               maxWidth={350}
               maxHeight={150}
               originAnchor={originAnchor}
-              queryVars={{
-                projectId: outcome.id,
-                teamId: outcome.team.id
-              }}
+              queryVars={{projectId: outcome.id}}
               targetAnchor={targetAnchor}
               toggle={<OutcomeCardFooterButton icon="github" />}
             />

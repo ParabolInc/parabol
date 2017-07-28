@@ -32,7 +32,8 @@ const subscriptions = [
 ];
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const GitHubReposMenuRoot = ({atmosphere, teamId, projectId, closePortal, setLoading}) => {
+const GitHubReposMenuRoot = ({atmosphere, projectId, closePortal, setLoading}) => {
+  const [teamId] = projectId.split('::');
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

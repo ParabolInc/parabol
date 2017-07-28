@@ -22,6 +22,10 @@ query {
       updatedAt
       sortOrder
       updatedAt
+      team @cached(type: "Team") {
+        id
+        name
+      }
       teamMember @cached(type: "TeamMember") {
         id
         picture
@@ -82,7 +86,8 @@ const mapStateToProps = (state, props) => {
     key,
     mutationHandlers,
     resolveCached: {
-      teamMember: (source) => source.teamMemberId
+      teamMember: (source) => source.teamMemberId,
+      team: (source) => source.teamMemberId.split('::')[1]
     },
     variables: {teamId}
   }).data;
