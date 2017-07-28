@@ -167,6 +167,9 @@ class ProjectColumn extends Component {
         </div>
         <div className={css(styles.columnBody)}>
           <div className={css(styles.columnInner)}>
+            {(projects.length === 0 && label === 'done') &&
+              <p>Projects will be automatically archived after a meeting!</p>
+            }
             {projects.map((project) =>
               <ProjectCardContainer
                 key={`teamCard${project.id}`}
