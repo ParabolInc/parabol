@@ -79,8 +79,7 @@ const OutcomeCard = (props) => {
         <ProjectEditor
           editorRef={editorRef}
           editorState={editorState}
-          isArchived={isArchived}
-          isDragging={isDragging}
+          readOnly={isArchived || isDragging || service}
           setEditorRef={setEditorRef}
           setEditorState={setEditorState}
           teamMembers={teamMembers}
