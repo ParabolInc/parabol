@@ -68,6 +68,11 @@ class AddGitHubRepo extends Component {
   }
 
   updateDropdownItem = (option) => () => {
+    // TODO refactor all of this. DRY it out between slack & GH, add loading & empty state
+    if (option.id === null) {
+      // there are no options
+
+    }
     this.setState({
       selectedRepo: {
         repoId: option.id,

@@ -45,7 +45,8 @@ export default {
     const {teamMemberId: assignee, content: rawContentStr} = project;
     const [assigneeUserId] = assignee.split('::');
     const providers = await r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'});
+      .getAll(teamId, {index: 'teamIds'})
+      .filter({service: GITHUB});
     const assigneeProvider = providers.find((provider) => provider.userId === assigneeUserId);
     if (!assigneeProvider) {
       const assigneeName = await r.table('TeamMember').get(assignee)('preferredName');
@@ -70,9 +71,7 @@ export default {
     let body = stateToMarkdown(contentState);
     if (!creatorProvider) {
       const creatorName = await r.table('User').get(userId)('preferredName');
-      body = `${body}
-      
-      _Added by ${creatorName}_`
+      body = `${body}\n\n_Added by ${creatorName}_`;
     }
     const payload = {
       title,

@@ -1,23 +1,48 @@
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import {withRouter} from 'react-router-dom';
 
 class GitHubRepoListMenu extends Component {
   componentWillMount() {
-    const {setLoading} = this.props;
+    const {setLoading, viewer: {githubRepos}} = this.props;
     setLoading(false);
+    this.filterRepos(githubRepos);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {viewer: {githubRepos}} = nextProps;
+    if (githubRepos !== this.props.viewer.githubRepos) {
+      this.filterRepos(githubRepos);
+    }
+  }
+
+  filterRepos(githubRepos) {
+    const {relay: {environment}} = this.props;
+    const {id: userId} = fromGlobalId(environment.viewerId);
+    const filteredRepos = githubRepos.filter((repo) => repo.userIds.includes(userId));
+    // technically, someone could leave all integrations but still be integrated.
+    this.filteredRepos = filteredRepos.length === 0 ? githubRepos : filteredRepos;
   }
 
   render() {
-    const {relay: {environment}, viewer, closePortal, projectId, setError, clearError} = this.props;
-    const {githubRepos} = viewer;
-    const onError = (err) => {console.log('error', err)};
-    const onCompleted = () => {console.log('comp')};
+    const {relay: {environment}, history, closePortal, projectId, setError, clearError, teamId} = this.props;
+    if (this.filteredRepos.length === 0) {
+      return (
+        <div>
+          <MenuItem
+            label="Add your first GitHub Repo"
+            onClick={() => history.push(`/team/${teamId}/settings/integrations/github`)}
+            closePortal={closePortal}
+          />
+        </div>
+      )
+    }
     return (
       <div>
-        {githubRepos.map((repo) => {
+        {this.filteredRepos.map((repo) => {
           const {nameWithOwner} = repo;
           return (
             <MenuItem
@@ -32,18 +57,17 @@ class GitHubRepoListMenu extends Component {
       </div>
     );
   }
-
 };
 
-GitHubRepoListMenu.propTypes = {
-};
+GitHubRepoListMenu.propTypes = {};
 
 export default createFragmentContainer(
-  GitHubRepoListMenu,
+  withRouter(GitHubRepoListMenu),
   graphql`
     fragment GitHubRepoListMenu_viewer on User {
       githubRepos(teamId: $teamId) {
         nameWithOwner
+        userIds
       }
     }
   `

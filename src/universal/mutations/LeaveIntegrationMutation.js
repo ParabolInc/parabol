@@ -23,10 +23,18 @@ export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
     const integration = store.get(globalId);
     if (integration) {
       const teamMembers = integration.getLinkedRecords('teamMembers');
-      const teamMemberId = `${userId}::${teamId}`;
-      const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
-      const newNodes = getArrayWithoutIds(teamMembers, globalTeamMemberId);
-      integration.setLinkedRecords(newNodes, 'teamMembers');
+      if (teamMembers) {
+        const teamMemberId = `${userId}::${teamId}`;
+        const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
+        const newNodes = getArrayWithoutIds(teamMembers, globalTeamMemberId);
+        integration.setLinkedRecords(newNodes, 'teamMembers');
+      }
+      // FIXME https://github.com/facebook/relay/issues/1963
+      //const userIds = integration.getValue('userIds');
+      //if (userIds) {
+        //const newUserIds = userIds.filter((id) => id !== userId);
+        //integration.setValue(newUserIds, 'userIds');
+      //}
     }
   } else if (type === GITHUB) {
     removeGitHubRepoUpdater(viewer, teamId, globalId);
