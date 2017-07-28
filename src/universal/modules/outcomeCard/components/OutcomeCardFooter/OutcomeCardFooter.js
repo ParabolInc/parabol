@@ -1,13 +1,18 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import isProjectArchived from 'universal/utils/isProjectArchived';
-import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
-import OutcomeCardAssignMenu from '../OutcomeCardAssignMenu/OutcomeCardAssignMenu';
-import OutcomeCardStatusMenu from '../OutcomeCardStatusMenu/OutcomeCardStatusMenu';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import isProjectArchived from 'universal/utils/isProjectArchived';
+import OutcomeCardAssignMenu from '../OutcomeCardAssignMenu/OutcomeCardAssignMenu';
+import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
+import OutcomeCardStatusMenu from '../OutcomeCardStatusMenu/OutcomeCardStatusMenu';
+import {convertToRaw} from 'draft-js';
+import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
+import {cashay} from 'cashay';
+import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 
 const fetchMenu = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 
@@ -21,63 +26,101 @@ const targetAnchor = {
   horizontal: 'right'
 };
 
-const OutcomeCardFooter = (props) => {
-  const {
-    cardHasFocus,
-    cardHasHover,
-    editorState,
-    isAgenda,
-    isPrivate,
-    outcome,
-    setIntegrationStyles,
-    showTeam,
-    styles,
-    teamMembers,
-    unarchiveProject
-  } = props;
-  const {teamMember: owner} = outcome;
-  const isArchived = isProjectArchived(outcome.tags);
+class OutcomeCardFooter extends Component {
 
-  const buttonBlockStyles = css(
-    styles.buttonBlock,
-    cardHasFocus && styles.showBlock,
-    cardHasHover && styles.showBlock
-  );
 
-  return (
-    <div className={css(styles.root)}>
-      <div className={css(styles.avatarBlock)}>
-        <OutcomeCardAssignMenu
-          cardHasHover={cardHasHover}
-          cardHasFocus={cardHasFocus}
-          outcome={outcome}
-          owner={owner}
-          teamMembers={teamMembers}
-        />
-      </div>
-      <div className={buttonBlockStyles}>
-        {isArchived ?
-          <OutcomeCardFooterButton onClick={unarchiveProject} icon="reply" /> :
-          <div>
-            <AsyncMenuContainer
-              fetchMenu={fetchMenu}
-              maxWidth={350}
-              maxHeight={150}
-              originAnchor={originAnchor}
-              queryVars={{projectId: outcome.id}}
-              targetAnchor={targetAnchor}
-              toggle={<OutcomeCardFooterButton icon="github" />}
-            />
-            <OutcomeCardStatusMenu
-              editorState={editorState}
-              isAgenda={isAgenda}
+  constructor(props) {
+    super(props);
+    this.setError = setError.bind(this);
+    this.clearError = clearError.bind(this);
+  }
+
+  state = {};
+
+  unarchiveProject = () => {
+    const {outcome: {id, content}} = this.props;
+    const {editorState} = this.state;
+    const eqFn = (data) => data.value === 'archived';
+    const nextContentState = removeAllRangesForEntity(editorState, content, 'TAG', eqFn);
+    const options = {
+      ops: {},
+      variables: {
+        updatedProject: {
+          id,
+          content: JSON.stringify(convertToRaw(nextContentState))
+        }
+      }
+    };
+    cashay.mutate('updateProject', options);
+  };
+
+  render() {
+    const {
+      cardHasFocus,
+      cardHasHover,
+      editorState,
+      isAgenda,
+      outcome,
+      styles,
+      teamMembers,
+    } = this.props;
+    const {teamMember: owner} = outcome;
+    const isArchived = isProjectArchived(outcome.tags);
+
+    const buttonBlockStyles = css(
+      styles.buttonBlock,
+      cardHasFocus && styles.showBlock,
+      cardHasHover && styles.showBlock
+    );
+
+    const {error} = this.state;
+    return (
+      <div className={css(styles.footerAndMessage)}>
+        <div className={css(styles.footer)}>
+          <div className={css(styles.avatarBlock)}>
+            <OutcomeCardAssignMenu
+              cardHasHover={cardHasHover}
+              cardHasFocus={cardHasFocus}
               outcome={outcome}
+              owner={owner}
+              teamMembers={teamMembers}
             />
           </div>
+          <div className={buttonBlockStyles}>
+            {isArchived ?
+              <OutcomeCardFooterButton onClick={this.unarchiveProject} icon="reply"/> :
+              <div>
+                <AsyncMenuContainer
+                  fetchMenu={fetchMenu}
+                  maxWidth={350}
+                  maxHeight={150}
+                  originAnchor={originAnchor}
+                  queryVars={{
+                    projectId: outcome.id,
+                    setError: this.setError,
+                    clearError: this.clearError
+                  }}
+                  targetAnchor={targetAnchor}
+                  toggle={<OutcomeCardFooterButton icon="github"/>}
+                />
+                <OutcomeCardStatusMenu
+                  editorState={editorState}
+                  isAgenda={isAgenda}
+                  outcome={outcome}
+                />
+              </div>
+            }
+          </div>
+        </div>
+        {error &&
+        <OutcomeCardMessage
+          onClose={this.clearError}
+          message={error}
+        />
         }
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 OutcomeCardFooter.propTypes = {
@@ -86,17 +129,14 @@ OutcomeCardFooter.propTypes = {
   editorState: PropTypes.object,
   isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
-  isPrivate: PropTypes.bool,
   outcome: PropTypes.object,
-  setIntegrationStyles: PropTypes.func,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
   teamMembers: PropTypes.array,
-  unarchiveProject: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({
-  root: {
+  footer: {
     display: 'flex',
     height: '2.5rem',
     padding: ui.cardPaddingBase

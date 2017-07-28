@@ -40,9 +40,7 @@ const OutcomeCard = (props) => {
     setIntegrationStyles,
     styles,
     teamMembers,
-    unarchiveProject
   } = props;
-  const cardHasMessage = true;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
   const {status} = outcome;
@@ -97,19 +95,9 @@ const OutcomeCard = (props) => {
           cardHasFocus={cardHasFocus}
           editorState={editorState}
           isAgenda={isAgenda}
-          isPrivate={isPrivate}
           outcome={outcome}
-          setIntegrationStyles={setIntegrationStyles}
-          showTeam={area === USER_DASH}
           teamMembers={teamMembers}
-          unarchiveProject={unarchiveProject}
         />
-        {cardHasMessage &&
-          <OutcomeCardMessage
-            hasClose
-            message="Looks like there was an issue. We’re working on it!"
-          />
-        }
       </div>
     </div>
   );
@@ -143,7 +131,6 @@ OutcomeCard.propTypes = {
   setIntegrationStyles: PropTypes.func,
   styles: PropTypes.object,
   teamMembers: PropTypes.array,
-  unarchiveProject: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({

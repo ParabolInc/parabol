@@ -104,23 +104,6 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-  unarchiveProject = () => {
-    const {outcome: {id, content}} = this.props;
-    const {editorState} = this.state;
-    const eqFn = (data) => data.value === 'archived';
-    const nextContentState = removeAllRangesForEntity(editorState, content, 'TAG', eqFn);
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id,
-          content: JSON.stringify(convertToRaw(nextContentState))
-        }
-      }
-    };
-    cashay.mutate('updateProject', options);
-  };
-
   handleBlur = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       this.handleCardUpdate(true);

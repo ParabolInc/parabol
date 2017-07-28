@@ -8,24 +8,24 @@ import FontAwesome from 'react-fontawesome';
 
 const OutcomeCardMessage = (props) => {
   const {
-    hasClose,
+    onClose,
     message,
     styles
   } = props;
 
   const messageInnerStyles = css(
     styles.messageInner,
-    hasClose && styles.hasClose
+    onClose && styles.onClose
   );
 
   return (
     <div className={css(styles.message)}>
       <div className={messageInnerStyles}>
         {message}
-        {hasClose &&
+        {onClose &&
           <div
             className={css(styles.messageClose)}
-            onClick={() => console.log('Close that card message!')}
+            onClick={onClose}
             tabIndex="0"
           >
             <FontAwesome
@@ -45,7 +45,7 @@ OutcomeCardMessage.propTypes = {
     'dark',
     'warm'
   ]),
-  hasClose: PropTypes.bool,
+  onClose: PropTypes.func,
   message: PropTypes.string,
   styles: PropTypes.object
 };
@@ -57,7 +57,7 @@ const styleThunk = (theme, {colorPalette}) => ({
     padding: `0 ${ui.cardPaddingBase} ${ui.cardPaddingBase}`
   },
 
-  hasClose: {
+  onClose: {
     paddingRight: '1.375rem'
   },
 

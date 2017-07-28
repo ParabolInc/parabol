@@ -11,7 +11,7 @@ class GitHubRepoListMenu extends Component {
   }
 
   render() {
-    const {relay: {environment}, viewer, closePortal, projectId} = this.props;
+    const {relay: {environment}, viewer, closePortal, projectId, setError, clearError} = this.props;
     const {githubRepos} = viewer;
     const onError = (err) => {console.log('error', err)};
     const onCompleted = () => {console.log('comp')};
@@ -24,7 +24,7 @@ class GitHubRepoListMenu extends Component {
               isActive={false}
               key={`githubReposMenItem${nameWithOwner}`}
               label={nameWithOwner}
-              onClick={() => CreateGitHubIssueMutation(environment, nameWithOwner, projectId, onError, onCompleted)}
+              onClick={() => CreateGitHubIssueMutation(environment, nameWithOwner, projectId, setError, clearError)}
               closePortal={closePortal}
             />
           );

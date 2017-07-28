@@ -32,7 +32,7 @@ const subscriptions = [
 ];
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const GitHubReposMenuRoot = ({atmosphere, projectId, closePortal, setLoading}) => {
+const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, closePortal, setLoading}) => {
   const [teamId] = projectId.split('::');
   return (
     <QueryRenderer
@@ -52,6 +52,8 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, closePortal, setLoading}) =
             teamId={teamId}
             projectId={projectId}
             closePortal={closePortal}
+            setError={setError}
+            clearError={clearError}
             setLoading={setLoading}
           />);
         } else {
@@ -65,7 +67,6 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, closePortal, setLoading}) =
 
 GitHubReposMenuRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  teamId: PropTypes.string.isRequired,
   projectId: PropTypes.string.isRequired,
   viewer: PropTypes.object
 };
