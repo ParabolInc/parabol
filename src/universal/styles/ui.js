@@ -125,7 +125,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   buttonBaseStyles: {
     appearance: 'none',
-    border: '1px solid transparent',
+    border: '.0625rem solid transparent',
     boxShadow: 'none',
     cursor: 'pointer',
     display: 'inline-block',
