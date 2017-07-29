@@ -24,7 +24,7 @@ const OutcomeCardFooterButton = (props) => {
   );
 
   const handleOnClick = (e) => {
-    onClick();
+    if (onClick) onClick();
     e.currentTarget.blur();
   };
 
@@ -38,6 +38,7 @@ const OutcomeCardFooterButton = (props) => {
 OutcomeCardFooterButton.propTypes = {
   icon: PropTypes.string,
   onClick: PropTypes.func,
+  onMouseEnter: PropTypes.func,
   styles: PropTypes.object
 };
 

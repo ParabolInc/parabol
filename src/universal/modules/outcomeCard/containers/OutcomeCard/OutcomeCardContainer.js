@@ -38,7 +38,6 @@ class OutcomeCardContainer extends Component {
     this.state = {
       cardHasHover: false,
       cardHasFocus: false,
-      cardHasIntegration: false,
       editorState: content ?
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
         EditorState.createEmpty(editorDecorators)

@@ -14,7 +14,7 @@ import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesFor
 import {cashay} from 'cashay';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 
-const fetchMenu = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
+const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 
 const originAnchor = {
   vertical: 'bottom',
@@ -37,10 +37,9 @@ class OutcomeCardFooter extends Component {
 
   state = {};
 
-  unarchiveProject = () => {
-    const {outcome: {id, content}} = this.props;
-    const {editorState} = this.state;
-    const eqFn = (data) => data.value === 'archived';
+  removeContentTag = (tagValue) => () => {
+    const {editorState, outcome: {id, content}} = this.props;
+    const eqFn = (data) => data.value === tagValue;
     const nextContentState = removeAllRangesForEntity(editorState, content, 'TAG', eqFn);
     const options = {
       ops: {},
@@ -60,6 +59,7 @@ class OutcomeCardFooter extends Component {
       cardHasHover,
       editorState,
       isAgenda,
+      isPrivate,
       outcome,
       styles,
       teamMembers
@@ -89,11 +89,11 @@ class OutcomeCardFooter extends Component {
           </div>
           <div className={buttonBlockStyles}>
             {isArchived ?
-              <OutcomeCardFooterButton onClick={this.unarchiveProject} icon="reply" /> :
+              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" /> :
               <div>
                 {!service &&
                 <AsyncMenuContainer
-                  fetchMenu={fetchMenu}
+                  fetchMenu={fetchGitHubRepos}
                   maxWidth={350}
                   maxHeight={150}
                   originAnchor={originAnchor}
@@ -109,7 +109,9 @@ class OutcomeCardFooter extends Component {
                 <OutcomeCardStatusMenu
                   editorState={editorState}
                   isAgenda={isAgenda}
+                  isPrivate={isPrivate}
                   outcome={outcome}
+                  removeContentTag={this.removeContentTag}
                 />
               </div>
             }
@@ -132,6 +134,7 @@ OutcomeCardFooter.propTypes = {
   editorState: PropTypes.object,
   isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
+  isPrivate: PropTypes.bool,
   outcome: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,

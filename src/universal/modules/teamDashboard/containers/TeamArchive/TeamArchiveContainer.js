@@ -14,6 +14,10 @@ query {
     tags
     teamMemberId
     updatedAt
+    team @cached(id: $teamId, type: "Team") {
+      id
+      name
+    },
     teamMember @cached(type: "TeamMember") {
       id
       picture
@@ -45,6 +49,7 @@ const mapStateToProps = (state, props) => {
     key: teamMemberId,
     variables: {teamMemberId},
     resolveCached: {
+      team: (source) => source.teamMemberId.split('::')[1],
       teamMember: (source) => source.teamMemberId
     },
     sort: {

@@ -82,6 +82,7 @@ const OutcomeCard = (props) => {
           cardHasFocus={cardHasFocus}
           editorState={editorState}
           isAgenda={isAgenda}
+          isPrivate={isPrivate}
           outcome={outcome}
           teamMembers={teamMembers}
         />
