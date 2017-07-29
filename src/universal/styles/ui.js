@@ -373,9 +373,9 @@ const ui = {
 
   // Modals
   // ---------------------------------------------------------------------------
-  modalBorder: '.0625rem solid rgba(0, 0, 0, .2)',
+  modalBackdropBackgroundColor: 'rgba(78, 73, 95, .25)',
   modalBorderRadius: borderRadiusLarge,
-  modalBoxShadow: shadow[3],
+  modalBoxShadow: `${shadow[3]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
   modalButtonSize: BUTTON_SIZE_MEDIUM,
   modalLayoutMain: MODAL_LAYOUT_MAIN,
   modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,

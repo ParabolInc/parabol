@@ -89,7 +89,7 @@ const animateOut = {
 const styleThunk = (theme, props) => ({
   backdrop: {
     alignItems: 'center',
-    background: 'rgba(255, 255, 255, .5)',
+    background: ui.modalBackdropBackgroundColor,
     bottom: 0,
     display: 'flex !important',
     flex: 1,
@@ -144,7 +144,6 @@ const styleThunk = (theme, props) => ({
     animationIterationCount: 1,
     animationName: animateIn,
     background: '#fff',
-    border: ui.modalBorder,
     borderRadius: ui.modalBorderRadius,
     boxShadow: ui.modalBoxShadow,
     overflow: 'hidden',
