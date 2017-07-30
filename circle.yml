@@ -59,6 +59,9 @@ stages:
           ./configure --enable-statedir=/tmp
           make
           make install
+          echo 256 | tee -a /proc/sys/fs/inotify/max_user_instances
+          echo 32768 | tee -a /proc/sys/fs/inotify/max_queued_events
+          echo 65536 | tee -a /proc/sys/fs/inotify/max_user_watches
 
       - type: cache-save
         key: action-{{ checksum "yarn.lock" }}
