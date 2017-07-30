@@ -15,13 +15,14 @@ import toGlobalId from 'universal/utils/relay/toGlobalId';
 import PropTypes from 'prop-types';
 
 class GitHubRepoRow extends Component {
-  state = {};
-
   constructor(props) {
     super(props);
     this.setError = setError.bind(this);
     this.clearError = clearError.bind(this);
   }
+
+  state = {};
+
   render() {
     const {accessToken, environment, styles, teamId, repo} = this.props;
     const {id, nameWithOwner, teamMembers} = repo;
@@ -74,7 +75,7 @@ GitHubRepoRow.propTypes = {
   styles: PropTypes.object,
   teamId: PropTypes.string,
   repo: PropTypes.object
-}
+};
 
 const styleThunk = () => ({
   errorRow: {

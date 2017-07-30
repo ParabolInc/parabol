@@ -2,11 +2,13 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types';
 
 const ProjectIntegrationLink = (props) => {
   const {styles, integration} = props;
   const {nameWithOwner, issueNumber} = integration || {};
   if (!issueNumber) return null;
+  // TODO make this async and point to subcomponents when we have more than github
   return (
     <a
       className={css(styles.demoLink)}
@@ -18,6 +20,11 @@ const ProjectIntegrationLink = (props) => {
       {`Issue #${issueNumber}`}
     </a>
   );
+};
+
+ProjectIntegrationLink.propTypes = {
+  integration: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

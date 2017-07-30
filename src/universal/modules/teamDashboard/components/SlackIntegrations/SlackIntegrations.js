@@ -31,11 +31,11 @@ const SlackIntegrations = (props) => {
   };
   return (
     <div className={css(styles.slackIntegrations)}>
-      <IntegrationsNavigateBack teamId={teamId}/>
+      <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <div className={css(styles.providerDetails)}>
         <div className={css(styles.providerAvatar)}>
-          <FontAwesome name="slack" className={css(styles.providerIcon)}/>
+          <FontAwesome name="slack" className={css(styles.providerIcon)} />
         </div>
         <div className={css(styles.providerInfo)}>
           <div className={css(styles.nameAndTags)}>

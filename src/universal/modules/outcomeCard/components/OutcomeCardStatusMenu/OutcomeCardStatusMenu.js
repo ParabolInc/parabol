@@ -24,7 +24,7 @@ const targetAnchor = {
 };
 
 class OutcomeCardStatusMenu extends Component {
-  addTagToProject = (tag) => () => {
+  makeAddTagToProject = (tag) => () => {
     const {outcome: {id: projectId}, editorState} = this.props;
     const contentState = editorState.getCurrentContent();
     const newContent = addTagToProject(contentState, tag);
@@ -69,7 +69,7 @@ class OutcomeCardStatusMenu extends Component {
         />
       );
     });
-    listItems.push( isPrivate ?
+    listItems.push(isPrivate ?
       (<MenuItem
         hr="before"
         icon="lock"
@@ -82,7 +82,7 @@ class OutcomeCardStatusMenu extends Component {
         icon="lock"
         key="private"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>}
-        onClick={this.addTagToProject('#private')}
+        onClick={this.makeAddTagToProject('#private')}
       />)
     );
     listItems.push(isAgenda ?
@@ -96,7 +96,7 @@ class OutcomeCardStatusMenu extends Component {
         icon="archive"
         key="archive"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>}
-        onClick={this.addTagToProject('#archived')}
+        onClick={this.makeAddTagToProject('#archived')}
       />));
     return listItems;
   };
@@ -130,7 +130,7 @@ class OutcomeCardStatusMenu extends Component {
         maxHeight="14.0625rem"
         originAnchor={originAnchor}
         targetAnchor={targetAnchor}
-        toggle={<OutcomeCardFooterButton icon="ellipsis-v"/>}
+        toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
       />
     );
   }
@@ -140,7 +140,9 @@ OutcomeCardStatusMenu.propTypes = {
   editorState: PropTypes.object,
   outcome: PropTypes.object,
   isAgenda: PropTypes.bool,
+  isPrivate: PropTypes.bool,
   onComplete: PropTypes.func,
+  removeContentTag: PropTypes.func.isRequired,
   styles: PropTypes.object
 };
 

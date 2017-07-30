@@ -1,5 +1,5 @@
 import {GraphQLInterfaceType} from 'graphql';
-import {IntegrationService} from 'server/graphql/types/IntegrationService';
+import IntegrationService from 'server/graphql/types/IntegrationService';
 import GitHubProject from 'server/graphql/types/GitHubProject';
 import {GITHUB} from 'universal/utils/constants';
 

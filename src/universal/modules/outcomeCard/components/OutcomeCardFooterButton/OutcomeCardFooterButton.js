@@ -24,12 +24,12 @@ const OutcomeCardFooterButton = (props) => {
   );
 
   const handleOnClick = (e) => {
-    if (onClick) onClick();
-    e.currentTarget.blur();
+    if (onClick) onClick(e);
+    // e.currentTarget.blur();
   };
 
   return (
-    <button className={buttonStyles} onClick={onClick} onMouseEnter={onMouseEnter}>
+    <button className={buttonStyles} onClick={handleOnClick} onMouseEnter={onMouseEnter}>
       <FontAwesome name={icon} style={faStyle} />
     </button>
   );

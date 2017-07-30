@@ -57,19 +57,16 @@ const OutcomeCardAssignMenu = (props) => {
   const toggle = toggleButton();
 
   const itemFactory = () => {
-    const items = [];
-    teamMembers.map((teamMember) => {
-      const isClickable = currentOwner !== teamMember.id;
-      items.push(
+    return teamMembers.map((teamMember) => {
+      return (
         <MenuItem
           avatar={teamMember.picture}
-          isActive={!isClickable}
+          isActive={currentOwner === teamMember.id}
           label={teamMember.preferredName}
           onClick={() => handleProjectUpdate(teamMember.id)}
         />
       );
     });
-    return items;
   };
 
   const originAnchor = {

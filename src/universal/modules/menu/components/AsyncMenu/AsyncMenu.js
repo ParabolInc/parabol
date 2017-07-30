@@ -1,14 +1,14 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import portal from 'react-portal-hoc';
 import boundedModal from 'universal/decorators/boundedModal/boundedModal';
+import Spinner from 'universal/modules/spinner/components/Spinner/Spinner';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import Spinner from 'universal/modules/spinner/components/Spinner/Spinner';
 
 const AsyncMenu = (props) => {
   const {
@@ -59,6 +59,15 @@ AsyncMenu.defaultProps = {
 };
 
 AsyncMenu.propTypes = {
+  closePortal: PropTypes.func.isRequired,
+  left: PropTypes.number,
+  top: PropTypes.number,
+  loading: PropTypes.bool,
+  Mod: PropTypes.any.isRequired,
+  setLoading: PropTypes.func.isRequired,
+  setMenuRef: PropTypes.func.isRequired,
+  styles: PropTypes.object,
+  queryVars: PropTypes.object
 };
 
 const styleThunk = (theme, {maxHeight, maxWidth}) => ({

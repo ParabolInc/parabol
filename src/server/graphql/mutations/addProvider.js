@@ -1,11 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import {verify} from 'jsonwebtoken';
+import IntegrationService from 'server/graphql/types/IntegrationService';
 import addProviderGitHub from 'server/safeMutations/addProviderGitHub';
 import addProviderSlack from 'server/safeMutations/addProviderSlack';
 import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import {GITHUB, SLACK} from 'universal/utils/constants';
-import {IntegrationService} from 'server/graphql/types/IntegrationService';
 
 
 export default {

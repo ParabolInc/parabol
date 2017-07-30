@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {connectionDefinitions, globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
-import {IntegrationService} from 'server/graphql/types/IntegrationService';
+import IntegrationService from 'server/graphql/types/IntegrationService';
 
 const Provider = new GraphQLObjectType({
   name: 'Provider',

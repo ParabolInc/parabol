@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import TeamMember from 'server/graphql/types/TeamMember';
 
 const JoinIntegrationPayload = new GraphQLObjectType({

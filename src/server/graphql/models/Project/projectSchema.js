@@ -1,17 +1,16 @@
 import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLString,
   GraphQLEnumType,
   GraphQLFloat,
+  GraphQLID,
+  GraphQLInputObjectType,
   GraphQLList,
-  GraphQLInputObjectType
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
-import {IntegrationService} from 'server/graphql/types/IntegrationService';
 import GitHubProject from 'server/graphql/types/GitHubProject';
+import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 
 export const ProjectStatus = new GraphQLEnumType({
   name: 'ProjectStatus',

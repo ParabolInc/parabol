@@ -164,12 +164,11 @@ const sub = () => ({
 });
 
 describe('ReactRelayQueryRenderer', () => {
-  let TestQuery;
-
-  let cacheConfig;
+  // let TestQuery;
+  // let cacheConfig;
   let environment;
   let render;
-  let store;
+  // let store;
   let variables;
   beforeEach(() => {
     jest.resetModules();
@@ -184,7 +183,7 @@ describe('ReactRelayQueryRenderer', () => {
     environment = new Atmosphere();
     environment.setSocket(clientSocket);
 
-    store = environment.getStore();
+    // store = environment.getStore();
     render = jest.fn(() => <div />);
     variables = {teamId: 1};
   });

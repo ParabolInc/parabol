@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
-import {IntegrationService} from 'server/graphql/types/IntegrationService';
+import IntegrationService from 'server/graphql/types/IntegrationService';
 
 export default {
   type: new GraphQLNonNull(LeaveIntegrationPayload),

@@ -1,5 +1,5 @@
 import {GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import {IntegrationService} from 'server/graphql/types/IntegrationService';
+import IntegrationService from 'server/graphql/types/IntegrationService';
 import ProjectIntegration from 'server/graphql/types/ProjectIntegration';
 
 const GitHubProject = new GraphQLObjectType({

@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 
 const LeaveIntegrationPayload = new GraphQLObjectType({
   name: 'LeaveIntegrationPayload',

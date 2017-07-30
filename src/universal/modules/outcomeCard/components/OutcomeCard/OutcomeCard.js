@@ -60,7 +60,7 @@ const OutcomeCard = (props) => {
       onMouseLeave={handleCardMouseLeave}
       tabIndex="-1"
     >
-      <ProjectWatermark service={service}/>
+      <ProjectWatermark service={service} />
       <div className={css(styles.contentBlock)}>
         <EditingStatusContainer
           isEditing={isEditing}
@@ -76,7 +76,7 @@ const OutcomeCard = (props) => {
           setEditorState={setEditorState}
           teamMembers={teamMembers}
         />
-        <ProjectIntegrationLink integration={integration}/>
+        <ProjectIntegrationLink integration={integration} />
         <OutcomeCardFooter
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}

@@ -1,17 +1,29 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
-import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {GITHUB} from 'universal/utils/constants';
+import PropTypes from 'prop-types';
+
+const iconLookup = {
+  [GITHUB]: 'github'
+};
 
 const ProjectWatermark = (props) => {
   const {service, styles} = props;
-  if (!service) return null;
+  const iconName = iconLookup[service];
+  if (!iconName) return null;
   return (
     <div className={css(styles.watermarkBlock)}>
-      <FontAwesome name="github" className={css(styles.watermark)} />
+      <FontAwesome name={iconName} className={css(styles.watermark)} />
     </div>
   );
+};
+
+ProjectWatermark.propTypes = {
+  service: PropTypes.string,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

@@ -2,9 +2,8 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
-import {getIsTeamLead, getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
 import removeRepoGitHub from 'server/safeMutations/removeRepoGitHub';
+import {getIsTeamLead, getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {GITHUB} from 'universal/utils/constants';
 
 export default {

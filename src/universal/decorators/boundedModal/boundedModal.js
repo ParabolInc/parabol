@@ -5,9 +5,10 @@ import ui from 'universal/styles/ui';
 export default (ComposedComponent) => {
   return class BoundedModal extends Component {
     static propTypes = {
+      height: PropTypes.number,
       left: PropTypes.number,
-      top: PropTypes.number,
-      height: PropTypes.number
+      menuRef: PropTypes.element,
+      top: PropTypes.number
     };
 
     state = {};
