@@ -8,13 +8,13 @@ import withStyles from 'universal/styles/withStyles';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import OutcomeCardAssignMenu from '../OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
-import OutcomeCardStatusMenu from '../OutcomeCardStatusMenu/OutcomeCardStatusMenu';
 import {convertToRaw} from 'draft-js';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
 import {cashay} from 'cashay';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
+const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
 
 const originAnchor = {
   vertical: 'bottom',
@@ -95,7 +95,7 @@ class OutcomeCardFooter extends Component {
                 <AsyncMenuContainer
                   fetchMenu={fetchGitHubRepos}
                   maxWidth={350}
-                  maxHeight={150}
+                  maxHeight={225}
                   originAnchor={originAnchor}
                   queryVars={{
                     projectId: outcome.id,
@@ -106,12 +106,20 @@ class OutcomeCardFooter extends Component {
                   toggle={<OutcomeCardFooterButton icon="github" />}
                 />
                 }
-                <OutcomeCardStatusMenu
-                  editorState={editorState}
-                  isAgenda={isAgenda}
-                  isPrivate={isPrivate}
-                  outcome={outcome}
-                  removeContentTag={this.removeContentTag}
+                <AsyncMenuContainer
+                  fetchMenu={fetchStatusMenu}
+                  maxWidth={200}
+                  maxHeight={225}
+                  originAnchor={originAnchor}
+                  queryVars={{
+                    editorState,
+                    isAgenda,
+                    isPrivate,
+                    outcome,
+                    removeContentTag: this.removeContentTag
+                  }}
+                  targetAnchor={targetAnchor}
+                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
                 />
               </div>
             }

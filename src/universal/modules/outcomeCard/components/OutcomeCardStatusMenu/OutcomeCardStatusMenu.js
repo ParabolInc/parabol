@@ -3,25 +3,14 @@ import {cashay} from 'cashay';
 import {convertToRaw} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Menu, MenuItem} from 'universal/modules/menu';
+import {MenuItem} from 'universal/modules/menu';
 import {textOverflow} from 'universal/styles/helpers';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import addTagToProject from 'universal/utils/draftjs/addTagToProject';
-import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 
 const statusItems = labels.projectStatus.slugs.slice();
-
-const originAnchor = {
-  vertical: 'bottom',
-  horizontal: 'right'
-};
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'right'
-};
 
 class OutcomeCardStatusMenu extends Component {
   makeAddTagToProject = (tag) => () => {
@@ -55,7 +44,7 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   itemFactory = () => {
-    const {isAgenda, isPrivate, removeContentTag, styles, outcome: {status: outcomeStatus}} = this.props;
+    const {closePortal, isAgenda, isPrivate, removeContentTag, styles, outcome: {status: outcomeStatus}} = this.props;
     const listItems = statusItems.map((status) => {
       const {color, icon, label} = labels.projectStatus[status];
       return (
@@ -66,6 +55,7 @@ class OutcomeCardStatusMenu extends Component {
           key={status}
           label={<div className={css(styles.label)}>{'Move to '}<b style={{color}}>{label}</b></div>}
           onClick={this.handleProjectUpdateFactory(status)}
+          closePortal={closePortal}
         />
       );
     });
@@ -76,6 +66,7 @@ class OutcomeCardStatusMenu extends Component {
         key="private"
         label={<div className={css(styles.label)}>{'Remove '}<b>{'#private'}</b></div>}
         onClick={removeContentTag('private')}
+        closePortal={closePortal}
       />) :
       (<MenuItem
         hr="before"
@@ -83,6 +74,7 @@ class OutcomeCardStatusMenu extends Component {
         key="private"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>}
         onClick={this.makeAddTagToProject('#private')}
+        closePortal={closePortal}
       />)
     );
     listItems.push(isAgenda ?
@@ -91,12 +83,14 @@ class OutcomeCardStatusMenu extends Component {
         key="delete"
         label={<div className={css(styles.label)}>{'Delete this Project'}</div>}
         onClick={this.deleteOutcome}
+        closePortal={closePortal}
       />) :
       (<MenuItem
         icon="archive"
         key="archive"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>}
         onClick={this.makeAddTagToProject('#archived')}
+        closePortal={closePortal}
       />));
     return listItems;
   };
@@ -125,18 +119,15 @@ class OutcomeCardStatusMenu extends Component {
 
   render() {
     return (
-      <Menu
-        itemFactory={this.itemFactory}
-        maxHeight="14.0625rem"
-        originAnchor={originAnchor}
-        targetAnchor={targetAnchor}
-        toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
-      />
+      <div>
+        {this.itemFactory()}
+      </div>
     );
   }
 }
 
 OutcomeCardStatusMenu.propTypes = {
+  closePortal: PropTypes.func.isRequired,
   editorState: PropTypes.object,
   outcome: PropTypes.object,
   isAgenda: PropTypes.bool,
