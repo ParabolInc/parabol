@@ -3,7 +3,6 @@ import {stringify} from 'querystring';
 import getRethink from 'server/database/rethinkDriver';
 import postOptions from 'server/utils/fetchOptions';
 import getPubSub from 'server/utils/getPubSub';
-import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
@@ -58,8 +57,8 @@ const addProviderGitHub = async (code, teamId, userId) => {
   const queryParams = {
     client_id: process.env.GITHUB_CLIENT_ID,
     client_secret: process.env.GITHUB_CLIENT_SECRET,
-    code,
-    //redirect_uri: makeAppLink('auth/github/entry')
+    code
+    // redirect_uri: makeAppLink('auth/github/entry')
   };
   const uri = `https://github.com/login/oauth/access_token?${stringify(queryParams)}`;
   const ghRes = await fetch(uri, postOptions);
