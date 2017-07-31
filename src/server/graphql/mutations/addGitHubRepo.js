@@ -100,6 +100,18 @@ export default {
     };
     getPubSub().publish(`githubRepoAdded.${teamId}`, {githubRepoAdded, mutatorId: socket.id});
 
+
+    // set up webhooks
+    //const createHookParams = {
+    //  name: 'web',
+    //  config: {
+    //    url: makeAppLink('webhooks/github'),
+    //    content_type: 'json',
+    //    //secret:
+    //  },
+    //  events: ["assigned", "unassigned", "labeled", "unlabeled", "opened", "edited", "milestoned", "demilestoned", "closed", "reopened"],
+    //  active: true
+    //};
     return githubRepoAdded;
   }
 };

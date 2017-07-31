@@ -1,20 +1,27 @@
+import {toGlobalId} from 'graphql-relay';
 import fetch from 'node-fetch';
 import {stringify} from 'querystring';
 import getRethink from 'server/database/rethinkDriver';
+import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
+import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import postOptions from 'server/utils/fetchOptions';
 import getPubSub from 'server/utils/getPubSub';
 import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
-import getProviderRowData from 'server/safeQueries/getProviderRowData';
-import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
-import {toGlobalId} from 'graphql-relay';
+import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 const profileQuery = `
 query { 
   viewer { 
     login
     id
+    organizations(first: 100) {
+      nodes {
+        login
+        viewerCanAdminister
+      }
+    }
   }
 }`;
 
@@ -68,23 +75,15 @@ const addProviderGitHub = async (code, teamId, userId) => {
   if (scope !== GITHUB_SCOPE) {
     throw new Error(`bad scope: ${scope}`);
   }
-  const authedPostOptions = {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`
-    },
-    body: JSON.stringify({
-      query: profileQuery
-    })
-  };
+  const authedPostOptions = makeGitHubPostOptions(accessToken, {
+    query: profileQuery
+  })
   const ghProfile = await fetch(GITHUB_ENDPOINT, authedPostOptions);
   const gqlRes = await ghProfile.json();
   if (!gqlRes.data) {
     console.error('GitHub error: ', gqlRes);
   }
-  const {data: {viewer: {login: providerUserName, id: providerUserId}}} = gqlRes;
+  const {data: {viewer: {login: providerUserName, id: providerUserId, organizations}}} = gqlRes;
   const provider = await r.table('Provider')
     .getAll(teamId, {index: 'teamIds'})
     .filter({service: GITHUB, userId})
@@ -131,6 +130,47 @@ const addProviderGitHub = async (code, teamId, userId) => {
     joinedIntegrationIds,
     teamMember
   };
+
+  const orgsWithAdminRights = organizations.nodes.filter((org) => org.viewerCanAdminister);
+  // for each org, see if the webhook already exists
+  // if it does, go on to next
+  // if it does not, create it
+
+  const webhookLists = await Promise.all(orgsWithAdminRights.map((org) => {
+    const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
+    return fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
+  }));
+  const createHookParams = {
+    name: 'web',
+    config: {
+      url: makeAppLink('webhooks/github'),
+      content_type: 'json',
+      //secret:
+    },
+    events: ['member_added', 'member_removed'],
+    active: true
+  };
+  const promises = webhookLists.map((hookList, idx) => {
+    if (hookList.length > 0) return undefined;
+    const org = orgsWithAdminRights[idx];
+    const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
+    return fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams))
+      .then((res) => {
+        console.log('res', res);
+        return res.json();
+      })
+      .then((resJson) => {
+        console.log('json', resJson)
+      })
+  });
+
+  const allRes = await Promise.all(promises);
+  console.log('promises', allRes);
+  // if only the admin can do this, it kinda loses the priority
+  // add the webhooks, only works if the request is from an org admin
+
+  //
+
   getPubSub().publish(`providerAdded.${teamId}`, {providerAdded});
 };
 
