@@ -22,6 +22,7 @@ import handleIntegration from './integrations/handleIntegration';
 import sendICS from './sendICS';
 import './polyfills';
 import {GITHUB, SLACK} from 'universal/utils/constants';
+import handleGitHubEntry from 'server/integrations/handleGitHubEntry';
 // Import .env and expand variables:
 getDotenv();
 
@@ -92,6 +93,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   app.post('/stripe', stripeHandler);
 
   // integration setup callbacks
+  app.get('/auth/github/entry', handleGitHubEntry);
   app.get('/auth/github', handleIntegration(GITHUB));
   app.get('/auth/slack', handleIntegration(SLACK));
 

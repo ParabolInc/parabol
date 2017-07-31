@@ -59,12 +59,15 @@ const addProviderGitHub = async (code, teamId, userId) => {
     client_id: process.env.GITHUB_CLIENT_ID,
     client_secret: process.env.GITHUB_CLIENT_SECRET,
     code,
-    redirect_uri: makeAppLink('auth/github')
+    redirect_uri: makeAppLink('auth/github/entry')
   };
   const uri = `https://github.com/login/oauth/access_token?${stringify(queryParams)}`;
   const ghRes = await fetch(uri, postOptions);
   const json = await ghRes.json();
-  const {access_token: accessToken, scope} = json;
+  const {access_token: accessToken, error, scope} = json;
+  if (error) {
+    throw new Error(`GitHub: ${error}`);
+  }
   if (scope !== GITHUB_SCOPE) {
     throw new Error(`bad scope: ${scope}`);
   }
