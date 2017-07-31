@@ -58,7 +58,7 @@ OutcomeCardAssignMenu.propTypes = {
   teamMembers: PropTypes.array.isRequired
 };
 
-//const styleThunk = () => ({
+// const styleThunk = () => ({
 //  //root: {
 //  //  alignItems: 'center',
 //  //  color: appTheme.palette.dark,
@@ -73,6 +73,6 @@ OutcomeCardAssignMenu.propTypes = {
 //    //fontWeight: 700,
 //    //marginLeft: '.5rem'
 //  //}
-//});
+// });
 
 export default OutcomeCardAssignMenu;
