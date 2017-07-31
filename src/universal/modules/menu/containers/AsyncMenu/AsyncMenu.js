@@ -32,6 +32,13 @@ export default class AsyncMenuContainer extends Component {
     this.smartToggle = this.makeSmartToggle(toggle);
   }
 
+  componentWillReceiveProps(nextProps) {
+    const {toggle} = nextProps;
+    if (this.props.toggle !== toggle) {
+      this.smartToggle = this.makeSmartToggle(toggle);
+    }
+  }
+
   setLoading = (val) => {
     if (this.state.loading !== val) {
       this.setState({

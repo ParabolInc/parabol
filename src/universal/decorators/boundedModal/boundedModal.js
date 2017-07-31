@@ -7,7 +7,7 @@ export default (ComposedComponent) => {
     static propTypes = {
       height: PropTypes.number,
       left: PropTypes.number,
-      menuRef: PropTypes.element,
+      menuRef: PropTypes.object,
       top: PropTypes.number
     };
 
