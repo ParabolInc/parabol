@@ -89,31 +89,38 @@ class OutcomeCardFooter extends Component {
     );
 
     const {error} = this.state;
+    const ownerAvatar = (
+      <div className={avatarStyles} tabIndex="0">
+        <img
+          alt={owner.preferredName}
+          className={css(styles.avatarImg)}
+          src={owner.picture}
+        />
+      </div>
+    );
+
     return (
       <div className={css(styles.footerAndMessage)}>
         <div className={css(styles.footer)}>
           <div className={css(styles.avatarBlock)}>
-            <AsyncMenuContainer
-              fetchMenu={fetchAssignMenu}
-              maxWidth={350}
-              maxHeight={225}
-              originAnchor={assignOriginAnchor}
-              queryVars={{
-                projectId: outcome.id,
-                ownerId: owner.id,
-                teamMembers,
-                setError: this.setError,
-                clearError: this.clearError
-              }}
-              targetAnchor={assignTargetAnchor}
-              toggle={<div className={avatarStyles} tabIndex="0">
-                <img
-                  alt={owner.preferredName}
-                  className={css(styles.avatarImg)}
-                  src={owner.picture}
-                />
-              </div>}
-            />
+            {service ?
+              ownerAvatar :
+              <AsyncMenuContainer
+                fetchMenu={fetchAssignMenu}
+                maxWidth={350}
+                maxHeight={225}
+                originAnchor={assignOriginAnchor}
+                queryVars={{
+                  projectId: outcome.id,
+                  ownerId: owner.id,
+                  teamMembers,
+                  setError: this.setError,
+                  clearError: this.clearError
+                }}
+                targetAnchor={assignTargetAnchor}
+                toggle={ownerAvatar}
+              />
+            }
           </div>
           <div className={buttonBlockStyles}>
             {isArchived ?
