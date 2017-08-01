@@ -47,7 +47,7 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
       render={({error, props}) => {
         // TODO handle the error within the menu
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error}/>;
+          return <ErrorComponent height={'14rem'} error={error} />;
         }
         if (props) {
           return (<GitHubRepoListMenu
@@ -60,7 +60,7 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
             setLoading={setLoading}
           />);
         }
-        return <SetLoading setLoading={setLoading}/>;
+        return <SetLoading setLoading={setLoading} />;
       }}
     />
   );
