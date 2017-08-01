@@ -37,7 +37,11 @@ const addProviderUpdater = (store, viewer, teamId, payload) => {
     newProviderRow.setValue(oldProviderRow.getValue('accessToken'), 'accessToken');
   }
   if (oldProviderMap) {
-    oldProviderMap.getLinkedRecord(service).copyFieldsFrom(newProviderRow);
+    const oldProviderRow = oldProviderMap.getLinkedRecord(service);
+    // copyFieldsFrom is just plain bad news
+    oldProviderRow.setValue(newProviderRow.getValue('userCount'), 'userCount');
+    oldProviderRow.setValue(newProviderRow.getValue('integrationCount'), 'integrationCount');
+    oldProviderRow.setValue(newProviderRow.getValue('accessToken'), 'accessToken');
   }
 
   // join the existing integrations

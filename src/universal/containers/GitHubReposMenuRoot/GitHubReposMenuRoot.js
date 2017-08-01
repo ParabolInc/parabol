@@ -9,6 +9,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import GitHubRepoListMenu from 'universal/modules/outcomeCard/components/GitHubRepoListMenu/GitHubRepoListMenu';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
+import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription';
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
 import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
@@ -28,7 +29,8 @@ const subscriptions = [
   GitHubRepoRemovedSubscription,
   ProviderRemovedSubscription,
   ProviderAddedSubscription,
-  IntegrationLeftSubscription(GITHUB)
+  IntegrationLeftSubscription(GITHUB),
+  IntegrationJoinedSubscription(GITHUB)
 ];
 
 const cacheConfig = {ttl: DEFAULT_TTL};
@@ -45,7 +47,7 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
       render={({error, props}) => {
         // TODO handle the error within the menu
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error} />;
+          return <ErrorComponent height={'14rem'} error={error}/>;
         }
         if (props) {
           return (<GitHubRepoListMenu
@@ -58,7 +60,7 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
             setLoading={setLoading}
           />);
         }
-        return <SetLoading setLoading={setLoading} />;
+        return <SetLoading setLoading={setLoading}/>;
       }}
     />
   );
