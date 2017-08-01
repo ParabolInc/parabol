@@ -98,7 +98,7 @@ const ProviderRow = (props) => {
             </div> :
             <div className={css(styles.subHeading)}>
               {comingSoon &&
-                <span className={css(styles.comingSoon)}>Coming Soon! </span>
+              <span className={css(styles.comingSoon)}>Coming Soon! </span>
               }
               {description}
             </div>

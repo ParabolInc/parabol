@@ -1,6 +1,8 @@
 import request from 'request';
+import closeClientPage from 'server/utils/closeClientPage';
 
 const handleGitHubEntry = (req, res) => {
+  closeClientPage(res);
   const {query} = req;
   const delimiterIdx = query.state.indexOf('::');
   const origin = query.state.substring(0, delimiterIdx);
@@ -10,7 +12,8 @@ const handleGitHubEntry = (req, res) => {
     state: query.state.substring(delimiterIdx + 2)
   };
   const newUrl = `${publicOrigin}/auth/github`;
-  req.pipe(request({qs, uri: newUrl})).pipe(res);
+  // ultrahook only supports POSTs, so POST it is
+  req.pipe(request({method: 'POST', qs, uri: newUrl})).pipe(res);
 };
 
 export default handleGitHubEntry;

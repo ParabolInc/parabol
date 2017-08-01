@@ -94,7 +94,8 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   // integration setup callbacks
   app.get('/auth/github/entry', handleGitHubEntry);
-  app.get('/auth/github', handleIntegration(GITHUB));
+  // ultrahook only supports POST, so let's just use POST
+  app.post('/auth/github', handleIntegration(GITHUB));
   app.get('/auth/slack', handleIntegration(SLACK));
 
   // server-side rendering
