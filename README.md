@@ -67,6 +67,9 @@ upgrades are as easy as `brew update && brew upgrade rethinkdb`
 
 Action also uses [yarn](https://yarnpkg.com/) which can be installed by running `npm install -g yarn`
 
+Additional dependencies include [redis](https://redis.io/), and
+[watchman](https://facebook.github.io/watchman/docs/install.html) (required by relay).
+
 #### Source code
 
 ```bash
@@ -124,6 +127,34 @@ migration.
 $ npm run db:migrate-testing # Only needs to be run once
 $ npm run test # Runs all tests
 ```
+
+### Getting Started on Windows
+Currently, many of the config files are written for a Unix based shell like bash. If you plan on contributing (awesome!),
+but are working on a Windows machine, you can follow these steps to get started. Note this is just __one__ way of setting
+up the environment for Windows, but it is the least likely to give you trouble down the road.
+
+1. Follow the instructions to install [bash for windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)
+2. Open cmd and type `bash`
+3. Install node >= 7.6.0 __inside__ of your bash instance
+4. Install the dependencies for [watchman](https://facebook.github.io/watchman/docs/install.html)
+5. Install watchman from source
+6. Start an instance of rethinkDB
+7. Start an instance of redis
+8. Navigate to the directory of your choice
+9. ```bash
+   $ git clone https://github.com/ParabolInc/action.git
+   $ cd action
+   $ yarn
+   $ npm run quickstart
+   ```
+
+If you run into problems, run each of these commands separately and watch for errors.
+ ```
+ npm run db:migrate
+ npm run build:dll
+ npm run build:relay
+ npm run dev
+ ```
 
 ## Bringing your database up to date
 
