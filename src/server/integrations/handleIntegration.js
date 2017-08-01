@@ -12,7 +12,7 @@ const query = `
 export default (service) => async (req, res) => {
   if (service === GITHUB) {
     // let the proxy know everything is cool
-    res.send(200);
+    res.sendStatus(200);
   } else {
     closeClientPage(res);
   }
