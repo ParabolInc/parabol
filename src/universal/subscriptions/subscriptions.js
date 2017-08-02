@@ -42,6 +42,11 @@ export default [
         content
         createdAt
         id
+        integration {
+          service
+          nameWithOwner
+          issueNumber
+        }
         status
         tags
         teamMemberId
