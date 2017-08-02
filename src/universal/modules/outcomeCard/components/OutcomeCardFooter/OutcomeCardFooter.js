@@ -17,12 +17,12 @@ const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMe
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
 
 const originAnchor = {
-  vertical: 'bottom',
+  vertical: 'top',
   horizontal: 'right'
 };
 
 const targetAnchor = {
-  vertical: 'top',
+  vertical: 'bottom',
   horizontal: 'right'
 };
 

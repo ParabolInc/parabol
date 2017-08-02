@@ -14,8 +14,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 const AsyncMenu = (props) => {
   const {
     closePortal,
-    left,
-    top,
+    coords,
     maxWidth,
     maxHeight,
     Mod,
@@ -25,12 +24,8 @@ const AsyncMenu = (props) => {
     queryVars
   } = props;
 
-  const menuBlockStyle = {
-    left,
-    top
-  };
   return (
-    <div className={css(styles.menuBlock)} style={menuBlockStyle} ref={setMenuRef}>
+    <div className={css(styles.menuBlock)} style={coords} ref={setMenuRef}>
       <div className={css(styles.menu)}>
         <TransitionGroup appear style={{overflow: 'hidden'}}>
           {Mod ?
@@ -53,15 +48,14 @@ const AsyncMenu = (props) => {
   );
 };
 
-AsyncMenu.defaultProps = {
-  menuOrientation: 'left',
-  verticalAlign: 'middle'
-};
-
 AsyncMenu.propTypes = {
   closePortal: PropTypes.func.isRequired,
-  left: PropTypes.number,
-  top: PropTypes.number,
+  coords: PropTypes.shapeOf({
+    left: PropTypes.number,
+    top: PropTypes.number,
+    right: PropTypes.number,
+    bottom: PropTypes.number,
+  }),
   Mod: PropTypes.any,
   setCoords: PropTypes.func.isRequired,
   setMenuRef: PropTypes.func.isRequired,
@@ -103,7 +97,5 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
 });
 
 export default portal({escToClose: true, clickToClose: true})(
-  boundedModal(
     withStyles(styleThunk)(AsyncMenu)
-  )
 );

@@ -48,23 +48,43 @@ export default class AsyncMenuContainer extends Component {
 
   setCoords = () => {
     setTimeout(() => {
-      if (this.menuRef) {
-        const {maxWidth, maxHeight} = this.props;
-        const menuCoords = this.menuRef.getBoundingClientRect();
-        const width = menuCoords.width || maxWidth;
-        const height = menuCoords.height || maxHeight;
-        const {originAnchor, targetAnchor, toggleMargin = 0} = this.props;
-        const originLeftOffset = getOffset(originAnchor.horizontal, this.toggleCoords.width);
-        const targetLeftOffset = getOffset(targetAnchor.horizontal, width);
-        const left = window.scrollX + this.toggleCoords.left + originLeftOffset - targetLeftOffset;
-        const originTopOffset = getOffset(originAnchor.vertical, this.toggleCoords.height);
-        const targetTopOffset = getOffset(targetAnchor.vertical, height);
-        const top = window.scrollY + this.toggleCoords.top + originTopOffset - targetTopOffset + toggleMargin;
-        this.setState({
-          left,
-          top
-        });
+      if (!this.menuRef) return;
+      // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
+      const {originAnchor, targetAnchor, toggleMargin = 0, maxWidth, maxHeight} = this.props;
+      const menuCoords = this.menuRef.getBoundingClientRect();
+      const menuWidth = menuCoords.width || maxWidth;
+      const menuHeight = menuCoords.height || maxHeight;
+      const nextCoords = {};
+
+      const originLeftOffset = getOffset(originAnchor.horizontal, this.toggleCoords.width);
+      const {scrollX, scrollY, innerWidth, innerHeight} = window;
+      if (targetAnchor.horizontal !== 'right') {
+        const targetLeftOffset = getOffset(targetAnchor.horizontal, menuWidth);
+        const left = scrollX + this.toggleCoords.left + originLeftOffset - targetLeftOffset;
+        const maxLeft = innerWidth - menuWidth + scrollX;
+        nextCoords.left = Math.min(left, maxLeft)
+      } else {
+        const right = innerWidth - (this.toggleCoords.left + originLeftOffset);
+        const maxRight = innerWidth - menuWidth - scrollX;
+        nextCoords.right = Math.min(right, maxRight);
       }
+
+      const originTopOffset = getOffset(originAnchor.vertical, this.toggleCoords.height);
+      if (targetAnchor.vertical !== 'bottom') {
+        const targetTopOffset = getOffset(targetAnchor.vertical, menuHeight);
+        const top = scrollY + this.toggleCoords.top + originTopOffset - targetTopOffset + toggleMargin;
+        const isBelow = top + menuHeight < innerHeight + scrollY;
+        if (isBelow) {
+          nextCoords.top = top;
+        }
+      }
+      // if it wasn't by choice or circumstance, put it above & anchor it from the bottom
+      if (nextCoords.top === undefined) {
+        const bottom = innerHeight - (this.toggleCoords.top + originTopOffset) - toggleMargin;
+        const maxBottom = innerHeight - menuHeight - scrollY;
+        nextCoords.bottom = Math.min(bottom, maxBottom);
+      }
+      this.setState(nextCoords);
     });
   }
 
@@ -108,7 +128,7 @@ export default class AsyncMenuContainer extends Component {
   };
 
   render() {
-    const {left, top, Mod} = this.state;
+    const {Mod, ...coords} = this.state;
     return (
       <AsyncMenu
         {...this.props}
@@ -116,8 +136,7 @@ export default class AsyncMenuContainer extends Component {
         setMenuRef={this.setMenuRef}
         menuRef={this.menuRef}
         toggle={this.smartToggle}
-        left={left}
-        top={top}
+        coords={coords}
         Mod={Mod}
       />
     );
