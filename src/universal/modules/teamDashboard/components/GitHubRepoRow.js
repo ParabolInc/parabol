@@ -103,10 +103,12 @@ const styleThunk = () => ({
   },
 
   avatarGroup: {
+    marginLeft: 'auto',
     padding: '0 .5rem 0 1rem'
   },
 
   avatar: {
+    display: 'inline-block',
     margin: '0 .5rem 0 0'
   }
 });
