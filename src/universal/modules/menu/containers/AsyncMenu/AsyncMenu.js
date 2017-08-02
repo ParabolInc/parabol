@@ -32,14 +32,12 @@ export default class AsyncMenuContainer extends Component {
     this.smartToggle = this.makeSmartToggle(toggle);
   }
 
-  setLoading = (val) => {
-    if (this.state.loading !== val) {
-      this.setState({
-        loading: val
-      });
-      this.setCoords();
+  componentWillReceiveProps(nextProps) {
+    const {toggle} = nextProps;
+    if (this.props.toggle !== toggle) {
+      this.smartToggle = this.makeSmartToggle(toggle);
     }
-  };
+  }
 
   setMenuRef = (c) => {
     if (c) {
@@ -48,7 +46,7 @@ export default class AsyncMenuContainer extends Component {
     }
   };
 
-  setCoords() {
+  setCoords = () => {
     setTimeout(() => {
       if (this.menuRef) {
         const {maxWidth, maxHeight} = this.props;
@@ -110,12 +108,11 @@ export default class AsyncMenuContainer extends Component {
   };
 
   render() {
-    const {left, loading, top, Mod} = this.state;
+    const {left, top, Mod} = this.state;
     return (
       <AsyncMenu
         {...this.props}
-        loading={loading}
-        setLoading={this.setLoading}
+        setCoords={this.setCoords}
         setMenuRef={this.setMenuRef}
         menuRef={this.menuRef}
         toggle={this.smartToggle}

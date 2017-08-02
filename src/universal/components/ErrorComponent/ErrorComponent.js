@@ -31,11 +31,12 @@ LoadingComponent.propTypes = {
 
 const styleThunk = (theme, {width = ui.settingsPanelMaxWidth, height = '20rem'}) => ({
   errorComponent: {
+    alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
     minHeight: height,
+    textAlign: 'center',
     width
   }
 });

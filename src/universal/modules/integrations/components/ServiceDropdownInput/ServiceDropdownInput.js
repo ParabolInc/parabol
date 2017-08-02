@@ -85,7 +85,8 @@ const styleThunk = () => ({
       borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
       boxShadow: ui.fieldBoxShadow
     }),
-    position: 'relative'
+    position: 'relative',
+    userSelect: 'none'
   },
 
   menuButtonBlock: {

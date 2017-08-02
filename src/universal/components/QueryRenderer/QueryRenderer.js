@@ -22,7 +22,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
     query: PropTypes.func,
     render: PropTypes.func.isRequired,
     variables: PropTypes.object,
-    subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired).isRequired
+    subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired)
   };
   static timeouts = {};
 

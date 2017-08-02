@@ -7,7 +7,12 @@ import tryParse from 'universal/utils/tryParse';
 
 const makeErrorObj = (errors) => {
   const firstError = errors[0].message;
-  return tryParse(firstError) || {_error: firstError};
+  return tryParse(firstError) ||
+    errors.reduce((errObj, err, idx) => {
+      const prop = idx === 0 ? '_error' : idx;
+      errObj[prop] = err.message;
+      return errObj;
+    }, {});
 };
 
 export default class Atmosphere extends Environment {
@@ -96,6 +101,7 @@ export default class Atmosphere extends Environment {
           const errorObj = makeErrorObj(errors);
           reject(errorObj);
         } else {
+          //reject({_error: 'A really big one'})
           // setTimeout(() => resolve(response), 2000);
           resolve(response);
         }

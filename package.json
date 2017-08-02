@@ -178,6 +178,7 @@
     "react-relay": "^1.1.0",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
+    "react-transition-group": "^2.2.0",
     "redux": "^3.7.0",
     "redux-form": "6.8.0",
     "redux-logger": "^3.0.6",
