@@ -46,7 +46,7 @@ const styleThunk = () => ({
     height: '8rem',
     lineHeight: '8rem',
     margin: 'auto -1.5rem -1.5rem auto',
-    opacity: 0.12,
+    opacity: 0.20,
     position: 'absolute',
     right: 0,
     width: '8rem'

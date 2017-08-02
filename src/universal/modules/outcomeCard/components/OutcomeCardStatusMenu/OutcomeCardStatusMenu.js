@@ -45,20 +45,21 @@ class OutcomeCardStatusMenu extends Component {
 
   itemFactory = () => {
     const {closePortal, isAgenda, isPrivate, removeContentTag, styles, outcome: {status: outcomeStatus}} = this.props;
-    const listItems = statusItems.map((status) => {
-      const {color, icon, label} = labels.projectStatus[status];
-      return (
-        <MenuItem
-          icon={icon}
-          iconColor={color}
-          isActive={status === outcomeStatus}
-          key={status}
-          label={<div className={css(styles.label)}>{'Move to '}<b style={{color}}>{label}</b></div>}
-          onClick={this.handleProjectUpdateFactory(status)}
-          closePortal={closePortal}
-        />
-      );
-    });
+    const listItems = statusItems
+      .filter((status) => status !== outcomeStatus)
+      .map((status) => {
+        const {color, icon, label} = labels.projectStatus[status];
+        return (
+          <MenuItem
+            icon={icon}
+            iconColor={color}
+            key={status}
+            label={<div className={css(styles.label)}>{'Move to '}<b style={{color}}>{label}</b></div>}
+            onClick={this.handleProjectUpdateFactory(status)}
+            closePortal={closePortal}
+          />
+        );
+      });
     listItems.push(isPrivate ?
       (<MenuItem
         hr="before"

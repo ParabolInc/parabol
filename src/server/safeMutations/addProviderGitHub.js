@@ -6,7 +6,6 @@ import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import postOptions from 'server/utils/fetchOptions';
 import getPubSub from 'server/utils/getPubSub';
-import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
@@ -65,13 +64,16 @@ const addProviderGitHub = async (code, teamId, userId) => {
   const queryParams = {
     client_id: process.env.GITHUB_CLIENT_ID,
     client_secret: process.env.GITHUB_CLIENT_SECRET,
-    code,
-    redirect_uri: makeAppLink('auth/github')
+    code
+    // redirect_uri: makeAppLink('auth/github/entry')
   };
   const uri = `https://github.com/login/oauth/access_token?${stringify(queryParams)}`;
   const ghRes = await fetch(uri, postOptions);
   const json = await ghRes.json();
-  const {access_token: accessToken, scope} = json;
+  const {access_token: accessToken, error, scope} = json;
+  if (error) {
+    throw new Error(`GitHub: ${error}`);
+  }
   if (scope !== GITHUB_SCOPE) {
     throw new Error(`bad scope: ${scope}`);
   }

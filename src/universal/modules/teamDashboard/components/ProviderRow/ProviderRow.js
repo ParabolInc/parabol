@@ -18,10 +18,10 @@ export const providerLookup = {
     ...ui.providers.github,
     route: 'github',
     makeUri: (jwt, teamId) => {
-      const redirect = makeHref('/auth/github');
-      const state = `${teamId}::${jwt}`;
+      // const redirect = makeHref('/auth/github/entry');
+      const state = `${window.location.origin}::${teamId}::${jwt}`;
       // eslint-disable-next-line
-      return `https://github.com/login/oauth/authorize?client_id=${window.__ACTION__.github}&scope=${GITHUB_SCOPE}&state=${state}&redirect_uri=${redirect}`
+      return `https://github.com/login/oauth/authorize?client_id=${window.__ACTION__.github}&scope=${GITHUB_SCOPE}&state=${state}`
     }
   },
   [SLACK]: {
@@ -98,7 +98,7 @@ const ProviderRow = (props) => {
             </div> :
             <div className={css(styles.subHeading)}>
               {comingSoon &&
-                <span className={css(styles.comingSoon)}>Coming Soon! </span>
+              <span className={css(styles.comingSoon)}>Coming Soon! </span>
               }
               {description}
             </div>
