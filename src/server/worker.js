@@ -22,8 +22,6 @@ import handleIntegration from './integrations/handleIntegration';
 import sendICS from './sendICS';
 import './polyfills';
 import {GITHUB, SLACK} from 'universal/utils/constants';
-import handleGitHubEntry from 'server/integrations/handleGitHubEntry';
-import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks';
 // Import .env and expand variables:
 getDotenv();
 
@@ -93,12 +91,8 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   const stripeHandler = stripeWebhookHandler(exchange);
   app.post('/stripe', stripeHandler);
 
-  // integration setup callbacks
-  app.get('/auth/github/entry', handleGitHubEntry);
-  // ultrahook only supports POST, so let's just use POST
-  app.post('/auth/github', handleIntegration(GITHUB));
+  app.get('/auth/github', handleIntegration(GITHUB));
   app.get('/auth/slack', handleIntegration(SLACK));
-  app.get('/webhooks/github', handleGitHubWebhooks);
 
   // server-side rendering
   app.get('*', createSSR);

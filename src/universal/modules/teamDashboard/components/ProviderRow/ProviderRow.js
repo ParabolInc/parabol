@@ -19,7 +19,7 @@ export const providerLookup = {
     route: 'github',
     makeUri: (jwt, teamId) => {
       // const redirect = makeHref('/auth/github/entry');
-      const state = `${window.location.origin}::${teamId}::${jwt}`;
+      const state = `${teamId}::${jwt}`;
       // eslint-disable-next-line
       return `https://github.com/login/oauth/authorize?client_id=${window.__ACTION__.github}&scope=${GITHUB_SCOPE}&state=${state}`
     }
