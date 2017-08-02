@@ -18,12 +18,12 @@ const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/compo
 const fetchAssignMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu');
 
 const originAnchor = {
-  vertical: 'top',
+  vertical: 'bottom',
   horizontal: 'right'
 };
 
 const targetAnchor = {
-  vertical: 'bottom',
+  vertical: 'top',
   horizontal: 'right'
 };
 

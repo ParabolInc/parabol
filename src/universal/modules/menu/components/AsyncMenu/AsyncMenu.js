@@ -50,7 +50,7 @@ const AsyncMenu = (props) => {
 
 AsyncMenu.propTypes = {
   closePortal: PropTypes.func.isRequired,
-  coords: PropTypes.shapeOf({
+  coords: PropTypes.shape({
     left: PropTypes.number,
     top: PropTypes.number,
     right: PropTypes.number,
@@ -66,7 +66,7 @@ AsyncMenu.propTypes = {
 const styleThunk = (theme, {maxHeight, maxWidth}) => ({
   menuBlock: {
     maxWidth,
-    paddingTop: '.25rem',
+    padding: '.25rem 0',
     position: 'absolute',
     zIndex: ui.ziMenu
   },

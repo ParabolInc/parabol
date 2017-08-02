@@ -54,7 +54,12 @@ export default class AsyncMenuContainer extends Component {
       const menuCoords = this.menuRef.getBoundingClientRect();
       const menuWidth = menuCoords.width || maxWidth;
       const menuHeight = menuCoords.height || maxHeight;
-      const nextCoords = {};
+      const nextCoords = {
+        left: undefined,
+        top: undefined,
+        right: undefined,
+        bottom: undefined,
+      };
 
       const originLeftOffset = getOffset(originAnchor.horizontal, this.toggleCoords.width);
       const {scrollX, scrollY, innerWidth, innerHeight} = window;
@@ -69,8 +74,8 @@ export default class AsyncMenuContainer extends Component {
         nextCoords.right = Math.min(right, maxRight);
       }
 
-      const originTopOffset = getOffset(originAnchor.vertical, this.toggleCoords.height);
       if (targetAnchor.vertical !== 'bottom') {
+        const originTopOffset = getOffset(originAnchor.vertical, this.toggleCoords.height);
         const targetTopOffset = getOffset(targetAnchor.vertical, menuHeight);
         const top = scrollY + this.toggleCoords.top + originTopOffset - targetTopOffset + toggleMargin;
         const isBelow = top + menuHeight < innerHeight + scrollY;
@@ -78,10 +83,10 @@ export default class AsyncMenuContainer extends Component {
           nextCoords.top = top;
         }
       }
-      // if it wasn't by choice or circumstance, put it above & anchor it from the bottom
+      // if by choice or circumstance, put it above & anchor it from the bottom
       if (nextCoords.top === undefined) {
-        const bottom = innerHeight - (this.toggleCoords.top + originTopOffset) - toggleMargin;
-        const maxBottom = innerHeight - menuHeight - scrollY;
+        const bottom = innerHeight - this.toggleCoords.top - toggleMargin - scrollY;
+        const maxBottom = innerHeight - menuHeight + scrollY;
         nextCoords.bottom = Math.min(bottom, maxBottom);
       }
       this.setState(nextCoords);
@@ -128,7 +133,7 @@ export default class AsyncMenuContainer extends Component {
   };
 
   render() {
-    const {Mod, ...coords} = this.state;
+    const {Mod, loading, ...coords} = this.state;
     return (
       <AsyncMenu
         {...this.props}
