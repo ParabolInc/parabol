@@ -152,6 +152,10 @@ const Meeting = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The number of agenda items completed during the meeting'
     },
+    projectsDone: {
+      type: GraphQLInt,
+      description: 'The number of projects archived during the meeting'
+    },
     // isActive: {type: GraphQLBoolean, description: 'true if a meeting is currently in progress'},
     createdAt: {
       type: GraphQLISO8601Type,

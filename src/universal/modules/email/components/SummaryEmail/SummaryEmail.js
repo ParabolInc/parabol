@@ -106,7 +106,7 @@ const SummaryEmail = (props) => {
     referrerUrl,
     teamDashUrl
   } = props;
-  const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName} = meeting;
+  const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName, projectsDone} = meeting;
   const membersSansOutcomes = invitees.filter((invitee) => invitee.projects.length === 0);
   const membersWithOutcomes = invitees.filter((invitee) => invitee.projects.length > 0);
   const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
@@ -238,6 +238,9 @@ const SummaryEmail = (props) => {
                         {makeSuccessStatement()}
                       </div>
                     }
+                    <div>
+                      <p>We archived {projectsDone} projects for you!</p>
+                    </div>
                   </div>
             }
                 <EmptySpace height={8} />

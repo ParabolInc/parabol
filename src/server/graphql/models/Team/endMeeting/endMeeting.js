@@ -48,6 +48,10 @@ export default {
     // RESOLUTION
     const now = new Date();
     const meetingId = meeting.id;
+    const projectsDone = await r.table('Project').getAll(teamId, {index: 'teamId'})
+        .filter({status: 'done'})
+        .filter((project) => project('tags').contains('archived').not())
+        .count();
     const completedMeeting = await r.table('AgendaItem')
     // get all agenda items
       .getAll(teamId, {index: 'teamId'})
@@ -74,6 +78,7 @@ export default {
           .do((projects) => {
             return r.table('Meeting').get(meetingId)
               .update({
+                projectsDone: projectsDone,
                 agendaItemsCompleted: agendaItemIds.count().default(0),
                 endedAt: now,
                 facilitator: `${authToken.sub}::${teamId}`,
