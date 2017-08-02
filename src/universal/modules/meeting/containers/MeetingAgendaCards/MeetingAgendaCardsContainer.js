@@ -8,6 +8,11 @@ const meetingAgendaCardsQuery = `
 query {
   agendaProjects(agendaId: $agendaId) @live {
     id
+    integration {
+      service
+      nameWithOwner
+      issueNumber
+    }
     agendaId
     content
     createdAt

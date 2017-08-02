@@ -23,6 +23,11 @@ export default [
     subscription($agendaId: ID!) {
       agendaProjects(agendaId: $agendaId) {
         id
+        integration {
+          service
+          nameWithOwner
+          issueNumber
+        }
         agendaId
         content
         createdAt
