@@ -52,7 +52,11 @@ class GitHubRepoRow extends Component {
             {nameWithOwner}
             <FontAwesome name="external-link-square" style={{marginLeft: '.5rem'}} />
           </a>
-          {teamMembers.map((user) => <Avatar key={user.id} {...user} size="smallest" />)}
+          {teamMembers &&
+            <div className={css(styles.avatarGroup)}>
+              {teamMembers.map((user) => <div className={css(styles.avatar)}><Avatar key={user.id} {...user} size="smallest" /></div>)}
+            </div>
+          }
           {accessToken &&
             <Button
               buttonStyle="flat"
@@ -94,6 +98,14 @@ const styleThunk = () => ({
     display: 'block',
     fontSize: appTheme.typography.s3,
     fontWeight: 700
+  },
+
+  avatarGroup: {
+    padding: '0 .5rem 0 1rem'
+  },
+
+  avatar: {
+    margin: '0 .5rem 0 0'
   }
 });
 
