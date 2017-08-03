@@ -17,7 +17,7 @@ const ProjectIntegrationLink = (props) => {
       target="_blank"
       title={`GitHub Issue #${issueNumber} on ${nameWithOwner}`}
     >
-      {`${nameWithOwner}/${issueNumber}`}
+      {`Issue #${issueNumber}`}
     </a>
   );
 };
