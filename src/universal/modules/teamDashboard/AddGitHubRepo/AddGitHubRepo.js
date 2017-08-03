@@ -76,11 +76,14 @@ class AddGitHubRepo extends Component {
 
   constructor(props) {
     super(props);
+    this._mounted = true;
     this.state = {
       options: [],
       selectedRepo: defaultSelectedRepo()
     };
     this.lastUpdated = 0;
+    window.gc = new WeakSet();
+    window.gc.add(this);
     this.fetchOptions(props.accessToken);
   }
 
@@ -92,6 +95,9 @@ class AddGitHubRepo extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this._mounted = false;
+  }
   updateDropdownItem = (option) => () => {
     // TODO refactor all of this. DRY it out between slack & GH, add loading & empty state
     if (option.id === null) {
@@ -126,6 +132,7 @@ class AddGitHubRepo extends Component {
       const postOptions = makeGitHubPostOptions(accessToken, {query: getReposQuery});
       const res = await fetch(GITHUB_ENDPOINT, postOptions);
       const resJson = await res.json();
+      if (!this._mounted) return;
       const {data, errors, message} = resJson;
       if (errors || message) {
         if (errors) {

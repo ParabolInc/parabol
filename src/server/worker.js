@@ -22,6 +22,7 @@ import handleIntegration from './integrations/handleIntegration';
 import sendICS from './sendICS';
 import './polyfills';
 import {GITHUB, SLACK} from 'universal/utils/constants';
+import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks';
 // Import .env and expand variables:
 getDotenv();
 
@@ -93,6 +94,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   app.get('/auth/github', handleIntegration(GITHUB));
   app.get('/auth/slack', handleIntegration(SLACK));
+  app.post('/webhooks/github', handleGitHubWebhooks);
 
   // server-side rendering
   app.get('*', createSSR);

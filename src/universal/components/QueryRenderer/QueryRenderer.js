@@ -197,6 +197,8 @@ export default class ReactRelayQueryRenderer extends React.Component {
           this.release();
         }
       };
+      // note that the reference to `this` could be a memory leak since these components are never released
+      // to minimize memory, we could make a `releaseFactory` that takes in the disposers
       environment.registerQuery(this._queryKey, subscriptionKeys, this.unsubscribe);
     }
   }

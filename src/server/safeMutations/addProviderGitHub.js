@@ -9,6 +9,7 @@ import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
+import makeAppLink from 'server/utils/makeAppLink';
 
 const profileQuery = `
 query { 
@@ -145,9 +146,10 @@ const addProviderGitHub = async (code, teamId, userId) => {
   const createHookParams = {
     name: 'web',
     config: {
-      url: makeAppLink('webhooks/github'),
+      url: makeAppLink('webhooks/github', {isWebhook: true}),
       content_type: 'json',
-      //secret:
+      // this doesn't have to be the client secret, but i don't see much harm in reusing it, assuming it's all SSL
+      secret: process.env.GITHUB_CLIENT_SECRET
     },
     events: ['member_added', 'member_removed'],
     active: true
