@@ -3,9 +3,11 @@ import getRethinkConfig from './getRethinkConfig';
 
 const config = getRethinkConfig();
 let driver;
-export default () => {
+const getRethink = () => {
   if (!driver) {
     driver = rethinkdbdash(config);
   }
   return driver;
 };
+
+export default getRethink;

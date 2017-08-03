@@ -14,7 +14,7 @@ export default function makeAppLink(_location, {qs, isWebhook}) {
   const portSuffix = process.env.NODE_ENV === 'production' ? '' : `:${port}`;
   const qsSuffix = qs ? `?${querystring.stringify(qs)}` : '';
   if (host === 'localhost' && isWebhook) {
-    return 'http://dev.parabol.ultrahook.com';
+    return `http://dev.parabol.ultrahook.com/${location}${qsSuffix}`;
   }
   return `${proto}://${host}${portSuffix}/${location}${qsSuffix}`;
 }

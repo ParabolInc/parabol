@@ -6,10 +6,11 @@ import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import postOptions from 'server/utils/fetchOptions';
 import getPubSub from 'server/utils/getPubSub';
+import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
-import makeAppLink from 'server/utils/makeAppLink';
+import maybeJoinRepos from 'server/integrations/githubWebhookHandlers/maybeJoinRepos';
 
 const profileQuery = `
 query { 
@@ -25,30 +26,45 @@ query {
   }
 }`;
 
+const createOrgWebhooks = async (accessToken, organizations) => {
+  const orgsWithAdminRights = organizations.nodes.filter((org) => org.viewerCanAdminister);
+  // for each org, see if the webhook already exists
+  // if it does, go on to next
+  // if it does not, create it
+
+  const webhookLists = await Promise.all(orgsWithAdminRights.map((org) => {
+    const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
+    return fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}}).then((res) => res.json());
+  }));
+  const createHookParams = {
+    name: 'web',
+    config: {
+      url: makeAppLink('webhooks/github', {isWebhook: true}),
+      content_type: 'json',
+      // this doesn't have to be the client secret, but i don't see much harm in reusing it, assuming it's all SSL
+      secret: process.env.GITHUB_CLIENT_SECRET
+    },
+    events: ['member_added', 'member_removed'],
+    active: true
+  };
+
+  webhookLists.forEach((hookList, idx) => {
+    if (hookList.length === 0) {
+      const org = orgsWithAdminRights[idx];
+      const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
+      fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams));
+    }
+  });
+
+};
+
 const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId) => {
+  if (integrationCount === 0) return [];
   const r = getRethink();
-  if (integrationCount > 0) {
-    const allIntegrations = await r.table(GITHUB)
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true});
-    const permissionPromises = allIntegrations.map((integration) => {
-      return tokenCanAccessRepo(accessToken, integration.nameWithOwner);
-    });
-    const permissionArray = await Promise.all(permissionPromises);
-    const integrationIdsToJoin = permissionArray.reduce((integrationArr, githubRes, idx) => {
-      if (!githubRes.errors) {
-        integrationArr.push(allIntegrations[idx].id);
-      }
-      return integrationArr;
-    }, []);
-    await r.table(GITHUB)
-      .getAll(r.args(integrationIdsToJoin), {index: 'id'})
-      .update((doc) => ({
-        userIds: doc('userIds').append(userId).distinct()
-      }));
-    return integrationIdsToJoin.map((id) => toGlobalId(GITHUB, id));
-  }
-  return [];
+  const allIntegrations = await r.table(GITHUB)
+    .getAll(teamId, {index: 'teamId'})
+    .filter({isActive: true});
+  return maybeJoinRepos(allIntegrations, accessToken, userId);
 };
 
 const getTeamMember = async (joinedIntegrationIds, teamMemberId) => {
@@ -86,7 +102,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
   if (!gqlRes.data) {
     console.error('GitHub error: ', gqlRes);
   }
-  const {data: {viewer: {login: providerUserName, id: providerUserId, organizations}}} = gqlRes;
+  const {data: {viewer: {login, organizations}}} = gqlRes;
   const provider = await r.table('Provider')
     .getAll(teamId, {index: 'teamIds'})
     .filter({service: GITHUB, userId})
@@ -100,8 +116,9 @@ const addProviderGitHub = async (code, teamId, userId) => {
             id: shortid.generate(),
             accessToken,
             createdAt: now,
-            providerUserId,
-            providerUserName,
+            // github userId is never used for queries, but the login is!
+            providerUserId: login,
+            providerUserName: login,
             service: GITHUB,
             teamIds: [teamId],
             updatedAt: now,
@@ -112,13 +129,15 @@ const addProviderGitHub = async (code, teamId, userId) => {
           .update({
             accessToken,
             updatedAt: now,
-            providerUserId,
-            providerUserName
+            providerUserId: login,
+            providerUserName: login
           }, {returnChanges: true})('changes')(0)('new_val')
       );
     });
+  createOrgWebhooks(accessToken, organizations);
+
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId);
+  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId)
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
   const providerAdded = {
@@ -133,47 +152,6 @@ const addProviderGitHub = async (code, teamId, userId) => {
     joinedIntegrationIds,
     teamMember
   };
-
-  const orgsWithAdminRights = organizations.nodes.filter((org) => org.viewerCanAdminister);
-  // for each org, see if the webhook already exists
-  // if it does, go on to next
-  // if it does not, create it
-
-  const webhookLists = await Promise.all(orgsWithAdminRights.map((org) => {
-    const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
-    return fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
-  }));
-  const createHookParams = {
-    name: 'web',
-    config: {
-      url: makeAppLink('webhooks/github', {isWebhook: true}),
-      content_type: 'json',
-      // this doesn't have to be the client secret, but i don't see much harm in reusing it, assuming it's all SSL
-      secret: process.env.GITHUB_CLIENT_SECRET
-    },
-    events: ['member_added', 'member_removed'],
-    active: true
-  };
-  const promises = webhookLists.map((hookList, idx) => {
-    if (hookList.length > 0) return undefined;
-    const org = orgsWithAdminRights[idx];
-    const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
-    return fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams))
-      .then((res) => {
-        console.log('res', res);
-        return res.json();
-      })
-      .then((resJson) => {
-        console.log('json', resJson)
-      })
-  });
-
-  const allRes = await Promise.all(promises);
-  console.log('promises', allRes);
-  // if only the admin can do this, it kinda loses the priority
-  // add the webhooks, only works if the request is from an org admin
-
-  //
 
   getPubSub().publish(`providerAdded.${teamId}`, {providerAdded});
 };
