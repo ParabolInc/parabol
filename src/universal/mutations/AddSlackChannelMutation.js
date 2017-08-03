@@ -1,4 +1,6 @@
 import {commitMutation} from 'react-relay';
+import {SLACK} from 'universal/utils/constants';
+import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount';
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
 
 const mutation = graphql`
@@ -14,14 +16,19 @@ const mutation = graphql`
 
 let tempId = 0;
 
-export const addSlackChannelUpdater = (store, viewerId, teamId, newNode) => {
+export const addSlackChannelUpdater = (store, viewerId, teamId, newSlackIntegration) => {
   const viewer = store.get(viewerId);
   const slackChannels = viewer.getLinkedRecords('slackChannels', {teamId});
-  const newNodes = insertNodeBefore(slackChannels, newNode, 'channelName');
-  viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
+  if (slackChannels) {
+    const newNodes = insertNodeBefore(slackChannels, newSlackIntegration, 'channelName');
+    viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
+  }
+
+  incrementIntegrationCount(viewer, teamId, SLACK, 1);
 };
 
-const AddSlackChannelMutation = (environment, payload, teamMemberId, viewerId, onError, onCompleted) => {
+const AddSlackChannelMutation = (environment, payload, teamMemberId, onError, onCompleted) => {
+  const {viewerId} = environment;
   const {channelId, channelName} = payload;
   return commitMutation(environment, {
     mutation,
@@ -32,17 +39,16 @@ const AddSlackChannelMutation = (environment, payload, teamMemberId, viewerId, o
       }
     },
     updater: (store) => {
-      const node = store.getRootField('addSlackChannel').getLinkedRecord('channel');
+      const slackIntegration = store.getRootField('addSlackChannel').getLinkedRecord('channel');
       const [, teamId] = teamMemberId.split('::');
-      addSlackChannelUpdater(store, viewerId, teamId, node);
+      addSlackChannelUpdater(store, viewerId, teamId, slackIntegration);
     },
     optimisticUpdater: (store) => {
-      const id = `client:channel:${tempId++}`;
-      const node = store.create(id, 'SlackIntegration');
-      node.setValue(channelId, 'channelId');
-      node.setValue(channelName, 'channelName');
+      const slackIntegration = store.create(`client:channel:${tempId++}`, SLACK)
+        .setValue(channelId, 'channelId')
+        .setValue(channelName, 'channelName');
       const [, teamId] = teamMemberId.split('::');
-      addSlackChannelUpdater(store, viewerId, teamId, node);
+      addSlackChannelUpdater(store, viewerId, teamId, slackIntegration);
     },
     onCompleted,
     onError

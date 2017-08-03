@@ -1,4 +1,7 @@
 import {commitMutation} from 'react-relay';
+import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
+import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount';
+import {SLACK} from 'universal/utils/constants';
 
 const mutation = graphql`
   mutation RemoveSlackChannelMutation($slackGlobalId: ID!) {
@@ -10,14 +13,13 @@ const mutation = graphql`
 
 export const removeSlackChannelUpdater = (viewer, teamId, deletedId) => {
   const slackChannels = viewer.getLinkedRecords('slackChannels', {teamId});
-  const idxToDelete = slackChannels.findIndex((channel) => channel.getValue('id') === deletedId);
-  if (idxToDelete !== -1) {
-    const newNodes = [...slackChannels.slice(0, idxToDelete), ...slackChannels.slice(idxToDelete + 1)];
-    viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
-  }
+  const newNodes = getArrayWithoutIds(slackChannels, deletedId);
+  viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId});
+  incrementIntegrationCount(viewer, teamId, SLACK, -1);
 };
 
-const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId, viewerId) => {
+const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {slackGlobalId},
@@ -32,7 +34,7 @@ const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId, viewerId
       removeSlackChannelUpdater(viewer, teamId, slackGlobalId);
     },
     onError: (err) => {
-      console.log('err', err);
+      console.error('err', err);
     }
   });
 };

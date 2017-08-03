@@ -13,11 +13,20 @@ query {
     content
     createdAt
     createdBy
+    integration {
+      service
+      nameWithOwner
+      issueNumber
+    }
     status
     tags
     teamMemberId
     updatedAt
     sortOrder
+    team @cached(type: "Team") {
+      id
+      name
+    }
     teamMember @cached(type: "TeamMember") {
       id
       picture
@@ -62,7 +71,8 @@ const mapStateToProps = (state, props) => {
       projects: (project) => !project.tags.includes('private')
     },
     resolveCached: {
-      teamMember: (source) => source.teamMemberId
+      teamMember: (source) => source.teamMemberId,
+      team: (source) => source.teamMemberId.split('::')[1]
     }
   }).data.projects;
   const projects = makeProjectsByStatus(memberProjects);

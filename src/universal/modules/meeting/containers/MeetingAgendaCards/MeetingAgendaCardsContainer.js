@@ -8,6 +8,11 @@ const meetingAgendaCardsQuery = `
 query {
   agendaProjects(agendaId: $agendaId) @live {
     id
+    integration {
+      service
+      nameWithOwner
+      issueNumber
+    }
     agendaId
     content
     createdAt
@@ -15,6 +20,10 @@ query {
     updatedAt
     status
     tags
+    team @cached(type: "Team") {
+      id
+      name
+    }
     teamMember @cached(type: "TeamMember") {
       id
       picture
@@ -32,7 +41,8 @@ const mapStateToProps = (state, props) => {
     key: agendaId,
     variables: {agendaId},
     resolveCached: {
-      teamMember: (source) => source.teamMemberId
+      teamMember: (source) => source.teamMemberId,
+      team: (source) => source.teamMemberId.split('::')[1]
     },
     sort: {
       agendaProjects: (a, b) => a.createdAt - b.createdAt

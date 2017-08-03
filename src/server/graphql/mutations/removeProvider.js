@@ -2,9 +2,28 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId, toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import getProviderRowData from 'server/safeQueries/getProviderRowData';
+import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {SLACK} from 'universal/utils/constants';
+import {GITHUB, SLACK} from 'universal/utils/constants';
+
+
+const getPayload = async (service, integrationChanges, teamId, userId) => {
+  const deletedIntegrationIds = integrationChanges
+    .filter((change) => !change.new_val.isActive)
+    .map((change) => toGlobalId(service, change.new_val.id));
+  const rowDetails = await getProviderRowData(service, teamId);
+  return {
+    providerRow: {
+      ...rowDetails,
+      accessToken: null,
+      service,
+      teamId: `_${teamId}`
+    },
+    deletedIntegrationIds,
+    userId
+  };
+};
 
 export default {
   name: 'RemoveProvider',
@@ -14,7 +33,7 @@ export default {
   args: {
     providerId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The relay id of the provider to remove'
+      description: 'The relay id of the service to remove'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -39,54 +58,38 @@ export default {
       throw new Error(`Provider ${providerId} does not exist`);
     }
 
-    // remove the user from every integration under the provider
+    // remove the user from every integration under the service
     const updatedProvider = res.changes[0];
     if (!updatedProvider) {
       throw new Error(`Provider ${providerId} did not contain ${teamId}`);
     }
     const {service} = updatedProvider.new_val;
+    const userId = getUserId(authToken);
     if (service === SLACK) {
-      const channelChanges = await r.table('SlackIntegration')
+      const channelChanges = await r.table(SLACK)
         .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
         .update({
           isActive: false
         }, {returnChanges: true})('changes').default([]);
-      const deletedIntegrationIds = channelChanges.map((change) => toGlobalId('SlackIntegration', change.new_val.id));
-      const providerRemoved = {
-        providerRow: {
-          accessToken: null,
-          service: SLACK,
-          teamId
-        },
-        deletedIntegrationIds
-      };
-
+      const providerRemoved = await getPayload(service, channelChanges, teamId, userId);
       getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
+      return providerRemoved;
+    } else if (service === GITHUB) {
+      const repoChanges = await r.table(GITHUB)
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
+        .update((doc) => ({
+          userIds: doc('userIds').difference([userId]),
+          // if they're the last one, remove the integration
+          isActive: doc('userIds').eq([userId]).not()
+        }), {returnChanges: true})('changes').default([]);
+      const providerRemoved = await getPayload(service, repoChanges, teamId, userId);
+      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
+      // TODO remove the cards that belong to the deletedIntegrationIds
       return providerRemoved;
     }
     // will never hit this
     return undefined;
-
-    // TODO rewrite
-    // const userId = getUserId(authToken);
-    // const table = serviceToProvider[service];
-    // const integrationChanges = await r.table(table)
-    //  .getAll(userId, {index: 'userIds'})
-    //  .update((user) => ({userIds: user('userIds').difference([userId])}), {returnChanges: true})('changes');
-    // if (integrationChanges.length === 0) return true;
-    //
-    // // remove the integration entirely if they were the last one on it
-    // const promises = integrationChanges.map((integration) => {
-    //  const {id, userIds} = integration.new_val;
-    //  if (userIds.length === 0) {
-    //    return r.table(table).get(id)
-    //      .update({
-    //        isActive: false,
-    //        userIds: []
-    //      });
-    //  }
-    //  return undefined;
-    // });
-    // await Promise.all(promises);
   }
 };

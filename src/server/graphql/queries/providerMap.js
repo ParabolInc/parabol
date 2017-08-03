@@ -2,8 +2,14 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ProviderMap from 'server/graphql/types/ProviderMap';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import serviceToProvider from 'server/utils/serviceToProvider';
-import {SLACK, CURRENT_PROVIDERS} from 'universal/utils/constants';
+import {CURRENT_PROVIDERS, SLACK} from 'universal/utils/constants';
+
+const getUserReduction = (service, reduction, userId) => {
+  if (service === SLACK) {
+    return reduction[0];
+  }
+  return reduction.find((doc) => doc.userId === userId) || {};
+};
 
 export default {
   type: ProviderMap,
@@ -26,55 +32,37 @@ export default {
     // RESOLUTION
     const allProviders = await r.table('Provider')
       .getAll(teamId, {index: 'teamIds'})
-      .group('service');
+      .group('service')
+      .ungroup()
+      .merge((row) => ({
+        integrationCount: r.table(row('group'))
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isActive: true})
+          .count()
+      }));
 
     const defaultMap = CURRENT_PROVIDERS.reduce((obj, service) => {
       obj[service] = {
         accessToken: null,
         service,
-        teamId
+        teamId,
+        userCount: 0,
+        integrationCount: 0
       };
       return obj;
     }, {});
 
     const providerMap = allProviders.reduce((map, obj) => {
       const service = obj.group;
-      if (service === SLACK) {
-        const teamProvider = obj.reduction[0];
-        const {accessToken} = teamProvider;
-        map[service] = {
-          accessToken,
-          service,
-          teamId
-        };
-      } else {
-        const userCount = obj.reduction.length;
-        const userDoc = obj.reduction.find((doc) => doc.userId === userId);
-        const accessToken = userDoc ? userDoc.accessToken : undefined;
-        const providerUserName = userDoc ? userDoc.providerUserName : undefined;
-        map[service] = {
-          userCount,
-          accessToken,
-          providerUserName,
-          service,
-          teamId
-        };
-      }
+      const userDoc = getUserReduction(service, obj.reduction, userId);
+      map[service] = {
+        ...map[service],
+        ...userDoc,
+        userCount: obj.reduction.length,
+        integrationCount: obj.integrationCount
+      };
       return map;
     }, defaultMap);
-    const services = Object.keys(providerMap);
-    const promises = services.map((service) => {
-      const table = serviceToProvider[service];
-      return r.table(table)
-        .getAll(teamId, {index: 'teamId'})
-        .count();
-    });
-
-    const integrationCounts = await Promise.all(promises);
-    // mutates providerMap
-    services.forEach((service, idx) => {
-      providerMap[service].integrationCount = integrationCounts[idx];
-    });
 
     // add teamId so the resolver can generate an ID for easy updates
     providerMap.teamId = teamId;

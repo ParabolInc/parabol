@@ -4,6 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import {SLACK} from 'universal/utils/constants';
 
 export default {
   name: 'RemoveSlackChannel',
@@ -18,7 +19,7 @@ export default {
     const r = getRethink();
     const {id} = fromGlobalId(slackGlobalId);
     // AUTH
-    const integration = await r.table('SlackIntegration').get(id);
+    const integration = await r.table(SLACK).get(id);
     if (!integration) {
       // no UI for this
       throw new Error(`${slackGlobalId} does not exist`);
@@ -34,7 +35,7 @@ export default {
     }
     // RESOLUTION
 
-    await r.table('SlackIntegration').get(id)
+    await r.table(SLACK).get(id)
       .update({
         isActive: false
       });

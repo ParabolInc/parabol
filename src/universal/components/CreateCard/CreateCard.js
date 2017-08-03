@@ -66,13 +66,19 @@ const styleThunk = () => ({
   hasControls: {
     '::after': {
       color: appTheme.palette.mid
+    },
+    ':hover': {
+      boxShadow: ui.cardBoxShadow[1]
+    },
+    ':focus': {
+      boxShadow: ui.cardBoxShadow[2]
     }
   },
 
   controlsBlock: {
     alignContent: 'center',
     alignSelf: 'stretch',
-    color: ui.palette.cool,
+    color: appTheme.palette.cool,
     display: 'flex',
     flexDirection: 'column',
     fontSize: appTheme.typography.s2,
@@ -82,8 +88,12 @@ const styleThunk = () => ({
     width: '100%',
 
     ':hover': {
-      cursor: 'pointer',
-      opacity: '.5'
+      color: appTheme.palette.cool80d,
+      cursor: 'pointer'
+    },
+    ':focus': {
+      color: appTheme.palette.cool80d,
+      cursor: 'pointer'
     }
   }
 });

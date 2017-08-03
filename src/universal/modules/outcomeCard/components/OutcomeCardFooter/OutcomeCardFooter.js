@@ -1,222 +1,235 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import FontAwesome from 'react-fontawesome';
-import appTheme from 'universal/styles/theme/appTheme';
+import {cashay} from 'cashay';
+import {convertToRaw} from 'draft-js';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
+import appTheme from 'universal/styles/theme/theme';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
 import isProjectArchived from 'universal/utils/isProjectArchived';
+import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
+import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 
-const avatarSize = '1.5rem';
-const faStyle = {
-  fontSize: ui.iconSize,
-  lineHeight: avatarSize
-};
-const OutcomeCardFooter = (props) => {
-  const {
-    cardHasHover,
-    hasOpenStatusMenu,
-    isPrivate,
-    outcome,
-    showTeam,
-    styles,
-    toggleAssignMenu,
-    toggleStatusMenu,
-    unarchiveProject
-  } = props;
-  const {teamMember: owner} = outcome;
-  const isArchived = isProjectArchived(outcome.tags);
-  // AVATAR
-  // -------
-  const avatarImage = owner.picture;
-  const avatarName = showTeam ? outcome.team.name : owner.preferredName;
-  // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
-  const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
-  let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
-  if (isArchived) buttonIcon = 'reply';
-  const showFully = (hasOpenStatusMenu || cardHasHover || isArchived);
+const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
+const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
+const fetchAssignMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu');
 
-  const avatarBlockStyle = css(
-    styles.avatarBlock,
-    isArchived && styles.avatarBlockArchived,
-    showTeam && styles.avatarBlockShowTeam
-  );
-  const buttonStyles = css(
-    styles.buttonBase,
-    isPrivate && styles.privateButton,
-    showFully && (isPrivate ? styles.privateButtonShowFully : styles.projectButtonShowFully)
-  );
-  return (
-    <div className={css(styles.root)}>
-      <div className={css(styles.avatarLayout)}>
-        <button disabled={isArchived} className={avatarBlockStyle} onClick={!isArchived && !showTeam && toggleAssignMenu}>
-          {!showTeam &&
-            <img
-              alt={avatarName}
-              className={css(styles.avatar)}
-              src={avatarImage}
-            />
-          }
-          <div className={css(styles.name)}>{avatarName}</div>
-          {!isArchived && !showTeam &&
-            <FontAwesome
-              className={css(styles.menuHint)}
-              name="ellipsis-v"
-              style={menuHintStyle}
-            />
-          }
-        </button>
-      </div>
-      <div className={css(styles.buttonBlock)}>
-        <button className={buttonStyles} onClick={isArchived ? unarchiveProject : toggleStatusMenu}>
-          <FontAwesome name={buttonIcon} style={faStyle} />
-        </button>
-      </div>
-    </div>
-  );
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
 };
 
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
+
+const assignOriginAnchor = {
+  vertical: 'bottom',
+  horizontal: 'left'
+};
+
+const assignTargetAnchor = {
+  vertical: 'top',
+  horizontal: 'left'
+};
+
+class OutcomeCardFooter extends Component {
+  constructor(props) {
+    super(props);
+    this.setError = setError.bind(this);
+    this.clearError = clearError.bind(this);
+  }
+
+  state = {};
+
+  removeContentTag = (tagValue) => () => {
+    const {editorState, outcome: {id, content}} = this.props;
+    const eqFn = (data) => data.value === tagValue;
+    const nextContentState = removeAllRangesForEntity(editorState, content, 'TAG', eqFn);
+    const options = {
+      ops: {},
+      variables: {
+        updatedProject: {
+          id,
+          content: JSON.stringify(convertToRaw(nextContentState))
+        }
+      }
+    };
+    cashay.mutate('updateProject', options);
+  };
+
+  render() {
+    const {
+      cardHasFocus,
+      cardHasHover,
+      editorState,
+      isAgenda,
+      isPrivate,
+      outcome,
+      styles,
+      teamMembers
+    } = this.props;
+    const {teamMember: owner, integration} = outcome;
+    const {service} = integration || {};
+    const isArchived = isProjectArchived(outcome.tags);
+
+    const buttonBlockStyles = css(
+      styles.buttonBlock,
+      cardHasFocus && styles.showBlock,
+      cardHasHover && styles.showBlock
+    );
+
+    const avatarStyles = css(
+      styles.avatar,
+      (cardHasHover || cardHasFocus) && styles.activeAvatar
+    );
+
+    const {error} = this.state;
+    const ownerAvatar = (
+      <div className={avatarStyles} tabIndex="0">
+        <img
+          alt={owner.preferredName}
+          className={css(styles.avatarImg)}
+          src={owner.picture}
+        />
+      </div>
+    );
+
+    return (
+      <div className={css(styles.footerAndMessage)}>
+        <div className={css(styles.footer)}>
+          <div className={css(styles.avatarBlock)}>
+            {service ?
+              ownerAvatar :
+              <AsyncMenuContainer
+                fetchMenu={fetchAssignMenu}
+                maxWidth={350}
+                maxHeight={225}
+                originAnchor={assignOriginAnchor}
+                queryVars={{
+                  projectId: outcome.id,
+                  ownerId: owner.id,
+                  teamMembers,
+                  setError: this.setError,
+                  clearError: this.clearError
+                }}
+                targetAnchor={assignTargetAnchor}
+                toggle={ownerAvatar}
+              />
+            }
+          </div>
+          <div className={buttonBlockStyles}>
+            {isArchived ?
+              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" /> :
+              <div>
+                {!service &&
+                <AsyncMenuContainer
+                  fetchMenu={fetchGitHubRepos}
+                  maxWidth={350}
+                  maxHeight={225}
+                  originAnchor={originAnchor}
+                  queryVars={{
+                    projectId: outcome.id,
+                    setError: this.setError,
+                    clearError: this.clearError
+                  }}
+                  targetAnchor={targetAnchor}
+                  toggle={<OutcomeCardFooterButton icon="github" />}
+                />
+                }
+                <AsyncMenuContainer
+                  fetchMenu={fetchStatusMenu}
+                  maxWidth={200}
+                  maxHeight={225}
+                  originAnchor={originAnchor}
+                  queryVars={{
+                    editorState,
+                    isAgenda,
+                    isPrivate,
+                    outcome,
+                    removeContentTag: this.removeContentTag
+                  }}
+                  targetAnchor={targetAnchor}
+                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
+                />
+              </div>
+            }
+          </div>
+        </div>
+        {error &&
+        <OutcomeCardMessage
+          onClose={this.clearError}
+          message={error}
+        />
+        }
+      </div>
+    );
+  }
+}
 
 OutcomeCardFooter.propTypes = {
+  cardHasFocus: PropTypes.bool,
   cardHasHover: PropTypes.bool,
-  toggleAssignMenu: PropTypes.func,
-  toggleStatusMenu: PropTypes.func,
-  hasOpenStatusMenu: PropTypes.bool,
+  editorState: PropTypes.object,
+  isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
   isPrivate: PropTypes.bool,
   outcome: PropTypes.object,
-  owner: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
-  team: PropTypes.object,
-  unarchiveProject: PropTypes.func.isRequired
-};
-const buttonShowFully = {
-  backgroundColor: appTheme.palette.mid10l,
-  color: appTheme.palette.dark
-};
-
-const privateButtonShowFully = {
-  backgroundColor: appTheme.palette.light90g,
-  color: appTheme.palette.dark
-};
-
-const buttonBase = {
-  backgroundColor: 'transparent',
-  border: 0,
-  borderRadius: '.5rem',
-  color: appTheme.palette.dark50l,
-  cursor: 'pointer',
-  fontSize: appTheme.typography.s3,
-  fontWeight: 700,
-  height: avatarSize,
-  lineHeight: avatarSize,
-  margin: 0,
-  outline: 'none',
-  padding: 0,
-  textAlign: 'center',
-  width: avatarSize,
-
-  ':hover': {
-    opacity: '.65'
-  },
-  ':focus': {
-    ...buttonShowFully
-  }
+  teamMembers: PropTypes.array
 };
 
 const styleThunk = () => ({
-  root: {
-    display: 'flex !important',
-    padding: ui.cardPaddingBase
-  },
-
-  avatarLayout: {
-    flex: 1,
-    fontSize: 0
-  },
-
-  avatarBlock: {
-    background: 'transparent',
-    border: 0,
-    cursor: 'pointer',
-    display: 'inline-block',
-    fontFamily: appTheme.typography.sansSerif,
-    fontSize: 0,
-    outline: 'none',
-    padding: 0,
-
-    ':hover': {
-      opacity: '.65'
-    },
-    ':focus': {
-      opacity: '.65'
-    }
-  },
-
-  avatarBlockArchived: {
-    cursor: 'not-allowed',
-    opacity: '1 !important'
-  },
-
-  avatarBlockShowTeam: {
-    cursor: 'default',
-    opacity: '1 !important'
+  activeAvatar: {
+    borderColor: appTheme.palette.mid50l
   },
 
   avatar: {
-    borderRadius: avatarSize,
-    boxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
-    display: 'inline-block',
-    height: avatarSize,
-    marginRight: '.375rem',
-    verticalAlign: 'top',
-    width: avatarSize
-  },
+    borderRadius: '100%',
+    border: '.0625rem solid transparent',
+    cursor: 'pointer',
+    height: '1.75rem',
+    marginLeft: '-.125rem',
+    outline: 'none',
+    padding: '.0625rem',
+    position: 'relative',
+    width: '1.75rem',
 
-  avatarTeam: {
-    borderRadius: '.125rem'
-  },
-
-  name: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: avatarSize,
-    verticalAlign: 'middle'
-  },
-
-  menuHint: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    marginLeft: '.375rem',
-    verticalAlign: 'middle'
-  },
-
-  buttonBlock: {
-    // Define
-  },
-
-  buttonBase: {
-    ...buttonBase
-  },
-
-  projectButtonShowFully: {
-    ...buttonBase,
-    ...buttonShowFully
-  },
-
-  privateButton: {
-    ...buttonBase,
-
+    ':hover': {
+      borderColor: appTheme.palette.dark
+    },
     ':focus': {
-      ...privateButtonShowFully
+      borderColor: appTheme.palette.dark
     }
   },
 
-  privateButtonShowFully: {
-    ...privateButtonShowFully
+  avatarBlock: {
+    flex: 1
+  },
+
+  avatarImg: {
+    borderRadius: '100%',
+    height: '1.5rem',
+    width: '1.5rem'
+  },
+
+  buttonBlock: {
+    opacity: 0
+  },
+
+  footer: {
+    display: 'flex',
+    height: '2.5rem',
+    padding: ui.cardPaddingBase
+  },
+
+  showBlock: {
+    opacity: 1
   }
 });
 

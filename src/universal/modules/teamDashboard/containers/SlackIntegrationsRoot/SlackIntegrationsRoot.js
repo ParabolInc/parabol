@@ -2,15 +2,19 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {graphql} from 'react-relay';
 import SlackIntegrations from 'universal/modules/teamDashboard/components/SlackIntegrations/SlackIntegrations';
-import {SLACK} from 'universal/utils/constants';
+import {DEFAULT_TTL, SLACK} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import {connect} from 'react-redux';
+import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
+import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
+import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
+import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 
 const slackChannelQuery = graphql`
-  query SlackIntegrationsRootQuery($teamId: ID!, $service: ID!) {
+  query SlackIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
     viewer {
       ...SlackIntegrations_viewer
     }
@@ -23,15 +27,24 @@ const mapStateToProps = (state) => {
   };
 };
 
+const subscriptions = [
+  SlackChannelAddedSubscription,
+  SlackChannelRemovedSubscription,
+  ProviderRemovedSubscription,
+  ProviderAddedSubscription
+];
+
+const cacheConfig = {ttl: DEFAULT_TTL};
+
 const SlackIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
   const [, teamId] = teamMemberId.split('::');
-  const cacheConfig = {sub: atmosphere.constructor.getKey('SlackChannelAddedSubscription', {teamId})};
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={slackChannelQuery}
       variables={{teamId, service: SLACK}}
+      subscriptions={subscriptions}
       render={({error, props}) => {
         if (error) {
           return <ErrorComponent height={'14rem'} error={error} />;

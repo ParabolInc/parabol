@@ -6,6 +6,7 @@ import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/Outco
 export default class OutcomeOrNullCard extends Component {
   static propTypes = {
     area: PropTypes.string,
+    hasDragStyles: PropTypes.bool,
     isAgenda: PropTypes.bool,
     isDragging: PropTypes.bool,
     myUserId: PropTypes.string,
@@ -20,12 +21,13 @@ export default class OutcomeOrNullCard extends Component {
   }
 
   render() {
-    const {area, isAgenda, myUserId, outcome, isDragging} = this.props;
+    const {area, hasDragStyles, isAgenda, myUserId, outcome, isDragging} = this.props;
     const {content, createdBy, teamMember: {preferredName}} = outcome;
     const showOutcome = content || createdBy === myUserId;
     return showOutcome ?
       <OutcomeCardContainer
         area={area}
+        hasDragStyles={hasDragStyles}
         isDragging={isDragging}
         isAgenda={isAgenda}
         outcome={outcome}

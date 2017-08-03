@@ -1,9 +1,8 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const DashModal = (props) => {
   const {
@@ -89,7 +88,7 @@ const animateOut = {
 const styleThunk = (theme, props) => ({
   backdrop: {
     alignItems: 'center',
-    background: 'rgba(255, 255, 255, .5)',
+    background: ui.modalBackdropBackgroundColor,
     bottom: 0,
     display: 'flex !important',
     flex: 1,
@@ -140,16 +139,15 @@ const styleThunk = (theme, props) => ({
   },
 
   modal: {
-    background: '#fff',
-    border: `.125rem solid ${appTheme.palette.mid30a}`,
-    boxShadow: ui.modalBoxShadow,
-    borderRadius: ui.modalBorderRadius,
-    overflow: 'hidden',
-    padding: '1.25rem',
-    width: '30rem',
+    animationDuration: '200ms',
     animationIterationCount: 1,
     animationName: animateIn,
-    animationDuration: '200ms'
+    background: '#fff',
+    borderRadius: ui.modalBorderRadius,
+    boxShadow: ui.modalBoxShadow,
+    overflow: 'hidden',
+    padding: '1.25rem',
+    width: '30rem'
   }
 });
 

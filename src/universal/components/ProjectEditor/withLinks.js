@@ -195,8 +195,8 @@ const withLinks = (ComposedComponent) => {
       if (linkViewerData || linkChangerData) {
         const targetRect = getDraftCoords(this.props.editorRef);
         if (targetRect) {
-          this.left = targetRect.left;
-          this.top = targetRect.top + ui.draftModalMargin;
+          this.left = window.scrollX + targetRect.left;
+          this.top = window.scrollY + targetRect.top + ui.draftModalMargin;
           this.height = targetRect.height;
         }
         const renderModal = linkViewerData ? this.renderViewerModal : this.renderChangerModal;

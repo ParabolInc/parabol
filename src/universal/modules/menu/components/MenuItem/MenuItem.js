@@ -8,9 +8,11 @@ import {textOverflow} from 'universal/styles/helpers';
 
 const MenuItem = (props) => {
   const {
+    avatar,
     closePortal,
     hr,
     icon,
+    iconColor,
     isActive,
     label,
     onClick,
@@ -29,12 +31,14 @@ const MenuItem = (props) => {
   };
   const labelStyles = css(
     styles.label,
+    avatar && styles.labelWithIcon,
     icon && styles.labelWithIcon
   );
   const labelEl = typeof label === 'string' ? <div className={labelStyles}>{label}</div> : label;
   const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
   const titleStr = title || titleFallbackStr;
   const iconStyle = {
+    color: iconColor || 'inherit',
     fontSize: ui.iconSize,
     lineHeight: 'inherit',
     marginLeft: ui.menuGutterHorizontal,
@@ -44,11 +48,19 @@ const MenuItem = (props) => {
   };
   const makeIcon = () =>
     <FontAwesome name={icon} style={iconStyle} />;
+  const makeAvatar = () =>
+    <img
+      alt={titleStr}
+      className={css(styles.avatar)}
+      src={avatar}
+    />;
   return (
     <div title={titleStr}>
       {hr === 'before' && <hr className={css(styles.hr)} />}
       <div className={rootStyles} onClick={handleClick} >
-        {icon && makeIcon()}{labelEl}
+        {avatar && makeAvatar()}
+        {!avatar && icon && makeIcon()}
+        {labelEl}
       </div>
       {hr === 'after' && <hr className={css(styles.hr)} />}
     </div>
@@ -56,12 +68,14 @@ const MenuItem = (props) => {
 };
 
 MenuItem.propTypes = {
+  avatar: PropTypes.string,
   closePortal: PropTypes.func,
   hr: PropTypes.oneOf([
     'before',
     'after'
   ]),
   icon: PropTypes.string,
+  iconColor: PropTypes.string,
   isActive: PropTypes.bool,
   label: PropTypes.any,
   onClick: PropTypes.func,
@@ -128,6 +142,14 @@ const styleThunk = () => ({
     marginBottom: ui.menuGutterVertical,
     marginTop: ui.menuGutterVertical,
     padding: 0
+  },
+
+  avatar: {
+    borderRadius: '100%',
+    height: '1.5rem',
+    marginLeft: ui.menuGutterHorizontal,
+    marginRight: ui.menuGutterInner,
+    width: '1.5rem'
   }
 });
 

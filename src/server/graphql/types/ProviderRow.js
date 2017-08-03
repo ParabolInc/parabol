@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
+import IntegrationService from 'server/graphql/types/IntegrationService';
 
 const ProviderRow = new GraphQLObjectType({
   name: 'ProviderRow',
@@ -23,7 +24,7 @@ const ProviderRow = new GraphQLObjectType({
       description: 'The username according to the provider'
     },
     service: {
-      type: GraphQLString,
+      type: IntegrationService,
       description: 'The name of the service'
     },
     teamId: {

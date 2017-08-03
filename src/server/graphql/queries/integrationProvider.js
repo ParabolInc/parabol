@@ -3,6 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import Provider from 'server/graphql/types/Provider';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
+import IntegrationService from 'server/graphql/types/IntegrationService';
 
 export default {
   type: Provider,
@@ -13,7 +14,7 @@ export default {
       description: 'The unique team member Id'
     },
     service: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(IntegrationService),
       description: 'The name of the service'
     }
   },

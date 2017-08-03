@@ -11,7 +11,7 @@ import {
   GraphQLInputObjectType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import TeamMember from '../TeamMember/teamMemberSchema';
+import TeamMember from 'server/graphql/types/TeamMember';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
 import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
 

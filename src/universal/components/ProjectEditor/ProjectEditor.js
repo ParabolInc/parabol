@@ -26,8 +26,7 @@ class ProjectEditor extends Component {
     handleKeyCommand: PropTypes.func,
     handleTab: PropTypes.func,
     handleReturn: PropTypes.func,
-    isArchived: PropTypes.bool,
-    isDragging: PropTypes.bool,
+    readOnly: PropTypes.bool,
     keyBindingFn: PropTypes.func,
     renderModal: PropTypes.func,
     removeModal: PropTypes.func,
@@ -163,7 +162,7 @@ class ProjectEditor extends Component {
   };
 
   render() {
-    const {editorState, renderModal, isArchived, isDragging, styles, setEditorRef} = this.props;
+    const {editorState, readOnly, renderModal, styles, setEditorRef} = this.props;
     // console.log('es', Editor.getClipboard())
     return (
       <div className={css(styles.root)}>
@@ -180,7 +179,7 @@ class ProjectEditor extends Component {
           onEscape={this.handleEscape}
           onTab={this.handleTab}
           onUpArrow={this.handleUpArrow}
-          readOnly={isArchived || isDragging}
+          readOnly={readOnly}
           ref={setEditorRef}
         />
         {renderModal && renderModal()}
@@ -191,6 +190,8 @@ class ProjectEditor extends Component {
 
 const styleThunk = () => ({
   root: {
+    fontSize: '1rem',
+    lineHeight: '1.25rem',
     padding: `0 ${ui.cardPaddingBase}`
   },
 

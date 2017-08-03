@@ -1,89 +1,78 @@
+import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
-import Avatar from 'universal/components/Avatar/Avatar';
+import {MenuItem} from 'universal/modules/menu';
 
 const OutcomeCardAssignMenu = (props) => {
-  const {onComplete, outcome, styles, teamMembers} = props;
-  const {teamMemberId: currentOwner, id: outcomeId} = outcome;
+  const {
+    closePortal,
+    projectId,
+    ownerId,
+    teamMembers
+  } = props;
 
   const handleProjectUpdate = (newOwner) => {
-    if (newOwner === currentOwner) {
+    if (newOwner === ownerId) {
       return;
     }
     const options = {
       ops: {},
       variables: {
         updatedProject: {
-          id: outcomeId,
+          id: projectId,
           teamMemberId: newOwner
         }
       }
     };
     cashay.mutate('updateProject', options);
-    if (onComplete) {
-      onComplete();
-    }
+  };
+
+  const itemFactory = () => {
+    return teamMembers
+      .filter((teamMember) => teamMember.id !== ownerId)
+      .map((teamMember) => {
+        return (
+          <MenuItem
+            key={teamMember.id}
+            avatar={teamMember.picture}
+            isActive={ownerId === teamMember.id}
+            label={teamMember.preferredName}
+            onClick={() => handleProjectUpdate(teamMember.id)}
+            closePortal={closePortal}
+          />
+        );
+      });
   };
 
   return (
-    <div className={css(styles.root)}>
-      {
-        teamMembers.map((teamMember) => {
-          const isClickable = currentOwner !== teamMember.id;
-          const menuItemStyles = css(styles.menuItem, isClickable && styles.menuItemClickable);
-          return (
-            <div className={menuItemStyles} key={`menuItem${teamMember.id}`}>
-              <Avatar
-                {...teamMember}
-                isClickable={isClickable}
-                hasBadge={false}
-                onClick={() => handleProjectUpdate(teamMember.id)}
-                size="smallest"
-              />
-            </div>
-          );
-        })
-      }
+    <div>
+      {itemFactory()}
     </div>
   );
 };
 
 OutcomeCardAssignMenu.propTypes = {
-  onComplete: PropTypes.func,
-  outcome: PropTypes.object,
-  styles: PropTypes.object,
-  teamMembers: PropTypes.array
+  closePortal: PropTypes.func.isRequired,
+  projectId: PropTypes.string.isRequired,
+  ownerId: PropTypes.string.isRequired,
+  teamMembers: PropTypes.array.isRequired
 };
 
-const styleThunk = () => ({
-  root: {
-    fontSize: 0,
-    minHeight: '75px', // based on 120px
-    padding: '.5rem',
-    textAlign: 'center',
-    width: '100%'
-  },
+// const styleThunk = () => ({
+//  //root: {
+//  //  alignItems: 'center',
+//  //  color: appTheme.palette.dark,
+//  //  display: 'flex',
+//  //  height: '1.5rem',
+//  //  fontSize: '13px'
+//  //},
+//
+//  //teamName: {
+//    //color: appThe/me.palette.dark,
+//    //display: 'inline-block',
+//    //fontWeight: 700,
+//    //marginLeft: '.5rem'
+//  //}
+// });
 
-  menuItem: {
-    display: 'inline-block',
-    fontSize: '1rem',
-    margin: '.5rem',
-    opacity: '.65'
-  },
-
-  menuItemClickable: {
-    opacity: 1,
-
-    ':hover': {
-      opacity: '.5'
-    },
-    ':focus': {
-      opacity: '.5'
-    }
-  }
-});
-
-export default withStyles(styleThunk)(OutcomeCardAssignMenu);
+export default OutcomeCardAssignMenu;

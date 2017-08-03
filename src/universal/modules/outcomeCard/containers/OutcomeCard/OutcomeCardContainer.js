@@ -7,7 +7,6 @@ import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
-import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
 
 const teamMembersQuery = `
 query {
@@ -37,8 +36,8 @@ class OutcomeCardContainer extends Component {
     super(props);
     const {outcome: {content}} = props;
     this.state = {
-      hasHover: false,
-      openArea: 'content',
+      cardHasHover: false,
+      cardHasFocus: false,
       editorState: content ?
         EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
         EditorState.createEmpty(editorDecorators)
@@ -103,38 +102,17 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-  unarchiveProject = () => {
-    const {outcome: {id, content}} = this.props;
-    const {editorState} = this.state;
-    const eqFn = (data) => data.value === 'archived';
-    const nextContentState = removeAllRangesForEntity(editorState, content, 'TAG', eqFn);
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id,
-          content: JSON.stringify(convertToRaw(nextContentState))
-        }
-      }
-    };
-    cashay.mutate('updateProject', options);
-  };
-
   handleBlur = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       this.handleCardUpdate(true);
     }
   };
 
-  openMenu = (nextArea) => () => {
-    const {openArea} = this.state;
-    const newOpenArea = nextArea === openArea ? 'content' : nextArea;
-    this.setState({openArea: newOpenArea});
-  };
+  handleCardMouseEnter = () => this.setState({cardHasHover: true});
+  handleCardMouseLeave = () => this.setState({cardHasHover: false});
 
-  hoverOn = () => this.setState({hasHover: true});
-
-  hoverOff = () => this.setState({hasHover: false});
+  handleCardBlur = () => this.setState({cardHasFocus: false});
+  handleCardFocus = () => this.setState({cardHasFocus: true});
 
   annouceEditing = (isEditing) => {
     this.setState({
@@ -151,22 +129,24 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {hasHover, isEditing, openArea, editorRef, editorState} = this.state;
-    const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
+    const {cardHasFocus, cardHasHover, isEditing, editorRef, editorState} = this.state;
+    const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div tabIndex={-1} onBlur={this.handleBlur} style={{outline: 'none'}}>
         <OutcomeCard
           area={area}
           editorRef={editorRef}
           editorState={editorState}
-          hasHover={hasHover}
-          hoverOff={this.hoverOff}
-          hoverOn={this.hoverOn}
+          cardHasHover={cardHasHover}
+          cardHasFocus={cardHasFocus}
+          handleCardBlur={this.handleCardBlur}
+          handleCardFocus={this.handleCardFocus}
+          handleCardMouseLeave={this.handleCardMouseLeave}
+          handleCardMouseEnter={this.handleCardMouseEnter}
+          hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
           isEditing={isEditing}
-          openArea={openArea}
-          openMenu={this.openMenu}
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
@@ -192,6 +172,7 @@ OutcomeCardContainer.propTypes = {
   focus: PropTypes.func,
   form: PropTypes.string,
   handleSubmit: PropTypes.func,
+  hasDragStyles: PropTypes.bool,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isAgenda: PropTypes.bool,

@@ -3,38 +3,26 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import {Link} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
-import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
+import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
+import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
+import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
 import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation';
-import goBackLabel from 'universal/styles/helpers/goBackLabel';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
 import {SLACK} from 'universal/utils/constants';
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
-import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
-import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
-import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
-
-const inlineBlockStyle = {
-  display: 'inline-block',
-  lineHeight: ui.dashSectionHeaderLineHeight,
-  marginRight: '.5rem',
-  verticalAlign: 'middle'
-};
 
 const {makeUri} = providerLookup[SLACK];
 
 const SlackIntegrations = (props) => {
   const {relay: {environment}, jwt, styles, teamId, teamMemberId, viewer} = props;
-  const {id: viewerId, slackChannels, integrationProvider} = viewer;
+  const {slackChannels, integrationProvider} = viewer;
   const handleRemoveChannel = (slackGlobalId) => () => {
-    RemoveSlackChannelMutation(environment, slackGlobalId, teamId, viewerId);
+    RemoveSlackChannelMutation(environment, slackGlobalId, teamId);
   };
   const accessToken = integrationProvider && integrationProvider.accessToken;
   const openOauth = () => {
@@ -43,10 +31,7 @@ const SlackIntegrations = (props) => {
   };
   return (
     <div className={css(styles.slackIntegrations)}>
-      <Link className={css(styles.link)} to={`/team/${teamId}/settings/integrations`} title="Back to Integrations">
-        <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
-        <div style={inlineBlockStyle}>Back to <b>Integrations</b></div>
-      </Link>
+      <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <div className={css(styles.providerDetails)}>
         <div className={css(styles.providerAvatar)}>
@@ -63,24 +48,22 @@ const SlackIntegrations = (props) => {
           </div>
         </div>
         {accessToken &&
-          <div className={css(styles.providerActions)}>
-            <Button
-              buttonStyle="flat"
-              colorPalette="warm"
-              label="Remove Slack"
-              onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId, viewerId)}
-              sansPaddingX
-              size="smallest"
-            />
-            <Button
-              buttonStyle="flat"
-              colorPalette="cool"
-              label="Refresh Token"
-              onClick={openOauth}
-              sansPaddingX
-              size="smallest"
-            />
-          </div>
+        <div className={css(styles.providerActions)}>
+          <Button
+            buttonStyle="flat"
+            colorPalette="warm"
+            label="Remove Slack"
+            onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)}
+            size="smallest"
+          />
+          <Button
+            buttonStyle="flat"
+            colorPalette="cool"
+            label="Refresh Token"
+            onClick={openOauth}
+            size="smallest"
+          />
+        </div>
         }
       </div>
       <Panel label="Channels">
@@ -91,7 +74,6 @@ const SlackIntegrations = (props) => {
                 accessToken={accessToken}
                 environment={environment}
                 teamMemberId={teamMemberId}
-                viewerId={viewer.id}
                 subbedChannels={slackChannels}
               />
             </div> :
@@ -106,23 +88,23 @@ const SlackIntegrations = (props) => {
             </div>
           }
           {slackChannels &&
-            <div className={css(styles.integrationsList)}>
-              {slackChannels.map((channel) => {
-                const {id, channelId, channelName} = channel;
-                return (
-                  <IntegrationRow key={`${channelId}-row`}>
-                    <div className={css(styles.channelName)}>{channelName}</div>
-                    <Button
-                      buttonStyle="flat"
-                      colorPalette="dark"
-                      label="Remove"
-                      onClick={handleRemoveChannel(id)}
-                      size="smallest"
-                    />
-                  </IntegrationRow>
-                );
-              })}
-            </div>
+          <div className={css(styles.integrationsList)}>
+            {slackChannels.map((channel) => {
+              const {id, channelId, channelName} = channel;
+              return (
+                <IntegrationRow key={`${channelId}-row`}>
+                  <div className={css(styles.channelName)}>{channelName}</div>
+                  <Button
+                    buttonStyle="flat"
+                    colorPalette="dark"
+                    label="Remove"
+                    onClick={handleRemoveChannel(id)}
+                    size="smallest"
+                  />
+                </IntegrationRow>
+              );
+            })}
+          </div>
           }
         </div>
       </Panel>
@@ -143,12 +125,6 @@ const styleThunk = () => ({
   slackIntegrations: {
     maxWidth: ui.settingsPanelMaxWidth,
     width: '100%'
-  },
-
-  link: {
-    ...goBackLabel,
-    display: 'block',
-    margin: '1rem 0'
   },
 
   providerDetails: {
@@ -180,9 +156,8 @@ const styleThunk = () => ({
   },
 
   providerActions: {
-    display: 'flex',
-    justifyContent: 'space-around',
     flex: 1,
+    marginLeft: 'auto',
     paddingLeft: ui.rowGutter,
     textAlign: 'right'
   },
@@ -208,23 +183,16 @@ const styleThunk = () => ({
 
   channelName: {
     color: ui.palette.cool,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700
   }
 });
 
-const subscriptionThunk = ({teamId, viewer: {id}}) => {
-  return [
-    SlackChannelAddedSubscription(teamId, id),
-    SlackChannelRemovedSubscription(teamId, id),
-    ProviderRemovedSubscription(teamId, id),
-    ProviderAddedSubscription(teamId, id)
-  ];
-};
+
 export default createFragmentContainer(
-  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(SlackIntegrations)),
+  withStyles(styleThunk)(SlackIntegrations),
   graphql`
     fragment SlackIntegrations_viewer on User {
-      id
       integrationProvider(teamId: $teamId, service: $service) {
         id
         accessToken

@@ -84,11 +84,11 @@ const transitionSlowest = '3200ms ease-in';
 
 // Shadows
 const shadow = [
-  '0 2px 2px rgba(0, 0, 0, .2), 0 1px 1px rgba(0, 0, 0, .2), 0 0 1px rgba(0, 0, 0, .35)',
-  '0 4px 4px rgba(0, 0, 0, .2), 0 2px 2px rgba(0, 0, 0, .2), 0 0 2px rgba(0, 0, 0, .35)',
-  '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
-  '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
-  '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)'
+  '0 .0625rem .125rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
+  '0 .125rem .25rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
+  '0 .25rem .5rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
+  '0 .5rem 1rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
+  '0 1rem 2rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)'
 ];
 
 // -----------------------------------------------------------------------------
@@ -125,39 +125,25 @@ const ui = {
   // ---------------------------------------------------------------------------
   buttonBaseStyles: {
     appearance: 'none',
-    border: '1px solid transparent',
+    border: '.0625rem solid transparent',
     boxShadow: 'none',
     cursor: 'pointer',
     display: 'inline-block',
     fontFamily: appTheme.typography.sansSerif,
     fontWeight: 700,
-    // lineHeight: '1.25em',
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
-    transition: `opacity ${transitionFastest}`,
+    transition: `transform ${transitionFastest}`,
     userSelect: 'none',
     verticalAlign: 'middle',
     ':hover': {
+      boxShadow: shadow[0],
       textDecoration: 'none'
     },
     ':focus': {
+      boxShadow: shadow[1],
       textDecoration: 'none'
-    },
-    ':active': {
-      animationDuration: '.1s',
-      animationName: {
-        '0%': {
-          transform: 'translate(0, 0)'
-        },
-        '50%': {
-          transform: 'translate(0, .25rem)'
-        },
-        '100%': {
-          transform: 'translate(0)'
-        }
-      },
-      animationTimingFunction: 'ease-in'
     }
   },
   buttonBlockStyles: {
@@ -215,17 +201,18 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
-  cardBoxShadow: '0 1px 2px rgba(103, 107, 139, .75)',
+  // boxShadow color with some mid hue rgba(103, 107, 139, .75) for reference (TA)
+  cardBoxShadow: [
+    shadow[0],
+    shadow[1],
+    shadow[2]
+  ],
   cardMaxWidth: '17.5rem',
   cardMinHeight: '8.1875rem',
   cardPaddingBase: '.5rem',
   cardDragStyle: {
-    backgroundColor: appTheme.palette.light10l,
-    borderColor: appTheme.palette.mid70l,
-    borderRadius: borderRadiusMedium,
-    boxShadow: '0 6px 12px rgba(0, 0, 0, .25)'
+    boxShadow: shadow[3]
   },
-  zCard: zIndexScale(6),
 
   // CTA Panels
   // ---------------------------------------------------------------------------
@@ -251,6 +238,7 @@ const ui = {
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
   draftModalMargin: 32,
+
   // Email
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
@@ -341,6 +329,9 @@ const ui = {
   iconSize2x,
   iconSize3x,
 
+  // Integrations
+  // ---------------------------------------------------------------------------
+
   // Invoice
   // ---------------------------------------------------------------------------
   invoiceBorderColor: appTheme.palette.mid40l,
@@ -369,7 +360,7 @@ const ui = {
   menuBackgroundColor: '#fff',
   menuBorderColor: appTheme.palette.mid30l,
   menuBorderRadius: borderRadiusSmall,
-  menuBoxShadow: shadow[1],
+  menuBoxShadow: shadow[2],
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',
   menuGutterVertical: '.5rem',
@@ -379,12 +370,12 @@ const ui = {
   menuItemColorHoverActive: appTheme.palette.dark50d,
   menuItemHeight: '2rem',
   menuItemFontSize: '.9375rem',
-  zMenu: zIndexScale(4),
 
   // Modals
   // ---------------------------------------------------------------------------
+  modalBackdropBackgroundColor: 'rgba(78, 73, 95, .25)',
   modalBorderRadius: borderRadiusLarge,
-  modalBoxShadow: '0 .25rem .5rem 0 rgba(0, 0, 0, .35)',
+  modalBoxShadow: `${shadow[3]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
   modalButtonSize: BUTTON_SIZE_MEDIUM,
   modalLayoutMain: MODAL_LAYOUT_MAIN,
   modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
@@ -421,7 +412,7 @@ const ui = {
       providerName: 'GitHub'
     },
     slack: {
-      description: 'Notify channels when meetings begin and end for this team',
+      description: 'Notify channels when meetings begin and end',
       color: '#6ecadc',
       icon: 'slack',
       providerName: 'Slack'
@@ -477,15 +468,21 @@ const ui = {
 
   // Generic zIndex scale
   // ---------------------------------------------------------------------------
-  z1: zIndexScale(1),
-  z2: zIndexScale(2),
-  z3: zIndexScale(4),
-  z5: zIndexScale(5),
-  z6: zIndexScale(6),
-  z7: zIndexScale(7),
-  z8: zIndexScale(8),
-  z9: zIndexScale(9),
-  z10: zIndexScale(10)
+  zi1: zIndexScale(1),
+  zi2: zIndexScale(2),
+  zi3: zIndexScale(3),
+  zi4: zIndexScale(4),
+  zi5: zIndexScale(5),
+  zi6: zIndexScale(6),
+  zi7: zIndexScale(7),
+  zi8: zIndexScale(8),
+  zi9: zIndexScale(9),
+  zi10: zIndexScale(10),
+
+  // …and then component-specific constants:
+
+  ziMenu: zIndexScale(4),
+  ziCardDragLayer: zIndexScale(6)
 };
 
 export default ui;

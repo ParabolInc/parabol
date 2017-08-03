@@ -38,7 +38,8 @@ const EditorSuggestions = (props) => {
   const menuStyle = {
     left,
     top,
-    position: 'absolute'
+    position: 'absolute',
+    zIndex: ui.ziMenu
   };
 
   const menuStyles = css(

@@ -18,11 +18,10 @@ import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
-import handleGitHub from './integrations/handleGitHub';
-import handleSlack from './integrations/handleSlack';
+import handleIntegration from './integrations/handleIntegration';
 import sendICS from './sendICS';
 import './polyfills';
-
+import {GITHUB, SLACK} from 'universal/utils/constants';
 // Import .env and expand variables:
 getDotenv();
 
@@ -92,9 +91,8 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   const stripeHandler = stripeWebhookHandler(exchange);
   app.post('/stripe', stripeHandler);
 
-  // integration setup callbacks
-  app.get('/auth/github', handleGitHub);
-  app.get('/auth/slack', handleSlack);
+  app.get('/auth/github', handleIntegration(GITHUB));
+  app.get('/auth/slack', handleIntegration(SLACK));
 
   // server-side rendering
   app.get('*', createSSR);

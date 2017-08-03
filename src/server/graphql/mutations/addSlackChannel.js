@@ -3,9 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
 import getPubSub from 'server/utils/getPubSub';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import shortid from 'shortid';
 import {SLACK} from 'universal/utils/constants';
+import insertSlackChannel from 'server/safeMutations/insertSlackChannel';
 
+// TODO get rid of input and only request teamId not teamMemberId
 const AddSlackChannelInput = new GraphQLInputObjectType({
   name: 'AddSlackChannelInput',
   fields: () => ({
@@ -66,14 +67,7 @@ export default {
     }
 
     // RESOLUTION
-    const newChannel = await r.table('SlackIntegration').insert({
-      id: shortid.generate(),
-      isActive: true,
-      channelId: slackChannelId,
-      channelName: name,
-      notifications: ['meeting:end', 'meeting:start'],
-      teamId
-    }, {returnChanges: true})('changes')(0)('new_val');
+    const newChannel = await insertSlackChannel(slackChannelId, name, teamId);
     const slackChannelAdded = {
       channel: newChannel
     };

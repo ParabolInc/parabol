@@ -11,7 +11,7 @@ const layerStyles = {
   pointerEvents: 'none',
   position: 'fixed',
   top: 0,
-  zIndex: ui.zCard
+  zIndex: ui.ziCardDragLayer
 };
 
 function getItemStyles(props) {
@@ -73,7 +73,7 @@ export default class ProjectDragLayer extends Component {
     return (
       <div style={getItemStyles(this.props)}>
         <div style={ui.cardDragStyle}>
-          <OutcomeOrNullCard {...this.props} isPreview />
+          <OutcomeOrNullCard {...this.props} hasDragStyles isPreview />
         </div>
       </div>
     );

@@ -2,23 +2,21 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
+import Panel from 'universal/components/Panel/Panel';
 import ProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
+import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {GITHUB, SLACK} from 'universal/utils/constants';
-import ui from 'universal/styles/ui';
-import Panel from 'universal/components/Panel/Panel';
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
+
 
 const ProviderList = (props) => {
   const {jwt, viewer, styles, teamId} = props;
-  const {providerMap: {github, slack}} = viewer;
+  const {providerMap} = viewer;
   return (
     <div className={css(styles.providerList)}>
       <Panel hasHeader={false}>
-        <ProviderRow name={GITHUB} providerDetails={github} teamId={teamId} comingSoon />
-        <ProviderRow name={SLACK} providerDetails={slack} jwt={jwt} teamId={teamId} />
+        <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} jwt={jwt} teamId={teamId} />
+        <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} jwt={jwt} teamId={teamId} />
       </Panel>
     </div>
   );
@@ -38,23 +36,15 @@ const styleThunk = () => ({
   }
 });
 
-const subscriptionThunk = ({teamId, viewer: {id}}) => {
-  return [
-    ProviderRemovedSubscription(teamId, id),
-    ProviderAddedSubscription(teamId, id)
-  ];
-};
-
 export default createFragmentContainer(
-  withSubscriptions(subscriptionThunk)(withStyles(styleThunk)(ProviderList)),
+  withStyles(styleThunk)(ProviderList),
   graphql`
     fragment ProviderList_viewer on User {
-      id
       providerMap(teamId: $teamId) {
-        github {
+        GitHubIntegration {
           ...ProviderRow_providerDetails
         }
-        slack {
+        SlackIntegration {
           ...ProviderRow_providerDetails
         }
       }

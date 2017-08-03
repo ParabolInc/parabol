@@ -19,16 +19,8 @@ export default {
     const filterFn = (value) => {
       return value.mutatorId !== socketId;
     };
-    // const resolve = (value) => {
-    //  // we know what the providerMap for slack will look like because everyone uses the same token
-    //  if (value.provider.service === SLACK) {
-    //    return value;
-    //  }
-    //  return undefined;
-    //  // wait for GH to add this logic, it involves a per-user query
-    //  //const userId = getUserId(authToken);
-    //  //return providerMapResolution(userId, teamId)
-    // }
+    // no need for a special resolve because we don't send secret info like accessToken
+    // we send the userId of the person who removed the provider & the client decides how to update the map
     return makeSubscribeIter(channelName, filterFn);
   }
 };

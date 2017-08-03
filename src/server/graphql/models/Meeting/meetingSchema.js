@@ -11,7 +11,7 @@ import {
 import {GraphQLURLType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ProjectStatus} from '../Project/projectSchema';
-import TeamMember from '../TeamMember/teamMemberSchema';
+import TeamMember from 'server/graphql/types/TeamMember';
 
 const MeetingProject = new GraphQLObjectType({
   name: 'MeetingProject',

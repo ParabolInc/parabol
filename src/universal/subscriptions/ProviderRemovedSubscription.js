@@ -1,6 +1,8 @@
 // import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
-import {removeProviderUpdater} from 'universal/mutations/RemoveProviderMutation';
-import {SLACK} from 'universal/utils/constants';
+import {
+  removeIntegrations, removeProviderUpdater, removeUserFromIntegrations,
+  updateProviderMap
+} from 'universal/mutations/RemoveProviderMutation';
 
 const subscription = graphql`
   subscription ProviderRemovedSubscription($teamId: ID!) {
@@ -8,13 +10,18 @@ const subscription = graphql`
       providerRow {
         service
         accessToken
+        userCount
+        integrationCount
       }
       deletedIntegrationIds
+      userId
     }
   }
 `;
 
-const ProviderRemovedSubscription = (teamId, viewerId) => (ensureSubscription) => {
+const ProviderRemovedSubscription = (environment, queryVariables) => {
+  const {ensureSubscription, viewerId} = environment;
+  const {teamId} = queryVariables;
   return ensureSubscription({
     subscription,
     variables: {teamId},
@@ -22,13 +29,19 @@ const ProviderRemovedSubscription = (teamId, viewerId) => (ensureSubscription) =
       const viewer = store.get(viewerId);
       const payload = store.getRootField('providerRemoved');
       const service = payload.getLinkedRecord('providerRow').getValue('service');
-      // remove the accessToken from the provider
-      removeProviderUpdater(viewer, teamId, service);
 
-      // remove the integrations that depend on this provider
-      if (service === SLACK) {
-        viewer.setLinkedRecords([], 'slackChannels', {teamId});
-      }
+      // remove the accessToken from the provider
+      const userId = payload.getValue('userId');
+      removeProviderUpdater(viewer, teamId, service, userId);
+
+      // update the userCount & integrationCount (and access token if mutator == viewer)
+      updateProviderMap(viewer, teamId, service, payload);
+
+      // update the integrations that exclusively belonged to this provider
+      const deletedIntegrationIds = payload.getValue('deletedIntegrationIds');
+      removeIntegrations(viewer, teamId, service, deletedIntegrationIds);
+
+      removeUserFromIntegrations(viewer, teamId, service, userId);
     }
   });
 };
