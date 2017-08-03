@@ -9,7 +9,9 @@ import {GITHUB, SLACK} from 'universal/utils/constants';
 
 
 const getPayload = async (service, integrationChanges, teamId, userId) => {
-  const deletedIntegrationIds = integrationChanges.map((change) => toGlobalId(service, change.new_val.id));
+  const deletedIntegrationIds = integrationChanges
+    .filter((change) => !change.new_val.isActive)
+    .map((change) => toGlobalId(service, change.new_val.id));
   const rowDetails = await getProviderRowData(service, teamId);
   return {
     providerRow: {

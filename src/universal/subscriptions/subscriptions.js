@@ -23,6 +23,11 @@ export default [
     subscription($agendaId: ID!) {
       agendaProjects(agendaId: $agendaId) {
         id
+        integration {
+          service
+          nameWithOwner
+          issueNumber
+        }
         agendaId
         content
         createdAt
@@ -42,6 +47,11 @@ export default [
         content
         createdAt
         id
+        integration {
+          service
+          nameWithOwner
+          issueNumber
+        }
         status
         tags
         teamMemberId

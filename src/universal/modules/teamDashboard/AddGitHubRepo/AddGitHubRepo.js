@@ -9,8 +9,32 @@ import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {GITHUB_ENDPOINT} from 'universal/utils/constants';
-import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
+import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
+
+const getUniqueRepos = (orgs, personalRepos) => {
+  const repoSet = new Set();
+  const repos = [];
+
+  // add in the organization repos
+  for (let i = 0; i < orgs.length; i++) {
+    const organization = orgs[i];
+    const orgRepos = organization.repositories.nodes;
+    for (let j = 0; j < orgRepos.length; j++) {
+      const repo = orgRepos[j];
+      repoSet.add(repo.nameWithOwner);
+      repos.push(repo);
+    }
+  }
+  // add in repos from personal & collaborations
+  for (let i = 0; i < personalRepos.length; i++) {
+    const repo = personalRepos[i];
+    if (!repoSet.has(repo.nameWithOwner)) {
+      repos.push(repo);
+    }
+  }
+  return repos;
+};
 
 const defaultSelectedRepo = () => ({
   repoId: undefined,
@@ -111,19 +135,15 @@ class AddGitHubRepo extends Component {
         setError.call(this, {_error: `GitHub Error: ${message}. Try refreshing your token`});
         throw message;
       }
-      const {viewer: {organizations: {nodes}, repositories}} = data;
-      nodes.unshift({
-        repositories
-      });
-      const repos = nodes.reduce((master, single) => {
-        master.push(...single.repositories.nodes);
-        return master;
-      }, []);
-
+      const {viewer: {organizations: {nodes: orgs}, repositories: {nodes: personalRepos}}} = data;
+      const repos = getUniqueRepos(orgs, personalRepos);
       const {subbedRepos} = this.props;
       const subbedRepoIds = subbedRepos.map(({nameWithOwner}) => nameWithOwner);
-      const oneMonthAgo = Date.now() - ms('30d');
-      const options = repos.filter((repo) => !subbedRepoIds.includes(repo.nameWithOwner) && new Date(repo.updatedAt) > oneMonthAgo)
+      const options = repos
+        .filter((repo) => !subbedRepoIds.includes(repo.nameWithOwner))
+        .sort((a, b) => a.updatedAt < b.updatedAt ? 1 : -1)
+        .slice(0, 60)
+        .sort((a, b) => a.nameWithOwner.toLowerCase() > b.nameWithOwner.toLowerCase() ? 1 : -1)
         .map((repo) => ({id: repo.nameWithOwner, label: repo.nameWithOwner}));
       this.setState({
         isLoaded: true,

@@ -1,4 +1,5 @@
 import {css} from 'aphrodite-local-styles/no-important';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import Avatar from 'universal/components/Avatar/Avatar';
@@ -7,12 +8,11 @@ import IntegrationRow from 'universal/modules/teamDashboard/components/Integrati
 import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation';
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation';
 import formError from 'universal/styles/helpers/formError';
-import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
+import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import toGlobalId from 'universal/utils/relay/toGlobalId';
-import PropTypes from 'prop-types';
 
 class GitHubRepoRow extends Component {
   constructor(props) {
@@ -52,15 +52,21 @@ class GitHubRepoRow extends Component {
             {nameWithOwner}
             <FontAwesome name="external-link-square" style={{marginLeft: '.5rem'}} />
           </a>
-          {teamMembers.map((user) => <Avatar key={user.id} {...user} size="smallest" />)}
+          <div className={css(styles.avatarGroup)}>
+            {teamMembers.map((user) => (
+              <div key={user.id} className={css(styles.avatar)}>
+                <Avatar {...user} size="smallest" />
+              </div>
+            ))}
+          </div>
           {accessToken &&
-            <Button
-              buttonStyle="flat"
-              colorPalette="dark"
-              label={viewerInIntegration ? 'Unlink Me' : 'Link Me'}
-              onClick={toggleIntegrationMembership(id)}
-              size="smallest"
-            />
+          <Button
+            buttonStyle="flat"
+            colorPalette="dark"
+            label={viewerInIntegration ? 'Unlink Me' : 'Link Me'}
+            onClick={toggleIntegrationMembership(id)}
+            size="smallest"
+          />
           }
         </IntegrationRow>
         {error && <div className={css(styles.errorRow)}>{error}</div>}
@@ -94,6 +100,16 @@ const styleThunk = () => ({
     display: 'block',
     fontSize: appTheme.typography.s3,
     fontWeight: 700
+  },
+
+  avatarGroup: {
+    marginLeft: 'auto',
+    padding: '0 .5rem 0 1rem'
+  },
+
+  avatar: {
+    display: 'inline-block',
+    margin: '0 .5rem 0 0'
   }
 });
 

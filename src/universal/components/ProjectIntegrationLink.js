@@ -15,9 +15,9 @@ const ProjectIntegrationLink = (props) => {
       href={`https://www.github.com/${nameWithOwner}/issues/${issueNumber}`}
       rel="noopener noreferrer"
       target="_blank"
-      title={`Issue #${issueNumber} on GitHub`}
+      title={`GitHub Issue #${issueNumber} on ${nameWithOwner}`}
     >
-      {`Issue #${issueNumber}`}
+      {`${nameWithOwner}/${issueNumber}`}
     </a>
   );
 };

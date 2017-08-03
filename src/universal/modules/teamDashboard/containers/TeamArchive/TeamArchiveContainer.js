@@ -10,6 +10,11 @@ query {
     id
     content
     createdAt
+    integration {
+      service
+      nameWithOwner
+      issueNumber
+    }
     status
     tags
     teamMemberId

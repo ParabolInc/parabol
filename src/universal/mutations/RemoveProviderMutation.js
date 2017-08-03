@@ -128,19 +128,20 @@ const RemoveProviderMutation = (environment, providerId, service, teamId) => {
       // update the userCount & integrationCount (and access token if mutator == viewer)
       const {id: userId} = fromGlobalId(viewer.getDataID());
       const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
-      if (!oldProviderMap) return;
-      const oldProviderRow = oldProviderMap.getLinkedRecord(service);
-      const oldUserCount = oldProviderRow.getValue('userCount') || 1;
-      const oldIntegrationCount = oldProviderRow.getValue('integrationCount') || deletedIntegrationIds.length;
-      const providerRow = store.create(`client:ProviderRow:${tempId++}`, 'ProviderRow')
-        .setValue(service, 'service')
-        .setValue(null, 'accessToken')
-        .setValue(oldUserCount - 1, 'userCount')
-        .setValue(oldIntegrationCount - deletedIntegrationIds.length, 'integrationCount');
-      const payload = store.create(`client:removeProvider:${tempId++}`, 'RemoveProviderPayload')
-        .setValue(userId, 'userId')
-        .setLinkedRecord(providerRow, 'providerRow');
-      updateProviderMap(viewer, teamId, service, payload);
+      if (oldProviderMap) {
+        const oldProviderRow = oldProviderMap.getLinkedRecord(service);
+        const oldUserCount = oldProviderRow.getValue('userCount') || 1;
+        const oldIntegrationCount = oldProviderRow.getValue('integrationCount') || deletedIntegrationIds.length;
+        const providerRow = store.create(`client:ProviderRow:${tempId++}`, 'ProviderRow')
+          .setValue(service, 'service')
+          .setValue(null, 'accessToken')
+          .setValue(oldUserCount - 1, 'userCount')
+          .setValue(oldIntegrationCount - deletedIntegrationIds.length, 'integrationCount');
+        const payload = store.create(`client:removeProvider:${tempId++}`, 'RemoveProviderPayload')
+          .setValue(userId, 'userId')
+          .setLinkedRecord(providerRow, 'providerRow');
+        updateProviderMap(viewer, teamId, service, payload);
+      }
 
       removeUserFromIntegrations(viewer, teamId, service, userId);
     },
