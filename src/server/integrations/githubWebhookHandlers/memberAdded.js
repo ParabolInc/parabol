@@ -24,12 +24,14 @@ const memberAdded = async (body) => {
         .coerceTo('array')
     }));
 
+  console.log('providers', providers);
   // get the ids of all the repos joined
   const joinedIntegrationsByTeam = await Promise.all(providers.map((provider) => {
     const {repos, accessToken, userId} = provider;
     return maybeJoinRepos(repos, accessToken, userId);
   }));
 
+  console.log('joinedInts', joinedIntegrationsByTeam);
   // tell all the listeners about all the repos this guy just joined
   joinedIntegrationsByTeam.forEach((integrationsJoined, idx) => {
     const {userId, repos} = providers[idx];

@@ -11,6 +11,7 @@ export default async (req, res) => {
     .createHmac(shaType, process.env.GITHUB_CLIENT_SECRET)
     .update(JSON.stringify(body))
     .digest('hex');
+  console.log('got event', event, hash === myHash);
   if (hash !== myHash) return;
   if (event === 'member_added') {
     memberAdded(body);

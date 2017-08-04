@@ -36,15 +36,17 @@ const createOrgWebhooks = async (accessToken, organizations) => {
     const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
     return fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}}).then((res) => res.json());
   }));
+  // FIXME this stupid thing... github keeps replying with active: false for no good reason or error
   const createHookParams = {
     name: 'web',
     config: {
       url: makeAppLink('webhooks/github', {isWebhook: true}),
       content_type: 'json',
       // this doesn't have to be the client secret, but i don't see much harm in reusing it, assuming it's all SSL
-      secret: process.env.GITHUB_CLIENT_SECRET
+      secret: process.env.GITHUB_CLIENT_SECRET,
+      insecure_ssl: "1"
     },
-    events: ['member_added', 'member_removed'],
+    events: ["member_added", "member_removed"],
     active: true
   };
 
@@ -52,7 +54,9 @@ const createOrgWebhooks = async (accessToken, organizations) => {
     if (hookList.length === 0) {
       const org = orgsWithAdminRights[idx];
       const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
-      fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams));
+      fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams))
+        .then((body) => body.json())
+        .then((res) => console.log('res', res))
     }
   });
 
