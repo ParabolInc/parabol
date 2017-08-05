@@ -9,6 +9,7 @@ const makeSubscribeIter = (channelName, filterFn = defaultFilterFn, resolve) => 
     const nextRes = await asyncIterator.next();
     const {value, done} = nextRes;
     if (done) {
+      //TODO after implementing a dataloader, clear it here?
       return asyncIterator.return();
     }
 

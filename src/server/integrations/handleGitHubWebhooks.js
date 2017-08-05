@@ -1,5 +1,29 @@
 import crypto from 'crypto';
 import memberAdded from 'server/integrations/githubWebhookHandlers/memberAdded';
+import memberRemoved from 'server/integrations/githubWebhookHandlers/memberRemoved';
+import schema from 'server/graphql/rootSchema';
+
+// TODO when this is all legit, we'll map through the queries & use the ASTs instead of the strings
+const eventLookup = {
+  organization: {
+    member_added: {
+      getVars: ({invitation: {login: userName}, organization: {login: orgName}}) => ({userName, orgName}),
+      query: `
+        mutation GitHubAddMember($userName: ID! $orgName: ID!) {
+          githubAddMember(userName: $userName, orgName: $orgName)
+        }
+      `
+    },
+    member_removed: {
+      getVars: ({membership: {user: {login: userName}}, organization: {login: orgName}}) => ({userName, orgName}),
+      query: `
+        mutation GitHubRemoveMember($userName: ID! $orgName: ID!) {
+          githubRemoveMember(userName: $userName, orgName: $orgName)
+        }
+      `
+    }
+  }
+};
 
 export default async (req, res) => {
   res.sendStatus(200);
@@ -13,7 +37,8 @@ export default async (req, res) => {
     .digest('hex');
   console.log('got event', event, hash === myHash);
   if (hash !== myHash) return;
-  if (event === 'member_added') {
-    memberAdded(body);
-  }
+  const {getVars, query} = eventLookup[event][body.action];
+  const variables = getVars(body);
+  const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET};
+  graphql(schema, query, {}, context, variables);
 };

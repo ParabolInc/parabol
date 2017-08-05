@@ -2,9 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
-import removeRepoGitHub from 'server/safeMutations/removeRepoGitHub';
 import {getIsTeamLead, getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
+import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
+
 
 export default {
   name: 'RemoveGitHubRepo',
@@ -26,7 +28,7 @@ export default {
       // no UI for this
       throw new Error(`${githubGlobalId} does not exist`);
     }
-    const {teamId, isActive, userIds} = integration;
+    const {teamId, isActive, userIds, nameWithOwner} = integration;
     requireSUOrTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
@@ -44,6 +46,18 @@ export default {
     }
 
     // RESOLUTION
-    return removeRepoGitHub(id, githubGlobalId, teamId, socket.id);
+    await r.table(GITHUB).get(id)
+      .update({
+        isActive: false,
+        userIds: []
+      });
+
+    const archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner);
+    const githubRepoRemoved = {
+      deletedId: githubGlobalId,
+      archivedProjectIds
+    };
+    getPubSub().publish(`githubRepoRemoved.${teamId}`, {githubRepoRemoved, mutatorId: socket.id});
+    return githubRepoRemoved;
   }
 };

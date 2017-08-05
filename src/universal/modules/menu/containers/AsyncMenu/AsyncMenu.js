@@ -28,6 +28,7 @@ export default class AsyncMenuContainer extends Component {
   };
 
   componentWillMount() {
+    this._mounted = true;
     const {toggle} = this.props;
     this.smartToggle = this.makeSmartToggle(toggle);
   }
@@ -39,6 +40,9 @@ export default class AsyncMenuContainer extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this._mounted = false;
+  }
   setMenuRef = (c) => {
     if (c) {
       this.menuRef = c;
@@ -89,7 +93,9 @@ export default class AsyncMenuContainer extends Component {
         const maxBottom = innerHeight - menuHeight + scrollY;
         nextCoords.bottom = Math.min(bottom, maxBottom);
       }
-      this.setState(nextCoords);
+      if (this._mounted) {
+        this.setState(nextCoords);
+      }
     });
   }
 
@@ -101,14 +107,16 @@ export default class AsyncMenuContainer extends Component {
         loading: true
       });
       const res = await fetchMenu();
-      this.setState({
-        Mod: res.default,
-        loading: false
-      });
+      if (this._mounted) {
+        this.setState({
+          Mod: res.default,
+          loading: false
+        });
+      }
     }
   };
 
-  makeSmartToggle = () => {
+  makeSmartToggle() {
     const {toggle} = this.props;
     return React.cloneElement(toggle, {
       onClick: (e) => {
