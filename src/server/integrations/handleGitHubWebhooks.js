@@ -1,6 +1,4 @@
 import crypto from 'crypto';
-import memberAdded from 'server/integrations/githubWebhookHandlers/memberAdded';
-import memberRemoved from 'server/integrations/githubWebhookHandlers/memberRemoved';
 import schema from 'server/graphql/rootSchema';
 
 // TODO when this is all legit, we'll map through the queries & use the ASTs instead of the strings

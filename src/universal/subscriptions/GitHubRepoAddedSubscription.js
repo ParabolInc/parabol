@@ -1,7 +1,7 @@
 // import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 import {addGitHubRepoUpdater} from 'universal/mutations/AddGitHubRepoMutation';
 
-const AddedSubscription = graphql`
+const subscription = graphql`
   subscription GitHubRepoAddedSubscription($teamId: ID!) {
     githubRepoAdded(teamId: $teamId) {
       repo {
@@ -21,7 +21,7 @@ const GitHubRepoAddedSubscription = (environment, queryVariables) => {
   const {ensureSubscription, viewerId} = environment;
   const {teamId} = queryVariables;
   return ensureSubscription({
-    subscription: AddedSubscription,
+    subscription,
     variables: {teamId},
     updater: (store) => {
       const newNode = store.getRootField('githubRepoAdded').getLinkedRecord('repo');

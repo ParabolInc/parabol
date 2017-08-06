@@ -1,6 +1,6 @@
 import {removeSlackChannelUpdater} from 'universal/mutations/RemoveSlackChannelMutation';
 
-const RemovedSubscription = graphql`
+const subscription = graphql`
   subscription SlackChannelRemovedSubscription($teamId: ID!) {
     slackChannelRemoved(teamId: $teamId) {
       deletedId
@@ -12,7 +12,7 @@ const SlackChannelRemovedSubscription = (environment, queryVariables) => {
   const {ensureSubscription, viewerId} = environment;
   const {teamId} = queryVariables;
   return ensureSubscription({
-    subscription: RemovedSubscription,
+    subscription,
     variables: {teamId},
     updater: (store) => {
       const viewer = store.get(viewerId);

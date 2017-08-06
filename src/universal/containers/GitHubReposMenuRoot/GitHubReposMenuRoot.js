@@ -16,6 +16,7 @@ import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubs
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
 
 const githubRepoQuery = graphql`
   query GitHubReposMenuRootQuery($teamId: ID!) {
@@ -29,10 +30,12 @@ const githubRepoQuery = graphql`
 const subscriptions = [
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
+  GitHubMemberRemovedSubscription,
   ProviderRemovedSubscription,
   ProviderAddedSubscription,
   IntegrationLeftSubscription(GITHUB),
-  IntegrationJoinedSubscription(GITHUB)
+  IntegrationJoinedSubscription(GITHUB),
+
 ];
 
 const cacheConfig = {ttl: DEFAULT_TTL};

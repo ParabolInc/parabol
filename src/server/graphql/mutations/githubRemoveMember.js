@@ -1,7 +1,6 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLBoolean} from 'graphql';
 import {toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
 import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
@@ -9,7 +8,7 @@ import {GITHUB} from 'universal/utils/constants';
 export default {
   name: 'GitHubRemoveMember',
   description: 'Receive a webhook from github saying an org member was removed',
-  type: new GraphQLNonNull(RemoveGitHubRepoPayload),
+  type: GraphQLBoolean,
   args: {
     userName: {
       type: new GraphQLNonNull(GraphQLID),
@@ -20,8 +19,13 @@ export default {
       description: 'The github org login'
     }
   },
-  resolve: async (source, {userName, orgName}) => {
+  resolve: async (source, {userName, orgName}, {serverSecret}) => {
     const r = getRethink();
+
+    // AUTH
+    if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
+      throw new Error('Don\'t be rude.');
+    }
 
     const userId = await r.table('Provider')
       .getAll(userName, {index: 'providerUserId'})
@@ -61,11 +65,12 @@ export default {
         archivedProjectsIds: archivedProjectsByRepo[idx]
       });
       return obj;
-    });
+    }, {});
 
     Object.keys(payloadsByTeam).forEach((teamId) => {
       const payload = payloadsByTeam[teamId];
       getPubSub().publish(`githubMemberRemoved.${teamId}`, payload);
-    })
+    });
+    return true;
   }
 };
