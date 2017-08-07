@@ -21,6 +21,6 @@ export default {
     // RESOLUTION
     const channelName = `integrationLeft.${teamId}.${service}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, filterFn);
+    return makeSubscribeIter(channelName, {filterFn});
   }
 };

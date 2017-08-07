@@ -1,11 +1,12 @@
 import crypto from 'crypto';
 import schema from 'server/graphql/rootSchema';
+import {graphql} from 'graphql';
 
 // TODO when this is all legit, we'll map through the queries & use the ASTs instead of the strings
 const eventLookup = {
   organization: {
     member_added: {
-      getVars: ({invitation: {login: userName}, organization: {login: orgName}}) => ({userName, orgName}),
+      getVars: ({membership: {user: {login: userName}}, organization: {login: orgName}}) => ({userName, orgName}),
       query: `
         mutation GitHubAddMember($userName: ID! $orgName: ID!) {
           githubAddMember(userName: $userName, orgName: $orgName)
@@ -38,5 +39,8 @@ export default async (req, res) => {
   const {getVars, query} = eventLookup[event][body.action];
   const variables = getVars(body);
   const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET};
-  graphql(schema, query, {}, context, variables);
+  const result = await graphql(schema, query, {}, context, variables);
+  if (result.errors) {
+    console.log('GITHUB GraphQL Error:', result.errors);
+  }
 };

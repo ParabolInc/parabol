@@ -10,7 +10,7 @@ import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
-import maybeJoinRepos from 'server/integrations/githubWebhookHandlers/maybeJoinRepos';
+import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 
 const profileQuery = `
 query { 

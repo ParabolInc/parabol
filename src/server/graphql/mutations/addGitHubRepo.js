@@ -49,11 +49,10 @@ export default {
       .getAll(teamId, {index: 'teamIds'})
       .filter({service: GITHUB});
 
-    const permissionPromises = allTeamProviders.map((prov) => {
+    const permissionArray = await Promise.all(allTeamProviders.map((prov) => {
       if (prov.userId === userId) return {};
       return tokenCanAccessRepo(prov.accessToken, nameWithOwner);
-    });
-    const permissionArray = await Promise.all(permissionPromises);
+    }));
     const userIds = permissionArray.reduce((userIdArr, githubRes, idx) => {
       if (!githubRes.errors) {
         userIdArr.push(allTeamProviders[idx].userId);
