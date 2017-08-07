@@ -36,6 +36,8 @@ export default async (req, res) => {
     .digest('hex');
   console.log('got event', event, hash === myHash);
   if (hash !== myHash) return;
+  const handler = eventLookup[event] && eventLookup[event][body.action];
+  if (!handler) return;
   const {getVars, query} = eventLookup[event][body.action];
   const variables = getVars(body);
   const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET};

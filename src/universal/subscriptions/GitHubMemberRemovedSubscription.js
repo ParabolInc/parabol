@@ -11,12 +11,12 @@ const subscription = graphql`
   }
 `;
 
-const GitHubMemberRemovedSubscription = (service) => (environment, queryVariables) => {
+const GitHubMemberRemovedSubscription = (environment, queryVariables) => {
   const {ensureSubscription, viewerId} = environment;
   const {teamId} = queryVariables;
   return ensureSubscription({
     subscription,
-    variables: {service, teamId},
+    variables: {teamId},
     updater: (store) => {
       const viewer = store.get(viewerId);
       store.getRootField('githubMemberRemoved')

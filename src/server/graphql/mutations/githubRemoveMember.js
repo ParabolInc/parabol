@@ -35,12 +35,13 @@ export default {
       .default(null);
 
     const updatedIntegrations = await r.table(GITHUB)
-      .getAll(userId, {index: 'userId'})
+      .getAll(userId, {index: 'userIds'})
       .filter((doc) => doc('nameWithOwner').match(`^${orgName}`))
       .update((doc) => ({
         userIds: doc('userIds').difference([userId]),
         isActive: doc('userIds').eq([userId]).not()
-      }), {returnChanges: true})('changes');
+      }), {returnChanges: true})('changes')
+      .default([]);
 
 
     const archivedProjectsByRepo = await Promise.all(updatedIntegrations.map(({new_val: isActive, teamId, nameWithOwner}) => {
@@ -66,10 +67,9 @@ export default {
       });
       return obj;
     }, {});
-
     Object.keys(payloadsByTeam).forEach((teamId) => {
-      const payload = payloadsByTeam[teamId];
-      getPubSub().publish(`githubMemberRemoved.${teamId}`, payload);
+      const githubMemberRemoved = payloadsByTeam[teamId];
+      getPubSub().publish(`githubMemberRemoved.${teamId}`, {githubMemberRemoved});
     });
     return true;
   }
