@@ -4,6 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
+import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
 
 export default {
   name: 'GitHubRemoveMember',
@@ -44,12 +45,7 @@ export default {
       .default([]);
 
 
-    const archivedProjectsByRepo = await Promise.all(updatedIntegrations.map(({new_val: isActive, teamId, nameWithOwner}) => {
-      if (!isActive) {
-        return archiveProjectsByGitHubRepo(teamId, nameWithOwner);
-      }
-      return [];
-    }));
+    const archivedProjectsByRepo = await archiveProjectsForManyRepos(updatedIntegrations);
 
     // 2 teams could use the same org, so break it down by team
     const payloadsByTeam = updatedIntegrations.reduce((obj, {new_val: {id, isActive, teamId}}, idx) => {
