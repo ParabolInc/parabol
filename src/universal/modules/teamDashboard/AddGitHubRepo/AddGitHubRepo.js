@@ -82,8 +82,6 @@ class AddGitHubRepo extends Component {
       selectedRepo: defaultSelectedRepo()
     };
     this.lastUpdated = 0;
-    window.gc = new WeakSet();
-    window.gc.add(this);
     this.fetchOptions(props.accessToken);
   }
 

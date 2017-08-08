@@ -5,10 +5,10 @@ import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import postOptions from 'server/utils/fetchOptions';
 import getPubSub from 'server/utils/getPubSub';
-import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
+import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 
 const profileQuery = `
 query { 
@@ -34,19 +34,8 @@ const createOrgWebhooks = async (accessToken, organizations) => {
     const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
     return fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}}).then((res) => res.json());
   }));
-  const createHookParams = {
-    name: 'web',
-    config: {
-      url: makeAppLink('webhooks/github', {isWebhook: true}),
-      content_type: 'json',
-      // this doesn't have to be the client secret, but i don't see much harm in reusing it, assuming it's all SSL
-      secret: process.env.GITHUB_CLIENT_SECRET,
-      insecure_ssl: 0
-    },
-    events: ['organization'],
-    active: true
-  };
 
+  const createHookParams = makeGitHubWebhookParams(['organization']);
   webhookLists.forEach((hookList, idx) => {
     if (hookList.length === 0) {
       const org = orgsWithAdminRights[idx];
