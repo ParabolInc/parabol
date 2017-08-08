@@ -34,7 +34,7 @@ const subscriptions = [
   ProviderRemovedSubscription,
   ProviderAddedSubscription,
   IntegrationLeftSubscription(GITHUB),
-  IntegrationJoinedSubscription(GITHUB),
+  IntegrationJoinedSubscription(GITHUB)
 
 ];
 
@@ -52,7 +52,7 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
       render={({error, props}) => {
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
-            {error && <ErrorComponent height={'14rem'} width={maxWidth} error={error}/>}
+            {error && <ErrorComponent height={'14rem'} width={maxWidth} error={error} />}
             {props && <AnimatedFade key="1" onEnter={setCoords}>
               <GitHubRepoListMenu
                 viewer={props.viewer}
@@ -66,7 +66,7 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
             </AnimatedFade>}
             {!props && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} width={maxWidth}/>
+              <LoadingComponent height={'5rem'} width={maxWidth} />
             </AnimatedFade>
             }
           </TransitionGroup>
@@ -78,6 +78,7 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
 
 GitHubReposMenuRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  maxWidth: PropTypes.number.isRequired,
   projectId: PropTypes.string.isRequired,
   viewer: PropTypes.object,
   setError: PropTypes.func.isRequired,

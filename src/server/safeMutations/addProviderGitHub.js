@@ -1,8 +1,7 @@
-import {toGlobalId} from 'graphql-relay';
 import fetch from 'node-fetch';
 import {stringify} from 'querystring';
 import getRethink from 'server/database/rethinkDriver';
-import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
+import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import postOptions from 'server/utils/fetchOptions';
 import getPubSub from 'server/utils/getPubSub';
@@ -10,7 +9,6 @@ import makeAppLink from 'server/utils/makeAppLink';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
-import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 
 const profileQuery = `
 query { 
@@ -55,10 +53,9 @@ const createOrgWebhooks = async (accessToken, organizations) => {
       const endpoint = `https://api.github.com/orgs/${org.login}/hooks`;
       fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams))
         .then((body) => body.json())
-        .then((res) => console.log('res', res))
+        .then((res) => console.log('res', res));
     }
   });
-
 };
 
 const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId) => {
@@ -99,7 +96,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
   }
   const authedPostOptions = makeGitHubPostOptions(accessToken, {
     query: profileQuery
-  })
+  });
   const ghProfile = await fetch(GITHUB_ENDPOINT, authedPostOptions);
   const gqlRes = await ghProfile.json();
   if (!gqlRes.data) {
@@ -140,7 +137,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
   createOrgWebhooks(accessToken, organizations);
 
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId)
+  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId);
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
   const providerAdded = {

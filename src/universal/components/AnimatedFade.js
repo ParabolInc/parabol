@@ -2,8 +2,13 @@ import {css} from 'aphrodite-local-styles/no-important';
 import React, {Component} from 'react';
 import CSSTransition from 'react-transition-group/CSSTransition';
 import withStyles from 'universal/styles/withStyles';
+import PropTypes from 'prop-types';
 
 class AnimatedFade extends Component {
+  static propTypes = {
+    children: PropTypes.any.isRequired,
+    styles: PropTypes.object
+  }
   state = {ready: false};
 
   componentWillMount() {
@@ -32,9 +37,9 @@ class AnimatedFade extends Component {
       >
         {children}
       </CSSTransition>
-    )
+    );
   }
-};
+}
 
 const styleThunk = () => ({
   enter: {

@@ -1,10 +1,9 @@
-import {GraphQLID, GraphQLNonNull, GraphQLBoolean} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import {toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
+import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
-import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
 
 export default {
   name: 'GitHubRemoveMember',

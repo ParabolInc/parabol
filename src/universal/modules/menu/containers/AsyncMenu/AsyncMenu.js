@@ -62,7 +62,7 @@ export default class AsyncMenuContainer extends Component {
         left: undefined,
         top: undefined,
         right: undefined,
-        bottom: undefined,
+        bottom: undefined
       };
 
       const originLeftOffset = getOffset(originAnchor.horizontal, this.toggleCoords.width);
@@ -71,7 +71,7 @@ export default class AsyncMenuContainer extends Component {
         const targetLeftOffset = getOffset(targetAnchor.horizontal, menuWidth);
         const left = scrollX + this.toggleCoords.left + originLeftOffset - targetLeftOffset;
         const maxLeft = innerWidth - menuWidth + scrollX;
-        nextCoords.left = Math.min(left, maxLeft)
+        nextCoords.left = Math.min(left, maxLeft);
       } else {
         const right = innerWidth - (this.toggleCoords.left + originLeftOffset);
         const maxRight = innerWidth - menuWidth - scrollX;
@@ -138,7 +138,7 @@ export default class AsyncMenuContainer extends Component {
       },
       onMouseEnter: this.ensureMod
     });
-  };
+  }
 
   render() {
     const {Mod, loading, ...coords} = this.state;

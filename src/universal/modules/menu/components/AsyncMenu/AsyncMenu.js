@@ -2,14 +2,13 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import portal from 'react-portal-hoc';
-import boundedModal from 'universal/decorators/boundedModal/boundedModal';
+import {TransitionGroup} from 'react-transition-group';
+import AnimatedFade from 'universal/components/AnimatedFade';
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {TransitionGroup} from 'react-transition-group';
-import AnimatedFade from 'universal/components/AnimatedFade';
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 
 const AsyncMenu = (props) => {
   const {
@@ -39,7 +38,7 @@ const AsyncMenu = (props) => {
               />
             </AnimatedFade> :
             <AnimatedFade key="2" exit={false} >
-              <LoadingComponent height={'5rem'} width={maxWidth}/>
+              <LoadingComponent height={'5rem'} width={maxWidth} />
             </AnimatedFade>
           }
         </TransitionGroup>
@@ -54,8 +53,10 @@ AsyncMenu.propTypes = {
     left: PropTypes.number,
     top: PropTypes.number,
     right: PropTypes.number,
-    bottom: PropTypes.number,
+    bottom: PropTypes.number
   }),
+  maxWidth: PropTypes.number.isRequired,
+  maxHeight: PropTypes.number.isRequired,
   Mod: PropTypes.any,
   setCoords: PropTypes.func.isRequired,
   setMenuRef: PropTypes.func.isRequired,
@@ -97,5 +98,5 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
 });
 
 export default portal({escToClose: true, clickToClose: true})(
-    withStyles(styleThunk)(AsyncMenu)
+  withStyles(styleThunk)(AsyncMenu)
 );

@@ -101,7 +101,7 @@ export default {
 
 
     // set up webhooks
-    //const createHookParams = {
+    // const createHookParams = {
     //  name: 'web',
     //  config: {
     //    url: makeAppLink('webhooks/github'),
@@ -110,7 +110,7 @@ export default {
     //  },
     //  events: ["assigned", "unassigned", "labeled", "unlabeled", "opened", "edited", "milestoned", "demilestoned", "closed", "reopened"],
     //  active: true
-    //};
+    // };
     return githubRepoAdded;
   }
 };

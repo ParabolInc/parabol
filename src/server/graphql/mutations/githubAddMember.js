@@ -65,15 +65,15 @@ export default {
         }
         const {teamId} = integration;
         const teamMemberId = `${userId}::${teamId}`;
-        console.log('gettingTeamMember', teamMemberId)
+        console.log('gettingTeamMember', teamMemberId);
         r.table('TeamMember').get(teamMemberId).then((teamMember) => {
-          console.log('teamMember', teamMember)
+          console.log('teamMember', teamMember);
           const channelName = `integrationJoined.${teamId}.${GITHUB}`;
           const integrationJoined = {
             globalId: globalIntegrationId,
             teamMember
           };
-          console.log('posting to channel', channelName, integrationJoined)
+          console.log('posting to channel', channelName, integrationJoined);
           // no need for a special payload/channel, nothing but joining a repo will occur for now
           getPubSub().publish(channelName, {integrationJoined});
         });
