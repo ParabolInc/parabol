@@ -28,14 +28,13 @@ const eventLookup = {
 export default async (req, res) => {
   res.sendStatus(200);
   const event = req.get('X-GitHub-Event');
-  const hexDigest = req.get('X-Hub-Signature');
+  const hexDigest = req.get('X-Hub-Signature') || '';
   const [shaType, hash] = hexDigest.split('=');
   const {body} = req;
   const myHash = crypto
     .createHmac(shaType, process.env.GITHUB_WEBHOOK_SECRET)
     .update(JSON.stringify(body))
     .digest('hex');
-  console.log('got event', event, hash === myHash);
   if (!secureCompare(hash, myHash)) return;
   const handler = eventLookup[event] && eventLookup[event][body.action];
   if (!handler) return;

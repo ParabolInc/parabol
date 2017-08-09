@@ -42,7 +42,9 @@ export default class AsyncMenuContainer extends Component {
 
   componentWillUnmount() {
     this._mounted = false;
+    window.removeEventListener('resize', this.resizeWindow, {passive: true});
   }
+
   setMenuRef = (c) => {
     if (c) {
       this.menuRef = c;
@@ -52,7 +54,7 @@ export default class AsyncMenuContainer extends Component {
 
   setCoords = () => {
     setTimeout(() => {
-      if (!this.menuRef) return;
+      if (!this.menuRef || !this._mounted) return;
       // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
       const {originAnchor, targetAnchor, toggleMargin = 0, maxWidth, maxHeight} = this.props;
       const menuCoords = this.menuRef.getBoundingClientRect();
@@ -93,11 +95,28 @@ export default class AsyncMenuContainer extends Component {
         const maxBottom = innerHeight - menuHeight + scrollY;
         nextCoords.bottom = Math.min(bottom, maxBottom);
       }
-      if (this._mounted) {
-        this.setState(nextCoords);
+
+      // listen to window resize only if it's anchored on the right or bottom
+      if (nextCoords.left === undefined || nextCoords.top === undefined) {
+        window.addEventListener('resize', this.resizeWindow, {passive: true});
       }
+      this.setState(nextCoords);
     });
   }
+
+  resizeWindow = () => {
+    const {left, top} = this.state;
+    if (left === undefined || top === undefined) {
+      const menuCoords = this.menuRef.getBoundingClientRect();
+      const nextCoords = {
+        left: menuCoords.left,
+        top: menuCoords.top,
+        right: undefined,
+        bottom: undefined
+      };
+      this.setState(nextCoords);
+    }
+  };
 
   ensureMod = async () => {
     const {fetchMenu} = this.props;
