@@ -57,7 +57,7 @@ export default {
       throw errors;
     }
 
-    const isRepoAdmin = data.getRepo.repository.viewerCanAdminister;
+    const isRepoAdmin = data.repository.viewerCanAdminister;
     if (!isRepoAdmin) {
       throw new Error(`You must be an administer of ${nameWithOwner} to integrate`);
     }
