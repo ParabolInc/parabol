@@ -50,30 +50,24 @@ export default {
 
     // tell all the listeners about all the repos this guy just joined
 
-    console.log('jointed', joinedIntegrationsByTeam);
     for (let i = 0; i < joinedIntegrationsByTeam.length; i++) {
       const integrationsJoined = joinedIntegrationsByTeam[i];
       const {userId, repos} = providers[i];
       for (let j = 0; j < integrationsJoined.length; j++) {
         const globalIntegrationId = integrationsJoined[j];
-        console.log('ints', globalIntegrationId);
         const {id: localIntegrationId} = fromGlobalId(globalIntegrationId);
         const integration = repos.find((repo) => repo.id === localIntegrationId);
-        console.log('int', integration);
         if (!integration) {
           throw new Error(`No repo found for ${localIntegrationId}`);
         }
         const {teamId} = integration;
         const teamMemberId = `${userId}::${teamId}`;
-        console.log('gettingTeamMember', teamMemberId);
         r.table('TeamMember').get(teamMemberId).then((teamMember) => {
-          console.log('teamMember', teamMember);
           const channelName = `integrationJoined.${teamId}.${GITHUB}`;
           const integrationJoined = {
             globalId: globalIntegrationId,
             teamMember
           };
-          console.log('posting to channel', channelName, integrationJoined);
           // no need for a special payload/channel, nothing but joining a repo will occur for now
           getPubSub().publish(channelName, {integrationJoined});
         });
