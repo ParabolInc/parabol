@@ -216,7 +216,15 @@ const styleThunk = (theme, props) => ({
   },
 
   raised: {
-    boxShadow: '0 2px 4px rgba(0, 0, 0, .3)'
+    boxShadow: ui.shadow[1],
+    // :hover, :focus the same for raised because
+    // the animation takes care of feel of depth
+    ':hover': {
+      boxShadow: ui.shadow[2]
+    },
+    ':focus': {
+      boxShadow: ui.shadow[2]
+    }
   },
 
   // Variants

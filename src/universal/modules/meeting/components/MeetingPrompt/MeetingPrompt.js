@@ -54,7 +54,7 @@ const styleThunk = (theme, {avatarLarge}) => ({
   meetingPromptRoot: {
     backgroundColor: appTheme.palette.mid10l,
     borderRadius: '.5rem',
-    boxShadow: '.125rem .25rem .25rem rgba(0, 0, 0, .25)',
+    boxShadow: ui.shadow[2],
     display: 'flex',
     overflow: 'hidden'
   },

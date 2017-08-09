@@ -83,6 +83,7 @@ const transitionSlower = '1600ms ease-in';
 const transitionSlowest = '3200ms ease-in';
 
 // Shadows
+// NOTE: levels increase on a scale of 2x
 const shadow = [
   '0 .0625rem .125rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
   '0 .125rem .25rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
