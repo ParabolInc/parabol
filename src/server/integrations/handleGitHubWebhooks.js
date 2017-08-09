@@ -32,7 +32,7 @@ export default async (req, res) => {
   const [shaType, hash] = hexDigest.split('=');
   const {body} = req;
   const myHash = crypto
-    .createHmac(shaType, process.env.GITHUB_CLIENT_SECRET)
+    .createHmac(shaType, process.env.GITHUB_WEBHOOK_SECRET)
     .update(JSON.stringify(body))
     .digest('hex');
   console.log('got event', event, hash === myHash);
