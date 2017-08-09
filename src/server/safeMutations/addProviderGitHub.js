@@ -8,7 +8,6 @@ import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
-import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 
 const profileQuery = `
 query { 
