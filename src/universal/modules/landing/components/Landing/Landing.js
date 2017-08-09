@@ -36,9 +36,9 @@ const Landing = (props) => {
             <Button
               buttonStyle="solid"
               colorPalette="warm"
+              depth={1}
               label="Get Started"
               onClick={handleLoginClick}
-              raised
               size="largest"
               textTransform="uppercase"
             />
@@ -46,9 +46,9 @@ const Landing = (props) => {
               <Button
                 buttonStyle="outlined"
                 colorPalette="white"
+                depth={1}
                 label="Log In"
                 onClick={handleLoginClick}
-                raised
                 size="smallest"
                 textTransform="uppercase"
               />

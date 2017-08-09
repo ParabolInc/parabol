@@ -143,7 +143,7 @@ const ui = {
       textDecoration: 'none'
     },
     ':focus': {
-      boxShadow: shadow[1],
+      boxShadow: shadow[0],
       textDecoration: 'none'
     }
   },

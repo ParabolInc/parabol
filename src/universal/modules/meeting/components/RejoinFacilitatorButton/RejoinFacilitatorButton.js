@@ -10,10 +10,10 @@ const RejoinFacilitatorButton = (props) => {
     <div className={css(styles.rejoinButtonBlock)}>
       <Button
         colorPalette="warm"
+        depth={2}
         icon="user"
         label="Rejoin Facilitator"
         onClick={onClickHandler}
-        raised
         size="small"
       />
     </div>
