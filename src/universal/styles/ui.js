@@ -201,12 +201,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
-  // boxShadow color with some mid hue rgba(103, 107, 139, .75) for reference (TA)
-  cardBoxShadow: [
-    shadow[0],
-    shadow[1],
-    shadow[2]
-  ],
   cardMaxWidth: '17.5rem',
   cardMinHeight: '8.1875rem',
   cardPaddingBase: '.5rem',
@@ -360,7 +354,7 @@ const ui = {
   menuBackgroundColor: '#fff',
   menuBorderColor: appTheme.palette.mid30l,
   menuBorderRadius: borderRadiusSmall,
-  menuBoxShadow: shadow[2],
+  menuBoxShadow: shadow[3],
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',
   menuGutterVertical: '.5rem',
@@ -375,7 +369,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   modalBackdropBackgroundColor: 'rgba(78, 73, 95, .25)',
   modalBorderRadius: borderRadiusLarge,
-  modalBoxShadow: `${shadow[3]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
+  modalBoxShadow: `${shadow[4]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
   modalButtonSize: BUTTON_SIZE_MEDIUM,
   modalLayoutMain: MODAL_LAYOUT_MAIN,
   modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
