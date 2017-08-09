@@ -190,6 +190,7 @@
     "redux-thunk": "2.2.0",
     "request": "^2.81.0",
     "rethinkdbdash": "^2.3.29",
+    "secure-compare": "^3.0.1",
     "serve-favicon": "^2.4.1",
     "shortid": "^2.2.8",
     "socketcluster": "^5.9.1",

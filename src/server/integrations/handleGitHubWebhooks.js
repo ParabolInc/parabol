@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import schema from 'server/graphql/rootSchema';
 import {graphql} from 'graphql';
+import secureCompare from 'secure-compare';
 
 // TODO when this is all legit, we'll map through the queries & use the ASTs instead of the strings
 const eventLookup = {
@@ -31,11 +32,11 @@ export default async (req, res) => {
   const [shaType, hash] = hexDigest.split('=');
   const {body} = req;
   const myHash = crypto
-    .createHmac(shaType, process.env.GITHUB_CLIENT_SECRET)
+    .createHmac(shaType, process.env.GITHUB_WEBHOOK_SECRET)
     .update(JSON.stringify(body))
     .digest('hex');
   console.log('got event', event, hash === myHash);
-  if (hash !== myHash) return;
+  if (!secureCompare(hash, myHash)) return;
   const handler = eventLookup[event] && eventLookup[event][body.action];
   if (!handler) return;
   const {getVars, query} = eventLookup[event][body.action];
