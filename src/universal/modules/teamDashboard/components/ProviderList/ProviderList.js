@@ -15,7 +15,7 @@ const ProviderList = (props) => {
   return (
     <div className={css(styles.providerList)}>
       <Panel hasHeader={false}>
-        <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} jwt={jwt} teamId={teamId} />
+        <ProviderRow firstInList name={GITHUB} providerDetails={providerMap[GITHUB]} jwt={jwt} teamId={teamId} />
         <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} jwt={jwt} teamId={teamId} />
       </Panel>
     </div>
