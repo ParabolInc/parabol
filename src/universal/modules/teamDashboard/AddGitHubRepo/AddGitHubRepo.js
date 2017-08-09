@@ -164,7 +164,7 @@ class AddGitHubRepo extends Component {
       const options = repos
         .filter((repo) => repo.viewerCanAdminister && !subbedRepoIds.includes(repo.nameWithOwner))
         .map((repo) => ({id: repo.nameWithOwner, label: repo.nameWithOwner}))
-        .sort((a, b) => a.label < b.label ? -1 : 1)
+        .sort((a, b) => a.label < b.label ? -1 : 1);
       this.setState({
         isLoaded: true,
         options
