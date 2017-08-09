@@ -4,15 +4,36 @@ import AddGitHubRepoPayload from 'server/graphql/types/AddGitHubRepoPayload';
 import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 import shortid from 'shortid';
 import {GITHUB} from 'universal/utils/constants';
-import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
+
+const createRepoWebhook = async (accessToken, nameWithOwner) => {
+  const endpoint = `https://api.github.com/repos/${nameWithOwner}/hooks`;
+  const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
+  const webhooks = await res.json();
+  // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
+  if (Array.isArray(webhooks) && webhooks.length === 0) {
+    const createHookParams = makeGitHubWebhookParams([
+      'issues',
+      'issue_comment',
+      'label',
+      'member',
+      'milestone',
+      'pull_request',
+      'pull_request_review',
+      'repository'
+    ]);
+    fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams));
+  }
+};
 
 const createOrgWebhook = async (accessToken, nameWithOwner) => {
   const [owner] = nameWithOwner.split('/');
   const endpoint = `https://api.github.com/orgs/${owner}/hooks`;
-  const webhooks = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}}).then((res) => res.json());
+  const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
+  const webhooks = await res.json();
   // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
   if (Array.isArray(webhooks) && webhooks.length === 0) {
     const createHookParams = makeGitHubWebhookParams(['organization']);
@@ -40,18 +61,18 @@ export default {
     const userId = getUserId(authToken);
     // VALIDATION
     // get the user's token
-    const provider = await r.table('Provider')
+    const allTeamProviders = await r.table('Provider')
       .getAll(teamId, {index: 'teamIds'})
-      .filter({service: GITHUB, userId})
-      .nth(0)
-      .default(null);
+      .filter({service: GITHUB});
 
-    if (!provider || !provider.accessToken) {
+    const viewerProviderIdx = allTeamProviders.findIndex((provider) => provider.userId === userId);
+    if (viewerProviderIdx === -1) {
       throw new Error('No GitHub Provider found! Try refreshing your token');
     }
-    const {accessToken} = provider;
-    const {data, errors} = await tokenCanAccessRepo(accessToken, nameWithOwner);
-
+    // first check if the viewer has permission. then, check the rest
+    const {accessToken} = allTeamProviders[viewerProviderIdx];
+    const viewerPermissions = await tokenCanAccessRepo(accessToken, nameWithOwner);
+    const {data, errors} = viewerPermissions;
     if (errors) {
       console.error('GitHub error: ', errors);
       throw errors;
@@ -62,23 +83,21 @@ export default {
       throw new Error(`You must be an administer of ${nameWithOwner} to integrate`);
     }
 
-    // try to put other team members on this integration
-    const allTeamProviders = await r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'})
-      .filter({service: GITHUB});
+    const teamMemberProviders =
+      [...allTeamProviders.slice(0, viewerProviderIdx), ...allTeamProviders.slice(viewerProviderIdx + 1)];
 
-    const permissionArray = await Promise.all(allTeamProviders.map((prov) => {
-      if (prov.userId === userId) return {};
+    const permissionArray = await Promise.all(teamMemberProviders.map((prov) => {
       return tokenCanAccessRepo(prov.accessToken, nameWithOwner);
     }));
     const userIds = permissionArray.reduce((userIdArr, githubRes, idx) => {
       if (!githubRes.errors) {
-        userIdArr.push(allTeamProviders[idx].userId);
+        userIdArr.push(teamMemberProviders[idx].userId);
       }
       return userIdArr;
-    }, []);
+    }, [userId]);
 
     // RESOLUTION
+    createRepoWebhook(accessToken, nameWithOwner);
     createOrgWebhook(accessToken, nameWithOwner);
     const newRepo = await r.table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
