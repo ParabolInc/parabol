@@ -6,6 +6,19 @@ import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/a
 import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
 import {GITHUB} from 'universal/utils/constants';
+import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
+import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
+
+const createOrgWebhook = async (accessToken, nameWithOwner) => {
+  const [owner] = nameWithOwner.split('/');
+  const endpoint = `https://api.github.com/orgs/${owner}/hooks`;
+  const webhooks = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}}).then((res) => res.json());
+  // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
+  if (Array.isArray(webhooks) && webhooks.length === 0) {
+    const createHookParams = makeGitHubWebhookParams(['organization']);
+    fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams));
+  }
+};
 
 export default {
   name: 'AddGitHubRepo',
@@ -37,11 +50,16 @@ export default {
       throw new Error('No GitHub Provider found! Try refreshing your token');
     }
     const {accessToken} = provider;
-    const {errors} = await tokenCanAccessRepo(accessToken, nameWithOwner);
+    const {data, errors} = await tokenCanAccessRepo(accessToken, nameWithOwner);
 
     if (errors) {
       console.error('GitHub error: ', errors);
       throw errors;
+    }
+
+    const isRepoAdmin = data.getRepo.repository.viewerCanAdminister;
+    if (!isRepoAdmin) {
+      throw new Error(`You must be an administer of ${nameWithOwner} to integrate`);
     }
 
     // try to put other team members on this integration
@@ -61,6 +79,7 @@ export default {
     }, []);
 
     // RESOLUTION
+    createOrgWebhook(accessToken, nameWithOwner);
     const newRepo = await r.table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({nameWithOwner})
