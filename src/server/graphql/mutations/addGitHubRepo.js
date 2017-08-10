@@ -9,13 +9,13 @@ import shortid from 'shortid';
 import {GITHUB} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
-const createRepoWebhook = async (accessToken, nameWithOwner) => {
+const createRepoWebhook = async (accessToken, nameWithOwner, senderLogin) => {
   const endpoint = `https://api.github.com/repos/${nameWithOwner}/hooks`;
   const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
   const webhooks = await res.json();
   // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
   if (Array.isArray(webhooks) && webhooks.length === 0) {
-    const createHookParams = makeGitHubWebhookParams([
+    const createHookParams = makeGitHubWebhookParams(senderLogin, [
       'issues',
       'issue_comment',
       'label',
@@ -97,7 +97,7 @@ export default {
     }, [userId]);
 
     // RESOLUTION
-    createRepoWebhook(accessToken, nameWithOwner);
+    createRepoWebhook(accessToken, nameWithOwner, providerUserName);
     createOrgWebhook(accessToken, nameWithOwner, providerUserName);
     const newRepo = await r.table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
