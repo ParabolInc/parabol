@@ -1,7 +1,7 @@
-import crypto from 'crypto';
 import schema from 'server/graphql/rootSchema';
 import {graphql} from 'graphql';
 import secureCompare from 'secure-compare';
+import signPayload from 'server/utils/signPayload';
 
 // TODO when this is all legit, we'll map through the queries & use the ASTs instead of the strings
 const eventLookup = {
@@ -28,14 +28,13 @@ const eventLookup = {
 export default async (req, res) => {
   res.sendStatus(200);
   const event = req.get('X-GitHub-Event');
-  const hexDigest = req.get('X-Hub-Signature');
+  const hexDigest = req.get('X-Hub-Signature') || '';
   const [shaType, hash] = hexDigest.split('=');
   const {body} = req;
-  const myHash = crypto
-    .createHmac(shaType, process.env.GITHUB_WEBHOOK_SECRET)
-    .update(JSON.stringify(body))
-    .digest('hex');
-  console.log('got event', event, hash === myHash);
+  const senderLogin = body && body.sender && body.sender.login;
+  const githubSecret = signPayload(process.env.GITHUB_WEBHOOK_SECRET, senderLogin);
+  const myHash = signPayload(githubSecret, JSON.stringify(body), shaType);
+  console.log('Got event', event, senderLogin, myHash === hash);
   if (!secureCompare(hash, myHash)) return;
   const handler = eventLookup[event] && eventLookup[event][body.action];
   if (!handler) return;
