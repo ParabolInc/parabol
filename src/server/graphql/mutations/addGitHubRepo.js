@@ -4,18 +4,36 @@ import AddGitHubRepoPayload from 'server/graphql/types/AddGitHubRepoPayload';
 import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import shortid from 'shortid';
-import {GITHUB} from 'universal/utils/constants';
 import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
+import shortid from 'shortid';
+import {GITHUB, GITHUB_ENDPOINT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
-const createOrgWebhook = async (accessToken, nameWithOwner, senderLogin) => {
+const getOrgQuery = `
+query getOrg($login: String!) {
+  organization(login: $login) {
+    databaseId
+  }
+}`;
+
+const createOrgWebhook = async (accessToken, nameWithOwner) => {
   const [owner] = nameWithOwner.split('/');
   const endpoint = `https://api.github.com/orgs/${owner}/hooks`;
   const webhooks = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}}).then((res) => res.json());
   // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
   if (Array.isArray(webhooks) && webhooks.length === 0) {
-    const createHookParams = makeGitHubWebhookParams(senderLogin, ['organization']);
+    const authedPostOptions = makeGitHubPostOptions(accessToken, {
+      query: getOrgQuery,
+      variables: {login: owner}
+    });
+    const ghProfile = await fetch(GITHUB_ENDPOINT, authedPostOptions);
+    const res = await ghProfile.json();
+    if (res.errors) {
+      throw res.errors;
+    }
+    const {data: {organization: {databaseId}}} = res;
+    const publickKey = String(databaseId);
+    const createHookParams = makeGitHubWebhookParams(publickKey, ['organization']);
     fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams));
   }
 };
@@ -79,7 +97,7 @@ export default {
     }, []);
 
     // RESOLUTION
-    createOrgWebhook(accessToken, nameWithOwner, providerUserName);
+    createOrgWebhook(accessToken, nameWithOwner);
     const newRepo = await r.table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({nameWithOwner})
