@@ -67,7 +67,7 @@ export default {
     if (!provider || !provider.accessToken) {
       throw new Error('No GitHub Provider found! Try refreshing your token');
     }
-    const {accessToken, providerUserName} = provider;
+    const {accessToken} = provider;
     const {data, errors} = await tokenCanAccessRepo(accessToken, nameWithOwner);
 
     if (errors) {
