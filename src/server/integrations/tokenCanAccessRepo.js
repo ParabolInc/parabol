@@ -4,6 +4,7 @@ import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 const getRepoQuery = `
 query getRepo($name: String! $owner: String!) {
   repository(name: $name, owner: $owner) {
+    databaseId
     viewerCanAdminister
   }
 }`;
