@@ -6,7 +6,7 @@ import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/a
 import getPubSub from 'server/utils/getPubSub';
 import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 import shortid from 'shortid';
-import {GITHUB} from 'universal/utils/constants';
+import {GITHUB, GITHUB_ENDPOINT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 const createRepoWebhook = async (accessToken, nameWithOwner, senderLogin) => {
@@ -29,14 +29,32 @@ const createRepoWebhook = async (accessToken, nameWithOwner, senderLogin) => {
   }
 };
 
-const createOrgWebhook = async (accessToken, nameWithOwner, senderLogin) => {
+const getOrgQuery = `
+query getOrg($login: String!) {
+  organization(login: $login) {
+    databaseId
+  }
+}`;
+
+const createOrgWebhook = async (accessToken, nameWithOwner) => {
   const [owner] = nameWithOwner.split('/');
   const endpoint = `https://api.github.com/orgs/${owner}/hooks`;
   const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
   const webhooks = await res.json();
   // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
   if (Array.isArray(webhooks) && webhooks.length === 0) {
-    const createHookParams = makeGitHubWebhookParams(senderLogin, ['organization']);
+    const authedPostOptions = makeGitHubPostOptions(accessToken, {
+      query: getOrgQuery,
+      variables: {login: owner}
+    });
+    const ghProfile = await fetch(GITHUB_ENDPOINT, authedPostOptions);
+    const res = await ghProfile.json();
+    if (res.errors) {
+      throw res.errors;
+    }
+    const {data: {organization: {databaseId}}} = res;
+    const publickKey = String(databaseId);
+    const createHookParams = makeGitHubWebhookParams(publickKey, ['organization']);
     fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams));
   }
 };
@@ -70,7 +88,7 @@ export default {
       throw new Error('No GitHub Provider found! Try refreshing your token');
     }
     // first check if the viewer has permission. then, check the rest
-    const {accessToken, providerUserName} = allTeamProviders[viewerProviderIdx];
+    const {accessToken} = allTeamProviders[viewerProviderIdx];
     const viewerPermissions = await tokenCanAccessRepo(accessToken, nameWithOwner);
     const {data, errors} = viewerPermissions;
     if (errors) {
@@ -97,8 +115,8 @@ export default {
     }, [userId]);
 
     // RESOLUTION
-    createRepoWebhook(accessToken, nameWithOwner, providerUserName);
-    createOrgWebhook(accessToken, nameWithOwner, providerUserName);
+    createRepoWebhook(accessToken, nameWithOwner);
+    createOrgWebhook(accessToken, nameWithOwner);
     const newRepo = await r.table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({nameWithOwner})
