@@ -6,7 +6,7 @@ import signPayload from 'server/utils/signPayload';
 // TODO when this is all legit, we'll map through the queries & use the ASTs instead of the strings
 const eventLookup = {
   organization: {
-    _getPublickKey: ({organization: {id}}) => id,
+    _getPublickKey: ({organization: {id}}) => String(id),
     member_added: {
       getVars: ({membership: {user: {login: userName}}, organization: {login: orgName}}) => ({userName, orgName}),
       query: `
