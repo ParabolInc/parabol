@@ -6,6 +6,7 @@ import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB, SLACK} from 'universal/utils/constants';
+import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
 
 
 const getPayload = async (service, integrationChanges, teamId, userId) => {
@@ -85,8 +86,13 @@ export default {
           isActive: doc('userIds').eq([userId]).not()
         }), {returnChanges: true})('changes').default([]);
       const providerRemoved = await getPayload(service, repoChanges, teamId, userId);
+      const archivedProjectsByRepo = await archiveProjectsForManyRepos(repoChanges);
+      providerRemoved.archivedProjectIds = archivedProjectsByRepo.reduce((arr, repoArr) => {
+        arr.push(...repoArr);
+        return arr;
+      }, []);
+
       getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
-      // TODO remove the cards that belong to the deletedIntegrationIds
       return providerRemoved;
     }
     // will never hit this

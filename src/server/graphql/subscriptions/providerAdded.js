@@ -38,6 +38,6 @@ export default {
         }
       };
     };
-    return makeSubscribeIter(channelName, undefined, resolve);
+    return makeSubscribeIter(channelName, {resolve});
   }
 };

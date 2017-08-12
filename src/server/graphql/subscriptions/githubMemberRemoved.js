@@ -1,22 +1,21 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
+import GitHubMemberRemovedPayload from 'server/graphql/types/GitHubMemberRemovedPayload';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
-import AddGitHubRepoPayload from 'server/graphql/types/AddGitHubRepoPayload';
 
 export default {
-  type: new GraphQLNonNull(AddGitHubRepoPayload),
+  type: new GraphQLNonNull(GitHubMemberRemovedPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken, socketId}) => {
+  subscribe: (source, {teamId}, {authToken}) => {
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const channelName = `githubRepoAdded.${teamId}`;
-    const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn});
+    const channelName = `githubMemberRemoved.${teamId}`;
+    return makeSubscribeIter(channelName);
   }
 };

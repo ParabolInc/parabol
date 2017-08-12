@@ -21,7 +21,7 @@ const Provider = new GraphQLObjectType({
     },
     providerUserId: {
       type: GraphQLID,
-      description: '*The id for the user used by the provider, eg SlackTeamId, GoogleUserId'
+      description: '*The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin'
     },
     providerUserName: {
       type: GraphQLString,

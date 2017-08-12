@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
+import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
@@ -49,16 +50,19 @@ export default {
       throw new Error('Integration was already updated');
     }
 
-    const integrationLeft = {
-      globalId,
-      userId: updatedIntegration.isActive ? userId : null
-    };
-
-    if (service === GITHUB) {
-      if (updatedIntegration.isActive === false) {
-        // TODO get rid of the cards, etc
+    const {isActive, nameWithOwner} = updatedIntegration;
+    let archivedProjectIds = [];
+    if (isActive === false) {
+      if (service === GITHUB) {
+        archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner);
       }
     }
+
+    const integrationLeft = {
+      globalId,
+      userId: isActive ? userId : null,
+      archivedProjectIds
+    };
     getPubSub().publish(`integrationLeft.${teamId}.${service}`, {integrationLeft, mutatorId: socket.id});
     return integrationLeft;
   }

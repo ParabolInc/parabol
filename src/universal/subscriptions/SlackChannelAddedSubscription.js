@@ -1,7 +1,7 @@
 // import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 import {addSlackChannelUpdater} from 'universal/mutations/AddSlackChannelMutation';
 
-const AddedSubscription = graphql`
+const subscription = graphql`
   subscription SlackChannelAddedSubscription($teamId: ID!) {
     slackChannelAdded(teamId: $teamId) {
       channel {
@@ -17,7 +17,7 @@ const SlackChannelAddedSubscription = (environment, queryVariables) => {
   const {ensureSubscription, viewerId} = environment;
   const {teamId} = queryVariables;
   return ensureSubscription({
-    subscription: AddedSubscription,
+    subscription,
     variables: {teamId},
     updater: (store) => {
       const newNode = store.getRootField('slackChannelAdded').getLinkedRecord('channel');

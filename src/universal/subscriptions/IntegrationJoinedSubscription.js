@@ -1,6 +1,6 @@
 import {joinIntegrationUpdater} from 'universal/mutations/JoinIntegrationMutation';
 
-const AddedSubscription = graphql`
+const subscription = graphql`
   subscription IntegrationJoinedSubscription($service: IntegrationService!, $teamId: ID!) {
     integrationJoined(service: $service, teamId: $teamId) {
       globalId
@@ -17,7 +17,7 @@ const IntegrationJoinedSubscription = (service) => (environment, queryVariables)
   const {ensureSubscription, viewerId} = environment;
   const {teamId} = queryVariables;
   return ensureSubscription({
-    subscription: AddedSubscription,
+    subscription,
     variables: {service, teamId},
     updater: (store) => {
       const viewer = store.get(viewerId);
