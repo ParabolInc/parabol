@@ -1,6 +1,6 @@
 import {removeGitHubRepoUpdater} from 'universal/mutations/RemoveGitHubRepoMutation';
 
-const RemovedSubscription = graphql`
+const subscription = graphql`
   subscription GitHubRepoRemovedSubscription($teamId: ID!) {
     githubRepoRemoved(teamId: $teamId) {
       deletedId
@@ -12,7 +12,7 @@ const GitHubRepoRemovedSubscription = (environment, queryVariables) => {
   const {ensureSubscription, viewerId} = environment;
   const {teamId} = queryVariables;
   return ensureSubscription({
-    subscription: RemovedSubscription,
+    subscription,
     variables: {teamId},
     updater: (store) => {
       const viewer = store.get(viewerId);

@@ -22,7 +22,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
     query: PropTypes.func,
     render: PropTypes.func.isRequired,
     variables: PropTypes.object,
-    subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired).isRequired
+    subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired)
   };
   static timeouts = {};
 
@@ -197,6 +197,8 @@ export default class ReactRelayQueryRenderer extends React.Component {
           this.release();
         }
       };
+      // note that the reference to `this` could be a memory leak since these components are never released
+      // to minimize memory, we could make a `releaseFactory` that takes in the disposers
       environment.registerQuery(this._queryKey, subscriptionKeys, this.unsubscribe);
     }
   }

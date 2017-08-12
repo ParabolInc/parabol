@@ -15,6 +15,7 @@ import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemoved
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
+import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
 
 const teamIntegrationsQuery = graphql`
   query TeamIntegrationsRootQuery($teamId: ID!) {
@@ -33,6 +34,7 @@ const mapStateToProps = (state) => {
 const subscriptions = [
   ProviderRemovedSubscription,
   ProviderAddedSubscription,
+  GitHubMemberRemovedSubscription,
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
   SlackChannelAddedSubscription,

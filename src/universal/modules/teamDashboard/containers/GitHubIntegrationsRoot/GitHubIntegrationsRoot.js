@@ -14,6 +14,7 @@ import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemoved
 import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription';
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
+import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
 
 const githubRepoQuery = graphql`
   query GitHubIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
@@ -30,6 +31,7 @@ const mapStateToProps = (state) => {
 };
 
 const subscriptions = [
+  GitHubMemberRemovedSubscription,
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
   ProviderRemovedSubscription,

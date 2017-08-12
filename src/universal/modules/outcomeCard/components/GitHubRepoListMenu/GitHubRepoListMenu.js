@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 
 class GitHubRepoListMenu extends Component {
   static propTypes = {
-    setLoading: PropTypes.func.isRequired,
     viewer: PropTypes.object.isRequired,
     relay: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
@@ -20,8 +19,7 @@ class GitHubRepoListMenu extends Component {
   }
 
   componentWillMount() {
-    const {setLoading, viewer: {githubRepos}} = this.props;
-    setLoading(false);
+    const {viewer: {githubRepos}} = this.props;
     this.filterRepos(githubRepos);
   }
 

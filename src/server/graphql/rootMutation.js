@@ -19,6 +19,8 @@ import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo';
 import leaveIntegration from 'server/graphql/mutations/leaveIntegration';
 import joinIntegration from 'server/graphql/mutations/joinIntegration';
 import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue';
+import githubAddMember from 'server/graphql/mutations/githubAddMember';
+import githubRemoveMember from 'server/graphql/mutations/githubRemoveMember';
 
 const rootFields = Object.assign({},
   agenda,
@@ -42,6 +44,8 @@ export default new GraphQLObjectType({
     addProvider,
     addSlackChannel,
     createGitHubIssue,
+    githubAddMember,
+    githubRemoveMember,
     joinIntegration,
     leaveIntegration,
     removeProvider,

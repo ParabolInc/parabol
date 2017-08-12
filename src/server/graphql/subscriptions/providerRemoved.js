@@ -21,6 +21,6 @@ export default {
     };
     // no need for a special resolve because we don't send secret info like accessToken
     // we send the userId of the person who removed the provider & the client decides how to update the map
-    return makeSubscribeIter(channelName, filterFn);
+    return makeSubscribeIter(channelName, {filterFn});
   }
 };

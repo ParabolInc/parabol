@@ -87,9 +87,9 @@ stages:
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
             export DEPLOY_ENV="staging"
           elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-            export DEPLOY_ENV="development-server"
-          else
             export DEPLOY_ENV="development"
+          else
+            export DEPLOY_ENV="local"
           fi
           ssh-agent $(
             ssh-add -D;
