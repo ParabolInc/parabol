@@ -4,6 +4,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.0 - 11-Aug-2017
+### Added
+- Basic Slack integration:
+   - Add integration in Team Settings to Slack channels of your choice
+   - Get notified when a meeting begins and ends
+- Basic GitHub integration:
+   - Access integration settings from Team Settings
+   - Create GitHub issues from project cards
+   - Basic infrastructure laid for receiving webhooks from GitHub
+- Pattern for animated transitions
+- Fancy new menus for Project Cards
+- Relay and our very own Relay pub/sub pattern
+
+### Fixed
+- #1135 yanks action email graphic
+- #1128 toggle label for org members
+- #1055 agenda prompt and create card UI text
+- #1054 name prompt and #460 progress dots
+- #1033 Updates is proper OOUX label
+- #551 timestamp toggle
+
+
 ## v0.19.2 - 29-Jun-2017
 ### Fixed
 - #1131 broken new team validation accepts blank name on client
