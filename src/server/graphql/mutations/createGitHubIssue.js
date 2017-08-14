@@ -78,11 +78,13 @@ export default {
       body,
       assignees: [assigneeProvider.providerUserName]
     };
+    console.log('payload to GH', payload)
     const {accessToken} = creatorProvider || assigneeProvider;
     const postOptions = makeGitHubPostOptions(accessToken, payload);
     const endpoint = `https://api.github.com/repos/${repoOwner}/${repoName}/issues`;
     const newIssue = await fetch(endpoint, postOptions);
     const res = await newIssue.json();
+    console.log('res', res);
     const {errors, message} = res;
     if (errors) {
       const {code, field} = errors[0];
@@ -98,10 +100,11 @@ export default {
       throw new Error(`GitHub: ${message}.`);
     }
 
-    const {number: issueNumber} = res;
+    const {number: issueNumber, id: integrationId} = res;
     await r.table('Project').get(projectId)
       .update({
         integration: {
+          integrationId,
           service: GITHUB,
           issueNumber,
           nameWithOwner

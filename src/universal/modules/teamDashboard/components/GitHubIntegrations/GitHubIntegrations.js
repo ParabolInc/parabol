@@ -20,6 +20,7 @@ const GitHubIntegrations = (props) => {
   const {relay: {environment}, jwt, styles, teamId, viewer} = props;
   const {githubRepos, integrationProvider} = viewer;
   const accessToken = integrationProvider && integrationProvider.accessToken;
+  const providerUserName = integrationProvider && integrationProvider.providerUserName;
   const openOauth = () => {
     const uri = makeUri(jwt, teamId);
     window.open(uri);
@@ -54,7 +55,7 @@ const GitHubIntegrations = (props) => {
           <Button
             buttonStyle="flat"
             colorPalette="cool"
-            label="Refresh Token"
+            label={`Refresh Token for ${providerUserName}`}
             onClick={openOauth}
             size="smallest"
           />
@@ -184,6 +185,7 @@ export default createFragmentContainer(
       integrationProvider(teamId: $teamId, service: $service) {
         id
         accessToken
+        providerUserName
       }
       githubRepos(teamId: $teamId) {
         id

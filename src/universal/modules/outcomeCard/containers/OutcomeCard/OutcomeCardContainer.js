@@ -151,7 +151,6 @@ class OutcomeCardContainer extends Component {
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
           teamMembers={teamMembers}
-          unarchiveProject={this.unarchiveProject}
         />
       </div>
     );

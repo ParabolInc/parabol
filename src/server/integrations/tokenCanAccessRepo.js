@@ -6,6 +6,9 @@ query getRepo($name: String! $owner: String!) {
   repository(name: $name, owner: $owner) {
     databaseId
     viewerCanAdminister
+    owner {
+      __typename
+    }
   }
 }`;
 

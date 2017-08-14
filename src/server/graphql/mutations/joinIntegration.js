@@ -9,7 +9,7 @@ import {GITHUB} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(JoinIntegrationPayload),
-  description: 'Remove a user from an integration',
+  description: 'Add a user to an integration',
   args: {
     globalId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -51,10 +51,10 @@ export default {
     // RESOLUTION
     // note: does not fail if they are already a member
     if (service === GITHUB) {
-      const {accessToken} = provider;
-      const integrationIds = await maybeJoinRepos([integration], accessToken, userId);
+      const {accessToken, providerUserName} = provider;
+      const integrationIds = await maybeJoinRepos([integration], accessToken, userId, providerUserName);
       if (integrationIds.length === 0) {
-        throw new Error('You do not have access to this repository');
+        throw new Error('You must be an org member or collaborator to join');
       }
     }
 
