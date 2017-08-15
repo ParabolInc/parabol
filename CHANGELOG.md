@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.2 - 14-Aug-2017
+### Added
+- add an adminUserId to every github integration
+### Fixed
+- #1239 Octocat styling regression
+
+
 ## v0.20.1 - 14-Aug-2017
 ### Fixed
 - #1243 facilitator tethering issue
