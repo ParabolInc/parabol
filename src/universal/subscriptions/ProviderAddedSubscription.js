@@ -11,6 +11,7 @@ const subscription = graphql`
       provider {
         id
         accessToken
+        providerUserName
         service
       }
       joinedIntegrationIds
