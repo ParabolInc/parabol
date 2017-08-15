@@ -1,7 +1,9 @@
+import {ContentState, convertToRaw} from 'draft-js';
+import {columnArray, PROJECT_MAX_CHARS} from 'universal/utils/constants';
 import {compositeId} from 'universal/validation/templates';
-import {columnArray} from 'universal/utils/constants';
 import legitify from './legitify';
-import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
+
+const makeEmptyStr = () => JSON.stringify(convertToRaw(ContentState.createFromText('')));
 
 export default function makeProjectSchema() {
   return legitify({
@@ -9,9 +11,25 @@ export default function makeProjectSchema() {
     agendaId: compositeId,
     content: (value) => value
       .trim()
+      .normalize((str) => {
+        let parsedContent;
+        try {
+          parsedContent = JSON.parse(str);
+        } catch (e) {
+          return makeEmptyStr();
+        }
+        const keys = Object.keys(parsedContent);
+        if (keys.length !== 2 ||
+          typeof parsedContent.entityMap !== 'object' ||
+          !Array.isArray(parsedContent.blocks ||
+          parsedContent.blocks.length === 0)) {
+          return makeEmptyStr();
+        }
+        return str;
+      })
       .max(PROJECT_MAX_CHARS, 'Whoa! That looks like 2 projects'),
     status: (value) => value
-      // status may be empty eg unarchive card
+    // status may be empty eg unarchive card
       .test((str) => str && !columnArray.includes(str) && 'That isn’t a status!'),
     teamMemberId: compositeId,
     sortOrder: (value) => value.float()

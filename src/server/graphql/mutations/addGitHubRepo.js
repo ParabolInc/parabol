@@ -109,6 +109,7 @@ export default {
           r.table(GITHUB)
             .insert({
               id: shortid.generate(),
+              adminUserId: userId,
               createdAt: now,
               updatedAt: now,
               isActive: true,
@@ -119,6 +120,7 @@ export default {
           r.table(GITHUB)
             .get(integrationId)
             .update({
+              adminUserId: userId,
               isActive: true,
               userIds,
               updatedAt: now
