@@ -73,7 +73,8 @@ class OutcomeCardFooter extends Component {
       isPrivate,
       outcome,
       styles,
-      teamMembers
+      teamMembers,
+      toggleMenuState
     } = this.props;
     const {teamMember: owner, integration} = outcome;
     const {service} = integration || {};
@@ -121,6 +122,7 @@ class OutcomeCardFooter extends Component {
                 }}
                 targetAnchor={assignTargetAnchor}
                 toggle={ownerAvatar}
+                toggleMenuState={toggleMenuState}
               />
             }
           </div>
@@ -141,6 +143,7 @@ class OutcomeCardFooter extends Component {
                   }}
                   targetAnchor={targetAnchor}
                   toggle={<OutcomeCardFooterButton icon="github"/>}
+                  toggleMenuState={toggleMenuState}
                 />
                 }
                 <AsyncMenuContainer
@@ -157,6 +160,7 @@ class OutcomeCardFooter extends Component {
                   }}
                   targetAnchor={targetAnchor}
                   toggle={<OutcomeCardFooterButton icon="ellipsis-v"/>}
+                  toggleMenuState={toggleMenuState}
                 />
               </div>
             }
@@ -183,7 +187,8 @@ OutcomeCardFooter.propTypes = {
   outcome: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array
+  teamMembers: PropTypes.array,
+  toggleMenuState: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({

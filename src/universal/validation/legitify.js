@@ -54,7 +54,7 @@ class Legitity {
   }
 
   trim() {
-    this.value = this.value && this.value.trim();
+    this.value = this.value && this.value.trim ? this.value.trim() : this.value;
     return this;
   }
 
@@ -65,6 +65,7 @@ class Legitity {
         this.error = msg;
       }
     }
+    return this;
   }
 
   test(check) {
