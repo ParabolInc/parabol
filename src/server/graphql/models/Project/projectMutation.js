@@ -1,17 +1,12 @@
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {ProjectInput} from './projectSchema';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLID
-} from 'graphql';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import shortid from 'shortid';
-import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import {handleSchemaErrors} from 'server/utils/utils';
 import updateProject from 'server/graphql/models/Project/updateProject/updateProject';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {handleSchemaErrors} from 'server/utils/utils';
+import shortid from 'shortid';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
-import {convertToRaw, ContentState} from 'draft-js';
+import makeProjectSchema from 'universal/validation/makeProjectSchema';
+import {ProjectInput} from './projectSchema';
 
 export default {
   updateProject,
@@ -36,14 +31,15 @@ export default {
       // VALIDATION
       // TODO make id, status, teamMemberId required
       const schema = makeProjectSchema();
-      const {errors, data: validNewProject} = schema(newProject);
+      // ensure that content is not empty
+      const {errors, data: validNewProject} = schema({content: 1, ...newProject});
       handleSchemaErrors(errors);
 
       // RESOLUTION
       const now = new Date();
       const [userId] = validNewProject.teamMemberId.split('::');
       const {content} = validNewProject;
-      const {entityMap} = content ? JSON.parse(content) : convertToRaw(ContentState.createFromText(''));
+      const {entityMap} = JSON.parse(content);
       const project = {
         ...validNewProject,
         userId,
