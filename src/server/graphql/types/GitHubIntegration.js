@@ -13,6 +13,10 @@ const GitHubIntegration = new GraphQLObjectType({
   fields: () => ({
     // shortid
     id: globalIdField(GITHUB, ({id}) => id),
+    adminUserId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The parabol userId of the admin for this repo (usually the creator)'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the integration was created'
