@@ -1,23 +1,13 @@
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  getSegmentTraitsForUsers,
-  requireSUOrTeamMember,
-  requireWebsocket
-} from 'server/utils/authorization';
-import {errorObj} from 'server/utils/utils';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLID
-} from 'graphql';
-import {
-  SUMMARY
-} from 'universal/utils/constants';
-import resetMeeting from './resetMeeting';
-import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import getEndMeetingSortOrders from 'server/graphql/models/Team/endMeeting/getEndMeetingSortOrders';
-import segmentIo from 'server/utils/segmentIo';
 import {endSlackMeeting} from 'server/graphql/models/Team/notifySlack/notifySlack';
+import {getSegmentTraitsForUsers, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import segmentIo from 'server/utils/segmentIo';
+import {errorObj} from 'server/utils/utils';
+import {SUMMARY} from 'universal/utils/constants';
+import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
+import resetMeeting from './resetMeeting';
 
 export default {
   type: GraphQLBoolean,
@@ -55,22 +45,13 @@ export default {
       .map((doc) => doc('id'))
       .coerceTo('array')
       .do((agendaItemIds) => {
-        // delete any null actions
         return r.table('Project')
           .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-          .filter((row) => row('content').eq(null))
-          .delete()
-          .do(() => {
-            // grab all the projects
-            return r.table('Project')
-              .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-              .filter((row) => row('content').ne(null))
-              .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
-              .orderBy('createdAt')
-              .pluck('id', 'content', 'status', 'tags', 'teamMemberId')
-              .coerceTo('array')
-              .default([]);
-          })
+          .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
+          .orderBy('createdAt')
+          .pluck('id', 'content', 'status', 'tags', 'teamMemberId')
+          .coerceTo('array')
+          .default([])
           .do((projects) => {
             return r.table('Meeting').get(meetingId)
               .update({
