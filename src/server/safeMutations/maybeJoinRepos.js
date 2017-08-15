@@ -27,8 +27,8 @@ const maybeJoinRepos = async (integrations, accessToken, userId, providerUserNam
   for (let i = 0; i < permissionArray.length; i++) {
     const githubRes = permissionArray[i];
     if (githubRes.errors) continue;
-    const repoType = githubRes.data.repository.owner.__typename;
-    if (repoType === 'Organization') {
+    const {__typename: repoType, viewerIsAMember}  = githubRes.data.repository.owner;
+    if (repoType === 'Organization' && viewerIsAMember) {
       orgRepoIds.push(integrations[i].id);
     } else {
       // this is a personal repo, where membership doesn't exist, so we need to see if they are a collaborator
