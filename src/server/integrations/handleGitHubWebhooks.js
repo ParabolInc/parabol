@@ -9,7 +9,7 @@ const getPublicKey = ({repository: {id}}) => String(id);
 const eventLookup = {
   issues: {
     // TODO pick this back up for epic 8
-    //assigned: {
+    //  assigned: {
     //  getVars: ({repository, issue, assignee}) => ({
     //    nameWithOwner: repository.full_name,
     //    integrationId: issue.id,
@@ -20,7 +20,7 @@ const eventLookup = {
     //      githubAddMember(assigneeLogin: $assigneeLogin, integrationId: $integrationId, nameWithOwner: $nameWithOwner)
     //    }
     //  `
-    //}
+    //  }
   },
   issue_comment: {},
   label: {},
