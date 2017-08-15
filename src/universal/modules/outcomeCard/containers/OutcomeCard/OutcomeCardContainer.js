@@ -1,5 +1,5 @@
 import {cashay} from 'cashay';
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import {convertToRaw, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -34,22 +34,21 @@ const mapStateToProps = (state, props) => {
 class OutcomeCardContainer extends Component {
   constructor(props) {
     super(props);
-    const {outcome: {content}} = props;
+    const {contentState} = props;
     this.state = {
       cardHasHover: false,
       cardHasFocus: false,
-      editorState: content ?
-        EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) :
-        EditorState.createEmpty(editorDecorators)
-    };
+      editorState: EditorState.createWithContent(contentState, editorDecorators)
+  }
+    ;
   }
 
   componentWillReceiveProps(nextProps) {
-    const {content: nextContent} = nextProps.outcome;
-    const {outcome: {content}} = this.props;
-    if (content !== nextContent) {
+    const {contentState: nextContentState} = nextProps;
+    const {contentState: initialContentState} = this.props;
+    if (initialContentState !== nextContentState) {
       const {editorState} = this.state;
-      const newContentState = mergeServerContent(editorState, convertFromRaw(JSON.parse(nextContent)));
+      const newContentState = mergeServerContent(editorState, nextContentState);
       const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
       this.setEditorState(newEditorState);
     }
@@ -64,9 +63,9 @@ class OutcomeCardContainer extends Component {
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused !== isFocused) {
       this.annouceEditing(isFocused);
-      if (!isFocused) {
-        this.handleCardUpdate();
-      }
+      //if (!isFocused) {
+      //  this.handleCardUpdate();
+      //}
     }
     this.setState({
       editorState
@@ -82,27 +81,25 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = (canDelete) => {
     const {editorState} = this.state;
-    const {outcome: {id: projectId, content}} = this.props;
+    const {outcome: {id: projectId}, contentState: initialContentState} = this.props;
     const contentState = editorState.getCurrentContent();
-    if (canDelete && contentState.getPlainText() === '') {
+    if (canDelete && !contentState.hasText()) {
       cashay.mutate('deleteProject', {variables: {projectId}});
-    } else {
-      const rawContentStr = JSON.stringify(convertToRaw(contentState));
-      if (rawContentStr !== content) {
-        cashay.mutate('updateProject', {
-          ops: {},
-          variables: {
-            updatedProject: {
-              id: projectId,
-              content: rawContentStr
-            }
+    } else if (initialContentState !== contentState) {
+      cashay.mutate('updateProject', {
+        ops: {},
+        variables: {
+          updatedProject: {
+            id: projectId,
+            content: JSON.stringify(convertToRaw(contentState))
           }
-        });
-      }
+        }
+      });
     }
   };
 
   handleBlur = (e) => {
+    console.log('cur', e.currentTarget, e.relatedTarget)
     if (!e.currentTarget.contains(e.relatedTarget)) {
       this.handleCardUpdate(true);
     }
