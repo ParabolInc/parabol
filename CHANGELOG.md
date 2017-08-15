@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.1 - 14-Aug-2017
+### Fixed
+- #1243 facilitator tethering issue
+- #1246 be safe with createFromContent
+
+
 ## v0.20.0 - 11-Aug-2017
 ### Added
 - Basic Slack integration:
@@ -31,6 +37,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #1131 broken new team validation accepts blank name on client
 - #1132 handle shouldValidate and handleSubmit on new team form
 
+
 ## v0.19.1 - 26-Jun-2017
 ### Fixed
 - #914 improbable welcome wizard race condition
@@ -38,6 +45,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #1086 teamId/orgId missing from Segment page events
 - #1116 new cards during meeting shows incorrect owner
 - #1117 meeting summary cards not rendering to HTML
+
 
 ## v0.19.0 - 22-Jun-2017
 ### Added
@@ -47,6 +55,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 - #1085 Migrations on deploy broken (regeneratorRuntime not found)
 
+
 ## v0.18.3 - 14-Jun-2017
 ### Added
 - #1070 Create segment event when meeting is automatically ended
@@ -54,12 +63,14 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 - #1074 endOldMeetings: meeting already ended
 
+
 ## v0.18.2 - 02-Jun-2017
 ### Added
 - Enhanced design of beta integrations configuration panel, starting with Slack
 
 ### Fixed
 - Various dependency updates fixing potential security vulnerabilities
+
 
 ## v0.18.1 - 18-May-2017
 ### Added
@@ -102,6 +113,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Actions (in favor of private projects)
 - redux-form from projects
 
+
 ## v0.17.6 - 25-Apr-2017
 ### Added
 - Hello lang tooltips, we'll now tell you which language is saying
@@ -114,6 +126,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #927 fix intranet query for un-ended meetings
 - CircleCI `circle.yml` ssh key management regression fixed
 
+
 ## v0.17.5 - 17-Apr-2017
 ### Fixed
 - typo in segment 'Meeting Completed' event
@@ -125,6 +138,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - fixes #864 team settings panel
 - fixes #882 delete team button
 - fixes #890 update voice of success copy
+
 
 ## v0.17.4 - 07-Apr-2017
 ### Added
@@ -139,6 +153,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Ensure meeting infinite loop fix
 - Avatar group, dates
 
+
 ## v0.17.3 - 05-Apr-2017
 ### Added
 - Action meeting layout and check-in UI/UX changes:
@@ -146,6 +161,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
    - #627 More vertical height during project updates
    - New placement and look for callouts and avatars
 - New counters on project columns
+
 
 ## v0.17.2 - 04-Apr-2017
 ### Added
@@ -157,9 +173,11 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #866 trial date completion bug
 - #868, #879 agendas items not marked as complete
 
+
 ## v0.17.1 - 29-Mar-2017
 ### Fixed
 - #859 infinite redirect loop when deleting the last phaseItem
+
 
 ## v0.17.0 - 27-Mar-2017
 ### Added
@@ -171,6 +189,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #839 max chars for projects
 - #857 mystery notification
 
+
 ## v0.16.12 - 22-Mar-2017
 ### Added
 - #344 meeting agenda list now reflects location of Facilitator and participants
@@ -179,9 +198,11 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 - Better fix for #850 r.createdAt.getTime is not a function
 
+
 ## v0.16.11 - 22-Mar-2017
 ### Fixed
 - Hotfix #850 r.createdAt.getTime is not a function
+
 
 ## v0.16.10 - 22-Mar-2017
 ### Added
@@ -197,6 +218,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
      but intentionally reversed in meetings so things are covered in a
      productive order
 - #848 eager-load error validation error for stripCard
+
 
 ## v0.16.9 - 20-Mar-2017
 ### Added
@@ -224,15 +246,18 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #821 actions list not showing in my dashboard
 - #824 Editing/cursor bug workaround, root cause still unknown
 
+
 ## v0.16.8 - 14-Mar-2017
 ### Fixed
 - #811 Rejoin facilitator button cursor is pointer
 - fix orgName update
 - Dependency bumps & linting
 
+
 ## v0.16.7 - 13-Mar-2017
 ### Fixed
 - #808 hey I want to pay!
+
 
 ## v0.16.5 - 11-Mar-2017
 ### Added
@@ -244,6 +269,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #755 filter handle alignment regression
 - #759 regression: clients unable to accept invitations
 - #793 no such customer exception
+
 
 ## v0.16.3 - 8-Mar-2017
 ### Added
@@ -264,10 +290,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #724 top notification bar & dash modal overlap
 - #733 team project columns (filtered by team member) cache/redux error on DnD
 
+
 ## v0.16.2 - 4-Mar-2017
 ### Added
 - Rejoin facilitator button
 - Switched to [migrate-rethinkdb](https://github.com/ParabolInc/migrate-rethinkdb)
+
 
 ## v0.16.1 - 2-Mar-2017
 ### Added
@@ -279,6 +307,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #753 cannot read property 'bestCursor' of undefined
 - #755 filter handle alignment regression
 - #757 add new team, always shows orgs as "Loading..."
+
 
 ## v0.16.0 - 25-Feb-2017
 ### Added
@@ -319,6 +348,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #718 toast notification for leaving a team copy
 - #725 acceptInvitation race condition
 
+
 ## v0.15.3 - 11-Feb-2017
 ### Added
 - OutcomeCard components (Projects, Action) now re-render their last-updated
@@ -327,14 +357,17 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Generate 'Meeting Completed' on server-side, client was not reliably
   sending this event
 
+
 ## v0.15.2 - 01-Feb-2017
 ### Fixed
 - Incremented `package.json` version to match tag – oops!
+
 
 ## v0.15.1 - 31-Jan-2017
 ### Added
 - `(<TAB> saves)` string to OutcomeCard components when editing
 - `npm run test:xunit` command for CircleCI 2.0
+
 
 ## v0.15.0 - 30-Jan-2017
 ### Added
@@ -342,11 +375,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
   their client version
 - Markdown support added to Action and Project cards
 
+
 ## v0.14.2 - 29-Jan-2017
 ### Fixes
 - #646 the first-time message meeting completion message was not displaying
 - #659 auth0 profile picture meta-information now updated when user changes
   profile image
+
 
 ## v0.14.1 - 16-Jan-2017
 ### Added
@@ -365,12 +400,14 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 - Fixes CircleCI caching issues building native bcrypt modules.
 
+
 ## v0.14.0 - 09-Jan-2017
 ### Added
 - Implements #595; upload of user avatar images to S3
   - Works by securely signing S3 PutObject URL
     see [documentation](./docs/s3.md)
 - `npm run build:deploy` and `npm run build:min` commands
+
 
 ## v0.13.6 - 20-Dec-2016
 ### Added
@@ -379,15 +416,18 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Expanded requireAuthAndRole with optional args
 - Added segment.io event on 'New Team' creation
 
+
 ## v0.13.5 - 12-Dec-2016
 ### Fixed
 - #556 archived cards no longer let you change the owner
 - #557 blur agenda item input after submit
 - #559 participants stopped following the leader after meeting "Last Call"
 
+
 ## v0.13.4 - 08-Dec-2016
 ### Fixed
 - #564 Fix email validation
+
 
 ## v0.13.3 - 05-Dec-2016
 ### Added
@@ -400,12 +440,14 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #547 welcome wizard step 3 cleanup
 - #549 welcome wizard step 3: removing email calls submit
 
+
 ## v0.13.2 - 27-Nov-2016
 ### Added
 - 'Player joined' message when teammate accepts invitation
 
 ### Fixed
 - #543 unable to end action meeting
+
 
 ## v0.13.1 - 25-Nov-2016
 ### Added
@@ -416,6 +458,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #514 Relabeling Actions and Projects during agenda processing
   - Copy now reads "New private action" and "New team project"
 - #536 Cashay warning while proceeding through check-in round
+
 
 ## v0.13.0 - 22-Nov-2016
 We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
@@ -428,9 +471,11 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #508 Agenda items collapse around 1265px
 - #517 Server exception encountered when generating meeting summary
 
+
 ## v0.12.1 - 15-Nov-2016
 ### Fixed
 - #518 Removed team member does not redirect away while on team dashboard
+
 
 ## v0.12.0 - 15-Nov-2016
 ### Added
@@ -445,6 +490,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 ### Fixed
 - #512 Grant facilitation permission to every team member
 
+
 ## v0.11.0 - 05-Nov-2016
 ### Added
 - Added S3 deployment to `npm run build:client-min` and application
@@ -457,6 +503,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
    - DashModal has updated border styling
    - SummaryHeader has button-styled link to team dashboard
    - LastCall pulls success expression from array
+
 
 ## v0.10.0 - 02-Nov-2016
 ### Added
@@ -486,11 +533,13 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Fixed race condition landing on meeting summary route at end of meeting
 - Fixed short urls
 
+
 ## v0.9.5 - 25-Oct-2016
 ### Fixed
 - #433 server crashing on localhost
 - #440 sentry.io bug on `id` field
 - #445 summary rendering “0” when there aren’t members without new outcomes
+
 
 ## v0.9.4 - 24-Oct-2016
 ### Fixed
@@ -498,6 +547,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #429 race to meeting summary and lobby
 - #430 generate only 1 email
 - #431 killMeeting
+
 
 ## v0.9.3 - 24-Oct-2016
 ### Added
@@ -511,6 +561,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 ### Fixed
 - Segment page events now report correct document title
 - #413 fixes build minification
+
 
 ## v0.8.1 - 19-Oct-2016
 ### Added
@@ -526,9 +577,11 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #397 breaks on react-router infinite loop redirect
 - #400 Doesn't submit twice when using Enter to submit outcome changes
 
+
 ## v0.8.0 - 18-Oct-2016
 ### Added
 - End of meeting summary
+
 
 ## v0.7.5 - 15-Oct-2016
 ### Added
@@ -541,6 +594,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 
 ### Fixed
 - Re-added actions subscription channel, was still being used by user dashboard
+
 
 ## v0.7.4 - 12-Oct-2016
 ### Added
@@ -562,9 +616,11 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #351 Font loads twice error
 - #373 Read-only team name outline/focus
 
+
 ## v0.7.1 - 05-Oct-2016
 ### Fixed
 - Fixed: #322, #323, #334, #335, #336
+
 
 ## v0.7.0 - 04-Oct-2016
 ### Added
@@ -579,9 +635,11 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Fixed: #124, #190, #221, #227, #252, #276, #282, #290, #295, #302, #305,
   #307, #313
 
+
 ## v0.6.3 - 28-Sep-2016
 ### Fixed
 - Agenda processing order fix for issue #294
+
 
 ## v0.6.2 - 27-Sep-2016
 ### Added
@@ -590,6 +648,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 ### Fixed
 - Add/remove rethinkdb entity from cache problem, see: https://github.com/mattkrick/cashay/issues/125
 - Editors multiplayer field regression
+
 
 ## v0.6.1 - 23-Sep-2016
 ### Added
@@ -615,6 +674,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Fixes for #119, #188, #225, #231, #241, #233, and #260
 - Merged #267 autofocus fix
 
+
 ## v0.5.3 - 30-Aug-2016
 ### Added
 - Project updates section
@@ -632,6 +692,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Lots of copy updates
 - redux-socket-cluster disconnect timeout
 - Refactored dashboard components into many clearer containers
+
 
 ## v0.4.1 - 16-Aug-2016
 ### Added
