@@ -6,7 +6,7 @@ import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/a
 import {GITHUB} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
-//const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
+// const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
 //  if (!creatorProvider) return false;
 //  const {providerUserName: creatorLogin, userId: creatorUserId} = creatorProvider;
 //  const {accessToken: adminAccessToken, userId: adminUserId} = adminProvider;
@@ -16,7 +16,7 @@ import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 //  const resJson = await res.json();
 //  const {permission} = resJson;
 //  return permission === 'admin' || permission === 'write';
-//};
+// };
 
 const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner) => {
   const r = getRethink();
@@ -95,7 +95,7 @@ export default {
     const adminProvider = providers.find((provider) => provider.userId === adminUserId);
     if (!adminProvider) {
       // this should never happen
-      throw new Error(`This repo does not have an admin! Please re-integrate the repo`);
+      throw new Error('This repo does not have an admin! Please re-integrate the repo');
     }
 
     const creatorProvider = providers.find((provider) => provider.userId === userId);

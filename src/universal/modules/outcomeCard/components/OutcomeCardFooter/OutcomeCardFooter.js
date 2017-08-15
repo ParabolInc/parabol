@@ -128,7 +128,7 @@ class OutcomeCardFooter extends Component {
           </div>
           <div className={buttonBlockStyles}>
             {isArchived ?
-              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply"/> :
+              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" /> :
               <div>
                 {!service &&
                 <AsyncMenuContainer
@@ -142,7 +142,7 @@ class OutcomeCardFooter extends Component {
                     clearError: this.clearError
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="github"/>}
+                  toggle={<OutcomeCardFooterButton icon="github" />}
                   toggleMenuState={toggleMenuState}
                 />
                 }
@@ -159,7 +159,7 @@ class OutcomeCardFooter extends Component {
                     removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="ellipsis-v"/>}
+                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
                   toggleMenuState={toggleMenuState}
                 />
               </div>

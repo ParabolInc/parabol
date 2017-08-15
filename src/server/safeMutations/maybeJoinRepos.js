@@ -9,13 +9,13 @@ const getCollabsOnPersonalRepos = async (personalRepos, providerUserName, access
     const {nameWithOwner} = repo;
     const endpoint = `https://api.github.com/repos/${nameWithOwner}/collaborators/${providerUserName}`;
     const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
-    console.log('status', res.status, typeof res.status)
     if (res.status === 204) {
       integrationIdsToJoin.push(repo.id);
     }
   }));
   return integrationIdsToJoin;
-}
+};
+
 const maybeJoinRepos = async (integrations, accessToken, userId, providerUserName) => {
   const r = getRethink();
   const permissionPromises = integrations.map((integration) => {
@@ -27,7 +27,7 @@ const maybeJoinRepos = async (integrations, accessToken, userId, providerUserNam
   for (let i = 0; i < permissionArray.length; i++) {
     const githubRes = permissionArray[i];
     if (githubRes.errors) continue;
-    const {__typename: repoType, viewerIsAMember}  = githubRes.data.repository.owner;
+    const {__typename: repoType, viewerIsAMember} = githubRes.data.repository.owner;
     if (repoType === 'Organization' && viewerIsAMember) {
       orgRepoIds.push(integrations[i].id);
     } else {

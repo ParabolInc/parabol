@@ -14,7 +14,7 @@ exports.down = async (r) => {
   const indices = [
     r.table('Project').indexDrop('integrationId'),
     r.table('GitHubIntegration').indexDrop('nameWithOwner')
-  ]
+  ];
   try {
     await Promise.all(indices);
   } catch (e) {

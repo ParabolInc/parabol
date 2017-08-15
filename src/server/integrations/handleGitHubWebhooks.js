@@ -8,18 +8,19 @@ const getPublicKey = ({repository: {id}}) => String(id);
 // TODO when this is all legit, we'll map through the queries & use the ASTs instead of the strings
 const eventLookup = {
   issues: {
-    assigned: {
-      getVars: ({repository, issue, assignee}) => ({
-        nameWithOwner: repository.full_name,
-        integrationId: issue.id,
-        assigneeLogin: assignee.login
-      }),
-      query: `
-        mutation GitHubAddAssignee($assigneeLogin: ID! $integrationId: ID!, $nameWithOwner: ID!) {
-          githubAddMember(assigneeLogin: $assigneeLogin, integrationId: $integrationId, nameWithOwner: $nameWithOwner)
-        }
-      `
-    }
+    // TODO pick this back up for epic 8
+    //assigned: {
+    //  getVars: ({repository, issue, assignee}) => ({
+    //    nameWithOwner: repository.full_name,
+    //    integrationId: issue.id,
+    //    assigneeLogin: assignee.login
+    //  }),
+    //  query: `
+    //    mutation GitHubAddAssignee($assigneeLogin: ID! $integrationId: ID!, $nameWithOwner: ID!) {
+    //      githubAddMember(assigneeLogin: $assigneeLogin, integrationId: $integrationId, nameWithOwner: $nameWithOwner)
+    //    }
+    //  `
+    //}
   },
   issue_comment: {},
   label: {},

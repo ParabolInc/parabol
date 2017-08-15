@@ -44,8 +44,8 @@ export default {
       .getAll(assigneeLogin, {index: 'providerUserId'})
       .filter({service: GITHUB})
       .filter((doc) => doc('teamIds').count().ne(0));
-    //.nth(0)('userId')
-    //.default(null);
+    // .nth(0)('userId')
+    // .default(null);
 
     if (providers.length === 0) {
       throw new Error(`${assigneeLogin} does not have a GitHub integration with Parabol`);
@@ -70,7 +70,7 @@ export default {
       const {content, status, tags, updatedAt} = project;
       if (!userIds.includes(userId)) {
         // This user doesn't want to own the project, so ignore
-        return false
+        return false;
       }
       const teamMemberId = `${userId}::${teamId}`;
       const updateObj = {
