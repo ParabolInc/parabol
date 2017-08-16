@@ -38,9 +38,7 @@ class ProjectEditor extends Component {
 
   componentDidMount() {
     const {editorState} = this.props;
-    const text = editorState.getCurrentContent().getPlainText();
-
-    if (text === '') {
+    if (!editorState.getCurrentContent().hasText()) {
       // don't pull it from this.props because react will mutate this.props to our advantage
       setTimeout(() => this.props.editorRef.focus());
     }
