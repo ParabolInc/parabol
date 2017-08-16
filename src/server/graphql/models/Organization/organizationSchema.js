@@ -9,7 +9,7 @@ import {
   GraphQLInputObjectType,
   GraphQLEnumType
 } from 'graphql';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {GraphQLURLType} from 'server/graphql/types';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import getRethink from 'server/database/rethinkDriver';

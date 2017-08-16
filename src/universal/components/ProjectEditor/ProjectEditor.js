@@ -14,7 +14,6 @@ import entitizeText from 'universal/utils/draftjs/entitizeText';
 import './Draft.css';
 
 class ProjectEditor extends Component {
-
   static propTypes = {
     editorRef: PropTypes.any,
     editorState: PropTypes.object,

@@ -13,6 +13,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
   if (thresholds.length === 0) {
     for (let i = 0; i < components.length; i++) {
       const component = components[i];
+      // eslint-disable-next-line react/no-find-dom-node
       const node = findDOMNode(component);
       const {top, height} = node.getBoundingClientRect();
       thresholds[i] = top + height / 2;

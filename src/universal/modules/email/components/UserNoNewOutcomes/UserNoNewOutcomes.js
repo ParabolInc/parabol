@@ -92,14 +92,14 @@ const UserNoNewOutcomes = (props) => {
   const makeMemberCells = (arr) => {
     const cells = () =>
       arr.map((member) =>
-        <td align="center" style={cellStyle} width={cellWidth} key={member.id}>
+        (<td align="center" style={cellStyle} width={cellWidth} key={member.id}>
           <img height={avatarSize} src={member.picture} style={avatarStyles} width={avatarSize} />
           <div style={nameStyle}>{member.preferredName}</div>
           {member.present ?
             <div style={presentStyles}>Present</div> :
             <div style={absentStyles}>Absent</div>
           }
-        </td>
+        </td>)
       );
     return cells();
   };
@@ -119,10 +119,10 @@ const UserNoNewOutcomes = (props) => {
               <table align="center" style={ui.emailTableBase}>
                 <tbody>
                   {memberCells.map((row, idx) =>
-                    <tr key={`memberCell${idx}`}>
+                    (<tr key={`memberCell${idx}`}>
                       {makeMemberCells(row)}
-                    </tr>
-                )}
+                    </tr>)
+                  )}
                 </tbody>
               </table>
             </td>

@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {connectionDefinitions, globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 import IntegrationService from 'server/graphql/types/IntegrationService';

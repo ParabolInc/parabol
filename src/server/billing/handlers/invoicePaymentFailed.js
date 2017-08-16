@@ -28,7 +28,7 @@ export default async function invoicePaymentFailed(invoiceId) {
    attack vector #2: call the webhook with the victims old failed invoiceId, causing them to fail again
    once failed, the stripeSubscriptionId will change (id1 -> null -> id2 on success)
    this is better than making sure the webhook was sent just a couple hours ago
-   also better than looking up the charge & making sure that there hasn't been a more recent, successful charge*/
+   also better than looking up the charge & making sure that there hasn't been a more recent, successful charge */
   console.log('paid, eq', paid, stripeSubscriptionId, subscription);
   if (paid || stripeSubscriptionId !== subscription) return;
 

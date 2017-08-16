@@ -11,7 +11,7 @@ const rootStyle = {
 };
 
 const PatternsContainer = () =>
-  <div style={rootStyle}>
+  (<div style={rootStyle}>
     <Helmet title="Welcome to the Parabol Pattern Library" />
 
     <Spinner fillColor="warm" width={64} />
@@ -47,6 +47,6 @@ const PatternsContainer = () =>
     <Button colorPalette="gray" label="Button" size="largest" buttonStyle="flat" />
 
     <h2>Invoice presentation</h2>
-  </div>;
+  </div>);
 
 export default PatternsContainer;

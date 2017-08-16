@@ -31,13 +31,13 @@ const TeamArchive = (props) => {
           {archivedProjects.length ?
             <div className={css(styles.cardGrid)}>
               {archivedProjects.map((project) =>
-                <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
+                (<div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
                   <OutcomeCardContainer
                     key={project.id}
                     form={`archived::${project.id}`}
                     outcome={project}
                   />
-                </div>
+                </div>)
               )}
             </div> :
             <div className={css(styles.emptyMsg)}>

@@ -9,7 +9,7 @@ import {
   GraphQLList
 } from 'graphql';
 import {GraphQLURLType} from '../../types';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {ProjectStatus} from '../Project/projectSchema';
 import TeamMember from 'server/graphql/types/TeamMember';
 

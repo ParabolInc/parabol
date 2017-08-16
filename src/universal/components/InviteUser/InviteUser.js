@@ -90,7 +90,8 @@ const InviteUser = (props) => {
       <div className={css(styles.buttonBlock)}>
         <Button
           colorPalette="mid"
-          label="Send Invite" size="smallest"
+          label="Send Invite"
+          size="smallest"
           onClick={handleSubmit(updateEditable)}
         />
       </div>

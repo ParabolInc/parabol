@@ -51,12 +51,12 @@ const TeamProjectsHeader = (props) => {
       onClick={() => dispatch(filterTeamMember(null))}
     />].concat(
       teamMembers.map((teamMember) =>
-        <MenuItem
+        (<MenuItem
           isActive={teamMember.id === teamMemberFilterId}
           key={`teamMemberFilter${teamMember.id}`}
           label={teamMember.preferredName}
           onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
-        />
+        />)
       ));
   };
   return (

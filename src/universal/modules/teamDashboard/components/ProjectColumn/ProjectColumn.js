@@ -82,11 +82,11 @@ class ProjectColumn extends Component {
       const itemFactory = () => {
         const menuItems = this.makeTeamMenuItems(sortOrder);
         return menuItems.map((item) =>
-          <MenuItem
+          (<MenuItem
             key={`MenuItem${item.label}`}
             label={item.label}
             onClick={item.handleClick}
-          />
+          />)
         );
       };
 
@@ -168,7 +168,7 @@ class ProjectColumn extends Component {
         <div className={css(styles.columnBody)}>
           <div className={css(styles.columnInner)}>
             {projects.map((project) =>
-              <ProjectCardContainer
+              (<ProjectCardContainer
                 key={`teamCard${project.id}`}
                 area={area}
                 project={project}
@@ -179,7 +179,7 @@ class ProjectColumn extends Component {
                     dragState.components.push(c);
                   }
                 }}
-              />)
+              />))
             }
           </div>
         </div>
