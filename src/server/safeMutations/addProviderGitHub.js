@@ -23,13 +23,13 @@ query {
   }
 }`;
 
-const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId) => {
+const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId, providerUserName) => {
   if (integrationCount === 0) return [];
   const r = getRethink();
   const allIntegrations = await r.table(GITHUB)
     .getAll(teamId, {index: 'teamId'})
     .filter({isActive: true});
-  return maybeJoinRepos(allIntegrations, accessToken, userId);
+  return maybeJoinRepos(allIntegrations, accessToken, userId, providerUserName);
 };
 
 const getTeamMember = async (joinedIntegrationIds, teamMemberId) => {
@@ -101,7 +101,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
     });
 
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId);
+  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId, login);
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
   const providerAdded = {

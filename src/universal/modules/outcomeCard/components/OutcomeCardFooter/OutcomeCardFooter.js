@@ -1,6 +1,5 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
-import {convertToRaw} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
@@ -47,19 +46,22 @@ class OutcomeCardFooter extends Component {
   state = {};
 
   removeContentTag = (tagValue) => () => {
-    const {editorState, outcome: {id, content}} = this.props;
+    const {outcome: {id, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
-    const nextContentState = removeAllRangesForEntity(editorState, content, 'TAG', eqFn);
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id,
-          content: JSON.stringify(convertToRaw(nextContentState))
+    const rawContent = JSON.parse(content);
+    const nextContent = removeAllRangesForEntity(rawContent, 'TAG', eqFn);
+    if (nextContent) {
+      const options = {
+        ops: {},
+        variables: {
+          updatedProject: {
+            id,
+            content: nextContent
+          }
         }
-      }
-    };
-    cashay.mutate('updateProject', options);
+      };
+      cashay.mutate('updateProject', options);
+    }
   };
 
   render() {

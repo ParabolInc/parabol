@@ -44,8 +44,8 @@ export default {
 
     // get the ids of all the repos joined
     const joinedIntegrationsByTeam = await Promise.all(providers.map((provider) => {
-      const {repos, accessToken, userId} = provider;
-      return maybeJoinRepos(repos, accessToken, userId);
+      const {repos, accessToken, providerUserName, userId} = provider;
+      return maybeJoinRepos(repos, accessToken, userId, providerUserName);
     }));
 
     // tell all the listeners about all the repos this guy just joined

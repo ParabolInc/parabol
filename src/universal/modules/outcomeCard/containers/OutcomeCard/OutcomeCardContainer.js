@@ -162,7 +162,6 @@ class OutcomeCardContainer extends Component {
           setEditorState={this.setEditorState}
           teamMembers={teamMembers}
           toggleMenuState={this.toggleMenuState}
-          unarchiveProject={this.unarchiveProject}
         />
       </div>
     );
