@@ -64,7 +64,7 @@ class OutcomeCardContainer extends Component {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused !== isFocused) {
-      this.setState({isEditingText: isFocused})
+      this.setState({isEditingText: isFocused});
       this.announceEditing(isFocused);
       if (!isFocused) {
         this.handleCardUpdate();
