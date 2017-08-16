@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.3 - 14-Aug-2017
+### Fixed
+- #1242 anyone can assign any team member
+- #1252 fix several are editing bug
+- #1253 regression on clicking card menus
+
 ## v0.20.2 - 14-Aug-2017
 ### Added
 - add an adminUserId to every github integration

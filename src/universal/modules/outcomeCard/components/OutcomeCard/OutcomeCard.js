@@ -24,16 +24,13 @@ const OutcomeCard = (props) => {
     isAgenda,
     isDragging,
     isEditing,
-    handleCardBlur,
-    handleCardFocus,
-    handleCardMouseEnter,
-    handleCardMouseLeave,
     hasDragStyles,
     outcome,
     setEditorRef,
     setEditorState,
     styles,
-    teamMembers
+    teamMembers,
+    toggleMenuState
   } = props;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
@@ -52,14 +49,7 @@ const OutcomeCard = (props) => {
   const {integration} = outcome;
   const {service} = integration || {};
   return (
-    <div
-      className={rootStyles}
-      onBlur={handleCardBlur}
-      onFocus={handleCardFocus}
-      onMouseEnter={handleCardMouseEnter}
-      onMouseLeave={handleCardMouseLeave}
-      tabIndex="-1"
-    >
+    <div className={rootStyles}>
       <ProjectWatermark service={service} />
       <div className={css(styles.contentBlock)}>
         <EditingStatusContainer
@@ -85,6 +75,7 @@ const OutcomeCard = (props) => {
           isPrivate={isPrivate}
           outcome={outcome}
           teamMembers={teamMembers}
+          toggleMenuState={toggleMenuState}
         />
       </div>
     </div>
@@ -98,10 +89,6 @@ OutcomeCard.propTypes = {
   cardHasHover: PropTypes.bool,
   cardHasFocus: PropTypes.bool,
   cardHasIntegration: PropTypes.bool,
-  handleCardBlur: PropTypes.func,
-  handleCardFocus: PropTypes.func,
-  handleCardMouseEnter: PropTypes.func,
-  handleCardMouseLeave: PropTypes.func,
   hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
@@ -117,7 +104,8 @@ OutcomeCard.propTypes = {
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array
+  teamMembers: PropTypes.array,
+  toggleMenuState: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({

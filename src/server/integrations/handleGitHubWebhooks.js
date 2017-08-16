@@ -3,8 +3,32 @@ import secureCompare from 'secure-compare';
 import schema from 'server/graphql/rootSchema';
 import signPayload from 'server/utils/signPayload';
 
+const getPublicKey = ({repository: {id}}) => String(id);
+
 // TODO when this is all legit, we'll map through the queries & use the ASTs instead of the strings
 const eventLookup = {
+  issues: {
+    // TODO pick this back up for epic 8
+    //  assigned: {
+    //  getVars: ({repository, issue, assignee}) => ({
+    //    nameWithOwner: repository.full_name,
+    //    integrationId: issue.id,
+    //    assigneeLogin: assignee.login
+    //  }),
+    //  query: `
+    //    mutation GitHubAddAssignee($assigneeLogin: ID! $integrationId: ID!, $nameWithOwner: ID!) {
+    //      githubAddMember(assigneeLogin: $assigneeLogin, integrationId: $integrationId, nameWithOwner: $nameWithOwner)
+    //    }
+    //  `
+    //  }
+  },
+  issue_comment: {},
+  label: {},
+  member: {},
+  milestone: {},
+  pull_request: {},
+  pull_request_review: {},
+
   organization: {
     _getPublickKey: ({organization: {id}}) => String(id),
     member_added: {
@@ -23,7 +47,8 @@ const eventLookup = {
         }
       `
     }
-  }
+  },
+  repository: {}
 };
 
 export default async (req, res) => {
@@ -35,7 +60,7 @@ export default async (req, res) => {
   if (!body || !hexDigest || !eventHandler) return;
 
   const actionHandler = eventHandler[body.action];
-  const publicKey = eventHandler._getPublickKey(body);
+  const publicKey = eventHandler._getPublickKey ? eventHandler._getPublickKey(body) : getPublicKey(body);
   if (!actionHandler || !publicKey) return;
 
   const [shaType, hash] = hexDigest.split('=');
