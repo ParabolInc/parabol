@@ -30,9 +30,8 @@ class EditorLinkViewer extends Component {
 
     const linkViewer = {
       left,
-      top,
-      position: 'absolute',
-      zIndex: ui.ziMenu
+      // initialize somewhere in the viewport so it doesn't trigger a scroll bar
+      top: top || 0
     };
     const menuStyles = css(
       styles.modal,
@@ -111,7 +110,9 @@ const styleThunk = (theme, props) => ({
     display: 'flex',
     fontSize: appTheme.typography.s5,
     padding: '0 .25rem',
-    zIndex: 1
+    position: 'absolute',
+    zIndex: ui.ziMenu,
+    //zIndex: 1
   },
 
   closing: {

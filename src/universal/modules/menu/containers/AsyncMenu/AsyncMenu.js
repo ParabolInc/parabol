@@ -24,7 +24,9 @@ export default class AsyncMenuContainer extends Component {
   };
 
   state = {
-    loading: false
+    loading: false,
+    // initialize somewhere in the viewport so it doesn't trigger a scroll bar
+    top: 0
   };
 
   componentWillMount() {
