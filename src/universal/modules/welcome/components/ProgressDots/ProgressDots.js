@@ -42,8 +42,8 @@ const ProgressDots = (props) => {
 ProgressDots.propTypes = {
   clickFactory: PropTypes.func,
   numDots: PropTypes.number.isRequired, // how many total dots shall we draw?
-  numCompleted: PropTypes.number,       // how many of the dots are completed?
-  currentDot: PropTypes.number,         // which dot (1=first dot) is the user on now?
+  numCompleted: PropTypes.number, // how many of the dots are completed?
+  currentDot: PropTypes.number, // which dot (1=first dot) is the user on now?
   styles: PropTypes.object
 };
 

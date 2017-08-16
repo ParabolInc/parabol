@@ -22,8 +22,8 @@ export default function signupTeam(team, teamLeader, teamMembers, refreshAuthTok
       const {resolve} = teamMutation.createFirstTeam;
       const newTeam = { ...team };
       resolve({}, {newTeam}, {authToken, unitTestCb})
-      .then((result) => expect(typeof result).toBe('string'))
-      .catch((e) => console.log(`exception during test: ${e}`));
+        .then((result) => expect(typeof result).toBe('string'))
+        .catch((e) => console.log(`exception during test: ${e}`));
     });
 
     test('invite team members and accept invitations', (done) => {
@@ -54,7 +54,7 @@ export default function signupTeam(team, teamLeader, teamMembers, refreshAuthTok
         return { email, fullName, task: '' };
       });
       resolve({}, {invitees, teamId}, {authToken, unitTestCb})
-      .catch((e) => { throw new Error(`${e}`); });
+        .catch((e) => { throw new Error(`${e}`); });
     });
   });
 }

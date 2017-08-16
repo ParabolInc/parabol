@@ -15,13 +15,13 @@ const DashNavList = (props) => {
       {hasTeams ?
         <div>
           {teams.map((team) =>
-            <div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
+            (<div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
               {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment" />}
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}
               />
-            </div>
+            </div>)
           )}
         </div> :
         <div className={css(styles.emptyTeams)}>It appears you are not a member of any team!</div>

@@ -32,8 +32,8 @@ export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
       // FIXME https://github.com/facebook/relay/issues/1963
       // const userIds = integration.getValue('userIds');
       // if (userIds) {
-        // const newUserIds = userIds.filter((id) => id !== userId);
-        // integration.setValue(newUserIds, 'userIds');
+      // const newUserIds = userIds.filter((id) => id !== userId);
+      // integration.setValue(newUserIds, 'userIds');
       // }
     }
   } else if (type === GITHUB) {

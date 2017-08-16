@@ -3,7 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLID
 } from 'graphql';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {GraphQLEmailType} from 'server/graphql/types';
 
 const OrgApproval = new GraphQLObjectType({

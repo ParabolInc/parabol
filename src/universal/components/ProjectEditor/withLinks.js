@@ -61,17 +61,6 @@ const withLinks = (ComposedComponent) => {
     };
     state = {};
 
-    // LinkChanger can take focus, so sometimes we don't want to blur
-    removeModal = (allowFocus) => {
-      const {linkChangerData} = this.state;
-      if (!linkChangerData || allowFocus) {
-        this.setState({
-          linkViewerData: undefined,
-          linkChangerData: undefined
-        });
-      }
-    };
-
     getMaybeLinkifiedState = (getNextState, editorState) => {
       this.undoLink = undefined;
       const {block, anchorOffset} = getAnchorLocation(editorState);
@@ -114,6 +103,17 @@ const withLinks = (ComposedComponent) => {
         }
       }
       return undefined;
+    };
+
+    // LinkChanger can take focus, so sometimes we don't want to blur
+    removeModal = (allowFocus) => {
+      const {linkChangerData} = this.state;
+      if (!linkChangerData || allowFocus) {
+        this.setState({
+          linkViewerData: undefined,
+          linkChangerData: undefined
+        });
+      }
     };
 
     handleBeforeInput = (char) => {

@@ -49,11 +49,11 @@ const MenuItem = (props) => {
   const makeIcon = () =>
     <FontAwesome name={icon} style={iconStyle} />;
   const makeAvatar = () =>
-    <img
+    (<img
       alt={titleStr}
       className={css(styles.avatar)}
       src={avatar}
-    />;
+    />);
   return (
     <div title={titleStr}>
       {hr === 'before' && <hr className={css(styles.hr)} />}

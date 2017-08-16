@@ -7,7 +7,7 @@ import {
   GraphQLInputObjectType
 } from 'graphql';
 import {GraphQLEmailType} from '../../types';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 
 export const Invitation = new GraphQLObjectType({
   name: 'Invitation',

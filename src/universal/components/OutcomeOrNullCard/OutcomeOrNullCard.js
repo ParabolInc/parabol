@@ -25,7 +25,7 @@ export default class OutcomeOrNullCard extends Component {
     );
   }
 
-  componentWillUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.outcome.content !== this.props.outcome.content) {
       this.setState({
         contentState: convertFromRaw(JSON.parse(nextProps.outcome.content))

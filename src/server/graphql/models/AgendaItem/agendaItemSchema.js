@@ -7,7 +7,7 @@ import {
   GraphQLInputObjectType,
   GraphQLFloat
 } from 'graphql';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 
 export const AgendaItem = new GraphQLObjectType({
   name: 'AgendaItem',

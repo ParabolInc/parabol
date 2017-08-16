@@ -55,20 +55,20 @@ const MeetingCheckin = (props) => {
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
 
   const makeGreeting = (greeting) =>
-    <span
+    (<span
       className={css(styles.greeting)}
       title={`${greeting.content} means “hello” in ${greeting.language}`}
     >
       {greeting.content}
-    </span>;
+    </span>);
 
   const meetingPromptHeading = () =>
-    <span>
+    (<span>
       <span style={{color: appTheme.palette.warm}}>
         {makeGreeting(checkInGreeting)}, {currentName}
       </span>
       <br /><i>{checkInQuestion}</i>?
-    </span>;
+    </span>);
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="1rem">

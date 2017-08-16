@@ -8,7 +8,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import getRethink from 'server/database/rethinkDriver';
 import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema';
 import integrationProvider from 'server/graphql/queries/integrationProvider';

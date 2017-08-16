@@ -24,13 +24,13 @@ const UserSummary = (props) => {
       </div>
       <div className={css(styles.cardGroup)}>
         {projects.map((project) =>
-          <div className={css(styles.cardBlock)} key={`summary-card-${project.id}`}>
+          (<div className={css(styles.cardBlock)} key={`summary-card-${project.id}`}>
             <SummaryCard
               content={project.content}
               status={project.status}
               tags={project.tags}
             />
-          </div>
+          </div>)
         )}
       </div>
     </div>

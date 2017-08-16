@@ -40,12 +40,12 @@ const makePlaceholders = (length, itemStyle) => {
   const emptyCardCount = rowLength - (length % rowLength + 1);
   /* eslint-disable react/no-array-index-key */
   return new Array(emptyCardCount).fill(undefined).map((item, idx) =>
-    <div
+    (<div
       className={css(itemStyle)}
       key={`CreateCardPlaceholder${idx}`}
     >
       <CreateCard />
-    </div>);
+    </div>));
   /* eslint-enable */
 };
 

@@ -22,7 +22,7 @@ export default function scRelaySubscribeHandler(exchange, socket) {
     // }, 5000)
     await forAwaitEach(asyncIterator, iterableCb);
 
-     /*
+    /*
       * tell the client it won't receive any more messages for that op
       * if the client initiated the unsub, then it'll have stopped listening before this is sent
       *
