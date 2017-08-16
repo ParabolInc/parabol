@@ -223,6 +223,21 @@ const withLinks = (ComposedComponent) => {
       return undefined;
     };
 
+    addHyperlink = () => {
+      const {editorState} = this.props;
+      const selectionState = getCtrlKSelection(editorState);
+      const text = getSelectionText(editorState, selectionState);
+      const link = getSelectionLink(editorState, selectionState);
+      this.setState({
+        linkViewerData: undefined,
+        linkChangerData: {
+          link,
+          text,
+          selectionState
+        }
+      });
+    };
+
     renderChangerModal = () => {
       const {linkChangerData} = this.state;
       const {text, link, selectionState} = linkChangerData;
@@ -260,21 +275,6 @@ const withLinks = (ComposedComponent) => {
           addHyperlink={this.addHyperlink}
         />
       );
-    };
-
-    addHyperlink = () => {
-      const {editorState} = this.props;
-      const selectionState = getCtrlKSelection(editorState);
-      const text = getSelectionText(editorState, selectionState);
-      const link = getSelectionLink(editorState, selectionState);
-      this.setState({
-        linkViewerData: undefined,
-        linkChangerData: {
-          link,
-          text,
-          selectionState
-        }
-      });
     };
 
     render() {
