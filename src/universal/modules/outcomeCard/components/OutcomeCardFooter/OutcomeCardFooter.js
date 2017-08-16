@@ -72,11 +72,12 @@ class OutcomeCardFooter extends Component {
       isAgenda,
       isPrivate,
       outcome,
+      showTeam,
       styles,
       teamMembers,
       toggleMenuState
     } = this.props;
-    const {teamMember: owner, integration} = outcome;
+    const {teamMember: owner, integration, team: {name: teamName}} = outcome;
     const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
 
@@ -92,22 +93,24 @@ class OutcomeCardFooter extends Component {
     );
 
     const {error} = this.state;
-    const ownerAvatar = (
-      <div className={avatarStyles} tabIndex="0">
-        <img
-          alt={owner.preferredName}
-          className={css(styles.avatarImg)}
-          src={owner.picture}
-        />
-      </div>
+    const ownerAvatarOrTeamName = (
+      showTeam ?
+        <div className={css(styles.teamName)}>{teamName}</div> :
+        (<div className={avatarStyles} tabIndex="0">
+          <img
+            alt={owner.preferredName}
+            className={css(styles.avatarImg)}
+            src={owner.picture}
+          />
+        </div>)
     );
 
     return (
       <div className={css(styles.footerAndMessage)}>
         <div className={css(styles.footer)}>
           <div className={css(styles.avatarBlock)}>
-            {service ?
-              ownerAvatar :
+            {service || showTeam ?
+              ownerAvatarOrTeamName :
               <AsyncMenuContainer
                 fetchMenu={fetchAssignMenu}
                 maxWidth={350}
@@ -121,7 +124,7 @@ class OutcomeCardFooter extends Component {
                   clearError: this.clearError
                 }}
                 targetAnchor={assignTargetAnchor}
-                toggle={ownerAvatar}
+                toggle={ownerAvatarOrTeamName}
                 toggleMenuState={toggleMenuState}
               />
             }
@@ -233,6 +236,15 @@ const styleThunk = () => ({
     display: 'flex',
     height: '2.5rem',
     padding: ui.cardPaddingBase
+  },
+
+  teamName: {
+    color: appTheme.palette.dark,
+    display: 'inline-block',
+    fontSize: appTheme.typography.s2,
+    fontWeight: 700,
+    lineHeight: '1.5rem',
+    verticalAlign: 'middle'
   },
 
   showBlock: {
