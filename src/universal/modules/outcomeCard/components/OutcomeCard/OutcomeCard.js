@@ -11,7 +11,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {ACTIVE, DONE, FUTURE, STUCK, USER_DASH} from 'universal/utils/constants';
+import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
 
@@ -25,6 +25,7 @@ const OutcomeCard = (props) => {
     isAgenda,
     isDragging,
     isEditing,
+    handleAddProject,
     hasDragStyles,
     outcome,
     setEditorRef,
@@ -69,13 +70,14 @@ const OutcomeCard = (props) => {
         />
         <ProjectIntegrationLink integration={integration} />
         <OutcomeCardFooter
+          area={area}
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
           editorState={editorState}
+          handleAddProject={handleAddProject}
           isAgenda={isAgenda}
           isPrivate={isPrivate}
           outcome={outcome}
-          showTeam={area === USER_DASH}
           teamMembers={teamMembers}
           toggleMenuState={toggleMenuState}
         />
@@ -91,6 +93,7 @@ OutcomeCard.propTypes = {
   cardHasHover: PropTypes.bool,
   cardHasFocus: PropTypes.bool,
   cardHasIntegration: PropTypes.bool,
+  handleAddProject: PropTypes.func,
   hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,

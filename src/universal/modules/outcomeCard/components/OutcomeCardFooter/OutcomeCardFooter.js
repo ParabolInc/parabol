@@ -11,6 +11,7 @@ import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesFor
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
+import {USER_DASH} from 'universal/utils/constants';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
@@ -66,17 +67,19 @@ class OutcomeCardFooter extends Component {
 
   render() {
     const {
+      area,
       cardHasFocus,
       cardHasHover,
       editorState,
+      handleAddProject,
       isAgenda,
       isPrivate,
       outcome,
-      showTeam,
       styles,
       teamMembers,
       toggleMenuState
     } = this.props;
+    const showTeam = area === USER_DASH;
     const {teamMember: owner, integration, team: {name: teamName}} = outcome;
     const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
@@ -140,6 +143,8 @@ class OutcomeCardFooter extends Component {
                   maxHeight={225}
                   originAnchor={originAnchor}
                   queryVars={{
+                    area,
+                    handleAddProject,
                     projectId: outcome.id,
                     setError: this.setError,
                     clearError: this.clearError
@@ -181,9 +186,11 @@ class OutcomeCardFooter extends Component {
 }
 
 OutcomeCardFooter.propTypes = {
+  area: PropTypes.string.isRequired,
   cardHasFocus: PropTypes.bool,
   cardHasHover: PropTypes.bool,
   editorState: PropTypes.object,
+  handleAddProject: PropTypes.func,
   isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
   isPrivate: PropTypes.bool,

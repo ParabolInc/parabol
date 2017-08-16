@@ -134,7 +134,7 @@ class OutcomeCardContainer extends Component {
 
   render() {
     const {cardHasFocus, cardHasHover, isEditing, editorRef, editorState} = this.state;
-    const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
+    const {area, handleAddProject, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
         tabIndex={-1}
@@ -153,6 +153,7 @@ class OutcomeCardContainer extends Component {
           editorState={editorState}
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
+          handleAddProject={handleAddProject}
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
@@ -171,6 +172,7 @@ class OutcomeCardContainer extends Component {
 OutcomeCardContainer.propTypes = {
   area: PropTypes.string,
   contentState: PropTypes.object.isRequired,
+  handleAddProject: PropTypes.func,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,

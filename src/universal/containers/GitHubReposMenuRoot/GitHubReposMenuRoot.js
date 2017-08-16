@@ -40,7 +40,18 @@ const subscriptions = [
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, closePortal, setCoords, maxWidth}) => {
+const GitHubReposMenuRoot = (rootProps) => {
+  const {
+    area,
+    atmosphere,
+    handleAddProject,
+    projectId,
+    setError,
+    clearError,
+    closePortal,
+    setCoords,
+    maxWidth
+  } = rootProps;
   const [teamId] = projectId.split('::');
   return (
     <QueryRenderer
@@ -55,6 +66,8 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
             {error && <ErrorComponent height={'14rem'} width={maxWidth} error={error} />}
             {props && <AnimatedFade key="1" onEnter={setCoords}>
               <GitHubRepoListMenu
+                area={area}
+                handleAddProject={handleAddProject}
                 viewer={props.viewer}
                 teamId={teamId}
                 projectId={projectId}
@@ -77,7 +90,9 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
 };
 
 GitHubReposMenuRoot.propTypes = {
+  area: PropTypes.string,
   atmosphere: PropTypes.object.isRequired,
+  handleAddProject: PropTypes.func,
   maxWidth: PropTypes.number.isRequired,
   projectId: PropTypes.string.isRequired,
   viewer: PropTypes.object,

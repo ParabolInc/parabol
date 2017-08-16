@@ -111,8 +111,8 @@ const styleThunk = (theme, props) => ({
     fontSize: appTheme.typography.s5,
     padding: '0 .25rem',
     position: 'absolute',
-    zIndex: ui.ziMenu,
-    //zIndex: 1
+    zIndex: ui.ziMenu
+    // zIndex: 1
   },
 
   closing: {
