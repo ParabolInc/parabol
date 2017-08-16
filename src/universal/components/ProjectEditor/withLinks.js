@@ -57,7 +57,8 @@ const withLinks = (ComposedComponent) => {
       keyBindingFn: PropTypes.func,
       removeModal: PropTypes.func,
       renderModal: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired
+      setEditorState: PropTypes.func.isRequired,
+      setEditingMeta: PropTypes.func.isRequired
     };
     state = {};
 
@@ -241,7 +242,7 @@ const withLinks = (ComposedComponent) => {
     renderChangerModal = () => {
       const {linkChangerData} = this.state;
       const {text, link, selectionState} = linkChangerData;
-      const {editorState, setEditorState, editorRef} = this.props;
+      const {editorState, setEditorState, setEditingMeta, editorRef} = this.props;
       return (
         <EditorLinkChanger
           isOpen
@@ -251,6 +252,7 @@ const withLinks = (ComposedComponent) => {
           editorState={editorState}
           selectionState={selectionState}
           setEditorState={setEditorState}
+          setEditingMeta={setEditingMeta}
           removeModal={this.removeModal}
           text={text}
           initialValues={{text, link}}

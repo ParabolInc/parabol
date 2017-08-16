@@ -36,6 +36,8 @@ class OutcomeCardContainer extends Component {
     super(props);
     const {contentState} = props;
     this.state = {
+      isEditingText: false,
+      isEditingMeta: false,
       cardHasHover: false,
       cardHasFocus: false,
       editorState: EditorState.createWithContent(contentState, editorDecorators),
@@ -62,7 +64,8 @@ class OutcomeCardContainer extends Component {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused !== isFocused) {
-      this.annouceEditing(isFocused);
+      this.setState({isEditingText: isFocused})
+      this.announceEditing(isFocused);
       if (!isFocused) {
         this.handleCardUpdate();
       }
@@ -72,6 +75,9 @@ class OutcomeCardContainer extends Component {
     });
   };
 
+  setEditingMeta = (isEditingMeta) => {
+    this.setState({isEditingMeta});
+  }
 
   setEditorRef = (c) => {
     this.setState({
@@ -118,10 +124,7 @@ class OutcomeCardContainer extends Component {
 
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
-  annouceEditing = (isEditing) => {
-    this.setState({
-      isEditing
-    });
+  announceEditing = (isEditing) => {
     const {outcome: {id: projectId}} = this.props;
     const [teamId] = projectId.split('::');
     cashay.mutate('edit', {
@@ -133,7 +136,7 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, isEditing, editorRef, editorState} = this.state;
+    const {cardHasFocus, cardHasHover, isEditingText, isEditingMeta, editorRef, editorState, editorHasModal} = this.state;
     const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
@@ -156,10 +159,11 @@ class OutcomeCardContainer extends Component {
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
-          isEditing={isEditing}
+          isEditing={isEditingText || isEditingMeta}
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
+          setEditingMeta={this.setEditingMeta}
           teamMembers={teamMembers}
           toggleMenuState={this.toggleMenuState}
         />
