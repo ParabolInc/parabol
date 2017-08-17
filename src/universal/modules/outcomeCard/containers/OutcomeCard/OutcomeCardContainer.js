@@ -63,10 +63,7 @@ class OutcomeCardContainer extends Component {
   componentDidUpdate(prevProps, prevState) {
     const curEditingClients = this.state.activeEditingClients;
     const prevEditingClients = prevState.activeEditingClients;
-    const shouldAnnounceEditing =
-      (curEditingClients.isEmpty() && !prevEditingClients.isEmpty()) ||
-      (!curEditingClients.isEmpty() && prevEditingClients.isEmpty());
-    if (shouldAnnounceEditing) {
+    if (curEditingClients.isEmpty() !== prevEditingClients.isEmpty()) {
       this.announceEditing(!curEditingClients.isEmpty());
     }
   }
@@ -155,7 +152,7 @@ class OutcomeCardContainer extends Component {
 
   render() {
     const {isEditing} = this;
-    const {cardHasFocus, cardHasHover, editorRef, editorState, editorHasModal} = this.state;
+    const {activeEditingClients, cardHasFocus, cardHasHover, editorRef, editorState, editorHasModal} = this.state;
     const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
@@ -178,7 +175,7 @@ class OutcomeCardContainer extends Component {
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
-          isEditing={isEditing()}
+          isEditing={!activeEditingClients.isEmpty()}
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
