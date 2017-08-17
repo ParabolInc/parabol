@@ -136,7 +136,7 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, isEditingText, isEditingMeta, editorRef, editorState, editorHasModal} = this.state;
+    const {cardHasFocus, cardHasHover, isEditingText, isEditingMeta, editorRef, editorState} = this.state;
     const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
