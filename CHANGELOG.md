@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.5 - 16-Aug-2017
+### Removed
+- Snyk (for now)
+
 ## v0.20.4 - 16-Aug-2017
 ### Fixed
 - #1260 missing team names
