@@ -1,5 +1,6 @@
 import {cashay} from 'cashay';
 import {convertToRaw, EditorState} from 'draft-js';
+import {Set} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -36,6 +37,7 @@ class OutcomeCardContainer extends Component {
     super(props);
     const {contentState} = props;
     this.state = {
+      activeEditingClients: Set(),
       cardHasHover: false,
       cardHasFocus: false,
       editorState: EditorState.createWithContent(contentState, editorDecorators),
@@ -58,11 +60,19 @@ class OutcomeCardContainer extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const curEditingClients = this.state.activeEditingClients;
+    const prevEditingClients = prevState.activeEditingClients;
+    if (curEditingClients.isEmpty() !== prevEditingClients.isEmpty()) {
+      this.announceEditing(!curEditingClients.isEmpty());
+    }
+  }
+
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused !== isFocused) {
-      this.annouceEditing(isFocused);
+      this.trackEditingClient('project-editor', isFocused);
       if (!isFocused) {
         this.handleCardUpdate();
       }
@@ -72,6 +82,17 @@ class OutcomeCardContainer extends Component {
     });
   };
 
+  isEditing = () => !this.state.activeEditingClients.isEmpty();
+
+  trackEditingClient = (uid, isEditing) => {
+    this.setState((curState) => {
+      const currentClients = curState.activeEditingClients;
+      const updatedClients = isEditing
+        ? currentClients.add(uid)
+        : currentClients.remove(uid);
+      return {activeEditingClients: updatedClients};
+    });
+  };
 
   setEditorRef = (c) => {
     this.setState({
@@ -118,10 +139,7 @@ class OutcomeCardContainer extends Component {
 
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
-  annouceEditing = (isEditing) => {
-    this.setState({
-      isEditing
-    });
+  announceEditing = (isEditing) => {
     const {outcome: {id: projectId}} = this.props;
     const [teamId] = projectId.split('::');
     cashay.mutate('edit', {
@@ -133,7 +151,8 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, isEditing, editorRef, editorState} = this.state;
+    const {isEditing} = this;
+    const {activeEditingClients, cardHasFocus, cardHasHover, editorRef, editorState, editorHasModal} = this.state;
     const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
@@ -156,10 +175,11 @@ class OutcomeCardContainer extends Component {
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
-          isEditing={isEditing}
+          isEditing={!activeEditingClients.isEmpty()}
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
+          trackEditingClient={this.trackEditingClient}
           teamMembers={teamMembers}
           toggleMenuState={this.toggleMenuState}
         />

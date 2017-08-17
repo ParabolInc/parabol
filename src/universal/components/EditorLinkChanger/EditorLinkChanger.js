@@ -46,6 +46,16 @@ class EditorLinkChanger extends Component {
     }
   };
 
+  componentWillMount() {
+    const {trackEditingClient} = this.props;
+    trackEditingClient('editor-link-changer', true);
+  }
+
+  componentWillUnmount() {
+    const {trackEditingClient} = this.props;
+    trackEditingClient('editor-link-changer', false);
+  }
+
   render() {
     const {
       isClosing,
@@ -121,6 +131,7 @@ EditorLinkChanger.propTypes = {
   removeModal: PropTypes.func.isRequired,
   selectionState: PropTypes.object.isRequired,
   setEditorState: PropTypes.func.isRequired,
+  trackEditingClient: PropTypes.func.isRequired,
   setRef: PropTypes.func,
   styles: PropTypes.object,
   text: PropTypes.string,
