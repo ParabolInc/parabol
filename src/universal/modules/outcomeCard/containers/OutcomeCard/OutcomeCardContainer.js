@@ -1,5 +1,6 @@
 import {cashay} from 'cashay';
 import {convertToRaw, EditorState} from 'draft-js';
+import {Set} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -36,8 +37,7 @@ class OutcomeCardContainer extends Component {
     super(props);
     const {contentState} = props;
     this.state = {
-      isEditingText: false,
-      isEditingMeta: false,
+      activeEditingClients: Set(),
       cardHasHover: false,
       cardHasFocus: false,
       editorState: EditorState.createWithContent(contentState, editorDecorators),
@@ -60,12 +60,22 @@ class OutcomeCardContainer extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const curEditingClients = this.state.activeEditingClients;
+    const prevEditingClients = prevState.activeEditingClients;
+    const shouldAnnounceEditing =
+      (curEditingClients.isEmpty() && !prevEditingClients.isEmpty()) ||
+      (!curEditingClients.isEmpty() && prevEditingClients.isEmpty());
+    if (shouldAnnounceEditing) {
+      this.announceEditing(!curEditingClients.isEmpty());
+    }
+  }
+
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused !== isFocused) {
-      this.setState({isEditingText: isFocused});
-      this.announceEditing(isFocused);
+      this.trackEditingClient('project-editor', isFocused);
       if (!isFocused) {
         this.handleCardUpdate();
       }
@@ -75,8 +85,18 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-  setEditingMeta = (isEditingMeta) => {
-    this.setState({isEditingMeta});
+  isEditing = () => {
+    return !this.state.activeEditingClients.isEmpty()
+  }
+
+  trackEditingClient = (uid, isEditing) => {
+    this.setState((curState) => {
+      const currentClients = curState.activeEditingClients;
+      const updatedClients = isEditing
+        ? currentClients.add(uid)
+        : currentClients.remove(uid);
+      return {activeEditingClients: updatedClients};
+    });
   }
 
   setEditorRef = (c) => {
@@ -136,7 +156,8 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, isEditingText, isEditingMeta, editorRef, editorState} = this.state;
+    const {isEditing} = this;
+    const {cardHasFocus, cardHasHover, editorRef, editorState, editorHasModal} = this.state;
     const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
@@ -159,11 +180,11 @@ class OutcomeCardContainer extends Component {
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
-          isEditing={isEditingText || isEditingMeta}
+          isEditing={isEditing()}
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
-          setEditingMeta={this.setEditingMeta}
+          trackEditingClient={this.trackEditingClient}
           teamMembers={teamMembers}
           toggleMenuState={this.toggleMenuState}
         />

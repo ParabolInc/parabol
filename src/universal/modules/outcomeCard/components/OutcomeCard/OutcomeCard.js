@@ -29,7 +29,7 @@ const OutcomeCard = (props) => {
     outcome,
     setEditorRef,
     setEditorState,
-    setEditingMeta,
+    trackEditingClient,
     styles,
     teamMembers,
     toggleMenuState
@@ -66,7 +66,7 @@ const OutcomeCard = (props) => {
           readOnly={Boolean(isArchived || isDragging || service)}
           setEditorRef={setEditorRef}
           setEditorState={setEditorState}
-          setEditingMeta={setEditingMeta}
+          trackEditingClient={trackEditingClient}
           teamMembers={teamMembers}
         />
         <ProjectIntegrationLink integration={integration} />
@@ -107,7 +107,7 @@ OutcomeCard.propTypes = {
   }),
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
-  setEditingMeta: PropTypes.func,
+  trackEditingClient: PropTypes.func,
   styles: PropTypes.object,
   teamMembers: PropTypes.array,
   toggleMenuState: PropTypes.func.isRequired
