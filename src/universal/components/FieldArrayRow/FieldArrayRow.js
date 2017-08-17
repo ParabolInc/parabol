@@ -37,7 +37,7 @@ const FieldArrayRow = (props) => {
         </div>
       </div>
       {fields.map((item, index) =>
-        <div
+        (<div
           className={css(styles.fieldGroupRow)}
           key={`inviteeRow${index}`} // eslint-disable-line react/no-array-index-key
           onMouseEnter={() => onHoverRow(index)}
@@ -66,7 +66,7 @@ const FieldArrayRow = (props) => {
               underline
             />
           </div>
-        </div>
+        </div>)
       )}
     </div>
   );

@@ -410,7 +410,8 @@ export default class MeetingContainer extends Component {
               agendaItem={agenda[localPhaseItem - 1]}
               isLast={localPhaseItem === agenda.length}
               gotoNext={this.gotoNext}
-              localPhaseItem={localPhaseItem}members={members}
+              localPhaseItem={localPhaseItem}
+              members={members}
               hideMoveMeetingControls={hideMoveMeetingControls}
             />
           }

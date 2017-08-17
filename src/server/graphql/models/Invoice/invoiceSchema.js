@@ -8,7 +8,7 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {
   ADDED_USERS,
   REMOVED_USERS,

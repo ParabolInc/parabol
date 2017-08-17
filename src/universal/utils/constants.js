@@ -21,7 +21,7 @@ export const APP_UPGRADE_PENDING_KEY = `${APP_NAME}:upgradePending`;
 export const APP_UPGRADE_PENDING_FALSE = 'false';
 export const APP_UPGRADE_PENDING_RELOAD = 'reload';
 export const APP_UPGRADE_PENDING_DONE = 'done';
-export const APP_VERSION_KEY = `${APP_NAME}:version`;         // in localStorage
+export const APP_VERSION_KEY = `${APP_NAME}:version`; // in localStorage
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 
 /* Phases */
@@ -43,7 +43,7 @@ export const FUTURE = 'future';
 export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
 export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
-/* Drag-n-Drop Items*/
+/* Drag-n-Drop Items */
 export const PROJECT = 'project';
 export const AGENDA_ITEM = 'agendaItem';
 

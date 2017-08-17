@@ -102,7 +102,7 @@ class MockDB {
     });
   }
 
-  newMeeting(overrides = {}, template = {}) {
+  newMeeting(overrides, template = {}) {
     const {inProgress, activeFacilitatorIdx = 0} = template;
     const meetingId = shortid.generate();
     const teamId = this.context.team.id;

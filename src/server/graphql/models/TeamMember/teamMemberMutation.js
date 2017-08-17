@@ -214,18 +214,18 @@ export default {
       // RESOLUTION
       await r.table('TeamMember')
         // remove leadership from the caller
-          .get(myTeamMemberId)
-          .update({
-            isLead: false
-          })
-          // give leadership to the new person
-          .do(() => {
-            return r.table('TeamMember')
-              .get(teamMemberId)
-              .update({
-                isLead: true
-              });
-          });
+        .get(myTeamMemberId)
+        .update({
+          isLead: false
+        })
+      // give leadership to the new person
+        .do(() => {
+          return r.table('TeamMember')
+            .get(teamMemberId)
+            .update({
+              isLead: true
+            });
+        });
       return true;
     }
   },

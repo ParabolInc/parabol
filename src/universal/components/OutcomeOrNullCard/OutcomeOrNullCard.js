@@ -18,19 +18,19 @@ export default class OutcomeOrNullCard extends Component {
     contentState: convertFromRaw(JSON.parse(this.props.outcome.content))
   };
 
-  shouldComponentUpdate(nextProps) {
-    return Boolean(!nextProps.isPreview ||
-      nextProps.outcome.status !== this.props.outcome.status ||
-      nextProps.outcome.content !== this.props.outcome.content
-    );
-  }
-
-  componentWillUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.outcome.content !== this.props.outcome.content) {
       this.setState({
         contentState: convertFromRaw(JSON.parse(nextProps.outcome.content))
       });
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return Boolean(!nextProps.isPreview ||
+      nextProps.outcome.status !== this.props.outcome.status ||
+      nextProps.outcome.content !== this.props.outcome.content
+    );
   }
 
   render() {

@@ -12,7 +12,7 @@ const CreateGitHubIssueMutation = (environment, nameWithOwner, projectId, onErro
     variables: {nameWithOwner, projectId},
     updater: () => {
     },
-      // TODO cashay
+    // TODO cashay
     optimisticUpdater: () => {
       // TODO cashay
     },

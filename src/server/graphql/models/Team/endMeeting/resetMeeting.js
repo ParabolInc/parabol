@@ -37,10 +37,10 @@ export default async function resetMeeting(teamId) {
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
               return r.table('TeamMember').get(doc('id'))
-                  .update({
-                    checkInOrder: arr.offsetsOf(doc).nth(0),
-                    isCheckedIn: null
-                  });
+                .update({
+                  checkInOrder: arr.offsetsOf(doc).nth(0),
+                  isCheckedIn: null
+                });
             })
             );
         });

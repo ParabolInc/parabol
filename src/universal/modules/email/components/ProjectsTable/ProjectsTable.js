@@ -23,13 +23,13 @@ const getProjectRows = (arr) => {
 /* eslint-disable react/no-array-index-key */
 const makeProjectCards = (arr) => {
   return arr.map((card, idx) =>
-    <td style={cardRowCell} key={`projectCard${idx}`}>
+    (<td style={cardRowCell} key={`projectCard${idx}`}>
       <Card
         content={card.content}
         status={card.status}
         tags={card.tags}
       />
-    </td>
+    </td>)
   );
 };
 
@@ -39,10 +39,10 @@ const ProjectsTable = (props) => {
     <table align="center" style={ui.emailTableBase}>
       <tbody>
         {projectRows.map((row, idx) =>
-          <tr key={`projectRow${idx}`}>
+          (<tr key={`projectRow${idx}`}>
             {makeProjectCards(row)}
-          </tr>
-      )}
+          </tr>)
+        )}
       </tbody>
     </table>
   );

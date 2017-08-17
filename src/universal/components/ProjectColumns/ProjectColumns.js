@@ -25,7 +25,7 @@ const ProjectColumns = (props) => {
     <div className={rootStyles}>
       <div className={css(styles.columns)}>
         {lanes.map((status, idx) =>
-          <ProjectColumn
+          (<ProjectColumn
             key={`projectCol${status}`}
             area={area}
             firstColumn={idx === 0}
@@ -36,7 +36,7 @@ const ProjectColumns = (props) => {
             status={status}
             teams={teams}
             userId={userId}
-          />
+          />)
         )}
       </div>
     </div>

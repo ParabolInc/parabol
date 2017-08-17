@@ -76,7 +76,7 @@ const TeamContainer = (props) => {
       teamMembers={teamMembers}
     >
       <Switch>
-        {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539*/}
+        {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
         <AsyncRoute exact path={match.path} extraProps={{teamName: team.name}} mod={agendaProjects} />
         <AsyncRoute path={`${match.path}/settings`} mod={teamSettings} extraProps={{teamMemberId}} />
         <AsyncRoute path={`${match.path}/archive`} extraProps={{teamName: team.name}} mod={archivedProjects} />

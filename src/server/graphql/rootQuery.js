@@ -2,7 +2,7 @@ import {GraphQLObjectType} from 'graphql';
 import agenda from './models/AgendaItem/agendaItemQuery';
 import invoice from './models/Invoice/invoiceQuery';
 import meeting from './models/Meeting/meetingQuery';
-import {nodeField} from './models/Node/nodeQuery';
+// import {nodeField} from './models/Node/nodeQuery';
 import organization from './models/Organization/organizationQuery';
 import project from './models/Project/projectQuery';
 import team from './models/Team/teamQuery';
@@ -14,7 +14,7 @@ import {toGlobalId} from 'graphql-relay';
 export default new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
-    node: nodeField,
+    // node: nodeField,
     viewer: {
       type: User,
       resolve: (source, args, {authToken}) => ({

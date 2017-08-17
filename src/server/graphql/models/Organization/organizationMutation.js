@@ -243,33 +243,33 @@ export default {
 
       // RESOLUTION
       const orgName = await r.table('User').get(userId)
-          .update((user) => ({
-            userOrgs: user('userOrgs').map((userOrg) => {
-              return r.branch(
-                userOrg('id').eq(orgId),
-                userOrg.merge({
-                  role
-                }),
-                userOrg
-              );
-            }),
-            updatedAt: now
-          }))
-          .do(() => {
-            return r.table('Organization').get(orgId)
-              .update((org) => ({
-                orgUsers: org('orgUsers').map((orgUser) => {
-                  return r.branch(
-                    orgUser('id').eq(userId),
-                    orgUser.merge({
-                      role
-                    }),
-                    orgUser
-                  );
-                }),
-                updatedAt: now
-              }), {returnChanges: true})('changes')(0)('old_val')('name').default(null);
-          });
+        .update((user) => ({
+          userOrgs: user('userOrgs').map((userOrg) => {
+            return r.branch(
+              userOrg('id').eq(orgId),
+              userOrg.merge({
+                role
+              }),
+              userOrg
+            );
+          }),
+          updatedAt: now
+        }))
+        .do(() => {
+          return r.table('Organization').get(orgId)
+            .update((org) => ({
+              orgUsers: org('orgUsers').map((orgUser) => {
+                return r.branch(
+                  orgUser('id').eq(userId),
+                  orgUser.merge({
+                    role
+                  }),
+                  orgUser
+                );
+              }),
+              updatedAt: now
+            }), {returnChanges: true})('changes')(0)('old_val')('name').default(null);
+        });
       if (role === BILLING_LEADER) {
         // add a notification
         await r.table('Notification').insert({
@@ -280,30 +280,30 @@ export default {
           userIds: [userId],
           varList: [orgName]
         })
-            .do(() => {
-              return r.table('Notification')
-                .getAll(orgId, {index: 'orgId'})
-                .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
-                .update((notification) => ({
-                  userIds: notification('userIds').append(userId)
-                }));
-            });
+          .do(() => {
+            return r.table('Notification')
+              .getAll(orgId, {index: 'orgId'})
+              .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
+              .update((notification) => ({
+                userIds: notification('userIds').append(userId)
+              }));
+          });
       } else if (role === null) {
         await r.table('Notification')
-            .getAll(userId, {index: 'userIds'})
-            .filter({
-              orgId,
-              type: PROMOTE_TO_BILLING_LEADER
-            })
-            .delete()
-            .do(() => {
-              return r.table('Notification')
-                .getAll(orgId, {index: 'orgId'})
-                .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
-                .update((notification) => ({
-                  userIds: notification('userIds').filter((id) => id.ne(userId))
-                }));
-            });
+          .getAll(userId, {index: 'userIds'})
+          .filter({
+            orgId,
+            type: PROMOTE_TO_BILLING_LEADER
+          })
+          .delete()
+          .do(() => {
+            return r.table('Notification')
+              .getAll(orgId, {index: 'orgId'})
+              .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
+              .update((notification) => ({
+                userIds: notification('userIds').filter((id) => id.ne(userId))
+              }));
+          });
       }
       return true;
     }

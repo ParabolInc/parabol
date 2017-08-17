@@ -37,7 +37,7 @@ const ToggleNav = (props) => {
         </div>
       );
     }
-  );
+    );
 
   return (
     <div className={css(styles.nav)}>

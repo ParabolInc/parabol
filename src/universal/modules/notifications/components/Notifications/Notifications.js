@@ -23,14 +23,14 @@ const Notifications = (props) => {
           {notifications.length ?
             <div className={css(styles.notificationList)}>
               {notifications.map((notification) =>
-                <NotificationRow
+                (<NotificationRow
                   dispatch={dispatch}
                   key={`notification${notification.id}`}
                   orgId={notification.orgId}
                   notificationId={notification.id}
                   type={notification.type}
                   varList={notification.varList}
-                />
+                />)
               )}
             </div> :
             <div className={css(styles.notificationsEmpty)}>
