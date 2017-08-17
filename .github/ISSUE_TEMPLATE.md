@@ -12,7 +12,7 @@
 
 [Describe the bug here, remove this section if issue is a feature enhancement request]
 
-- **OS:** OSX / Linux / Windows / ?
+- **OS:** macOS / Linux / Windows / ?
 - **Browser:** Chrome / Safari / Lynx / ? + version
 - **Node version:** `node --version`
 - **NPM version:** `npm --version`
