@@ -23,11 +23,15 @@ export default class AsyncMenuContainer extends Component {
     fetchMenu: PropTypes.func.isRequired
   };
 
-  state = {
-    loading: false,
+  constructor(props) {
+    super(props);
+    const {originCoords} = props;
+    this.state = {
+      loading: false,
     // initialize somewhere in the viewport so it doesn't trigger a scroll bar
-    top: 0
-  };
+      top: originCoords && originCoords.top || 0
+    }
+  }
 
   componentWillMount() {
     this._mounted = true;

@@ -252,7 +252,13 @@ const withLinks = (ComposedComponent) => {
       const {linkChangerData} = this.state;
       const {text, link, selectionState} = linkChangerData;
       const {editorState, setEditorState, editorRef} = this.props;
-      const originCoords = getDraftCoords(this.props.editorRef);
+      const coords = getDraftCoords(editorRef);
+      if (!coords) {
+        setTimeout(() => {
+          this.forceUpdate();
+        })
+        return null;
+      }
       // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
         <AsyncMenuContainer
@@ -262,7 +268,7 @@ const withLinks = (ComposedComponent) => {
           maxWidth={230}
           maxHeight={200}
           originAnchor={originAnchor}
-          originCoords={originCoords}
+          originCoords={coords}
           queryVars={{
             editorState: editorState,
             selectionState: selectionState,
@@ -280,8 +286,16 @@ const withLinks = (ComposedComponent) => {
 
     renderViewerModal = () => {
       const {linkViewerData} = this.state;
-      const {editorState, setEditorState} = this.props;
-      const originCoords = getDraftCoords(this.props.editorRef);
+      const {editorRef, editorState, setEditorState} = this.props;
+
+      const coords = getDraftCoords(editorRef);
+      if (!coords) {
+        setTimeout(() => {
+          this.forceUpdate();
+        })
+        return null;
+      }
+
       return (
         <AsyncMenuContainer
           key="EditorLinkViewer"
@@ -290,9 +304,7 @@ const withLinks = (ComposedComponent) => {
           maxWidth={400}
           maxHeight={100}
           originAnchor={originAnchor}
-          originCoords={originCoords}
-          escToClose={false}
-          clickToClose={false}
+          originCoords={coords}
           queryVars={{
             editorState: editorState,
             setEditorState: setEditorState,
@@ -301,7 +313,7 @@ const withLinks = (ComposedComponent) => {
             addHyperlink: this.addHyperlink
           }}
           targetAnchor={targetAnchor}
-          isOpen={Boolean(linkViewerData)}
+          isOpen
         />
       );
     };
