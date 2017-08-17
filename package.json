@@ -41,9 +41,7 @@
     "lint:fix": "eslint --fix 'src/**/*.js' 'webpack/*.js' ",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
     "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.graphql --watch",
-    "snyk-protect": "snyk protect",
-    "update-schema": "node ./src/server/utils/updateSchema.babel.js",
-    "prepublish": "npm run snyk-protect"
+    "update-schema": "node ./src/server/utils/updateSchema.babel.js"
   },
   "pre-commit": [],
   "devDependencies": {
@@ -198,8 +196,7 @@
     "tlds": "^1.192.0",
     "to-markdown": "^3.0.4",
     "unicode-substring": "^1.0.0",
-    "webpack-s3-plugin": "^0.9.2",
-    "snyk": "^1.38.2"
+    "webpack-s3-plugin": "^0.9.2"
   },
   "engines": {
     "yarn": "0.22.0"
@@ -210,6 +207,5 @@
     ],
     "testRegex": "/__tests__/.*.test\\.jsx?$",
     "testResultsProcessor": "./src/server/__tests__/teardown"
-  },
-  "snyk": true
+  }
 }
