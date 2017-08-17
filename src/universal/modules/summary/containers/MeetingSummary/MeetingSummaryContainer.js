@@ -17,6 +17,7 @@ query{
     teamName
     meetingNumber
     agendaItemsCompleted
+    projectsDone
     invitees {
       id
       present
