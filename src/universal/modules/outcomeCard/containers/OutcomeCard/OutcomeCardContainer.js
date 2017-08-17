@@ -85,9 +85,7 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-  isEditing = () => {
-    return !this.state.activeEditingClients.isEmpty()
-  }
+  isEditing = () => !this.state.activeEditingClients.isEmpty();
 
   trackEditingClient = (uid, isEditing) => {
     this.setState((curState) => {
@@ -97,7 +95,7 @@ class OutcomeCardContainer extends Component {
         : currentClients.remove(uid);
       return {activeEditingClients: updatedClients};
     });
-  }
+  };
 
   setEditorRef = (c) => {
     this.setState({
