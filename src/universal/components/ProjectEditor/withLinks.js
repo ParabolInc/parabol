@@ -1,21 +1,21 @@
 import {EditorState, KeyBindingUtil} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 import getSelectionLink from 'universal/components/ProjectEditor/getSelectionLink';
 import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
+import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+import ui from 'universal/styles/ui';
 import addSpace from 'universal/utils/draftjs/addSpace';
+import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
 import makeAddLink from 'universal/utils/draftjs/makeAddLink';
 import splitBlock from 'universal/utils/draftjs/splitBlock';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
-import ui from 'universal/styles/ui';
-import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
-import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
 
 const fetchEditorLinkChanger = () => System.import('universal/components/EditorLinkChanger/EditorLinkChanger');
+const fetchEditorLinkViewer = () => System.import('universal/components/EditorLinkViewer/EditorLinkViewer');
 
 const originAnchor = {
   vertical: 'top',
@@ -71,11 +71,10 @@ const withLinks = (ComposedComponent) => {
       renderModal: PropTypes.func,
       setEditorState: PropTypes.func.isRequired
     };
+
     constructor(props) {
       super(props);
       this.state = {};
-      this.left = 0;
-      this.top = 0;
     }
 
     getMaybeLinkifiedState = (getNextState, editorState) => {
@@ -210,12 +209,6 @@ const withLinks = (ComposedComponent) => {
     initialize = () => {
       const {linkViewerData, linkChangerData} = this.state;
       if (linkViewerData || linkChangerData) {
-        const targetRect = getDraftCoords(this.props.editorRef);
-        if (targetRect) {
-          this.left = window.scrollX + targetRect.left;
-          this.top = window.scrollY + targetRect.top + ui.draftModalMargin;
-          this.height = targetRect.height;
-        }
         const renderModal = linkViewerData ? this.renderViewerModal : this.renderChangerModal;
         const {removeModal} = this;
         return {
@@ -260,8 +253,10 @@ const withLinks = (ComposedComponent) => {
       const {text, link, selectionState} = linkChangerData;
       const {editorState, setEditorState, editorRef} = this.props;
       const originCoords = getDraftCoords(this.props.editorRef);
+      // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
         <AsyncMenuContainer
+          key="EditorLinkChanger"
           marginFromOrigin={ui.draftModalMargin}
           fetchMenu={fetchEditorLinkChanger}
           maxWidth={230}
@@ -275,7 +270,7 @@ const withLinks = (ComposedComponent) => {
             removeModal: this.removeModal,
             text: text,
             initialValues: {text, link},
-            editorRef: editorRef,
+            editorRef: editorRef
           }}
           targetAnchor={targetAnchor}
           isOpen
@@ -286,17 +281,27 @@ const withLinks = (ComposedComponent) => {
     renderViewerModal = () => {
       const {linkViewerData} = this.state;
       const {editorState, setEditorState} = this.props;
+      const originCoords = getDraftCoords(this.props.editorRef);
       return (
-        <EditorLinkViewer
-          isOpen
-          top={this.top}
-          left={this.left}
-          height={this.height}
-          editorState={editorState}
-          setEditorState={setEditorState}
-          removeModal={this.removeModal}
-          href={linkViewerData.href}
-          addHyperlink={this.addHyperlink}
+        <AsyncMenuContainer
+          key="EditorLinkViewer"
+          marginFromOrigin={ui.draftModalMargin}
+          fetchMenu={fetchEditorLinkViewer}
+          maxWidth={400}
+          maxHeight={100}
+          originAnchor={originAnchor}
+          originCoords={originCoords}
+          escToClose={false}
+          clickToClose={false}
+          queryVars={{
+            editorState: editorState,
+            setEditorState: setEditorState,
+            removeModal: this.removeModal,
+            href: linkViewerData.href,
+            addHyperlink: this.addHyperlink
+          }}
+          targetAnchor={targetAnchor}
+          isOpen={Boolean(linkViewerData)}
         />
       );
     };

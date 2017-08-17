@@ -38,7 +38,6 @@ class AsyncMenu extends Component {
       styles,
       queryVars
     } = this.props;
-
     return (
       <div className={css(styles.menuBlock)} style={coords} ref={setMenuRef}>
         <div className={css(styles.menu)}>

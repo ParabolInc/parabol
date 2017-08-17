@@ -1,8 +1,8 @@
 import {css} from 'aphrodite-local-styles/no-important';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import CSSTransition from 'react-transition-group/CSSTransition';
 import withStyles from 'universal/styles/withStyles';
-import PropTypes from 'prop-types';
 
 class AnimatedFade extends Component {
   static propTypes = {
@@ -12,9 +12,18 @@ class AnimatedFade extends Component {
   state = {ready: false};
 
   componentWillMount() {
+    this._mounted = true;
     // This is required because aphrodite loads async. updating it to push styles in sync will fix this
     // calling css below injects them into the stylesheet & then waiting till the next tick gives it time to flush
-    setTimeout(() => this.setState({ready: true}));
+    setTimeout(() => {
+      if (this._mounted) {
+        this.setState({ready: true})
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   render() {

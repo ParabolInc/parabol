@@ -35,15 +35,22 @@ export default class AsyncMenuContainer extends Component {
     if (toggle) {
       this.smartToggle = this.makeSmartToggle(toggle);
     } else {
-      this.ensureMod();
       this.originCoords = originCoords;
+      this.ensureMod();
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const {toggle} = nextProps;
+    const {originCoords, toggle} = nextProps;
     if (this.props.toggle !== toggle) {
       this.smartToggle = this.makeSmartToggle(toggle);
+    }
+    if (originCoords && this.originCoords) {
+      if (this.originCoords.top !== originCoords.top ||
+        this.originCoords.left !== originCoords.left) {
+        this.originCoords = originCoords;
+        this.setCoords();
+      }
     }
   }
 
