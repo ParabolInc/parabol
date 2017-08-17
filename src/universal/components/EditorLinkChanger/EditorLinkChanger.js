@@ -27,7 +27,7 @@ class EditorLinkChanger extends Component {
     const href = linkify.match(data.link)[0].url;
     removeModal(true);
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState);
-    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text);
+    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text, {keepSelection: true});
     setEditorState(nextEditorState);
     setTimeout(() => editorRef.focus(), 0);
   };

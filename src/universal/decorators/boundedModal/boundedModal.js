@@ -11,7 +11,10 @@ export default (ComposedComponent) => {
       top: PropTypes.number
     };
 
-    state = {};
+    state = {
+      left: this.props.left,
+      top: this.props.top
+    };
 
     componentDidMount() {
       setTimeout(() => this.setPos(this.props));

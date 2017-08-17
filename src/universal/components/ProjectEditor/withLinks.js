@@ -59,7 +59,12 @@ const withLinks = (ComposedComponent) => {
       renderModal: PropTypes.func,
       setEditorState: PropTypes.func.isRequired
     };
-    state = {};
+    constructor(props) {
+      super(props);
+      this.state = {};
+      this.left = 0;
+      this.top = 0;
+    }
 
     getMaybeLinkifiedState = (getNextState, editorState) => {
       this.undoLink = undefined;
