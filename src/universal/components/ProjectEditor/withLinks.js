@@ -1,7 +1,6 @@
 import {EditorState, KeyBindingUtil} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import EditorLinkChanger from 'universal/components/EditorLinkChanger/EditorLinkChanger';
 import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 import getSelectionLink from 'universal/components/ProjectEditor/getSelectionLink';
@@ -14,6 +13,19 @@ import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
 import ui from 'universal/styles/ui';
 import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
+import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+
+const fetchEditorLinkChanger = () => System.import('universal/components/EditorLinkChanger/EditorLinkChanger');
+
+const originAnchor = {
+  vertical: 'top',
+  horizontal: 'left'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'left'
+};
 
 const getEntityKeyAtCaret = (editorState) => {
   const selectionState = editorState.getSelection();
@@ -247,19 +259,26 @@ const withLinks = (ComposedComponent) => {
       const {linkChangerData} = this.state;
       const {text, link, selectionState} = linkChangerData;
       const {editorState, setEditorState, editorRef} = this.props;
+      const originCoords = getDraftCoords(this.props.editorRef);
       return (
-        <EditorLinkChanger
+        <AsyncMenuContainer
+          marginFromOrigin={ui.draftModalMargin}
+          fetchMenu={fetchEditorLinkChanger}
+          maxWidth={230}
+          maxHeight={200}
+          originAnchor={originAnchor}
+          originCoords={originCoords}
+          queryVars={{
+            editorState: editorState,
+            selectionState: selectionState,
+            setEditorState: setEditorState,
+            removeModal: this.removeModal,
+            text: text,
+            initialValues: {text, link},
+            editorRef: editorRef,
+          }}
+          targetAnchor={targetAnchor}
           isOpen
-          top={this.top}
-          left={this.left}
-          height={this.height}
-          editorState={editorState}
-          selectionState={selectionState}
-          setEditorState={setEditorState}
-          removeModal={this.removeModal}
-          text={text}
-          initialValues={{text, link}}
-          editorRef={editorRef}
         />
       );
     };

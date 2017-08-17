@@ -19,7 +19,7 @@ export default class AsyncMenuContainer extends Component {
     maxWidth: PropTypes.number,
     maxHeight: PropTypes.number,
     minWidth: PropTypes.number,
-    toggleMargin: PropTypes.number,
+    marginFromOrigin: PropTypes.number,
     fetchMenu: PropTypes.func.isRequired
   };
 
@@ -31,8 +31,13 @@ export default class AsyncMenuContainer extends Component {
 
   componentWillMount() {
     this._mounted = true;
-    const {toggle} = this.props;
-    this.smartToggle = this.makeSmartToggle(toggle);
+    const {originCoords, toggle} = this.props;
+    if (toggle) {
+      this.smartToggle = this.makeSmartToggle(toggle);
+    } else {
+      this.ensureMod();
+      this.originCoords = originCoords;
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -58,7 +63,7 @@ export default class AsyncMenuContainer extends Component {
     setTimeout(() => {
       if (!this.menuRef || !this._mounted) return;
       // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
-      const {originAnchor, targetAnchor, toggleMargin = 0, maxWidth, maxHeight} = this.props;
+      const {originAnchor, targetAnchor, marginFromOrigin = 0, maxWidth, maxHeight} = this.props;
       const menuCoords = this.menuRef.getBoundingClientRect();
       const menuWidth = menuCoords.width || maxWidth;
       const menuHeight = menuCoords.height || maxHeight;
@@ -69,23 +74,23 @@ export default class AsyncMenuContainer extends Component {
         bottom: undefined
       };
 
-      const originLeftOffset = getOffset(originAnchor.horizontal, this.toggleCoords.width);
+      const originLeftOffset = getOffset(originAnchor.horizontal, this.originCoords.width);
       const {scrollX, scrollY, innerWidth, innerHeight} = window;
       if (targetAnchor.horizontal !== 'right') {
         const targetLeftOffset = getOffset(targetAnchor.horizontal, menuWidth);
-        const left = scrollX + this.toggleCoords.left + originLeftOffset - targetLeftOffset;
+        const left = scrollX + this.originCoords.left + originLeftOffset - targetLeftOffset;
         const maxLeft = innerWidth - menuWidth + scrollX;
         nextCoords.left = Math.min(left, maxLeft);
       } else {
-        const right = innerWidth - (this.toggleCoords.left + originLeftOffset);
+        const right = innerWidth - (this.originCoords.left + originLeftOffset);
         const maxRight = innerWidth - menuWidth - scrollX;
         nextCoords.right = Math.min(right, maxRight);
       }
 
       if (targetAnchor.vertical !== 'bottom') {
-        const originTopOffset = getOffset(originAnchor.vertical, this.toggleCoords.height);
+        const originTopOffset = getOffset(originAnchor.vertical, this.originCoords.height);
         const targetTopOffset = getOffset(targetAnchor.vertical, menuHeight);
-        const top = scrollY + this.toggleCoords.top + originTopOffset - targetTopOffset + toggleMargin;
+        const top = scrollY + this.originCoords.top + originTopOffset - targetTopOffset + marginFromOrigin;
         const isBelow = top + menuHeight < innerHeight + scrollY;
         if (isBelow) {
           nextCoords.top = top;
@@ -93,7 +98,7 @@ export default class AsyncMenuContainer extends Component {
       }
       // if by choice or circumstance, put it above & anchor it from the bottom
       if (nextCoords.top === undefined) {
-        const bottom = innerHeight - this.toggleCoords.top - toggleMargin - scrollY;
+        const bottom = innerHeight - this.originCoords.top - marginFromOrigin - scrollY;
         const maxBottom = innerHeight - menuHeight + scrollY;
         nextCoords.bottom = Math.min(bottom, maxBottom);
       }
@@ -121,9 +126,9 @@ export default class AsyncMenuContainer extends Component {
   };
 
   ensureMod = async () => {
-    const {fetchMenu} = this.props;
-    const {Mod} = this.state;
-    if (!Mod) {
+    const {Mod, loading} = this.state;
+    if (!Mod && !loading) {
+      const {fetchMenu} = this.props;
       this.setState({
         loading: true
       });
@@ -142,14 +147,11 @@ export default class AsyncMenuContainer extends Component {
     return React.cloneElement(toggle, {
       onClick: (e) => {
         // the toggle shouldn't move, so it's safe to save it as a constant
-        this.toggleCoords = e.currentTarget.getBoundingClientRect();
+        this.originCoords = e.currentTarget.getBoundingClientRect();
         this.setCoords();
 
         // if they hit the button without first hovering over it, make sure to download the Mod
-        const {Mod, loading} = this.state;
-        if (!Mod && !loading) {
-          this.ensureMod();
-        }
+        this.ensureMod();
 
         // if the menu was gonna do something, do it
         const {onClick} = toggle.props;

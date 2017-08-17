@@ -44,7 +44,7 @@ class AsyncMenu extends Component {
         <div className={css(styles.menu)}>
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {Mod ?
-              <AnimatedFade key="1">
+              <AnimatedFade>
                 <Mod
                   {...queryVars}
                   maxHeight={maxHeight}
@@ -53,7 +53,7 @@ class AsyncMenu extends Component {
                   setCoords={setCoords}
                 />
               </AnimatedFade> :
-              <AnimatedFade key="2" exit={false}>
+              <AnimatedFade exit={false}>
                 <LoadingComponent height={'5rem'} width={maxWidth} />
               </AnimatedFade>
             }
