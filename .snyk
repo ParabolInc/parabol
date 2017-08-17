@@ -15,10 +15,10 @@ patch:
     - socketcluster > sc-broker-cluster > socketcluster-server > sc-auth > jsonwebtoken > ms:
         patched: '2017-05-22T07:59:10.175Z'
     - bcrypt > node-pre-gyp > tar-pack > debug > ms:
-        patched: '2017-08-16T23:51:24.547Z'
+        patched: '2017-08-17T00:05:49.864Z'
   'npm:marked:20170112':
     - graphiql > marked:
-        patched: '2017-08-16T23:51:24.547Z'
+        patched: '2017-08-17T00:05:49.864Z'
   'npm:semver:20150403':
     - webpack-s3-plugin > cdnizer > jsdelivr-cdn-data > semver:
-        patched: '2017-08-16T23:51:24.547Z'
+        patched: '2017-08-17T00:05:49.864Z'
