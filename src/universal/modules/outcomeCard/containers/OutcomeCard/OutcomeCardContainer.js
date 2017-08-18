@@ -72,7 +72,6 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-
   setEditorRef = (c) => {
     this.setState({
       editorRef: c
