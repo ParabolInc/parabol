@@ -109,7 +109,8 @@ export default class AsyncMenuContainer extends Component {
       }
       // if by choice or circumstance, put it above & anchor it from the bottom
       if (nextCoords.top === undefined) {
-        const bottom = innerHeight - this.originCoords.top - marginFromOrigin - scrollY;
+        // dont include marginFromOrigin here, it's just too tall
+        const bottom = innerHeight - this.originCoords.top - scrollY;
         const maxBottom = innerHeight - menuHeight + scrollY;
         nextCoords.bottom = Math.min(bottom, maxBottom);
       }
@@ -176,6 +177,10 @@ export default class AsyncMenuContainer extends Component {
 
   render() {
     const {Mod, loading, ...coords} = this.state;
+    // if we don't know where to put it, don't do anything yet
+    if (!this.smartToggle && !this.originCoords) {
+      return null;
+    }
     return (
       <AsyncMenu
         {...this.props}

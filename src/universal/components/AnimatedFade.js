@@ -42,7 +42,10 @@ class AnimatedFade extends Component {
       <CSSTransition
         {...props}
         classNames={classNames}
-        timeout={300}
+        timeout={{
+          enter: 100,
+          exit: 100
+        }}
       >
         {children}
       </CSSTransition>
@@ -69,8 +72,8 @@ const styleThunk = () => ({
 
   exitActive: {
     opacity: 0,
-    transform: 'translate3d(0, -10px, 0)',
-    transition: 'all 100ms ease-in'
+    transform: 'translate3d(0, -32px, 0)',
+    transition: 'all 100ms ease-out'
   }
 });
 

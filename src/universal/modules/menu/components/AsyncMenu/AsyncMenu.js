@@ -28,6 +28,7 @@ class AsyncMenu extends Component {
 
   render() {
     const {
+      isClosing,
       closePortal,
       coords,
       maxWidth,
@@ -38,23 +39,26 @@ class AsyncMenu extends Component {
       styles,
       queryVars
     } = this.props;
+    const menuStyles = css(styles.menuBlock, isClosing && styles.closing);
     return (
-      <div className={css(styles.menuBlock)} style={coords} ref={setMenuRef}>
+      <div className={menuStyles} style={coords} ref={setMenuRef}>
         <div className={css(styles.menu)}>
           <TransitionGroup appear style={{overflow: 'hidden'}}>
-            {Mod ?
-              <AnimatedFade>
-                <Mod
-                  {...queryVars}
-                  maxHeight={maxHeight}
-                  maxWidth={maxWidth}
-                  closePortal={closePortal}
-                  setCoords={setCoords}
-                />
-              </AnimatedFade> :
-              <AnimatedFade exit={false}>
-                <LoadingComponent height={'5rem'} width={maxWidth} />
-              </AnimatedFade>
+            {Mod && !isClosing &&
+            <AnimatedFade>
+              <Mod
+                {...queryVars}
+                maxHeight={maxHeight}
+                maxWidth={maxWidth}
+                closePortal={closePortal}
+                setCoords={setCoords}
+              />
+            </AnimatedFade>
+            }
+            {!Mod && !isClosing &&
+            < AnimatedFade exit={false} unmountOnExit>
+              <LoadingComponent height={'5rem'} width={maxWidth}/>
+            </AnimatedFade>
             }
           </TransitionGroup>
         </div>
@@ -82,7 +86,24 @@ AsyncMenu.propTypes = {
   toggleMenuState: PropTypes.func
 };
 
+const animateOut = {
+  '0%': {
+    opacity: '1',
+    transform: 'translate3d(0, 0, 0)'
+
+  },
+  '100%': {
+    opacity: '0',
+    transform: 'translate3d(0, -32px, 0)'
+  }
+};
+
 const styleThunk = (theme, {maxHeight, maxWidth}) => ({
+  closing: {
+    animationDuration: `150ms`,
+    animationName: animateOut
+  },
+
   menuBlock: {
     maxWidth,
     padding: '.25rem 0',
@@ -115,6 +136,6 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
   }
 });
 
-export default portal({escToClose: true, clickToClose: true})(
+export default portal({clickToClose: true, escToClose: true, closeAfter: 150})(
   withStyles(styleThunk)(AsyncMenu)
 );

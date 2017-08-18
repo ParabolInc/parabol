@@ -1,10 +1,8 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import React from 'react';
-import portal from 'react-portal-hoc';
 import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
 import MentionTag from 'universal/components/MentionTag/MentionTag';
 import MentionUser from 'universal/components/MentionUser/MentionUser';
-import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -25,29 +23,20 @@ const EditorSuggestions = (props) => {
     active,
     handleSelect,
     isClosing,
-    left,
     setRef,
     styles,
     suggestions,
     suggestionType,
-    top
   } = props;
 
   const SuggestionItem = suggestionTypes[suggestionType];
-
-  const menuStyle = {
-    left,
-    top,
-    position: 'absolute',
-    zIndex: ui.ziMenu
-  };
 
   const menuStyles = css(
     styles.mentionMenu,
     isClosing && styles.closing
   );
   return (
-    <div style={menuStyle} className={menuStyles} ref={setRef}>
+    <div className={menuStyles} ref={setRef}>
       {suggestions.map((suggestion, idx) => {
         return (
           // eslint-disable-next-line
@@ -72,45 +61,9 @@ EditorSuggestions.propTypes = {
   top: PropTypes.number
 };
 
-const animateIn = {
-  '0%': {
-    opacity: '0',
-    transform: 'translate3d(0, -32px, 0)'
-
-  },
-  '100%': {
-    opacity: '1',
-    transform: 'translate3d(0, 0, 0)'
-  }
-};
-
-const animateOut = {
-  '0%': {
-    opacity: '1',
-    transform: 'translate3d(0, 0, 0)'
-
-  },
-  '100%': {
-    opacity: '0',
-    transform: 'translate3d(0, -32px, 0)'
-  }
-};
-
 const styleThunk = (theme, props) => ({
-  closing: {
-    animationDuration: `${props.closeAfter}ms`,
-    animationName: animateOut
-  },
-
   mentionMenu: {
-    animationDuration: '200ms',
-    animationName: animateIn,
-    background: '#fff',
-    borderRadius: ui.menuBorderRadius,
-    boxShadow: ui.menuBoxShadow,
     color: ui.palette.dark,
-    padding: `${ui.menuGutterVertical} 0`,
-    zIndex: 1
   },
 
   active: {
@@ -134,6 +87,4 @@ const styleThunk = (theme, props) => ({
   }
 });
 
-export default portal({closeAfter: 100})(
-  boundedModal(withStyles(styleThunk)(EditorSuggestions))
-);
+export default withStyles(styleThunk)(EditorSuggestions)

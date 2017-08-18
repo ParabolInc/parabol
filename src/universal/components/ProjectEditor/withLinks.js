@@ -253,16 +253,19 @@ const withLinks = (ComposedComponent) => {
       const {text, link, selectionState} = linkChangerData;
       const {editorState, setEditorState, editorRef} = this.props;
       const coords = getDraftCoords(editorRef);
+      // in this case, coords can be good, then bad as soon as the changer takes focus
+      // so, the container must handle bad then good as well as good then bad
       if (!coords) {
         setTimeout(() => {
           this.forceUpdate();
         })
-        return null;
       }
       // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
         <AsyncMenuContainer
           key="EditorLinkChanger"
+          escToClose={false}
+          clickToClose={false}
           marginFromOrigin={ui.draftModalMargin}
           fetchMenu={fetchEditorLinkChanger}
           maxWidth={230}
@@ -293,12 +296,13 @@ const withLinks = (ComposedComponent) => {
         setTimeout(() => {
           this.forceUpdate();
         })
-        return null;
       }
 
       return (
         <AsyncMenuContainer
           key="EditorLinkViewer"
+          escToClose={false}
+          clickToClose={false}
           marginFromOrigin={ui.draftModalMargin}
           fetchMenu={fetchEditorLinkViewer}
           maxWidth={400}
