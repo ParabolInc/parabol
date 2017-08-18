@@ -43,6 +43,10 @@ class OutcomeCardContainer extends Component {
     };
   }
 
+  componentWillMount() {
+    this._mounted = true;
+  }
+
   componentWillReceiveProps(nextProps) {
     const {contentState: nextContentState} = nextProps;
     const {contentState: initialContentState} = this.props;
@@ -56,6 +60,10 @@ class OutcomeCardContainer extends Component {
     if (!this.props.isDragging && nextProps.isDragging) {
       this.handleCardUpdate();
     }
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   setEditorState = (editorState) => {
@@ -79,9 +87,11 @@ class OutcomeCardContainer extends Component {
   };
 
   toggleMenuState = () => {
-    this.setState({
-      cardHasMenuOpen: !this.state.cardHasMenuOpen
-    });
+    if (this._mounted) {
+      this.setState({
+        cardHasMenuOpen: !this.state.cardHasMenuOpen
+      });
+    }
   };
 
   handleCardUpdate = () => {

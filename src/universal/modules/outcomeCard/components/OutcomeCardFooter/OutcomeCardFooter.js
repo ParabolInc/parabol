@@ -49,8 +49,7 @@ class OutcomeCardFooter extends Component {
   removeContentTag = (tagValue) => () => {
     const {outcome: {id, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
-    const rawContent = JSON.parse(content);
-    const nextContent = removeAllRangesForEntity(rawContent, 'TAG', eqFn);
+    const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
     if (nextContent) {
       const options = {
         ops: {},
