@@ -9,6 +9,7 @@ const mutation = graphql`
     addGitHubRepo(nameWithOwner: $nameWithOwner, teamId: $teamId) {
       repo {
         id
+        adminUserId
         nameWithOwner
         teamMembers {
           id

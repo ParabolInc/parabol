@@ -3,6 +3,7 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
 import {GITHUB} from 'universal/utils/constants';
 import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
+import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
 // import serviceToProvider from 'server/utils/serviceToProvider';
 // import {getServiceFromId} from 'universal/utils/integrationIds';
 
@@ -104,16 +105,9 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
 
   const changedGitHubIntegrations = changedProviders.some((change) => change.new_val.service === GITHUB);
   if (changedGitHubIntegrations) {
-    const updatedIntegrations = await r.table(GITHUB)
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((doc) => doc('userIds').contains(userId))
-      .update((doc) => ({
-        userIds: doc('userIds').difference([userId]),
-        isActive: doc('userIds').count().ne(0)
-      }), {returnChanges: true})('changes')
-      .default([]);
+    const repoChanges = removeGitHubReposForUserId(userId, [teamId]);
     // TODO send the archived projects in a mutation payload
-    await archiveProjectsForManyRepos(updatedIntegrations);
+    await archiveProjectsForManyRepos(repoChanges);
   }
   return true;
 }

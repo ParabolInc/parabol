@@ -4,6 +4,7 @@ import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Button from 'universal/components/Button/Button';
+import Tag from 'universal/components/Tag/Tag';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation';
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation';
@@ -25,7 +26,7 @@ class GitHubRepoRow extends Component {
 
   render() {
     const {accessToken, environment, styles, teamId, repo} = this.props;
-    const {id, nameWithOwner, teamMembers} = repo;
+    const {id, adminUserId, nameWithOwner, teamMembers} = repo;
 
     const {id: userId} = fromGlobalId(environment.viewerId);
     const teamMemberId = `${userId}::${teamId}`;
@@ -39,35 +40,41 @@ class GitHubRepoRow extends Component {
       }
     };
     const {error} = this.state;
+    const isCreator = adminUserId === userId;
     return (
       <div className={css(styles.rowAndError)}>
         <IntegrationRow>
-          <a
-            className={css(styles.nameWithOwner)}
-            href={`https://github.com/${nameWithOwner}`}
-            rel="noopener noreferrer"
-            target="_blank"
-            title={nameWithOwner}
-          >
-            {nameWithOwner}
-            <FontAwesome name="external-link-square" style={{marginLeft: '.5rem'}} />
-          </a>
+          <div className={css(styles.repoName)}>
+            <a
+              className={css(styles.nameWithOwner)}
+              href={`https://github.com/${nameWithOwner}`}
+              rel="noopener noreferrer"
+              target="_blank"
+              title={nameWithOwner}
+            >
+              {nameWithOwner}
+              <FontAwesome name="external-link-square" style={{marginLeft: '.5rem'}}/>
+              {isCreator && <Tag colorPalette="light" label="Creator"/>}
+            </a>
+          </div>
           <div className={css(styles.avatarGroup)}>
             {teamMembers.map((user) => (
               <div key={user.id} className={css(styles.avatar)}>
-                <Avatar {...user} size="smallest" />
+                <Avatar {...user} size="smallest"/>
               </div>
             ))}
           </div>
-          {accessToken &&
-          <Button
-            buttonStyle="flat"
-            colorPalette="dark"
-            label={viewerInIntegration ? 'Unlink Me' : 'Link Me'}
-            onClick={toggleIntegrationMembership(id)}
-            size="smallest"
-          />
-          }
+          <div className={css(styles.actionButton)}>
+            {accessToken && !isCreator &&
+            <Button
+              buttonStyle="flat"
+              colorPalette="dark"
+              label={viewerInIntegration ? 'Unlink Me' : 'Link Me'}
+              onClick={toggleIntegrationMembership(id)}
+              size="smallest"
+            />
+            }
+          </div>
         </IntegrationRow>
         {error && <div className={css(styles.errorRow)}>{error}</div>}
       </div>
@@ -84,6 +91,20 @@ GitHubRepoRow.propTypes = {
 };
 
 const styleThunk = () => ({
+  actionButton: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    minWidth: '7rem'
+  },
+
+  avatarGroup: {
+    marginLeft: 'auto',
+    padding: '0 .5rem 0 1rem',
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'flex-end'
+  },
+
   errorRow: {
     ...formError,
     marginTop: '-1rem',
@@ -91,20 +112,21 @@ const styleThunk = () => ({
     textAlign: 'end'
   },
 
+  repoName: {
+    display: 'flex'
+  },
+
   rowAndError: {
     display: 'flex',
+    flex: 1,
     flexDirection: 'column'
   },
 
   nameWithOwner: {
     display: 'block',
+    flex: 1,
     fontSize: appTheme.typography.s3,
     fontWeight: 700
-  },
-
-  avatarGroup: {
-    marginLeft: 'auto',
-    padding: '0 .5rem 0 1rem'
   },
 
   avatar: {

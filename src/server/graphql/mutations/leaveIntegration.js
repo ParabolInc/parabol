@@ -27,7 +27,7 @@ export default {
     if (!integration) {
       throw new Error('That integration does not exist');
     }
-    const {teamId, userIds} = integration;
+    const {adminUserId, teamId, userIds} = integration;
     requireSUOrTeamMember(authToken, teamId);
 
     // VALIDATION
@@ -39,17 +39,19 @@ export default {
       throw new Error('You are not a part of this integration');
     }
 
-    // RESOLUTION
-    const updatedIntegration = await r.table(service).get(localId)
-      .update((doc) => ({
-        userIds: doc('userIds').difference([userId]),
-        isActive: doc('userIds').eq([userId]).not()
-      }), {returnChanges: true})('changes')(0)('new_val').default(null);
-
-    if (!updatedIntegration) {
-      throw new Error('Integration was already updated');
+    if (userId === adminUserId) {
+      throw new Error('The repo admin cannot leave the repo');
     }
 
+    // RESOLUTION
+    let integrationChanges;
+    if (service === GITHUB) {
+      integrationChanges = await removeGitHubReposForUserId(userId, [teamId]);
+    }
+    if (integrationChanges.length === 0) {
+      throw new Error('Integration was already updated');
+    }
+    const updatedIntegration = integrationChanges[0].new_val;
     const {isActive, nameWithOwner} = updatedIntegration;
     let archivedProjectIds = [];
     if (isActive === false) {
