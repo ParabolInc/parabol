@@ -51,8 +51,8 @@ export default {
     // RESOLUTION
     // note: does not fail if they are already a member
     if (service === GITHUB) {
-      const {accessToken, providerUserName} = provider;
-      const integrationIds = await maybeJoinRepos([integration], accessToken, userId, providerUserName);
+      const usersAndIntegrations = await maybeJoinRepos([integration], [provider]);
+      const integrationIds = usersAndIntegrations[userId];
       if (integrationIds.length === 0) {
         throw new Error('You must be an org member or collaborator to join');
       }

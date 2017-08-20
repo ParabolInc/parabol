@@ -23,13 +23,13 @@ query {
   }
 }`;
 
-const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId, providerUserName) => {
-  if (integrationCount === 0) return [];
+const getJoinedIntegrationIds = async (teamId, integrationCount, isUpdate) => {
+  if (integrationCount === 0 || isUpdate) return [];
   const r = getRethink();
-  const allIntegrations = await r.table(GITHUB)
+  return r.table(GITHUB)
     .getAll(teamId, {index: 'teamId'})
-    .filter({isActive: true});
-  return maybeJoinRepos(allIntegrations, accessToken, userId, providerUserName);
+    .filter({isActive: true})
+    .run();
 };
 
 const getTeamMember = async (joinedIntegrationIds, teamMemberId) => {
@@ -67,8 +67,8 @@ const addProviderGitHub = async (code, teamId, userId) => {
   if (!gqlRes.data) {
     console.error('GitHub error: ', gqlRes);
   }
-  const {data: {viewer: {login}}} = gqlRes;
-  const provider = await r.table('Provider')
+  const {data: {viewer: {login: providerUserName}}} = gqlRes;
+  const providerChange = await r.table('Provider')
     .getAll(teamId, {index: 'teamIds'})
     .filter({service: GITHUB, userId})
     .nth(0)('id')
@@ -82,26 +82,29 @@ const addProviderGitHub = async (code, teamId, userId) => {
             accessToken,
             createdAt: now,
             // github userId is never used for queries, but the login is!
-            providerUserId: login,
-            providerUserName: login,
+            providerUserId: providerUserName,
+            providerUserName,
             service: GITHUB,
             teamIds: [teamId],
             updatedAt: now,
             userId
-          }, {returnChanges: true})('changes')(0)('new_val'),
+          }, {returnChanges: true})('changes')(0),
         r.table('Provider')
           .get(providerId)
           .update({
             accessToken,
             updatedAt: now,
-            providerUserId: login,
-            providerUserName: login
-          }, {returnChanges: true})('changes')(0)('new_val')
+            providerUserId: providerUserName,
+            providerUserName
+          }, {returnChanges: true})('changes')(0)
       );
     });
+  const provider = providerChange.new_val;
 
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId, login);
+  const integrationsToJoin = await getJoinedIntegrationIds(teamId, rowDetails.integrationCount, Boolean(providerChange.old_val));
+  const userIntegrations = await maybeJoinRepos(integrationsToJoin, [provider]);
+  const joinedIntegrationIds = userIntegrations[userId];
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
   const providerAdded = {

@@ -44,14 +44,16 @@ export default {
     }
 
     // RESOLUTION
-    let integrationChanges;
-    if (service === GITHUB) {
-      integrationChanges = await removeGitHubReposForUserId(userId, [teamId]);
-    }
-    if (integrationChanges.length === 0) {
+    const updatedIntegration = await r.table(service).get(localId)
+      .update((doc) => ({
+        userIds: doc('userIds').difference([userId]),
+        isActive: doc('adminUserId').eq(userId).not()
+      }), {returnChanges: true})('changes')(0)('new_val').default(null);
+
+    if (!updatedIntegration) {
       throw new Error('Integration was already updated');
     }
-    const updatedIntegration = integrationChanges[0].new_val;
+
     const {isActive, nameWithOwner} = updatedIntegration;
     let archivedProjectIds = [];
     if (isActive === false) {

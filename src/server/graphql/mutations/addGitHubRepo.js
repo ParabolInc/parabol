@@ -8,6 +8,7 @@ import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
+import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 
 const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) => {
   const endpoint = `https://api.github.com/repos/${nameWithOwner}/hooks`;
@@ -77,8 +78,8 @@ export default {
     requireSUOrTeamMember(authToken, teamId);
     requireWebsocket(socket);
     const userId = getUserId(authToken);
+
     // VALIDATION
-    // get the user's token
     const allTeamProviders = await r.table('Provider')
       .getAll(teamId, {index: 'teamIds'})
       .filter({service: GITHUB});
@@ -101,22 +102,13 @@ export default {
       throw new Error(`You must be an administer of ${nameWithOwner} to integrate`);
     }
 
-    const teamMemberProviders =
-      [...allTeamProviders.slice(0, viewerProviderIdx), ...allTeamProviders.slice(viewerProviderIdx + 1)];
-
-    const permissionArray = await Promise.all(teamMemberProviders.map((prov) => {
-      return tokenCanAccessRepo(prov.accessToken, nameWithOwner);
-    }));
-    const userIds = permissionArray.reduce((userIdArr, githubRes, idx) => {
-      if (!githubRes.errors) {
-        userIdArr.push(teamMemberProviders[idx].userId);
-      }
-      return userIdArr;
-    }, [userId]);
-
     // RESOLUTION
+
+    // add the webhooks on GitHub
     createRepoWebhook(accessToken, nameWithOwner, String(ghRepoId));
     createOrgWebhook(accessToken, nameWithOwner);
+
+    // create or rehydrate the integration
     const newRepo = await r.table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({nameWithOwner})
@@ -134,19 +126,23 @@ export default {
               isActive: true,
               nameWithOwner,
               teamId,
-              userIds
+              userIds: [userId]
             }, {returnChanges: true})('changes')(0)('new_val'),
           r.table(GITHUB)
             .get(integrationId)
             .update({
               adminUserId: userId,
               isActive: true,
-              userIds,
+              userIds: [userId],
               updatedAt: now
             }, {returnChanges: true})('changes')(0)('new_val')
         );
       });
 
+    // get a list of everyone else on the team that can join
+    const teamMemberProviders = allTeamProviders.slice().splice(viewerProviderIdx, 1);
+    const usersAndIntegrations = await maybeJoinRepos([newRepo], teamMemberProviders);
+    const userIds = Object.keys(usersAndIntegrations);
     // doing this fetch here, before we publish to the pubsub, means we don't need to do it once per sub
     newRepo.users = await r.table('User')
       .getAll(r.args(userIds), {index: 'id'})
