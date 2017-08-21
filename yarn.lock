@@ -7269,9 +7269,9 @@ react-notification-system@^0.2.15:
     object-assign "^4.0.1"
     prop-types "^15.5.6"
 
-react-portal-hoc@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/react-portal-hoc/-/react-portal-hoc-0.4.1.tgz#c1e31b571bc227f936f57c766223e0e60dfe1cfa"
+react-portal-hoc@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/react-portal-hoc/-/react-portal-hoc-0.4.2.tgz#6e25a74b39596be3b3f3322bdbeb8ea2e26fcb5e"
 
 react-proxy@^1.1.7:
   version "1.1.8"

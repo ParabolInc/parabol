@@ -28,7 +28,7 @@ export default class AsyncMenuContainer extends Component {
     const {originCoords} = props;
     this.state = {
       loading: false,
-    // initialize somewhere in the viewport so it doesn't trigger a scroll bar
+      // initialize somewhere in the viewport so it doesn't trigger a scroll bar
       top: originCoords && originCoords.top || 0
     }
   }
