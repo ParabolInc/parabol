@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {cashay} from 'cashay';
-import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
@@ -9,6 +8,7 @@ import addOrgSchema from 'universal/validation/addOrgSchema';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {connect} from 'react-redux';
 import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm';
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 
 const orgDropdownMenuItemsQuery = `
 query {
@@ -64,7 +64,7 @@ class NewTeamFormContainer extends Component {
     if (isNewOrg) {
       const schema = addOrgSchema();
       const {data: {teamName, inviteesRaw, orgName, stripeToken}} = schema(submittedData);
-      const parsedInvitees = emailAddresses.parseAddressList(inviteesRaw);
+      const parsedInvitees = parseEmailAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
       const variables = {
         newTeam: {
@@ -85,7 +85,7 @@ class NewTeamFormContainer extends Component {
     } else {
       const schema = makeAddTeamSchema();
       const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
-      const parsedInvitees = emailAddresses.parseAddressList(inviteesRaw);
+      const parsedInvitees = parseEmailAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
       const variables = {
         newTeam: {
