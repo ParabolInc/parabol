@@ -18,10 +18,9 @@ const getCollabsOnPersonalRepos = async (personalRepos, providerUserName, access
 };
 
 const getIntegrationIdsToJoin = async (integrations, accessToken, providerUserName) => {
-  const permissionPromises = integrations.map((integration) => {
+  const permissionArray = await Promise.all(integrations.map((integration) => {
     return tokenCanAccessRepo(accessToken, integration.nameWithOwner);
-  });
-  const permissionArray = await Promise.all(permissionPromises);
+  }));
   const orgRepoIds = [];
   const personalRepos = [];
   for (let i = 0; i < permissionArray.length; i++) {

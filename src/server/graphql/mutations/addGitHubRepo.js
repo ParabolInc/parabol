@@ -140,17 +140,22 @@ export default {
       });
 
     // get a list of everyone else on the team that can join
-    const teamMemberProviders = allTeamProviders.slice().splice(viewerProviderIdx, 1);
+    const teamMemberProviders = [
+      ...allTeamProviders.slice(0, viewerProviderIdx),
+      ...allTeamProviders.slice(viewerProviderIdx + 1)
+    ];
     const usersAndIntegrations = await maybeJoinRepos([newRepo], teamMemberProviders);
-    const userIds = Object.keys(usersAndIntegrations);
+    const userIds = Object.keys(usersAndIntegrations).concat(userId);
     // doing this fetch here, before we publish to the pubsub, means we don't need to do it once per sub
-    newRepo.users = await r.table('User')
-      .getAll(r.args(userIds), {index: 'id'})
-      .pluck('preferredName', 'picture', 'id');
-
-    const githubRepoAdded = {
-      repo: newRepo
+    const repo = {
+      ...newRepo,
+      userIds,
+      teamMembers: await r.table('User')
+        .getAll(r.args(userIds), {index: 'id'})
+        .pluck('preferredName', 'picture', 'id')
     };
+
+    const githubRepoAdded = {repo};
     getPubSub().publish(`githubRepoAdded.${teamId}`, {githubRepoAdded, mutatorId: socket.id});
 
 

@@ -23,13 +23,15 @@ query {
   }
 }`;
 
-const getJoinedIntegrationIds = async (teamId, integrationCount, isUpdate) => {
+const getJoinedIntegrationIds = async (teamId, provider, integrationCount, isUpdate) => {
   if (integrationCount === 0 || isUpdate) return [];
   const r = getRethink();
-  return r.table(GITHUB)
+  const integrationsToJoin = await r.table(GITHUB)
     .getAll(teamId, {index: 'teamId'})
-    .filter({isActive: true})
-    .run();
+    .filter({isActive: true});
+  const userIntegrations = await maybeJoinRepos(integrationsToJoin, [provider]);
+  const {userId} = provider;
+  return userIntegrations[userId];
 };
 
 const getTeamMember = async (joinedIntegrationIds, teamMemberId) => {
@@ -102,9 +104,8 @@ const addProviderGitHub = async (code, teamId, userId) => {
   const provider = providerChange.new_val;
 
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const integrationsToJoin = await getJoinedIntegrationIds(teamId, rowDetails.integrationCount, Boolean(providerChange.old_val));
-  const userIntegrations = await maybeJoinRepos(integrationsToJoin, [provider]);
-  const joinedIntegrationIds = userIntegrations[userId];
+  const isUpdate = Boolean(providerChange.old_val);
+  const joinedIntegrationIds = await getJoinedIntegrationIds(teamId, provider, rowDetails.integrationCount, isUpdate);
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
   const providerAdded = {
