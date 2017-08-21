@@ -148,7 +148,7 @@ const SummaryEmail = (props) => {
               <div style={bannerMessageStyles}>
                 {bannerMessage}
               </div>
-            }
+              }
               <EmptySpace height={8} />
             </td>
           </tr>
@@ -239,7 +239,7 @@ const SummaryEmail = (props) => {
                       </div>
                     }
                   </div>
-            }
+                }
                 <EmptySpace height={8} />
               </td>
             </tr>
@@ -261,10 +261,10 @@ const SummaryEmail = (props) => {
         </table>
         {membersWithOutcomes.map((member) =>
           <UserProjects member={member} key={`userProjects'${member.id}`} />
-      )}
+        )}
         {hasUsersWithoutOutcomes &&
         <UserNoNewOutcomes members={membersSansOutcomes} />
-      }
+        }
         <EmptySpace height={0} />
         <hr style={ruleStyle} />
         <EmptySpace height={48} />

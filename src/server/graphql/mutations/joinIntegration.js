@@ -2,12 +2,14 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import JoinIntegrationPayload from 'server/graphql/types/JoinIntegrationPayload';
+import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import {GITHUB} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(JoinIntegrationPayload),
-  description: 'Remove a user from an integration',
+  description: 'Add a user to an integration',
   args: {
     globalId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -37,15 +39,25 @@ export default {
       throw new Error('You are already a part of this integration');
     }
 
-    // RESOLUTION
-    const updatedIntegration = await r.table(service).get(localId)
-      .update((doc) => ({
-        userIds: doc('userIds').append(userId).distinct()
-      }), {returnChanges: true})('changes')(0)('new_val').default(null);
-
-    if (!updatedIntegration) {
-      throw new Error('Integration was already updated');
+    const provider = await r.table('Provider')
+      .getAll(teamId, {index: 'teamIds'})
+      .filter({service, userId})
+      .nth(0)
+      .default(null);
+    if (!provider) {
+      throw new Error('You must first connect your account to the integration');
     }
+
+    // RESOLUTION
+    // note: does not fail if they are already a member
+    if (service === GITHUB) {
+      const {accessToken, providerUserName} = provider;
+      const integrationIds = await maybeJoinRepos([integration], accessToken, userId, providerUserName);
+      if (integrationIds.length === 0) {
+        throw new Error('You must be an org member or collaborator to join');
+      }
+    }
+
     const teamMemberId = `${userId}::${teamId}`;
     const teamMember = await r.table('TeamMember').get(teamMemberId);
     if (!teamMember) {

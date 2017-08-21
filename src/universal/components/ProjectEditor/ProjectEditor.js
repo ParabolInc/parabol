@@ -14,7 +14,6 @@ import entitizeText from 'universal/utils/draftjs/entitizeText';
 import './Draft.css';
 
 class ProjectEditor extends Component {
-
   static propTypes = {
     editorRef: PropTypes.any,
     editorState: PropTypes.object,
@@ -38,9 +37,7 @@ class ProjectEditor extends Component {
 
   componentDidMount() {
     const {editorState} = this.props;
-    const text = editorState.getCurrentContent().getPlainText();
-
-    if (text === '') {
+    if (!editorState.getCurrentContent().hasText()) {
       // don't pull it from this.props because react will mutate this.props to our advantage
       setTimeout(() => this.props.editorRef.focus());
     }

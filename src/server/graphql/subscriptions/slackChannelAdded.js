@@ -17,6 +17,6 @@ export default {
     // RESOLUTION
     const channelName = `slackChannelAdded.${teamId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, filterFn);
+    return makeSubscribeIter(channelName, {filterFn});
   }
 };

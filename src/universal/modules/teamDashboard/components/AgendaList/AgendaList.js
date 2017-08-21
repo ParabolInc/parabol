@@ -49,7 +49,7 @@ const AgendaList = (props) => {
       {agenda.length > 0 ?
         <div className={css(styles.inner)}>
           {agenda.map((item, idx) =>
-            <AgendaItem
+            (<AgendaItem
               key={`agendaItem${item.id}`}
               agendaItem={item}
               agendaPhaseItem={agendaPhaseItem}
@@ -67,7 +67,7 @@ const AgendaList = (props) => {
                   dragState.components.push(c);
                 }
               }}
-            />
+            />)
           )}
         </div> :
         <div className={css(styles.empty)}>

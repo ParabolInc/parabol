@@ -75,10 +75,10 @@ const UserSettings = (props) => {
 };
 
 UserSettings.propTypes = {
-  activity: PropTypes.string,          // from settingsDuck
+  activity: PropTypes.string, // from settingsDuck
   dispatch: PropTypes.func,
   handleSubmit: PropTypes.func,
-  nextPage: PropTypes.string,          // from settingsDuck
+  nextPage: PropTypes.string, // from settingsDuck
   onSubmit: PropTypes.func,
   user: PropTypes.shape({
     email: PropTypes.string,

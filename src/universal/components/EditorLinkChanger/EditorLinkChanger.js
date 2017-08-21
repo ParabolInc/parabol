@@ -20,7 +20,6 @@ const validate = (values) => {
 };
 
 class EditorLinkChanger extends Component {
-
   onSubmit = (submissionData) => {
     const {editorState, editorRef, removeModal, selectionState, setEditorState} = this.props;
     const schema = changerValidation();

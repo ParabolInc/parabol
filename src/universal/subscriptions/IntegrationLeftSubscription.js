@@ -1,6 +1,6 @@
 import {leaveIntegrationUpdater} from 'universal/mutations/LeaveIntegrationMutation';
 
-const AddedSubscription = graphql`
+const subscription = graphql`
   subscription IntegrationLeftSubscription($service: IntegrationService!, $teamId: ID!) {
     integrationLeft(service: $service, teamId: $teamId) {
       globalId
@@ -13,7 +13,7 @@ const IntegrationLeftSubscription = (service) => (environment, queryVariables) =
   const {ensureSubscription, viewerId} = environment;
   const {teamId} = queryVariables;
   return ensureSubscription({
-    subscription: AddedSubscription,
+    subscription,
     variables: {service, teamId},
     updater: (store) => {
       const viewer = store.get(viewerId);

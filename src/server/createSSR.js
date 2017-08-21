@@ -34,7 +34,7 @@ export default function createSSR(req, res) {
   const store = finalCreateStore(makeReducer(), {});
   if (process.env.NODE_ENV === 'production') {
     if (!cachedPage) {
-       // eslint-disable-next-line global-require
+      // eslint-disable-next-line global-require
       const assets = require('../../build/assets.json');
       const htmlString = renderToStaticMarkup(<Html store={store} assets={assets} clientKeyLoader={clientKeyLoader} />);
       cachedPage = `<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`);
@@ -49,9 +49,9 @@ export default function createSSR(req, res) {
     const segmentSnippet = segKey && `
     <script>
       ${makeSegmentSnippet.min({
-        host: 'cdn.segment.com',
-        apiKey: segKey
-      })}
+    host: 'cdn.segment.com',
+    apiKey: segKey
+  })}
     </script>
     `;
 

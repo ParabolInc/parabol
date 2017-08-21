@@ -6,7 +6,8 @@ import Bundle from '../Bundle/Bundle';
 const AsyncRoute = ({mod, exact, path, isAbstract, isPrivate, extraProps}) => {
   return (
     <Route
-      exact={exact} path={path}
+      exact={exact}
+      path={path}
       render={({history, location, match}) => (
         <Bundle
           isAbstractRoute={isAbstract}
@@ -17,7 +18,7 @@ const AsyncRoute = ({mod, exact, path, isAbstract, isPrivate, extraProps}) => {
           match={match}
           mod={mod}
         />
-    )}
+      )}
     />
   );
 };

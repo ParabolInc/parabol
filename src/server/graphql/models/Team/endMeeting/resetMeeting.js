@@ -1,8 +1,6 @@
-import {convertFromRaw, convertToRaw} from 'draft-js';
 import getRethink from 'server/database/rethinkDriver';
 import {DONE, LOBBY} from 'universal/utils/constants';
-import addTagToProject from 'universal/utils/draftjs/addTagToProject';
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
+import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
 
 export default async function resetMeeting(teamId) {
   return new Promise((resolve) => {
@@ -12,18 +10,9 @@ export default async function resetMeeting(teamId) {
         .filter({status: DONE})
         .filter((project) => project('tags').contains('archived').not())
         .pluck('id', 'content', 'tags');
-      const archivedProjects = projects.map((project) => {
-        const contentState = convertFromRaw(JSON.parse(project.content));
-        const nextContentState = addTagToProject(contentState, '#archived');
-        const raw = convertToRaw(nextContentState);
-        const nextTags = getTagsFromEntityMap(raw.entityMap);
-        const nextContentStr = JSON.stringify(raw);
-        return {
-          content: nextContentStr,
-          tags: nextTags,
-          id: project.id
-        };
-      });
+
+      // TODO capture archived projects & push the list to pubsub when we move to evented subs for projects
+      await archiveProjectsForDB(projects);
       await r.table('Team').get(teamId)
         .update({
           facilitatorPhase: LOBBY,
@@ -32,16 +21,6 @@ export default async function resetMeeting(teamId) {
           facilitatorPhaseItem: null,
           meetingPhaseItem: null,
           activeFacilitator: null
-        })
-        .do(() => {
-          return r.expr(archivedProjects).forEach((project) => {
-            return r.table('Project')
-              .get(project('id'))
-              .update({
-                content: project('content'),
-                tags: project('tags')
-              });
-          });
         })
         .do(() => {
           // flag agenda items as inactive (more or less deleted)
@@ -58,10 +37,10 @@ export default async function resetMeeting(teamId) {
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
               return r.table('TeamMember').get(doc('id'))
-                  .update({
-                    checkInOrder: arr.offsetsOf(doc).nth(0),
-                    isCheckedIn: null
-                  });
+                .update({
+                  checkInOrder: arr.offsetsOf(doc).nth(0),
+                  isCheckedIn: null
+                });
             })
             );
         });

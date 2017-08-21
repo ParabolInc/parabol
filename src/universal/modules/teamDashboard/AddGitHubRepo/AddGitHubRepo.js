@@ -11,6 +11,7 @@ import withStyles from 'universal/styles/withStyles';
 import {GITHUB_ENDPOINT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
+import appTheme from 'universal/styles/theme/theme';
 
 const getUniqueRepos = (orgs, personalRepos) => {
   const repoSet = new Set();
@@ -60,7 +61,8 @@ query getRepos {
 fragment repoFrag on RepositoryConnection {
   nodes {
     nameWithOwner
-    updatedAt    
+    updatedAt
+    viewerCanAdminister
   }
 }
 `;
@@ -76,9 +78,11 @@ class AddGitHubRepo extends Component {
 
   constructor(props) {
     super(props);
+    this._mounted = true;
     this.state = {
       options: [],
-      selectedRepo: defaultSelectedRepo()
+      selectedRepo: defaultSelectedRepo(),
+      showHint: undefined
     };
     this.lastUpdated = 0;
     this.fetchOptions(props.accessToken);
@@ -92,6 +96,10 @@ class AddGitHubRepo extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this._mounted = false;
+  }
+
   updateDropdownItem = (option) => () => {
     // TODO refactor all of this. DRY it out between slack & GH, add loading & empty state
     if (option.id === null) {
@@ -103,7 +111,8 @@ class AddGitHubRepo extends Component {
         repoId: option.id,
         nameWithOwner: option.label
       },
-      options: this.state.options.filter((row) => row.id !== option.id)
+      options: this.state.options.filter((row) => row.id !== option.id),
+      showHint: false
     });
   };
 
@@ -114,8 +123,20 @@ class AddGitHubRepo extends Component {
 
     AddGitHubRepoMutation(environment, nameWithOwner, teamId, setError.bind(this), clearError.bind(this));
     this.setState({
-      selectedRepo: defaultSelectedRepo()
+      selectedRepo: defaultSelectedRepo(),
+      showHint: false
     });
+  };
+
+  handleToggleClick = () => {
+    const {accessToken} = this.props;
+    const {showHint, menuOpen} = this.state;
+    const nextMenuOpen = !menuOpen;
+    this.setState({
+      menuOpen: nextMenuOpen,
+      showHint: nextMenuOpen === false && showHint === undefined ? true : showHint
+    });
+    this.fetchOptions(accessToken);
   };
 
   fetchOptions = async (accessToken) => {
@@ -126,6 +147,7 @@ class AddGitHubRepo extends Component {
       const postOptions = makeGitHubPostOptions(accessToken, {query: getReposQuery});
       const res = await fetch(GITHUB_ENDPOINT, postOptions);
       const resJson = await res.json();
+      if (!this._mounted) return;
       const {data, errors, message} = resJson;
       if (errors || message) {
         if (errors) {
@@ -140,11 +162,9 @@ class AddGitHubRepo extends Component {
       const {subbedRepos} = this.props;
       const subbedRepoIds = subbedRepos.map(({nameWithOwner}) => nameWithOwner);
       const options = repos
-        .filter((repo) => !subbedRepoIds.includes(repo.nameWithOwner))
-        .sort((a, b) => a.updatedAt < b.updatedAt ? 1 : -1)
-        .slice(0, 60)
-        .sort((a, b) => a.nameWithOwner.toLowerCase() > b.nameWithOwner.toLowerCase() ? 1 : -1)
-        .map((repo) => ({id: repo.nameWithOwner, label: repo.nameWithOwner}));
+        .filter((repo) => repo.viewerCanAdminister && !subbedRepoIds.includes(repo.nameWithOwner))
+        .map((repo) => ({id: repo.nameWithOwner, label: repo.nameWithOwner}))
+        .sort((a, b) => a.label < b.label ? -1 : 1);
       this.setState({
         isLoaded: true,
         options
@@ -152,21 +172,26 @@ class AddGitHubRepo extends Component {
     }
   };
 
+
   render() {
-    const {isLoaded, options, selectedRepo: {nameWithOwner}} = this.state;
-    const {accessToken, styles} = this.props;
+    const {styles} = this.props;
+    const {error, isLoaded, options, selectedRepo: {nameWithOwner}, showHint} = this.state;
+    const footerMessage = error || (showHint && 'Repo 404? Make sure you have admin privileges in GitHub!');
+    const footerStyle = css(
+      error ? styles.error : styles.footer
+    );
     return (
       <div className={css(styles.addRepo)}>
         <div className={css(styles.dropdownAndError)}>
           <ServiceDropdownInput
-            fetchOptions={() => this.fetchOptions(accessToken)}
+            fetchOptions={this.handleToggleClick}
             dropdownText={nameWithOwner}
             handleItemClick={this.updateDropdownItem}
             options={options}
             isLoaded={isLoaded}
           />
-          <div className={css(styles.error)}>
-            {this.state.error}
+          <div className={footerStyle}>
+            {footerMessage}
           </div>
         </div>
         <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
@@ -196,6 +221,10 @@ const styleThunk = () => ({
   },
   error: {
     ...formError,
+    textAlign: 'right'
+  },
+  footer: {
+    color: appTheme.palette.mid90l,
     textAlign: 'right'
   }
 });

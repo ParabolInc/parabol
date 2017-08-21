@@ -61,17 +61,6 @@ const withLinks = (ComposedComponent) => {
     };
     state = {};
 
-    // LinkChanger can take focus, so sometimes we don't want to blur
-    removeModal = (allowFocus) => {
-      const {linkChangerData} = this.state;
-      if (!linkChangerData || allowFocus) {
-        this.setState({
-          linkViewerData: undefined,
-          linkChangerData: undefined
-        });
-      }
-    };
-
     getMaybeLinkifiedState = (getNextState, editorState) => {
       this.undoLink = undefined;
       const {block, anchorOffset} = getAnchorLocation(editorState);
@@ -114,6 +103,17 @@ const withLinks = (ComposedComponent) => {
         }
       }
       return undefined;
+    };
+
+    // LinkChanger can take focus, so sometimes we don't want to blur
+    removeModal = (allowFocus) => {
+      const {linkChangerData} = this.state;
+      if (!linkChangerData || allowFocus) {
+        this.setState({
+          linkViewerData: undefined,
+          linkChangerData: undefined
+        });
+      }
     };
 
     handleBeforeInput = (char) => {
@@ -223,6 +223,21 @@ const withLinks = (ComposedComponent) => {
       return undefined;
     };
 
+    addHyperlink = () => {
+      const {editorState} = this.props;
+      const selectionState = getCtrlKSelection(editorState);
+      const text = getSelectionText(editorState, selectionState);
+      const link = getSelectionLink(editorState, selectionState);
+      this.setState({
+        linkViewerData: undefined,
+        linkChangerData: {
+          link,
+          text,
+          selectionState
+        }
+      });
+    };
+
     renderChangerModal = () => {
       const {linkChangerData} = this.state;
       const {text, link, selectionState} = linkChangerData;
@@ -260,21 +275,6 @@ const withLinks = (ComposedComponent) => {
           addHyperlink={this.addHyperlink}
         />
       );
-    };
-
-    addHyperlink = () => {
-      const {editorState} = this.props;
-      const selectionState = getCtrlKSelection(editorState);
-      const text = getSelectionText(editorState, selectionState);
-      const link = getSelectionLink(editorState, selectionState);
-      this.setState({
-        linkViewerData: undefined,
-        linkChangerData: {
-          link,
-          text,
-          selectionState
-        }
-      });
     };
 
     render() {

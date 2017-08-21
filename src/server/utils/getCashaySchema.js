@@ -15,7 +15,7 @@ require('babel-register')({ // eslint-disable-line import/no-extraneous-dependen
       basedir: path.resolve(filename, '..'),
       extensions: ['.js'],
       moduleDirectory: [
-        path.join(__dirname, '..', '..'),  // application root
+        path.join(__dirname, '..', '..'), // application root
         path.join(__dirname, '..', '..', '..', 'node_modules')
       ]
     });

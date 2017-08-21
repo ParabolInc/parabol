@@ -19,8 +19,8 @@ const TeamSettingsWrapper = (props) => {
       <TeamSettingsToggleNav activeKey={areaMatch.params.area || ''} teamId={teamId} />
       <Switch>
         <AsyncRoute exact path={match.url} mod={overview} extraProps={{teamId}} />
-        {/* <AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/>*/}
-        {/* <AsyncRoute exact path={`${match.url}/roles`} mod={overview} extraProps={{teamId}}/>*/}
+        {/* <AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/> */}
+        {/* <AsyncRoute exact path={`${match.url}/roles`} mod={overview} extraProps={{teamId}}/> */}
         <AsyncRoute path={`${match.url}/integrations/slack`} mod={slackIntegrations} extraProps={{teamMemberId}} />
         <AsyncRoute path={`${match.url}/integrations/github`} mod={githubIntegrations} extraProps={{teamMemberId}} />
         <AsyncRoute exact path={`${match.url}/integrations`} mod={providers} extraProps={{teamMemberId}} />

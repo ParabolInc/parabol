@@ -42,9 +42,9 @@ const styleThunk = () => ({
   watermark: {
     bottom: 0,
     color: ui.palette.dark,
-    fontSize: '7rem',
+    fontSize: '7rem !important',
+    lineHeight: '8rem !important',
     height: '8rem',
-    lineHeight: '8rem',
     margin: 'auto -1.5rem -1.5rem auto',
     opacity: 0.20,
     position: 'absolute',

@@ -27,10 +27,10 @@ const LoadingView = (props) => {
     <div className={css(styles.root)}>
       <h1 className={css(styles.heading)}>Welcome to Parabol!</h1>
       {duckStyles.map((delayClass, idx) =>
-        <LoadingDuck
+        (<LoadingDuck
           className={css(delayClass, styles.patoStyles)}
           key={idx} // eslint-disable-line react/no-array-index-key
-        />
+        />)
       )}
       <h2 className={css(styles.message)}>Just putting our ducks in a row…</h2>
       {children}

@@ -5,7 +5,7 @@ import {
   GraphQLString,
   GraphQLEnumType
 } from 'graphql';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {ProjectStatus} from '../Project/projectSchema';
 import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
 

@@ -6,6 +6,36 @@ import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/a
 import {GITHUB} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
+// const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
+//  if (!creatorProvider) return false;
+//  const {providerUserName: creatorLogin, userId: creatorUserId} = creatorProvider;
+//  const {accessToken: adminAccessToken, userId: adminUserId} = adminProvider;
+//  if (adminUserId === creatorUserId) return true;
+//  const endpoint = `https://api.github.com/repos/${nameWithOwner}/collaborators/${creatorLogin}/permission`;
+//  const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${adminAccessToken}`}});
+//  const resJson = await res.json();
+//  const {permission} = resJson;
+//  return permission === 'admin' || permission === 'write';
+// };
+
+const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner) => {
+  const r = getRethink();
+  const {errors, message} = res;
+  if (errors) {
+    const {code, field} = errors[0];
+    if (code === 'invalid') {
+      if (field === 'assignees') {
+        const assigneeName = await r.table('TeamMember').get(assigneeTeamMemberId)('preferredName');
+        throw new Error(`${assigneeName} cannot be assigned to ${nameWithOwner}. Make sure they have access`);
+      }
+    }
+    throw new Error(`GitHub: ${field} ${code}.${message}`);
+  } else if (message) {
+    // this means it's our bad:
+    throw new Error(`GitHub: ${message}.`);
+  }
+};
+
 export default {
   name: 'CreateGitHubIssue',
   type: GraphQLBoolean,
@@ -21,6 +51,7 @@ export default {
   },
   resolve: async (source, {nameWithOwner, projectId}, {authToken, socket}) => {
     const r = getRethink();
+    const now = new Date();
 
     // AUTH
     const [teamId] = projectId.split('::');
@@ -40,17 +71,31 @@ export default {
     if (!repoOwner || !repoName) {
       throw new Error(`${nameWithOwner} is not a valid repository`);
     }
+    const adminUserId = await r.table(GITHUB)
+      .getAll(nameWithOwner, {index: 'nameWithOwner'})
+      .filter({isActive: true, teamId})
+      .nth(0)('adminUserId')
+      .default(null);
+
+    if (!adminUserId) {
+      throw new Error(`No integration for ${nameWithOwner} exists for ${teamId}`);
+    }
 
     // RESOLUTION
-    const {teamMemberId: assignee, content: rawContentStr} = project;
-    const [assigneeUserId] = assignee.split('::');
+    const {teamMemberId: assigneeTeamMemberId, content: rawContentStr} = project;
+    const [assigneeUserId] = assigneeTeamMemberId.split('::');
     const providers = await r.table('Provider')
       .getAll(teamId, {index: 'teamIds'})
       .filter({service: GITHUB});
     const assigneeProvider = providers.find((provider) => provider.userId === assigneeUserId);
     if (!assigneeProvider) {
-      const assigneeName = await r.table('TeamMember').get(assignee)('preferredName');
+      const assigneeName = await r.table('TeamMember').get(assigneeTeamMemberId)('preferredName');
       throw new Error(`Assignment failed! Ask ${assigneeName} to add GitHub in Team Settings`);
+    }
+    const adminProvider = providers.find((provider) => provider.userId === adminUserId);
+    if (!adminProvider) {
+      // this should never happen
+      throw new Error('This repo does not have an admin! Please re-integrate the repo');
     }
 
     const creatorProvider = providers.find((provider) => provider.userId === userId);
@@ -82,30 +127,38 @@ export default {
     const postOptions = makeGitHubPostOptions(accessToken, payload);
     const endpoint = `https://api.github.com/repos/${repoOwner}/${repoName}/issues`;
     const newIssue = await fetch(endpoint, postOptions);
-    const res = await newIssue.json();
-    const {errors, message} = res;
-    if (errors) {
-      const {code, field} = errors[0];
-      if (code === 'invalid') {
-        if (field === 'assignees') {
-          const assigneeName = await r.table('TeamMember').get(assignee)('preferredName');
-          throw new Error(`${assigneeName} cannot be assigned to ${nameWithOwner}. Make sure they have access`);
-        }
+    const newIssueJson = await newIssue.json();
+    try {
+      await makeAssigneeError(newIssueJson, assigneeTeamMemberId, nameWithOwner);
+    } catch (e) {
+      throw e;
+    }
+    const {id: integrationId, assignees, number: issueNumber} = newIssueJson;
+    if (assignees.length === 0) {
+      const {accessToken: adminAccessToken} = adminProvider;
+      const patchEndpoint = `https://api.github.com/repos/${nameWithOwner}/issues/${issueNumber}`;
+      const assignedIssue = await fetch(patchEndpoint, {
+        method: 'PATCH',
+        headers: {Authorization: `token ${adminAccessToken}`},
+        body: JSON.stringify({assignees: payload.assignees})
+      });
+      const assignedIssueJson = await assignedIssue.json();
+      try {
+        await makeAssigneeError(assignedIssueJson, assigneeTeamMemberId, nameWithOwner);
+      } catch (e) {
+        throw e;
       }
-      throw new Error(`GitHub: ${field} ${code}.${message}`);
-    } else if (message) {
-      // this means it's our bad:
-      throw new Error(`GitHub: ${message}.`);
     }
 
-    const {number: issueNumber} = res;
     await r.table('Project').get(projectId)
       .update({
         integration: {
+          integrationId,
           service: GITHUB,
           issueNumber,
           nameWithOwner
-        }
+        },
+        updatedAt: now
       });
 
     return true;

@@ -42,7 +42,7 @@ const Step3InviteeList = (props) => {
       };
       cashay.mutate('inviteTeamMembers', options);
     }
-    history.push(`/team/${teamId}`);  // redirect leader to their new team
+    history.push(`/team/${teamId}`); // redirect leader to their new team
 
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {

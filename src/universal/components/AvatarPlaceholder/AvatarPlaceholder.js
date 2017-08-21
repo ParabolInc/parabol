@@ -32,7 +32,7 @@ const styleThunk = () => ({
   avatarPlaceholder: {
     backgroundColor: appTheme.palette.mid50l,
     borderRadius: '100%',
-      // boxShadow: `0 0 0 2px #fff, 0 0 0 4px ${appTheme.palette.mid10a}`,
+    // boxShadow: `0 0 0 2px #fff, 0 0 0 4px ${appTheme.palette.mid10a}`,
     color: appTheme.palette.mid50l,
     fontSize: ui.iconSize3x,
     height: avatarPlaceholderSize,

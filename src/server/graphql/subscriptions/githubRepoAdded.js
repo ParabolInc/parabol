@@ -17,6 +17,6 @@ export default {
     // RESOLUTION
     const channelName = `githubRepoAdded.${teamId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, filterFn);
+    return makeSubscribeIter(channelName, {filterFn});
   }
 };

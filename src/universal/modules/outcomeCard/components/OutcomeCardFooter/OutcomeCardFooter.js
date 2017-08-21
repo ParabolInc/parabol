@@ -1,6 +1,5 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
-import {convertToRaw} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
@@ -47,19 +46,22 @@ class OutcomeCardFooter extends Component {
   state = {};
 
   removeContentTag = (tagValue) => () => {
-    const {editorState, outcome: {id, content}} = this.props;
+    const {outcome: {id, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
-    const nextContentState = removeAllRangesForEntity(editorState, content, 'TAG', eqFn);
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id,
-          content: JSON.stringify(convertToRaw(nextContentState))
+    const rawContent = JSON.parse(content);
+    const nextContent = removeAllRangesForEntity(rawContent, 'TAG', eqFn);
+    if (nextContent) {
+      const options = {
+        ops: {},
+        variables: {
+          updatedProject: {
+            id,
+            content: nextContent
+          }
         }
-      }
-    };
-    cashay.mutate('updateProject', options);
+      };
+      cashay.mutate('updateProject', options);
+    }
   };
 
   render() {
@@ -70,10 +72,12 @@ class OutcomeCardFooter extends Component {
       isAgenda,
       isPrivate,
       outcome,
+      showTeam,
       styles,
-      teamMembers
+      teamMembers,
+      toggleMenuState
     } = this.props;
-    const {teamMember: owner, integration} = outcome;
+    const {teamMember: owner, integration, team: {name: teamName}} = outcome;
     const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
 
@@ -89,22 +93,24 @@ class OutcomeCardFooter extends Component {
     );
 
     const {error} = this.state;
-    const ownerAvatar = (
-      <div className={avatarStyles} tabIndex="0">
-        <img
-          alt={owner.preferredName}
-          className={css(styles.avatarImg)}
-          src={owner.picture}
-        />
-      </div>
+    const ownerAvatarOrTeamName = (
+      showTeam ?
+        <div className={css(styles.teamName)}>{teamName}</div> :
+        (<div className={avatarStyles} tabIndex="0">
+          <img
+            alt={owner.preferredName}
+            className={css(styles.avatarImg)}
+            src={owner.picture}
+          />
+        </div>)
     );
 
     return (
       <div className={css(styles.footerAndMessage)}>
         <div className={css(styles.footer)}>
           <div className={css(styles.avatarBlock)}>
-            {service ?
-              ownerAvatar :
+            {service || showTeam ?
+              ownerAvatarOrTeamName :
               <AsyncMenuContainer
                 fetchMenu={fetchAssignMenu}
                 maxWidth={350}
@@ -118,7 +124,8 @@ class OutcomeCardFooter extends Component {
                   clearError: this.clearError
                 }}
                 targetAnchor={assignTargetAnchor}
-                toggle={ownerAvatar}
+                toggle={ownerAvatarOrTeamName}
+                toggleMenuState={toggleMenuState}
               />
             }
           </div>
@@ -139,6 +146,7 @@ class OutcomeCardFooter extends Component {
                   }}
                   targetAnchor={targetAnchor}
                   toggle={<OutcomeCardFooterButton icon="github" />}
+                  toggleMenuState={toggleMenuState}
                 />
                 }
                 <AsyncMenuContainer
@@ -155,6 +163,7 @@ class OutcomeCardFooter extends Component {
                   }}
                   targetAnchor={targetAnchor}
                   toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
+                  toggleMenuState={toggleMenuState}
                 />
               </div>
             }
@@ -181,7 +190,8 @@ OutcomeCardFooter.propTypes = {
   outcome: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array
+  teamMembers: PropTypes.array,
+  toggleMenuState: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({
@@ -226,6 +236,15 @@ const styleThunk = () => ({
     display: 'flex',
     height: '2.5rem',
     padding: ui.cardPaddingBase
+  },
+
+  teamName: {
+    color: appTheme.palette.dark,
+    display: 'inline-block',
+    fontSize: appTheme.typography.s2,
+    fontWeight: 700,
+    lineHeight: '1.5rem',
+    verticalAlign: 'middle'
   },
 
   showBlock: {

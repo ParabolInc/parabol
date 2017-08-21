@@ -12,10 +12,8 @@ module.exports = {
       'cashay',
       'core-js',
       'email-addresses',
-      'graphiql',
       'graphql',
       'html-entities', // server
-      'markdown-it',
       'react',
       'react-async-hoc',
       'react-copy-to-clipboard',
@@ -34,7 +32,6 @@ module.exports = {
       'redbox-react',
       'redux',
       'redux-form',
-      'redux-logger',
       'redux-raven-middleware',
       'redux-segment',
       'redux-socket-cluster',

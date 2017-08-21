@@ -18,14 +18,14 @@ const Organizations = (props) => {
   } = props;
   const gotoNewTeam = () => { history.push('/newteam/1'); };
   const addNewOrg = () =>
-    <IconControl
+    (<IconControl
       icon="plus-square-o"
       iconSize={ui.iconSize2x}
       label="New Organization"
       lineHeight={ui.iconSize2x}
       onClick={gotoNewTeam}
       padding={`0 0 0 ${ui.panelGutter}`}
-    />;
+    />);
   return (
     <UserSettingsWrapper>
       <Helmet title="My Organizations | Parabol" />
@@ -33,11 +33,11 @@ const Organizations = (props) => {
         {organizations.length ?
           <Panel label="Organizations" controls={addNewOrg()}>
             {organizations.map((organization) =>
-              <OrganizationRow
+              (<OrganizationRow
                 key={`orgRow${organization.id}`}
                 organization={organization}
                 onRowClick={() => history.push(`/me/organizations/${organization.id}`)}
-              />
+              />)
             )}
           </Panel> :
           <EmptyOrgsCallOut />

@@ -1,46 +1,35 @@
 import fetch from 'node-fetch';
 import {stringify} from 'querystring';
 import getRethink from 'server/database/rethinkDriver';
+import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
+import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import postOptions from 'server/utils/fetchOptions';
 import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants';
-import getProviderRowData from 'server/safeQueries/getProviderRowData';
-import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
-import {toGlobalId} from 'graphql-relay';
+import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 const profileQuery = `
 query { 
   viewer { 
     login
     id
+    organizations(first: 100) {
+      nodes {
+        login
+        viewerCanAdminister
+      }
+    }
   }
 }`;
 
-const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId) => {
+const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId, providerUserName) => {
+  if (integrationCount === 0) return [];
   const r = getRethink();
-  if (integrationCount > 0) {
-    const allIntegrations = await r.table(GITHUB)
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true});
-    const permissionPromises = allIntegrations.map((integration) => {
-      return tokenCanAccessRepo(accessToken, integration.nameWithOwner);
-    });
-    const permissionArray = await Promise.all(permissionPromises);
-    const integrationIdsToJoin = permissionArray.reduce((integrationArr, githubRes, idx) => {
-      if (!githubRes.errors) {
-        integrationArr.push(allIntegrations[idx].id);
-      }
-      return integrationArr;
-    }, []);
-    await r.table(GITHUB)
-      .getAll(r.args(integrationIdsToJoin), {index: 'id'})
-      .update((doc) => ({
-        userIds: doc('userIds').append(userId).distinct()
-      }));
-    return integrationIdsToJoin.map((id) => toGlobalId(GITHUB, id));
-  }
-  return [];
+  const allIntegrations = await r.table(GITHUB)
+    .getAll(teamId, {index: 'teamId'})
+    .filter({isActive: true});
+  return maybeJoinRepos(allIntegrations, accessToken, userId, providerUserName);
 };
 
 const getTeamMember = async (joinedIntegrationIds, teamMemberId) => {
@@ -70,23 +59,15 @@ const addProviderGitHub = async (code, teamId, userId) => {
   if (scope !== GITHUB_SCOPE) {
     throw new Error(`bad scope: ${scope}`);
   }
-  const authedPostOptions = {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`
-    },
-    body: JSON.stringify({
-      query: profileQuery
-    })
-  };
+  const authedPostOptions = makeGitHubPostOptions(accessToken, {
+    query: profileQuery
+  });
   const ghProfile = await fetch(GITHUB_ENDPOINT, authedPostOptions);
   const gqlRes = await ghProfile.json();
   if (!gqlRes.data) {
     console.error('GitHub error: ', gqlRes);
   }
-  const {data: {viewer: {login: providerUserName, id: providerUserId}}} = gqlRes;
+  const {data: {viewer: {login}}} = gqlRes;
   const provider = await r.table('Provider')
     .getAll(teamId, {index: 'teamIds'})
     .filter({service: GITHUB, userId})
@@ -100,8 +81,9 @@ const addProviderGitHub = async (code, teamId, userId) => {
             id: shortid.generate(),
             accessToken,
             createdAt: now,
-            providerUserId,
-            providerUserName,
+            // github userId is never used for queries, but the login is!
+            providerUserId: login,
+            providerUserName: login,
             service: GITHUB,
             teamIds: [teamId],
             updatedAt: now,
@@ -112,13 +94,14 @@ const addProviderGitHub = async (code, teamId, userId) => {
           .update({
             accessToken,
             updatedAt: now,
-            providerUserId,
-            providerUserName
+            providerUserId: login,
+            providerUserName: login
           }, {returnChanges: true})('changes')(0)('new_val')
       );
     });
+
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId);
+  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId, login);
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
   const providerAdded = {
@@ -133,6 +116,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
     joinedIntegrationIds,
     teamMember
   };
+
   getPubSub().publish(`providerAdded.${teamId}`, {providerAdded});
 };
 

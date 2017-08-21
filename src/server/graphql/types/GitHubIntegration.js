@@ -3,7 +3,7 @@ import {globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 import TeamMember from 'server/graphql/types/TeamMember';
 import getRethink from 'server/database/rethinkDriver';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {GITHUB} from 'universal/utils/constants';
 
 const GitHubIntegration = new GraphQLObjectType({
@@ -13,6 +13,10 @@ const GitHubIntegration = new GraphQLObjectType({
   fields: () => ({
     // shortid
     id: globalIdField(GITHUB, ({id}) => id),
+    adminUserId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The parabol userId of the admin for this repo (usually the creator)'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the integration was created'

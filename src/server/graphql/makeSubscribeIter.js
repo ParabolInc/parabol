@@ -3,7 +3,8 @@ import getPubSub from 'server/utils/getPubSub';
 
 const defaultFilterFn = () => true;
 
-const makeSubscribeIter = (channelName, filterFn = defaultFilterFn, resolve) => {
+const makeSubscribeIter = (channelName, options = {}) => {
+  const {filterFn = defaultFilterFn, resolve} = options;
   const asyncIterator = getPubSub().asyncIterator(channelName);
   const getNextPromise = async () => {
     const nextRes = await asyncIterator.next();
@@ -14,7 +15,10 @@ const makeSubscribeIter = (channelName, filterFn = defaultFilterFn, resolve) => 
 
     if (filterFn(value)) {
       if (resolve) {
-        nextRes.value = await resolve(value);
+        return {
+          done: false,
+          value: await resolve(value)
+        };
       }
       return nextRes;
     }

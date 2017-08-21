@@ -21,7 +21,7 @@ export const APP_UPGRADE_PENDING_KEY = `${APP_NAME}:upgradePending`;
 export const APP_UPGRADE_PENDING_FALSE = 'false';
 export const APP_UPGRADE_PENDING_RELOAD = 'reload';
 export const APP_UPGRADE_PENDING_DONE = 'done';
-export const APP_VERSION_KEY = `${APP_NAME}:version`;         // in localStorage
+export const APP_VERSION_KEY = `${APP_NAME}:version`; // in localStorage
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 
 /* Phases */
@@ -43,7 +43,7 @@ export const FUTURE = 'future';
 export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
 export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
-/* Drag-n-Drop Items*/
+/* Drag-n-Drop Items */
 export const PROJECT = 'project';
 export const AGENDA_ITEM = 'agendaItem';
 
@@ -146,7 +146,7 @@ export const DEFAULT_TTL = ms('5m');
 export const GITHUB = 'GitHubIntegration';
 export const SLACK = 'SlackIntegration';
 export const CURRENT_PROVIDERS = [GITHUB, SLACK];
-export const GITHUB_SCOPE = 'repo,user:email,write:repo_hook';
+export const GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook';
 export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:bot';
 export const GITHUB_ENDPOINT = 'https://api.github.com/graphql';
 

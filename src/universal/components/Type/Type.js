@@ -75,14 +75,14 @@ Type.propTypes = {
   marginTop: PropTypes.string,
   scale: PropTypes.oneOf([
     'sBase', // 16px
-    's1',    // 12px
-    's2',    // 13px
-    's3',    // 14px
-    's4',    // 18px
-    's5',    // 20px
-    's6',    // 24px
-    's7',    // 36px
-    's8'    // 48px
+    's1', // 12px
+    's2', // 13px
+    's3', // 14px
+    's4', // 18px
+    's5', // 20px
+    's6', // 24px
+    's7', // 36px
+    's8' // 48px
   ]),
   colorPalette: PropTypes.oneOf([
     'cool',

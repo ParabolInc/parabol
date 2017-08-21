@@ -2,9 +2,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {graphql} from 'react-relay';
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
+import AnimatedFade from 'universal/components/AnimatedFade';
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import SetLoading from 'universal/components/SetLoading';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import GitHubRepoListMenu from 'universal/modules/outcomeCard/components/GitHubRepoListMenu/GitHubRepoListMenu';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
@@ -14,6 +15,8 @@ import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeft
 import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription';
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
 
 const githubRepoQuery = graphql`
   query GitHubReposMenuRootQuery($teamId: ID!) {
@@ -27,15 +30,17 @@ const githubRepoQuery = graphql`
 const subscriptions = [
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
+  GitHubMemberRemovedSubscription,
   ProviderRemovedSubscription,
   ProviderAddedSubscription,
   IntegrationLeftSubscription(GITHUB),
   IntegrationJoinedSubscription(GITHUB)
+
 ];
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, closePortal, setLoading}) => {
+const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, closePortal, setCoords, maxWidth}) => {
   const [teamId] = projectId.split('::');
   return (
     <QueryRenderer
@@ -45,36 +50,41 @@ const GitHubReposMenuRoot = ({atmosphere, projectId, setError, clearError, close
       variables={{teamId, service: GITHUB}}
       subscriptions={subscriptions}
       render={({error, props}) => {
-        // TODO handle the error within the menu
-        if (error) {
-          return <ErrorComponent height={'14rem'} error={error} />;
-        }
-        if (props) {
-          return (<GitHubRepoListMenu
-            viewer={props.viewer}
-            teamId={teamId}
-            projectId={projectId}
-            closePortal={closePortal}
-            setError={setError}
-            clearError={clearError}
-            setLoading={setLoading}
-          />);
-        }
-        return <SetLoading setLoading={setLoading} />;
+        return (
+          <TransitionGroup appear style={{overflow: 'hidden'}}>
+            {error && <ErrorComponent height={'14rem'} width={maxWidth} error={error} />}
+            {props && <AnimatedFade key="1" onEnter={setCoords}>
+              <GitHubRepoListMenu
+                viewer={props.viewer}
+                teamId={teamId}
+                projectId={projectId}
+                closePortal={closePortal}
+                setError={setError}
+                clearError={clearError}
+                setCoords={setCoords}
+              />
+            </AnimatedFade>}
+            {!props && !error &&
+            <AnimatedFade key="2" unmountOnExit exit={false}>
+              <LoadingComponent height={'5rem'} width={maxWidth} />
+            </AnimatedFade>
+            }
+          </TransitionGroup>
+        );
       }}
     />
   );
 };
 
-
 GitHubReposMenuRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  maxWidth: PropTypes.number.isRequired,
   projectId: PropTypes.string.isRequired,
   viewer: PropTypes.object,
   setError: PropTypes.func.isRequired,
   clearError: PropTypes.func.isRequired,
   closePortal: PropTypes.func.isRequired,
-  setLoading: PropTypes.func.isRequired
+  setCoords: PropTypes.func.isRequired
 };
 
 export default withAtmosphere(GitHubReposMenuRoot);
