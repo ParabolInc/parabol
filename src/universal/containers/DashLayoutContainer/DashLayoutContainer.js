@@ -62,7 +62,7 @@ const mapStateToProps = (state) => {
     userId: state.auth.sub,
     trialNotification: notifications[0],
     hasMeetingAlert: state.dash.hasMeetingAlert,
-    hasTrialAlert: state.dash.hasTrialAlert,
+    hasTrialAlert: state.dash.hasTrialAlert
   };
 };
 

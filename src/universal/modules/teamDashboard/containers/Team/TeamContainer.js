@@ -89,6 +89,7 @@ const TeamContainer = (props) => {
 
 TeamContainer.propTypes = {
   hasMeetingAlert: PropTypes.bool,
+  hasTrialAlert: PropTypes.bool,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired
   }),
