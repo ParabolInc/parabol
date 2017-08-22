@@ -47,7 +47,7 @@ const Step2TeamName = (props) => {
       <Type align="center" italic scale="s6">
         Nice to meet you, {preferredName}!
       </Type>
-      <WelcomeHeading copy={<span>Please type in your team name:</span>}/>
+      <WelcomeHeading copy={<span>Please type in your team name:</span>} />
       {error && <div className={css(styles.error)}>{error}</div>}
       <form className={css(styles.formBlock)} onSubmit={handleSubmit(onTeamNameSubmit)}>
         <Field
@@ -61,7 +61,7 @@ const Step2TeamName = (props) => {
           type="text"
           underline
         />
-        <WelcomeSubmitButton disabled={submitting || !teamName}/>
+        <WelcomeSubmitButton disabled={submitting || !teamName} />
       </form>
     </div>
   );

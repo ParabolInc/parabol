@@ -20,9 +20,9 @@ const DashLayout = (props) => {
   return (
     <div className={css(styles.root)}>
       {/* Shows over any dashboard view when we prompt the trial extension (1 week after sign up?). */}
-      {barType === TRIAL_EXPIRES_SOON && <ActiveTrialDashAlert orgId={orgId}/>}
+      {barType === TRIAL_EXPIRES_SOON && <ActiveTrialDashAlert orgId={orgId} />}
       {/* Shows over any account view when the trial has expired. */}
-      {barType === TRIAL_EXPIRED && <ExpiredTrialDashAlert orgId={orgId}/>}
+      {barType === TRIAL_EXPIRED && <ExpiredTrialDashAlert orgId={orgId} />}
       {/* Shows over any dashboard view when there is a meeting. */}
       {hasMeetingNotification && <MeetingDashAlert activeMeetings={activeMeetings} />}
       <div className={css(styles.main)}>

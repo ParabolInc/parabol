@@ -26,7 +26,7 @@ const EditorSuggestions = (props) => {
     setRef,
     styles,
     suggestions,
-    suggestionType,
+    suggestionType
   } = props;
 
   const SuggestionItem = suggestionTypes[suggestionType];
@@ -61,9 +61,9 @@ EditorSuggestions.propTypes = {
   top: PropTypes.number
 };
 
-const styleThunk = (theme, props) => ({
+const styleThunk = () => ({
   mentionMenu: {
-    color: ui.palette.dark,
+    color: ui.palette.dark
   },
 
   active: {
@@ -87,4 +87,4 @@ const styleThunk = (theme, props) => ({
   }
 });
 
-export default withStyles(styleThunk)(EditorSuggestions)
+export default withStyles(styleThunk)(EditorSuggestions);

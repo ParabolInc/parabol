@@ -73,7 +73,7 @@ class Step1PreferredName extends Component {
     const copy = <span>{'What do you prefer your teammates to call you?'}</span>;
     return (
       <div style={{width: '100%'}}>
-        <WelcomeHeading copy={copy}/>
+        <WelcomeHeading copy={copy} />
         {error && <div className={css(styles.error)}>{error}</div>}
         <form className={css(styles.formBlock)} onSubmit={handleSubmit(this.onPreferredNameSubmit)}>
           <Field
@@ -87,7 +87,7 @@ class Step1PreferredName extends Component {
             type="text"
             underline
           />
-          <WelcomeSubmitButton disabled={submitting || !preferredName}/>
+          <WelcomeSubmitButton disabled={submitting || !preferredName} />
         </form>
       </div>
     );

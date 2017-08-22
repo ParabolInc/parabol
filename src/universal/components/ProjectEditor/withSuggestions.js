@@ -199,7 +199,7 @@ const withSuggestions = (ComposedComponent) => {
       if (!coords) {
         setTimeout(() => {
           this.forceUpdate();
-        })
+        });
       }
       return (
         <AsyncMenuContainer
@@ -210,13 +210,13 @@ const withSuggestions = (ComposedComponent) => {
           originAnchor={originAnchor}
           originCoords={coords}
           queryVars={{
-            editorState: editorState,
-            setEditorState: setEditorState,
-            active: active,
-            suggestions: suggestions,
-            suggestionType: suggestionType,
+            editorState,
+            setEditorState,
+            active,
+            suggestions,
+            suggestionType,
             handleSelect: this.handleSelect,
-            removeModal: this.removeModal,
+            removeModal: this.removeModal
           }}
           targetAnchor={targetAnchor}
           isOpen

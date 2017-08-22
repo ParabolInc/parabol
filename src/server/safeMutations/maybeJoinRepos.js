@@ -64,7 +64,7 @@ const maybeJoinRepos = async (integrations, providers) => {
 export default maybeJoinRepos;
 
 // TODO maybe use this later to be extra efficient
-//const groupPrimitiveArraysByKey = (obj) => {
+// const groupPrimitiveArraysByKey = (obj) => {
 //  const keys = Object.keys(obj);
 //  const usedKeys = new Set();
 //  const groups = [];
@@ -87,5 +87,5 @@ export default maybeJoinRepos;
 //    }
 //  }
 //  return groups;
-//};
+// };
 //

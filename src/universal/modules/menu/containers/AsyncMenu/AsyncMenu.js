@@ -14,6 +14,12 @@ const getOffset = (orientation, fullWidth) => {
 export default class AsyncMenuContainer extends Component {
   static propTypes = {
     originAnchor: PropTypes.object,
+    originCoords: PropTypes.shape({
+      left: PropTypes.number,
+      top: PropTypes.number,
+      right: PropTypes.number,
+      bottom: PropTypes.number
+    }),
     targetAnchor: PropTypes.object,
     toggle: PropTypes.object,
     maxWidth: PropTypes.number,
@@ -30,7 +36,7 @@ export default class AsyncMenuContainer extends Component {
       loading: false,
       // initialize somewhere in the viewport so it doesn't trigger a scroll bar
       top: originCoords && originCoords.top || 0
-    }
+    };
   }
 
   componentWillMount() {

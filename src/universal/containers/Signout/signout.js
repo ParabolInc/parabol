@@ -25,4 +25,4 @@ const signout = (atmosphere, dispatch, history) => {
   cashay.clear();
 };
 
-export default signout
+export default signout;

@@ -62,12 +62,12 @@ EditorLinkViewer.propTypes = {
   top: PropTypes.number
 };
 
-const styleThunk = (theme, props) => ({
+const styleThunk = () => ({
   modal: {
     alignItems: 'center',
     color: ui.palette.dark,
     display: 'flex',
-    fontSize: appTheme.typography.s5,
+    fontSize: appTheme.typography.s5
   },
 
   url: {

@@ -23,7 +23,7 @@ const TrialExpired = (props) => {
       <div className={css(styles.icon)}>
         <div className={css(styles.avatarPlaceholder)}>
           <div className={css(styles.avatarPlaceholderInner)}>
-            <FontAwesome name="credit-card"/>
+            <FontAwesome name="credit-card" />
           </div>
         </div>
       </div>

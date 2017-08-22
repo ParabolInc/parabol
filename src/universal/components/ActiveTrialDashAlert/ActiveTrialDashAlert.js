@@ -32,7 +32,7 @@ const ActiveTrialDashAlert = (props) => {
           <span className={css(styles.underline)}>
             Go to My Account
           </span>
-          <FontAwesome name="arrow-right" style={iconStyle}/>
+          <FontAwesome name="arrow-right" style={iconStyle} />
         </Link>
       </div>
     </DashAlert>

@@ -42,7 +42,7 @@ export default {
     // plural for each organization
     const providers = await r.table('Provider')
       .getAll(assigneeLogin, {index: 'providerUserId'})
-      .filter({service: GITHUB, isActive: true})
+      .filter({service: GITHUB, isActive: true});
     // .nth(0)('userId')
     // .default(null);
 

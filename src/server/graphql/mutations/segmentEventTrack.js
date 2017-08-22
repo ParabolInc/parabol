@@ -17,7 +17,6 @@ export default {
     }
   },
   resolve: async (source, {event, options = {}}, {authToken}) => {
-
     // AUTH
     const userId = getUserId(authToken);
     const {teamId, orgId} = options;
@@ -31,6 +30,5 @@ export default {
 
     // RESOLUTION
     sendSegmentEvent(event, userId, options);
-
   }
 };

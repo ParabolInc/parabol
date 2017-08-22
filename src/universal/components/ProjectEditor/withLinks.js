@@ -258,7 +258,7 @@ const withLinks = (ComposedComponent) => {
       if (!coords) {
         setTimeout(() => {
           this.forceUpdate();
-        })
+        });
       }
       // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
@@ -273,13 +273,13 @@ const withLinks = (ComposedComponent) => {
           originAnchor={originAnchor}
           originCoords={coords}
           queryVars={{
-            editorState: editorState,
-            selectionState: selectionState,
-            setEditorState: setEditorState,
+            editorState,
+            selectionState,
+            setEditorState,
             removeModal: this.removeModal,
-            text: text,
+            text,
             initialValues: {text, link},
-            editorRef: editorRef
+            editorRef
           }}
           targetAnchor={targetAnchor}
           isOpen
@@ -295,7 +295,7 @@ const withLinks = (ComposedComponent) => {
       if (!coords) {
         setTimeout(() => {
           this.forceUpdate();
-        })
+        });
       }
 
       return (
@@ -310,8 +310,8 @@ const withLinks = (ComposedComponent) => {
           originAnchor={originAnchor}
           originCoords={coords}
           queryVars={{
-            editorState: editorState,
-            setEditorState: setEditorState,
+            editorState,
+            setEditorState,
             removeModal: this.removeModal,
             href: linkViewerData.href,
             addHyperlink: this.addHyperlink

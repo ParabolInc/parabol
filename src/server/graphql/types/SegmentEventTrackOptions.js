@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInputObjectType, GraphQLInt, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLInputObjectType, GraphQLInt} from 'graphql';
 
 const SegmentEventTrackOptions = new GraphQLInputObjectType({
   name: 'SegmentEventTrackOptions',
@@ -9,7 +9,7 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
       type: GraphQLInt,
       description: 'Used during the welcome wizard step 3'
     }
-    })
+  })
 });
 
 export default SegmentEventTrackOptions;

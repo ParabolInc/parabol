@@ -45,6 +45,7 @@ const Auth0ShowLock = (props) => {
 };
 
 Auth0ShowLock.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
 };
 

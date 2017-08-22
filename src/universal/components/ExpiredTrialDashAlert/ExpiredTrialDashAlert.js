@@ -33,7 +33,7 @@ const ExpiredTrialDashAlert = (props) => {
           <span className={css(styles.underline)}>
             Add Billing Information
           </span>
-          <FontAwesome name="arrow-right" style={iconStyle}/>
+          <FontAwesome name="arrow-right" style={iconStyle} />
         </Link>
       </div>
     </DashAlert>

@@ -117,7 +117,7 @@ EditorLinkChanger.propTypes = {
   valid: PropTypes.bool
 };
 
-const styleThunk = (theme, props) => ({
+const styleThunk = () => ({
   modal: {
     color: ui.palette.dark,
     padding: '.5rem .5rem .5rem 1rem'

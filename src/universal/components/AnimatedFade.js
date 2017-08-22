@@ -17,7 +17,7 @@ class AnimatedFade extends Component {
     // calling css below injects them into the stylesheet & then waiting till the next tick gives it time to flush
     setTimeout(() => {
       if (this._mounted) {
-        this.setState({ready: true})
+        this.setState({ready: true});
       }
     });
   }

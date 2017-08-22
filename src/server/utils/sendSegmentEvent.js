@@ -12,7 +12,7 @@ const getTraits = (userIds) => {
       email: r.row('email'),
       id: r.row('id'),
       name: r.row('preferredName')
-    })
+    });
 };
 
 const getOrgId = (teamId) => {

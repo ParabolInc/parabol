@@ -56,8 +56,8 @@ class AsyncMenu extends Component {
             </AnimatedFade>
             }
             {!Mod && !isClosing &&
-            < AnimatedFade exit={false} unmountOnExit>
-              <LoadingComponent height={'5rem'} width={maxWidth}/>
+            <AnimatedFade exit={false} unmountOnExit>
+              <LoadingComponent height={'5rem'} width={maxWidth} />
             </AnimatedFade>
             }
           </TransitionGroup>
@@ -76,6 +76,7 @@ AsyncMenu.propTypes = {
     right: PropTypes.number,
     bottom: PropTypes.number
   }),
+  isClosing: PropTypes.bool,
   maxWidth: PropTypes.number.isRequired,
   maxHeight: PropTypes.number.isRequired,
   Mod: PropTypes.any,
@@ -100,7 +101,7 @@ const animateOut = {
 
 const styleThunk = (theme, {maxHeight, maxWidth}) => ({
   closing: {
-    animationDuration: `150ms`,
+    animationDuration: '150ms',
     animationName: animateOut
   },
 

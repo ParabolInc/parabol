@@ -53,14 +53,14 @@ class GitHubRepoRow extends Component {
               title={nameWithOwner}
             >
               {nameWithOwner}
-              <FontAwesome name="external-link-square" style={{marginLeft: '.5rem'}}/>
-              {isCreator && <Tag colorPalette="light" label="Creator"/>}
+              <FontAwesome name="external-link-square" style={{marginLeft: '.5rem'}} />
+              {isCreator && <Tag colorPalette="light" label="Creator" />}
             </a>
           </div>
           <div className={css(styles.avatarGroup)}>
             {teamMembers.map((user) => (
               <div key={user.id} className={css(styles.avatar)}>
-                <Avatar {...user} size="smallest"/>
+                <Avatar {...user} size="smallest" />
               </div>
             ))}
           </div>
