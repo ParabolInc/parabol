@@ -29,6 +29,7 @@ const getSegmentProps = (userIds, teamId) => {
 };
 
 const sendSegmentEvent = async (event, maybeUserIds, options) => {
+  console.log('are options null or undefined?',options)
   const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds];
   const properties = await getSegmentProps(userIds, options.teamId);
   userIds.forEach((userId, idx) => {

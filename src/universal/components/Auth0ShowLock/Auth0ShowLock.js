@@ -3,6 +3,7 @@ import React from 'react';
 import signinAndUpdateToken from './signinAndUpdateToken';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 /*
  * NOTE: showLock is, and may only ever be called from the client:
@@ -11,7 +12,7 @@ import auth0Overrides from 'universal/styles/theme/auth0Overrides';
  * rendered within the SSR.
  */
 let stylesInjected;
-export function showLock(dispatch) {
+export function showLock(atmosphere, dispatch) {
   if (!stylesInjected) {
     stylesInjected = true;
     injectGlobals(auth0Overrides);
@@ -28,17 +29,17 @@ export function showLock(dispatch) {
       }
     }, (error, profile, authToken) => {
       if (error) throw error;
-      signinAndUpdateToken(dispatch, profile, authToken);
+      signinAndUpdateToken(atmosphere, dispatch, profile, authToken);
     });
   });
 }
 
 const Auth0ShowLock = (props) => {
-  const {dispatch} = props;
+  const {atmosphere, dispatch} = props;
   return (
     <div>{
       /* auth0 lock can't SSR: */
-      __CLIENT__ && showLock(dispatch)
+      __CLIENT__ && showLock(atmosphere, dispatch)
     }</div>
   );
 };
@@ -47,4 +48,4 @@ Auth0ShowLock.propTypes = {
   dispatch: PropTypes.func.isRequired
 };
 
-export default Auth0ShowLock;
+export default withAtmosphere(Auth0ShowLock);

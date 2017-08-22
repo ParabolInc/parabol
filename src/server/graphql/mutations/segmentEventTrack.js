@@ -1,5 +1,6 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql';
+import SegmentEventTrackOptions from 'server/graphql/types/SegmentEventTrackOptions';
+import {getUserId, getUserOrgDoc, requireOrgLeader, requireSUOrTeamMember} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 
 
@@ -11,16 +12,25 @@ export default {
     event: {
       type: new GraphQLNonNull(GraphQLString)
     },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID)
+    options: {
+      type: SegmentEventTrackOptions
     }
   },
-  resolve: async (source, {event, userId, teamId}, {authToken}) => {
+  resolve: async (source, {event, options}, {authToken}) => {
+
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    const userId = getUserId(authToken);
+    const {teamId, orgId} = options || {};
+    if (teamId) {
+      requireSUOrTeamMember(authToken, teamId);
+    }
+    if (orgId) {
+      const userOrgDoc = await getUserOrgDoc(userId, orgId);
+      requireOrgLeader(userOrgDoc);
+    }
 
     // RESOLUTION
-    sendSegmentEvent(event, userId, {teamId});
+    sendSegmentEvent(event, userId, options);
 
   }
 };
