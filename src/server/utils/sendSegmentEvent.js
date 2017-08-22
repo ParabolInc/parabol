@@ -1,32 +1,45 @@
 import getRethink from 'server/database/rethinkDriver';
 import segmentIo from 'server/utils/segmentIo';
+import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 
-const getSegmentProps = (maybeUserIds, teamId) => {
-  const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds];
+const getTraits = (userIds) => {
   const r = getRethink();
-  return r.expr({
-    traits: r.table('User')
-      .getAll(r.args(userIds), {index: 'id'})
-      .map({
-        avatar: r.row('picture').default(''),
-        createdAt: r.row('createdAt').default(0),
-        email: r.row('email'),
-        id: r.row('id'),
-        name: r.row('preferredName')
-      }),
-    orgId: r.table('Team').get(teamId)('orgId')
-  });
+  return r.table('User')
+    .getAll(r.args(userIds), {index: 'id'})
+    .map({
+      avatar: r.row('picture').default(''),
+      createdAt: r.row('createdAt').default(0),
+      email: r.row('email'),
+      id: r.row('id'),
+      name: r.row('preferredName')
+    })
 };
 
-const sendSegmentEvent = async (event, userId, teamId) => {
-  const properties = await getSegmentProps(userId, teamId);
-  segmentIo.track({
-    userId,
-    event,
-    properties: {
-      ...properties,
-      teamId
-    }
+const getOrgId = (teamId) => {
+  const r = getRethink();
+  return teamId ? r.table('Team').get(teamId)('orgId') : undefined;
+};
+
+
+const getSegmentProps = (userIds, teamId) => {
+  return userIds.map(resolvePromiseObj({
+    traits: getTraits(userIds),
+    orgId: getOrgId(teamId)
+  }));
+};
+
+const sendSegmentEvent = async (event, maybeUserIds, options) => {
+  const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds];
+  const properties = await getSegmentProps(userIds, options.teamId);
+  userIds.forEach((userId, idx) => {
+    segmentIo.track({
+      userId,
+      event,
+      properties: {
+        ...properties[idx],
+        ...options
+      }
+    });
   });
 };
 

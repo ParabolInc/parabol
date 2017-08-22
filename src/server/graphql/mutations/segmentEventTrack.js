@@ -20,7 +20,7 @@ export default {
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
-    sendSegmentEvent(event, userId, teamId);
+    sendSegmentEvent(event, userId, {teamId});
 
   }
 };

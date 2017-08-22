@@ -1,19 +1,12 @@
-import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLInt
-} from 'graphql';
-import {ACTION_MONTHLY} from 'server/utils/serverConstants';
-import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
-import {
-  getUserSegmentTraits,
-  requireSU
-} from 'server/utils/authorization';
+import {GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
 import stripe from 'server/billing/stripe';
-import {fromEpochSeconds} from 'server/utils/epochTime';
-import segmentIo from 'server/utils/segmentIo';
+import getRethink from 'server/database/rethinkDriver';
 import {GraphQLEmailType} from 'server/graphql/types';
+import {requireSU} from 'server/utils/authorization';
+import {fromEpochSeconds} from 'server/utils/epochTime';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import {ACTION_MONTHLY} from 'server/utils/serverConstants';
+import {TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 
 export default {
   type: GraphQLString,
@@ -51,20 +44,12 @@ export default {
       throw new Error(`${email} is not a member of any organizations`);
     }
 
-    const segmentTraits = await getUserSegmentTraits(userId);
     const trialArr = [TRIAL_EXPIRED, TRIAL_EXPIRES_SOON];
 
     const updates = orgs.map((org) => {
       const {id: orgId, orgUsers, stripeId} = org;
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
-      segmentIo.track({
-        userId,
-        event: 'Manual trial extension',
-        properties: {
-          orgId,
-          traits: segmentTraits
-        }
-      });
+      sendSegmentEvent('Manual trial extension', userId, {orgId});
       return stripe.subscriptions.create({
         customer: stripeId,
         metadata: {
