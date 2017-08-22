@@ -72,6 +72,7 @@ const iconSize3x = '42px'; // FontAwesome 3x
 // Modals
 const MODAL_LAYOUT_MAIN = 'main';
 const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert';
+const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
 // Transitions
@@ -234,6 +235,7 @@ const ui = {
   },
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
+  dashAlertsHeight: '5.25rem',
   dashSectionHeaderLineHeight: '2rem',
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
@@ -379,10 +381,12 @@ const ui = {
   modalButtonSize: BUTTON_SIZE_MEDIUM,
   modalLayoutMain: MODAL_LAYOUT_MAIN,
   modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
+  modalLayoutMainWithDashAlerts: MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS,
   modalLayoutViewport: MODAL_LAYOUT_VIEWPORT,
   modalLayout: [
     MODAL_LAYOUT_MAIN,
     MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
+    MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS,
     MODAL_LAYOUT_VIEWPORT
   ],
 

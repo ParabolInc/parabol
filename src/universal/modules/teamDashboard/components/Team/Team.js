@@ -22,7 +22,8 @@ const initialValues = {teamName: ''};
 const Team = (props) => {
   const {
     children,
-    hasDashAlert,
+    hasMeetingAlert,
+    hasTrialAlert,
     isSettings,
     history,
     styles,
@@ -34,7 +35,8 @@ const Team = (props) => {
   const hasOverlay = hasActiveMeeting || !isPaid;
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
-  const modalLayout = hasDashAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
+  const singleAlertModalLayout = (hasMeetingAlert || hasTrialAlert) ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
+  const modalLayout = (hasMeetingAlert && hasTrialAlert) ? ui.modalLayoutMainWithDashAlerts : singleAlertModalLayout;
   const goToMeetingLobby = () =>
     history.push(`/meeting/${teamId}/`);
   const goToTeamSettings = () =>
@@ -109,7 +111,8 @@ const Team = (props) => {
 
 Team.propTypes = {
   children: PropTypes.any,
-  hasDashAlert: PropTypes.bool,
+  hasMeetingAlert: PropTypes.bool,
+  hasTrialAlert: PropTypes.bool,
   isSettings: PropTypes.bool.isRequired,
   history: PropTypes.object,
   styles: PropTypes.object,

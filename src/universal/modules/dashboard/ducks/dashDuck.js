@@ -1,15 +1,23 @@
-const DASH_ALERT_PRESENCE = 'dash/DASH_ALERT_PRESENCE';
+const DASH_HAS_MEETING_ALERT = 'dash/DASH_HAS_MEETING_ALERT';
+const DASH_HAS_TRIAL_ALERT = 'dash/DASH_HAS_TRIAL_ALERT';
 
 const initialState = {
-  hasDashAlert: false
+  hasMeetingAlert: false,
+  hasTrialAlert: false
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case DASH_ALERT_PRESENCE: {
+    case DASH_HAS_MEETING_ALERT: {
       return {
         ...state,
-        hasDashAlert: action.payload.hasDashAlert
+        hasMeetingAlert: action.payload.hasMeetingAlert
+      };
+    }
+    case DASH_HAS_TRIAL_ALERT: {
+      return {
+        ...state,
+        hasTrialAlert: action.payload.hasTrialAlert
       };
     }
     default:
@@ -17,12 +25,22 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export const setDashAlertPresence = (bool) => {
-  const hasDashAlert = Boolean(bool);
+export const setMeetingAlertState = (bool) => {
+  const hasMeetingAlert = Boolean(bool);
   return {
-    type: DASH_ALERT_PRESENCE,
+    type: DASH_HAS_MEETING_ALERT,
     payload: {
-      hasDashAlert
+      hasMeetingAlert
+    }
+  };
+};
+
+export const setTrialAlertState = (bool) => {
+  const hasTrialAlert = Boolean(bool);
+  return {
+    type: DASH_HAS_TRIAL_ALERT,
+    payload: {
+      hasTrialAlert
     }
   };
 };

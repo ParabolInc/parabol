@@ -116,6 +116,11 @@ const styleThunk = (theme, props) => ({
     top: ui.dashAlertHeight
   },
 
+  [ui.modalLayoutMainWithDashAlerts]: {
+    left: ui.dashSidebarWidth,
+    top: ui.dashAlertsHeight
+  },
+
   [ui.modalLayoutViewport]: {
     left: 0
   },
