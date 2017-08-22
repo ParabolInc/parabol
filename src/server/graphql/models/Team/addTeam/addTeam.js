@@ -18,6 +18,7 @@ import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
 import addTeamValidation from './addTeamValidation';
 import inviteAsBillingLeader from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsBillingLeader';
 import inviteAsUser from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsUser';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 
 export default {
   type: GraphQLBoolean,
@@ -54,8 +55,11 @@ export default {
     socket.setAuthToken(newAuthToken);
     await createTeamAndLeader(userId, newTeam);
 
+    const inviteeCount = invitees && invitees.length || 0;
+    sendSegmentEvent('New Team', userId, {teamId, orgId, inviteeCount});
+
     // handle invitees
-    if (!invitees || invitees.length === 0) {
+    if (inviteeCount === 0) {
       return true;
     }
 

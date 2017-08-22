@@ -22,22 +22,22 @@ const getOrgId = (teamId) => {
 
 
 const getSegmentProps = (userIds, teamId) => {
-  return userIds.map(resolvePromiseObj({
-    traits: getTraits(userIds),
+  return resolvePromiseObj({
+    traitsArr: getTraits(userIds),
     orgId: getOrgId(teamId)
-  }));
+  });
 };
 
-const sendSegmentEvent = async (event, maybeUserIds, options) => {
-  console.log('are options null or undefined?',options)
+const sendSegmentEvent = async (event, maybeUserIds, options = {}) => {
   const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds];
-  const properties = await getSegmentProps(userIds, options.teamId);
-  userIds.forEach((userId, idx) => {
+  const {traitsArr, orgId} = await getSegmentProps(userIds, options.teamId);
+  traitsArr.forEach((traits) => {
     segmentIo.track({
-      userId,
+      userId: traits.id,
       event,
       properties: {
-        ...properties[idx],
+        orgId,
+        ...traits,
         ...options
       }
     });

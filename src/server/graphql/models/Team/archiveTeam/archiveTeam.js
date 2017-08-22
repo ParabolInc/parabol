@@ -1,6 +1,7 @@
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getRethink from 'server/database/rethinkDriver';
 import {
+  getUserId,
   requireSUOrLead,
   requireWebsocket
 } from 'server/utils/authorization';
@@ -12,6 +13,7 @@ import {
 import shortid from 'shortid';
 import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
 import {TEAM_ARCHIVED} from 'universal/utils/constants';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 
 export default {
   type: GraphQLBoolean,
@@ -26,11 +28,13 @@ export default {
     const now = new Date();
 
     // AUTH
-    const teamMemberId = `${authToken.sub}::${teamId}`;
+    const userId = getUserId(authToken);
+    const teamMemberId = `${userId}::${teamId}`;
     requireSUOrLead(authToken, teamMemberId);
     requireWebsocket(socket);
 
     // RESOLUTION
+    sendSegmentEvent('Archive Team', userId, {teamId});
     const dbResult = await r.table('Team')
       .get(teamId)
       .pluck('name', 'orgId')

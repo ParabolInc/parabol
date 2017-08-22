@@ -16,11 +16,11 @@ export default {
       type: SegmentEventTrackOptions
     }
   },
-  resolve: async (source, {event, options}, {authToken}) => {
+  resolve: async (source, {event, options = {}}, {authToken}) => {
 
     // AUTH
     const userId = getUserId(authToken);
-    const {teamId, orgId} = options || {};
+    const {teamId, orgId} = options;
     if (teamId) {
       requireSUOrTeamMember(authToken, teamId);
     }

@@ -33,7 +33,7 @@ function createImposter(atmosphere, userId, dispatch, history) {
     const {email, id, jwt, name, picture} = data.createImposterToken;
     const profile = {avatar: picture, email, id, name};
     // Reset application state:
-    await signout(dispatch);
+    await signout(atmosphere, dispatch);
     // Cashay User query needed to setup later mutation in signinAndUpdateToken:
     cashay.query(getAuthQueryString, getAuthedOptions(id));
     // Assume the identity of the new user:

@@ -14,8 +14,8 @@ class SignoutContainer extends Component {
   };
 
   componentWillMount() {
-    const {atmosphere, store: {dispatch}} = this.context;
-    const {history} = this.props;
+    const {store: {dispatch}} = this.context;
+    const {atmosphere, history} = this.props;
     signout(atmosphere, dispatch, history);
   }
 

@@ -1,22 +1,21 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {withRouter} from 'react-router-dom';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import Button from 'universal/components/Button/Button';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import Row from 'universal/components/Row/Row';
 import FontAwesome from 'react-fontawesome';
+import {withRouter} from 'react-router-dom';
+import Button from 'universal/components/Button/Button';
+import Row from 'universal/components/Row/Row';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
+import withStyles from 'universal/styles/withStyles';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const TrialExpired = (props) => {
-  const {dispatch, orgId, history, styles} = props;
+  const {atmosphere, orgId, history, styles} = props;
   const addBilling = () => {
-    dispatch(
-      segmentEventTrack('Notification TrialExpired Click')
-    );
+    SendClientSegmentEventMutation(atmosphere, 'Notification TrialExpired Click', {orgId});
     history.push(`/me/organizations/${orgId}`);
   };
   return (
@@ -24,7 +23,7 @@ const TrialExpired = (props) => {
       <div className={css(styles.icon)}>
         <div className={css(styles.avatarPlaceholder)}>
           <div className={css(styles.avatarPlaceholderInner)}>
-            <FontAwesome name="credit-card" />
+            <FontAwesome name="credit-card"/>
           </div>
         </div>
       </div>
@@ -47,7 +46,7 @@ const TrialExpired = (props) => {
 };
 
 TrialExpired.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  atmosphere: PropTypes.object.isRequired,
   orgId: PropTypes.string.isRequired,
   history: PropTypes.object.isRequired,
   styles: PropTypes.string
@@ -92,6 +91,8 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(TrialExpired)
+export default withAtmosphere(
+  withRouter(
+    withStyles(styleThunk)(TrialExpired)
+  )
 );

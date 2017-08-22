@@ -1,14 +1,13 @@
+import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {cashay} from 'cashay';
-import shortid from 'shortid';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
-import addOrgSchema from 'universal/validation/addOrgSchema';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {connect} from 'react-redux';
+import shortid from 'shortid';
 import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
+import addOrgSchema from 'universal/validation/addOrgSchema';
+import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 
 const orgDropdownMenuItemsQuery = `
 query {
@@ -77,7 +76,6 @@ class NewTeamFormContainer extends Component {
         stripeToken
       };
       await cashay.mutate('addOrg', {variables});
-      dispatch(segmentEventTrack('New Org'));
       dispatch(showSuccess({
         title: 'Organization successfully created!',
         message: `Here's your new team dashboard for ${teamName}`
@@ -96,12 +94,6 @@ class NewTeamFormContainer extends Component {
         invitees
       };
       await cashay.mutate('addTeam', {variables});
-      dispatch(segmentEventTrack('New Team',
-        {
-          inviteeCount: invitees && invitees.length || 0,
-          teamId: newTeamId
-        }
-      ));
       dispatch(showSuccess({
         title: 'Team successfully created!',
         message: `Here's your new team dashboard for ${teamName}`
