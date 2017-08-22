@@ -142,7 +142,7 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, isEditing, editorRef, editorState} = this.state;
+    const {cardHasFocus, cardHasHover, cardHasMenuOpen, isEditing, editorRef, editorState} = this.state;
     const {area, handleAddProject, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
@@ -162,6 +162,7 @@ class OutcomeCardContainer extends Component {
           editorState={editorState}
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
+          cardHasMenuOpen={cardHasMenuOpen}
           handleAddProject={handleAddProject}
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}

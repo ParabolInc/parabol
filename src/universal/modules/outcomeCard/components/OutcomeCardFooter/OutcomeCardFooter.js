@@ -67,8 +67,7 @@ class OutcomeCardFooter extends Component {
   render() {
     const {
       area,
-      cardHasFocus,
-      cardHasHover,
+      cardIsActive,
       editorState,
       handleAddProject,
       isAgenda,
@@ -85,13 +84,12 @@ class OutcomeCardFooter extends Component {
 
     const buttonBlockStyles = css(
       styles.buttonBlock,
-      cardHasFocus && styles.showBlock,
-      cardHasHover && styles.showBlock
+      cardIsActive && styles.showBlock
     );
 
     const avatarStyles = css(
       styles.avatar,
-      (cardHasHover || cardHasFocus) && styles.activeAvatar
+      cardIsActive && styles.activeAvatar
     );
 
     const {error} = this.state;
@@ -186,8 +184,7 @@ class OutcomeCardFooter extends Component {
 
 OutcomeCardFooter.propTypes = {
   area: PropTypes.string.isRequired,
-  cardHasFocus: PropTypes.bool,
-  cardHasHover: PropTypes.bool,
+  cardIsActive: PropTypes.bool,
   editorState: PropTypes.object,
   handleAddProject: PropTypes.func,
   isAgenda: PropTypes.bool,

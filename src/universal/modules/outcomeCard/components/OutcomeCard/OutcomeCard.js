@@ -20,6 +20,7 @@ const OutcomeCard = (props) => {
     area,
     cardHasFocus,
     cardHasHover,
+    cardHasMenuOpen,
     editorRef,
     editorState,
     isAgenda,
@@ -71,8 +72,7 @@ const OutcomeCard = (props) => {
         <ProjectIntegrationLink integration={integration} />
         <OutcomeCardFooter
           area={area}
-          cardHasHover={cardHasHover}
-          cardHasFocus={cardHasFocus}
+          cardIsActive={cardHasFocus || cardHasHover || cardHasMenuOpen}
           editorState={editorState}
           handleAddProject={handleAddProject}
           isAgenda={isAgenda}
@@ -92,6 +92,7 @@ OutcomeCard.propTypes = {
   editorState: PropTypes.object,
   cardHasHover: PropTypes.bool,
   cardHasFocus: PropTypes.bool,
+  cardHasMenuOpen: PropTypes.bool,
   cardHasIntegration: PropTypes.bool,
   handleAddProject: PropTypes.func,
   hasDragStyles: PropTypes.bool,
