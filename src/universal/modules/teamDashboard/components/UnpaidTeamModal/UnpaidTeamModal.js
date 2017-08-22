@@ -10,7 +10,7 @@ const UnpaidTeamModal = (props) => {
   return (
     <DashModal position="absolute" modalLayout={modalLayout} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
-        Oh dear...
+        Oh dear…
       </Type>
       <Type align="center" bold marginBottom="1.5rem" scale="s4">
         {problem}<br />

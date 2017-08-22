@@ -48,13 +48,14 @@ const Team = (props) => {
         modalLayout={modalLayout}
         teamId={teamId}
         teamName={teamName}
-        key={teamId}
+        key={`${teamId}MeetingModal`}
       />
       <UnpaidTeamModalContainer
         isOpen={!isPaid}
         teamId={teamId}
         modalLayout={modalLayout}
         teamName={teamName}
+        key={`${teamId}UnpaidModal`}
       />
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>

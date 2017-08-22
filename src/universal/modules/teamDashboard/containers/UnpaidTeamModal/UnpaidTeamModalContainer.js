@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import UnpaidTeamModal from 'universal/modules/teamDashboard/components/UnpaidTeamModal/UnpaidTeamModal';
 import {withRouter} from 'react-router-dom';
 import portal from 'react-portal-hoc';
+import ui from 'universal/styles/ui';
 
 const orgDetailsQuery = `
 query {
@@ -38,7 +39,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const UnpaidTeamModalContainer = (props) => {
-  const {closeAfter, isClosing, history, teamName, orgDetails, myUserId} = props;
+  const {closeAfter, isClosing, history, teamName, orgDetails, myUserId, modalLayout} = props;
   const {creditCard, billingLeaders, name: orgName, id: orgId} = orgDetails;
   if (billingLeaders.length === 0) return null;
   const {last4} = creditCard;
@@ -54,6 +55,7 @@ const UnpaidTeamModalContainer = (props) => {
     <UnpaidTeamModal
       closeAfter={closeAfter}
       isClosing={isClosing}
+      modalLayout={modalLayout}
       problem={problem}
       solution={solution}
       isALeader={isALeader}
@@ -65,6 +67,7 @@ const UnpaidTeamModalContainer = (props) => {
 UnpaidTeamModalContainer.propTypes = {
   closeAfter: PropTypes.number,
   isClosing: PropTypes.bool,
+  modalLayout: PropTypes.oneOf(ui.modalLayout),
   myUserId: PropTypes.string,
   history: PropTypes.object,
   orgDetails: PropTypes.shape({
