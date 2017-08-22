@@ -85,8 +85,8 @@ export default {
     const {teamMemberId: assigneeTeamMemberId, content: rawContentStr} = project;
     const [assigneeUserId] = assigneeTeamMemberId.split('::');
     const providers = await r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'})
-      .filter({service: GITHUB});
+      .getAll(teamId, {index: 'teamId'})
+      .filter({service: GITHUB, isActive: true});
     const assigneeProvider = providers.find((provider) => provider.userId === assigneeUserId);
     if (!assigneeProvider) {
       const assigneeName = await r.table('TeamMember').get(assigneeTeamMemberId)('preferredName');

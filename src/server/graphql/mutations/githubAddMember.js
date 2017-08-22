@@ -30,12 +30,11 @@ export default {
     // look the person up by their github user name on the provider table
     const providers = await r.table('Provider')
       .getAll(userName, {index: 'providerUserId'})
-      .filter({service: GITHUB})
-      .filter((doc) => doc('teamIds').count().ne(0))
-      .pluck('accessToken', 'userId', 'teamIds')
+      .filter({service: GITHUB, isActive: true})
+      .pluck('accessToken', 'userId', 'teamId')
       .merge((provider) => ({
         repos: r.table(GITHUB)
-          .getAll(r.args(provider('teamIds')), {index: 'teamId'})
+          .getAll(provider('teamId'), {index: 'teamId'})
           .filter({isActive: true})
           .filter((doc) => doc('nameWithOwner').match(`^${orgName}`))
           .pluck('id', 'nameWithOwner', 'teamId')

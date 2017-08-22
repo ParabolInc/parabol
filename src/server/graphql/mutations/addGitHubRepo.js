@@ -36,7 +36,6 @@ query getOrg($login: String!) {
     databaseId
   }
 }`;
-
 const createOrgWebhook = async (accessToken, nameWithOwner) => {
   const [owner] = nameWithOwner.split('/');
   const endpoint = `https://api.github.com/orgs/${owner}/hooks`;
@@ -81,8 +80,8 @@ export default {
 
     // VALIDATION
     const allTeamProviders = await r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'})
-      .filter({service: GITHUB});
+      .getAll(teamId, {index: 'teamId'})
+      .filter({service: GITHUB, isActive: true});
 
     const viewerProviderIdx = allTeamProviders.findIndex((provider) => provider.userId === userId);
     if (viewerProviderIdx === -1) {

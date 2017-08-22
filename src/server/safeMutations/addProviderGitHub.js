@@ -71,7 +71,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
   }
   const {data: {viewer: {login: providerUserName}}} = gqlRes;
   const providerChange = await r.table('Provider')
-    .getAll(teamId, {index: 'teamIds'})
+    .getAll(teamId, {index: 'teamId'})
     .filter({service: GITHUB, userId})
     .nth(0)('id')
     .default(null)
@@ -83,11 +83,12 @@ const addProviderGitHub = async (code, teamId, userId) => {
             id: shortid.generate(),
             accessToken,
             createdAt: now,
+            isActive: true,
             // github userId is never used for queries, but the login is!
             providerUserId: providerUserName,
             providerUserName,
             service: GITHUB,
-            teamIds: [teamId],
+            teamId,
             updatedAt: now,
             userId
           }, {returnChanges: true})('changes')(0),
@@ -95,6 +96,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
           .get(providerId)
           .update({
             accessToken,
+            isActive: true,
             updatedAt: now,
             providerUserId: providerUserName,
             providerUserName
@@ -104,7 +106,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
   const provider = providerChange.new_val;
 
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const isUpdate = Boolean(providerChange.old_val);
+  const isUpdate = providerChange.old_val.isActive;
   const joinedIntegrationIds = await getJoinedIntegrationIds(teamId, provider, rowDetails.integrationCount, isUpdate);
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);

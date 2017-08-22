@@ -54,7 +54,9 @@ export default {
     // unlink the team from the user's token
     const res = await r.table('Provider')
       .get(dbProviderId)
-      .update((user) => ({teamIds: user('teamIds').difference([teamId])}), {returnChanges: true});
+      .update({
+        isActive: false
+      }, {returnChanges: true});
 
     if (res.skipped === 1) {
       throw new Error(`Provider ${providerId} does not exist`);
@@ -78,7 +80,7 @@ export default {
       getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
       return providerRemoved;
     } else if (service === GITHUB) {
-      const repoChanges = removeGitHubReposForUserId(userId, [teamId]);
+      const repoChanges = await removeGitHubReposForUserId(userId, [teamId]);
       const providerRemoved = await getPayload(service, repoChanges, teamId, userId);
       const archivedProjectsByRepo = await archiveProjectsForManyRepos(repoChanges);
       providerRemoved.archivedProjectIds = archivedProjectsByRepo.reduce((arr, repoArr) => {

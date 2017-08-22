@@ -40,8 +40,8 @@ export default {
     }
 
     const provider = await r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'})
-      .filter({service, userId})
+      .getAll(teamId, {index: 'teamId'})
+      .filter({service, userId, isActive: true})
       .nth(0)
       .default(null);
     if (!provider) {
