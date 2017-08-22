@@ -52,6 +52,7 @@ const styleThunk = () => ({
     padding: '.75rem',
     position: 'fixed',
     right: '2rem',
+    zIndex: ui.ziRejoinFacilitatorButton,
 
     ':hover': {
       opacity: '.65'

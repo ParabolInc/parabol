@@ -486,7 +486,8 @@ const ui = {
   // …and then component-specific constants:
 
   ziMenu: zIndexScale(4),
-  ziCardDragLayer: zIndexScale(6)
+  ziCardDragLayer: zIndexScale(6),
+  ziRejoinFacilitatorButton: zIndexScale(7)
 };
 
 export default ui;
