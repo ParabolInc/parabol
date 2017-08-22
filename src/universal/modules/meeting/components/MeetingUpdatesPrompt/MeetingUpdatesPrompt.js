@@ -8,7 +8,7 @@ const MeetingUpdatesPrompt = (props) => {
     members
   } = props;
   const currentTeamMember = members[localPhaseItem - 1];
-  const heading = <span>{currentTeamMember.preferredName}, <i>what’s changed since last week</i>?</span>;
+  const heading = <span>{currentTeamMember.preferredName}, <i>what’s changed since our last meeting</i>?</span>;
   return (
     <MeetingPrompt
       avatar={currentTeamMember.picture}
