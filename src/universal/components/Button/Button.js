@@ -210,10 +210,10 @@ const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransfor
   depth: {
     boxShadow: depth && ui.shadow[depth],
     ':hover': {
-      boxShadow: depth && ui.shadow[depth + 1],
+      boxShadow: depth && ui.shadow[depth + 1]
     },
     ':focus': {
-      boxShadow: depth && ui.shadow[depth + 1],
+      boxShadow: depth && ui.shadow[depth + 1]
     }
   },
 
