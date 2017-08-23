@@ -31,11 +31,15 @@ export default class AsyncMenuContainer extends Component {
 
   constructor(props) {
     super(props);
-    const {originCoords} = props;
+    const {marginFromOrigin, originCoords} = props;
+    const top = (originCoords && originCoords.top || 0) + (marginFromOrigin || 0);
+    const left = originCoords && originCoords.left || 0;
+
     this.state = {
       loading: false,
       // initialize somewhere in the viewport so it doesn't trigger a scroll bar
-      top: originCoords && originCoords.top || 0
+      left,
+      top
     };
   }
 
