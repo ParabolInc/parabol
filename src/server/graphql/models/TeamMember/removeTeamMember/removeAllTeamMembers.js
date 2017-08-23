@@ -105,7 +105,7 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
 
   const changedGitHubIntegrations = changedProviders.some((change) => change.new_val.service === GITHUB);
   if (changedGitHubIntegrations) {
-    const repoChanges = removeGitHubReposForUserId(userId, teamIds);
+    const repoChanges = await removeGitHubReposForUserId(userId, teamIds);
     // TODO send the archived projects in a mutation payload
     await archiveProjectsForManyRepos(repoChanges);
   }

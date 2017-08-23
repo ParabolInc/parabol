@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import addTagToProject from 'universal/utils/draftjs/addTagToProject';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
-const archiveProjectsForDB = (projects) => {
+const archiveProjectsForDB = async (projects) => {
   const r = getRethink();
   const archivedProjects = projects.map((project) => {
     const contentState = convertFromRaw(JSON.parse(project.content));
@@ -17,18 +17,17 @@ const archiveProjectsForDB = (projects) => {
       id: project.id
     };
   });
-  return r.expr(archivedProjects).forEach((project) => {
+  await r.expr(archivedProjects).forEach((project) => {
     return r.table('Project')
       .get(project('id'))
       .update({
         content: project('content'),
         tags: project('tags')
       });
-  })
-    .then(() => {
-      // return the ids of the archived projects
-      return projects.map(({id}) => id);
-    });
+  });
+
+  // return the ids of the archived projects
+  return projects.map(({id}) => id);
 };
 
 export default archiveProjectsForDB;
