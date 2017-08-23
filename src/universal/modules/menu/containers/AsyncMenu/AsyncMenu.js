@@ -55,8 +55,9 @@ export default class AsyncMenuContainer extends Component {
     if (this.props.toggle !== toggle) {
       this.smartToggle = this.makeSmartToggle(toggle);
     }
-    if (originCoords && this.originCoords) {
-      if (this.originCoords.top !== originCoords.top ||
+    if (originCoords) {
+      if (!this.originCoords ||
+        this.originCoords.top !== originCoords.top ||
         this.originCoords.left !== originCoords.left) {
         this.originCoords = originCoords;
         this.setCoords();
