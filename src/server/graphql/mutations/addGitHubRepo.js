@@ -144,13 +144,16 @@ export default {
       ...allTeamProviders.slice(viewerProviderIdx + 1)
     ];
     const usersAndIntegrations = await maybeJoinRepos([newRepo], teamMemberProviders);
-    const userIds = Object.keys(usersAndIntegrations).concat(userId);
+    const userIds = Object.keys(usersAndIntegrations)
+      .filter((userIdToAdd) => usersAndIntegrations[userIdToAdd].length > 0)
+      .concat(userId);
     // doing this fetch here, before we publish to the pubsub, means we don't need to do it once per sub
     const repo = {
       ...newRepo,
       userIds,
-      teamMembers: await r.table('User')
-        .getAll(r.args(userIds), {index: 'id'})
+      teamMembers: await r.table('TeamMember')
+        .getAll(r.args(userIds), {index: 'userId'})
+        .filter({teamId})
         .pluck('preferredName', 'picture', 'id')
     };
 
