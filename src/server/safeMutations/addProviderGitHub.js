@@ -103,10 +103,10 @@ const addProviderGitHub = async (code, teamId, userId) => {
           }, {returnChanges: true})('changes')(0)
       );
     });
-  const provider = providerChange.new_val;
+  const {new_val: provider, old_val: oldProvider} = providerChange;
 
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const isUpdate = providerChange.old_val.isActive;
+  const isUpdate = oldProvider && oldProvider.isActive;
   const joinedIntegrationIds = await getJoinedIntegrationIds(teamId, provider, rowDetails.integrationCount, isUpdate);
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
