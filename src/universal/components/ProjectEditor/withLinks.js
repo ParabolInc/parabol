@@ -69,7 +69,8 @@ const withLinks = (ComposedComponent) => {
       keyBindingFn: PropTypes.func,
       removeModal: PropTypes.func,
       renderModal: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired
+      setEditorState: PropTypes.func.isRequired,
+      trackEditingComponent: PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -251,7 +252,7 @@ const withLinks = (ComposedComponent) => {
     renderChangerModal = () => {
       const {linkChangerData} = this.state;
       const {text, link, selectionState} = linkChangerData;
-      const {editorState, setEditorState, editorRef} = this.props;
+      const {editorState, setEditorState, trackEditingComponent, editorRef} = this.props;
       const coords = getDraftCoords(editorRef);
       // in this case, coords can be good, then bad as soon as the changer takes focus
       // so, the container must handle bad then good as well as good then bad
@@ -283,6 +284,17 @@ const withLinks = (ComposedComponent) => {
           }}
           targetAnchor={targetAnchor}
           isOpen
+          top={this.top}
+          left={this.left}
+          height={this.height}
+          editorState={editorState}
+          selectionState={selectionState}
+          setEditorState={setEditorState}
+          trackEditingComponent={trackEditingComponent}
+          removeModal={this.removeModal}
+          text={text}
+          initialValues={{text, link}}
+          editorRef={editorRef}
         />
       );
     };

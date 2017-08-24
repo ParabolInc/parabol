@@ -18,6 +18,7 @@ class ProjectEditor extends Component {
     editorRef: PropTypes.any,
     editorState: PropTypes.object,
     setEditorState: PropTypes.func,
+    trackEditingComponent: PropTypes.func,
     handleBeforeInput: PropTypes.func,
     handleChange: PropTypes.func,
     handleUpArrow: PropTypes.func,
