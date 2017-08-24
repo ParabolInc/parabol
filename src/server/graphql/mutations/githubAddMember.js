@@ -30,22 +30,23 @@ export default {
     // look the person up by their github user name on the provider table
     const providers = await r.table('Provider')
       .getAll(userName, {index: 'providerUserId'})
-      .filter({service: GITHUB})
-      .filter((doc) => doc('teamIds').count().ne(0))
-      .pluck('accessToken', 'userId', 'teamIds')
+      .filter({service: GITHUB, isActive: true})
+      .pluck('accessToken', 'userId', 'teamId')
       .merge((provider) => ({
         repos: r.table(GITHUB)
-          .getAll(r.args(provider('teamIds')), {index: 'teamId'})
+          .getAll(provider('teamId'), {index: 'teamId'})
           .filter({isActive: true})
           .filter((doc) => doc('nameWithOwner').match(`^${orgName}`))
           .pluck('id', 'nameWithOwner', 'teamId')
           .coerceTo('array')
       }));
 
-    // get the ids of all the repos joined
-    const joinedIntegrationsByTeam = await Promise.all(providers.map((provider) => {
-      const {repos, accessToken, providerUserName, userId} = provider;
-      return maybeJoinRepos(repos, accessToken, userId, providerUserName);
+    const joinedIntegrationsByTeam = [];
+    await Promise.all(providers.map((provider) => {
+      const {repos, userId} = provider;
+      // get an objlike {userId: [int1, int2]}
+      return maybeJoinRepos(repos, [provider])
+        .then((obj) => joinedIntegrationsByTeam.push(...obj[userId]));
     }));
 
     // tell all the listeners about all the repos this guy just joined

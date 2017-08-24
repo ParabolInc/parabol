@@ -1,15 +1,17 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import {Link} from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
+import {Link} from 'react-router-dom';
 import {DashAlert} from 'universal/components/Dashboard';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 
 const ActiveTrialDashAlert = (props) => {
-  const {accountLink, dispatch, styles} = props;
+  const {atmosphere, orgId, styles} = props;
+  const accountLink = `/me/organizations/${orgId}`;
   const iconStyle = {
     fontSize: ui.iconSize
   };
@@ -24,12 +26,13 @@ const ActiveTrialDashAlert = (props) => {
           title="Go to My Account"
           to={accountLink}
           onClick={() => {
-            dispatch(
-              segmentEventTrack('DashAlert Click ActiveTrialDashAlert')
-            );
+            SendClientSegmentEventMutation(atmosphere, 'DashAlert Click ActiveTrialDashAlert', {orgId});
           }}
         >
-          <span className={css(styles.underline)}>Go to My Account</span> <FontAwesome name="arrow-right" style={iconStyle} />
+          <span className={css(styles.underline)}>
+            Go to My Account
+          </span>
+          <FontAwesome name="arrow-right" style={iconStyle} />
         </Link>
       </div>
     </DashAlert>
@@ -37,8 +40,8 @@ const ActiveTrialDashAlert = (props) => {
 };
 
 ActiveTrialDashAlert.propTypes = {
-  accountLink: PropTypes.string,
-  dispatch: PropTypes.func.isRequired,
+  atmosphere: PropTypes.object.isRequired,
+  orgId: PropTypes.string.isRequired,
   styles: PropTypes.object
 };
 
@@ -74,4 +77,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(ActiveTrialDashAlert);
+export default withAtmosphere(withStyles(styleThunk)(ActiveTrialDashAlert));

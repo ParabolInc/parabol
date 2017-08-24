@@ -31,7 +31,8 @@ export default {
 
     // RESOLUTION
     const allProviders = await r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'})
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isActive: true})
       .group('service')
       .ungroup()
       .merge((row) => ({

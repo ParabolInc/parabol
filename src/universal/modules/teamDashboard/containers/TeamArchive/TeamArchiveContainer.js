@@ -64,17 +64,19 @@ const mapStateToProps = (state, props) => {
   const {archivedProjects} = teamArchiveContainer.data;
   return {
     archivedProjects,
-    teamId
+    teamId,
+    userId
   };
 };
 
 const TeamArchiveContainer = (props) => {
-  const {archivedProjects, teamId, teamName} = props;
+  const {archivedProjects, teamId, teamName, userId} = props;
   return (
     <TeamArchive
       archivedProjects={archivedProjects}
       teamId={teamId}
       teamName={teamName}
+      userId={userId}
     />
   );
 };
@@ -83,7 +85,8 @@ TeamArchiveContainer.propTypes = {
   archivedProjects: PropTypes.array.isRequired,
   match: PropTypes.object.isRequired,
   teamId: PropTypes.string.isRequired,
-  teamName: PropTypes.string
+  teamName: PropTypes.string,
+  userId: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(TeamArchiveContainer);

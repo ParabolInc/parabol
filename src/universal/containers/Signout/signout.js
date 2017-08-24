@@ -1,21 +1,18 @@
 import {cashay} from 'cashay';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 import {removeAuthToken} from 'universal/redux/authDuck';
 import {reset as resetAppState} from 'universal/redux/rootDuck';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import {
-  APP_UPGRADE_PENDING_KEY,
-  APP_UPGRADE_PENDING_RELOAD
-} from 'universal/utils/constants';
+import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD} from 'universal/utils/constants';
 
 const signoutSuccess = {
   title: 'Tootles!',
   message: 'You’ve been logged out successfully.'
 };
 
-export default function signout(dispatch, history) {
+const signout = (atmosphere, dispatch, history) => {
   const reloadPendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
-  dispatch(segmentEventTrack('User Logout'));
+  SendClientSegmentEventMutation(atmosphere, 'User Logout');
   dispatch(removeAuthToken());
   /* reset the app state, but preserve any pending notifications: */
   if (history) {
@@ -26,4 +23,6 @@ export default function signout(dispatch, history) {
     dispatch(showSuccess(signoutSuccess));
   }
   cashay.clear();
-}
+};
+
+export default signout;

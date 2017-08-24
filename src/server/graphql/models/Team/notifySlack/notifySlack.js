@@ -14,8 +14,8 @@ const getIntegrationsForNotification = (teamId, notification) => {
 const notifySlack = async (integrations, teamId, slackText) => {
   const r = getRethink();
   const provider = await r.table('Provider')
-    .getAll(teamId, {index: 'teamIds'})
-    .filter({service: SLACK})
+    .getAll(teamId, {index: 'teamId'})
+    .filter({service: SLACK, isActive: true})
     .nth(0);
   // for each slack channel, send a notification
   for (let i = 0; i < integrations.length; i++) {

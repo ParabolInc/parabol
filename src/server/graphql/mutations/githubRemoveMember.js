@@ -29,8 +29,7 @@ export default {
 
     const userId = await r.table('Provider')
       .getAll(userName, {index: 'providerUserId'})
-      .filter({service: GITHUB})
-      .filter((doc) => doc('teamIds').count().ne(0))
+      .filter({service: GITHUB, isActive: true})
       .nth(0)('userId')
       .default(null);
 

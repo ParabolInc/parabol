@@ -68,7 +68,7 @@ upgrades are as easy as `brew update && brew upgrade rethinkdb`
 Action also uses [yarn](https://yarnpkg.com/) which can be installed by running `npm install -g yarn`
 
 Additional dependencies include [redis](https://redis.io/), and
-[watchman](https://facebook.github.io/watchman/docs/install.html) (required by relay).
+[watchman](https://facebook.github.io/watchman/docs/install.html) (optional for relay).
 
 #### Source code
 

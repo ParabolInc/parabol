@@ -1,14 +1,18 @@
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import PropTypes from 'prop-types';
+import React from 'react';
+import appTheme from 'universal/styles/theme/appTheme';
+
+// inline styles so oy-vey doesn't barf when making emails using draft-js cards
+const style = {
+  color: appTheme.palette.cool,
+  fontWeight: 800
+};
 
 const Hashtag = (props) => {
   // const {url} = props.contentState.getEntity(props.entityKey).getData();
-  const {styles, offsetkey, children} = props;
+  const {offsetkey, children} = props;
   return (
-    <span data-offset-key={offsetkey} className={css(styles.hashtag)}>
+    <span data-offset-key={offsetkey} style={style}>
       {children}
     </span>
   );
@@ -20,12 +24,4 @@ Hashtag.propTypes = {
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
-  hashtag: {
-    color: appTheme.palette.cool,
-    fontWeight: 800
-
-  }
-});
-
-export default withStyles(styleThunk)(Hashtag);
+export default Hashtag;
