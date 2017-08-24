@@ -18,6 +18,16 @@ const validate = (values) => {
 };
 
 class EditorLinkChanger extends Component {
+  componentWillMount() {
+    const {trackEditingComponent} = this.props;
+    trackEditingComponent('editor-link-changer', true);
+  }
+
+  componentWillUnmount() {
+    const {trackEditingComponent} = this.props;
+    trackEditingComponent('editor-link-changer', false);
+  }
+
   onSubmit = (submissionData) => {
     const {editorState, editorRef, removeModal, selectionState, setEditorState} = this.props;
     const schema = changerValidation();
@@ -43,16 +53,6 @@ class EditorLinkChanger extends Component {
       setTimeout(() => editorRef.focus(), 0);
     }
   };
-
-  componentWillMount() {
-    const {trackEditingClient} = this.props;
-    trackEditingClient('editor-link-changer', true);
-  }
-
-  componentWillUnmount() {
-    const {trackEditingClient} = this.props;
-    trackEditingClient('editor-link-changer', false);
-  }
 
   render() {
     const {
@@ -120,7 +120,7 @@ EditorLinkChanger.propTypes = {
   removeModal: PropTypes.func.isRequired,
   selectionState: PropTypes.object.isRequired,
   setEditorState: PropTypes.func.isRequired,
-  trackEditingClient: PropTypes.func.isRequired,
+  trackEditingComponent: PropTypes.func.isRequired,
   setRef: PropTypes.func,
   styles: PropTypes.object,
   text: PropTypes.string,
