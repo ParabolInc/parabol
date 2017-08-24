@@ -67,10 +67,10 @@ const MeetingAgendaLastCall = (props) => {
               <Button
                 buttonStyle="solid"
                 colorPalette="cool"
+                depth={1}
                 label="End Meeting"
                 onClick={gotoNext}
                 size="largest"
-                raised
                 textTransform="uppercase"
               />
             </div> :

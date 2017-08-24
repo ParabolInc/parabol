@@ -74,6 +74,9 @@ const MODAL_LAYOUT_MAIN = 'main';
 const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
+// Panels
+const panelInnerBorderColor = appTheme.palette.mid20l;
+
 // Transitions
 const transitionFastest = '100ms ease-in';
 const transitionFaster = '200ms ease-in';
@@ -83,6 +86,7 @@ const transitionSlower = '1600ms ease-in';
 const transitionSlowest = '3200ms ease-in';
 
 // Shadows
+// NOTE: levels increase on a scale of 2x
 const shadow = [
   '0 .0625rem .125rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
   '0 .125rem .25rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
@@ -142,7 +146,7 @@ const ui = {
       textDecoration: 'none'
     },
     ':focus': {
-      boxShadow: shadow[1],
+      boxShadow: shadow[0],
       textDecoration: 'none'
     }
   },
@@ -201,12 +205,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
-  // boxShadow color with some mid hue rgba(103, 107, 139, .75) for reference (TA)
-  cardBoxShadow: [
-    shadow[0],
-    shadow[1],
-    shadow[2]
-  ],
   cardMaxWidth: '17.5rem',
   cardMinHeight: '8.1875rem',
   cardPaddingBase: '.5rem',
@@ -360,7 +358,7 @@ const ui = {
   menuBackgroundColor: '#fff',
   menuBorderColor: appTheme.palette.mid30l,
   menuBorderRadius: borderRadiusSmall,
-  menuBoxShadow: shadow[2],
+  menuBoxShadow: shadow[3],
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',
   menuGutterVertical: '.5rem',
@@ -375,7 +373,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   modalBackdropBackgroundColor: 'rgba(78, 73, 95, .25)',
   modalBorderRadius: borderRadiusLarge,
-  modalBoxShadow: `${shadow[3]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
+  modalBoxShadow: `${shadow[4]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
   modalButtonSize: BUTTON_SIZE_MEDIUM,
   modalLayoutMain: MODAL_LAYOUT_MAIN,
   modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
@@ -393,6 +391,7 @@ const ui = {
   // Panels
   // ---------------------------------------------------------------------------
   panelBorderColor: appTheme.palette.mid40l,
+  panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
   panelMarginVertical: '1.5rem',
@@ -428,7 +427,7 @@ const ui = {
 
   // Rows
   // ---------------------------------------------------------------------------
-  rowBorderColor: appTheme.palette.mid20l,
+  rowBorderColor: panelInnerBorderColor,
   rowHeadingColor: appTheme.palette.dark,
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
