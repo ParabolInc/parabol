@@ -1,6 +1,4 @@
-import {getVisibleSelectionRect} from 'draft-js';
 import React, {Component} from 'react';
-import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import completeEntity, {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity';
 import resolvers from 'universal/components/ProjectEditor/resolvers';
@@ -8,12 +6,28 @@ import getAnchorLocation from './getAnchorLocation';
 import stringScore from 'string-score';
 import ui from 'universal/styles/ui';
 import PropTypes from 'prop-types';
+import getDraftCoords from 'universal/utils/getDraftCoords';
+import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+
+
+const originAnchor = {
+  vertical: 'top',
+  horizontal: 'left'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'left'
+};
+
+const fetchEditorSuggestions = () => System.import('universal/components/EditorSuggestions/EditorSuggestions');
 
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
     static propTypes = {
       handleUpArrow: PropTypes.func,
       handleDownArrow: PropTypes.func,
+      editorRef: PropTypes.any,
       editorState: PropTypes.object.isRequired,
       handleTab: PropTypes.func,
       handleReturn: PropTypes.func,
@@ -180,21 +194,32 @@ const withSuggestions = (ComposedComponent) => {
 
     renderModal = () => {
       const {active, suggestions, suggestionType} = this.state;
-      const {editorState, setEditorState} = this.props;
-      const targetRect = getVisibleSelectionRect(window);
+      const {editorRef, editorState, setEditorState} = this.props;
+      const coords = getDraftCoords(editorRef);
+      if (!coords) {
+        setTimeout(() => {
+          this.forceUpdate();
+        });
+      }
       return (
-        <EditorSuggestions
+        <AsyncMenuContainer
+          marginFromOrigin={ui.draftModalMargin}
+          fetchMenu={fetchEditorSuggestions}
+          maxWidth={500}
+          maxHeight={200}
+          originAnchor={originAnchor}
+          originCoords={coords}
+          queryVars={{
+            editorState,
+            setEditorState,
+            active,
+            suggestions,
+            suggestionType,
+            handleSelect: this.handleSelect,
+            removeModal: this.removeModal
+          }}
+          targetAnchor={targetAnchor}
           isOpen
-          active={active}
-          suggestions={suggestions}
-          suggestionType={suggestionType}
-          top={targetRect && window.scrollY + targetRect.top + ui.draftModalMargin}
-          left={targetRect && window.scrollX + targetRect.left}
-          height={targetRect && targetRect.height}
-          editorState={editorState}
-          setEditorState={setEditorState}
-          removeModal={this.removeModal}
-          handleSelect={this.handleSelect}
         />
       );
     };

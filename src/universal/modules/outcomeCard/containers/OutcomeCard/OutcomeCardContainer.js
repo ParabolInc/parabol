@@ -43,6 +43,10 @@ class OutcomeCardContainer extends Component {
     };
   }
 
+  componentWillMount() {
+    this._mounted = true;
+  }
+
   componentWillReceiveProps(nextProps) {
     const {contentState: nextContentState} = nextProps;
     const {contentState: initialContentState} = this.props;
@@ -56,6 +60,10 @@ class OutcomeCardContainer extends Component {
     if (!this.props.isDragging && nextProps.isDragging) {
       this.handleCardUpdate();
     }
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   setEditorState = (editorState) => {
@@ -72,7 +80,6 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-
   setEditorRef = (c) => {
     this.setState({
       editorRef: c
@@ -80,9 +87,11 @@ class OutcomeCardContainer extends Component {
   };
 
   toggleMenuState = () => {
-    this.setState({
-      cardHasMenuOpen: !this.state.cardHasMenuOpen
-    });
+    if (this._mounted) {
+      this.setState({
+        cardHasMenuOpen: !this.state.cardHasMenuOpen
+      });
+    }
   };
 
   handleCardUpdate = () => {
@@ -133,8 +142,8 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, isEditing, editorRef, editorState} = this.state;
-    const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
+    const {cardHasFocus, cardHasHover, cardHasMenuOpen, isEditing, editorRef, editorState} = this.state;
+    const {area, handleAddProject, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
         tabIndex={-1}
@@ -153,6 +162,8 @@ class OutcomeCardContainer extends Component {
           editorState={editorState}
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
+          cardHasMenuOpen={cardHasMenuOpen}
+          handleAddProject={handleAddProject}
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
@@ -171,6 +182,7 @@ class OutcomeCardContainer extends Component {
 OutcomeCardContainer.propTypes = {
   area: PropTypes.string,
   contentState: PropTypes.object.isRequired,
+  handleAddProject: PropTypes.func,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,

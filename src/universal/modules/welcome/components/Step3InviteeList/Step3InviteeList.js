@@ -5,12 +5,13 @@ import Button from 'universal/components/Button/Button';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
 import {cashay} from 'cashay';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {withRouter} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import makeStep3Schema from 'universal/validation/makeStep3Schema';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const validate = (values) => {
   const schema = makeStep3Schema();
@@ -23,9 +24,10 @@ const emailInviteSuccess = {
 };
 
 const Step3InviteeList = (props) => {
-  const {dispatch, existingInvites, handleSubmit, invitees, history, styles, teamId} = props;
+  const {atmosphere, dispatch, existingInvites, handleSubmit, invitees, history, styles, teamId} = props;
   const onInviteTeamSubmit = () => {
-    if (invitees && invitees.length > 0) {
+    const inviteeCount = invitees && invitees.length || 0;
+    if (inviteeCount > 0) {
       const serverInvitees = invitees.map((invitee) => {
         const {email, fullName, task} = invitee;
         return {
@@ -46,9 +48,7 @@ const Step3InviteeList = (props) => {
 
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {
-      dispatch(segmentEventTrack('Welcome Step3 Completed',
-        {inviteeCount: invitees && invitees.length || 0}
-      ));
+      SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {inviteeCount});
       dispatch(showSuccess(emailInviteSuccess)); // trumpet our leader's brilliance!
       dispatch(destroy('welcomeWizard')); // bye bye form data!
     }, 1000);
@@ -91,9 +91,7 @@ const Step3InviteeList = (props) => {
         System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
       }}
       onClick={() => {
-        dispatch(
-          segmentEventTrack('Welcome Step3 Completed', {inviteeCount: 0})
-        );
+        SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {inviteeCount: 0});
       }}
       style={{margin: '1rem auto', maxWidth: '45.5rem', padding: '0 2.5rem'}}
       title="I’ll invite them later"
@@ -104,6 +102,7 @@ const Step3InviteeList = (props) => {
 };
 
 Step3InviteeList.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   existingInvites: PropTypes.array,
   handleSubmit: PropTypes.func.isRequired,
@@ -122,8 +121,8 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({
+export default withAtmosphere(reduxForm({
   form: 'welcomeWizard',
   destroyOnUnmount: false,
   validate
-})(withRouter(withStyles(styleThunk)(Step3InviteeList)));
+})(withRouter(withStyles(styleThunk)(Step3InviteeList))));

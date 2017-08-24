@@ -1,13 +1,11 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import React, {Component} from 'react';
-import portal from 'react-portal-hoc';
 import Button from 'universal/components/Button/Button';
 import removeLink from 'universal/utils/draftjs/removeLink';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 import PropTypes from 'prop-types';
 
 const dontTellDraft = (e) => {
@@ -19,24 +17,14 @@ const dontTellDraft = (e) => {
 class EditorLinkViewer extends Component {
   render() {
     const {
-      left,
-      top,
       href,
-      isClosing,
       styles,
       addHyperlink,
       setRef
     } = this.props;
 
-    const linkViewer = {
-      left,
-      top,
-      position: 'absolute',
-      zIndex: ui.ziMenu
-    };
     const menuStyles = css(
       styles.modal,
-      isClosing && styles.closing
     );
 
     const handleRemove = () => {
@@ -50,7 +38,7 @@ class EditorLinkViewer extends Component {
     };
 
     return (
-      <div style={linkViewer} className={menuStyles} onMouseDown={dontTellDraft} ref={setRef}>
+      <div className={menuStyles} onMouseDown={dontTellDraft} ref={setRef}>
         <span className={css(styles.url)}>
           <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
         </span>
@@ -74,49 +62,12 @@ EditorLinkViewer.propTypes = {
   top: PropTypes.number
 };
 
-
-const animateIn = {
-  '0%': {
-    opacity: '0',
-    transform: 'translate3d(0, -32px, 0)'
-
-  },
-  '100%': {
-    opacity: '1',
-    transform: 'translate3d(0, 0, 0)'
-  }
-};
-
-const animateOut = {
-  '0%': {
-    opacity: '1',
-    transform: 'translate3d(0, 0, 0)'
-
-  },
-  '100%': {
-    opacity: '0',
-    transform: 'translate3d(0, -32px, 0)'
-  }
-};
-
-const styleThunk = (theme, props) => ({
+const styleThunk = () => ({
   modal: {
     alignItems: 'center',
-    animationDuration: '200ms',
-    animationName: animateIn,
-    background: '#fff',
-    borderRadius: ui.menuBorderRadius,
-    boxShadow: ui.menuBoxShadow,
     color: ui.palette.dark,
     display: 'flex',
-    fontSize: appTheme.typography.s5,
-    padding: '0 .25rem',
-    zIndex: 1
-  },
-
-  closing: {
-    animationDuration: `${props.closeAfter}ms`,
-    animationName: animateOut
+    fontSize: appTheme.typography.s5
   },
 
   url: {
@@ -138,8 +89,4 @@ const styleThunk = (theme, props) => ({
   }
 });
 
-export default portal({closeAfter: 100})(
-  boundedModal(
-    withStyles(styleThunk)(EditorLinkViewer)
-  )
-);
+export default withStyles(styleThunk)(EditorLinkViewer);

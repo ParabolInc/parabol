@@ -3,6 +3,7 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
 import {GITHUB} from 'universal/utils/constants';
 import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
+import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
 // import serviceToProvider from 'server/utils/serviceToProvider';
 // import {getServiceFromId} from 'universal/utils/integrationIds';
 
@@ -96,24 +97,17 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
 
   // TODO on the frontend, pop a warning if this is the last guy
   const changedProviders = await r.table('Provider')
-    .getAll(r.args(teamIds), {index: 'teamIds'})
-    .filter({userId})
-    .update((doc) => ({
-      teamIds: doc('teamIds').filter((teamId) => r.expr(teamIds).contains(teamId).not())
-    }), {returnChanges: true})('changes').default([]);
+    .getAll(r.args(teamIds), {index: 'teamId'})
+    .filter({userId, isActive: true})
+    .update({
+      isActive: false
+    }, {returnChanges: true})('changes').default([]);
 
   const changedGitHubIntegrations = changedProviders.some((change) => change.new_val.service === GITHUB);
   if (changedGitHubIntegrations) {
-    const updatedIntegrations = await r.table(GITHUB)
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((doc) => doc('userIds').contains(userId))
-      .update((doc) => ({
-        userIds: doc('userIds').difference([userId]),
-        isActive: doc('userIds').count().ne(0)
-      }), {returnChanges: true})('changes')
-      .default([]);
+    const repoChanges = await removeGitHubReposForUserId(userId, teamIds);
     // TODO send the archived projects in a mutation payload
-    await archiveProjectsForManyRepos(updatedIntegrations);
+    await archiveProjectsForManyRepos(repoChanges);
   }
   return true;
 }

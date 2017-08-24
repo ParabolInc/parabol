@@ -11,6 +11,7 @@ import {TeamInput} from '../teamSchema';
 import addSeedProjects from './addSeedProjects';
 import createFirstTeamValidation from './createFirstTeamValidation';
 import createTeamAndLeader from './createTeamAndLeader';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 
 export default {
   // return the new JWT that has the new tms field
@@ -45,6 +46,7 @@ export default {
     await ensureUniqueId('Team', newTeam.id);
 
     // RESOLUTION
+    sendSegmentEvent('Welcome Step2 Completed', userId, {teamId: newTeam.id});
     const orgId = shortid.generate();
     const res = await r.branch(
       r.table('User').get(userId)('trialOrg'),

@@ -1,28 +1,16 @@
-import {getVisibleSelectionRect} from 'draft-js';
-
-const getBlockTargetRect = () => {
-  const selection = window.getSelection();
-  if (selection.rangeCount) {
-    let node = selection.getRangeAt(0).startContainer;
-    while (node !== null) {
-      if (node.getAttribute && node.getAttribute('data-block')) {
-        return node.getBoundingClientRect();
-      }
-      node = node.parentNode;
-    }
-  }
-  return undefined;
-};
+// getVisibleSelectionRect is brittle AF so we make our own
 
 const getDraftCoords = (editorRef) => {
-  if (getBlockTargetRect()) {
-    return getVisibleSelectionRect(window);
-  }
-  const range = document.createRange();
-  range.setStart(editorRef.refs.editor, 0);
+  const editorEl = editorRef.refs.editor;
   const selection = window.getSelection();
-  selection.addRange(range);
-  return getBlockTargetRect();
+  if (selection && selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0);
+    // if the window selection is within the editor, use it
+    if (editorEl.contains(range.startContainer)) {
+      return range.getClientRects()[0];
+    }
+  }
+  return null;
 };
 
 export default getDraftCoords;

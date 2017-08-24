@@ -12,7 +12,7 @@ class Legitity {
   }
 
   float(msg) {
-    if (!this.error && this.value && !Number.isFinite(this.value)) {
+    if (!this.error && this.value !== undefined && !Number.isFinite(this.value)) {
       this.error = msg || 'float';
     }
     return this;
@@ -60,7 +60,7 @@ class Legitity {
 
   normalize(fn, msg) {
     if (!this.error) {
-      this.value = this.value && fn(this.value);
+      this.value = this.value !== undefined && fn(this.value);
       if (this.value === null) {
         this.error = msg;
       }
