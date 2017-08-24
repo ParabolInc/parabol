@@ -198,7 +198,6 @@ class Button extends Component {
   }
 }
 
-
 const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransform}) => ({
   // Button base
   base: {
@@ -208,7 +207,7 @@ const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransfor
     lineHeight: ui.buttonLineHeight,
     padding: ui.buttonPadding[size] || ui.buttonPadding.medium,
     textTransform: textTransform || 'none',
-    transition: 'box-shadow 100ms ease-in'
+    transition: `box-shadow ${ui.transition[0]}`
   },
 
   depth: {
