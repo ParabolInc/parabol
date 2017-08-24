@@ -2,8 +2,8 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import getEndMeetingSortOrders from 'server/graphql/models/Team/endMeeting/getEndMeetingSortOrders';
 import {endSlackMeeting} from 'server/graphql/models/Team/notifySlack/notifySlack';
-import {getSegmentTraitsForUsers, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import segmentIo from 'server/utils/segmentIo';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
 import {SUMMARY} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -97,26 +97,11 @@ export default {
             meetingPhaseItem: null
           });
       });
-    // dispatch segment events:
-    getSegmentTraitsForUsers(
-      // extract user part of id from x::y invitee:
-      completedMeeting.invitees
-        .filter((invitee) => invitee.present)
-        .map((invitee) => invitee.id.split('::')[0])
-    ).then((segmentTraits) =>
-      segmentTraits.forEach((traits) => {
-        segmentIo.track({
-          userId: traits.id,
-          teamId,
-          event: 'Meeting Completed',
-          properties: {
-            meetingNumber: completedMeeting.meetingNumber,
-            teamId,
-            traits
-          }
-        });
-      })
-    );
+    const {meetingNumber} = completedMeeting;
+    const userIds = completedMeeting.invitees
+      .filter((invitee) => invitee.present)
+      .map((invitee) => invitee.id.split('::')[0]);
+    sendSegmentEvent('Meeting Completed', userIds, {teamId, meetingNumber});
     // reset the meeting
     resetMeeting(teamId);
     endSlackMeeting(meetingId, teamId);

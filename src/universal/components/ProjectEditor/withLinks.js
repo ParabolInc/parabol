@@ -1,19 +1,31 @@
 import {EditorState, KeyBindingUtil} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import EditorLinkChanger from 'universal/components/EditorLinkChanger/EditorLinkChanger';
-import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 import getSelectionLink from 'universal/components/ProjectEditor/getSelectionLink';
 import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
+import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+import ui from 'universal/styles/ui';
 import addSpace from 'universal/utils/draftjs/addSpace';
+import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
 import makeAddLink from 'universal/utils/draftjs/makeAddLink';
 import splitBlock from 'universal/utils/draftjs/splitBlock';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
-import ui from 'universal/styles/ui';
-import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
+
+const fetchEditorLinkChanger = () => System.import('universal/components/EditorLinkChanger/EditorLinkChanger');
+const fetchEditorLinkViewer = () => System.import('universal/components/EditorLinkViewer/EditorLinkViewer');
+
+const originAnchor = {
+  vertical: 'top',
+  horizontal: 'left'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'left'
+};
 
 const getEntityKeyAtCaret = (editorState) => {
   const selectionState = editorState.getSelection();
@@ -57,9 +69,14 @@ const withLinks = (ComposedComponent) => {
       keyBindingFn: PropTypes.func,
       removeModal: PropTypes.func,
       renderModal: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired
+      setEditorState: PropTypes.func.isRequired,
+      trackEditingComponent: PropTypes.func.isRequired
     };
-    state = {};
+
+    constructor(props) {
+      super(props);
+      this.state = {};
+    }
 
     getMaybeLinkifiedState = (getNextState, editorState) => {
       this.undoLink = undefined;
@@ -193,12 +210,6 @@ const withLinks = (ComposedComponent) => {
     initialize = () => {
       const {linkViewerData, linkChangerData} = this.state;
       if (linkViewerData || linkChangerData) {
-        const targetRect = getDraftCoords(this.props.editorRef);
-        if (targetRect) {
-          this.left = window.scrollX + targetRect.left;
-          this.top = window.scrollY + targetRect.top + ui.draftModalMargin;
-          this.height = targetRect.height;
-        }
         const renderModal = linkViewerData ? this.renderViewerModal : this.renderChangerModal;
         const {removeModal} = this;
         return {
@@ -241,9 +252,37 @@ const withLinks = (ComposedComponent) => {
     renderChangerModal = () => {
       const {linkChangerData} = this.state;
       const {text, link, selectionState} = linkChangerData;
-      const {editorState, setEditorState, editorRef} = this.props;
+      const {editorState, setEditorState, trackEditingComponent, editorRef} = this.props;
+      const coords = getDraftCoords(editorRef);
+      // in this case, coords can be good, then bad as soon as the changer takes focus
+      // so, the container must handle bad then good as well as good then bad
+      if (!coords) {
+        setTimeout(() => {
+          this.forceUpdate();
+        });
+      }
+      // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
-        <EditorLinkChanger
+        <AsyncMenuContainer
+          key="EditorLinkChanger"
+          escToClose={false}
+          clickToClose={false}
+          marginFromOrigin={ui.draftModalMargin}
+          fetchMenu={fetchEditorLinkChanger}
+          maxWidth={230}
+          maxHeight={200}
+          originAnchor={originAnchor}
+          originCoords={coords}
+          queryVars={{
+            editorState,
+            selectionState,
+            setEditorState,
+            removeModal: this.removeModal,
+            text,
+            initialValues: {text, link},
+            editorRef
+          }}
+          targetAnchor={targetAnchor}
           isOpen
           top={this.top}
           left={this.left}
@@ -251,6 +290,7 @@ const withLinks = (ComposedComponent) => {
           editorState={editorState}
           selectionState={selectionState}
           setEditorState={setEditorState}
+          trackEditingComponent={trackEditingComponent}
           removeModal={this.removeModal}
           text={text}
           initialValues={{text, link}}
@@ -261,18 +301,35 @@ const withLinks = (ComposedComponent) => {
 
     renderViewerModal = () => {
       const {linkViewerData} = this.state;
-      const {editorState, setEditorState} = this.props;
+      const {editorRef, editorState, setEditorState} = this.props;
+
+      const coords = getDraftCoords(editorRef);
+      if (!coords) {
+        setTimeout(() => {
+          this.forceUpdate();
+        });
+      }
+
       return (
-        <EditorLinkViewer
+        <AsyncMenuContainer
+          key="EditorLinkViewer"
+          escToClose={false}
+          clickToClose={false}
+          marginFromOrigin={ui.draftModalMargin}
+          fetchMenu={fetchEditorLinkViewer}
+          maxWidth={400}
+          maxHeight={100}
+          originAnchor={originAnchor}
+          originCoords={coords}
+          queryVars={{
+            editorState,
+            setEditorState,
+            removeModal: this.removeModal,
+            href: linkViewerData.href,
+            addHyperlink: this.addHyperlink
+          }}
+          targetAnchor={targetAnchor}
           isOpen
-          top={this.top}
-          left={this.left}
-          height={this.height}
-          editorState={editorState}
-          setEditorState={setEditorState}
-          removeModal={this.removeModal}
-          href={linkViewerData.href}
-          addHyperlink={this.addHyperlink}
         />
       );
     };

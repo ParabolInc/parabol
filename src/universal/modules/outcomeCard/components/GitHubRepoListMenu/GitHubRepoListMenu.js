@@ -1,13 +1,17 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation';
+import {MEETING} from 'universal/utils/constants';
+import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import PropTypes from 'prop-types';
 
 class GitHubRepoListMenu extends Component {
   static propTypes = {
+    area: PropTypes.string.isRequired,
+    handleAddProject: PropTypes.func,
     viewer: PropTypes.object.isRequired,
     relay: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
@@ -39,13 +43,18 @@ class GitHubRepoListMenu extends Component {
   }
 
   render() {
-    const {relay: {environment}, history, closePortal, projectId, setError, clearError, teamId} = this.props;
+    const {area, handleAddProject, relay: {environment}, history, closePortal, projectId, setError, clearError, teamId} = this.props;
     if (this.filteredRepos.length === 0) {
+      const inMeeting = area === MEETING;
+      const handleClick = inMeeting ?
+        handleAddProject(convertToProjectContent('#private Connect my GitHub account in Team Settings after the meeting')) :
+        () => history.push(`/team/${teamId}/settings/integrations/github`);
+      const label = inMeeting ? 'No repos! Remind me to set up GitHub' : 'Add your first GitHub repo';
       return (
         <div>
           <MenuItem
-            label="Add your first GitHub Repo"
-            onClick={() => history.push(`/team/${teamId}/settings/integrations/github`)}
+            label={label}
+            onClick={handleClick}
             closePortal={closePortal}
           />
         </div>

@@ -1,18 +1,19 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import {Field, reduxForm, initialize, SubmissionError} from 'redux-form';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import InputField from 'universal/components/InputField/InputField';
 import {cashay} from 'cashay';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {Field, initialize, reduxForm, SubmissionError} from 'redux-form';
+import InputField from 'universal/components/InputField/InputField';
 import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
-import step1Validation from './step1Validation';
+import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
+import formError from 'universal/styles/helpers/formError';
+import withStyles from 'universal/styles/withStyles';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import shouldValidate from 'universal/validation/shouldValidate';
-import formError from 'universal/styles/helpers/formError';
-import WelcomeSubmitButton from '../WelcomeSubmitButton/WelcomeSubmitButton';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
+import WelcomeSubmitButton from '../WelcomeSubmitButton/WelcomeSubmitButton';
+import step1Validation from './step1Validation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const validate = (values) => {
   const welcomeSchema = step1Validation();
@@ -21,6 +22,7 @@ const validate = (values) => {
 
 class Step1PreferredName extends Component {
   static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
     error: PropTypes.string,
     dispatch: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func,
@@ -34,8 +36,8 @@ class Step1PreferredName extends Component {
   };
 
   componentWillMount() {
-    const {dispatch, user: {preferredName}} = this.props;
-    dispatch(segmentEventTrack('Welcome Step1 Reached'));
+    const {atmosphere, dispatch, user: {preferredName}} = this.props;
+    SendClientSegmentEventMutation(atmosphere, 'Welcome Step1 Reached');
     if (preferredName) {
       dispatch(initialize('welcomeWizard', {preferredName}));
     }
@@ -49,7 +51,7 @@ class Step1PreferredName extends Component {
   }
 
   onPreferredNameSubmit = async (submissionData) => {
-    const {dispatch, user} = this.props;
+    const {atmosphere, dispatch, user} = this.props;
     const {data: {preferredName}} = step1Validation()(submissionData);
     const options = {
       variables: {
@@ -63,7 +65,7 @@ class Step1PreferredName extends Component {
     if (error) throw new SubmissionError(error);
     dispatch(updateCompleted(1));
     dispatch(nextPage());
-    dispatch(segmentEventTrack('Welcome Step1 Completed', {preferredName}));
+    SendClientSegmentEventMutation(atmosphere, 'Welcome Step1 Completed');
   };
 
   render() {
@@ -114,6 +116,8 @@ const reduxFormOptions = {
   validate
 };
 
-export default withStyles(styleThunk)(
-  reduxForm(reduxFormOptions)(Step1PreferredName)
+export default withAtmosphere(
+  withStyles(styleThunk)(
+    reduxForm(reduxFormOptions)(Step1PreferredName)
+  )
 );

@@ -189,6 +189,7 @@ export default createFragmentContainer(
       }
       githubRepos(teamId: $teamId) {
         id
+        adminUserId
         nameWithOwner
         teamMembers {
           id

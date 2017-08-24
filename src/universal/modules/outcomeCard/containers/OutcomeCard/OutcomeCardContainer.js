@@ -1,5 +1,6 @@
 import {cashay} from 'cashay';
 import {convertToRaw, EditorState} from 'draft-js';
+import {Set} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -36,11 +37,16 @@ class OutcomeCardContainer extends Component {
     super(props);
     const {contentState} = props;
     this.state = {
+      activeEditingComponents: Set(),
       cardHasHover: false,
       cardHasFocus: false,
       editorState: EditorState.createWithContent(contentState, editorDecorators),
       cardHasMenuOpen: false
     };
+  }
+
+  componentWillMount() {
+    this._mounted = true;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -58,11 +64,23 @@ class OutcomeCardContainer extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const curEditingComponents = this.state.activeEditingComponents;
+    const prevEditingComponents = prevState.activeEditingComponents;
+    if (curEditingComponents.isEmpty() !== prevEditingComponents.isEmpty()) {
+      this.announceEditing(!curEditingComponents.isEmpty());
+    }
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
+  }
+
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused !== isFocused) {
-      this.annouceEditing(isFocused);
+      this.trackEditingComponent('project-editor', isFocused);
       if (!isFocused) {
         this.handleCardUpdate();
       }
@@ -72,17 +90,28 @@ class OutcomeCardContainer extends Component {
     });
   };
 
-
   setEditorRef = (c) => {
     this.setState({
       editorRef: c
     });
   };
 
-  toggleMenuState = () => {
-    this.setState({
-      cardHasMenuOpen: !this.state.cardHasMenuOpen
+  trackEditingComponent = (uid, isEditing) => {
+    this.setState((curState) => {
+      const currentClients = curState.activeEditingComponents;
+      const updatedClients = isEditing
+        ? currentClients.add(uid)
+        : currentClients.remove(uid);
+      return {activeEditingComponents: updatedClients};
     });
+  };
+
+  toggleMenuState = () => {
+    if (this._mounted) {
+      this.setState({
+        cardHasMenuOpen: !this.state.cardHasMenuOpen
+      });
+    }
   };
 
   handleCardUpdate = () => {
@@ -118,10 +147,7 @@ class OutcomeCardContainer extends Component {
 
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
-  annouceEditing = (isEditing) => {
-    this.setState({
-      isEditing
-    });
+  announceEditing = (isEditing) => {
     const {outcome: {id: projectId}} = this.props;
     const [teamId] = projectId.split('::');
     cashay.mutate('edit', {
@@ -133,8 +159,8 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {cardHasFocus, cardHasHover, isEditing, editorRef, editorState} = this.state;
-    const {area, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
+    const {activeEditingComponents, cardHasFocus, cardHasHover, cardHasMenuOpen, editorRef, editorState} = this.state;
+    const {area, handleAddProject, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
         tabIndex={-1}
@@ -153,13 +179,16 @@ class OutcomeCardContainer extends Component {
           editorState={editorState}
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
+          cardHasMenuOpen={cardHasMenuOpen}
+          handleAddProject={handleAddProject}
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
-          isEditing={isEditing}
+          isEditing={!activeEditingComponents.isEmpty()}
           outcome={outcome}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
+          trackEditingComponent={this.trackEditingComponent}
           teamMembers={teamMembers}
           toggleMenuState={this.toggleMenuState}
         />
@@ -171,6 +200,7 @@ class OutcomeCardContainer extends Component {
 OutcomeCardContainer.propTypes = {
   area: PropTypes.string,
   contentState: PropTypes.object.isRequired,
+  handleAddProject: PropTypes.func,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,

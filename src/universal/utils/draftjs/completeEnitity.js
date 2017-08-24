@@ -76,13 +76,14 @@ export const autoCompleteEmoji = (editorState, emoji) => {
   return EditorState.push(editorState, finalContent, 'remove-characters');
 };
 
-const completeEntity = (editorState, entityName, entityData, mention) => {
+const completeEntity = (editorState, entityName, entityData, mention, options = {}) => {
+  const {keepSelection} = options;
   const {editorChangeType, entityType} = operationTypes[entityName];
   const contentState = editorState.getCurrentContent();
   const contentStateWithEntity = contentState
     .createEntity(entityName, entityType, entityData);
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-  const expandedSelectionState = getExpandedSelectionState(editorState);
+  const expandedSelectionState = keepSelection ? editorState.getSelection() : getExpandedSelectionState(editorState);
   const contentWithEntity = makeContentWithEntity(contentState, expandedSelectionState, mention, entityKey);
   const endKey = contentWithEntity.getSelectionAfter().getEndKey();
   const endOffset = contentWithEntity.getSelectionAfter().getEndOffset();

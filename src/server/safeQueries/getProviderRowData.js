@@ -8,8 +8,8 @@ const getProviderRowData = (service, teamId) => {
       .filter({isActive: true})
       .count(),
     userCount: r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'})
-      .filter({service})
+      .getAll(teamId, {index: 'teamId'})
+      .filter({service, isActive: true})
       .count()
   });
 };

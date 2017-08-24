@@ -4,6 +4,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.6 - 24-Aug-2017
+### Fixed
+- #1177 ensure that `teamId` and `orgId` are populated on most page load events
+- #1179 no footer icons when menu is open
+- #1193 teamIds to teamId
+- #1206 semicolon delimitation on invites
+- #1229 no space before new link
+- #1233 add your first repo from meeting
+- #1241 duplicate tags extracted from projects
+- #1248 don't let repo admins unlink, destroy the repo if they get removed
+- #1255 modal shudder
+- #1258 Outcome Card editing state turns off when the link modal is open
+- #1270 Archived Projects do not show up for some teams
+- #1275 project placeholder
+- #1279 portal remounts during unmount
+- #1291 failed post-meeting emails
+- #1298 failure on first github provider created
+- #1299 bad rejoin facilitator logic
+
 ## v0.20.5 - 16-Aug-2017
 ### Removed
 - Snyk (for now)

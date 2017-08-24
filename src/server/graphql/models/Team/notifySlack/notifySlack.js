@@ -14,9 +14,13 @@ const getIntegrationsForNotification = (teamId, notification) => {
 const notifySlack = async (integrations, teamId, slackText) => {
   const r = getRethink();
   const provider = await r.table('Provider')
-    .getAll(teamId, {index: 'teamIds'})
-    .filter({service: SLACK})
-    .nth(0);
+    .getAll(teamId, {index: 'teamId'})
+    .filter({service: SLACK, isActive: true})
+    .nth(0)
+    .default(null);
+  if (!provider) {
+    throw new Error('SlackIntegration exists without Provider! Something is fishy');
+  }
   // for each slack channel, send a notification
   for (let i = 0; i < integrations.length; i++) {
     const integration = integrations[i];

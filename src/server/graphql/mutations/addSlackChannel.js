@@ -42,8 +42,8 @@ export default {
 
     // get the user's token
     const provider = await r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'})
-      .filter({service: SLACK})
+      .getAll(teamId, {index: 'teamId'})
+      .filter({service: SLACK, isActive: true})
       .nth(0)
       .default(null);
 

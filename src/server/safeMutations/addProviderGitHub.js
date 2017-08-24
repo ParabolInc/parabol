@@ -23,13 +23,15 @@ query {
   }
 }`;
 
-const getJoinedIntegrationIds = async (integrationCount, accessToken, teamId, userId, providerUserName) => {
-  if (integrationCount === 0) return [];
+const getJoinedIntegrationIds = async (teamId, provider, integrationCount, isUpdate) => {
+  if (integrationCount === 0 || isUpdate) return [];
   const r = getRethink();
-  const allIntegrations = await r.table(GITHUB)
+  const integrationsToJoin = await r.table(GITHUB)
     .getAll(teamId, {index: 'teamId'})
     .filter({isActive: true});
-  return maybeJoinRepos(allIntegrations, accessToken, userId, providerUserName);
+  const userIntegrations = await maybeJoinRepos(integrationsToJoin, [provider]);
+  const {userId} = provider;
+  return userIntegrations[userId];
 };
 
 const getTeamMember = async (joinedIntegrationIds, teamMemberId) => {
@@ -67,9 +69,9 @@ const addProviderGitHub = async (code, teamId, userId) => {
   if (!gqlRes.data) {
     console.error('GitHub error: ', gqlRes);
   }
-  const {data: {viewer: {login}}} = gqlRes;
-  const provider = await r.table('Provider')
-    .getAll(teamId, {index: 'teamIds'})
+  const {data: {viewer: {login: providerUserName}}} = gqlRes;
+  const providerChange = await r.table('Provider')
+    .getAll(teamId, {index: 'teamId'})
     .filter({service: GITHUB, userId})
     .nth(0)('id')
     .default(null)
@@ -81,27 +83,31 @@ const addProviderGitHub = async (code, teamId, userId) => {
             id: shortid.generate(),
             accessToken,
             createdAt: now,
+            isActive: true,
             // github userId is never used for queries, but the login is!
-            providerUserId: login,
-            providerUserName: login,
+            providerUserId: providerUserName,
+            providerUserName,
             service: GITHUB,
-            teamIds: [teamId],
+            teamId,
             updatedAt: now,
             userId
-          }, {returnChanges: true})('changes')(0)('new_val'),
+          }, {returnChanges: true})('changes')(0),
         r.table('Provider')
           .get(providerId)
           .update({
             accessToken,
+            isActive: true,
             updatedAt: now,
-            providerUserId: login,
-            providerUserName: login
-          }, {returnChanges: true})('changes')(0)('new_val')
+            providerUserId: providerUserName,
+            providerUserName
+          }, {returnChanges: true})('changes')(0)
       );
     });
+  const {new_val: provider, old_val: oldProvider} = providerChange;
 
   const rowDetails = await getProviderRowData(GITHUB, teamId);
-  const joinedIntegrationIds = await getJoinedIntegrationIds(rowDetails.integrationCount, accessToken, teamId, userId, login);
+  const isUpdate = oldProvider && oldProvider.isActive;
+  const joinedIntegrationIds = await getJoinedIntegrationIds(teamId, provider, rowDetails.integrationCount, isUpdate);
   const teamMemberId = `${userId}::${teamId}`;
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId);
   const providerAdded = {

@@ -82,7 +82,8 @@ class Button extends Component {
       'menu',
       'reset',
       'submit'
-    ])
+    ]),
+    waiting: PropTypes.bool
   };
 
   constructor(props) {
@@ -126,7 +127,8 @@ class Button extends Component {
       size,
       styles,
       title,
-      type
+      type,
+      waiting
     } = this.props;
 
     const {pressedDown} = this.state;
@@ -139,7 +141,8 @@ class Button extends Component {
       isBlock && styles.isBlock,
       styles.propColors,
       disabled && styles.disabled,
-      pressedDown && styles.pressedDown
+      pressedDown && styles.pressedDown,
+      waiting && styles.wait
     );
 
     const makeIconLabel = () => {
@@ -174,7 +177,7 @@ class Button extends Component {
     return (
       <button
         className={buttonStyles}
-        disabled={disabled}
+        disabled={disabled || waiting}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseDown={this.onMouseDown}
@@ -254,6 +257,11 @@ const styleThunk = (theme, props) => ({
 
   pressedDown: {
     transform: 'translate(0, .125rem)'
+  },
+
+  wait: {
+    ...ui.buttonDisabledStyles,
+    cursor: 'wait'
   }
 });
 
