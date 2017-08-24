@@ -78,12 +78,15 @@ const MODAL_LAYOUT_VIEWPORT = 'viewport';
 const panelInnerBorderColor = appTheme.palette.mid20l;
 
 // Transitions
-const transitionFastest = '100ms ease-in';
-const transitionFaster = '200ms ease-in';
-const transitionFast = '400ms ease-in';
-const transitionSlow = '800ms ease-in';
-const transitionSlower = '1600ms ease-in';
-const transitionSlowest = '3200ms ease-in';
+// NOTE: increases on a scale of 2x
+const transition = [
+  '100ms ease-in',
+  '200ms ease-in',
+  '400ms ease-in',
+  '800ms ease-in',
+  '1600ms ease-in',
+  '3200ms ease-in'
+];
 
 // Shadows
 // NOTE: levels increase on a scale of 2x
@@ -138,7 +141,7 @@ const ui = {
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
-    transition: `transform ${transitionFastest}`,
+    transition: `transform ${transition[0]}`,
     userSelect: 'none',
     verticalAlign: 'middle',
     ':hover': {
@@ -458,12 +461,7 @@ const ui = {
 
   // Transitions
   // ---------------------------------------------------------------------------
-  transitionFastest,
-  transitionFaster,
-  transitionFast,
-  transitionSlow,
-  transitionSlower,
-  transitionSlowest,
+  transition,
 
   // Generic zIndex scale
   // ---------------------------------------------------------------------------
