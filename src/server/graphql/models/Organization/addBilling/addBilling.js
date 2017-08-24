@@ -113,7 +113,7 @@ export default {
       .delete();
 
     const channel = `upcomingInvoice/${orgId}`;
-    const upcomingInvoice = await makeUpcomingInvoice(orgId, stripeId);
+    const upcomingInvoice = await makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId);
     const payload = {
       type: 'update',
       fields: upcomingInvoice

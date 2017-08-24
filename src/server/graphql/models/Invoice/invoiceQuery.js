@@ -42,9 +42,10 @@ export default {
         if (currentInvoice && currentInvoice.createdAt.getTime() + UPCOMING_INVOICE_TIME_VALID > now) {
           return currentInvoice;
         }
-        const stripeId = await r.table('Organization').get(orgId)('stripeId');
+        const {stripeId, stripeSubscriptionId} = await r.table('Organization').get(orgId)
+          .pluck('stripeId', 'stripeSubscriptionId');
         const stripeLineItems = await fetchAllLines('upcoming', stripeId);
-        const upcomingInvoice = await stripe.invoices.retrieveUpcoming(stripeId);
+        const upcomingInvoice = await stripe.invoices.retrieveUpcoming(stripeId, {subscription: stripeSubscriptionId});
         await generateInvoice(upcomingInvoice, stripeLineItems, orgId, invoiceId);
         return r.table('Invoice')
           .get(invoiceId)
