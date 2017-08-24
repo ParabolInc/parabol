@@ -45,7 +45,6 @@ const defaultDetails = {
 const ProviderRow = (props) => {
   const {
     comingSoon,
-    firstInList,
     history,
     jwt,
     name,
@@ -76,7 +75,7 @@ const ProviderRow = (props) => {
   };
   const hasActivity = userCount > 0 || integrationCount > 0;
   return (
-    <Row sansBorder={firstInList} style={{justifyContent: 'flex-start'}}>
+    <Row style={{justifyContent: 'flex-start'}}>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
         <div className={css(styles.providerAvatar)} style={{backgroundColor: color}}>
           <FontAwesome name={icon} className={css(styles.providerIcon)} />
@@ -139,7 +138,6 @@ const ProviderRow = (props) => {
 ProviderRow.propTypes = {
   actions: PropTypes.any,
   comingSoon: PropTypes.bool,
-  firstInList: PropTypes.bool,
   history: PropTypes.object,
   jwt: PropTypes.string,
   name: PropTypes.string,
