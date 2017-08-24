@@ -320,7 +320,8 @@ export default class MeetingContainer extends Component {
       meetingPhaseItem,
       name: teamName
     } = team;
-    const agendaPhaseItem = agenda.findIndex((a) => a.isComplete === false) + 1;
+    const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
+      agenda.findIndex((a) => a.isComplete === false) + 1 : 0;
 
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
