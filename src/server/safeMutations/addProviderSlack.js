@@ -36,7 +36,7 @@ const addProviderSlack = async (code, teamId, userId) => {
     throw new Error(`bad scope: ${scope}`);
   }
   const provider = await r.table('Provider')
-    .getAll(teamId, {index: 'teamIds'})
+    .getAll(teamId, {index: 'teamId'})
     .filter({service: SLACK})
     .nth(0)('id')
     .default(null)
@@ -48,10 +48,11 @@ const addProviderSlack = async (code, teamId, userId) => {
             id: shortid.generate(),
             accessToken,
             createdAt: now,
+            isActive: true,
             providerUserId,
             providerUserName,
             service: SLACK,
-            teamIds: [teamId],
+            teamId,
             updatedAt: now,
             userId
           }, {returnChanges: true})('changes')(0)('new_val'),
@@ -59,6 +60,7 @@ const addProviderSlack = async (code, teamId, userId) => {
           .get(providerId)
           .update({
             accessToken,
+            isActive: true,
             updatedAt: now
           }, {returnChanges: true})('changes')(0)('new_val')
       );

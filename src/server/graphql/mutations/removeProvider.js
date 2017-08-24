@@ -7,6 +7,7 @@ import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/a
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
+import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
 
 
 const getPayload = async (service, integrationChanges, teamId, userId) => {
@@ -53,7 +54,9 @@ export default {
     // unlink the team from the user's token
     const res = await r.table('Provider')
       .get(dbProviderId)
-      .update((user) => ({teamIds: user('teamIds').difference([teamId])}), {returnChanges: true});
+      .update({
+        isActive: false
+      }, {returnChanges: true});
 
     if (res.skipped === 1) {
       throw new Error(`Provider ${providerId} does not exist`);
@@ -77,14 +80,7 @@ export default {
       getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
       return providerRemoved;
     } else if (service === GITHUB) {
-      const repoChanges = await r.table(GITHUB)
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .update((doc) => ({
-          userIds: doc('userIds').difference([userId]),
-          // if they're the last one, remove the integration
-          isActive: doc('userIds').eq([userId]).not()
-        }), {returnChanges: true})('changes').default([]);
+      const repoChanges = await removeGitHubReposForUserId(userId, [teamId]);
       const providerRemoved = await getPayload(service, repoChanges, teamId, userId);
       const archivedProjectsByRepo = await archiveProjectsForManyRepos(repoChanges);
       providerRemoved.archivedProjectIds = archivedProjectsByRepo.reduce((arr, repoArr) => {

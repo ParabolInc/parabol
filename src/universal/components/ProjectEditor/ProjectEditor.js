@@ -177,6 +177,7 @@ class ProjectEditor extends Component {
           onEscape={this.handleEscape}
           onTab={this.handleTab}
           onUpArrow={this.handleUpArrow}
+          placeholder={'Describe what "Done" looks like'}
           readOnly={readOnly}
           ref={setEditorRef}
         />

@@ -11,6 +11,7 @@ import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesFor
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
+import {USER_DASH} from 'universal/utils/constants';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
@@ -48,8 +49,7 @@ class OutcomeCardFooter extends Component {
   removeContentTag = (tagValue) => () => {
     const {outcome: {id, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
-    const rawContent = JSON.parse(content);
-    const nextContent = removeAllRangesForEntity(rawContent, 'TAG', eqFn);
+    const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
     if (nextContent) {
       const options = {
         ops: {},
@@ -66,30 +66,30 @@ class OutcomeCardFooter extends Component {
 
   render() {
     const {
-      cardHasFocus,
-      cardHasHover,
+      area,
+      cardIsActive,
       editorState,
+      handleAddProject,
       isAgenda,
       isPrivate,
       outcome,
-      showTeam,
       styles,
       teamMembers,
       toggleMenuState
     } = this.props;
+    const showTeam = area === USER_DASH;
     const {teamMember: owner, integration, team: {name: teamName}} = outcome;
     const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
 
     const buttonBlockStyles = css(
       styles.buttonBlock,
-      cardHasFocus && styles.showBlock,
-      cardHasHover && styles.showBlock
+      cardIsActive && styles.showBlock
     );
 
     const avatarStyles = css(
       styles.avatar,
-      (cardHasHover || cardHasFocus) && styles.activeAvatar
+      cardIsActive && styles.activeAvatar
     );
 
     const {error} = this.state;
@@ -140,6 +140,8 @@ class OutcomeCardFooter extends Component {
                   maxHeight={225}
                   originAnchor={originAnchor}
                   queryVars={{
+                    area,
+                    handleAddProject,
                     projectId: outcome.id,
                     setError: this.setError,
                     clearError: this.clearError
@@ -181,9 +183,10 @@ class OutcomeCardFooter extends Component {
 }
 
 OutcomeCardFooter.propTypes = {
-  cardHasFocus: PropTypes.bool,
-  cardHasHover: PropTypes.bool,
+  area: PropTypes.string.isRequired,
+  cardIsActive: PropTypes.bool,
   editorState: PropTypes.object,
+  handleAddProject: PropTypes.func,
   isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
   isPrivate: PropTypes.bool,

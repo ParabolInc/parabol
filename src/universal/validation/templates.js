@@ -1,7 +1,7 @@
-import emailAddresses from 'email-addresses';
 import {APP_MAX_AVATAR_FILE_SIZE, PROJECT_MAX_CHARS} from 'universal/utils/constants';
 import linkify from 'universal/utils/linkify';
 import {compositeIdRegex, emailRegex, idRegex, urlRegex} from 'universal/validation/regex';
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 
 export const avatar = {
   size: (value) => value
@@ -23,20 +23,32 @@ export const fullName = (value) => value
   .min(1, 'It looks like you wanted to include a name')
   .max(PROJECT_MAX_CHARS, 'That name looks too long!');
 
+const lastIndexOfDelim = (str, delims = [';', ',']) => {
+  let highscore = -1;
+  for (let i = 0; i < delims.length; i++) {
+    const delim = delims[i];
+    const lastIdx = str.lastIndexOf(delim);
+    if (lastIdx > highscore) {
+      highscore = lastIdx;
+    }
+  }
+  return highscore;
+};
+
 export const inviteesRaw = (value) => value
   .test((raw) => {
     if (!raw) return undefined;
-    const parsedAddresses = emailAddresses.parseAddressList(raw);
+    const parsedAddresses = parseEmailAddressList(raw);
     if (!parsedAddresses) {
-      let i = raw.lastIndexOf(',');
+      let i = lastIndexOfDelim(raw);
       while (i > 0) {
         const lastGoodString = raw.substr(0, i);
-        const parseable = emailAddresses.parseAddressList(lastGoodString);
+        const parseable = parseEmailAddressList(lastGoodString);
         if (parseable) {
-          const startingIdx = lastGoodString.lastIndexOf(',') + 1;
+          const startingIdx = lastIndexOfDelim(lastGoodString) + 1;
           return `The email after ${lastGoodString.substr(startingIdx)} doesn’t look quite right`;
         }
-        i = lastGoodString.lastIndexOf(',');
+        i = lastIndexOfDelim(lastGoodString);
       }
       return 'That first email doesn’t look right';
     }

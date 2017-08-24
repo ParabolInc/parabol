@@ -9,6 +9,7 @@ import {showError} from 'universal/modules/toast/ducks/toastDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import signout from 'universal/containers/Signout/signout';
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 
 const impersonateTokenQuery = `
@@ -22,7 +23,7 @@ query {
   }
 }`;
 
-function createImposter(userId, dispatch, history) {
+function createImposter(atmosphere, userId, dispatch, history) {
   const variables = {userId};
   cashay.mutate('createImposterToken', {variables}).then(async ({data, error}) => {
     if (error) {
@@ -32,11 +33,11 @@ function createImposter(userId, dispatch, history) {
     const {email, id, jwt, name, picture} = data.createImposterToken;
     const profile = {avatar: picture, email, id, name};
     // Reset application state:
-    await signout(dispatch);
+    await signout(atmosphere, dispatch);
     // Cashay User query needed to setup later mutation in signinAndUpdateToken:
     cashay.query(getAuthQueryString, getAuthedOptions(id));
     // Assume the identity of the new user:
-    await signinAndUpdateToken(dispatch, profile, jwt);
+    await signinAndUpdateToken(atmosphere, dispatch, profile, jwt);
     // Navigate to a default location, the application root:
     history.replace('/');
   });
@@ -76,8 +77,10 @@ const showDucks = () => {
 
 @connect(mapStateToProps)
 @requireAuthAndRole('su', {silent: true})
+@withAtmosphere
 export default class Impersonate extends Component {
   static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     newUserId: PropTypes.string,
@@ -85,12 +88,12 @@ export default class Impersonate extends Component {
   };
 
   componentWillMount() {
-    const {dispatch, newUserId, history} = this.props;
+    const {atmosphere, dispatch, newUserId, history} = this.props;
 
     if (!newUserId) {
       return;
     }
-    createImposter(newUserId, dispatch, history);
+    createImposter(atmosphere, newUserId, dispatch, history);
   }
 
   render() {
