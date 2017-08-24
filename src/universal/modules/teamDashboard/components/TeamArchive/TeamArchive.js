@@ -6,10 +6,11 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {ib, overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
-import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import FontAwesome from 'react-fontawesome';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
+import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import {TEAM_DASH} from 'universal/utils/constants';
 
 const iconStyle = {
   ...ib,
@@ -18,7 +19,7 @@ const iconStyle = {
 };
 
 const TeamArchive = (props) => {
-  const {archivedProjects, styles, teamId, teamName} = props;
+  const {archivedProjects, styles, teamId, teamName, userId} = props;
   return (
     <div className={css(styles.root)}>
       <Helmet title={`${teamName} Archive | Parabol`} />
@@ -32,9 +33,10 @@ const TeamArchive = (props) => {
             <div className={css(styles.cardGrid)}>
               {archivedProjects.map((project) =>
                 (<div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
-                  <OutcomeCardContainer
+                  <OutcomeOrNullCard
                     key={project.id}
-                    form={`archived::${project.id}`}
+                    area={TEAM_DASH}
+                    myUserId={userId}
                     outcome={project}
                   />
                 </div>)
@@ -60,7 +62,8 @@ TeamArchive.propTypes = {
   styles: PropTypes.object,
   teamId: PropTypes.string,
   teamName: PropTypes.string,
-  teamMembers: PropTypes.array
+  teamMembers: PropTypes.array,
+  userId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({

@@ -1,14 +1,17 @@
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import PropTypes from 'prop-types';
+import React from 'react';
+import appTheme from 'universal/styles/theme/appTheme';
+
+const style = {
+  color: appTheme.palette.cool,
+  fontWeight: 800
+};
 
 const Mention = (props) => {
   // const {url} = props.contentState.getEntity(props.entityKey).getData();
-  const {styles, offsetkey, children} = props;
+  const {offsetkey, children} = props;
   return (
-    <span data-offset-key={offsetkey} className={css(styles.mention)}>
+    <span data-offset-key={offsetkey} style={style}>
       {children}
     </span>
   );
@@ -16,15 +19,7 @@ const Mention = (props) => {
 
 Mention.propTypes = {
   children: PropTypes.any,
-  offsetkey: PropTypes.string,
-  styles: PropTypes.object
+  offsetkey: PropTypes.string
 };
 
-const styleThunk = () => ({
-  mention: {
-    color: appTheme.palette.cool,
-    fontWeight: 800
-  }
-});
-
-export default withStyles(styleThunk)(Mention);
+export default Mention;

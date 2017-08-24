@@ -114,11 +114,10 @@ export default class DashLayoutContainer extends Component {
   }
 
   render() {
-    const {activeMeetings, children, dispatch, trialNotification} = this.props;
+    const {activeMeetings, children, trialNotification} = this.props;
     return (
       <DashLayout
         activeMeetings={activeMeetings}
-        dispatch={dispatch}
         trialNotification={trialNotification}
       >
         {children}

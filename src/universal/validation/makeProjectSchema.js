@@ -10,7 +10,6 @@ export default function makeProjectSchema() {
     id: compositeId,
     agendaId: compositeId,
     content: (value) => value
-      .trim()
       .normalize((str) => {
         let parsedContent;
         try {

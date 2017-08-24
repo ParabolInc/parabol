@@ -14,6 +14,7 @@ import {
 import {connect} from 'react-redux';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const mapStateToProps = (state) => {
   return {
@@ -23,8 +24,10 @@ const mapStateToProps = (state) => {
 
 @loginWithToken
 @connect(mapStateToProps)
+@withAtmosphere
 export default class LandingContainer extends Component {
   static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
     auth: PropTypes.object,
     dispatch: PropTypes.func.isRequired,
     nextUrl: PropTypes.string
@@ -47,6 +50,7 @@ export default class LandingContainer extends Component {
 
   componentDidMount() {
     const {
+      atmosphere,
       dispatch,
       nextUrl
     } = this.props;
@@ -54,7 +58,7 @@ export default class LandingContainer extends Component {
       require('auth0-lock');
     });
     if (nextUrl) {
-      showLock(dispatch);
+      showLock(atmosphere, dispatch);
     }
     const upgradePendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
     if (upgradePendingState === APP_UPGRADE_PENDING_RELOAD) {
@@ -88,8 +92,8 @@ export default class LandingContainer extends Component {
     if (this.state.refreshNeeded) {
       loginClickHandler = () => window.location.reload();
     } else {
-      const {dispatch} = this.props;
-      loginClickHandler = () => showLock(dispatch);
+      const {atmosphere, dispatch} = this.props;
+      loginClickHandler = () => showLock(atmosphere, dispatch);
     }
     return (
       <div>

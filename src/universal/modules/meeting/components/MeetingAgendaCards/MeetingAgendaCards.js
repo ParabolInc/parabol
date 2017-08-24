@@ -6,14 +6,15 @@ import ui from 'universal/styles/ui';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
-import {ACTIVE} from 'universal/utils/constants';
+import {ACTIVE, MEETING} from 'universal/utils/constants';
 import withHotkey from 'react-hotkey-hoc';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 
-const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
+const handleAddProjectFactory = (teamMemberId, agendaId) => (content) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
+    content,
     status: ACTIVE,
     teamMemberId,
     sortOrder: 0,
@@ -22,14 +23,20 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
   cashay.mutate('createProject', {variables: {newProject}});
 };
 
-const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
+const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject) => {
   return array.map((outcome) => {
     const {id} = outcome;
     const key = `$outcomeCard${id}`;
     const [myUserId] = myTeamMemberId.split('::');
     return (
       <div className={css(itemStyle)} key={key}>
-        <OutcomeOrNullCard isAgenda myUserId={myUserId} outcome={outcome} />
+        <OutcomeOrNullCard
+          area={MEETING}
+          handleAddProject={handleAddProject}
+          isAgenda
+          myUserId={myUserId}
+          outcome={outcome}
+        />
       </div>
     );
   });
@@ -52,17 +59,18 @@ const makePlaceholders = (length, itemStyle) => {
 const MeetingAgendaCards = (props) => {
   const {agendaId, bindHotkey, dispatch, myTeamMemberId, outcomes, styles} = props;
   const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
+  const addBlankProject = handleAddProject();
   bindHotkey('p', handleAddProject);
   return (
     <div className={css(styles.root)}>
       {/* Get Cards */}
       {outcomes.length !== 0 &&
-      makeCards(outcomes, dispatch, myTeamMemberId, styles.item)
+      makeCards(outcomes, dispatch, myTeamMemberId, styles.item, handleAddProject)
       }
       {/* Input Card */}
       <div className={css(styles.item)}>
         <CreateCard
-          handleAddProject={handleAddProject}
+          handleAddProject={addBlankProject}
           hasControls
         />
       </div>
