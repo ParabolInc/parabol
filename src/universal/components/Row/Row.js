@@ -20,15 +20,14 @@ const Row = (props) => {
 
 Row.propTypes = {
   children: PropTypes.any,
-  sansBorder: PropTypes.bool,
   style: PropTypes.object,
   styles: PropTypes.object
 };
 
-const styleThunk = (theme, {sansBorder}) => ({
+const styleThunk = () => ({
   row: {
     alignItems: 'center',
-    borderTop: sansBorder ? 'none' : `1px solid ${ui.rowBorderColor}`,
+    borderTop: `.0625rem solid ${ui.rowBorderColor}`,
     display: 'flex',
     justifyContent: 'space-between',
     padding: ui.rowGutter,
