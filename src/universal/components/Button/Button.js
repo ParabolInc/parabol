@@ -207,16 +207,17 @@ const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransfor
     fontSize: ui.buttonFontSize[size] || ui.buttonFontSize.medium,
     lineHeight: ui.buttonLineHeight,
     padding: ui.buttonPadding[size] || ui.buttonPadding.medium,
-    textTransform: textTransform || 'none'
+    textTransform: textTransform || 'none',
+    transition: 'box-shadow 100ms ease-in'
   },
 
   depth: {
-    boxShadow: depth && ui.shadow[depth],
+    boxShadow: ui.shadow[depth],
     ':hover': {
-      boxShadow: depth && ui.shadow[depth + 1]
+      boxShadow: ui.shadow[depth + 1]
     },
     ':focus': {
-      boxShadow: depth && ui.shadow[depth + 1]
+      boxShadow: ui.shadow[depth + 1]
     }
   },
 

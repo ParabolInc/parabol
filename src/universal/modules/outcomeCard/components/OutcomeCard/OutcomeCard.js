@@ -119,7 +119,7 @@ const styleThunk = () => ({
     ...cardRootStyles,
     outline: 'none',
     paddingTop: '.1875rem',
-
+    transition: 'box-shadow 100ms ease-in',
     '::after': {
       ...cardBorderTop
     }
