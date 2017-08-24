@@ -79,8 +79,8 @@ adjust it to what you think is fair.
 
 ## Conversion rate
 
-At present, 100 points convert to options for 10,000 shares in Parabol Inc.
-With 10,000,000 shares outstanding, that’s 0.1% of the company.
+At present, 100 points convert to options for 1,400 shares in Parabol Inc.
+With 13,468,000 shares outstanding, that’s roughly 0.01% of the company.
 
 We'll convert for you every time you hit a new 100 point threshold. That is
 to say, 200 points, 300 points, and so on.
