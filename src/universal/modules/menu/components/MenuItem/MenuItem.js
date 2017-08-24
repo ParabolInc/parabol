@@ -101,7 +101,7 @@ const styleThunk = () => ({
     color: ui.menuItemColor,
     cursor: 'pointer',
     display: 'flex',
-    transition: `background-color ${ui.transitionFastest}`,
+    transition: `background-color ${ui.transition[0]}`,
 
     ':hover': {
       ...hoverFocusStyles

@@ -42,9 +42,9 @@ const MeetingLobby = (props) => {
           <Button
             buttonStyle="solid"
             colorPalette="cool"
+            depth={1}
             label="Start Meeting"
             onClick={onStartMeetingClick}
-            raised
             size="largest"
             textTransform="uppercase"
           />
