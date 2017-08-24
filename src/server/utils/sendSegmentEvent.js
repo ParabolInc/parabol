@@ -31,13 +31,15 @@ const getSegmentProps = (userIds, teamId) => {
 const sendSegmentEvent = async (event, maybeUserIds, options = {}) => {
   const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds];
   const {traitsArr, orgId} = await getSegmentProps(userIds, options.teamId);
-  traitsArr.forEach((traits) => {
+  traitsArr.forEach((traitsWithId) => {
+    const {id: userId, ...traits} = traitsWithId;
     segmentIo.track({
-      userId: traits.id,
+      userId,
       event,
       properties: {
         orgId,
-        ...traits,
+        traits,
+        // options is a superset of SegmentEventTrackOptions
         ...options
       }
     });
