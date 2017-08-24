@@ -14,8 +14,8 @@ const ProviderList = (props) => {
   const {providerMap} = viewer;
   return (
     <div className={css(styles.providerList)}>
-      <Panel hasHeader={false}>
-        <ProviderRow firstInList name={GITHUB} providerDetails={providerMap[GITHUB]} jwt={jwt} teamId={teamId} />
+      <Panel hasHeader={false} hideFirstRowBorder>
+        <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} jwt={jwt} teamId={teamId} />
         <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} jwt={jwt} teamId={teamId} />
       </Panel>
     </div>

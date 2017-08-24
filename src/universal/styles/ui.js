@@ -74,6 +74,9 @@ const MODAL_LAYOUT_MAIN = 'main';
 const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
+// Panels
+const panelInnerBorderColor = appTheme.palette.mid20l;
+
 // Transitions
 const transitionFastest = '100ms ease-in';
 const transitionFaster = '200ms ease-in';
@@ -388,6 +391,7 @@ const ui = {
   // Panels
   // ---------------------------------------------------------------------------
   panelBorderColor: appTheme.palette.mid40l,
+  panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
   panelMarginVertical: '1.5rem',
@@ -423,7 +427,7 @@ const ui = {
 
   // Rows
   // ---------------------------------------------------------------------------
-  rowBorderColor: appTheme.palette.mid20l,
+  rowBorderColor: panelInnerBorderColor,
   rowHeadingColor: appTheme.palette.dark,
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',

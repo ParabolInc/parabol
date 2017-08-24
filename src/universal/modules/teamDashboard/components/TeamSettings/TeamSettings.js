@@ -215,11 +215,11 @@ const styleThunk = () => ({
   },
 
   panelBorder: {
-    borderTop: `1px solid ${ui.panelBorderColor}`
+    borderTop: `1px solid ${ui.panelInnerBorderColor}`
   },
 
   panelRow: {
-    borderTop: `1px solid ${ui.panelBorderColor}`,
+    borderTop: `1px solid ${ui.rowBorderColor}`,
     padding: `${ui.panelGutter}`
   }
 });
