@@ -196,8 +196,8 @@ export default {
       const week = getWeekOfYear(now);
 
       const updatedTeam = {
-        checkInGreeting: makeCheckinGreeting(week),
-        checkInQuestion: makeCheckinQuestion(week),
+        checkInGreeting: makeCheckinGreeting(week, teamId),
+        checkInQuestion: makeCheckinQuestion(week, teamId),
         meetingId,
         activeFacilitator: facilitatorId,
         facilitatorPhase: CHECKIN,

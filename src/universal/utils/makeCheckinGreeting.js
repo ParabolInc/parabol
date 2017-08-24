@@ -77,10 +77,14 @@ const questions = [
   'What’s got your attention this week'
 ];
 
-export const makeCheckinGreeting = (week) => {
-  return greetings[week % greetings.length];
+export const makeCheckinGreeting = (week, seedId = '') => {
+  const seed = seedId.charCodeAt(0);
+  const idx = (seed + week) % greetings.length;
+  return greetings[idx];
 };
 
-export const makeCheckinQuestion = (week) => {
-  return questions[week % questions.length];
+export const makeCheckinQuestion = (week, seedId = '') => {
+  const seed = seedId.charCodeAt(0);
+  const idx = (seed + week) % questions.length;
+  return questions[idx];
 };

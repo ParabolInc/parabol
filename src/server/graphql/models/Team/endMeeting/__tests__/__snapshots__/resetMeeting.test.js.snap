@@ -99,10 +99,10 @@ Object {
   "team": Object {
     "activeFacilitator": null,
     "checkInGreeting": Object {
-      "content": "Salut",
-      "language": "Catalan",
+      "content": "Bonjour",
+      "language": "French",
     },
-    "checkInQuestion": "Anything inspire you recently",
+    "checkInQuestion": "If you could have one superpower today, what would it be",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,

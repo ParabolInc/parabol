@@ -238,10 +238,10 @@ Object {
   "team": Object {
     "activeFacilitator": 24,
     "checkInGreeting": Object {
-      "content": "Salut",
-      "language": "Catalan",
+      "content": "Merhaba",
+      "language": "Turkish",
     },
-    "checkInQuestion": "Anything inspire you recently",
+    "checkInQuestion": "If you could have one superpower today, what would it be",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
     "id": 6,
@@ -604,10 +604,10 @@ Object {
   "team": Object {
     "activeFacilitator": 25,
     "checkInGreeting": Object {
-      "content": "Salut",
-      "language": "Catalan",
+      "content": "Bonjour",
+      "language": "French",
     },
-    "checkInQuestion": "Anything inspire you recently",
+    "checkInQuestion": "If you could have one superpower today, what would it be",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
     "id": 6,
