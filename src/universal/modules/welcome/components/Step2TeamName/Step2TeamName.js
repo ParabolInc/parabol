@@ -1,19 +1,18 @@
+import {css} from 'aphrodite-local-styles/no-important';
+import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
-import InputField from 'universal/components/InputField/InputField';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import shortid from 'shortid';
+import InputField from 'universal/components/InputField/InputField';
 import Type from 'universal/components/Type/Type';
 import WelcomeHeading from 'universal/modules/welcome/components/WelcomeHeading/WelcomeHeading';
-import {nextPage, updateCompleted, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
-import shortid from 'shortid';
-import {cashay} from 'cashay';
-import {setAuthToken} from 'universal/redux/authDuck';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
+import {nextPage, setWelcomeTeam, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {setAuthToken} from 'universal/redux/authDuck';
 import formError from 'universal/styles/helpers/formError';
+import withStyles from 'universal/styles/withStyles';
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import step2Validation from './step2Validation';
 
 const validate = (values) => {
@@ -42,7 +41,6 @@ const Step2TeamName = (props) => {
     dispatch(updateCompleted(2));
     dispatch(nextPage());
     dispatch(setAuthToken(newToken));
-    dispatch(segmentEventTrack('Welcome Step2 Completed'));
   };
   return (
     <div style={{width: '100%'}}>

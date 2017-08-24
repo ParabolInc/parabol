@@ -111,8 +111,10 @@ export default class Atmosphere extends Environment {
 
   setAuthToken = (authToken) => {
     this.authToken = authToken;
-    const authObj = jwtDecode(authToken);
-    this.viewerId = toGlobalId('User', authObj.sub);
+    if (authToken) {
+      const authObj = jwtDecode(authToken);
+      this.viewerId = toGlobalId('User', authObj.sub);
+    }
   };
 
   setSocket = (socket) => {

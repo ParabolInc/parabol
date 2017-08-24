@@ -36,7 +36,10 @@ const GitHubIntegration = new GraphQLObjectType({
     teamMembers: {
       type: new GraphQLList(TeamMember),
       description: 'The users that can CRUD this integration',
-      resolve: async ({userIds, teamId}) => {
+      resolve: async ({userIds, teamId, teamMembers}) => {
+        // very odd that i have to do this... possible regression in GraphQL?
+        if (teamMembers) return teamMembers;
+
         // TODO if we wanna build a cache in front of our DB, this is a great place to start
 
         // no auth needed because everything returning a GitHubIntegration has already checked for teamId

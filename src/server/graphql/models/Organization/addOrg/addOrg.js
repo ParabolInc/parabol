@@ -12,6 +12,7 @@ import addOrgValidation from 'server/graphql/models/Organization/addOrg/addOrgVa
 import createTeamAndLeader from '../../Team/createFirstTeam/createTeamAndLeader';
 import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
 import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 
 export default {
   type: GraphQLBoolean,
@@ -68,6 +69,7 @@ export default {
       teamOrgInvitations.push(asyncInviteTeam(userId, teamId, invitees));
     }
     await Promise.all(teamOrgInvitations);
+    sendSegmentEvent('New Org', userId, {orgId, teamId});
     return true;
   }
 };

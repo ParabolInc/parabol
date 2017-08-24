@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {connectionDefinitions, globalIdField} from 'graphql-relay';
 import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import IntegrationService from 'server/graphql/types/IntegrationService';
 
 const Provider = new GraphQLObjectType({
@@ -19,6 +19,10 @@ const Provider = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp the provider was created'
     },
+    isActive: {
+      type: GraphQLBoolean,
+      description: 'True if the Provider is active. else false'
+    },
     providerUserId: {
       type: GraphQLID,
       description: '*The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin'
@@ -31,9 +35,9 @@ const Provider = new GraphQLObjectType({
       type: IntegrationService,
       description: 'The name of the service'
     },
-    teamIds: {
-      type: new GraphQLList(GraphQLID),
-      description: '*The teams that the token is linked to, if any'
+    teamId: {
+      type: GraphQLID,
+      description: '*The team that the token is linked to'
     },
     updatedAt: {
       type: GraphQLISO8601Type,

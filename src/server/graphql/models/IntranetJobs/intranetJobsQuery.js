@@ -1,17 +1,10 @@
-import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLString,
-  GraphQLInt
-} from 'graphql';
-import {getUserSegmentTraits, requireSU} from 'server/utils/authorization';
-import {
-  AUTO_PAUSE_THRESH,
-  AUTO_PAUSE_USER,
-  OLD_MEETING_AGE
-} from 'server/utils/serverConstants';
+import {GraphQLInt, GraphQLString} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
+import getRethink from 'server/database/rethinkDriver';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
-import segmentIo from 'server/utils/segmentIo';
+import {requireSU} from 'server/utils/authorization';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import {AUTO_PAUSE_THRESH, AUTO_PAUSE_USER, OLD_MEETING_AGE} from 'server/utils/serverConstants';
 
 export default {
   intranetPing: {
@@ -93,7 +86,7 @@ export default {
         .group({index: 'teamId'}) // for each team
         .max('createdAt') // get the most recent meeting only
         .ungroup()('reduction') // return as sequence
-        .filter({ endedAt: null }, { default: true }) // filter to unended meetings
+        .filter({endedAt: null}, {default: true}) // filter to unended meetings
         .filter(r.row('createdAt').le(activeThresh))('teamId') // filter to old meetings, return teamIds
         .do((teamIds) => r.table('TeamMember')
           .getAll(r.args(teamIds), {index: 'teamId'})
@@ -102,15 +95,7 @@ export default {
         ); // join by team leader userId
       const promises = idPairs.map(async ({teamId, userId}) => {
         await endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}});
-        const segmentTraits = await getUserSegmentTraits(userId);
-        segmentIo.track({
-          userId,
-          event: 'endOldMeeting',
-          properties: {
-            teamId,
-            traits: segmentTraits
-          }
-        });
+        sendSegmentEvent('endOldMeeting', userId, {teamId});
       });
       await Promise.all(promises);
       return idPairs.length;

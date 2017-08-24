@@ -13,6 +13,7 @@ module.exports = {
       'core-js',
       'email-addresses',
       'graphql',
+      'graphiql',
       'html-entities', // server
       'react',
       'react-async-hoc',
@@ -53,6 +54,7 @@ module.exports = {
     new webpack.DllPlugin({name: '[name]', path: path.join(root, 'dll', '[name].json')}) // eslint-disable-line no-new
   ],
   module: {
+    noParse: /graphiql/,
     loaders: [
       {
         test: /auth0-lock\/.*\.js$/,
