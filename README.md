@@ -75,6 +75,7 @@ Additional dependencies include [redis](https://redis.io/), and
 ```bash
 $ git clone https://github.com/ParabolInc/action.git
 $ cd action
+$ cp .env.example .env # be sure to verify the API keys have useful values
 $ rethinkdb # in a separate window
 $ yarn
 $ npm run quickstart
