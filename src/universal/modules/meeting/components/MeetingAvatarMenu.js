@@ -7,9 +7,19 @@ import ui from 'universal/styles/ui';
 class MeetingAvatarMenu extends Component {
   render() {
     const {avatar, closePortal, handleNavigate, handlePromote, styles} = this.props;
-    const {isFacilitating, isSelf, preferredName} = avatar;
+    const {isCheckedIn, isConnected, isFacilitating, isSelf, preferredName} = avatar;
+    const connected = isConnected ? 'connected' : 'disconnected';
+    const checkedIn = isCheckedIn ? ' and checked in' : '';
+    const headerLabel = `${preferredName} is ${connected} ${checkedIn}`;
+
     return (
       <div>
+        <MenuItem
+          key="header"
+          label={headerLabel}
+          onClick={handleNavigate}
+          closePortal={closePortal}
+        />
         {handleNavigate &&
         <MenuItem
           key="handleNavigate"

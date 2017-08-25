@@ -65,12 +65,13 @@ const MeetingAvatarGroup = (props) => {
               cashay.mutate('changeFacilitator', options);
             };
             const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator;
+            const isClickable = handleNavigate || handlePromote;
             const toggle = () => (
               <Avatar
                 {...avatar}
                 hasBadge
                 isActive={avatar.isFacilitating}
-                isClickable={canNavigate}
+                isClickable={isClickable}
                 picture={picture}
                 size="fill"
               />
