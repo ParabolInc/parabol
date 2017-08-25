@@ -2,22 +2,29 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {MenuItem} from 'universal/modules/menu';
 import {textOverflow} from 'universal/styles/helpers';
-import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 
 class MeetingAvatarMenu extends Component {
   render() {
-    const {avatar, closePortal, handleNavigate, styles} = this.props;
+    const {avatar, closePortal, handleNavigate, handlePromote, styles} = this.props;
     const {isFacilitating, isSelf, preferredName} = avatar;
     return (
       <div>
         {handleNavigate &&
         <MenuItem
           key="handleNavigate"
-          label={`Goto ${preferredName}`}
+          label={`Navigate to ${preferredName}`}
           onClick={handleNavigate}
           closePortal={closePortal}
         />
+        }
+        {handlePromote &&
+        <MenuItem
+          key="promoteToFacilitator"
+          label={`Promote ${preferredName} to facilitator`}
+          onClick={handlePromote}
+          closePortal={closePortal}
+          />
         }
       </div>
     );

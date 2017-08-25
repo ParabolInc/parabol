@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Tag from 'universal/components/Tag/Tag';
+import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
 import appTheme from 'universal/styles/theme/appTheme';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
-import voidClick from 'universal/utils/voidClick';
-import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+import {cashay} from 'cashay';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -27,6 +27,7 @@ const MeetingAvatarGroup = (props) => {
     avatars,
     facilitatorPhaseItem,
     gotoItem,
+    isFacilitating,
     localPhase,
     localPhaseItem,
     onFacilitatorPhase,
@@ -38,8 +39,8 @@ const MeetingAvatarGroup = (props) => {
       <div className={css(styles.meetingAvatarGroupInner)}>
         {
           avatars.map((avatar, idx) => {
+            const {isConnected, isSelf} = avatar;
             const picture = avatar.picture || defaultUserAvatar;
-            const {isFacilitating, isSelf} = avatar;
             const count = idx + 1;
             const itemStyles = css(
               styles.item,
@@ -56,37 +57,42 @@ const MeetingAvatarGroup = (props) => {
               !canNavigate && styles.tagBlockReadOnly
             );
             const navigateTo = () => {
-                gotoItem(count);
+              gotoItem(count);
             };
             const handleNavigate = canNavigate && navigateTo;
-            const toggle = (
-              <div className={avatarBlockStyles}>
-                <Avatar
-                  {...avatar}
-                  hasBadge
-                  isActive={isFacilitating}
-                  isClickable={canNavigate}
-                  picture={picture}
-                  size="fill"
-                />
-              </div>
+            const promoteToFacilitator = () => {
+              const options = {variables: {facilitatorId: avatar.id}};
+              cashay.mutate('changeFacilitator', options);
+            };
+            const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator;
+            const toggle = () => (
+              <Avatar
+                {...avatar}
+                hasBadge
+                isActive={avatar.isFacilitating}
+                isClickable={canNavigate}
+                picture={picture}
+                size="fill"
+              />
             );
-
             return (
               <div className={itemStyles} key={avatar.id}>
-                <AsyncMenuContainer
-                  fetchMenu={fetchMeetingAvatarMenu}
-                  maxWidth={350}
-                  maxHeight={225}
-                  originAnchor={originAnchor}
-                  queryVars={{
-                    handleNavigate,
-                    avatar
-                  }}
-                  targetAnchor={targetAnchor}
-                  toggle={toggle}
-                />
-                {isFacilitating &&
+                <div className={avatarBlockStyles}>
+                  <AsyncMenuContainer
+                    fetchMenu={fetchMeetingAvatarMenu}
+                    maxWidth={350}
+                    maxHeight={225}
+                    originAnchor={originAnchor}
+                    queryVars={{
+                      handleNavigate,
+                      handlePromote,
+                      avatar,
+                    }}
+                    targetAnchor={targetAnchor}
+                    toggle={toggle()}
+                  />
+                </div>
+                {avatar.isFacilitating &&
                 <div className={tagBlockStyles}>
                   <Tag colorPalette="gray" label="Facilitator"/>
                 </div>

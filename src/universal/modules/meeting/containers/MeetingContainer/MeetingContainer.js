@@ -320,8 +320,6 @@ export default class MeetingContainer extends Component {
       meetingPhaseItem,
       name: teamName
     } = team;
-    const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
-      agenda.findIndex((a) => a.isComplete === false) + 1 : 0;
 
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
@@ -329,6 +327,8 @@ export default class MeetingContainer extends Component {
       || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
+    const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
+      agenda.findIndex((a) => a.isComplete === false) + 1 : 0;
     const phasesAlwaysInSync = ['lobby', 'firstcall', 'lastcall'];
     const inSync = isFacilitating || phasesAlwaysInSync.includes(meetingPhase) ? true :
       localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
@@ -371,6 +371,7 @@ export default class MeetingContainer extends Component {
               avatars={members}
               gotoItem={this.gotoItem}
               gotoNext={this.gotoNext}
+              isFacilitating={isFacilitating}
               localPhase={localPhase}
               {...phaseStateProps}
             />
