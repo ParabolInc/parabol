@@ -1,14 +1,26 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import {CHECKIN, UPDATES, phaseArray} from 'universal/utils/constants';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Tag from 'universal/components/Tag/Tag';
+import appTheme from 'universal/styles/theme/appTheme';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
 import voidClick from 'universal/utils/voidClick';
+import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
+const fetchMeetingAvatarMenu = () => System.import('universal/modules/meeting/components/MeetingAvatarMenu');
 
 const MeetingAvatarGroup = (props) => {
   const {
@@ -27,7 +39,7 @@ const MeetingAvatarGroup = (props) => {
         {
           avatars.map((avatar, idx) => {
             const picture = avatar.picture || defaultUserAvatar;
-            const isFacilitating = avatar.isFacilitating;
+            const {isFacilitating, isSelf} = avatar;
             const count = idx + 1;
             const itemStyles = css(
               styles.item,
@@ -37,35 +49,47 @@ const MeetingAvatarGroup = (props) => {
               styles.avatarBlock,
               count === localPhaseItem && styles.avatarBlockLocal,
               count === facilitatorPhaseItem && onFacilitatorPhase && styles.avatarBlockFacilitator,
-              !canNavigate && styles.avatarBlockReadOnly,
+              !canNavigate && styles.avatarBlockReadOnly
             );
             const tagBlockStyles = css(
               styles.tagBlock,
               !canNavigate && styles.tagBlockReadOnly
             );
-            const handleClick = (e) => {
-              if (canNavigate) {
+            const navigateTo = () => {
                 gotoItem(count);
-              } else {
-                voidClick(e);
-              }
             };
+            const handleNavigate = canNavigate && navigateTo;
+            const toggle = (
+              <div className={avatarBlockStyles}>
+                <Avatar
+                  {...avatar}
+                  hasBadge
+                  isActive={isFacilitating}
+                  isClickable={canNavigate}
+                  picture={picture}
+                  size="fill"
+                />
+              </div>
+            );
+
             return (
               <div className={itemStyles} key={avatar.id}>
-                <div className={avatarBlockStyles} onClick={(e) => handleClick(e)}>
-                  <Avatar
-                    {...avatar}
-                    hasBadge
-                    isActive={isFacilitating}
-                    isClickable={canNavigate}
-                    picture={picture}
-                    size="fill"
-                  />
-                </div>
+                <AsyncMenuContainer
+                  fetchMenu={fetchMeetingAvatarMenu}
+                  maxWidth={350}
+                  maxHeight={225}
+                  originAnchor={originAnchor}
+                  queryVars={{
+                    handleNavigate,
+                    avatar
+                  }}
+                  targetAnchor={targetAnchor}
+                  toggle={toggle}
+                />
                 {isFacilitating &&
-                  <div className={tagBlockStyles}>
-                    <Tag colorPalette="gray" label="Facilitator" />
-                  </div>
+                <div className={tagBlockStyles}>
+                  <Tag colorPalette="gray" label="Facilitator"/>
+                </div>
                 }
               </div>
             );
