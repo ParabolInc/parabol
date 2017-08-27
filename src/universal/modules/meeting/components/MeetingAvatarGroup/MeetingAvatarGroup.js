@@ -118,9 +118,11 @@ const MeetingAvatarGroup = (props) => {
 };
 
 MeetingAvatarGroup.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   avatars: PropTypes.array,
   facilitatorPhaseItem: PropTypes.number,
   gotoItem: PropTypes.func.isRequired,
+  isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   onFacilitatorPhase: PropTypes.bool,

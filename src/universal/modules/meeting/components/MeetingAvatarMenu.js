@@ -38,14 +38,14 @@ const MeetingAvatarMenu = (props) => {
       {handleRequest &&
       <MenuItem
         key="requestFacilitator"
-        label={`Request to become facilitator`}
+        label={'Request to become facilitator'}
         onClick={handleRequest}
         closePortal={closePortal}
       />
       }
     </div>
   );
-}
+};
 
 MeetingAvatarMenu.propTypes = {
   avatar: PropTypes.shape({

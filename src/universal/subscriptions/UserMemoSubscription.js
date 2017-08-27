@@ -26,7 +26,7 @@ const UserMemoSubscription = (environment, variables, dispatch) => {
         const requestorId = payload.getValue('requestorId');
         dispatch(showInfo({
           title: `${requestorName} wants to facilitate`,
-          message: `Click 'Promote' to hand over the reigns`,
+          message: 'Click \'Promote\' to hand over the reigns',
           autoDismiss: 0,
           action: {
             label: 'Promote',
