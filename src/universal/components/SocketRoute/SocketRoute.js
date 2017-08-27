@@ -6,7 +6,9 @@ import {Switch} from 'react-router-dom';
 import {socketClusterReducer} from 'redux-socket-cluster';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
+import UserMemoSubscription from 'universal/subscriptions/UserMemoSubscription';
 import withReducer from '../../decorators/withReducer/withReducer';
+import withSubscriptions from 'universal/decorators/withSubscriptions.js/withSubscriptions';
 
 
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
@@ -15,8 +17,8 @@ const meetingContainer = () => System.import('universal/modules/meeting/containe
 const SocketRoute = () => {
   return (
     <Switch>
-      <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} />
-      <AsyncRoute path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingContainer} />
+      <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper}/>
+      <AsyncRoute path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingContainer}/>
     </Switch>
   );
 };
@@ -25,11 +27,17 @@ SocketRoute.propTypes = {
   match: PropTypes.object.isRequired
 };
 
+const subThunk = (props, environment, dispatch) => {
+  return UserMemoSubscription(environment, undefined, dispatch);
+};
+
 export default
-withReducer({socket: socketClusterReducer})(
-  dragDropContext(HTML5Backend)(
-    socketWithPresence(
-      SocketRoute
+withSubscriptions(subThunk)(
+  withReducer({socket: socketClusterReducer})(
+    dragDropContext(HTML5Backend)(
+      socketWithPresence(
+        SocketRoute
+      )
     )
   )
 );

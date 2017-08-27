@@ -9,6 +9,7 @@ export const JOIN_TEAM = 'JOIN_TEAM';
 export const REJOIN_TEAM = 'REJOIN_TEAM';
 // message to an individual user
 export const ADD_TO_TEAM = 'ADD_TO_TEAM';
+export const FACILITATOR_REQUEST = 'FACILITATOR_REQUEST';
 
 // CHANNELS
 export const ARCHIVED_PROJECTS = 'archivedProjects';

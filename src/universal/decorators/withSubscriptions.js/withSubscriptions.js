@@ -5,7 +5,8 @@ import getDisplayName from 'universal/utils/getDisplayName';
 export default (subThunk, options = {}) => (ComposedComponent) => {
   class WithSubscriptions extends Component {
     static contextTypes = {
-      atmosphere: PropTypes.object
+      atmosphere: PropTypes.object,
+      store: PropTypes.object
     };
     static displayName = `WithSubscriptions(${getDisplayName(ComposedComponent)})`;
     static timeouts = {};
@@ -18,11 +19,10 @@ export default (subThunk, options = {}) => (ComposedComponent) => {
         clearTimeout(timeouts[key]);
         delete timeouts[key];
       }
-      const {atmosphere} = this.context;
-      const maybeThunkArray = subThunk(this.props);
-      const thunkArray = Array.isArray(maybeThunkArray) ? maybeThunkArray : [maybeThunkArray];
-      const unsubArray = thunkArray.map((sub) => sub(atmosphere.ensureSubscription));
-      this.unsubscribe = () => unsubArray.forEach((unsub) => unsub());
+      const {atmosphere, store} = this.context;
+      const maybeKeyArray = subThunk(this.props, atmosphere, store.dispatch);
+      const keyArray = Array.isArray(maybeKeyArray) ? maybeKeyArray : [maybeKeyArray];
+      keyArray.forEach((subKey) => atmosphere.safeSocketUnsubscribe(subKey));
     }
 
     componentWillUnmount() {
