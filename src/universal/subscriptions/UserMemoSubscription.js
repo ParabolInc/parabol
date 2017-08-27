@@ -20,9 +20,10 @@ const UserMemoSubscription = (environment, variables, dispatch) => {
     subscription,
     updater: (store) => {
       const payload = store.getRootField('userMemo');
-      const {type} = payload;
+      const type = payload.getValue('type');
       if (type === FACILITATOR_REQUEST) {
-        const {requestorName, requestorId} = payload;
+        const requestorName = payload.getValue('requestorName');
+        const requestorId = payload.getValue('requestorId');
         dispatch(showInfo({
           title: `${requestorName} wants to facilitate`,
           message: `Click 'Promote' to hand over the reigns`,

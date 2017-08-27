@@ -22,6 +22,7 @@ import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue';
 import githubAddMember from 'server/graphql/mutations/githubAddMember';
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee';
 import githubRemoveMember from 'server/graphql/mutations/githubRemoveMember';
+import requestFacilitator from 'server/graphql/mutations/requestFacilitator';
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
 
 const rootFields = Object.assign({},
@@ -54,6 +55,7 @@ export default new GraphQLObjectType({
     removeProvider,
     removeSlackChannel,
     removeGitHubRepo,
+    requestFacilitator,
     segmentEventTrack
   })
 });

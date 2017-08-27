@@ -9,7 +9,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
 const MeetingAvatarMenu = (props) => {
-  const {avatar, closePortal, handleNavigate, handlePromote, localPhase, styles} = props;
+  const {avatar, closePortal, handleNavigate, handlePromote, handleRequest, localPhase, styles} = props;
   const {isCheckedIn, isConnected, preferredName} = avatar;
   const connected = isConnected ? 'connected' : 'disconnected';
   const checkedIn = isCheckedIn ? ' and checked in' : '';
@@ -35,6 +35,14 @@ const MeetingAvatarMenu = (props) => {
         closePortal={closePortal}
       />
       }
+      {handleRequest &&
+      <MenuItem
+        key="requestFacilitator"
+        label={`Request to become facilitator`}
+        onClick={handleRequest}
+        closePortal={closePortal}
+      />
+      }
     </div>
   );
 }
@@ -48,6 +56,7 @@ MeetingAvatarMenu.propTypes = {
   closePortal: PropTypes.func.isRequired,
   handleNavigate: PropTypes.func,
   handlePromote: PropTypes.func,
+  handleRequest: PropTypes.func,
   localPhase: PropTypes.string.isRequired,
   styles: PropTypes.object
 

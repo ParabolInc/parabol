@@ -10,6 +10,8 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
 import {cashay} from 'cashay';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -24,6 +26,7 @@ const fetchMeetingAvatarMenu = () => System.import('universal/modules/meeting/co
 
 const MeetingAvatarGroup = (props) => {
   const {
+    atmosphere,
     avatars,
     facilitatorPhaseItem,
     gotoItem,
@@ -64,14 +67,19 @@ const MeetingAvatarGroup = (props) => {
               const options = {variables: {facilitatorId: avatar.id}};
               cashay.mutate('changeFacilitator', options);
             };
+            const requestFacilitator = () => {
+              const [, teamId] = avatar.id.split('::');
+              RequestFacilitatorMutation(atmosphere, teamId);
+            };
+
             const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator;
-            const isClickable = Boolean(handleNavigate || handlePromote);
+            const handleRequest = avatar.isFacilitating && !isSelf && requestFacilitator;
             const toggle = () => (
               <Avatar
                 {...avatar}
                 hasBadge
                 isActive={avatar.isFacilitating}
-                isClickable={isClickable}
+                isClickable
                 picture={picture}
                 size="fill"
               />
@@ -87,6 +95,7 @@ const MeetingAvatarGroup = (props) => {
                     queryVars={{
                       handleNavigate,
                       handlePromote,
+                      handleRequest,
                       avatar,
                       localPhase
                     }}
@@ -201,4 +210,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingAvatarGroup);
+export default withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup));
