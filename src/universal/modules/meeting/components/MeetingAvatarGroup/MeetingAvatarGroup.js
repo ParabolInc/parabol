@@ -65,7 +65,7 @@ const MeetingAvatarGroup = (props) => {
               cashay.mutate('changeFacilitator', options);
             };
             const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator;
-            const isClickable = handleNavigate || handlePromote;
+            const isClickable = Boolean(handleNavigate || handlePromote);
             const toggle = () => (
               <Avatar
                 {...avatar}
@@ -88,6 +88,7 @@ const MeetingAvatarGroup = (props) => {
                       handleNavigate,
                       handlePromote,
                       avatar,
+                      localPhase
                     }}
                     targetAnchor={targetAnchor}
                     toggle={toggle()}
@@ -95,7 +96,7 @@ const MeetingAvatarGroup = (props) => {
                 </div>
                 {avatar.isFacilitating &&
                 <div className={tagBlockStyles}>
-                  <Tag colorPalette="gray" label="Facilitator"/>
+                  <Tag colorPalette="gray" label="Facilitator" />
                 </div>
                 }
               </div>
