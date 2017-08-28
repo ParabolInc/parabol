@@ -1,5 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
-import {ADD_TO_TEAM, REJOIN_TEAM, PRESENCE, USER_MEMO} from 'universal/subscriptions/constants';
+import getPubSub from 'server/utils/getPubSub';
+import {ADD_TO_TEAM, PRESENCE, REJOIN_TEAM, USER_MEMO} from 'universal/subscriptions/constants';
+import tmsSignToken from 'server/utils/tmsSignToken';
 
 export default async function reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange, sender) {
   if (idsToReactivate.length > 0) {
@@ -18,12 +20,17 @@ export default async function reactivateTeamMembers(idsToReactivate, teamId, tea
               tms: user('tms').append(teamId)
             });
           }, {returnChanges: true})('changes')
+          .default([])
           .map((change) => change('new_val'));
       });
     reactivatedUsers.forEach((user) => {
-      const {preferredName, id: reactivatedUserId} = user;
-      const userChannel = `${USER_MEMO}/${reactivatedUserId}`;
-      exchange.publish(userChannel, {type: ADD_TO_TEAM, teamId, teamName});
+      const {preferredName, id: reactivatedUserId, tms} = user;
+      getPubSub().publish(`${USER_MEMO}/${reactivatedUserId}`, {
+        type: ADD_TO_TEAM,
+        teamId,
+        teamName,
+        _authToken: tmsSignToken({sub: reactivatedUserId}, tms)
+      });
       const channel = `${PRESENCE}/${teamId}`;
       exchange.publish(channel, {
         type: REJOIN_TEAM,

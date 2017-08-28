@@ -2,7 +2,9 @@ import {sign} from 'jsonwebtoken';
 import {clientSecret} from './auth0Helpers';
 import {JWT_LIFESPAN} from './serverConstants';
 import {toEpochSeconds} from 'server/utils/epochTime';
+import getDotenv from 'universal/utils/dotenv';
 
+getDotenv();
 /**
  * When a user joins a team, we need to put them on that team.
  * This includes storing the team in their JWT
@@ -15,6 +17,9 @@ export default function tmsSignToken(authToken, tms) {
   const iat = toEpochSeconds(now);
   const newToken = {
     ...authToken,
+    //aud: 'TODOFIXME',
+    //sub: 'admin@parabol.co',
+    iss: `parabol-${process.env.NODE_ENV}`,
     exp,
     iat,
     tms

@@ -1,18 +1,31 @@
+import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLList
-} from 'graphql';
-import {Invitee} from '../invitationSchema';
-import {requireOrgLeaderOrTeamMember, getUserId, getUserOrgDoc, isBillingLeader} from 'server/utils/authorization';
-import {handleSchemaErrors} from 'server/utils/utils';
-import asyncInviteTeam from './asyncInviteTeam';
-import inviteTeamMemberValidation from './inviteTeamMembersValidation';
-import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
 import inviteAsUser from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsUser';
 import reactivateTeamMembers from 'server/graphql/models/Invitation/inviteTeamMembers/reactivateTeamMembers';
+import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
+import {getUserId, getUserOrgDoc, isBillingLeader, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
+import {Invitee} from '../invitationSchema';
+import asyncInviteTeam from './asyncInviteTeam';
+
+const getInvitationErrors = (inviteeEmails, activeTeamMembers = [], pendingInvitations = [], pendingApprovals = []) => {
+  const getInviteeError = (inviteeEmail) => {
+    if (activeTeamMembers.includes(inviteeEmail)) {
+      return 'member'
+    }
+    if (pendingInvitations.includes(inviteeEmail)) {
+      return 'invited'
+    }
+    if (pendingApprovals.includes(inviteeEmail)) {
+      return 'pending'
+    }
+    return undefined;
+  };
+
+  return inviteeEmails.map((inviteeEmail) => ({
+    email: inviteeEmail,
+    error: getInviteeError(inviteeEmail)
+  }));
+};
 
 export default {
   type: GraphQLBoolean,
@@ -34,6 +47,7 @@ export default {
   },
   async resolve(source, {invitees, teamId}, {authToken, exchange}) {
     const r = getRethink();
+    const now = Date.now();
 
     // AUTH
     await requireOrgLeaderOrTeamMember(authToken, teamId);
@@ -43,13 +57,16 @@ export default {
     const inviterIsBillingLeader = isBillingLeader(userOrgDoc);
 
     // VALIDATION
-    const now = Date.now();
     // don't let them invite the same person twice
     const emailArr = invitees.map((invitee) => invitee.email);
-    const usedEmails = await r.expr({
-      inviteEmails: r.table('Invitation')
+    const {pendingInvitations, pendingApprovals, teamMembers} = await r.expr({
+      pendingInvitations: r.table('Invitation')
         .getAll(r.args(emailArr), {index: 'email'})
         .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
+        .coerceTo('array'),
+      pendingApprovals: r.table('OrgApproval')
+        .getAll(r.args(emailArr), {index: 'email'})
+        .filter({teamId})
         .coerceTo('array'),
       teamMembers: r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
@@ -58,19 +75,11 @@ export default {
         }))
         .coerceTo('array')
     });
-    // ignore pendingApprovalEmails because this could be the Billing Leader hitting accept
-    const {inviteEmails, teamMembers} = usedEmails;
-    const schemaProps = {
-      activeTeamMemberEmails: teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email),
-      inviteEmails
-    };
-    const schema = inviteTeamMemberValidation(schemaProps);
-    const {errors, data: validInvitees} = schema(invitees);
-    handleSchemaErrors(errors);
-    // await validateNotificationId(notificationId, authToken);
-
+    const activeTeamMembers = teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email);
+    const newInvitations = getInvitationErrors(emailArr, activeTeamMembers, pendingInvitations, pendingApprovals);
 
     // RESOLUTION
+    const errorFreeInvitations = newInvitations.filter((invite) => !invite.error);
     const inactiveTeamMembers = teamMembers.filter((m) => m.isNotRemoved === false);
     const idsToReactivate = [];
     const newInvitees = [];

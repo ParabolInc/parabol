@@ -4,9 +4,11 @@ export const LEAVE = 'LEAVE';
 export const PRESENT = 'PRESENT';
 export const SOUNDOFF = 'SOUNDOFF';
 export const KICK_OUT = 'KICK_OUT';
+
 // annoucements to the rest of the team
 export const JOIN_TEAM = 'JOIN_TEAM';
 export const REJOIN_TEAM = 'REJOIN_TEAM';
+
 // message to an individual user
 export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 export const FACILITATOR_REQUEST = 'FACILITATOR_REQUEST';

@@ -54,6 +54,11 @@ describe('team member reactivation', () => {
     const {resolve} = teamMemberMutation.removeTeamMember;
     const teamMemberId = `${testOrg.otherTeamMembers[0].id}::${testOrg.team.id}`;
     const exchange = { publish: jest.fn() };
+    const mockPubSub = {
+      publish: jest.fn()
+    };
+    // TODO move to pubSub
+    const pubSub = jest.fn(() => mockPubSub);
     const socket = jest.fn();
     // TEST
     const result = await resolve({}, {teamMemberId}, {authToken, exchange, socket});

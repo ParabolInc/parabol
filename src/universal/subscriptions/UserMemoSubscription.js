@@ -1,6 +1,6 @@
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
-import {FACILITATOR_REQUEST} from 'universal/subscriptions/constants';
 import {cashay} from 'cashay';
+import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
+import {ADD_TO_TEAM, FACILITATOR_REQUEST} from 'universal/subscriptions/constants';
 
 const subscription = graphql`
   subscription UserMemoSubscription {
@@ -9,6 +9,12 @@ const subscription = graphql`
       ... on FacilitatorRequestMemo {
         requestorName
         requestorId
+      }
+      ... on AddToTeamMemo {
+        _authToken {
+          sub
+        }
+        teamName
       }
     }
   }
@@ -35,6 +41,12 @@ const UserMemoSubscription = (environment, variables, dispatch) => {
               cashay.mutate('changeFacilitator', options);
             }
           }
+        }));
+      } else if (type === ADD_TO_TEAM) {
+        const teamName = payload.getValue('teamName');
+        dispatch(showInfo({
+          title: 'Congratulations!',
+          message: `You've been added to team ${teamName}`
         }));
       }
     }

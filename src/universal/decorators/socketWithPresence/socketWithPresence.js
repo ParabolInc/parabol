@@ -9,7 +9,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AuthEngine from 'universal/redux/AuthEngine';
 import {
-  ADD_TO_TEAM,
   JOIN_TEAM,
   KICK_OUT,
   NOTIFICATIONS,
@@ -113,13 +112,7 @@ export default (ComposedComponent) => {
     memoHandler = (data) => {
       const {type} = data;
       const {dispatch} = this.props;
-      if (type === ADD_TO_TEAM) {
-        const {teamName} = data;
-        dispatch(showInfo({
-          title: 'Congratulations!',
-          message: `You've been added to team ${teamName}`
-        }));
-      } else if (type === KICK_OUT) {
+      if (type === KICK_OUT) {
         const {teamId, teamName} = data;
         const {history, location: {pathname}} = this.props;
         const onExTeamRoute = Boolean(matchPath(pathname, {
