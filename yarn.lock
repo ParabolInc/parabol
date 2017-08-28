@@ -1413,7 +1413,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-"bluebird@>= 3.0.1", bluebird@^3.3.3, bluebird@^3.3.4, bluebird@^3.5.0:
+"bluebird@>= 3.0.1", bluebird@^3.3.3, bluebird@^3.3.4, bluebird@^3.4.0, bluebird@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
 
@@ -5444,6 +5444,15 @@ macaddress@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/macaddress/-/macaddress-0.2.8.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
 
+mailchimp-api-v3@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/mailchimp-api-v3/-/mailchimp-api-v3-1.7.0.tgz#ce56e341ad9661da5cfc673f6f1173d747f2e35c"
+  dependencies:
+    bluebird "^3.4.0"
+    lodash "^3.10.1"
+    request "^2.67.0"
+    tar "^2.2.1"
+
 mailcomposer@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/mailcomposer/-/mailcomposer-4.0.2.tgz#b635402cc7f2eedb10130d3d09ad88b1c2d7e101"
@@ -7419,7 +7428,7 @@ request-promise-native@^1.0.3:
     stealthy-require "^1.1.0"
     tough-cookie ">=2.3.0"
 
-request@2.81.0, request@^2.79.0, request@^2.81.0:
+request@2.81.0, request@^2.67.0, request@^2.79.0, request@^2.81.0:
   version "2.81.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.81.0.tgz#c6928946a0e06c5f8d6f8a9333469ffda46298a0"
   dependencies:
