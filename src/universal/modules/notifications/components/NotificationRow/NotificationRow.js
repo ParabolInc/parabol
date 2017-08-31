@@ -2,9 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import typePicker from 'universal/modules/notifications/helpers/typePicker';
 
+
 const NotificationRow = (props) => {
   const {dispatch, notificationId, orgId, type, varList} = props;
   const NotificationType = typePicker[type];
+  // TODO use react-async-component?
   return <NotificationType dispatch={dispatch} orgId={orgId} notificationId={notificationId} varList={varList} />;
 };
 
