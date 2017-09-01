@@ -77,6 +77,9 @@ export const DENY_NEW_USER = 'DENY_NEW_USER';
 export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
+// sent to parabol users who got invited to a new team and maybe a new org
+// [inviterName, teamId, teamName]
+export const TEAM_INVITE = 'TEAM_INVITE';
 
 export const notificationTypes = [
   TRIAL_EXPIRES_SOON,
@@ -152,3 +155,14 @@ export const GITHUB_ENDPOINT = 'https://api.github.com/graphql';
 
 /* JavaScript specifics */
 export const MAX_TIMEOUT = 2147483647;
+
+
+// InvitationResultTypes
+// the invitation has been sent
+export const SUCCESS = 'SUCCESS';
+// the approval request has been sent to the billing leader
+export const PENDING_APPROVAL = 'PENDING_APPROVAL';
+// that email has already been invited
+export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
+// that email used to be on the team, and now they are again
+export const REACTIVATED = 'REACTIVATED';

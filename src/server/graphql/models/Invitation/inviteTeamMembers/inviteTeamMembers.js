@@ -1,31 +1,73 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import inviteAsUser from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsUser';
-import reactivateTeamMembers from 'server/graphql/models/Invitation/inviteTeamMembers/reactivateTeamMembers';
-import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
+import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import {getUserId, getUserOrgDoc, isBillingLeader, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
+import shortid from 'shortid';
+import {ALREADY_ON_TEAM, PENDING_APPROVAL, SUCCESS, TEAM_INVITE} from 'universal/utils/constants';
 import {Invitee} from '../invitationSchema';
-import asyncInviteTeam from './asyncInviteTeam';
 
-const getInvitationErrors = (inviteeEmails, activeTeamMembers = [], pendingInvitations = [], pendingApprovals = []) => {
-  const getInviteeError = (inviteeEmail) => {
-    if (activeTeamMembers.includes(inviteeEmail)) {
-      return 'member'
-    }
-    if (pendingInvitations.includes(inviteeEmail)) {
-      return 'invited'
-    }
-    if (pendingApprovals.includes(inviteeEmail)) {
-      return 'pending'
-    }
-    return undefined;
-  };
 
-  return inviteeEmails.map((inviteeEmail) => ({
-    email: inviteeEmail,
-    error: getInviteeError(inviteeEmail)
-  }));
+//const determineInviteeAction = (invitee) => {
+//  const {
+//    isActiveTeamMember,
+//    isPendingApproval,
+//    isPendingInvitation,
+//    isUser,
+//    isActiveUser,
+//    isOrgMember,
+//    isNewTeamMember,
+//  } = invitee;
+//  if (isActiveTeamMember) {
+//    return
+//  }
+//}
+
+const sendNotification = async (invitee, inviter) => {
+  const r = getRethink();
+  const now = new Date();
+  const {userId} = invitee;
+  const {orgId, inviterName, teamId, teamName} = inviter;
+  await r.table('Notification').insert({
+    id: shortid.generate(),
+    type: TEAM_INVITE,
+    startAt: now,
+    orgId,
+    userIds: [userId],
+    varList: [inviterName, teamId, teamName]
+  })
+  return {
+    result: SUCCESS,
+    userId
+  }
 };
+const handleInOrgInvite = async (invitee, inviter) => {
+  const {isNewTeamMember} = invitee;
+  if (isNewTeamMember) {
+    sendNotification(invitee, inviter);
+  } else {
+    reactivateAndSendWelcomeBack();
+  }
+};
+
+//const getInvitationErrors = (inviteeEmails, activeTeamMembers = [], pendingInvitations = [], pendingApprovals = []) => {
+//  const getInviteeError = (inviteeEmail) => {
+//    if (activeTeamMembers.includes(inviteeEmail)) {
+//      return 'member'
+//    }
+//    if (pendingInvitations.includes(inviteeEmail)) {
+//      return 'invited'
+//    }
+//    if (pendingApprovals.includes(inviteeEmail)) {
+//      return 'pending'
+//    }
+//    return undefined;
+//  };
+//
+//  return inviteeEmails.map((inviteeEmail) => ({
+//    email: inviteeEmail,
+//    error: getInviteeError(inviteeEmail)
+//  }));
+//};
 
 export default {
   type: GraphQLBoolean,
@@ -59,7 +101,7 @@ export default {
     // VALIDATION
     // don't let them invite the same person twice
     const emailArr = invitees.map((invitee) => invitee.email);
-    const {pendingInvitations, pendingApprovals, teamMembers} = await r.expr({
+    const {pendingInvitations, pendingApprovals, teamMembers, users} = await r.expr({
       pendingInvitations: r.table('Invitation')
         .getAll(r.args(emailArr), {index: 'email'})
         .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
@@ -70,17 +112,91 @@ export default {
         .coerceTo('array'),
       teamMembers: r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
-        .merge((teamMember) => ({
-          userOrgs: r.table('User').get(teamMember('userId'))('userOrgs').default([])
-        }))
-        .coerceTo('array')
+        //.merge((teamMember) => ({
+        //  userOrgs: r.table('User').get(teamMember('userId'))('userOrgs').default([])
+        //}))
+        .coerceTo('array'),
+      users: r.table('User').getAll(r.args(emailArr), {index: 'email'})
     });
     const activeTeamMembers = teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email);
+    const inactiveTeamMembers = teamMembers.filter((m) => !m.isNotRemoved).map((m) => m.email);
     const newInvitations = getInvitationErrors(emailArr, activeTeamMembers, pendingInvitations, pendingApprovals);
 
     // RESOLUTION
-    const errorFreeInvitations = newInvitations.filter((invite) => !invite.error);
-    const inactiveTeamMembers = teamMembers.filter((m) => m.isNotRemoved === false);
+    const inviterAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
+    const inviterDetails = {
+      ...inviterAndTeamName,
+      orgId
+    };
+
+    //const errorFreeInvitations = newInvitations.filter((invite) => !invite.error);
+    const detailedInvitations = emailArr.map((email) => {
+      const userDoc = users.find((user) => user.email === email);
+      return {
+        email,
+        isActiveTeamMember: activeTeamMembers.includes(email),
+        isPendingApproval: pendingApprovals.includes(email),
+        isPendingInvitation: pendingInvitations.includes(email),
+        isUser: Boolean(userDoc),
+        isActiveUser: userDoc && !userDoc.inactive,
+        isOrgMember: userDoc && userDoc.userOrgs.includes((userOrgDoc) => userOrgDoc.id === orgId),
+        isNewTeamMember: !inactiveTeamMembers.includes((tm) => tm.email === email),
+        userId: userDoc
+      };
+    });
+
+    const results = detailedInvitations.map((invitee) => {
+      const {
+        isActiveTeamMember,
+        isPendingApproval,
+        isPendingInvitation,
+        isUser,
+        isActiveUser,
+        isOrgMember,
+        isNewTeamMember
+      } = invitee;
+      if (isActiveTeamMember) {
+        return ALREADY_ON_TEAM;
+      }
+      if (isPendingApproval) {
+        return PENDING_APPROVAL;
+      }
+      if (isPendingInvitation) {
+        // if they want to resend the invite, they need to click the button
+        return SUCCESS;
+      }
+      if (isActiveUser && isOrgMember) {
+        return handleInOrgInvite(invitee, inviterDetails);
+      }
+
+      //email: invitee.email,
+      //action: determineInviteeAction(invitee)
+
+    })
+
+    detailedInvitations.forEach((invitee) => {
+      const {isUser, isActiveUser, isOrgMember} = invitee;
+
+
+      if (isBillingLeader()) {
+        if (!isActiveUser) {
+          sendEmail()
+        } else if (!isOrgMember) {
+          sendNotification();
+        }
+      } else {
+        if (isUser) {
+          if (isActiveUser) {
+            askForApproval(useNotification);
+          } else {
+            askForApproval(useNotification, useEmail);
+          }
+        } else {
+          askForApproval(useEmail);
+        }
+      }
+    })
+
     const idsToReactivate = [];
     const newInvitees = [];
     for (let i = 0; i < validInvitees.length; i++) {
@@ -131,3 +247,4 @@ export default {
     return undefined;
   }
 };
+

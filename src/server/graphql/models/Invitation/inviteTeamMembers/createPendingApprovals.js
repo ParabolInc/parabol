@@ -20,7 +20,7 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
     startAt: now,
     orgId,
     userIds,
-    varList: [inviter.id, inviter.preferredName, inviteeEmail, teamId, teamName]
+    varList: [inviter.preferredName, inviteeEmail, teamId, teamName]
   }));
 
   const pendingApprovals = outOfOrgEmails.map((inviteeEmail) => ({
