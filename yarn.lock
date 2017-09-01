@@ -2678,9 +2678,9 @@ draft-js-utils@^0.1.5:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-0.1.7.tgz#e2b6927ca620edf1855a4bfc1cf1d21080a70f16"
 
-"draft-js@https://github.com/mattkrick/draft-js/tarball/patch-2":
+"draft-js@https://github.com/mattkrick/draft-js/tarball/safari-fix-built":
   version "0.10.1"
-  resolved "https://github.com/mattkrick/draft-js/tarball/patch-2#04aa1a6e36494224bf4992e091dec4bfbd03bb60"
+  resolved "https://github.com/mattkrick/draft-js/tarball/safari-fix-built#428cdfe79dea4b52015e679b5021c3fc2c92a3fd"
   dependencies:
     fbjs "^0.8.12"
     immutable "~3.7.4"

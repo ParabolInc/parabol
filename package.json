@@ -125,7 +125,7 @@
     "deep-freeze": "^0.0.1",
     "dotenv": "2.0.0",
     "dotenv-expand": "^0.1.0",
-    "draft-js": "https://github.com/mattkrick/draft-js/tarball/patch-2",
+    "draft-js": "https://github.com/mattkrick/draft-js/tarball/safari-fix-built",
     "draft-js-export-html": "^0.5.4",
     "draft-js-export-markdown": "^0.3.0",
     "email-addresses": "^3.0.1",
