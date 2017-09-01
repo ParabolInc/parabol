@@ -29,12 +29,8 @@ const styleThunk = () => ({
   rejoinButtonBlock: {
     bottom: '2rem',
     position: 'fixed',
-    right: '2rem'
-    zIndex: ui.ziRejoinFacilitatorButton,
-
-    ':hover': {
-      opacity: '.65'
-    }
+    right: '2rem',
+    zIndex: ui.ziRejoinFacilitatorButton
   }
 });
 
