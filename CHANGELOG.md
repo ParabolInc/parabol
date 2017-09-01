@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.9 - 01-Sep-2017
+### Added
+- Upgrade to Node.js v8.4.0
+
 ## v0.20.8 - 31-Aug-2017
 ### Fixed
 - #1312 getLength on truncateCard
