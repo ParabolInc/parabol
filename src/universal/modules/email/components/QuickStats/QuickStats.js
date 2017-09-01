@@ -55,7 +55,6 @@ const QuickStats = (props) => {
 
   return (
     <div>
-      <EmptySpace height={32} />
       <div style={headingStyles}>
         Quick Stats
       </div>
