@@ -14,7 +14,8 @@ getDotenv();
 const root = process.cwd();
 const clientInclude = [
   path.join(root, 'src', 'client'),
-  path.join(root, 'src', 'universal')
+  path.join(root, 'src', 'universal'),
+  path.join(root, 'build') // for appTheme.json
 ];
 
 
