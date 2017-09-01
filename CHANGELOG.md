@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.8 - 31-Aug-2017
+### Fixed
+- #1312 getLength on truncateCard
+
 ## v0.20.7 - 25-Aug-2017
 ### Fixed
 - #1303 Link Changer modal broke & caused an infinite loop
