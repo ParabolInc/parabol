@@ -161,7 +161,13 @@ const SummaryEmail = (props) => {
           <tbody>
             <tr>
               <td align="center" style={{padding: 0}}>
-                <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName} />
+                <SummaryHeader
+                  createdAt={createdAt}
+                  meetingNumber={meetingNumber}
+                  referrer={referrer}
+                  teamDashUrl={teamDashUrl}
+                  teamName={teamName}
+                />
               </td>
             </tr>
           </tbody>
