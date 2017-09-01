@@ -52,27 +52,6 @@ export function segmentEventIdentify(authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   };
 }
 
-export function segmentEventTrack(event, properties, options, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
-  return (dispatch, getState) => {
-    const traits = selectSegmentTraits(getState(), authReducer);
-    const propertiesOut = Object.assign({}, {traits}, properties);
-    const optionsOut = Object.assign({}, {context: {traits}}, options);
-
-    dispatch({ type: SEGMENT_EVENT,
-      meta: {
-        analytics: {
-          eventType: EventTypes.track,
-          eventPayload: {
-            event,
-            properties: propertiesOut,
-            options: optionsOut
-          }
-        }
-      }
-    });
-  };
-}
-
 export function segmentEventPage(name, category, properties, options, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
     const traits = selectSegmentTraits(getState(), authReducer);

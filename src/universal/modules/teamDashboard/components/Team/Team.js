@@ -65,11 +65,11 @@ const Team = (props) => {
             <Button
               buttonStyle="solid"
               colorPalette="warm"
+              depth={1}
               icon="users"
               iconPlacement="left"
               label="Meeting Lobby"
               onClick={goToMeetingLobby}
-              raised
               size="smallest"
             />
           }

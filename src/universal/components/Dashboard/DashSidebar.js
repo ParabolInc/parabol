@@ -98,7 +98,7 @@ const styleThunk = () => ({
     display: 'block',
     marginTop: '.5rem',
     position: 'relative',
-    transition: `opacity ${ui.transitionFastest}`,
+    transition: `opacity ${ui.transition[0]}`,
     userSelect: 'none',
 
     ...makeHoverFocus({

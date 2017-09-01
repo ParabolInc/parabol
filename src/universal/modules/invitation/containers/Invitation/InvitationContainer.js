@@ -19,6 +19,7 @@ import {
 } from 'universal/modules/invitation/helpers/notifications';
 import withReducer from 'universal/decorators/withReducer/withReducer';
 import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const mapStateToProps = (state, props) => {
   const {match: {params: {id}}} = props;
@@ -32,8 +33,10 @@ const mapStateToProps = (state, props) => {
 
 @connect(mapStateToProps)
 @withReducer({userDashboardSettings: userSettingsReducer})
+@withAtmosphere
 export default class Invitation extends Component {
   static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
     auth: PropTypes.object,
     dispatch: PropTypes.func.isRequired,
     inviteToken: PropTypes.string.isRequired,
@@ -43,10 +46,10 @@ export default class Invitation extends Component {
 
   // use DidMount to be SSR friendly
   componentDidMount() {
-    const {auth, dispatch} = this.props;
+    const {atmosphere, auth, dispatch} = this.props;
     this.state = {processedInvitation: false};
     if (!auth.sub) {
-      showLock(dispatch);
+      showLock(atmosphere, dispatch);
     } else {
       this.stateMachine(this.props);
     }

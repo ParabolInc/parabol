@@ -5,7 +5,7 @@ const cardRootStyles = {
   border: 0,
   borderRadius: ui.cardBorderRadius,
   borderTop: '1px solid',
-  boxShadow: ui.cardBoxShadow[0],
+  boxShadow: ui.shadow[0],
   position: 'relative',
   width: '100%'
 };

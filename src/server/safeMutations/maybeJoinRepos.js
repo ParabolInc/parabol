@@ -2,6 +2,7 @@ import {toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
 import {GITHUB} from 'universal/utils/constants';
+import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 
 const getCollabsOnPersonalRepos = async (personalRepos, providerUserName, accessToken) => {
   const integrationIdsToJoin = [];
@@ -16,12 +17,10 @@ const getCollabsOnPersonalRepos = async (personalRepos, providerUserName, access
   return integrationIdsToJoin;
 };
 
-const maybeJoinRepos = async (integrations, accessToken, userId, providerUserName) => {
-  const r = getRethink();
-  const permissionPromises = integrations.map((integration) => {
+const getIntegrationIdsToJoin = async (integrations, accessToken, providerUserName) => {
+  const permissionArray = await Promise.all(integrations.map((integration) => {
     return tokenCanAccessRepo(accessToken, integration.nameWithOwner);
-  });
-  const permissionArray = await Promise.all(permissionPromises);
+  }));
   const orgRepoIds = [];
   const personalRepos = [];
   for (let i = 0; i < permissionArray.length; i++) {
@@ -36,14 +35,57 @@ const maybeJoinRepos = async (integrations, accessToken, userId, providerUserNam
     }
   }
   const personalRepoIds = await getCollabsOnPersonalRepos(personalRepos, providerUserName, accessToken);
-  const integrationIdsToJoin = [...orgRepoIds, ...personalRepoIds];
+  return [...orgRepoIds, ...personalRepoIds];
+};
 
-  await r.table(GITHUB)
-    .getAll(r.args(integrationIdsToJoin), {index: 'id'})
-    .update((doc) => ({
-      userIds: doc('userIds').append(userId).distinct()
-    }));
-  return integrationIdsToJoin.map((id) => toGlobalId(GITHUB, id));
+
+// this is tricky logic, might as well make this handle an M:N for integrations & providers
+const maybeJoinRepos = async (integrations, providers) => {
+  if (integrations.length === 0 || providers.length === 0) return {};
+  const r = getRethink();
+
+  const maybeJoinReposForProvider = async (provider) => {
+    const {accessToken, userId, providerUserName} = provider;
+    const integrationIdArray = await getIntegrationIdsToJoin(integrations, accessToken, providerUserName);
+    await r.table(GITHUB)
+      .getAll(r.args(integrationIdArray), {index: 'id'})
+      .update((doc) => ({
+        userIds: doc('userIds').append(userId).distinct()
+      }));
+    return integrationIdArray.map((id) => toGlobalId(GITHUB, id));
+  };
+
+  return resolvePromiseObj(providers.reduce((obj, provider) => {
+    obj[provider.userId] = maybeJoinReposForProvider(provider);
+    return obj;
+  }, {}));
 };
 
 export default maybeJoinRepos;
+
+// TODO maybe use this later to be extra efficient
+// const groupPrimitiveArraysByKey = (obj) => {
+//  const keys = Object.keys(obj);
+//  const usedKeys = new Set();
+//  const groups = [];
+//  for (let i = 0; i < keys.length; i++) {
+//    if (usedKeys.has(i)) continue;
+//    const key = keys[i];
+//    const values = obj[key];
+//    groups.push({
+//      keys: [key],
+//      values
+//    });
+//    for (let j = i + 1; j < keys.length; j++) {
+//      if (usedKeys.has(j)) continue;
+//      const nextKey = keys[j];
+//      const nextValue = obj[nextKey];
+//      if (primitiveArrayEqual(values, nextValue)) {
+//        groups[groups.length - 1].keys.push(nextKey);
+//        usedKeys.add(j);
+//      }
+//    }
+//  }
+//  return groups;
+// };
+//

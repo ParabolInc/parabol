@@ -18,6 +18,7 @@ class ProjectEditor extends Component {
     editorRef: PropTypes.any,
     editorState: PropTypes.object,
     setEditorState: PropTypes.func,
+    trackEditingComponent: PropTypes.func,
     handleBeforeInput: PropTypes.func,
     handleChange: PropTypes.func,
     handleUpArrow: PropTypes.func,
@@ -161,8 +162,13 @@ class ProjectEditor extends Component {
   render() {
     const {editorState, readOnly, renderModal, styles, setEditorRef} = this.props;
     // console.log('es', Editor.getClipboard())
+    const noText = !editorState.getCurrentContent().hasText();
+    const rootStyles = css(
+      styles.root,
+      noText && styles.rootNoText
+    );
     return (
-      <div className={css(styles.root)}>
+      <div className={rootStyles}>
         <Editor
           blockStyleFn={this.blockStyleFn}
           editorState={editorState}
@@ -176,6 +182,7 @@ class ProjectEditor extends Component {
           onEscape={this.handleEscape}
           onTab={this.handleTab}
           onUpArrow={this.handleUpArrow}
+          placeholder={'Describe what “Done” looks like'}
           readOnly={readOnly}
           ref={setEditorRef}
         />
@@ -190,6 +197,10 @@ const styleThunk = () => ({
     fontSize: '1rem',
     lineHeight: '1.25rem',
     padding: `0 ${ui.cardPaddingBase}`
+  },
+
+  rootNoText: {
+    height: '2.5rem'
   },
 
   editorBlockquote: {

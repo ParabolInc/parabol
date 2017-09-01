@@ -73,6 +73,7 @@ const ProviderRow = (props) => {
     fontSize: ui.iconSize,
     fontWeight: 400
   };
+  const hasActivity = userCount > 0 || integrationCount > 0;
   return (
     <Row style={{justifyContent: 'flex-start'}}>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
@@ -85,24 +86,24 @@ const ProviderRow = (props) => {
           <div className={css(styles.nameAndMeta)}>
             <div className={css(styles.providerName)}>
               {providerName}
+              {hasActivity &&
+                <div className={css(styles.providerMeta)}>
+                  <div className={css(styles.providerMetaItem)}>
+                    <FontAwesome name="user-circle" style={metaIconStyle} /> {userCount}
+                  </div>
+                  <div className={css(styles.providerMetaItem)}>
+                    <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
+                  </div>
+                </div>
+              }
             </div>
           </div>
-          {accessToken ?
-            <div className={css(styles.providerMeta)}>
-              <div className={css(styles.providerMetaItem)}>
-                <FontAwesome name="user-circle" style={metaIconStyle} /> {userCount}
-              </div>
-              <div className={css(styles.providerMetaItem)}>
-                <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
-              </div>
-            </div> :
-            <div className={css(styles.subHeading)}>
-              {comingSoon &&
-              <span className={css(styles.comingSoon)}>Coming Soon! </span>
-              }
-              {description}
-            </div>
-          }
+          <div className={css(styles.subHeading)}>
+            {comingSoon &&
+            <span className={css(styles.comingSoon)}>Coming Soon! </span>
+            }
+            {description}
+          </div>
         </ConditionalLink>
       </div>
       {!comingSoon &&
@@ -147,8 +148,9 @@ ProviderRow.propTypes = {
 
 const styleThunk = () => ({
   comingSoon: {
-    fontWeight: 800
+    fontWeight: 700
   },
+
   providerAvatar: {
     borderRadius: ui.providerIconBorderRadius
   },
@@ -175,6 +177,7 @@ const styleThunk = () => ({
   },
 
   providerRowContent: {
+    display: 'block',
     color: ui.providerName.color,
 
     ':hover': {
@@ -191,13 +194,18 @@ const styleThunk = () => ({
   },
 
   providerMeta: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s3
+    color: appTheme.palette.mid,
+    display: 'inline-block',
+    fontSize: 0,
+    height: '1rem',
+    lineHeight: appTheme.typography.s3,
+    padding: '0 0 .125rem 1.5rem',
+    verticalAlign: 'middle'
   },
 
   providerMetaItem: {
     display: 'inline-block',
-    fontSize: appTheme.typography.sBase,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     marginRight: ui.rowGutter
   },

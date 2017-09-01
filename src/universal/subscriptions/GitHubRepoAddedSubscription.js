@@ -6,6 +6,7 @@ const subscription = graphql`
     githubRepoAdded(teamId: $teamId) {
       repo {
         id
+        adminUserId
         nameWithOwner
         teamMembers {
           id

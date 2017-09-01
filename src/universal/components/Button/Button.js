@@ -53,6 +53,8 @@ class Button extends Component {
   static propTypes = {
     colorPalette: PropTypes.oneOf(ui.paletteOptions),
     compact: PropTypes.bool,
+    // depth: up to 3 + 1 (for :hover, :focus) = up to ui.shadow[4]
+    depth: PropTypes.oneOf([0, 1, 2, 3]),
     disabled: PropTypes.bool,
     icon: PropTypes.string,
     iconPlacement: PropTypes.oneOf([
@@ -70,7 +72,6 @@ class Button extends Component {
       'inverted',
       'flat'
     ]),
-    raised: PropTypes.bool,
     styles: PropTypes.object,
     textTransform: PropTypes.oneOf([
       'none',
@@ -82,7 +83,8 @@ class Button extends Component {
       'menu',
       'reset',
       'submit'
-    ])
+    ]),
+    waiting: PropTypes.bool
   };
 
   constructor(props) {
@@ -115,6 +117,7 @@ class Button extends Component {
   render() {
     const {
       compact,
+      depth,
       disabled,
       icon,
       iconPlacement,
@@ -122,11 +125,11 @@ class Button extends Component {
       label,
       onClick,
       onMouseEnter,
-      raised,
       size,
       styles,
       title,
-      type
+      type,
+      waiting
     } = this.props;
 
     const {pressedDown} = this.state;
@@ -134,12 +137,13 @@ class Button extends Component {
 
     const buttonStyles = css(
       styles.base,
-      raised && styles.raised,
+      depth && styles.depth,
       compact && styles.compact,
       isBlock && styles.isBlock,
       styles.propColors,
       disabled && styles.disabled,
-      pressedDown && styles.pressedDown
+      pressedDown && styles.pressedDown,
+      waiting && styles.wait
     );
 
     const makeIconLabel = () => {
@@ -174,7 +178,7 @@ class Button extends Component {
     return (
       <button
         className={buttonStyles}
-        disabled={disabled}
+        disabled={disabled || waiting}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseDown={this.onMouseDown}
@@ -194,16 +198,26 @@ class Button extends Component {
   }
 }
 
-
-const styleThunk = (theme, props) => ({
+const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransform}) => ({
   // Button base
   base: {
     ...ui.buttonBaseStyles,
     borderRadius: ui.buttonBorderRadius,
-    fontSize: ui.buttonFontSize[props.size] || ui.buttonFontSize.medium,
+    fontSize: ui.buttonFontSize[size] || ui.buttonFontSize.medium,
     lineHeight: ui.buttonLineHeight,
-    padding: ui.buttonPadding[props.size] || ui.buttonPadding.medium,
-    textTransform: props.textTransform || 'none'
+    padding: ui.buttonPadding[size] || ui.buttonPadding.medium,
+    textTransform: textTransform || 'none',
+    transition: `box-shadow ${ui.transition[0]}`
+  },
+
+  depth: {
+    boxShadow: ui.shadow[depth],
+    ':hover': {
+      boxShadow: ui.shadow[depth + 1]
+    },
+    ':focus': {
+      boxShadow: ui.shadow[depth + 1]
+    }
   },
 
   isBlock: {
@@ -215,13 +229,9 @@ const styleThunk = (theme, props) => ({
     paddingRight: ui.buttonPaddingHorizontalCompact
   },
 
-  raised: {
-    boxShadow: '0 2px 4px rgba(0, 0, 0, .3)'
-  },
-
   // Variants
   // NOTE: Doing this saves us from creating 6*3 classes
-  propColors: makePropColors(props.buttonStyle, props.colorPalette),
+  propColors: makePropColors(buttonStyle, colorPalette),
 
   // Disabled state
   disabled: {
@@ -245,7 +255,7 @@ const styleThunk = (theme, props) => ({
   label: {
     ...textOverflow,
     display: 'inline-block',
-    fontSize: ui.buttonFontSize[props.size] || ui.buttonFontSize.medium,
+    fontSize: ui.buttonFontSize[size] || ui.buttonFontSize.medium,
     height: ui.buttonLineHeight,
     lineHeight: ui.buttonLineHeight,
     maxWidth: '100%',
@@ -254,6 +264,11 @@ const styleThunk = (theme, props) => ({
 
   pressedDown: {
     transform: 'translate(0, .125rem)'
+  },
+
+  wait: {
+    ...ui.buttonDisabledStyles,
+    cursor: 'wait'
   }
 });
 

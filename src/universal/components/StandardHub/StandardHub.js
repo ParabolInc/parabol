@@ -133,7 +133,7 @@ const styleThunk = () => ({
     cursor: 'pointer',
     flex: 1,
     position: 'relative',
-    transition: `opacity ${ui.transitionFastest}`,
+    transition: `opacity ${ui.transition[0]}`,
 
     ':hover': {
       opacity: '.5'
@@ -184,7 +184,7 @@ const styleThunk = () => ({
     justifyContent: 'center',
     position: 'relative',
     textDecoration: 'none !important',
-    transition: `background-color ${ui.transitionFastest}`,
+    transition: `background-color ${ui.transition[0]}`,
     width: 32,
 
     ...makeHoverFocus({

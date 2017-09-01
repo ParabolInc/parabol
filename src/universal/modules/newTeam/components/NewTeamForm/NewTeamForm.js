@@ -3,8 +3,8 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
@@ -179,7 +179,7 @@ const styleThunk = () => ({
   billingBlock: {
     border: `1px solid ${appTheme.palette.mid30l}`,
     background: appTheme.palette.light50l,
-    boxShadow: '0 1px 2px rgba(0, 0, 0, .2)',
+    boxShadow: ui.shadow[0],
     color: appTheme.palette.dark50d,
     margin: '1rem 0',
     padding: '.75rem .75rem .5rem'

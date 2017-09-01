@@ -27,7 +27,7 @@ Row.propTypes = {
 const styleThunk = () => ({
   row: {
     alignItems: 'center',
-    borderTop: `1px solid ${ui.rowBorderColor}`,
+    borderTop: `.0625rem solid ${ui.rowBorderColor}`,
     display: 'flex',
     justifyContent: 'space-between',
     padding: ui.rowGutter,

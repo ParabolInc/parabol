@@ -2,11 +2,9 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import portal from 'react-portal-hoc';
 import {Field, reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import PlainInputField from 'universal/components/PlainInputField/PlainInputField';
-import boundedModal from 'universal/decorators/boundedModal/boundedModal';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import completeEntity from 'universal/utils/draftjs/completeEnitity';
@@ -20,6 +18,16 @@ const validate = (values) => {
 };
 
 class EditorLinkChanger extends Component {
+  componentWillMount() {
+    const {trackEditingComponent} = this.props;
+    trackEditingComponent('editor-link-changer', true);
+  }
+
+  componentWillUnmount() {
+    const {trackEditingComponent} = this.props;
+    trackEditingComponent('editor-link-changer', false);
+  }
+
   onSubmit = (submissionData) => {
     const {editorState, editorRef, removeModal, selectionState, setEditorState} = this.props;
     const schema = changerValidation();
@@ -27,7 +35,7 @@ class EditorLinkChanger extends Component {
     const href = linkify.match(data.link)[0].url;
     removeModal(true);
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState);
-    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text);
+    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text, {keepSelection: true});
     setEditorState(nextEditorState);
     setTimeout(() => editorRef.focus(), 0);
   };
@@ -48,9 +56,6 @@ class EditorLinkChanger extends Component {
 
   render() {
     const {
-      isClosing,
-      left,
-      top,
       styles,
       handleSubmit,
       valid,
@@ -58,16 +63,10 @@ class EditorLinkChanger extends Component {
       text
     } = this.props;
 
-    const pos = {left, top};
-    const menuStyles = css(
-      styles.modal,
-      isClosing && styles.closing
-    );
     const label = text ? 'Update' : 'Add';
     return (
       <div
-        style={pos}
-        className={menuStyles}
+        className={css(styles.modal)}
         onBlur={this.handleBlur}
         onKeyDown={this.handleKeyDown}
         tabIndex={-1}
@@ -121,6 +120,7 @@ EditorLinkChanger.propTypes = {
   removeModal: PropTypes.func.isRequired,
   selectionState: PropTypes.object.isRequired,
   setEditorState: PropTypes.func.isRequired,
+  trackEditingComponent: PropTypes.func.isRequired,
   setRef: PropTypes.func,
   styles: PropTypes.object,
   text: PropTypes.string,
@@ -128,47 +128,10 @@ EditorLinkChanger.propTypes = {
   valid: PropTypes.bool
 };
 
-const animateIn = {
-  '0%': {
-    opacity: '0',
-    transform: 'translate3d(0, -32px, 0)'
-
-  },
-  '100%': {
-    opacity: '1',
-    transform: 'translate3d(0, 0, 0)'
-  }
-};
-
-const animateOut = {
-  '0%': {
-    opacity: '1',
-    transform: 'translate3d(0, 0, 0)'
-
-  },
-  '100%': {
-    opacity: '0',
-    transform: 'translate3d(0, -32px, 0)'
-  }
-};
-
-const styleThunk = (theme, props) => ({
+const styleThunk = () => ({
   modal: {
-    animationDuration: '200ms',
-    animationName: animateIn,
-    background: '#fff',
-    borderRadius: ui.menuBorderRadius,
-    boxShadow: ui.menuBoxShadow,
     color: ui.palette.dark,
-    outline: 'none',
-    padding: '.5rem .5rem .5rem 1rem',
-    position: 'absolute',
-    zIndex: ui.ziMenu
-  },
-
-  closing: {
-    animationDuration: `${props.closeAfter}ms`,
-    animationName: animateOut
+    padding: '.5rem .5rem .5rem 1rem'
   },
 
   form: {
@@ -196,10 +159,6 @@ const styleThunk = (theme, props) => ({
   }
 });
 
-export default portal({closeAfter: 100})(
-  reduxForm({form: 'linkChanger', validate, shouldValidate, immutableProps: ['editorState', 'selectionState']})(
-    boundedModal(
-      withStyles(styleThunk)(EditorLinkChanger)
-    )
-  )
+export default reduxForm({form: 'linkChanger', validate, shouldValidate, immutableProps: ['editorState', 'selectionState']})(
+  withStyles(styleThunk)(EditorLinkChanger)
 );

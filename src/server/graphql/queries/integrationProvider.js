@@ -27,8 +27,8 @@ export default {
 
     // RESOLUTION
     return r.table('Provider')
-      .getAll(teamId, {index: 'teamIds'})
-      .filter({service})
+      .getAll(teamId, {index: 'teamId'})
+      .filter({service, isActive: true})
       .filter((doc) => doc('service').eq(SLACK).or(doc('userId').eq(userId)))
       .nth(0)
       .default(null);

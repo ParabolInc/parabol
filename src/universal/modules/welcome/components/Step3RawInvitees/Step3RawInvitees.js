@@ -4,11 +4,11 @@ import InputField from 'universal/components/InputField/InputField';
 import {Field, reduxForm, arrayPush, change} from 'redux-form';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import makeStep3RawSchema from 'universal/validation/makeStep3RawSchema';
-import emailAddresses from 'email-addresses';
 import {updateExistingInvites} from 'universal/modules/welcome/ducks/welcomeDuck';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 
 const validate = (values) => {
   const schema = makeStep3RawSchema();
@@ -19,7 +19,7 @@ const Step3RawInvitees = (props) => {
   const {dispatch, handleSubmit, invitees = [], inviteesRaw, untouch, styles} = props;
 
   const onAddInviteesButtonClick = () => {
-    const parsedAddresses = emailAddresses.parseAddressList(inviteesRaw);
+    const parsedAddresses = parseEmailAddressList(inviteesRaw);
     // clear the inviteesRaw form component:
     dispatch(change('welcomeWizardRawInvitees', 'inviteesRaw', ''));
     if (!parsedAddresses) {

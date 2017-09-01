@@ -11,7 +11,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {ACTIVE, DONE, FUTURE, STUCK, USER_DASH} from 'universal/utils/constants';
+import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
 
@@ -20,15 +20,18 @@ const OutcomeCard = (props) => {
     area,
     cardHasFocus,
     cardHasHover,
+    cardHasMenuOpen,
     editorRef,
     editorState,
     isAgenda,
     isDragging,
     isEditing,
+    handleAddProject,
     hasDragStyles,
     outcome,
     setEditorRef,
     setEditorState,
+    trackEditingComponent,
     styles,
     teamMembers,
     toggleMenuState
@@ -65,17 +68,18 @@ const OutcomeCard = (props) => {
           readOnly={Boolean(isArchived || isDragging || service)}
           setEditorRef={setEditorRef}
           setEditorState={setEditorState}
+          trackEditingComponent={trackEditingComponent}
           teamMembers={teamMembers}
         />
         <ProjectIntegrationLink integration={integration} />
         <OutcomeCardFooter
-          cardHasHover={cardHasHover}
-          cardHasFocus={cardHasFocus}
+          area={area}
+          cardIsActive={cardHasFocus || cardHasHover || cardHasMenuOpen}
           editorState={editorState}
+          handleAddProject={handleAddProject}
           isAgenda={isAgenda}
           isPrivate={isPrivate}
           outcome={outcome}
-          showTeam={area === USER_DASH}
           teamMembers={teamMembers}
           toggleMenuState={toggleMenuState}
         />
@@ -90,7 +94,9 @@ OutcomeCard.propTypes = {
   editorState: PropTypes.object,
   cardHasHover: PropTypes.bool,
   cardHasFocus: PropTypes.bool,
+  cardHasMenuOpen: PropTypes.bool,
   cardHasIntegration: PropTypes.bool,
+  handleAddProject: PropTypes.func,
   hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
@@ -105,6 +111,7 @@ OutcomeCard.propTypes = {
   }),
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
+  trackEditingComponent: PropTypes.func,
   styles: PropTypes.object,
   teamMembers: PropTypes.array,
   toggleMenuState: PropTypes.func.isRequired
@@ -115,7 +122,7 @@ const styleThunk = () => ({
     ...cardRootStyles,
     outline: 'none',
     paddingTop: '.1875rem',
-
+    transition: `box-shadow ${ui.transition[0]}`,
     '::after': {
       ...cardBorderTop
     }
@@ -148,11 +155,11 @@ const styleThunk = () => ({
   // hover before focus, it matters
 
   cardHasHover: {
-    boxShadow: ui.cardBoxShadow[1]
+    boxShadow: ui.shadow[1]
   },
 
   cardHasFocus: {
-    boxShadow: ui.cardBoxShadow[2]
+    boxShadow: ui.shadow[2]
   },
 
   hasDragStyles: {

@@ -1,9 +1,9 @@
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
+import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 
-export default async function signinAndUpdateToken(dispatch, profile, auth0Token) {
+export default async function signinAndUpdateToken(atmosphere, dispatch, profile, auth0Token) {
   cashay.create({httpTransport: new ActionHTTPTransport(auth0Token)});
   const options = {variables: {auth0Token}};
   /*
@@ -12,5 +12,5 @@ export default async function signinAndUpdateToken(dispatch, profile, auth0Token
    */
   await cashay.mutate('updateUserWithAuthToken', options);
   dispatch(setAuthToken(auth0Token));
-  dispatch(segmentEventTrack('User Login'));
+  SendClientSegmentEventMutation(atmosphere, 'User Login');
 }

@@ -34,7 +34,7 @@ const styleThunk = () => ({
   tagBase: {
     backgroundColor: 'transparent',
     borderRadius: '4em',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, .3)',
+    boxShadow: ui.shadow[0],
     color: appTheme.palette.dark,
     display: 'inline-block',
     fontSize: '.625rem',

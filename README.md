@@ -68,13 +68,14 @@ upgrades are as easy as `brew update && brew upgrade rethinkdb`
 Action also uses [yarn](https://yarnpkg.com/) which can be installed by running `npm install -g yarn`
 
 Additional dependencies include [redis](https://redis.io/), and
-[watchman](https://facebook.github.io/watchman/docs/install.html) (required by relay).
+[watchman](https://facebook.github.io/watchman/docs/install.html) (optional for relay).
 
 #### Source code
 
 ```bash
 $ git clone https://github.com/ParabolInc/action.git
 $ cd action
+$ cp .env.example .env # be sure to verify the API keys have useful values
 $ rethinkdb # in a separate window
 $ yarn
 $ npm run quickstart
