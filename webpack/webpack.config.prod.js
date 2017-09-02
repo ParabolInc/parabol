@@ -114,7 +114,11 @@ export default {
   module: {
     loaders: [
       {test: /\.flow$/, loader: 'ignore-loader'},
-      {test: /\.json$/, loader: 'json-loader'},
+      {
+        test: /\.json$/,
+        loader: 'json-loader',
+        include: clientInclude
+      },
       {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?\S*)?$/, loader: 'url-loader?limit=10000'},
       {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {

@@ -6,7 +6,8 @@ import npmPackage from '../package.json';
 const root = process.cwd();
 const serverInclude = [
   path.join(root, 'src', 'server'),
-  path.join(root, 'src', 'universal')
+  path.join(root, 'src', 'universal'),
+  path.join(root, 'build') // for appTheme.json
 ];
 
 const prefetches = [];
@@ -52,7 +53,12 @@ export default {
   ],
   module: {
     loaders: [
-      {test: /\.json$/, loader: 'json-loader'},
+      {test: /\.flow$/, loader: 'ignore-loader'},
+      {
+        test: /\.json$/,
+        loader: 'json-loader',
+        include: serverInclude
+      },
       {
         test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: 'url-loader?limit=10000'
