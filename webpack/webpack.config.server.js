@@ -54,7 +54,11 @@ export default {
   module: {
     loaders: [
       {test: /\.flow$/, loader: 'ignore-loader'},
-      {test: /\.json$/, loader: 'json-loader'},
+      {
+        test: /\.json$/,
+        loader: 'json-loader',
+        include: serverInclude
+      },
       {
         test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: 'url-loader?limit=10000'
