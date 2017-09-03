@@ -7,7 +7,7 @@ const mutation = graphql`
 
 const SendClientSegmentEventMutation = (atmosphere, event, options) => {
   const {_network: network} = atmosphere;
-  network.request(mutation(), {event, options});
+  network.observe(mutation(), {event, options}, {force: true});
 };
 
 export default SendClientSegmentEventMutation;
