@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.20.9 - 02-Sep-2017
+### Added
+- Upgrade to Node.js v8.4.0
+### Fixed
+- #1320, sendSegmentEvent exception (fixed by Node version update)
+- #1317 TypeError: Cannot read property 'getIn' of undefined
+   - Fixed by private fork of draft-js
+
 ## v0.20.8 - 31-Aug-2017
 ### Fixed
 - #1312 getLength on truncateCard
