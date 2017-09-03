@@ -327,11 +327,12 @@ export default class MeetingContainer extends Component {
       || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
+
+    const inSync = isFacilitating || facilitatorPhase === localPhase &&
+      // FIXME remove || when changing to relay. right now it's a null & an undefined
+      (facilitatorPhaseItem === localPhaseItem || !facilitatorPhaseItem && !localPhaseItem);
     const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
       agenda.findIndex((a) => a.isComplete === false) + 1 : 0;
-    const phasesAlwaysInSync = ['lobby', 'firstcall', 'lastcall'];
-    const inSync = isFacilitating || phasesAlwaysInSync.includes(meetingPhase) ? true :
-      localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
     const rejoinFacilitator = () => {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       history.push(pushURL);

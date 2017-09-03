@@ -30,20 +30,19 @@ const truncateByBlock = (contentState) => {
 // truncate on MAX_CHARS chars or MAX_BLOCKS line breaks
 const truncateCard = (content) => {
   const contentState = truncateByBlock(convertFromRaw(JSON.parse(content)));
-  const length = contentState.getPlainText().length;
-  if (length <= MAX_CHARS) return contentState;
+  const lastBlock = contentState.getLastBlock();
   let block = contentState.getFirstBlock();
   let curLength = 0;
   for (let i = 0; i < MAX_BLOCKS; i++) {
-    const blockLen = block.getLength();
     const key = block.getKey();
-    if (curLength + blockLen > MAX_CHARS) {
-      const lastBlock = contentState.getLastBlock().getKey();
+    const blockLen = block.getLength();
+    curLength += blockLen;
+    if (curLength > MAX_CHARS) {
       const selection = new SelectionState({
-        anchorOffset: Math.max(0, MAX_CHARS - curLength - ELLIPSIS.length),
-        focusOffset: blockLen,
+        anchorOffset: Math.max(0, MAX_CHARS - curLength + blockLen - ELLIPSIS.length),
+        focusOffset: lastBlock.getLength(),
         anchorKey: key,
-        focusKey: lastBlock,
+        focusKey: lastBlock.getKey(),
         isBackward: false,
         hasFocus: false
       });
@@ -53,10 +52,11 @@ const truncateCard = (content) => {
         ELLIPSIS
       );
     }
-    curLength += blockLen;
     block = contentState.getBlockAfter(key);
+    if (!block) break;
+    // treat a linebreak as a character
+    curLength++;
   }
-  // should never reach this
   return contentState;
 };
 
