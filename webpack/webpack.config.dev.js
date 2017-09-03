@@ -76,6 +76,7 @@ export default {
   },
   module: {
     loaders: [
+      {test: /\.flow$/, loader: 'ignore-loader'},
       {test: /\.json$/, loader: 'json-loader'},
       {test: /\.(png|jpg|jpeg|gif|svg)(\?\S*)?$/, loader: 'url-loader?limit=1000'},
       {test: /\.(eot|ttf|wav|mp3|woff|woff2)(\?\S*)?$/, loader: 'file-loader'},

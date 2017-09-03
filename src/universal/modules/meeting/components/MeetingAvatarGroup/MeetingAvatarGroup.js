@@ -62,7 +62,6 @@ const MeetingAvatarGroup = (props) => {
             const navigateTo = () => {
               gotoItem(count);
             };
-            const handleNavigate = canNavigate && navigateTo;
             const promoteToFacilitator = () => {
               const options = {variables: {facilitatorId: avatar.id}};
               cashay.mutate('changeFacilitator', options);
@@ -71,9 +70,9 @@ const MeetingAvatarGroup = (props) => {
               const [, teamId] = avatar.id.split('::');
               RequestFacilitatorMutation(atmosphere, teamId);
             };
-
-            const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator;
-            const handleRequest = avatar.isFacilitating && !isSelf && requestFacilitator;
+            const handleNavigate = canNavigate && navigateTo || undefined;
+            const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator || undefined;
+            const handleRequest = avatar.isFacilitating && !isSelf && requestFacilitator || undefined;
             const toggle = () => (
               <Avatar
                 {...avatar}
