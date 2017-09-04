@@ -1,6 +1,6 @@
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
+import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {FACILITATOR_REQUEST} from 'universal/subscriptions/constants';
-import {cashay} from 'cashay';
 
 const subscription = graphql`
   subscription UserMemoSubscription {
@@ -31,8 +31,10 @@ const UserMemoSubscription = (environment, variables, dispatch) => {
           action: {
             label: 'Promote',
             callback: () => {
-              const options = {variables: {facilitatorId: requestorId}};
-              cashay.mutate('changeFacilitator', options);
+              const onError = (err) => {
+                console.error(err);
+              };
+              PromoteFacilitatorMutation(environment, requestorId, onError);
             }
           }
         }));

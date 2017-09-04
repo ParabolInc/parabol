@@ -9,9 +9,9 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
-import {cashay} from 'cashay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation';
+import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -63,8 +63,10 @@ const MeetingAvatarGroup = (props) => {
               gotoItem(count);
             };
             const promoteToFacilitator = () => {
-              const options = {variables: {facilitatorId: avatar.id}};
-              cashay.mutate('changeFacilitator', options);
+              const onError = (err) => {
+                console.error(err);
+              };
+              PromoteFacilitatorMutation(atmosphere, avatar.id, onError);
             };
             const requestFacilitator = () => {
               const [, teamId] = avatar.id.split('::');
