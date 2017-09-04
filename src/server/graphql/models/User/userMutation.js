@@ -16,6 +16,7 @@ import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {GraphQLURLType} from '../../types';
 import segmentIo from 'server/utils/segmentIo';
+import mailchimp from 'server/utils/mailchimp';
 import addFeatureFlag from './addFeatureFlag/addFeatureFlag';
 
 export default {
@@ -142,6 +143,7 @@ export default {
           name: newUser.preferredName
         }
       });
+      mailchimp.addOrUpdateMemberToList(newUser.email, newUser);
       // don't await
       setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
       return newUser;
@@ -196,6 +198,7 @@ export default {
           name: dbProfile.preferredName
         }
       });
+      mailchimp.addOrUpdateMemberToList(dbProfile.email, dbProfile);
       return dbProfile;
     }
   }
