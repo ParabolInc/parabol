@@ -5,10 +5,9 @@ const mutation = graphql`
   }
 `;
 
-const SendClientSegmentEventMutation = async (atmosphere, event, options) => {
+const SendClientSegmentEventMutation = (atmosphere, event, options) => {
   const {_network: network} = atmosphere;
-  const res = await network.request(mutation(), {event, options});
-  console.log('res', res);
+  network.observe(mutation(), {event, options}, {force: true});
 };
 
 export default SendClientSegmentEventMutation;
