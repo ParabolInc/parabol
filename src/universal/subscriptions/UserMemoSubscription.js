@@ -1,4 +1,4 @@
-import {cashay} from 'cashay';
+import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import {ADD_TO_TEAM, FACILITATOR_REQUEST} from 'universal/subscriptions/constants';
 
@@ -37,8 +37,10 @@ const UserMemoSubscription = (environment, variables, dispatch) => {
           action: {
             label: 'Promote',
             callback: () => {
-              const options = {variables: {facilitatorId: requestorId}};
-              cashay.mutate('changeFacilitator', options);
+              const onError = (err) => {
+                console.error(err);
+              };
+              PromoteFacilitatorMutation(environment, requestorId, onError);
             }
           }
         }));

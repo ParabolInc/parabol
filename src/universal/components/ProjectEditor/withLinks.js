@@ -126,6 +126,7 @@ const withLinks = (ComposedComponent) => {
     removeModal = (allowFocus) => {
       const {linkChangerData} = this.state;
       if (!linkChangerData || allowFocus) {
+        this.cachedCoords = null;
         this.setState({
           linkViewerData: undefined,
           linkChangerData: undefined
@@ -256,7 +257,8 @@ const withLinks = (ComposedComponent) => {
       const coords = getDraftCoords(editorRef);
       // in this case, coords can be good, then bad as soon as the changer takes focus
       // so, the container must handle bad then good as well as good then bad
-      if (!coords) {
+      this.cachedCoords = coords || this.cachedCoords;
+      if (!this.cachedCoords) {
         setTimeout(() => {
           this.forceUpdate();
         });
@@ -272,7 +274,7 @@ const withLinks = (ComposedComponent) => {
           maxWidth={230}
           maxHeight={200}
           originAnchor={originAnchor}
-          originCoords={coords}
+          originCoords={this.cachedCoords}
           queryVars={{
             editorState,
             selectionState,
@@ -280,21 +282,14 @@ const withLinks = (ComposedComponent) => {
             removeModal: this.removeModal,
             text,
             initialValues: {text, link},
-            editorRef
+            editorRef,
+            trackEditingComponent
           }}
           targetAnchor={targetAnchor}
           isOpen
           top={this.top}
           left={this.left}
           height={this.height}
-          editorState={editorState}
-          selectionState={selectionState}
-          setEditorState={setEditorState}
-          trackEditingComponent={trackEditingComponent}
-          removeModal={this.removeModal}
-          text={text}
-          initialValues={{text, link}}
-          editorRef={editorRef}
         />
       );
     };

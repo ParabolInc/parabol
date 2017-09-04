@@ -54,8 +54,8 @@ module.exports = {
     new webpack.DllPlugin({name: '[name]', path: path.join(root, 'dll', '[name].json')}) // eslint-disable-line no-new
   ],
   module: {
-    noParse: /graphiql/,
     loaders: [
+      {test: /\.flow$/, loader: 'ignore-loader'},
       {
         test: /auth0-lock\/.*\.js$/,
         loaders: [

@@ -9,9 +9,9 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
-import {cashay} from 'cashay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation';
+import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -62,18 +62,19 @@ const MeetingAvatarGroup = (props) => {
             const navigateTo = () => {
               gotoItem(count);
             };
-            const handleNavigate = canNavigate && navigateTo;
             const promoteToFacilitator = () => {
-              const options = {variables: {facilitatorId: avatar.id}};
-              cashay.mutate('changeFacilitator', options);
+              const onError = (err) => {
+                console.error(err);
+              };
+              PromoteFacilitatorMutation(atmosphere, avatar.id, onError);
             };
             const requestFacilitator = () => {
               const [, teamId] = avatar.id.split('::');
               RequestFacilitatorMutation(atmosphere, teamId);
             };
-
-            const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator;
-            const handleRequest = avatar.isFacilitating && !isSelf && requestFacilitator;
+            const handleNavigate = canNavigate && navigateTo || undefined;
+            const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator || undefined;
+            const handleRequest = avatar.isFacilitating && !isSelf && requestFacilitator || undefined;
             const toggle = () => (
               <Avatar
                 {...avatar}

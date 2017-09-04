@@ -1,46 +1,46 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
-import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
-import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
-import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
+import React, {Component} from 'react';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
+import withHotkey from 'react-hotkey-hoc';
+import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
+import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
+import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
+import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
+import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
+import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingMainHeader from 'universal/modules/meeting/components/MeetingMainHeader/MeetingMainHeader';
-import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
-import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
 import MeetingUpdatesPrompt from 'universal/modules/meeting/components/MeetingUpdatesPrompt/MeetingUpdatesPrompt';
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
-import MeetingUpdatesContainer
-  from '../MeetingUpdates/MeetingUpdatesContainer';
-import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
-import {
-  LOBBY,
-  CHECKIN,
-  UPDATES,
-  FIRST_CALL,
-  AGENDA_ITEMS,
-  LAST_CALL,
-  phaseArray,
-  SORT_STEP
-} from 'universal/utils/constants';
-import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
-import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
+import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
 import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
-import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase';
-import withHotkey from 'react-hotkey-hoc';
-import {showError} from 'universal/modules/toast/ducks/toastDuck';
-import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
-import electFacilitatorIfNone from 'universal/modules/meeting/helpers/electFacilitatorIfNone';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import electFacilitatorIfNone from 'universal/modules/meeting/helpers/electFacilitatorIfNone';
 import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeetingRoute';
+import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
+import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
+import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase';
+import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
+import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
+import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import {
+  AGENDA_ITEMS,
+  CHECKIN,
+  FIRST_CALL,
+  LAST_CALL,
+  LOBBY,
+  phaseArray,
+  SORT_STEP,
+  UPDATES
+} from 'universal/utils/constants';
+import MeetingUpdatesContainer from '../MeetingUpdates/MeetingUpdatesContainer';
 
 const meetingContainerQuery = `
 query{
@@ -133,6 +133,7 @@ let infiniteTrigger = false;
 @connect(mapStateToProps)
 @dragDropContext(HTML5Backend)
 @withHotkey
+@withAtmosphere
 export default class MeetingContainer extends Component {
   static propTypes = {
     agenda: PropTypes.array.isRequired,
@@ -180,6 +181,20 @@ export default class MeetingContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     electFacilitatorIfNone(nextProps, this.props.members);
+    // if promoted to facilitator, ensure the facilitator is where you are
+    const {isFacilitating, team: {id: teamId, facilitatorPhase, facilitatorPhaseItem}, localPhase, localPhaseItem} = nextProps;
+    if (!this.props.isFacilitating && isFacilitating) {
+      const variables = {teamId};
+      if (facilitatorPhase !== localPhase) {
+        variables.nextPhase = localPhase;
+      }
+      if (localPhaseItem !== facilitatorPhaseItem) {
+        variables.nextPhaseItem = localPhaseItem;
+      }
+      if (Object.keys(variables).length > 1) {
+        cashay.mutate('moveMeeting', {variables});
+      }
+    }
   }
 
   shouldComponentUpdate(nextProps) {
@@ -210,7 +225,7 @@ export default class MeetingContainer extends Component {
           message: 'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
         }));
         raven.captureMessage(
-          'MeetingContainer::shouldComponentUpdate(): infiniteLoop watchdog triggered',
+          'MeetingContainer::shouldComponentUpdate(): infiniteLoop watchdog triggered'
         );
       }
     } else {
@@ -327,11 +342,12 @@ export default class MeetingContainer extends Component {
       || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
+
+    const inSync = isFacilitating || facilitatorPhase === localPhase &&
+      // FIXME remove || when changing to relay. right now it's a null & an undefined
+      (facilitatorPhaseItem === localPhaseItem || !facilitatorPhaseItem && !localPhaseItem);
     const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
       agenda.findIndex((a) => a.isComplete === false) + 1 : 0;
-    const phasesAlwaysInSync = ['lobby', 'firstcall', 'lastcall'];
-    const inSync = isFacilitating || phasesAlwaysInSync.includes(meetingPhase) ? true :
-      localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
     const rejoinFacilitator = () => {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       history.push(pushURL);
@@ -408,14 +424,14 @@ export default class MeetingContainer extends Component {
           />
           }
           {localPhase === AGENDA_ITEMS &&
-            <MeetingAgendaItems
-              agendaItem={agenda[localPhaseItem - 1]}
-              isLast={localPhaseItem === agenda.length}
-              gotoNext={this.gotoNext}
-              localPhaseItem={localPhaseItem}
-              members={members}
-              hideMoveMeetingControls={hideMoveMeetingControls}
-            />
+          <MeetingAgendaItems
+            agendaItem={agenda[localPhaseItem - 1]}
+            isLast={localPhaseItem === agenda.length}
+            gotoNext={this.gotoNext}
+            localPhaseItem={localPhaseItem}
+            members={members}
+            hideMoveMeetingControls={hideMoveMeetingControls}
+          />
           }
           {localPhase === LAST_CALL &&
           <MeetingAgendaLastCallContainer
