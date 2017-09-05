@@ -7,7 +7,8 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 export default class AsyncComponent extends Component {
   static propTypes = {
     fetchMod: PropTypes.func.isRequired,
-    Loader: PropTypes.any
+    loadingWidth: PropTypes.any,
+    loadingHeight: PropTypes.any
   };
   state = {
     loading: false
@@ -25,11 +26,11 @@ export default class AsyncComponent extends Component {
   ensureMod = async () => {
     const {Mod, loading} = this.state;
     if (!Mod && !loading) {
-      const {fetchMenu} = this.props;
+      const {fetchMod} = this.props;
       this.setState({
         loading: true
       });
-      const res = await fetchMenu();
+      const res = await fetchMod();
       if (this._mounted) {
         this.setState({
           Mod: res.default,
@@ -41,7 +42,7 @@ export default class AsyncComponent extends Component {
 
   render() {
     const {Mod} = this.state;
-    const {fetchMod, loadingWidth, loadingHeight, ...props} = this.props;
+    const {fetchMod, loadingWidth = 'inherit', loadingHeight = '5rem', ...props} = this.props;
     return (
       <TransitionGroup appear style={{overflow: 'hidden'}}>
         {Mod ?
@@ -49,7 +50,7 @@ export default class AsyncComponent extends Component {
             <Mod {...props}/>
           </AnimatedFade> :
           <AnimatedFade exit={false} unmountOnExit>
-            <LoadingComponent height={'5rem'} width="inherit"/>
+            <LoadingComponent height={loadingHeight} width={loadingWidth}/>
           </AnimatedFade>
         }
       </TransitionGroup>

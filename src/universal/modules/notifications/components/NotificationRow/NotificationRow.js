@@ -9,6 +9,8 @@ const NotificationRow = (props) => {
   const fetchMod = typePicker[type];
   return (
     <AsyncComponent
+      loadingWidth="inherit"
+      loadingHeight="5rem"
       fetchMod={fetchMod}
       dispatch={dispatch}
       orgId={orgId}
