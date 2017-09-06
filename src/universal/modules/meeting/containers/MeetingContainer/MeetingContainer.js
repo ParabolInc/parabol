@@ -183,7 +183,8 @@ export default class MeetingContainer extends Component {
     electFacilitatorIfNone(nextProps, this.props.members);
     // if promoted to facilitator, ensure the facilitator is where you are
     const {isFacilitating, team: {id: teamId, facilitatorPhase, facilitatorPhaseItem}, localPhase, localPhaseItem} = nextProps;
-    if (!this.props.isFacilitating && isFacilitating) {
+    // check activeFacilitator to make sure the meeting has started & we've got all the data
+    if (this.props.team.activeFacilitator && !this.props.isFacilitating && isFacilitating) {
       const variables = {teamId};
       if (facilitatorPhase !== localPhase) {
         variables.nextPhase = localPhase;
