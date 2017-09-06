@@ -6,6 +6,7 @@ import makeInviteToken from './makeInviteToken';
 import makeInvitationsForDB from './makeInvitationsForDB';
 
 export default async function asyncInviteTeam(inviterUserId, teamId, invitees) {
+  if (invitees.length === 0) return invitees;
   const r = getRethink();
   const inviteesWithTokens = invitees.map((invitee) => ({...invitee, inviteToken: makeInviteToken()}));
   const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, inviterUserId);

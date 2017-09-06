@@ -3,6 +3,7 @@ import shortid from 'shortid';
 import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default async function createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName, userId) {
+  if (outOfOrgEmails.length === 0) return;
   const r = getRethink();
   const now = new Date();
   // add a notification to the Billing Leaders
