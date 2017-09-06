@@ -55,7 +55,8 @@ class MockDB {
 
   init() {
     const orgId = shortid.generate();
-    const teamId = shortid.generate();
+    // underscore for a static seed based on the first char
+    const teamId = `_${shortid.generate()}`;
     // this.context.team = {id: shortid.generate()};
     const users = testUsers.map((user, idx) => ({
       ...user,
@@ -130,8 +131,8 @@ class MockDB {
       const week = getWeekOfYear(new Date());
       this.teamMember(activeFacilitatorIdx);
       Object.assign(this.context.team, {
-        checkInGreeting: makeCheckinGreeting(week),
-        checkInQuestion: makeCheckinQuestion(week),
+        checkInGreeting: makeCheckinGreeting(week, teamId),
+        checkInQuestion: makeCheckinQuestion(week, teamId),
         meetingId,
         activeFacilitator: this.context.teamMember,
         facilitatorPhase: CHECKIN,

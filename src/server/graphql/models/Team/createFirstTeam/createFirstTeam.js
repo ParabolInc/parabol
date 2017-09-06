@@ -46,7 +46,6 @@ export default {
     await ensureUniqueId('Team', newTeam.id);
 
     // RESOLUTION
-    sendSegmentEvent('Welcome Step2 Completed', userId, {teamId: newTeam.id});
     const orgId = shortid.generate();
     const res = await r.branch(
       r.table('User').get(userId)('trialOrg'),
@@ -84,6 +83,7 @@ export default {
         unitTestCb();
       }
     }, 0);
+    sendSegmentEvent('Welcome Step2 Completed', userId, {teamId: newTeam.id});
     return tmsSignToken(authToken, tms);
   }
 };

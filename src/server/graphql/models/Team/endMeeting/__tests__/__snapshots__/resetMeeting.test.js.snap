@@ -99,10 +99,10 @@ Object {
   "team": Object {
     "activeFacilitator": null,
     "checkInGreeting": Object {
-      "content": "Salut",
-      "language": "Catalan",
+      "content": "Shalom",
+      "language": "Hebrew",
     },
-    "checkInQuestion": "Anything inspire you recently",
+    "checkInQuestion": "What’s something you’ve learned recently",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,

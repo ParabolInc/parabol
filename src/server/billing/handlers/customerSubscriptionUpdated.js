@@ -46,7 +46,7 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
   }
   // invalidate the upcomingInvoice
   const channel = `upcomingInvoice/${orgId}`;
-  const upcomingInvoice = await makeUpcomingInvoice(orgId, customer);
+  const upcomingInvoice = await makeUpcomingInvoice(orgId, customer, subscriptionId);
   const payload = {
     type: 'update',
     fields: upcomingInvoice

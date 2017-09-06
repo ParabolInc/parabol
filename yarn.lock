@@ -2678,9 +2678,9 @@ draft-js-utils@^0.1.5:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-0.1.7.tgz#e2b6927ca620edf1855a4bfc1cf1d21080a70f16"
 
-"draft-js@https://github.com/mattkrick/draft-js/tarball/safari-fix-built":
+"draft-js@https://github.com/mattkrick/draft-js/tarball/710c3ea2367953a70d71ac3d8cdf11bcf18f2f9e":
   version "0.10.1"
-  resolved "https://github.com/mattkrick/draft-js/tarball/safari-fix-built#428cdfe79dea4b52015e679b5021c3fc2c92a3fd"
+  resolved "https://github.com/mattkrick/draft-js/tarball/710c3ea2367953a70d71ac3d8cdf11bcf18f2f9e#e53b223a8348b0e8b99da6dd75d6ca7a65c6a3fb"
   dependencies:
     fbjs "^0.8.12"
     immutable "~3.7.4"
@@ -3930,7 +3930,7 @@ hawk@~3.1.3:
     hoek "2.x.x"
     sntp "1.x.x"
 
-history@^4.5.1, history@^4.6.0, history@^4.7.2:
+history@^4.7.2:
   version "4.7.2"
   resolved "https://registry.yarnpkg.com/history/-/history-4.7.2.tgz#22b5c7f31633c5b8021c7f4a8a954ac139ee8d5b"
   dependencies:
@@ -6329,7 +6329,7 @@ path-to-regexp@0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
 
-path-to-regexp@^1.5.3, path-to-regexp@^1.7.0:
+path-to-regexp@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-1.7.0.tgz#59fde0f435badacba103a84e9d3bc64e96b9937d"
   dependencies:
@@ -7019,28 +7019,18 @@ react-relay@1.3.0:
     react-static-container "^1.0.1"
     relay-runtime "1.3.0"
 
-react-router-dom@4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-4.1.2.tgz#7f8a7ca868d32acadd19ca09543b40d26df8ec37"
+react-router-dom@4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-4.2.2.tgz#c8a81df3adc58bba8a76782e946cbd4eae649b8d"
   dependencies:
-    history "^4.5.1"
-    loose-envify "^1.3.1"
-    prop-types "^15.5.4"
-    react-router "^4.1.1"
-
-react-router@4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-4.1.2.tgz#7ae027341abc42eb08ad9f7a8cac08d0563672ce"
-  dependencies:
-    history "^4.6.0"
-    hoist-non-react-statics "^1.2.0"
+    history "^4.7.2"
     invariant "^2.2.2"
     loose-envify "^1.3.1"
-    path-to-regexp "^1.5.3"
     prop-types "^15.5.4"
+    react-router "^4.2.0"
     warning "^3.0.0"
 
-react-router@^4.1.1:
+react-router@4.2.0, react-router@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/react-router/-/react-router-4.2.0.tgz#61f7b3e3770daeb24062dae3eedef1b054155986"
   dependencies:

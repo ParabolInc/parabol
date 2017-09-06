@@ -20,6 +20,7 @@ import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
 import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
 import integrationJoined from 'server/graphql/subscriptions/integrationJoined';
+import userMemo from 'server/graphql/subscriptions/userMemo';
 
 const rootFields = Object.assign({},
   agenda,
@@ -47,6 +48,7 @@ export default new GraphQLObjectType({
     slackChannelRemoved,
     providerAdded,
     providerRemoved,
+    userMemo,
     ...rootFields
   })
 });

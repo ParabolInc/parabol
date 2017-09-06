@@ -149,7 +149,7 @@ export default class Atmosphere extends Environment {
   };
 
   ensureSubscription = (config) => {
-    const {subscription, variables} = config;
+    const {subscription, variables = {}} = config;
     const {name} = subscription();
     const subKey = Atmosphere.getKey(name, variables);
     const opManager = this.subLookup[subKey];
