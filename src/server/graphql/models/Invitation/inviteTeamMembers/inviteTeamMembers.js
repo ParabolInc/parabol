@@ -22,30 +22,106 @@ import {Invitee} from '../invitationSchema';
 //  }
 //}
 
-const sendNotification = async (invitee, inviter) => {
+const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
+const SEND_EMAIL = 'SEND_EMAIL';
+const ASK_APPROVAL_EMAIL = 'ASK_APPROVAL_EMAIL';
+const ASK_APPROVAL_EMAIL_NOTIFICATION = 'ASK_APPROVAL_EMAIL_NOTIFICATION';
+const ASK_APPROVAL_NOTIFICATION = 'ASK_APPROVAL_NOTIFICATION';
+
+const sendNotification = (inviteeUserId, inviter) => {
   const r = getRethink();
   const now = new Date();
-  const {userId} = invitee;
   const {orgId, inviterName, teamId, teamName} = inviter;
-  await r.table('Notification').insert({
+  return r.table('Notification').insert({
     id: shortid.generate(),
     type: TEAM_INVITE,
     startAt: now,
     orgId,
-    userIds: [userId],
+    userIds: [inviteeUserId],
     varList: [inviterName, teamId, teamName]
   })
-  return {
-    result: SUCCESS,
-    userId
+    .run();
+};
+
+const reactivateAndSendWelcomeBack = (invitees, inviter) => {
+  const r = getRethink();
+  const now = new Date();
+  const {teamId} = inviter;
+  if (idsToReactivate.length > 0) {
+    const r = getRethink();
+    const userIdsToReactivate = idsToReactivate.map((teamMemberId) => {
+      return teamMemberId.substr(0, teamMemberId.indexOf('::'));
+    });
+    const reactivatedUsers = await r.table('TeamMember')
+      .getAll(r.args(idsToReactivate), {index: 'id'})
+      .update({isNotRemoved: true})
+      .do(() => {
+        return r.table('User')
+          .getAll(r.args(userIdsToReactivate))
+          .update((user) => {
+            return user.merge({
+              tms: user('tms').append(teamId)
+            });
+          }, {returnChanges: true})('changes')('new_val')
+          .default(null);
+      });
+    reactivatedUsers.forEach((user) => {
+      const {preferredName, id: reactivatedUserId, tms} = user;
+      getPubSub().publish(`${USER_MEMO}/${reactivatedUserId}`, {
+        type: ADD_TO_TEAM,
+        teamId,
+        teamName,
+        _authToken: tmsSignToken({sub: reactivatedUserId}, tms)
+      });
+      const channel = `${PRESENCE}/${teamId}`;
+      exchange.publish(channel, {
+        type: REJOIN_TEAM,
+        name: preferredName,
+        sender
+      });
+    });
+  }
+}
+
+const handleInOrgInvite = async (invitee, inviter) => {
+  const {isNewTeamMember, email, userId} = invitee;
+  if (isNewTeamMember) {
+    await sendNotification(userId, inviter);
+    return {
+      result: SUCCESS,
+      email
+    };
+  } else {
+
+    reactivateAndSendWelcomeBack();
   }
 };
-const handleInOrgInvite = async (invitee, inviter) => {
-  const {isNewTeamMember} = invitee;
-  if (isNewTeamMember) {
-    sendNotification(invitee, inviter);
+
+const getAction = (invitee, inviter) => {
+  if (isActiveTeamMember) return ALREADY_ON_TEAM;
+  if (isPendingApproval) return PENDING_APPROVAL;
+  if (isPendingInvitation) return SUCCESS;
+  const {isActiveUser, isNewTeamMember, isOrgMember, isUser} = invitee;
+  if (isActiveUser && isOrgMember) {
+    return isNewTeamMember ? SEND_NOTIFICATION : REACTIVATE;
+  }
+  const {isBillingLeader} = inviter;
+  if (isBillingLeader) {
+    if (!isActiveUser) {
+      return SEND_EMAIL;
+    } else if (!isOrgMember) {
+      return SEND_NOTIFICATION;
+    }
   } else {
-    reactivateAndSendWelcomeBack();
+    if (isUser) {
+      if (isActiveUser) {
+        return ASK_APPROVAL_NOTIFICATION;
+      } else {
+        return ASK_APPROVAL_EMAIL_NOTIFICATION;
+      }
+    } else {
+      askForApproval(useEmail);
+    }
   }
 };
 
@@ -116,36 +192,49 @@ export default {
         //  userOrgs: r.table('User').get(teamMember('userId'))('userOrgs').default([])
         //}))
         .coerceTo('array'),
-      users: r.table('User').getAll(r.args(emailArr), {index: 'email'})
+      users: r.table('User')
+        .getAll(r.args(emailArr), {index: 'email'})
+        .coerceTo('array')
     });
-    const activeTeamMembers = teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email);
-    const inactiveTeamMembers = teamMembers.filter((m) => !m.isNotRemoved).map((m) => m.email);
-    const newInvitations = getInvitationErrors(emailArr, activeTeamMembers, pendingInvitations, pendingApprovals);
+
+    //const newInvitations = getInvitationErrors(emailArr, activeTeamMembers, pendingInvitations, pendingApprovals);
 
     // RESOLUTION
+    const activeTeamMembers = teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email);
+    const inactiveTeamMembers = teamMembers.filter((m) => !m.isNotRemoved).map((m) => m.email);
     const inviterAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
     const inviterDetails = {
       ...inviterAndTeamName,
-      orgId
+      orgId,
+      teamId,
+      isBillingLeader: inviterIsBillingLeader
     };
 
-    //const errorFreeInvitations = newInvitations.filter((invite) => !invite.error);
     const detailedInvitations = emailArr.map((email) => {
       const userDoc = users.find((user) => user.email === email);
-      return {
+      const details = {
         email,
         isActiveTeamMember: activeTeamMembers.includes(email),
         isPendingApproval: pendingApprovals.includes(email),
         isPendingInvitation: pendingInvitations.includes(email),
         isUser: Boolean(userDoc),
         isActiveUser: userDoc && !userDoc.inactive,
-        isOrgMember: userDoc && userDoc.userOrgs.includes((userOrgDoc) => userOrgDoc.id === orgId),
+        isOrgMember: userDoc && userDoc.userOrgs.includes((userDocOrg) => userDocOrg.id === orgId),
         isNewTeamMember: !inactiveTeamMembers.includes((tm) => tm.email === email),
-        userId: userDoc
+        userId: userDoc && userDoc.id
       };
+      return {
+        ...details,
+        action: getAction(details);
+      }
     });
 
-    const results = detailedInvitations.map((invitee) => {
+
+    const actionsToTake  = detailedInvitations.map((invitee) => {
+      // These should never be reached thanks to good client validation
+
+    })
+    const results = await Promise.all(detailedInvitations.map((invitee) => {
       const {
         isActiveTeamMember,
         isPendingApproval,
@@ -155,95 +244,57 @@ export default {
         isOrgMember,
         isNewTeamMember
       } = invitee;
-      if (isActiveTeamMember) {
-        return ALREADY_ON_TEAM;
-      }
-      if (isPendingApproval) {
-        return PENDING_APPROVAL;
-      }
-      if (isPendingInvitation) {
-        // if they want to resend the invite, they need to click the button
-        return SUCCESS;
-      }
-      if (isActiveUser && isOrgMember) {
-        return handleInOrgInvite(invitee, inviterDetails);
-      }
 
-      //email: invitee.email,
-      //action: determineInviteeAction(invitee)
-
-    })
-
-    detailedInvitations.forEach((invitee) => {
-      const {isUser, isActiveUser, isOrgMember} = invitee;
+    }));
 
 
-      if (isBillingLeader()) {
-        if (!isActiveUser) {
-          sendEmail()
-        } else if (!isOrgMember) {
-          sendNotification();
-        }
-      } else {
-        if (isUser) {
-          if (isActiveUser) {
-            askForApproval(useNotification);
-          } else {
-            askForApproval(useNotification, useEmail);
-          }
-        } else {
-          askForApproval(useEmail);
-        }
-      }
-    })
-
-    const idsToReactivate = [];
-    const newInvitees = [];
-    for (let i = 0; i < validInvitees.length; i++) {
-      const validInvitee = validInvitees[i];
-      const inactiveInvitee = inactiveTeamMembers.find((m) => m.email === validInvitee.email);
-      if (inactiveInvitee) {
-        // if they were previously removed from the team, see if they're still in the org
-        const inOrg = Boolean(inactiveInvitee.userOrgs.find((userOrg) => userOrg.id === orgId));
-        if (inOrg) {
-          // if they're in the org, reactive them
-          idsToReactivate.push(inactiveInvitee.id);
-          continue;
-        }
-      }
-      newInvitees.push(validInvitee);
-    }
-
-    await reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange, userId);
-
-    if (newInvitees.length > 0) {
-      // if it's a Billing Leader send them all
-      const inviteeEmails = newInvitees.map((i) => i.email);
-      if (inviterIsBillingLeader) {
-        // if any folks were pending, release the floodgates, a Billing Leader has approved them
-        const pendingApprovals = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
-        // we should always have a fresh invitee, but we do this safety check in case the front-end validation messes up
-        const freshInvitees = newInvitees.filter((i) =>
-          !pendingApprovals.find((d) => d.inviteeEmail === i.email && d.invitedTeamId === teamId));
-        if (freshInvitees) {
-          setTimeout(async () => {
-            await asyncInviteTeam(userId, teamId, freshInvitees);
-          }, 0);
-        }
-        pendingApprovals.forEach((invite) => {
-          const {inviterId, inviteeEmail, invitedTeamId} = invite;
-          const invitee = [{email: inviteeEmail}];
-          // when we invite the person, try to invite from the original requester, if not, Billing Leader
-          setTimeout(async () => {
-            await asyncInviteTeam(inviterId, invitedTeamId, invitee);
-          }, 0);
-        });
-
-        return true;
-      }
-      // return false if org approvals sent, true if only invites were sent
-      return inviteAsUser(newInvitees, orgId, userId, teamId, teamName);
-    }
+    //const idsToReactivate = [];
+    //const newInvitees = [];
+    //for (let i = 0; i < validInvitees.length; i++) {
+    //  const validInvitee = validInvitees[i];
+    //  const inactiveInvitee = inactiveTeamMembers.find((m) => m.email === validInvitee.email);
+    //  if (inactiveInvitee) {
+    //    // if they were previously removed from the team, see if they're still in the org
+    //    const inOrg = Boolean(inactiveInvitee.userOrgs.find((userOrg) => userOrg.id === orgId));
+    //    if (inOrg) {
+    //      // if they're in the org, reactive them
+    //      idsToReactivate.push(inactiveInvitee.id);
+    //      continue;
+    //    }
+    //  }
+    //  newInvitees.push(validInvitee);
+    //}
+    //
+    //await reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange, userId);
+    //
+    //if (newInvitees.length > 0) {
+    //  // if it's a Billing Leader send them all
+    //  const inviteeEmails = newInvitees.map((i) => i.email);
+    //  if (inviterIsBillingLeader) {
+    //    // if any folks were pending, release the floodgates, a Billing Leader has approved them
+    //    const pendingApprovals = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
+    //    // we should always have a fresh invitee, but we do this safety check in case the front-end validation messes up
+    //    const freshInvitees = newInvitees.filter((i) =>
+    //      !pendingApprovals.find((d) => d.inviteeEmail === i.email && d.invitedTeamId === teamId));
+    //    if (freshInvitees) {
+    //      setTimeout(async () => {
+    //        await asyncInviteTeam(userId, teamId, freshInvitees);
+    //      }, 0);
+    //    }
+    //    pendingApprovals.forEach((invite) => {
+    //      const {inviterId, inviteeEmail, invitedTeamId} = invite;
+    //      const invitee = [{email: inviteeEmail}];
+    //      // when we invite the person, try to invite from the original requester, if not, Billing Leader
+    //      setTimeout(async () => {
+    //        await asyncInviteTeam(inviterId, invitedTeamId, invitee);
+    //      }, 0);
+    //    });
+    //
+    //    return true;
+    //  }
+    //  // return false if org approvals sent, true if only invites were sent
+    //  return inviteAsUser(newInvitees, orgId, userId, teamId, teamName);
+    //}
     return undefined;
   }
 };

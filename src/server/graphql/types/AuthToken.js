@@ -25,7 +25,7 @@ const AuthToken = new GraphQLObjectType({
   fields: () => ({
     aud: {
       type: GraphQLString,
-      description: 'audience'
+      description: 'audience. the target API used in auth0. Parabol does not use this.'
     },
     bet: {
       type: GraphQLInt,
@@ -41,7 +41,7 @@ const AuthToken = new GraphQLObjectType({
     },
     iss: {
       type: GraphQLString,
-      description: 'issuer'
+      description: 'issuer. the url that gave them the token. useful for detecting environment'
     },
     sub: {
       type: GraphQLID,
@@ -49,11 +49,11 @@ const AuthToken = new GraphQLObjectType({
     },
     rol: {
       type: AuthTokenRole,
-      description: 'Any privileges associated with the account'
+      description: 'role. Any privileges associated with the account'
     },
     tms: {
       type: new GraphQLList(GraphQLID),
-      description: 'a list of teamIds where the user is active'
+      description: 'teams. a list of teamIds where the user is active'
     }
   })
 });

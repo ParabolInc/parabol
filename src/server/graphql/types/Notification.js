@@ -1,39 +1,19 @@
-import {GraphQLEnumType, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLInterfaceType, GraphQLObjectType, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {
-  DENY_NEW_USER,
-  PAYMENT_REJECTED,
-  PROMOTE_TO_BILLING_LEADER,
-  REQUEST_NEW_USER,
-  TRIAL_EXPIRED,
-  TRIAL_EXPIRES_SOON
-} from 'universal/utils/constants';
+import NotificationEnum from 'server/graphql/types/NotificationEnum';
 
+//const resolveTypeLookup = {
+//  [FACILITATOR_REQUEST]: FacilitatorRequestMemo,
+//  [ADD_TO_TEAM]: AddToTeamMemo
+//};
 
-export const NotificationType = new GraphQLEnumType({
-  name: 'NotificationType',
-  description: 'The kind of notification',
-  values: {
-    [TRIAL_EXPIRES_SOON]: {},
-    [TRIAL_EXPIRED]: {},
-    [PAYMENT_REJECTED]: {},
-    [PROMOTE_TO_BILLING_LEADER]: {},
-    [REQUEST_NEW_USER]: {},
-    [DENY_NEW_USER]: {}
-  }
-});
-
-const resolveTypeLookup = {
-  [FACILITATOR_REQUEST]: FacilitatorRequestMemo,
-  [ADD_TO_TEAM]: AddToTeamMemo
-};
-
-const Notification = new GraphQLInterfaceType({
+// TODO move from varList to interface
+const Notification = new GraphQLObjectType({
   name: 'Notification',
-  fields: {
+  fields: () => ({
     type: {
       id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique notification id (shortid)'},
-      type: NotificationType
+      type: NotificationEnum
     },
     orgId: {
       type: GraphQLID,
@@ -51,8 +31,10 @@ const Notification = new GraphQLInterfaceType({
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: 'a list of variables to feed the notification and create a message client-side'
     }
-  },
-  resolveType(value) {
-    return resolveTypeLookup[value.type];
-  }
+  }),
+  //resolveType(value) {
+  //  return resolveTypeLookup[value.type];
+  //}
 });
+
+export default Notification;
