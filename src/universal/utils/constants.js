@@ -57,6 +57,9 @@ export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
 /* NotificationRow Types */
+// Send to folks that got reactivated on a team
+// varList = [inviterName, teamName]
+export const ADDED_TO_TEAM = 'ADDED_TO_TEAM';
 // Sent to Billing Leaders when their trial will expire in < 2 weeks
 // varList = [trialExpiresAt]
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';

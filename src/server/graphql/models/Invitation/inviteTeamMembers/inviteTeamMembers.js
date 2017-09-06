@@ -10,7 +10,10 @@ import getPubSub from 'server/utils/getPubSub';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
 import {ADD_TO_TEAM, PRESENCE, REJOIN_TEAM, USER_MEMO} from 'universal/subscriptions/constants';
-import {ALREADY_ON_TEAM, PENDING_APPROVAL, REACTIVATED, SUCCESS, TEAM_INVITE} from 'universal/utils/constants';
+import {
+  ADDED_TO_TEAM, ALREADY_ON_TEAM, PENDING_APPROVAL, REACTIVATED, SUCCESS,
+  TEAM_INVITE
+} from 'universal/utils/constants';
 import {Invitee} from '../invitationSchema';
 
 // actions, to be unioned with results
@@ -36,8 +39,9 @@ const sendNotification = async (invitees, inviter) => {
 
 const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
   if (invitees.length === 0) return;
-  const {teamId, teamName} = inviter;
+  const {orgId, teamId, teamName, inviterName} = inviter;
   const r = getRethink();
+  const now = new Date();
   const userIds = invitees.map(({userId}) => userId);
   const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
   const reactivatedUsers = await r.table('TeamMember')
@@ -53,6 +57,15 @@ const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
         }, {returnChanges: true})('changes')('new_val')
         .default(null);
     });
+  const notifications = reactivatedUsers.map((user) => ({
+    id: shortid.generate(),
+    type: ADDED_TO_TEAM,
+    startAt: now,
+    orgId,
+    userIds: [user.id],
+    varList: [inviterName, teamName]
+  }));
+  await r.table('Notification').insert(notifications);
   reactivatedUsers.forEach((user) => {
     const {preferredName, id: reactivatedUserId, tms} = user;
     getPubSub().publish(`${USER_MEMO}/${reactivatedUserId}`, {
@@ -146,8 +159,7 @@ export default {
     const inviterDetails = {
       ...inviterAndTeamName,
       orgId,
-      teamId,
-      isBillingLeader: inviterIsBillingLeader
+      teamId
     };
 
     const detailedInvitations = emailArr.map((email) => {
