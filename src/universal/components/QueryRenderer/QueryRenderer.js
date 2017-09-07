@@ -24,6 +24,11 @@ export default class ReactRelayQueryRenderer extends React.Component {
     variables: PropTypes.object,
     subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired)
   };
+
+  static contextTypes = {
+    store: PropTypes.object
+  };
+
   static timeouts = {};
 
   constructor(props, context) {
@@ -183,8 +188,9 @@ export default class ReactRelayQueryRenderer extends React.Component {
   _subscribe(subscriptions) {
     if (subscriptions) {
       const {environment, variables} = this._relayContext;
+      const {store: {dispatch}} = this.context;
       // subscribe to each new sub, or return the subKey of an already existing sub
-      const subscriptionKeys = subscriptions.map((sub) => sub(environment, variables));
+      const subscriptionKeys = subscriptions.map((sub) => sub(environment, variables, dispatch));
       // provide an unsub prop to the component so we can unsub whenever we want
       // when we call unsub we want to:
       //   release immediately if component is unmounted

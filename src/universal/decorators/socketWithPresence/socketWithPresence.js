@@ -85,7 +85,6 @@ export default (ComposedComponent) => {
 
     componentDidMount() {
       this.subscribeToPresence({tms: []}, this.props);
-      this.subscribeToNotifications();
       this.watchForKickout();
       this.listenForVersion();
     }

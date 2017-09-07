@@ -6,11 +6,11 @@ const subscription = graphql`
   subscription UserMemoSubscription {
     userMemo {
       type
-      ... on FacilitatorRequestMemo {
+      ... on NotifyFacilitatorRequest {
         requestorName
         requestorId
       }
-      ... on AddToTeamMemo {
+      ... on NotifyAddedToTeam {
         _authToken {
           sub
         }
@@ -20,7 +20,7 @@ const subscription = graphql`
   }
 `;
 
-const UserMemoSubscription = (environment, variables, dispatch) => {
+const UserMemoSubscription = (environment, queryVariables, dispatch) => {
   const {ensureSubscription} = environment;
   return ensureSubscription({
     subscription,

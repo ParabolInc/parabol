@@ -1,16 +1,20 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import UserMemoPayload from 'server/graphql/types/UserMemoPayload';
-import UserMemoType from 'server/graphql/types/UserMemoType';
+import Notification from 'server/graphql/types/Notification';
+import NotificationEnum from 'server/graphql/types/NotificationEnum';
 import AuthToken from 'server/graphql/types/AuthToken';
 
-const AddToTeamMemo = new GraphQLObjectType({
-  name: 'AddToTeamMemo',
-  description: 'A user memo sent by a team member to request to become the facilitator',
-  interfaces: () => [UserMemoPayload],
+const NotifyAddedToTeam = new GraphQLObjectType({
+  name: 'NotifyAddedToTeam',
+  description: 'A notification sent by a team member to request to become the facilitator',
+  interfaces: () => [Notification],
   fields: () => ({
     _authToken: {
       type: AuthToken,
       description: 'The new auth token for the user. Requested by, but not sent to the client'
+    },
+    inviterName: {
+      type: GraphQLString,
+      description: 'The name of the person that invited them onto the team'
     },
     teamName: {
       type: new GraphQLNonNull(GraphQLString),
@@ -21,9 +25,9 @@ const AddToTeamMemo = new GraphQLObjectType({
       description: 'The teamId the user is joining'
     },
     type: {
-      type: new GraphQLNonNull(UserMemoType)
+      type: new GraphQLNonNull(NotificationEnum)
     }
   })
 });
 
-export default AddToTeamMemo;
+export default NotifyAddedToTeam;

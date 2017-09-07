@@ -1,7 +1,7 @@
 import {GraphQLSchema} from 'graphql';
 //import UserMemoPayload from 'server/graphql/types/UserMemoPayload';
-import AddToTeamMemo from 'server/graphql/types/AddToTeamMemo';
-import FacilitatorRequestMemo from 'server/graphql/types/FacilitatorRequestMemo';
+import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
+import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import mutation from './rootMutation';
 import query from './rootQuery';
 import subscription from './rootSubscription';
@@ -11,7 +11,7 @@ export default new GraphQLSchema({
   mutation,
   subscription,
   types: [
-    AddToTeamMemo,
-    FacilitatorRequestMemo
+    NotifyAddedToTeam,
+    NotifyFacilitatorRequest
   ]
 });

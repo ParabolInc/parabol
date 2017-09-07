@@ -10,7 +10,6 @@ import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemove
 import agenda from './models/AgendaItem/agendaItemSubscription';
 import invitation from './models/Invitation/invitationSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
-import notification from './models/Notification/notificationSubscription';
 import organization from './models/Organization/organizationSubscription';
 import orgApproval from './models/OrgApproval/orgApprovalSubscription';
 import presence from './models/Presence/presenceSubscription';
@@ -20,13 +19,13 @@ import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
 import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
 import integrationJoined from 'server/graphql/subscriptions/integrationJoined';
-import userMemo from 'server/graphql/subscriptions/userMemo';
+import notificationAdded from 'server/graphql/subscriptions/notificationAdded';
+import notificationCleared from 'server/graphql/subscriptions/notificationCleared';
 
 const rootFields = Object.assign({},
   agenda,
   invitation,
   invoice,
-  notification,
   orgApproval,
   organization,
   presence,
@@ -44,11 +43,12 @@ export default new GraphQLObjectType({
     githubRepoRemoved,
     integrationJoined,
     integrationLeft,
+    notificationAdded,
+    notificationCleared,
     slackChannelAdded,
     slackChannelRemoved,
     providerAdded,
     providerRemoved,
-    userMemo,
     ...rootFields
   })
 });

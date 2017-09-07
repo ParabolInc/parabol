@@ -48,7 +48,7 @@ export default {
 
     // RESOLUTION
     const [inviterId, , inviteeEmail] = varList;
-    const billingLeaderName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
+    const deniedByName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
     await Promise.all([
       removeOrgApprovalAndNotification(orgId, inviteeEmail),
       r.table('Notification').insert({
@@ -57,7 +57,7 @@ export default {
         startAt: now,
         orgId,
         userIds: [inviterId],
-        varList: [reason, billingLeaderName, inviteeEmail]
+        varList: [reason, deniedByName, inviteeEmail]
       })
     ]);
     return true;

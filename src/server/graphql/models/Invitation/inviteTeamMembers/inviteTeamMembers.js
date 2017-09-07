@@ -9,9 +9,13 @@ import {getUserId, getUserOrgDoc, isBillingLeader, requireOrgLeaderOrTeamMember}
 import getPubSub from 'server/utils/getPubSub';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
-import {ADD_TO_TEAM, PRESENCE, REJOIN_TEAM, USER_MEMO} from 'universal/subscriptions/constants';
+import {PRESENCE, REJOIN_TEAM} from 'universal/subscriptions/constants';
 import {
-  ADDED_TO_TEAM, ALREADY_ON_TEAM, PENDING_APPROVAL, REACTIVATED, SUCCESS,
+  ADD_TO_TEAM,
+  ALREADY_ON_TEAM,
+  PENDING_APPROVAL,
+  REACTIVATED,
+  SUCCESS,
   TEAM_INVITE
 } from 'universal/utils/constants';
 import {Invitee} from '../invitationSchema';
@@ -59,7 +63,7 @@ const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
     });
   const notifications = reactivatedUsers.map((user) => ({
     id: shortid.generate(),
-    type: ADDED_TO_TEAM,
+    type: ADD_TO_TEAM,
     startAt: now,
     orgId,
     userIds: [user.id],
@@ -68,11 +72,12 @@ const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
   await r.table('Notification').insert(notifications);
   reactivatedUsers.forEach((user) => {
     const {preferredName, id: reactivatedUserId, tms} = user;
-    getPubSub().publish(`${USER_MEMO}/${reactivatedUserId}`, {
-      type: ADD_TO_TEAM,
+    getPubSub().publish(`notificationAdded.${reactivatedUserId}`, {
+      _authToken: tmsSignToken({sub: reactivatedUserId}, tms),
+      inviterName,
       teamId,
       teamName,
-      _authToken: tmsSignToken({sub: reactivatedUserId}, tms)
+      type: ADD_TO_TEAM
     });
     const channel = `${PRESENCE}/${teamId}`;
     // TODO refactor out exchange
