@@ -357,6 +357,7 @@ export default class MeetingContainer extends Component {
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
     const hideMoveMeetingControls = isFacilitating ? false :
       (!isBehindMeeting && isLastItemOfPhase(localPhase, localPhaseItem, members, agenda));
+    const showCheckInControls = isFacilitating || meetingPhase > CHECKIN;
 
     const phaseStateProps = { // DRY
       facilitatorPhaseItem,
@@ -405,7 +406,7 @@ export default class MeetingContainer extends Component {
           <MeetingCheckin
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
-            hideMoveMeetingControls={hideMoveMeetingControls}
+            showCheckInControls={showCheckInControls}
             {...phaseStateProps}
           />
           }

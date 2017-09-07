@@ -5,8 +5,10 @@ import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import {MEETING} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 
 const MeetingUpdates = (props) => {
   const {
@@ -16,6 +18,7 @@ const MeetingUpdates = (props) => {
     queryKey,
     projects,
     styles,
+    team,
     hideMoveMeetingControls
   } = props;
   const self = members.find((m) => m.isSelf);
@@ -24,7 +27,7 @@ const MeetingUpdates = (props) => {
     <MeetingMain>
       <MeetingSection flexToFill>
         <div className={css(styles.layout)}>
-          {!hideMoveMeetingControls &&
+          {!hideMoveMeetingControls ?
             <Button
               buttonStyle="flat"
               colorPalette="cool"
@@ -34,7 +37,10 @@ const MeetingUpdates = (props) => {
               label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
               onClick={gotoNext}
               size="small"
-            />
+            /> :
+            <MeetingFacilitationHint>
+              {'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {'to advance to the Agenda'}
+            </MeetingFacilitationHint>
           }
         </div>
         <div className={css(styles.body)}>
