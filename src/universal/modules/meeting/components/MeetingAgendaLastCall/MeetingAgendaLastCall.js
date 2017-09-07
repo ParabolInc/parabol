@@ -5,11 +5,11 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import plural from 'universal/utils/plural';
 import Button from 'universal/components/Button/Button';
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
 
 const MeetingAgendaLastCall = (props) => {
@@ -62,8 +62,8 @@ const MeetingAgendaLastCall = (props) => {
 
           <AgendaShortcutHint />
 
-          {!hideMoveMeetingControls ?
-            <div className={css(styles.buttonBlock)}>
+          <div className={css(styles.controlBlock)}>
+            {!hideMoveMeetingControls ?
               <Button
                 buttonStyle="solid"
                 colorPalette="cool"
@@ -72,14 +72,12 @@ const MeetingAgendaLastCall = (props) => {
                 onClick={gotoNext}
                 size="largest"
                 textTransform="uppercase"
-              />
-            </div> :
-            <div className={css(styles.warmHighlight)}>
-              <Type align="center" scale="s4" colorPalette="black">
-                <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis /></span>
-              </Type>
-            </div>
-          }
+              /> :
+              <MeetingFacilitationHint>
+                {'Waiting for'} <b>{facilitatorName}</b> {'to end the meeting'}
+              </MeetingFacilitationHint>
+            }
+          </div>
         </MeetingSection>
       </MeetingSection>
     </MeetingMain>
@@ -99,7 +97,7 @@ const styleThunk = () => ({
     color: appTheme.palette.warm
   },
 
-  buttonBlock: {
+  controlBlock: {
     marginTop: '2.5rem'
   },
 

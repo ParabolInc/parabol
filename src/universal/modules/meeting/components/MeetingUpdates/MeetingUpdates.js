@@ -5,8 +5,10 @@ import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import {MEETING} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 
 const MeetingUpdates = (props) => {
   const {
@@ -15,16 +17,18 @@ const MeetingUpdates = (props) => {
     members,
     queryKey,
     projects,
+    showMoveMeetingControls,
     styles,
-    hideMoveMeetingControls
+    team
   } = props;
   const self = members.find((m) => m.isSelf);
+  const currentTeamMember = members[localPhaseItem - 1];
   const isLastMember = localPhaseItem === members.length;
   return (
     <MeetingMain>
       <MeetingSection flexToFill>
         <div className={css(styles.layout)}>
-          {!hideMoveMeetingControls &&
+          {showMoveMeetingControls ?
             <Button
               buttonStyle="flat"
               colorPalette="cool"
@@ -34,7 +38,13 @@ const MeetingUpdates = (props) => {
               label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
               onClick={gotoNext}
               size="small"
-            />
+            /> :
+            <MeetingFacilitationHint>
+              {isLastMember ?
+                <span>{'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {'to advance to the Agenda'}</span> :
+                <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {'to give Updates'}</span>
+              }
+            </MeetingFacilitationHint>
           }
         </div>
         <div className={css(styles.body)}>
@@ -53,9 +63,9 @@ MeetingUpdates.propTypes = {
   onFacilitatorPhase: PropTypes.bool,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string.isRequired,
+  showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
-  team: PropTypes.object.isRequired,
-  hideMoveMeetingControls: PropTypes.bool
+  team: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({

@@ -355,8 +355,11 @@ export default class MeetingContainer extends Component {
     };
 
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
-    const hideMoveMeetingControls = isFacilitating ? false :
-      (!isBehindMeeting && isLastItemOfPhase(localPhase, localPhaseItem, members, agenda));
+    const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, members, agenda);
+    console.log(`isBehindMeeting: ${isBehindMeeting}`);
+    console.log(`isLastPhaseItem: ${isLastPhaseItem}`);
+    const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
+    const showMoveMeetingControls = isFacilitating || isBehindMeeting;
 
     const phaseStateProps = { // DRY
       facilitatorPhaseItem,
@@ -405,7 +408,7 @@ export default class MeetingContainer extends Component {
           <MeetingCheckin
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
-            hideMoveMeetingControls={hideMoveMeetingControls}
+            showMoveMeetingControls={showMoveMeetingControls}
             {...phaseStateProps}
           />
           }
@@ -413,7 +416,7 @@ export default class MeetingContainer extends Component {
           <MeetingUpdatesContainer
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
-            hideMoveMeetingControls={hideMoveMeetingControls}
+            showMoveMeetingControls={showMoveMeetingControls}
             {...phaseStateProps}
           />
           }
@@ -431,6 +434,7 @@ export default class MeetingContainer extends Component {
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
             members={members}
+            team={team}
             hideMoveMeetingControls={hideMoveMeetingControls}
           />
           }
