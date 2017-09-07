@@ -7,7 +7,7 @@ import {socketClusterReducer} from 'redux-socket-cluster';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-import UserMemoSubscription from 'universal/subscriptions/UserMemoSubscription';
+import NotificationAddedSubscription from 'universal/subscriptions/NotificationAddedSubscription';
 import {DEFAULT_TTL} from 'universal/utils/constants';
 import withReducer from '../../decorators/withReducer/withReducer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -15,12 +15,12 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingContainer = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer');
 
-const githubRepoQuery = graphql`
-  query NotificationsQuery {
+const query = graphql`
+  query SocketRouteQuery {
     viewer {
       notifications {
         edges {
-          nodes {
+          node {
             id
             orgId
             startAt
@@ -43,7 +43,7 @@ const githubRepoQuery = graphql`
 `;
 
 const subscriptions = [
-  UserMemoSubscription
+  NotificationAddedSubscription
 ];
 
 const cacheConfig = {ttl: DEFAULT_TTL};
@@ -53,7 +53,7 @@ const SocketRoute = ({atmosphere}) => {
     <QueryRenderer
       cacheConfig={cacheConfig}
       environment={atmosphere}
-      query={githubRepoQuery}
+      query={query}
       variables={{}}
       subscriptions={subscriptions}
       render={({props}) => {

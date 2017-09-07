@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import Notification from 'server/graphql/types/Notification';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 
 const NotifyInvitation = new GraphQLObjectType({
   name: 'NotifyInvitation',
@@ -27,9 +26,7 @@ const NotifyInvitation = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The team name the inviteeEmail is being invited to'
     },
-    type: {
-      type: new GraphQLNonNull(NotificationEnum)
-    }
+    ...notificationInterfaceFields
   })
 });
 

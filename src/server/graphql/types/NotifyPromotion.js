@@ -1,6 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import Notification from 'server/graphql/types/Notification';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 
 const NotifyPromotion = new GraphQLObjectType({
   name: 'NotifyPromotion',
@@ -11,9 +10,7 @@ const NotifyPromotion = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The team or org name they are now in charge of'
     },
-    type: {
-      type: new GraphQLNonNull(NotificationEnum)
-    }
+    ...notificationInterfaceFields
   })
 });
 

@@ -11,7 +11,7 @@ import {cashay} from 'cashay';
 
 const TrialExpiresSoon = (props) => {
   const {
-    notificationId,
+    notification,
     styles,
     varList
   } = props;

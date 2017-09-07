@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import Notification from 'server/graphql/types/Notification';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 
 const NotifyFacilitatorRequest = new GraphQLObjectType({
   name: 'NotifyFacilitatorRequest',
@@ -15,9 +14,7 @@ const NotifyFacilitatorRequest = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamMemberId of the requestor'
     },
-    type: {
-      type: new GraphQLNonNull(NotificationEnum)
-    }
+    ...notificationInterfaceFields
   })
 });
 

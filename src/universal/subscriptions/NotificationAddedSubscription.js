@@ -3,9 +3,10 @@ import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import {ADD_TO_TEAM, FACILITATOR_REQUEST} from 'universal/subscriptions/constants';
 
 const subscription = graphql`
-  subscription UserMemoSubscription {
-    userMemo {
-      type
+  subscription NotificationAddedSubscription {
+    notificationAdded {
+      id
+      orgId
       ... on NotifyFacilitatorRequest {
         requestorName
         requestorId
@@ -20,7 +21,7 @@ const subscription = graphql`
   }
 `;
 
-const UserMemoSubscription = (environment, queryVariables, dispatch) => {
+const NotificationAddedSubscription = (environment, queryVariables, dispatch) => {
   const {ensureSubscription} = environment;
   return ensureSubscription({
     subscription,
@@ -55,4 +56,4 @@ const UserMemoSubscription = (environment, queryVariables, dispatch) => {
   });
 };
 
-export default UserMemoSubscription;
+export default NotificationAddedSubscription;

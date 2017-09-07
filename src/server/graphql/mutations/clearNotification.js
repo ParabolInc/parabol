@@ -3,6 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import DefaultRemovalPayload from 'server/graphql/types/DefaultRemovalPayload';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import {NOTIFICATION_CLEARED} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(DefaultRemovalPayload),
@@ -26,7 +27,7 @@ export default {
     const notificationCleared = {
       deletedId: notificationId
     };
-    getPubSub().publish(`notificationCleared.${userId}`, {notificationCleared, mutatorId: socket.id});
+    getPubSub().publish(`${NOTIFICATION_CLEARED}.${userId}`, {notificationCleared, mutatorId: socket.id});
     return notificationCleared;
   }
 };

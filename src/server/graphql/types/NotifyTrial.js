@@ -1,7 +1,6 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import Notification from 'server/graphql/types/Notification';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 
 const NotifyTrial = new GraphQLObjectType({
   name: 'NotifyTrial',
@@ -12,9 +11,7 @@ const NotifyTrial = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The name of the team member requesting to become facilitator'
     },
-    type: {
-      type: new GraphQLNonNull(NotificationEnum)
-    }
+    ...notificationInterfaceFields
   })
 });
 

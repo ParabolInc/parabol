@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import Notification from 'server/graphql/types/Notification';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
 import AuthToken from 'server/graphql/types/AuthToken';
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 
 const NotifyAddedToTeam = new GraphQLObjectType({
   name: 'NotifyAddedToTeam',
@@ -24,9 +23,7 @@ const NotifyAddedToTeam = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId the user is joining'
     },
-    type: {
-      type: new GraphQLNonNull(NotificationEnum)
-    }
+    ...notificationInterfaceFields
   })
 });
 

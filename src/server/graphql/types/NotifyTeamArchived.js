@@ -1,6 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import Notification from 'server/graphql/types/Notification';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 
 const NotifyTeamArchived = new GraphQLObjectType({
   name: 'NotifyTeamArchived',
@@ -11,9 +10,7 @@ const NotifyTeamArchived = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the team that has been archived'
     },
-    type: {
-      type: new GraphQLNonNull(NotificationEnum)
-    }
+    ...notificationInterfaceFields
   })
 });
 

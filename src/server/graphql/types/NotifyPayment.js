@@ -1,6 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import Notification from 'server/graphql/types/Notification';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 
 const NotifyPayment = new GraphQLObjectType({
   name: 'NotifyPayment',
@@ -15,9 +14,7 @@ const NotifyPayment = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The brand of credit card'
     },
-    type: {
-      type: new GraphQLNonNull(NotificationEnum)
-    }
+    ...notificationInterfaceFields
   })
 });
 
