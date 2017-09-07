@@ -1,40 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  DashContent,
-  DashHeader,
-  DashMain
-} from 'universal/components/Dashboard';
+import {DashContent, DashHeader, DashMain} from 'universal/components/Dashboard';
 import SettingsHeader from 'universal/modules/userDashboard/components/SettingsHeader/SettingsHeader';
-import {cashay} from 'cashay';
-import {connect} from 'react-redux';
 
-const notificationsQuery = `
-query {
-  notifications(userId: $userId) @live {
-    id
-    startAt
-    type
-    varList
-  }
-}`;
 
-const mapStateToProps = (state) => {
-  const {notifications} = cashay.query(notificationsQuery, {
-    op: 'userSettingsWrapper',
-    sort: {
-      notifications: (a, b) => a.startAt > b.startAt ? 1 : -1
-    },
-    variables: {
-      userId: state.auth.obj.sub
-    }
-  }).data;
-  return {
-    notificationCount: notifications.length
-  };
-};
-
-const UserSettings = (props) => {
+const UserSettingsWrapper = (props) => {
   const {children} = props;
   return (
     <DashMain>
@@ -49,9 +19,8 @@ const UserSettings = (props) => {
   );
 };
 
-UserSettings.propTypes = {
-  notificationCount: PropTypes.number,
+UserSettingsWrapper.propTypes = {
   children: PropTypes.any
 };
 
-export default connect(mapStateToProps)(UserSettings);
+export default UserSettingsWrapper;

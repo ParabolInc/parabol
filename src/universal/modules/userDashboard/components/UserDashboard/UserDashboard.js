@@ -9,23 +9,24 @@ const organizations = () => System.import('universal/modules/userDashboard/conta
 const organization = () => System.import('universal/modules/userDashboard/containers/Organization/OrganizationContainer');
 const userDashMain = () => System.import('universal/modules/userDashboard/components/UserDashMain/UserDashMain');
 const userSettings = () => System.import('universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer');
-const notifications = () => System.import('universal/modules/notifications/containers/Notifications/NotificationsContainer');
+const notificationsMod = () => System.import('universal/modules/notifications/containers/Notifications/NotificationsContainer');
 
 const UserDashboard = (props) => {
-  const {match} = props;
+  const {match, notifications} = props;
   return (
     <Switch>
       <AsyncRoute exact path={match.url} mod={userDashMain} />
       <AsyncRoute path={`${match.url}/settings`} mod={userSettings} />
       <AsyncRoute exact path={`${match.url}/organizations`} mod={organizations} />
       <AsyncRoute path={`${match.url}/organizations/:orgId/:orgArea?`} mod={organization} />
-      <AsyncRoute path={`${match.url}/notifications`} mod={notifications} />
+      <AsyncRoute path={`${match.url}/notifications`} mod={notificationsMod} extraProps={{notifications}} />
     </Switch>
   );
 };
 
 UserDashboard.propTypes = {
-  match: PropTypes.object.isRequired
+  match: PropTypes.object.isRequired,
+  notifications: PropTypes.object
 };
 
 export default withReducer({userDashboard: userDashReducer})(

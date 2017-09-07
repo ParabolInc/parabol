@@ -16,7 +16,7 @@ import {Menu, MenuItem} from 'universal/modules/menu';
 const StandardHub = (props) => {
   const {
     email,
-    notificationCount,
+    notificationsCount,
     picture,
     preferredName,
     history,
@@ -71,7 +71,7 @@ const StandardHub = (props) => {
 
   const notificationsStyles = css(
     styles.notifications,
-    notificationCount > 0 && styles.notificationsWithBadge,
+    notificationsCount > 0 && styles.notificationsWithBadge,
     // location === '/me/notifications' && styles.notificationsActive
   );
 
@@ -98,9 +98,9 @@ const StandardHub = (props) => {
         to="/me/notifications"
       >
         <FontAwesome name="bell" style={iconStyle} />
-        {notificationCount > 0 &&
+        {notificationsCount > 0 &&
           <div className={css(styles.badgeBlock)}>
-            <Badge value={notificationCount} />
+            <Badge value={notificationsCount} />
           </div>
         }
       </NavLink>
@@ -110,7 +110,7 @@ const StandardHub = (props) => {
 
 StandardHub.propTypes = {
   email: PropTypes.string,
-  notificationCount: PropTypes.number,
+  notificationsCount: PropTypes.number,
   picture: PropTypes.string,
   preferredName: PropTypes.string,
   history: PropTypes.object,

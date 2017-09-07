@@ -21,7 +21,7 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails) => {
       .delete({returnChanges: true})('changes')
       .map((change) => change('old_val'))
       .default([])
-  })
+  });
   return removedNotification;
 };
 

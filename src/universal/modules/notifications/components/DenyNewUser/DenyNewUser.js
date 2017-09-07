@@ -9,7 +9,7 @@ import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import {cashay} from 'cashay';
 
-const TrialExpiresSoon = (props) => {
+const DenyNewUser = (props) => {
   const {
     notification,
     styles,
@@ -47,7 +47,7 @@ const TrialExpiresSoon = (props) => {
   );
 };
 
-TrialExpiresSoon.propTypes = {
+DenyNewUser.propTypes = {
   notificationId: PropTypes.string,
   styles: PropTypes.object,
   varList: PropTypes.array
@@ -62,4 +62,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(TrialExpiresSoon);
+export default withStyles(styleThunk)(DenyNewUser);

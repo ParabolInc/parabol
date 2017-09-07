@@ -31,26 +31,24 @@ query {
     name
     meetingId
   }
-  notifications(userId: $userId) @live {
-    id
-    orgId
-    startAt
-    type
-  }
 }
 `;
 
+const getTrialNotification = (notifications) => {
+  if (!notifications || !notifications.edges[0]) return undefined;
+  const edge = notifications.edges.find(({node}) =>
+    (node.type === TRIAL_EXPIRED || node.type === TRIAL_EXPIRES_SOON) && node.startAt < new Date());
+  if (!edge) return undefined;
+  return edge ? edge.node : undefined;
+};
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, {notifications}) => {
   const userId = state.auth.obj.sub;
-  const {notifications, teams} = cashay.query(dashNavListQuery, {
+  const {teams} = cashay.query(dashNavListQuery, {
     op: 'dashLayoutContainer',
     variables: {userId},
     resolveCached: {
       teams: () => () => true
-    },
-    filter: {
-      notifications: (n) => (n.type === TRIAL_EXPIRED || n.type === TRIAL_EXPIRES_SOON) && n.startAt < new Date()
     },
     sort: {
       teams: (a, b) => a.name > b.name ? 1 : -1
@@ -60,17 +58,17 @@ const mapStateToProps = (state) => {
     activeMeetings: resolveActiveMeetings(teams),
     tms: state.auth.obj.tms,
     userId: state.auth.sub,
-    trialNotification: notifications[0],
-    hasDashAlert: state.dash.hasDashAlert
+    hasDashAlert: state.dash.hasDashAlert,
+    trialNotification: getTrialNotification(notifications)
   };
 };
 
 const maybeSetDashAlert = (props) => {
   const {
     activeMeetings,
-    trialNotification,
     hasDashAlert,
-    dispatch
+    dispatch,
+    trialNotification
   } = props;
   const shouldHaveDashAlert = activeMeetings.length > 0 || (trialNotification && trialNotification.type);
   if (shouldHaveDashAlert !== hasDashAlert) {

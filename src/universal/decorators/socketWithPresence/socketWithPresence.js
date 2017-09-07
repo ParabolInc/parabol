@@ -11,7 +11,6 @@ import AuthEngine from 'universal/redux/AuthEngine';
 import {
   JOIN_TEAM,
   KICK_OUT,
-  NOTIFICATIONS,
   PRESENCE,
   REJOIN_TEAM,
   TEAM_MEMBERS,
@@ -153,15 +152,6 @@ export default (ComposedComponent) => {
     watchForKickout() {
       const socket = socketCluster.connect();
       socket.on('kickOut', this.kickoutHandler);
-    }
-
-    subscribeToNotifications() {
-      const {userId} = this.props;
-      const socket = socketCluster.connect();
-      cashay.subscribe(NOTIFICATIONS, userId);
-      const userMemoChannel = `${USER_MEMO}/${userId}`;
-      socket.subscribe(userMemoChannel, {waitForAuth: true});
-      socket.watch(userMemoChannel, this.memoHandler);
     }
 
     subscribeToPresence(oldProps, props) {

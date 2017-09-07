@@ -56,15 +56,15 @@ const SocketRoute = ({atmosphere}) => {
       query={query}
       variables={{}}
       subscriptions={subscriptions}
-      render={({props}) => {
-        const viewer = props ? props.viewer : undefined;
+      render={({props: renderProps}) => {
+        const notifications = renderProps ? renderProps.viewer.notifications : undefined;
         return (
           <Switch>
-            <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} extraProps={{viewer}} />
+            <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} extraProps={{notifications}} />
             <AsyncRoute
               path="/meeting/:teamId/:localPhase?/:localPhaseItem?"
               mod={meetingContainer}
-              extraProps={{viewer}}
+              extraProps={{notifications}}
             />
           </Switch>
         );
@@ -76,7 +76,7 @@ const SocketRoute = ({atmosphere}) => {
 
 SocketRoute.propTypes = {
   match: PropTypes.object.isRequired,
-  atmosphere: PropTypes.object.isRequired,
+  atmosphere: PropTypes.object.isRequired
 
 };
 

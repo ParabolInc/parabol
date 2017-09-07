@@ -1,23 +1,29 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Row from 'universal/components/Row/Row';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import {cashay} from 'cashay';
-import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
+import Row from 'universal/components/Row/Row';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 
 const AddedToTeam = (props) => {
   const {
+    atmosphere,
     styles,
-    notification
+    notification,
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
   } = props;
   const {id: notificationId, teamName} = notification;
   const acknowledge = () => {
-    const variables = {notificationId};
-    cashay.mutate('clearNotification', {variables});
+    submitMutation();
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
   };
   return (
     <Row>
@@ -31,6 +37,7 @@ const AddedToTeam = (props) => {
       <div className={css(styles.button)}>
         <Button
           colorPalette="cool"
+          disabled={submitting}
           isBlock
           label="Great!"
           size={ui.notificationButtonSize}
@@ -43,7 +50,12 @@ const AddedToTeam = (props) => {
 };
 
 AddedToTeam.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
+  submitMutation: PropTypes.func.isRequired,
+  submitting: PropTypes.bool,
   notification: PropTypes.shape({
     id: PropTypes.string.isRequired,
     teamName: PropTypes.string.isRequired
@@ -59,4 +71,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(AddedToTeam);
+export default withAtmosphere(withStyles(styleThunk)(AddedToTeam));

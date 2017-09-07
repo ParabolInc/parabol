@@ -3,7 +3,6 @@ import {
   AGENDA_PROJECTS,
   ARCHIVED_PROJECTS,
   INVITATIONS,
-  NOTIFICATIONS,
   ORG_APPROVALS,
   ORGANIZATION,
   ORGANIZATIONS,
@@ -95,19 +94,6 @@ export default [
         email
         tokenExpiration
         updatedAt
-      }
-    }`
-  },
-  {
-    channel: NOTIFICATIONS,
-    string: `
-    subscription($userId: ID!) {
-      notifications(userId: $userId) {
-        id
-        orgId
-        startAt
-        type
-        varList
       }
     }`
   },

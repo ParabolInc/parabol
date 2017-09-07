@@ -31,7 +31,7 @@ const TeamSettingsTabs = (props) => {
 
 TeamSettingsTabs.propTypes = {
   activeKey: PropTypes.string,
-  notificationCount: PropTypes.number,
+  notificationsCount: PropTypes.number,
   history: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string
