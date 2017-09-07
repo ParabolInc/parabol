@@ -15,12 +15,12 @@ import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitator
 
 const MeetingCheckin = (props) => {
   const {
-    showCheckInControls,
     gotoNext,
     localPhaseItem,
     members,
-    team,
-    styles
+    showMoveMeetingControls,
+    styles,
+    team
   } = props;
 
   const {
@@ -81,7 +81,7 @@ const MeetingCheckin = (props) => {
           heading={meetingPromptHeading()}
         />
         <div className={css(styles.base)}>
-          {showCheckInControls ?
+          {showMoveMeetingControls ?
             <CheckInControls
               checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
               nextMember={nextMember}
@@ -103,10 +103,10 @@ const MeetingCheckin = (props) => {
 
 MeetingCheckin.propTypes = {
   gotoNext: PropTypes.func.isRequired,
-  showCheckInControls: PropTypes.bool,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
   onFacilitatorPhase: PropTypes.bool,
+  showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
   team: PropTypes.object
 };

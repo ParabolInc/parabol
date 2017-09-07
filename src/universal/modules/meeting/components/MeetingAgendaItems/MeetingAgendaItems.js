@@ -8,17 +8,20 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingAgendaCardsContainer from 'universal/modules/meeting/containers/MeetingAgendaCards/MeetingAgendaCardsContainer';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 
 const MeetingAgendaItems = (props) => {
   const {
     agendaItem,
-    isLast,
     gotoNext,
+    hideMoveMeetingControls,
+    isLast,
     localPhaseItem,
     members,
     styles,
-    hideMoveMeetingControls
+    team
   } = props;
 
   if (!agendaItem) {
@@ -43,7 +46,10 @@ const MeetingAgendaItems = (props) => {
               />
             </div>
             <div className={css(styles.nav)}>
-              {!hideMoveMeetingControls &&
+              {hideMoveMeetingControls ?
+                <MeetingFacilitationHint>
+                  {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {'to wrap up the Agenda'}
+                </MeetingFacilitationHint> :
                 <Button
                   buttonStyle="flat"
                   colorPalette="cool"
@@ -71,12 +77,13 @@ const MeetingAgendaItems = (props) => {
 
 MeetingAgendaItems.propTypes = {
   agendaItem: PropTypes.object.isRequired,
-  isLast: PropTypes.bool,
   gotoNext: PropTypes.func.isRequired,
+  hideMoveMeetingControls: PropTypes.bool,
+  isLast: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   styles: PropTypes.object.isRequired,
-  hideMoveMeetingControls: PropTypes.bool
+  team: PropTypes.object
 };
 
 const styleThunk = () => ({

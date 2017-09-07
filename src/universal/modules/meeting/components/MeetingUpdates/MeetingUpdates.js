@@ -17,17 +17,18 @@ const MeetingUpdates = (props) => {
     members,
     queryKey,
     projects,
+    showMoveMeetingControls,
     styles,
-    team,
-    hideMoveMeetingControls
+    team
   } = props;
   const self = members.find((m) => m.isSelf);
+  const currentTeamMember = members[localPhaseItem - 1];
   const isLastMember = localPhaseItem === members.length;
   return (
     <MeetingMain>
       <MeetingSection flexToFill>
         <div className={css(styles.layout)}>
-          {!hideMoveMeetingControls ?
+          {showMoveMeetingControls ?
             <Button
               buttonStyle="flat"
               colorPalette="cool"
@@ -39,7 +40,10 @@ const MeetingUpdates = (props) => {
               size="small"
             /> :
             <MeetingFacilitationHint>
-              {'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {'to advance to the Agenda'}
+              {isLastMember ?
+                <span>{'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {'to advance to the Agenda'}</span> :
+                <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {'to give Updates'}</span>
+              }
             </MeetingFacilitationHint>
           }
         </div>
@@ -59,9 +63,9 @@ MeetingUpdates.propTypes = {
   onFacilitatorPhase: PropTypes.bool,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string.isRequired,
+  showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
-  team: PropTypes.object.isRequired,
-  hideMoveMeetingControls: PropTypes.bool
+  team: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
