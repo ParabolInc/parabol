@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import Notification from 'server/graphql/types/Notification';
 import NotificationEnum from 'server/graphql/types/NotificationEnum';
 

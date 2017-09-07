@@ -10,7 +10,8 @@ import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import rejectOrgApprovalValidation from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApprovalValidation';
 import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
 import shortid from 'shortid';
-import {DENY_NEW_USER} from 'universal/utils/constants';
+import {DENY_NEW_USER, NOTIFICATION_ADDED} from 'universal/utils/constants';
+import getPubSub from 'server/utils/getPubSub';
 
 export default {
   type: GraphQLBoolean,
@@ -38,7 +39,7 @@ export default {
     if (!notification) {
       throw errorObj({reason: `Notification ${notificationId} no longer exists!`});
     }
-    const {orgId, varList} = notification;
+    const {orgId, inviterUserId, inviteeEmail} = notification;
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
     requireOrgLeader(userOrgDoc);
 
@@ -47,19 +48,23 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const [inviterId, , inviteeEmail] = varList;
     const deniedByName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
+    const notificationAdded = {
+      id: shortid.generate(),
+      type: DENY_NEW_USER,
+      startAt: now,
+      orgId,
+      userIds: [inviterUserId],
+      reason,
+      deniedByName,
+      inviteeEmail
+    };
+
     await Promise.all([
       removeOrgApprovalAndNotification(orgId, inviteeEmail),
-      r.table('Notification').insert({
-        id: shortid.generate(),
-        type: DENY_NEW_USER,
-        startAt: now,
-        orgId,
-        userIds: [inviterId],
-        varList: [reason, deniedByName, inviteeEmail]
-      })
+      r.table('Notification').insert(notificationAdded)
     ]);
+    getPubSub().publish(`${NOTIFICATION_ADDED}.${inviterUserId}`, {notificationAdded});
     return true;
   }
 };

@@ -165,3 +165,7 @@ export const PENDING_APPROVAL = 'PENDING_APPROVAL';
 export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 // that email used to be on the team, and now they are again
 export const REACTIVATED = 'REACTIVATED';
+
+/* Relay Subscription Channels */
+export const NOTIFICATION_ADDED = 'notificationAdded';
+export const NOTIFICATION_CLEARED = 'notificationCleared';

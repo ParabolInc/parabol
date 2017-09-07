@@ -1,5 +1,4 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import Notification from 'server/graphql/types/Notification';
 import NotificationEnum from 'server/graphql/types/NotificationEnum';
 

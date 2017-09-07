@@ -8,7 +8,7 @@ const InvitationResultEnum = new GraphQLEnumType({
     [ALREADY_ON_TEAM]: {},
     [PENDING_APPROVAL]: {},
     [REACTIVATED]: {},
-    [SUCCESS]: {},
+    [SUCCESS]: {}
   }
 });
 

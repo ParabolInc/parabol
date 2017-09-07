@@ -1,11 +1,12 @@
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
+import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLString
-} from 'graphql';
+import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
+import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
+import extendTrial from 'server/graphql/models/Organization/extendTrial/extendTrial';
+import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
+import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
+import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
 import {
   getUserId,
   getUserOrgDoc,
@@ -13,24 +14,19 @@ import {
   requireOrgLeaderOfUser,
   requireWebsocket
 } from 'server/utils/authorization';
-import {errorObj, validateAvatarUpload} from 'server/utils/utils';
-import getS3PutUrl from 'server/utils/getS3PutUrl';
-import {
-  PAUSE_USER,
-  REMOVE_USER,
-  MAX_MONTHLY_PAUSES
-} from 'server/utils/serverConstants';
-import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import {GraphQLURLType} from '../../types';
-import shortid from 'shortid';
-import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
-import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
-import extendTrial from 'server/graphql/models/Organization/extendTrial/extendTrial';
-import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
-import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
-import {BILLING_LEADER, PROMOTE_TO_BILLING_LEADER, billingLeaderTypes} from 'universal/utils/constants';
 import {toEpochSeconds} from 'server/utils/epochTime';
-import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
+import getPubSub from 'server/utils/getPubSub';
+import getS3PutUrl from 'server/utils/getS3PutUrl';
+import {MAX_MONTHLY_PAUSES, PAUSE_USER, REMOVE_USER} from 'server/utils/serverConstants';
+import {errorObj, validateAvatarUpload} from 'server/utils/utils';
+import shortid from 'shortid';
+import {
+  BILLING_LEADER,
+  billingLeaderTypes,
+  NOTIFICATION_ADDED, NOTIFICATION_CLEARED,
+  PROMOTE_TO_BILLING_LEADER
+} from 'universal/utils/constants';
+import {GraphQLURLType} from '../../types';
 
 export default {
   updateOrg,
@@ -242,68 +238,81 @@ export default {
       }
 
       // RESOLUTION
-      const orgName = await r.table('User').get(userId)
-        .update((user) => ({
-          userOrgs: user('userOrgs').map((userOrg) => {
-            return r.branch(
-              userOrg('id').eq(orgId),
-              userOrg.merge({
-                role
-              }),
-              userOrg
-            );
-          }),
-          updatedAt: now
-        }))
-        .do(() => {
-          return r.table('Organization').get(orgId)
-            .update((org) => ({
-              orgUsers: org('orgUsers').map((orgUser) => {
-                return r.branch(
-                  orgUser('id').eq(userId),
-                  orgUser.merge({
-                    role
-                  }),
-                  orgUser
-                );
-              }),
-              updatedAt: now
-            }), {returnChanges: true})('changes')(0)('old_val')('name').default(null);
-        });
+      const {orgName} = await r({
+        userOrgsUpdate: r.table('User').get(userId)
+          .update((user) => ({
+            userOrgs: user('userOrgs').map((userOrg) => {
+              return r.branch(
+                userOrg('id').eq(orgId),
+                userOrg.merge({
+                  role
+                }),
+                userOrg
+              );
+            }),
+            updatedAt: now
+          })),
+        orgName: r.table('Organization').get(orgId)
+          .update((org) => ({
+            orgUsers: org('orgUsers').map((orgUser) => {
+              return r.branch(
+                orgUser('id').eq(userId),
+                orgUser.merge({
+                  role
+                }),
+                orgUser
+              );
+            }),
+            updatedAt: now
+          }), {returnChanges: true})('changes')(0)('new_val')('name').default(null)
+      });
       if (role === BILLING_LEADER) {
         // add a notification
-        await r.table('Notification').insert({
+        const promotionNotification = {
           id: shortid.generate(),
           type: PROMOTE_TO_BILLING_LEADER,
           startAt: now,
           orgId,
           userIds: [userId],
-          varList: [orgName]
-        })
-          .do(() => {
-            return r.table('Notification')
-              .getAll(orgId, {index: 'orgId'})
-              .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
-              .update((notification) => ({
-                userIds: notification('userIds').append(userId)
-              }));
-          });
+          groupName: orgName
+        };
+        const {existingNotifications} = await r({
+          insert: r.table('Notification').insert(promotionNotification),
+          existingNotifications: r.table('Notification')
+            .getAll(orgId, {index: 'orgId'})
+            .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
+            .update((notification) => ({
+              userIds: notification('userIds').append(userId)
+            }), {returnChanges: true})('changes')
+            .map((change) => change('new_val'))
+            .default([])
+        });
+        getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded: promotionNotification});
+        existingNotifications.forEach((notificationAdded) => {
+          getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+        });
       } else if (role === null) {
-        await r.table('Notification')
-          .getAll(userId, {index: 'userIds'})
-          .filter({
-            orgId,
-            type: PROMOTE_TO_BILLING_LEADER
-          })
-          .delete()
-          .do(() => {
-            return r.table('Notification')
-              .getAll(orgId, {index: 'orgId'})
-              .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
-              .update((notification) => ({
-                userIds: notification('userIds').filter((id) => id.ne(userId))
-              }));
-          });
+        const {removedNotificationIds} = await r({
+          demotion: r.table('Notification')
+            .getAll(userId, {index: 'userIds'})
+            .filter({
+              orgId,
+              type: PROMOTE_TO_BILLING_LEADER
+            })
+            .delete(),
+          removedNotificationIds: r.table('Notification')
+            .getAll(orgId, {index: 'orgId'})
+            .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
+            .update((notification) => ({
+              userIds: notification('userIds').filter((id) => id.ne(userId))
+            }), {returnChanges: true})('changes')
+            .map((change) => change('new_val'))('id')
+            .default([])
+        });
+        removedNotificationIds.forEach((deletedId) => {
+          const notificationCleared = {deletedId};
+          getPubSub().publish(`${NOTIFICATION_CLEARED}.${userId}`, {notificationCleared});
+        });
       }
       return true;
     }

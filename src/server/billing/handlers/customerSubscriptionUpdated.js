@@ -1,9 +1,10 @@
+import terminateSubscription from 'server/billing/helpers/terminateSubscription';
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import shortid from 'shortid';
-import {BILLING_LEADER, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
-import terminateSubscription from 'server/billing/helpers/terminateSubscription';
 import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
+import getPubSub from 'server/utils/getPubSub';
+import shortid from 'shortid';
+import {BILLING_LEADER, NOTIFICATION_ADDED, TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 
 /*
  * Used as a pseudo hook for trial ending. We could use payment_failed, but that hook is sent 1 hr after this one
@@ -29,20 +30,24 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
       }
       return billingLeaders;
     }, []);
-    await r.table('Notification').insert({
+    const notificationAdded = {
       id: shortid.generate(),
       type: TRIAL_EXPIRED,
       startAt: now,
       orgId,
       userIds,
-      varList: [now]
-    })
-      .do(() => {
-        return r.table('Notification')
-          .getAll(orgId, {index: 'orgId'})
-          .filter({type: TRIAL_EXPIRES_SOON})
-          .delete();
-      });
+      expiresAt: now
+    };
+    await r({
+      insert: r.table('Notification').insert(notificationAdded),
+      remove: r.table('Notification')
+        .getAll(orgId, {index: 'orgId'})
+        .filter({type: TRIAL_EXPIRES_SOON})
+        .delete()
+    });
+    userIds.forEach((userId) => {
+      getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+    });
   }
   // invalidate the upcomingInvoice
   const channel = `upcomingInvoice/${orgId}`;

@@ -1,13 +1,14 @@
 import getRethink from 'server/database/rethinkDriver';
+import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
-import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {BILLING_LEADER, NOTIFICATION_ADDED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default async function createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName, userId) {
   if (outOfOrgEmails.length === 0) return;
   const r = getRethink();
   const now = new Date();
   // add a notification to the Billing Leaders
-  const {userIds, inviter} = await r.expr({
+  const {userIds, inviter} = await r({
     userIds: r.table('User')
       .getAll(orgId, {index: 'userOrgs'})
       .filter((user) => user('userOrgs')
@@ -21,8 +22,11 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
     startAt: now,
     orgId,
     userIds,
-    // we could probably get rid of the id here
-    varList: [inviter.id, inviter.preferredName, inviteeEmail, teamId, teamName]
+    inviterUserId: inviter.id,
+    inviterName: inviter.preferredName,
+    inviteeEmail,
+    teamId,
+    teamName
   }));
 
   const pendingApprovals = outOfOrgEmails.map((inviteeEmail) => ({
@@ -33,8 +37,13 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
     teamId
   }));
   // send a new notification to each Billing Leader concerning each out-of-org invitee
-  await r.table('Notification').insert(notifications)
-    .do(() => {
-      return r.table('OrgApproval').insert(pendingApprovals);
+  await r({
+    notifications: r.table('Notification').insert(notifications),
+    approvals: r.table('OrgApproval').insert(pendingApprovals)
+  });
+  notifications.forEach((notificationAdded) => {
+    notificationAdded.userIds.forEach((notifiedUserId) => {
+      getPubSub().publish(`${NOTIFICATION_ADDED}.${notifiedUserId}`, {notificationAdded});
     });
+  });
 }

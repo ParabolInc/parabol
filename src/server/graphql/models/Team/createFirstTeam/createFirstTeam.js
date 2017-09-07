@@ -6,12 +6,13 @@ import {TRIAL_EXPIRES_SOON_DELAY} from 'server/utils/serverConstants';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {NOTIFICATION_ADDED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {TeamInput} from '../teamSchema';
 import addSeedProjects from './addSeedProjects';
 import createFirstTeamValidation from './createFirstTeamValidation';
 import createTeamAndLeader from './createTeamAndLeader';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import getPubSub from 'server/utils/getPubSub';
 
 export default {
   // return the new JWT that has the new tms field
@@ -68,18 +69,20 @@ export default {
     await createTeamAndLeader(userId, validNewTeam, true);
     // set up the team while the user is on step 3
     setTimeout(async () => {
-      addSeedProjects(userId, teamId);
       // Asynchronously create seed projects for team leader:
+      addSeedProjects(userId, teamId);
       // TODO: remove me after more
-      await r.table('Notification').insert({
+      const notificationAdded = {
         id: expiresSoonId,
         type: TRIAL_EXPIRES_SOON,
         startAt: new Date(now.getTime() + TRIAL_EXPIRES_SOON_DELAY),
         orgId,
         userIds: [userId],
-        // trialExpiresAt
-        varList: [periodEnd]
-      });
+        trialExpiresAt: periodEnd
+      };
+      await r.table('Notification').insert(notificationAdded);
+      // this probably doesn't do anything since they haven't subscribed yet, but a nice safety measure
+      getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
       if (unitTestCb) {
         unitTestCb();
       }

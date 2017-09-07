@@ -26,10 +26,7 @@ const Notifications = (props) => {
                 (<NotificationRow
                   dispatch={dispatch}
                   key={`notification${notification.id}`}
-                  orgId={notification.orgId}
-                  notificationId={notification.id}
-                  type={notification.type}
-                  varList={notification.varList}
+                  notification={notification}
                 />)
               )}
             </div> :

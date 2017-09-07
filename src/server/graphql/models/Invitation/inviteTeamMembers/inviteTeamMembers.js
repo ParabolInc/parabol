@@ -13,6 +13,7 @@ import {PRESENCE, REJOIN_TEAM} from 'universal/subscriptions/constants';
 import {
   ADD_TO_TEAM,
   ALREADY_ON_TEAM,
+  NOTIFICATION_ADDED,
   PENDING_APPROVAL,
   REACTIVATED,
   SUCCESS,
@@ -36,9 +37,14 @@ const sendNotification = async (invitees, inviter) => {
     startAt: now,
     orgId,
     userIds: [invitee.userId],
-    varList: [inviterName, teamId, teamName]
+    inviterName,
+    teamId,
+    teamName
   }));
   await r.table('Notification').insert(invitations);
+  invitations.forEach((notificationAdded) => {
+    getPubSub().publish(`${NOTIFICATION_ADDED}.${notificationAdded.userId}`, {notificationAdded});
+  });
 };
 
 const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
@@ -48,37 +54,39 @@ const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
   const now = new Date();
   const userIds = invitees.map(({userId}) => userId);
   const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
-  const reactivatedUsers = await r.table('TeamMember')
-    .getAll(r.args(teamMemberIds), {index: 'id'})
-    .update({isNotRemoved: true})
-    .do(() => {
-      return r.table('User')
-        .getAll(r.args(userIds))
-        .update((user) => {
-          return user.merge({
-            tms: user('tms').append(teamId)
-          });
-        }, {returnChanges: true})('changes')('new_val')
-        .default(null);
-    });
+  const {reactivatedUsers} = await r({
+    reactivatedTeamMembers: r.table('TeamMember')
+      .getAll(r.args(teamMemberIds), {index: 'id'})
+      .update({isNotRemoved: true}),
+    reactivatedUsers: r.table('User')
+      .getAll(r.args(userIds))
+      .update((user) => {
+        return user.merge({
+          tms: user('tms').append(teamId)
+        });
+      }, {returnChanges: true})('changes')('new_val')
+      .default(null)
+  });
   const notifications = reactivatedUsers.map((user) => ({
     id: shortid.generate(),
     type: ADD_TO_TEAM,
     startAt: now,
     orgId,
     userIds: [user.id],
-    varList: [inviterName, teamName]
+    inviterName,
+    teamName
   }));
   await r.table('Notification').insert(notifications);
   reactivatedUsers.forEach((user) => {
     const {preferredName, id: reactivatedUserId, tms} = user;
-    getPubSub().publish(`notificationAdded.${reactivatedUserId}`, {
+    const notificationAdded = {
       _authToken: tmsSignToken({sub: reactivatedUserId}, tms),
       inviterName,
       teamId,
       teamName,
       type: ADD_TO_TEAM
-    });
+    };
+    getPubSub().publish(`${NOTIFICATION_ADDED}.${reactivatedUserId}`, {notificationAdded});
     const channel = `${PRESENCE}/${teamId}`;
     // TODO refactor out exchange
     exchange.publish(channel, {
@@ -183,7 +191,7 @@ export default {
       return {
         ...details,
         action: getAction(details, inviterIsBillingLeader)
-      }
+      };
     });
 
     const inviteesToReactivate = detailedInvitations.filter(({action}) => action === REACTIVATED);
@@ -198,9 +206,9 @@ export default {
     const invitesByUserId = inviteesToEmail.reduce((invitations, invitee) => {
       const {email} = invitee;
       const removedApproval = removedApprovals.find((approval) => approval.inviteeEmail === email);
-      const inviteeUserId = removedApproval ? removedApproval.inviterId : userId;
-      invitations[inviteeUserId] = invitations[inviteeUserId] || [];
-      invitations[inviteeUserId].push(email);
+      const inviterUserId = removedApproval ? removedApproval.inviterUserId : userId;
+      invitations[inviterUserId] = invitations[inviterUserId] || [];
+      invitations[inviterUserId].push(email);
       return invitations;
     }, {});
     const sendEmails = Object.keys(invitesByUserId)

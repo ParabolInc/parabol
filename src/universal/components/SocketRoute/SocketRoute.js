@@ -48,22 +48,24 @@ const subscriptions = [
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const SocketRoute = ({atmosphere, jwt, teamMemberId}) => {
-  const [, teamId] = teamMemberId.split('::');
+const SocketRoute = ({atmosphere}) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={githubRepoQuery}
-      variables={{teamId, service: GITHUB}}
+      variables={{}}
       subscriptions={subscriptions}
-      render={({error, props}) => {
+      render={({props}) => {
         const viewer = props ? props.viewer : undefined;
         return (
           <Switch>
-            <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} extraProps={{viewer}}/>
-            <AsyncRoute path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingContainer}
-                        extraProps={{viewer}}/>
+            <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} extraProps={{viewer}} />
+            <AsyncRoute
+              path="/meeting/:teamId/:localPhase?/:localPhaseItem?"
+              mod={meetingContainer}
+              extraProps={{viewer}}
+            />
           </Switch>
         );
       }}
@@ -72,14 +74,10 @@ const SocketRoute = ({atmosphere, jwt, teamMemberId}) => {
   );
 };
 
-// TODO wrap this in a QueryRenderer for Notifications
-const SocketRoute = () => {
-
-
-};
-
 SocketRoute.propTypes = {
-  match: PropTypes.object.isRequired
+  match: PropTypes.object.isRequired,
+  atmosphere: PropTypes.object.isRequired,
+
 };
 
 export default

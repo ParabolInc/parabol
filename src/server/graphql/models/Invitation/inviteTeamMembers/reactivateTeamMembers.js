@@ -1,10 +1,10 @@
-//import getRethink from 'server/database/rethinkDriver';
-//import getPubSub from 'server/utils/getPubSub';
-//import {PRESENCE, REJOIN_TEAM, USER_MEMO} from 'universal/subscriptions/constants';
-//import {ADD_TO_TEAM} from 'universal/utils/constants';
-//import tmsSignToken from 'server/utils/tmsSignToken';
+// import getRethink from 'server/database/rethinkDriver';
+// import getPubSub from 'server/utils/getPubSub';
+// import {PRESENCE, REJOIN_TEAM, USER_MEMO} from 'universal/subscriptions/constants';
+// import {ADD_TO_TEAM} from 'universal/utils/constants';
+// import tmsSignToken from 'server/utils/tmsSignToken';
 //
-//export default async function reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange, sender) {
+// export default async function reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange, sender) {
 //  if (idsToReactivate.length > 0) {
 //    const r = getRethink();
 //    const userIdsToReactivate = idsToReactivate.map((teamMemberId) => {
@@ -40,4 +40,4 @@
 //      });
 //    });
 //  }
-//}
+// }

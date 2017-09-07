@@ -13,6 +13,7 @@ export default {
   [ADDED_TO_TEAM]: () => System.import('universal/modules/notifications/components/AddedToTeam/AddedToTeam'),
   [DENY_NEW_USER]: () => System.import('universal/modules/notifications/components/DenyNewUser/DenyNewUser'),
   [PAYMENT_REJECTED]: () => System.import('universal/modules/notifications/components/PaymentRejected/PaymentRejected'),
+  // eslint-disable-next-line max-len
   [PROMOTE_TO_BILLING_LEADER]: () => System.import('universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader'),
   [REQUEST_NEW_USER]: () => System.import('universal/modules/notifications/components/RequestNewUser/RequestNewUser'),
   [TEAM_INVITE]: () => System.import('universal/modules/notifications/components/TeamInvite/TeamInvite'),

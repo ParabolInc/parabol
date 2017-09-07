@@ -7,9 +7,9 @@ const NotifyPromotion = new GraphQLObjectType({
   description: 'A notification alerting the user that they have been promoted (to team or org leader)',
   interfaces: () => [Notification],
   fields: () => ({
-    name: {
+    groupName: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The name team or org they are now in charge of'
+      description: 'The team or org name they are now in charge of'
     },
     type: {
       type: new GraphQLNonNull(NotificationEnum)

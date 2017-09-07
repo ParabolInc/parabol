@@ -1,4 +1,5 @@
 exports.up = async (r) => {
+  // these are the only notification types in the prod database as of 9/6/17
   const tables = [
     r.table('Notification')
       .filter({type: 'REQUEST_NEW_USER'})
@@ -18,7 +19,7 @@ exports.up = async (r) => {
       .replace((row) => {
         return row
           .merge({
-            teamName: row('varList')(0),
+            teamName: row('varList')(0)
           })
           .without('varList');
       }),
@@ -27,7 +28,7 @@ exports.up = async (r) => {
       .replace((row) => {
         return row
           .merge({
-            expiresAt: row('varList')(0),
+            expiresAt: row('varList')(0)
           })
           .without('varList');
       })

@@ -1,53 +1,53 @@
-//import orgGenerator from 'server/__tests__/Organization/data/orgGenerator';
-//import cleanupOrgData from 'server/__tests__/utils/cleanupOrgData';
-//import refreshAuthToken from 'server/__tests__/utils/refreshAuthToken';
-//import {
+// import orgGenerator from 'server/__tests__/Organization/data/orgGenerator';
+// import cleanupOrgData from 'server/__tests__/utils/cleanupOrgData';
+// import refreshAuthToken from 'server/__tests__/utils/refreshAuthToken';
+// import {
 //  mockAuth0AuthenticationClientTokensGetInfo,
 //  mockAuth0ManagementClientUsersUpdateAppMetadata
-//} from 'server/__tests__/utils/mockAuth0';
-//import {
+// } from 'server/__tests__/utils/mockAuth0';
+// import {
 //  mockStripeCustomersCreate,
 //  mockStripeSubscriptionsCreate,
 //  mockStripeSubscriptionsUpdate
-//} from 'server/__tests__/utils/mockStripe';
-//import signupTeam from 'server/__tests__/utils/signupTeam';
-//import signupTeamLeader from 'server/__tests__/utils/signupTeamLeader';
+// } from 'server/__tests__/utils/mockStripe';
+// import signupTeam from 'server/__tests__/utils/signupTeam';
+// import signupTeamLeader from 'server/__tests__/utils/signupTeamLeader';
 //
-//import {
+// import {
 //  ADD_TO_TEAM,
 //  KICK_OUT,
 //  REJOIN_TEAM,
 //  PRESENCE,
 //  USER_MEMO
-//} from 'universal/subscriptions/constants';
-//import getRethink from 'server/database/rethinkDriver';
-//import teamMemberMutation from 'server/graphql/models/TeamMember/teamMemberMutation';
+// } from 'universal/subscriptions/constants';
+// import getRethink from 'server/database/rethinkDriver';
+// import teamMemberMutation from 'server/graphql/models/TeamMember/teamMemberMutation';
 //
-//import reactivateTeamMembers from '../reactivateTeamMembers';
+// import reactivateTeamMembers from '../reactivateTeamMembers';
 //
-//const testOrg = orgGenerator(2);
+// const testOrg = orgGenerator(2);
 //
-//mockAuth0AuthenticationClientTokensGetInfo(testOrg.allTeamMembers);
-//mockAuth0ManagementClientUsersUpdateAppMetadata();
-//mockStripeCustomersCreate();
-//mockStripeSubscriptionsUpdate();
-//mockStripeSubscriptionsCreate();
-//console.error = jest.fn();
+// mockAuth0AuthenticationClientTokensGetInfo(testOrg.allTeamMembers);
+// mockAuth0ManagementClientUsersUpdateAppMetadata();
+// mockStripeCustomersCreate();
+// mockStripeSubscriptionsUpdate();
+// mockStripeSubscriptionsCreate();
+// console.error = jest.fn();
 //
-//afterAll(async () => {
+// afterAll(async () => {
 //  const r = getRethink();
 //  await r.getPoolMaster().drain();
-//});
+// });
 //
-//signupTeamLeader(testOrg.billingLeader);
-//signupTeam(
+// signupTeamLeader(testOrg.billingLeader);
+// signupTeam(
 //  testOrg.team,
 //  testOrg.billingLeader,
 //  testOrg.otherTeamMembers,
 //  () => refreshAuthToken(testOrg.billingLeader.id)
-//);
+// );
 //
-//describe('team member reactivation', () => {
+// describe('team member reactivation', () => {
 //  test('member leaves a team', async () => {
 //    // SETUP
 //    const authToken = await refreshAuthToken(testOrg.billingLeader.id);
@@ -115,6 +115,6 @@
 //      sender: testOrg.billingLeader.id
 //    });
 //  });
-//});
+// });
 //
-//cleanupOrgData(testOrg.billingLeader, testOrg.otherTeamMembers);
+// cleanupOrgData(testOrg.billingLeader, testOrg.otherTeamMembers);

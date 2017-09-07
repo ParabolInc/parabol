@@ -12,10 +12,9 @@ import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 const AddedToTeam = (props) => {
   const {
     styles,
-    varList,
-    notificationId
+    notification
   } = props;
-  const [teamName] = varList;
+  const {id: notificationId, teamName} = notification;
   const acknowledge = () => {
     const variables = {notificationId};
     cashay.mutate('clearNotification', {variables});
@@ -45,8 +44,10 @@ const AddedToTeam = (props) => {
 
 AddedToTeam.propTypes = {
   styles: PropTypes.object,
-  varList: PropTypes.array.isRequired,
-  notificationId: PropTypes.string.isRequired
+  notification: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    teamName: PropTypes.string.isRequired
+  })
 };
 
 const styleThunk = () => ({

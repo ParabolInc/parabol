@@ -1,10 +1,11 @@
+import fetchAllLines from 'server/billing/helpers/fetchAllLines';
+import terminateSubscription from 'server/billing/helpers/terminateSubscription';
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import shortid from 'shortid';
-import {FAILED, BILLING_LEADER, PAYMENT_REJECTED} from 'universal/utils/constants';
-import terminateSubscription from 'server/billing/helpers/terminateSubscription';
-import fetchAllLines from 'server/billing/helpers/fetchAllLines';
+import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
+import shortid from 'shortid';
+import {BILLING_LEADER, FAILED, NOTIFICATION_ADDED, PAYMENT_REJECTED} from 'universal/utils/constants';
 
 /*
  * Used for failed payments that are not trialing. Trialing orgs will not have a CC
@@ -54,18 +55,21 @@ export default async function invoicePaymentFailed(invoiceId) {
       account_balance: amountDue - nextMonthAmount
     });
     console.log('setting unpaid on db');
-    await r.table('Invoice').get(invoiceId).update({
-      status: FAILED
-    })
-      .do(() => {
-        return r.table('Notification').insert({
-          id: shortid.generate(),
-          type: PAYMENT_REJECTED,
-          startAt: now,
-          orgId,
-          userIds,
-          varList: [last4, brand]
-        });
-      });
+    const notificationAdded = {
+      id: shortid.generate(),
+      type: PAYMENT_REJECTED,
+      startAt: now,
+      orgId,
+      userIds,
+      last4,
+      brand
+    };
+    await r({
+      update: r.table('Invoice').get(invoiceId).update({status: FAILED}),
+      insert: r.table('Notification').insert(notificationAdded)
+    });
+    userIds.forEach((userId) => {
+      getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+    });
   }
 }

@@ -1,5 +1,4 @@
 import {GraphQLSchema} from 'graphql';
-//import UserMemoPayload from 'server/graphql/types/UserMemoPayload';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import mutation from './rootMutation';

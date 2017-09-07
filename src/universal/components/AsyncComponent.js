@@ -47,10 +47,10 @@ export default class AsyncComponent extends Component {
       <TransitionGroup appear style={{overflow: 'hidden'}}>
         {Mod ?
           <AnimatedFade>
-            <Mod {...props}/>
+            <Mod {...props} />
           </AnimatedFade> :
           <AnimatedFade exit={false} unmountOnExit>
-            <LoadingComponent height={loadingHeight} width={loadingWidth}/>
+            <LoadingComponent height={loadingHeight} width={loadingWidth} />
           </AnimatedFade>
         }
       </TransitionGroup>

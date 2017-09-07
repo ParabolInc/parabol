@@ -21,7 +21,7 @@ export default function notificationTemplate(template) {
       type,
       startAt: new Date(now.getTime() + TRIAL_EXPIRES_SOON_DELAY),
       userIds: billingLeadersOnly(this.db.user, this.context.organization.id),
-      varList: [this.context.organization.periodEnd]
+      expiresAt: this.context.organization.periodEnd
     };
   }
   if (type === TRIAL_EXPIRED) {
@@ -29,7 +29,7 @@ export default function notificationTemplate(template) {
       type,
       startAt: now,
       userIds: billingLeadersOnly(this.db.user, this.context.organization.id),
-      varList: [this.context.organization.periodEnd]
+      expiresAt: this.context.organization.periodEnd
     };
   }
   if (type === PAYMENT_REJECTED) {
@@ -38,7 +38,8 @@ export default function notificationTemplate(template) {
       type,
       startAt: now,
       userIds: billingLeadersOnly(this.db.user, this.context.organization.id),
-      varList: [last4, brand]
+      last4,
+      brand
     };
   }
   return {};

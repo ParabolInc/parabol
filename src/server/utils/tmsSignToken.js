@@ -12,8 +12,8 @@ export default function tmsSignToken(authToken = {}, tms) {
   if (!authToken.sub) {
     throw new Error('Auth token is missing sub');
   }
-// new token will expire in 30 days
-// JWT timestamps chop off milliseconds
+  // new token will expire in 30 days
+  // JWT timestamps chop off milliseconds
   const now = Date.now();
   const exp = toEpochSeconds(now + JWT_LIFESPAN);
   const iat = toEpochSeconds(now);
