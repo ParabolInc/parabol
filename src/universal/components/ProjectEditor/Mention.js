@@ -4,7 +4,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 const style = {
   color: appTheme.palette.cool,
-  fontWeight: 800
+  fontWeight: 700
 };
 
 const Mention = (props) => {
