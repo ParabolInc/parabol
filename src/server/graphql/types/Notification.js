@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
-import {connectionDefinitions} from 'graphql-relay';
+import {connectionDefinitions, globalIdField} from 'graphql-relay';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import NotificationEnum from 'server/graphql/types/NotificationEnum';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
@@ -37,13 +37,7 @@ const resolveTypeLookup = {
 };
 
 export const notificationInterfaceFields = {
-  id: {
-    type: new GraphQLNonNull(GraphQLID),
-    description: 'The unique notification id (shortid)'
-  },
-  type: {
-    type: NotificationEnum
-  },
+  id: globalIdField('Notification', ({id}) => id),
   orgId: {
     type: GraphQLID,
     description: '*The unique organization ID for this notification. Can be blank for targeted notifications'
@@ -51,6 +45,9 @@ export const notificationInterfaceFields = {
   startAt: {
     type: GraphQLISO8601Type,
     description: 'The datetime to activate the notification & send it to the client'
+  },
+  type: {
+    type: NotificationEnum
   },
   userIds: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),

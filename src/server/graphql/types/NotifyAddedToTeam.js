@@ -7,6 +7,7 @@ const NotifyAddedToTeam = new GraphQLObjectType({
   description: 'A notification sent by a team member to request to become the facilitator',
   interfaces: () => [Notification],
   fields: () => ({
+    ...notificationInterfaceFields,
     _authToken: {
       type: AuthToken,
       description: 'The new auth token for the user. Requested by, but not sent to the client'
@@ -23,7 +24,6 @@ const NotifyAddedToTeam = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId the user is joining'
     },
-    ...notificationInterfaceFields
   })
 });
 

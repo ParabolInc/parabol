@@ -72,7 +72,7 @@ export default {
       // Asynchronously create seed projects for team leader:
       addSeedProjects(userId, teamId);
       // TODO: remove me after more
-      const notificationAdded = {
+      const notification = {
         id: expiresSoonId,
         type: TRIAL_EXPIRES_SOON,
         startAt: new Date(now.getTime() + TRIAL_EXPIRES_SOON_DELAY),
@@ -80,7 +80,8 @@ export default {
         userIds: [userId],
         trialExpiresAt: periodEnd
       };
-      await r.table('Notification').insert(notificationAdded);
+      await r.table('Notification').insert(notification);
+      const notificationAdded = {notification};
       // this probably doesn't do anything since they haven't subscribed yet, but a nice safety measure
       getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
       if (unitTestCb) {

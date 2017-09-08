@@ -42,8 +42,9 @@ const sendNotification = async (invitees, inviter) => {
     teamName
   }));
   await r.table('Notification').insert(invitations);
-  invitations.forEach((notificationAdded) => {
-    getPubSub().publish(`${NOTIFICATION_ADDED}.${notificationAdded.userId}`, {notificationAdded});
+  invitations.forEach((notification) => {
+    const notificationAdded = {notification};
+    getPubSub().publish(`${NOTIFICATION_ADDED}.${notification.userId}`, {notificationAdded});
   });
 };
 
@@ -80,11 +81,13 @@ const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
   reactivatedUsers.forEach((user) => {
     const {preferredName, id: reactivatedUserId, tms} = user;
     const notificationAdded = {
-      _authToken: tmsSignToken({sub: reactivatedUserId}, tms),
-      inviterName,
-      teamId,
-      teamName,
-      type: ADD_TO_TEAM
+      notification: {
+        _authToken: tmsSignToken({sub: reactivatedUserId}, tms),
+        inviterName,
+        teamId,
+        teamName,
+        type: ADD_TO_TEAM
+      }
     };
     getPubSub().publish(`${NOTIFICATION_ADDED}.${reactivatedUserId}`, {notificationAdded});
     const channel = `${PRESENCE}/${teamId}`;

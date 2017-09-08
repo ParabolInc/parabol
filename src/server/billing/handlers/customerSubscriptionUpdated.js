@@ -30,7 +30,7 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
       }
       return billingLeaders;
     }, []);
-    const notificationAdded = {
+    const notification = {
       id: shortid.generate(),
       type: TRIAL_EXPIRED,
       startAt: now,
@@ -39,12 +39,13 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
       expiresAt: now
     };
     await r({
-      insert: r.table('Notification').insert(notificationAdded),
+      insert: r.table('Notification').insert(notification),
       remove: r.table('Notification')
         .getAll(orgId, {index: 'orgId'})
         .filter({type: TRIAL_EXPIRES_SOON})
         .delete()
     });
+    const notificationAdded = {notification};
     userIds.forEach((userId) => {
       getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
     });

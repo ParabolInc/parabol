@@ -41,8 +41,9 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
     notifications: r.table('Notification').insert(notifications),
     approvals: r.table('OrgApproval').insert(pendingApprovals)
   });
-  notifications.forEach((notificationAdded) => {
-    notificationAdded.userIds.forEach((notifiedUserId) => {
+  notifications.forEach((notification) => {
+    const notificationAdded = {notification};
+    notification.userIds.forEach((notifiedUserId) => {
       getPubSub().publish(`${NOTIFICATION_ADDED}.${notifiedUserId}`, {notificationAdded});
     });
   });

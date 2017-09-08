@@ -80,6 +80,8 @@ export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
 // sent to parabol users who got invited to a new team and maybe a new org
 
+
+
 export const notificationTypes = [
   TRIAL_EXPIRES_SOON,
   TRIAL_EXPIRED,

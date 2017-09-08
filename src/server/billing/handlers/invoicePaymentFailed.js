@@ -55,7 +55,7 @@ export default async function invoicePaymentFailed(invoiceId) {
       account_balance: amountDue - nextMonthAmount
     });
     console.log('setting unpaid on db');
-    const notificationAdded = {
+    const notification = {
       id: shortid.generate(),
       type: PAYMENT_REJECTED,
       startAt: now,
@@ -66,8 +66,9 @@ export default async function invoicePaymentFailed(invoiceId) {
     };
     await r({
       update: r.table('Invoice').get(invoiceId).update({status: FAILED}),
-      insert: r.table('Notification').insert(notificationAdded)
+      insert: r.table('Notification').insert(notification)
     });
+    const notificationAdded = {notification};
     userIds.forEach((userId) => {
       getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
     });

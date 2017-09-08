@@ -287,9 +287,10 @@ export default {
             .map((change) => change('new_val'))
             .default([])
         });
-        getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded: promotionNotification});
-        existingNotifications.forEach((notificationAdded) => {
-          getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+        const notificationAdded = {notification: promotionNotification};
+        getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+        existingNotifications.forEach((notification) => {
+          getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded: {notification}});
         });
       } else if (role === null) {
         const {removedNotificationIds} = await r({

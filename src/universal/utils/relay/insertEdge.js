@@ -15,7 +15,7 @@ export const insertNodeBefore = (nodes, newNode, propName) => {
   const newName = newNode.getValue(propName);
   const newIdx = nodes.findIndex((node) => {
     const nodeName = node ? node.getValue(propName) : '';
-    return nodeName > newName;
+    return nodeName > newName ? 1 : -1;
   });
   return newIdx === -1 ? nodes.concat(newNode) : [...nodes.slice(0, newIdx), newNode, ...nodes.slice(newIdx)];
 };

@@ -56,7 +56,7 @@ export default {
           },
           {
             // Team has data or TeamMembers, archive team:
-            notificationAdded: r.table('Notification').insert({
+            notification: r.table('Notification').insert({
               id: shortid.generate(),
               orgId: doc('team')('orgId'),
               startAt: now,
@@ -69,7 +69,8 @@ export default {
         )
       }));
 
-    const {teamResults: {notificationAdded}, teamName, userDocs} = dbResult;
+    const {teamResults: {notification}, teamName, userDocs} = dbResult;
+    const notificationAdded = {notification};
     userDocs.forEach((user) => {
       const {id, tms} = user;
       // update the tms on auth0 in async

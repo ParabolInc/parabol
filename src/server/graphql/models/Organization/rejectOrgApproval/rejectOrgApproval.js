@@ -49,7 +49,7 @@ export default {
 
     // RESOLUTION
     const deniedByName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
-    const notificationAdded = {
+    const notification = {
       id: shortid.generate(),
       type: DENY_NEW_USER,
       startAt: now,
@@ -62,8 +62,9 @@ export default {
 
     await Promise.all([
       removeOrgApprovalAndNotification(orgId, inviteeEmail),
-      r.table('Notification').insert(notificationAdded)
+      r.table('Notification').insert(notification)
     ]);
+    const notificationAdded = {notification};
     getPubSub().publish(`${NOTIFICATION_ADDED}.${inviterUserId}`, {notificationAdded});
     return true;
   }
