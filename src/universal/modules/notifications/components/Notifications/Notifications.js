@@ -20,7 +20,7 @@ const Notifications = (props) => {
       <Helmet title="My Notifications | Parabol" />
       <div className={css(styles.wrapper)}>
         <Panel label="Notifications">
-          {notifications.edges.length ?
+          {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
               {notifications.edges.map(({node}) =>
                 (<NotificationRow

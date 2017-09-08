@@ -26,7 +26,7 @@ const RejectOrgApprovalModal = (props) => {
     error,
     handleSubmit,
     isClosing,
-    notificationId,
+    dbNotificationId,
     inviteeEmail,
     inviterName,
     submitting,
@@ -35,7 +35,7 @@ const RejectOrgApprovalModal = (props) => {
   const onSubmit = async (submissionData) => {
     const schema = rejectOrgApprovalValidation();
     const {data: {reason}} = schema(submissionData);
-    const variables = {reason, notificationId};
+    const variables = {reason, dbNotificationId};
     const {error: anError} = await cashay.mutate('rejectOrgApproval', {variables});
     if (anError) throw new SubmissionError(anError);
     closePortal();
@@ -79,12 +79,9 @@ RejectOrgApprovalModal.propTypes = {
   isClosing: PropTypes.bool,
   inviteeEmail: PropTypes.string,
   inviterName: PropTypes.string,
-  notificationId: PropTypes.string.isRequired,
-  orgId: PropTypes.string.isRequired,
-  preferredName: PropTypes.string.isRequired,
+  dbNotificationId: PropTypes.string.isRequired,
   submitting: PropTypes.bool,
   styles: PropTypes.object,
-  userId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({
@@ -98,7 +95,7 @@ const styleThunk = () => ({
 });
 
 export default portal({escToClose: true, closeAfter: 100})(
-  reduxForm({form: 'rejectOrgApproval', validate, shouldValidate})(
+  reduxForm({form: 'rejectOrgApproval', validate})(
     withStyles(styleThunk)(RejectOrgApprovalModal)
   )
 );

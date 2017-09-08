@@ -35,7 +35,7 @@ export default {
             type: REQUEST_NEW_USER
           })
           .filter((notification) => {
-            return notification('varList')(2).eq(email).and(notification('varList')(3).eq(teamId));
+            return r.and(notification('inviteeEmail').eq(email), notification('teamId').eq(teamId));
           })
           .delete();
       });

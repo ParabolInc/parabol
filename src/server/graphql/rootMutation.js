@@ -17,6 +17,7 @@ import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue';
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee';
 import githubAddMember from 'server/graphql/mutations/githubAddMember';
 import githubRemoveMember from 'server/graphql/mutations/githubRemoveMember';
+import inviteTeamMembers from 'server/graphql/mutations/inviteTeamMembers';
 import joinIntegration from 'server/graphql/mutations/joinIntegration';
 import leaveIntegration from 'server/graphql/mutations/leaveIntegration';
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
@@ -51,6 +52,7 @@ export default new GraphQLObjectType({
     githubAddAssignee,
     githubAddMember,
     githubRemoveMember,
+    inviteTeamMembers,
     joinIntegration,
     leaveIntegration,
     promoteFacilitator,

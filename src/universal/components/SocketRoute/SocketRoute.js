@@ -11,6 +11,7 @@ import NotificationAddedSubscription from 'universal/subscriptions/NotificationA
 import {DEFAULT_TTL} from 'universal/utils/constants';
 import withReducer from '../../decorators/withReducer/withReducer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import NotificationClearedSubscription from 'universal/subscriptions/NotificationClearedSubscription';
 
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingContainer = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer');
@@ -25,16 +26,42 @@ const query = graphql`
             orgId
             startAt
             type
-            ... on NotifyFacilitatorRequest {
-              requestorName
-              requestorId
-            }
             ... on NotifyAddedToTeam {
               _authToken {
                 sub
               }
+              inviterName
               teamName
-            } 
+              teamId
+            }
+            ... on NotifyDenial {
+              reason
+              deniedByName
+              inviteeEmail
+            }
+            ... on NotifyFacilitatorRequest {
+              requestorName
+              requestorId
+            }
+            ... on NotifyInvitation {
+              inviterName
+              inviteeEmail
+              teamId
+              teamName
+            }
+            ... on NotifyPayment {
+              last4
+              brand
+            }
+            ... on NotifyPromotion {
+              groupName
+            }
+            ... on NotifyTeamArchived {
+              teamName
+            }
+            ... on NotifyTrial {
+              trialExpiresAt
+            }
           }
         }    
       }
@@ -43,7 +70,8 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  NotificationAddedSubscription
+  NotificationAddedSubscription,
+  NotificationClearedSubscription
 ];
 
 const cacheConfig = {ttl: DEFAULT_TTL};

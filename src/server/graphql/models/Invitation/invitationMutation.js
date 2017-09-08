@@ -13,10 +13,8 @@ import resolveSentEmails from './inviteTeamMembers/resolveSentEmails';
 import hashInviteTokenKey from './inviteTeamMembers/hashInviteTokenKey';
 import resendInvite from './inviteTeamMembers/resendInvite';
 import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
-import inviteTeamMembers from 'server/graphql/models/Invitation/inviteTeamMembers/inviteTeamMembers';
 
 export default {
-  inviteTeamMembers,
   cancelInvite: {
     type: GraphQLBoolean,
     description: 'Cancel an invitation',

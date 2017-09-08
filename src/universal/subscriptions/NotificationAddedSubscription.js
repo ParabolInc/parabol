@@ -1,6 +1,6 @@
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {ADD_TO_TEAM, ephemeralNotifications, FACILITATOR_REQUEST} from 'universal/utils/constants';
+import {ADD_TO_TEAM, FACILITATOR_REQUEST} from 'universal/utils/constants';
 import isNotificationEphemeral from 'universal/utils/isNotificationEphemeral';
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
 
@@ -12,16 +12,41 @@ const subscription = graphql`
         orgId
         startAt
         type
-        ... on NotifyFacilitatorRequest {
-          requestorName
-          requestorId
-        }
         ... on NotifyAddedToTeam {
           _authToken {
             sub
           }
           inviterName
           teamName
+          teamId
+        }
+        ... on NotifyDenial {
+          reason
+          deniedByName
+          inviteeEmail
+        }
+        ... on NotifyFacilitatorRequest {
+          requestorName
+          requestorId
+        }
+        ... on NotifyInvitation {
+          inviterName
+          inviteeEmail
+          teamId
+          teamName
+        }
+        ... on NotifyPayment {
+          last4
+          brand
+        }
+        ... on NotifyPromotion {
+          groupName
+        }
+        ... on NotifyTeamArchived {
+          teamName
+        }
+        ... on NotifyTrial {
+          trialExpiresAt
         }
       }
     }

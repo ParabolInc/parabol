@@ -19,7 +19,7 @@ import {
   SUCCESS,
   TEAM_INVITE
 } from 'universal/utils/constants';
-import {Invitee} from '../invitationSchema';
+import {Invitee} from '../models/Invitation/invitationSchema';
 
 // actions, to be unioned with results
 const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
@@ -122,11 +122,10 @@ const getAction = (invitee, inviterIsBillingLeader) => {
 };
 
 export default {
-  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(InviteTeamMembersPayload))),
+  type: new GraphQLNonNull(InviteTeamMembersPayload),
   description: `If in the org,
      Send invitation emails to a list of email addresses, add them to the invitation table.
-     Else, send a request to the org leader to get them approval and put them in the OrgApproval table.
-     Returns true if invitation is sent, false if approval is needed, undefined/null if neither`,
+     Else, send a request to the org leader to get them approval and put them in the OrgApproval table.`,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -224,7 +223,7 @@ export default {
       createPendingApprovals(approvalEmails, orgId, teamId, teamName, userId)
     ]);
 
-    return detailedInvitations.map((invitee) => {
+    const results = detailedInvitations.map((invitee) => {
       const {email, action} = invitee;
       let result = action;
       if (action === ASK_APPROVAL) {
@@ -234,6 +233,7 @@ export default {
       }
       return {email, result};
     });
+    return {results};
   }
 };
 

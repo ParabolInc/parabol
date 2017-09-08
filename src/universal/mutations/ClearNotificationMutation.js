@@ -9,7 +9,7 @@ const mutation = graphql`
   }
 `;
 
-export const removeNotification = (viewer, deletedId) => {
+export const removeNotificationUpdater = (viewer, deletedId) => {
   const notifications = viewer.getLinkedRecords('notifications');
   if (notifications) {
     const newNodes = getArrayWithoutIds(notifications, deletedId);
@@ -24,13 +24,12 @@ const ClearNotificationMutation = (environment, notificationId, onError, onCompl
     variables: {notificationId},
     updater: (store) => {
       const viewer = store.get(viewerId);
-      const payload = store.getRootField('clearNotification');
-      const deletedId = payload.getValue('deletedId');
-      removeNotification(viewer, deletedId);
+      const deletedId = store.getRootField('clearNotification').getValue('deletedId');
+      removeNotificationUpdater(viewer, deletedId);
     },
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId);
-      removeNotification(viewer, notificationId);
+      removeNotificationUpdater(viewer, notificationId);
     },
     onCompleted,
     onError

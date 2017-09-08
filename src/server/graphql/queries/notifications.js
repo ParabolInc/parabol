@@ -18,12 +18,9 @@ export default {
 
     // RESOLUTION
     // TODO consider moving the requestedFields to all queries
-    const requestedFields = getRequestedFields(refs);
-    const pluckFields = requestedFields.concat('startAt');
     const nodes = await r.table('Notification')
       .getAll(userId, {index: 'userIds'})
       .filter((row) => row('startAt').le(r.now()))
-      .pluck(pluckFields)
       .orderBy(r.desc('startAt'));
     const edges = nodes.map((node) => ({
       cursor: node.startAt,

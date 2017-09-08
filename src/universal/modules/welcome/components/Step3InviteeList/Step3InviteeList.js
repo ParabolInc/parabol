@@ -12,6 +12,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 
 const validate = (values) => {
   const schema = makeStep3Schema();
@@ -36,13 +37,7 @@ const Step3InviteeList = (props) => {
           task
         };
       });
-      const options = {
-        variables: {
-          teamId,
-          invitees: serverInvitees
-        }
-      };
-      cashay.mutate('inviteTeamMembers', options);
+      InviteTeamMembersMutation(atmosphere, serverInvitees, teamId, dispatch);
     }
     history.push(`/team/${teamId}`); // redirect leader to their new team
 
