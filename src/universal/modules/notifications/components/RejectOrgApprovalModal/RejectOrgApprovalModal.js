@@ -1,17 +1,16 @@
+import {css} from 'aphrodite-local-styles/no-important';
+import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {DashModal} from 'universal/components/Dashboard';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
+import portal from 'react-portal-hoc';
+import {Field, reduxForm, SubmissionError} from 'redux-form';
 import Button from 'universal/components/Button/Button';
+import {DashModal} from 'universal/components/Dashboard';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import Type from 'universal/components/Type/Type';
-import {cashay} from 'cashay';
-import portal from 'react-portal-hoc';
-import {reduxForm, Field, SubmissionError} from 'redux-form';
-import shouldValidate from 'universal/validation/shouldValidate';
 import formError from 'universal/styles/helpers/formError';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 import rejectOrgApprovalValidation from './rejectOrgApprovalValidation';
 
 const validate = (values) => {
@@ -81,7 +80,7 @@ RejectOrgApprovalModal.propTypes = {
   inviterName: PropTypes.string,
   dbNotificationId: PropTypes.string.isRequired,
   submitting: PropTypes.bool,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

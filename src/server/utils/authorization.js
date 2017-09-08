@@ -1,6 +1,6 @@
-import {errorObj} from './utils';
-import getRethink from '../database/rethinkDriver';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import getRethink from '../database/rethinkDriver';
+import {errorObj} from './utils';
 
 export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -183,11 +183,7 @@ export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
   return true;
 };
 
-export const requireNotificationOwner = async (userId, notificationId) => {
-  const r = getRethink();
-  const res = await r.table('Notification').get(notificationId)('userIds').contains(userId).default(null);
-  if (!res) {
-    throw errorObj({_error: `Notification ${notificationId} does not exist or ${userId} does not have access to it`});
-  }
-  return true;
+export const requireNotificationOwner = async (userId, notification) => {
+  if (notification.userIds.includes(userId)) return true;
+  throw errorObj({_error: `Notification ${notification.id} does not exist or ${userId} does not have access to it`});
 };

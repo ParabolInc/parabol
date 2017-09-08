@@ -1,18 +1,16 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {reduxForm, destroy} from 'redux-form';
+import {Link, withRouter} from 'react-router-dom';
+import {destroy, reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
-import {cashay} from 'cashay';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import {withRouter} from 'react-router-dom';
-import {Link} from 'react-router-dom';
-import makeStep3Schema from 'universal/validation/makeStep3Schema';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
+import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
+import withStyles from 'universal/styles/withStyles';
+import makeStep3Schema from 'universal/validation/makeStep3Schema';
 
 const validate = (values) => {
   const schema = makeStep3Schema();

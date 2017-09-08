@@ -27,3 +27,8 @@ export const UPCOMING_INVOICE_TIME_VALID = ms('10m');
 /* invite token keys */
 export const INVITE_TOKEN_INVITE_ID_LEN = 6;
 export const INVITE_TOKEN_KEY_LEN = 8;
+
+/* invitation actions */
+export const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
+export const SEND_EMAIL = 'SEND_EMAIL';
+export const ASK_APPROVAL = 'ASK_APPROVAL';

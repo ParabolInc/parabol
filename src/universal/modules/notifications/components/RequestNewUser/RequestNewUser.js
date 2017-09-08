@@ -1,22 +1,20 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Button from 'universal/components/Button/Button';
-import Row from 'universal/components/Row/Row';
-import {cashay} from 'cashay';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
-import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
+import Row from 'universal/components/Row/Row';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
 const RequestNewUser = (props) => {
   const {
     atmosphere,
-    dispatch,
     styles,
     notification,
     submitting,
@@ -24,14 +22,11 @@ const RequestNewUser = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id, inviterName, inviteeEmail, teamId, teamName} = notification;
+  const {id, inviterName, inviteeEmail, teamName} = notification;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acceptInvite = () => {
     submitMutation();
-    const invitees = [{
-      email: inviteeEmail
-    }];
-    InviteTeamMembersMutation(atmosphere, invitees, teamId, dispatch, onError, onCompleted);
+    ApproveToOrgMutation(atmosphere, dbNotificationId, onError, onCompleted);
   };
 
   const rejectToggle = (

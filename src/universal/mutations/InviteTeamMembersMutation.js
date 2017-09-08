@@ -13,9 +13,9 @@ const mutation = graphql`
   }
 `;
 
-//export const addInvitationUpdater = () => {
+// export const addInvitationUpdater = () => {
 //  // TODO add some logic when the invitation array is no longer fed by the changefeed
-//};
+// };
 
 const toastNewInvitations = (results, dispatch) => {
   const resultsByType = results.reduce((obj, {result, email}) => {
@@ -34,7 +34,7 @@ const toastNewInvitations = (results, dispatch) => {
         message: emails.length === 1 ?
           `${firstEmail} is already on your team!` :
           `The following users are already on your team: ${allEmails}`
-      }))
+      }));
     } else if (result === PENDING_APPROVAL) {
       dispatch(showSuccess({
         title: 'Request sent to admin',
@@ -44,7 +44,7 @@ const toastNewInvitations = (results, dispatch) => {
       }));
     } else if (result === REACTIVATED) {
       dispatch(showSuccess({
-        title: `Back in it!`,
+        title: 'Back in it!',
         message: emails.length === 1 ?
           `${firstEmail} used to be on this team, so they were automatically approved` :
           `The following team members have been reinstated: ${allEmails}`
@@ -69,9 +69,9 @@ const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onEr
           result: result.getValue('result')
         }));
       toastNewInvitations(results, dispatch);
-      //addInvitationUpdater(store, viewerId, teamId, node);
+      // addInvitationUpdater(store, viewerId, teamId, node);
     },
-    //optimisticUpdater: (store) => {
+    // optimisticUpdater: (store) => {
     //  // TODO feed isBillingLeader in here & then invite them if true, or set to pending if false
     //  //const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId);
     //  //const repoId = `addGitHubRepo:${tempId++}`;
@@ -80,7 +80,7 @@ const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onEr
     //  //  .setValue(repoId, 'id')
     //  //  .setLinkedRecords([teamMemberNode], 'teamMembers');
     //  //addInvitationUpdater(store, viewerId, teamId, repo);
-    //},
+    // },
     onCompleted,
     onError
   });

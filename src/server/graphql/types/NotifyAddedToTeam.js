@@ -23,7 +23,7 @@ const NotifyAddedToTeam = new GraphQLObjectType({
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId the user is joining'
-    },
+    }
   })
 });
 

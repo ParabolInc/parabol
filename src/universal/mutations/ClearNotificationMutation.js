@@ -1,35 +1,37 @@
 import {commitMutation} from 'react-relay';
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
+import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
-  mutation ClearNotificationMutation($notificationId: ID!) {
-    clearNotification(notificationId: $notificationId) {
+  mutation ClearNotificationMutation($dbNotificationId: ID!) {
+    clearNotification(dbNotificationId: $dbNotificationId) {
       deletedId
     }
   }
 `;
 
-export const removeNotificationUpdater = (viewer, deletedId) => {
+export const clearNotificationUpdater = (viewer, deletedGlobalId) => {
   const notifications = viewer.getLinkedRecords('notifications');
   if (notifications) {
-    const newNodes = getArrayWithoutIds(notifications, deletedId);
+    const newNodes = getArrayWithoutIds(notifications, deletedGlobalId);
     viewer.setLinkedRecords(newNodes, 'notifications');
   }
 };
 
-const ClearNotificationMutation = (environment, notificationId, onError, onCompleted) => {
+const ClearNotificationMutation = (environment, dbNotificationId, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {notificationId},
+    variables: {dbNotificationId},
     updater: (store) => {
       const viewer = store.get(viewerId);
       const deletedId = store.getRootField('clearNotification').getValue('deletedId');
-      removeNotificationUpdater(viewer, deletedId);
+      clearNotificationUpdater(viewer, deletedId);
     },
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId);
-      removeNotificationUpdater(viewer, notificationId);
+      const notificationId = toGlobalId('Notification', dbNotificationId);
+      clearNotificationUpdater(viewer, notificationId);
     },
     onCompleted,
     onError

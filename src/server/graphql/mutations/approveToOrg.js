@@ -1,0 +1,58 @@
+import {GraphQLID, GraphQLNonNull} from 'graphql';
+import getRethink from 'server/database/rethinkDriver';
+import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
+import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
+import DefaultRemovalPayload from 'server/graphql/types/DefaultRemovalPayload';
+import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {NOTIFICATION_CLEARED} from 'universal/utils/constants';
+import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
+
+export default {
+  type: new GraphQLNonNull(DefaultRemovalPayload),
+  description: 'Approve an outsider to join the organization',
+  args: {
+    dbNotificationId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The notification the billing leader is accepting'
+    }
+  },
+  async resolve(source, {dbNotificationId}, {authToken, socket}) {
+    const r = getRethink();
+
+    // AUTH
+    const userId = getUserId(authToken);
+    const notification = await r.table('Notification').get(dbNotificationId);
+    await requireNotificationOwner(userId, notification);
+
+    // RESOLUTION
+    const {inviterId, teamId, inviteeEmail, orgId, userIds} = notification;
+    const inviterAndTeamName = await getInviterInfoAndTeamName(teamId, inviterId);
+    const inviterDetails = {
+      ...inviterAndTeamName,
+      orgId,
+      teamId
+    };
+
+    // invitee
+    const invitee = r.table('User')
+      .getAll(inviteeEmail, {index: 'email'})
+      .nth(0)
+      .pluck('inactive')
+      .default(null);
+
+    const invitees = [{email: inviteeEmail}];
+    const isActive = invitee && !invitee.inactive;
+    if (isActive) {
+      await sendInvitationViaNotification(invitees, inviterDetails);
+    } else {
+      await asyncInviteTeam(inviterId, teamId, invitees);
+    }
+    const notificationCleared = {deletedId: dbNotificationId};
+    userIds.forEach((notifiedUserId) => {
+      getPubSub().publish(`${NOTIFICATION_CLEARED}.${notifiedUserId}`, {notificationCleared, mutatorId: socket.id});
+    });
+    return notificationCleared;
+  }
+};
+

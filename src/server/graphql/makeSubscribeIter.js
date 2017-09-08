@@ -22,7 +22,7 @@ const makeSubscribeIter = (channelName, options = {}) => {
         };
       }
       if (channelName.startsWith(NOTIFICATION_ADDED)) {
-      console.log('nextRes', nextRes)
+        console.log('nextRes', nextRes);
       }
       return nextRes;
     }

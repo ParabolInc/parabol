@@ -9,6 +9,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const AddedToTeam = (props) => {
   const {
@@ -20,10 +21,11 @@ const AddedToTeam = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id: notificationId, teamName} = notification;
+  const {id, teamName} = notification;
+  const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
   };
   return (
     <Row>

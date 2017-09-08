@@ -11,7 +11,7 @@ export default {
 
     // RESOLUTION
     const channelName = `${NOTIFICATION_ADDED}.${userId}`;
-    console.log('subbing to', channelName)
+    console.log('subbing to', channelName);
     return makeSubscribeIter(channelName);
   }
 };

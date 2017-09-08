@@ -1,6 +1,5 @@
 import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import getRequestedFields from 'server/graphql/getRequestedFields';
 import {NotificationConnection} from 'server/graphql/types/Notification';
 import {getUserId} from 'server/utils/authorization';
 
@@ -11,7 +10,7 @@ export default {
     ...forwardConnectionArgs
   },
   description: 'all the notifications for a single user',
-  resolve: async (source, args, {authToken}, refs) => {
+  resolve: async (source, args, {authToken}) => {
     const r = getRethink();
     // AUTH
     const userId = getUserId(authToken);

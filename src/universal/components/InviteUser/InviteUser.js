@@ -82,6 +82,7 @@ const InviteUser = (props) => {
 };
 
 InviteUser.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   actions: PropTypes.any,
   dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
@@ -123,4 +124,4 @@ export default withAtmosphere(
   reduxForm({form: 'inviteTeamMember', validate})(
     withStyles(styleThunk)(InviteUser)
   )
-)
+);

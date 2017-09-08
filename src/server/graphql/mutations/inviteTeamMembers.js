@@ -16,37 +16,12 @@ import {
   NOTIFICATION_ADDED,
   PENDING_APPROVAL,
   REACTIVATED,
-  SUCCESS,
-  TEAM_INVITE
+  SUCCESS
 } from 'universal/utils/constants';
 import {Invitee} from '../models/Invitation/invitationSchema';
+import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
+import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
 
-// actions, to be unioned with results
-const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
-const SEND_EMAIL = 'SEND_EMAIL';
-const ASK_APPROVAL = 'ASK_APPROVAL';
-
-const sendNotification = async (invitees, inviter) => {
-  if (invitees.length === 0) return;
-  const r = getRethink();
-  const now = new Date();
-  const {orgId, inviterName, teamId, teamName} = inviter;
-  const invitations = invitees.map((invitee) => ({
-    id: shortid.generate(),
-    type: TEAM_INVITE,
-    startAt: now,
-    orgId,
-    userIds: [invitee.userId],
-    inviterName,
-    teamId,
-    teamName
-  }));
-  await r.table('Notification').insert(invitations);
-  invitations.forEach((notification) => {
-    const notificationAdded = {notification};
-    getPubSub().publish(`${NOTIFICATION_ADDED}.${notification.userId}`, {notificationAdded});
-  });
-};
 
 const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
   if (invitees.length === 0) return;
@@ -203,22 +178,19 @@ export default {
     const approvalEmails = inviteesToApprove.map(({email}) => email);
     const approvalsToClear = inviteesToNotify.concat(inviteesToEmail).map(({email}) => email);
 
-    // this function is called by a billing leader when they approve someone in which case we need the original inviterId
-    const removedApprovals = await removeOrgApprovalAndNotification(orgId, approvalsToClear);
     const invitesByUserId = inviteesToEmail.reduce((invitations, invitee) => {
       const {email} = invitee;
-      const removedApproval = removedApprovals.find((approval) => approval.inviteeEmail === email);
-      const inviterUserId = removedApproval ? removedApproval.inviterUserId : userId;
-      invitations[inviterUserId] = invitations[inviterUserId] || [];
-      invitations[inviterUserId].push(email);
+      invitations[userId] = invitations[userId] || [];
+      invitations[userId].push(email);
       return invitations;
     }, {});
     const sendEmails = Object.keys(invitesByUserId)
       .map((inviterId) => asyncInviteTeam(inviterId, teamId, invitesByUserId[inviterId]));
 
     await Promise.all([
+      removeOrgApprovalAndNotification(orgId, approvalsToClear),
       reactivateAndSendWelcomeBack(inviteesToReactivate, inviterDetails, exchange),
-      sendNotification(inviteesToNotify, inviterDetails),
+      sendInvitationViaNotification(inviteesToNotify, inviterDetails),
       Promise.all(sendEmails),
       createPendingApprovals(approvalEmails, orgId, teamId, teamName, userId)
     ]);

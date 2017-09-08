@@ -9,23 +9,24 @@ export default {
   type: new GraphQLNonNull(DefaultRemovalPayload),
   description: 'Remove a notification by ID',
   args: {
-    notificationId: {
+    dbNotificationId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the notification to remove'
     }
   },
-  async resolve(source, {notificationId}, {authToken}) {
+  async resolve(source, {dbNotificationId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
     const userId = getUserId(authToken);
-    await requireNotificationOwner(userId, notificationId);
+    const notification = await r.table('Notification').get(dbNotificationId);
+    await requireNotificationOwner(userId, notification);
 
     // RESOLUTION
-    await r.table('Notification').get(notificationId).delete();
+    await r.table('Notification').get(dbNotificationId).delete();
 
     const notificationCleared = {
-      deletedId: notificationId
+      deletedId: dbNotificationId
     };
     getPubSub().publish(`${NOTIFICATION_CLEARED}.${userId}`, {notificationCleared, mutatorId: socket.id});
     return notificationCleared;
