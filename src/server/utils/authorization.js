@@ -185,5 +185,5 @@ export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
 
 export const requireNotificationOwner = async (userId, notification) => {
   if (notification.userIds.includes(userId)) return true;
-  throw errorObj({_error: `Notification ${notification.id} does not exist or ${userId} does not have access to it`});
+  throw new Error(`Notification ${notification.id} does not exist or ${userId} does not have access to it`);
 };

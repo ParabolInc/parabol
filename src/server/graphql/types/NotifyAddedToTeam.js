@@ -4,7 +4,7 @@ import Notification, {notificationInterfaceFields} from 'server/graphql/types/No
 
 const NotifyAddedToTeam = new GraphQLObjectType({
   name: 'NotifyAddedToTeam',
-  description: 'A notification sent by a team member to request to become the facilitator',
+  description: 'A notification sent to someone who was just added to a team',
   interfaces: () => [Notification],
   fields: () => ({
     ...notificationInterfaceFields,

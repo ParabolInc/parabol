@@ -26,16 +26,17 @@ export default {
     await requireNotificationOwner(userId, notification);
 
     // RESOLUTION
-    const {inviterId, teamId, inviteeEmail, orgId, userIds} = notification;
-    const inviterAndTeamName = await getInviterInfoAndTeamName(teamId, inviterId);
+    const {inviterUserId, teamId, inviteeEmail, orgId, userIds} = notification;
+    const {inviterName, teamName} = await getInviterInfoAndTeamName(teamId, inviterUserId);
     const inviterDetails = {
-      ...inviterAndTeamName,
+      inviterName,
+      teamName,
       orgId,
       teamId
     };
 
     // invitee
-    const invitee = r.table('User')
+    const invitee = await r.table('User')
       .getAll(inviteeEmail, {index: 'email'})
       .nth(0)
       .pluck('inactive')
@@ -46,7 +47,7 @@ export default {
     if (isActive) {
       await sendInvitationViaNotification(invitees, inviterDetails);
     } else {
-      await asyncInviteTeam(inviterId, teamId, invitees);
+      await asyncInviteTeam(inviterUserId, teamId, invitees);
     }
     const notificationCleared = {deletedId: dbNotificationId};
     userIds.forEach((notifiedUserId) => {

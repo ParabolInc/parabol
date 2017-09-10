@@ -162,7 +162,7 @@ class MockDB {
 
   newNotification(overrides = {}, template = {}) {
     return this.closeout('notification', {
-      id: `${overrides.type}|${shortid.generate()}`,
+      id: `${template.type}|${shortid.generate()}`,
       startAt: new Date(__anHourAgo),
       orgId: this.context.organization.id,
       userIds: [this.context.user.id],
