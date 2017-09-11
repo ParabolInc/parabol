@@ -1,4 +1,4 @@
-import asyncInviteTeam from './asyncInviteTeam';
+import asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 
 export default async function inviteAsBillingLeader(invitees, orgId, inviterUserId, teamId) {

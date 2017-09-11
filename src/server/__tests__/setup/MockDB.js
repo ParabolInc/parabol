@@ -289,6 +289,7 @@ class MockDB {
       inactive: false,
       identities: [],
       picture: 'https://placeimg.com/100/100/animals',
+      preferredName: overrides.name,
       tms: [teamId],
       updatedAt: anHourAgo,
       userOrgs: [{

@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
+import asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import DefaultRemovalPayload from 'server/graphql/types/DefaultRemovalPayload';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';

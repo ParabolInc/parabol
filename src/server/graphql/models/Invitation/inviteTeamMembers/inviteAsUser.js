@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
-import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
+import asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 
 export default async function inviteAsUser(invitees, orgId, userId, teamId, teamName) {

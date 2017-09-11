@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`inviteTeamMembers asks the billing leader for approval 1`] = `
+Object {
+  "results": Array [
+    Object {
+      "email": 0,
+      "preferredName": undefined,
+      "result": "PENDING_APPROVAL",
+    },
+  ],
+}
+`;
+
+exports[`inviteTeamMembers invites a new person via email 1`] = `
+Object {
+  "results": Array [
+    Object {
+      "email": 0,
+      "preferredName": undefined,
+      "result": "SUCCESS",
+    },
+  ],
+}
+`;
+
+exports[`inviteTeamMembers invites a new person via notification 1`] = `
+Object {
+  "results": Array [
+    Object {
+      "email": 0,
+      "preferredName": "Leader of One",
+      "result": "ALREADY_ON_TEAM",
+    },
+  ],
+}
+`;
+
+exports[`inviteTeamMembers reactivates a team member that has been invited back to the team 1`] = `
+Object {
+  "results": Array [
+    Object {
+      "email": "bruce.banner@avengers.org",
+      "preferredName": "Hulk",
+      "result": "SUCCESS",
+    },
+  ],
+}
+`;
+
+exports[`inviteTeamMembers throws in the caller is not on the team 1`] = `"{\\"_error\\":\\"Unauthorized to view details for team 0 with token {\\\\\\"iss\\\\\\":\\\\\\"action-test\\\\\\",\\\\\\"sub\\\\\\":1,\\\\\\"aud\\\\\\":\\\\\\"test-audience\\\\\\",\\\\\\"exp\\\\\\":1485849600,\\\\\\"iat\\\\\\":1483257600,\\\\\\"tms\\\\\\":[\\\\\\"fakeTeam\\\\\\"]}\\"}"`;

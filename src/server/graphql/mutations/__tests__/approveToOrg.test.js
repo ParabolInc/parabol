@@ -4,7 +4,7 @@ import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
-import * as asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
+import * as asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
 import * as sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
 import * as getPubSub from 'server/utils/getPubSub';

@@ -10,7 +10,7 @@ import {TeamInput} from 'server/graphql/models/Team/teamSchema';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import addOrgValidation from 'server/graphql/models/Organization/addOrg/addOrgValidation';
 import createTeamAndLeader from '../../Team/createFirstTeam/createTeamAndLeader';
-import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
+import asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 

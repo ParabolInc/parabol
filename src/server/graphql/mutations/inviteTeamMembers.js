@@ -1,21 +1,20 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
-import createPendingApprovals from 'server/safeMutations/createPendingApprovals';
-import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
-import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
+import asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import getResults from 'server/graphql/mutations/helpers/inviteTeamMembers/getResults';
 import makeDetailedInvitations from 'server/graphql/mutations/helpers/inviteTeamMembers/makeDetailedInvitations';
 import publishNotifications from 'server/graphql/mutations/helpers/inviteTeamMembers/publishNotifications';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
+import createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reactivateTeamMembersAndMakeNotifications';
+import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
 import {getUserId, getUserOrgDoc, isBillingLeader, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
 import {REACTIVATED, TEAM_INVITE} from 'universal/utils/constants';
+import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import {Invitee} from '../models/Invitation/invitationSchema';
-import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -42,7 +41,14 @@ export default {
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
 
     const emailArr = invitees.map((invitee) => invitee.email);
-    const {pendingEmailInvitations, pendingNotificationInvitations, pendingApprovals, teamMembers, users} = await r.expr({
+    const {
+      inviterDoc,
+      pendingEmailInvitations,
+      pendingNotificationInvitations,
+      pendingApprovals,
+      teamMembers,
+      users
+    } = await r.expr({
       pendingEmailInvitations: r.table('Invitation')
         .getAll(r.args(emailArr), {index: 'email'})
         .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
@@ -64,16 +70,23 @@ export default {
         .coerceTo('array'),
       users: r.table('User')
         .getAll(r.args(emailArr), {index: 'email'})
-        .coerceTo('array')
+        .coerceTo('array'),
+      inviterDoc: r.table('User').get(userId)
+        .merge((doc) => ({
+          inviterAvatar: doc('picture'),
+          inviterEmail: doc('email'),
+          inviterName: doc('preferredName')
+        }))
+        .pluck('email', 'picture', 'preferredName')
     });
     const pendingInvitations = pendingEmailInvitations.concat(pendingNotificationInvitations);
     // RESOLUTION
-    const inviterAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
     const inviter = {
-      ...inviterAndTeamName,
+      ...inviterDoc,
       userId,
       orgId,
       teamId,
+      teamName,
       isBillingLeader: isBillingLeader(userOrgDoc)
     };
 
