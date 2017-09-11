@@ -1,18 +1,16 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {Field, reduxForm} from 'redux-form';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import Button from 'universal/components/Button/Button';
 import Editable from 'universal/components/Editable/Editable';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import inviteUserValidation from './inviteUserValidation';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const makeSchemaProps = (props) => {
   const {invitations, orgApprovals, teamMembers} = props;

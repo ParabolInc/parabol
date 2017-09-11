@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`publishNotifications publishes cleared notifications to the message bus 1`] = `Array []`;
+
+exports[`publishNotifications publishes new notifications to the message bus 1`] = `
+Array [
+  Array [
+    "notificationsAdded.1",
+    Object {
+      "notificationsAdded": Object {
+        "notifications": Array [
+          Object {
+            "type": "REACTIVATED",
+          },
+          Object {
+            "type": "REACTIVATED",
+          },
+        ],
+      },
+    },
+  ],
+  Array [
+    "notificationsAdded.2",
+    Object {
+      "notificationsAdded": Object {
+        "notifications": Array [
+          Object {
+            "type": "REACTIVATED",
+          },
+        ],
+      },
+    },
+  ],
+]
+`;

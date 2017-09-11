@@ -1,7 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
-import {BILLING_LEADER, NOTIFICATIONS_ADDED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default async function createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName, userId) {
   if (outOfOrgEmails.length === 0) return [];

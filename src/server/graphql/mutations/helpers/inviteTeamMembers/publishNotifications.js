@@ -1,19 +1,10 @@
 import getPubSub from 'server/utils/getPubSub';
 import {NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
-import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 
-const publishNotifications = (notificationsToSend) => {
-  const {
-    reactivation,
-    notificationsToClear,
-    teamInvite,
-    approval
-  } = notificationsToSend;
-
-  const allNotificationsToAdd = mergeObjectsWithArrValues(reactivation, teamInvite, approval);
-  Object.keys(allNotificationsToAdd).forEach((userId) => {
+const publishNotifications = ({notificationsToAdd, notificationsToClear}) => {
+  Object.keys(notificationsToAdd).forEach((userId) => {
     const notificationsAdded = {
-      notifications: allNotificationsToAdd[userId]
+      notifications: notificationsToAdd[userId]
     };
     getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
   });

@@ -12,9 +12,10 @@ import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reac
 import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
 import {getUserId, getUserOrgDoc, isBillingLeader, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
-import {REACTIVATED} from 'universal/utils/constants';
+import {REACTIVATED, TEAM_INVITE} from 'universal/utils/constants';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import {Invitee} from '../models/Invitation/invitationSchema';
+import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -41,10 +42,18 @@ export default {
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
 
     const emailArr = invitees.map((invitee) => invitee.email);
-    const {pendingInvitations, pendingApprovals, teamMembers, users} = await r.expr({
-      pendingInvitations: r.table('Invitation')
+    const {pendingEmailInvitations, pendingNotificationInvitations, pendingApprovals, teamMembers, users} = await r.expr({
+      pendingEmailInvitations: r.table('Invitation')
         .getAll(r.args(emailArr), {index: 'email'})
         .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
+        .coerceTo('array'),
+      pendingNotificationInvitations: r.table('Notification')
+        .getAll(orgId, {index: 'orgId'})
+        .filter({
+          type: TEAM_INVITE,
+          teamId
+        })
+        .filter((doc) => r.expr(emailArr).includes(doc('inviteeEmail')))('inviteeEmail')
         .coerceTo('array'),
       pendingApprovals: r.table('OrgApproval')
         .getAll(r.args(emailArr), {index: 'email'})
@@ -57,7 +66,7 @@ export default {
         .getAll(r.args(emailArr), {index: 'email'})
         .coerceTo('array')
     });
-
+    const pendingInvitations = pendingEmailInvitations.concat(pendingNotificationInvitations);
     // RESOLUTION
     const inviterAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
     const inviter = {
@@ -76,7 +85,7 @@ export default {
     const approvalEmails = inviteesToApprove.map(({email}) => email);
     const approvalsToClear = inviteesToNotify.concat(inviteesToEmail).map(({email}) => email);
 
-    const notificationsToSend = await resolvePromiseObj({
+    const {reactivations, notificationsToClear, teamInvites, approvals} = await resolvePromiseObj({
       reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers),
       notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear),
       teamInvites: sendInvitationViaNotification(inviteesToNotify, inviter),
@@ -84,13 +93,14 @@ export default {
       emailInvites: asyncInviteTeam(userId, teamId, inviteesToEmail)
     });
 
-    publishNotifications(notificationsToSend);
+    const notificationsToAdd = mergeObjectsWithArrValues(reactivations, teamInvites, approvals);
+    publishNotifications({notificationsToAdd, notificationsToClear});
     const results = getResults(detailedInvitations);
     return {results};
 
     // uncomment this when moving teams to relay
-    //getPubSub().publish(`${TEAM_MEMBERS_INVITED}.${teamId}`, {teamMembersInvited, mutatorId: socket.id});
-    //return teamMembersInvited;
+    // getPubSub().publish(`${TEAM_MEMBERS_INVITED}.${teamId}`, {teamMembersInvited, mutatorId: socket.id});
+    // return teamMembersInvited;
   }
 };
 

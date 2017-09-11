@@ -1,17 +1,12 @@
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLID
-} from 'graphql';
-import {getUserId, getUserOrgDoc, requireWebsocket, requireOrgLeader} from 'server/utils/authorization';
-import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import rejectOrgApprovalValidation from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApprovalValidation';
 import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
+import publishNotifications from 'server/graphql/mutations/helpers/inviteTeamMembers/publishNotifications';
+import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
-import getPubSub from 'server/utils/getPubSub';
+import {DENY_NEW_USER} from 'universal/utils/constants';
 
 export default {
   type: GraphQLBoolean,
@@ -64,12 +59,11 @@ export default {
       removeOrgApprovalAndNotification(orgId, inviteeEmail),
       r.table('Notification').insert(notification)
     ]);
-    //const notificationAdded = {notification};
-    //const notificationCleared = {deletedId: removedNotification.id};
-    //removedNotification.userIds.forEach((notifiedUserId) => {
-    //  getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationCleared});
-    //});
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${inviterUserId}`, {notificationAdded});
+    const notificationsToAdd = {
+      [inviterUserId]: [notification]
+    };
+
+    publishNotifications({notificationsToAdd, notificationsToClear});
     return true;
   }
 };

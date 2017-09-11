@@ -2,17 +2,17 @@ import {parse, subscribe} from 'graphql';
 import {forAwaitEach} from 'iterall';
 import Schema from 'server/graphql/rootSchema';
 
-const handleGqlResponse = (value, socket) => {
-  if (value.clientValue) {
-    const {_authToken: clientAuthToken, ...clientValue} = value;
-    socket.setAuthToken({
-      ...clientAuthToken,
-      exp: undefined
-    });
-    return clientValue;
-  }
-  return value;
-};
+//const handleGqlResponse = (value, socket) => {
+//  if (value.clientValue) {
+//    const {_authToken: clientAuthToken, ...clientValue} = value;
+//    socket.setAuthToken({
+//      ...clientAuthToken,
+//      exp: undefined
+//    });
+//    return clientValue;
+//  }
+//  return value;
+//};
 
 export default function scRelaySubscribeHandler(exchange, socket) {
   socket.subs = socket.subs || [];
@@ -24,7 +24,6 @@ export default function scRelaySubscribeHandler(exchange, socket) {
     const asyncIterator = subscribe(Schema, document, {}, context, variables);
     socket.subs[opId] = asyncIterator;
     const iterableCb = (value) => {
-      //const clientValue = handleGqlResponse(value, socket);
       socket.emit(`gqlData.${opId}`, value);
     };
 

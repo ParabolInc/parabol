@@ -70,7 +70,7 @@ describe('approveToOrg', () => {
     const mockDB = new MockDB();
     await mockDB.init()
       .user(1, {userOrgs: [{role: BILLING_LEADER, id: mockDB.context.organization.id}]})
-      .newNotification(undefined, {type: REQUEST_NEW_USER})
+      .newNotification(undefined, {type: REQUEST_NEW_USER});
     const {notification} = mockDB.context;
     const firstUser = mockDB.db.user[0];
     const authToken = mockAuthToken(firstUser);
@@ -82,7 +82,7 @@ describe('approveToOrg', () => {
     await approveToOrg.resolve(undefined, {dbNotificationId}, {authToken, socket});
 
     // VERIFY
-    expect(mockPubSub.publish).toHaveBeenCalledTimes(2)
+    expect(mockPubSub.publish).toHaveBeenCalledTimes(2);
   });
 
   test('throws if the caller does not own the notification', async () => {

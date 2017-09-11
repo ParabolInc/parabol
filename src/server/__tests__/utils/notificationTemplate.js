@@ -46,7 +46,7 @@ export default function notificationTemplate(template) {
       reason: 'Do not like them',
       deniedByName: this.context.user[0].preferredName,
       inviteeEmail: newInvitee().email
-    }
+    };
   }
   if (type === PROMOTE_TO_BILLING_LEADER) {
     return {

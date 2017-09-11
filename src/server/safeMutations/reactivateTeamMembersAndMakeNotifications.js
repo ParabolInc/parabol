@@ -65,7 +65,7 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
     teamName
   }));
   await r.table('Notification').insert(notifications);
-  return makeReactivationNotifications(reactivatedUsers, teamMembers, inviter.userId)
+  return makeReactivationNotifications(reactivatedUsers, teamMembers, inviter.userId);
 };
 
 export default reactivateTeamMembersAndMakeNotifications;
