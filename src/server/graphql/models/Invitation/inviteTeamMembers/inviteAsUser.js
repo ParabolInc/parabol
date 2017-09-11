@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
-import createPendingApprovals from 'server/graphql/models/Invitation/inviteTeamMembers/createPendingApprovals';
+import createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 
 export default async function inviteAsUser(invitees, orgId, userId, teamId, teamName) {
   const r = getRethink();
@@ -19,8 +19,14 @@ export default async function inviteAsUser(invitees, orgId, userId, teamId, team
 
   // seek approval for the rest
   const outOfOrgEmails = inviteeEmails.filter((email) => !inOrgInvitees.find((i) => i.email === email));
+  const inviter = {
+    orgId,
+    teamId,
+    teamName,
+    userId
+  };
   if (outOfOrgEmails.length) {
-    await createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName, userId);
+    await createPendingApprovals(outOfOrgEmails, inviter);
     return false;
   }
   return true;

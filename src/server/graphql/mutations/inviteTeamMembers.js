@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
-import createPendingApprovals from 'server/graphql/models/Invitation/inviteTeamMembers/createPendingApprovals';
+import createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import getResults from 'server/graphql/mutations/helpers/inviteTeamMembers/getResults';
@@ -89,7 +89,7 @@ export default {
       reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers),
       notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear),
       teamInvites: sendInvitationViaNotification(inviteesToNotify, inviter),
-      approvals: createPendingApprovals(approvalEmails, orgId, teamId, teamName, userId),
+      approvals: createPendingApprovals(approvalEmails, inviter),
       emailInvites: asyncInviteTeam(userId, teamId, inviteesToEmail)
     });
 
