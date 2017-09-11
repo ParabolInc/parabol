@@ -6,6 +6,7 @@ import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
+import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
 import NotifyPayment from 'server/graphql/types/NotifyPayment';
 import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
@@ -14,8 +15,10 @@ import {
   ADD_TO_TEAM,
   DENY_NEW_USER,
   FACILITATOR_REQUEST,
+  JOIN_TEAM,
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
+  REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
   TEAM_INVITE,
@@ -27,7 +30,9 @@ const resolveTypeLookup = {
   [ADD_TO_TEAM]: NotifyAddedToTeam,
   [DENY_NEW_USER]: NotifyDenial,
   [FACILITATOR_REQUEST]: NotifyFacilitatorRequest,
+  [JOIN_TEAM]: NotifyNewTeamMember,
   [PAYMENT_REJECTED]: NotifyPayment,
+  [REJOIN_TEAM]: NotifyNewTeamMember,
   [REQUEST_NEW_USER]: NotifyInvitation,
   [TEAM_INVITE]: NotifyInvitation,
   [TRIAL_EXPIRES_SOON]: NotifyTrial,

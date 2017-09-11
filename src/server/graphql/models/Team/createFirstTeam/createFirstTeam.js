@@ -6,7 +6,7 @@ import {TRIAL_EXPIRES_SOON_DELAY} from 'server/utils/serverConstants';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {NOTIFICATION_ADDED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {NOTIFICATIONS_ADDED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {TeamInput} from '../teamSchema';
 import addSeedProjects from './addSeedProjects';
 import createFirstTeamValidation from './createFirstTeamValidation';
@@ -83,7 +83,7 @@ export default {
       await r.table('Notification').insert(notification);
       const notificationAdded = {notification};
       // this probably doesn't do anything since they haven't subscribed yet, but a nice safety measure
-      getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded});
       if (unitTestCb) {
         unitTestCb();
       }

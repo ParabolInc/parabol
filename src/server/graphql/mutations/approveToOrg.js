@@ -5,7 +5,7 @@ import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTe
 import DefaultRemovalPayload from 'server/graphql/types/DefaultRemovalPayload';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATION_CLEARED} from 'universal/utils/constants';
+import {NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
 
 export default {
@@ -51,7 +51,7 @@ export default {
     }
     const notificationCleared = {deletedId: dbNotificationId};
     userIds.forEach((notifiedUserId) => {
-      getPubSub().publish(`${NOTIFICATION_CLEARED}.${notifiedUserId}`, {notificationCleared, mutatorId: socket.id});
+      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationCleared, mutatorId: socket.id});
     });
     return notificationCleared;
   }

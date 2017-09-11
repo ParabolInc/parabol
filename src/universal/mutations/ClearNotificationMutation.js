@@ -10,10 +10,10 @@ const mutation = graphql`
   }
 `;
 
-export const clearNotificationUpdater = (viewer, deletedGlobalId) => {
+export const clearNotificationUpdater = (viewer, deletedGlobalIds) => {
   const notifications = viewer.getLinkedRecords('notifications');
   if (notifications) {
-    const newNodes = getArrayWithoutIds(notifications, deletedGlobalId);
+    const newNodes = getArrayWithoutIds(notifications, deletedGlobalIds);
     viewer.setLinkedRecords(newNodes, 'notifications');
   }
 };

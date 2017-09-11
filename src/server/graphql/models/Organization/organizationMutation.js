@@ -23,7 +23,7 @@ import shortid from 'shortid';
 import {
   BILLING_LEADER,
   billingLeaderTypes,
-  NOTIFICATION_ADDED, NOTIFICATION_CLEARED,
+  NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED,
   PROMOTE_TO_BILLING_LEADER
 } from 'universal/utils/constants';
 import {GraphQLURLType} from '../../types';
@@ -288,9 +288,9 @@ export default {
             .default([])
         });
         const notificationAdded = {notification: promotionNotification};
-        getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+        getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded});
         existingNotifications.forEach((notification) => {
-          getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded: {notification}});
+          getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded: {notification}});
         });
       } else if (role === null) {
         const {removedNotificationIds} = await r({
@@ -312,7 +312,7 @@ export default {
         });
         removedNotificationIds.forEach((deletedId) => {
           const notificationCleared = {deletedId};
-          getPubSub().publish(`${NOTIFICATION_CLEARED}.${userId}`, {notificationCleared});
+          getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationCleared});
         });
       }
       return true;

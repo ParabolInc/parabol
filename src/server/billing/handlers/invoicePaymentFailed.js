@@ -5,7 +5,7 @@ import getRethink from 'server/database/rethinkDriver';
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {BILLING_LEADER, FAILED, NOTIFICATION_ADDED, PAYMENT_REJECTED} from 'universal/utils/constants';
+import {BILLING_LEADER, FAILED, NOTIFICATIONS_ADDED, PAYMENT_REJECTED} from 'universal/utils/constants';
 
 /*
  * Used for failed payments that are not trialing. Trialing orgs will not have a CC
@@ -70,7 +70,7 @@ export default async function invoicePaymentFailed(invoiceId) {
     });
     const notificationAdded = {notification};
     userIds.forEach((userId) => {
-      getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded});
     });
   }
 }

@@ -19,8 +19,9 @@ import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
 import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
 import integrationJoined from 'server/graphql/subscriptions/integrationJoined';
-import notificationAdded from 'server/graphql/subscriptions/notificationAdded';
-import notificationCleared from 'server/graphql/subscriptions/notificationCleared';
+import notificationsAdded from 'server/graphql/subscriptions/notificationsAdded';
+import notificationsCleared from 'server/graphql/subscriptions/notificationsCleared';
+import teamMembersInvited from 'server/graphql/subscriptions/teamMembersInvited';
 
 const rootFields = Object.assign({},
   agenda,
@@ -43,12 +44,13 @@ export default new GraphQLObjectType({
     githubRepoRemoved,
     integrationJoined,
     integrationLeft,
-    notificationAdded,
-    notificationCleared,
+    notificationsAdded,
+    notificationsCleared,
     slackChannelAdded,
     slackChannelRemoved,
     providerAdded,
     providerRemoved,
+    teamMembersInvited,
     ...rootFields
   })
 });

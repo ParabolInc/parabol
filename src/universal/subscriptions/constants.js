@@ -5,15 +5,10 @@ export const PRESENT = 'PRESENT';
 export const SOUNDOFF = 'SOUNDOFF';
 export const KICK_OUT = 'KICK_OUT';
 
-// annoucements to the rest of the team
-export const JOIN_TEAM = 'JOIN_TEAM';
-export const REJOIN_TEAM = 'REJOIN_TEAM';
-
 // CHANNELS
 export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
 export const INVITATIONS = 'invitations';
-export const NOTIFICATIONS = 'notifications';
 export const ORG_APPROVALS = 'orgApprovals';
 export const ORGANIZATION = 'organization';
 export const ORGANIZATIONS = 'organizations';

@@ -12,7 +12,6 @@ import {
   JOIN_TEAM,
   KICK_OUT,
   PRESENCE,
-  REJOIN_TEAM,
   TEAM_MEMBERS,
   USER_MEMO
 } from 'universal/subscriptions/constants';
@@ -137,13 +136,6 @@ export default (ComposedComponent) => {
           dispatch(showInfo({
             title: 'Ahoy, a new crewmate!',
             message: `${name} just joined team ${teamName}`
-          }));
-        } else if (data.type === REJOIN_TEAM) {
-          const {name} = data;
-          const teamName = getTeamName(teamId);
-          dispatch(showInfo({
-            title: `${name} is back!`,
-            message: `${name} just rejoined team ${teamName}`
           }));
         }
       });

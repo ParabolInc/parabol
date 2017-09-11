@@ -4,97 +4,17 @@ import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/
 import createPendingApprovals from 'server/graphql/models/Invitation/inviteTeamMembers/createPendingApprovals';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
+import getResults from 'server/graphql/mutations/helpers/inviteTeamMembers/getResults';
+import makeDetailedInvitations from 'server/graphql/mutations/helpers/inviteTeamMembers/makeDetailedInvitations';
+import publishNotifications from 'server/graphql/mutations/helpers/inviteTeamMembers/publishNotifications';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
-import {getUserId, getUserOrgDoc, isBillingLeader, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
-import tmsSignToken from 'server/utils/tmsSignToken';
-import shortid from 'shortid';
-import {PRESENCE, REJOIN_TEAM} from 'universal/subscriptions/constants';
-import {
-  ADD_TO_TEAM,
-  ALREADY_ON_TEAM,
-  NOTIFICATION_ADDED,
-  PENDING_APPROVAL,
-  REACTIVATED,
-  SUCCESS
-} from 'universal/utils/constants';
-import {Invitee} from '../models/Invitation/invitationSchema';
-import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
+import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reactivateTeamMembersAndMakeNotifications';
 import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
-
-
-const reactivateAndSendWelcomeBack = async (invitees, inviter, exchange) => {
-  if (invitees.length === 0) return;
-  const {orgId, teamId, teamName, inviterName} = inviter;
-  const r = getRethink();
-  const now = new Date();
-  const userIds = invitees.map(({userId}) => userId);
-  const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
-  const {reactivatedUsers} = await r({
-    reactivatedTeamMembers: r.table('TeamMember')
-      .getAll(r.args(teamMemberIds), {index: 'id'})
-      .update({isNotRemoved: true}),
-    reactivatedUsers: r.table('User')
-      .getAll(r.args(userIds))
-      .update((user) => {
-        return user.merge({
-          tms: user('tms').append(teamId)
-        });
-      }, {returnChanges: true})('changes')('new_val')
-      .default(null)
-  });
-  const notifications = reactivatedUsers.map((user) => ({
-    id: shortid.generate(),
-    type: ADD_TO_TEAM,
-    startAt: now,
-    orgId,
-    userIds: [user.id],
-    inviterName,
-    teamName
-  }));
-  await r.table('Notification').insert(notifications);
-  reactivatedUsers.forEach((user) => {
-    const {preferredName, id: reactivatedUserId, tms} = user;
-    const notificationAdded = {
-      notification: {
-        _authToken: tmsSignToken({sub: reactivatedUserId}, tms),
-        inviterName,
-        teamId,
-        teamName,
-        type: ADD_TO_TEAM
-      }
-    };
-    getPubSub().publish(`${NOTIFICATION_ADDED}.${reactivatedUserId}`, {notificationAdded});
-    const channel = `${PRESENCE}/${teamId}`;
-    // TODO refactor out exchange
-    exchange.publish(channel, {
-      type: REJOIN_TEAM,
-      name: preferredName,
-      sender: inviter.userId
-    });
-  });
-};
-
-const getAction = (invitee, inviterIsBillingLeader) => {
-  const {
-    isActiveTeamMember,
-    isPendingApproval,
-    isPendingInvitation,
-    isActiveUser,
-    isNewTeamMember,
-    isOrgMember
-  } = invitee;
-  if (isActiveTeamMember) return ALREADY_ON_TEAM;
-  if (isPendingApproval && !inviterIsBillingLeader) return PENDING_APPROVAL;
-  if (isPendingInvitation) return SUCCESS;
-  if (isOrgMember) {
-    return isNewTeamMember ? SEND_NOTIFICATION : REACTIVATED;
-  }
-  if (inviterIsBillingLeader) {
-    return isActiveUser ? SEND_NOTIFICATION : SEND_EMAIL;
-  }
-  return ASK_APPROVAL;
-};
+import {getUserId, getUserOrgDoc, isBillingLeader, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
+import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
+import {REACTIVATED} from 'universal/utils/constants';
+import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
+import {Invitee} from '../models/Invitation/invitationSchema';
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -109,11 +29,8 @@ export default {
     invitees: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
     }
-    // notificationId: {
-    //   type: GraphQLID
-    // }
   },
-  async resolve(source, {invitees, teamId}, {authToken, exchange}) {
+  async resolve(source, {invitees, teamId}, {authToken}) {
     const r = getRethink();
     const now = Date.now();
 
@@ -122,7 +39,6 @@ export default {
     const userId = getUserId(authToken);
     const {name: teamName, orgId} = await r.table('Team').get(teamId).pluck('name', 'orgId');
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    const inviterIsBillingLeader = isBillingLeader(userOrgDoc);
 
     const emailArr = invitees.map((invitee) => invitee.email);
     const {pendingInvitations, pendingApprovals, teamMembers, users} = await r.expr({
@@ -143,34 +59,16 @@ export default {
     });
 
     // RESOLUTION
-    const activeTeamMembers = teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email);
-    const inactiveTeamMembers = teamMembers.filter((m) => !m.isNotRemoved).map((m) => m.email);
     const inviterAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
-    const inviterDetails = {
+    const inviter = {
       ...inviterAndTeamName,
+      userId,
       orgId,
-      teamId
+      teamId,
+      isBillingLeader: isBillingLeader(userOrgDoc)
     };
 
-    const detailedInvitations = emailArr.map((email) => {
-      const userDoc = users.find((user) => user.email === email);
-      const details = {
-        email,
-        isActiveTeamMember: activeTeamMembers.includes(email),
-        isPendingApproval: pendingApprovals.includes(email),
-        isPendingInvitation: pendingInvitations.includes(email),
-        isUser: Boolean(userDoc),
-        isActiveUser: userDoc && !userDoc.inactive,
-        isOrgMember: userDoc && userDoc.userOrgs.includes((userDocOrg) => userDocOrg.id === orgId),
-        isNewTeamMember: !inactiveTeamMembers.includes((tm) => tm.email === email),
-        userId: userDoc && userDoc.id
-      };
-      return {
-        ...details,
-        action: getAction(details, inviterIsBillingLeader)
-      };
-    });
-
+    const detailedInvitations = makeDetailedInvitations(teamMembers, emailArr, users, pendingApprovals, pendingInvitations, inviter);
     const inviteesToReactivate = detailedInvitations.filter(({action}) => action === REACTIVATED);
     const inviteesToNotify = detailedInvitations.filter(({action}) => action === SEND_NOTIFICATION);
     const inviteesToEmail = detailedInvitations.filter(({action}) => action === SEND_EMAIL);
@@ -178,34 +76,21 @@ export default {
     const approvalEmails = inviteesToApprove.map(({email}) => email);
     const approvalsToClear = inviteesToNotify.concat(inviteesToEmail).map(({email}) => email);
 
-    const invitesByUserId = inviteesToEmail.reduce((invitations, invitee) => {
-      const {email} = invitee;
-      invitations[userId] = invitations[userId] || [];
-      invitations[userId].push(email);
-      return invitations;
-    }, {});
-    const sendEmails = Object.keys(invitesByUserId)
-      .map((inviterId) => asyncInviteTeam(inviterId, teamId, invitesByUserId[inviterId]));
-
-    await Promise.all([
-      removeOrgApprovalAndNotification(orgId, approvalsToClear),
-      reactivateAndSendWelcomeBack(inviteesToReactivate, inviterDetails, exchange),
-      sendInvitationViaNotification(inviteesToNotify, inviterDetails),
-      Promise.all(sendEmails),
-      createPendingApprovals(approvalEmails, orgId, teamId, teamName, userId)
-    ]);
-
-    const results = detailedInvitations.map((invitee) => {
-      const {email, action} = invitee;
-      let result = action;
-      if (action === ASK_APPROVAL) {
-        result = PENDING_APPROVAL;
-      } else if (action === SEND_EMAIL || action === SEND_NOTIFICATION) {
-        result = SUCCESS;
-      }
-      return {email, result};
+    const notificationsToSend = await resolvePromiseObj({
+      reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers),
+      notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear),
+      teamInvites: sendInvitationViaNotification(inviteesToNotify, inviter),
+      approvals: createPendingApprovals(approvalEmails, orgId, teamId, teamName, userId),
+      emailInvites: asyncInviteTeam(userId, teamId, inviteesToEmail)
     });
+
+    publishNotifications(notificationsToSend);
+    const results = getResults(detailedInvitations);
     return {results};
+
+    // uncomment this when moving teams to relay
+    //getPubSub().publish(`${TEAM_MEMBERS_INVITED}.${teamId}`, {teamMembersInvited, mutatorId: socket.id});
+    //return teamMembersInvited;
   }
 };
 

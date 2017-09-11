@@ -24,8 +24,8 @@ export default function scRelaySubscribeHandler(exchange, socket) {
     const asyncIterator = subscribe(Schema, document, {}, context, variables);
     socket.subs[opId] = asyncIterator;
     const iterableCb = (value) => {
-      const clientValue = handleGqlResponse(value, socket);
-      socket.emit(`gqlData.${opId}`, clientValue);
+      //const clientValue = handleGqlResponse(value, socket);
+      socket.emit(`gqlData.${opId}`, value);
     };
 
     // Use this to kick clients out of the sub

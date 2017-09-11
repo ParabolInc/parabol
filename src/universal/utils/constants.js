@@ -168,5 +168,8 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
-export const NOTIFICATION_ADDED = 'notificationAdded';
-export const NOTIFICATION_CLEARED = 'notificationCleared';
+export const NOTIFICATIONS_ADDED = 'notificationsAdded';
+export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
+export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
+export const JOIN_TEAM = 'JOIN_TEAM';
+export const REJOIN_TEAM = 'REJOIN_TEAM';

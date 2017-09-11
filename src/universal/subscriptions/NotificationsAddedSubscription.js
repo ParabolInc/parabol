@@ -5,9 +5,9 @@ import isNotificationEphemeral from 'universal/utils/isNotificationEphemeral';
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
 
 const subscription = graphql`
-  subscription NotificationAddedSubscription {
-    notificationAdded {
-      notification {
+  subscription NotificationsAddedSubscription {
+    notificationsAdded {
+      notifications {
         id
         orgId
         startAt
@@ -62,42 +62,44 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
   }
 };
 
-const NotificationAddedSubscription = (environment, queryVariables, dispatch) => {
+const NotificationsAddedSubscription = (environment, queryVariables, dispatch) => {
   const {ensureSubscription, viewerId} = environment;
   return ensureSubscription({
     subscription,
     updater: (store) => {
-      const payload = store.getRootField('notificationAdded').getLinkedRecord('notification');
-      const type = payload.getValue('type');
-      if (type === FACILITATOR_REQUEST) {
-        const requestorName = payload.getValue('requestorName');
-        const requestorId = payload.getValue('requestorId');
-        dispatch(showInfo({
-          title: `${requestorName} wants to facilitate`,
-          message: 'Click \'Promote\' to hand over the reigns',
-          autoDismiss: 0,
-          action: {
-            label: 'Promote',
-            callback: () => {
-              const onError = (err) => {
-                console.error(err);
-              };
-              PromoteFacilitatorMutation(environment, requestorId, onError);
+      const notifications = store.getRootField('notificationAdded').getLinkedRecords('notifications');
+      notifications.forEach((payload) => {
+        const type = payload.getValue('type');
+        if (type === FACILITATOR_REQUEST) {
+          const requestorName = payload.getValue('requestorName');
+          const requestorId = payload.getValue('requestorId');
+          dispatch(showInfo({
+            title: `${requestorName} wants to facilitate`,
+            message: 'Click \'Promote\' to hand over the reigns',
+            autoDismiss: 0,
+            action: {
+              label: 'Promote',
+              callback: () => {
+                const onError = (err) => {
+                  console.error(err);
+                };
+                PromoteFacilitatorMutation(environment, requestorId, onError);
+              }
             }
-          }
-        }));
-      } else if (type === ADD_TO_TEAM) {
-        const teamName = payload.getValue('teamName');
-        dispatch(showInfo({
-          title: 'Congratulations!',
-          message: `You've been added to team ${teamName}`
-        }));
-      }
-      if (isNotificationEphemeral(type)) {
-        addNotificationUpdater(store, viewerId, payload);
-      }
+          }));
+        } else if (type === ADD_TO_TEAM) {
+          const teamName = payload.getValue('teamName');
+          dispatch(showInfo({
+            title: 'Congratulations!',
+            message: `You've been added to team ${teamName}`
+          }));
+        }
+        if (isNotificationEphemeral(type)) {
+          addNotificationUpdater(store, viewerId, payload);
+        }
+      });
     }
   });
 };
 
-export default NotificationAddedSubscription;
+export default NotificationsAddedSubscription;

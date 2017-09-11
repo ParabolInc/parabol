@@ -19,6 +19,14 @@ const InvitationResult = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The email address requested to join the team'
     },
+    //inviterName: {
+    //  type: GraphQLString,
+    //  description: 'The name of the person that triggered the invitation (only populated for reactivations)'
+    //},
+    //preferredName: {
+    //  type: GraphQLString,
+    //  description: 'The name of the user being invited (only populated for reactivations)'
+    //},
     result: {
       type: InvitationResultEnum,
       description: 'The outcome of trying to invite an email address'

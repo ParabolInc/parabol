@@ -17,7 +17,7 @@ const mutation = graphql`
 //  // TODO add some logic when the invitation array is no longer fed by the changefeed
 // };
 
-const toastNewInvitations = (results, dispatch) => {
+export const inviteTeamMembersUpdater = (results, dispatch) => {
   const resultsByType = results.reduce((obj, {result, email}) => {
     obj[result] = obj[result] || [];
     obj[result].push(email);
@@ -68,7 +68,7 @@ const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onEr
           email: result.getValue('email'),
           result: result.getValue('result')
         }));
-      toastNewInvitations(results, dispatch);
+      inviteTeamMembersUpdater(results, dispatch);
       // addInvitationUpdater(store, viewerId, teamId, node);
     },
     // optimisticUpdater: (store) => {

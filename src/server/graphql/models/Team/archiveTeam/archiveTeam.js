@@ -5,7 +5,7 @@ import {getUserId, requireSUOrLead, requireWebsocket} from 'server/utils/authori
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import shortid from 'shortid';
 import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
-import {NOTIFICATION_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
+import {NOTIFICATIONS_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
 import getPubSub from 'server/utils/getPubSub';
 
 export default {
@@ -78,7 +78,7 @@ export default {
       // update the server socket, if they're logged in
       const channel = `${USER_MEMO}/${id}`;
       exchange.publish(channel, {type: KICK_OUT, teamId, teamName});
-      getPubSub().publish(`${NOTIFICATION_ADDED}.${id}`, {notificationAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${id}`, {notificationAdded});
     });
 
     return true;

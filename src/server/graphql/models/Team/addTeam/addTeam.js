@@ -26,7 +26,7 @@ export default {
   args: {
     newTeam: {
       type: new GraphQLNonNull(TeamInput),
-      description: 'The new team object with exactly 1 team member'
+      description: 'The new team object'
     },
     invitees: {
       type: new GraphQLList(new GraphQLNonNull(Invitee))

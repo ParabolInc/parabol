@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
 import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
-import {BILLING_LEADER, NOTIFICATION_ADDED, TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {BILLING_LEADER, NOTIFICATIONS_ADDED, TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 
 /*
  * Used as a pseudo hook for trial ending. We could use payment_failed, but that hook is sent 1 hr after this one
@@ -47,7 +47,7 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
     });
     const notificationAdded = {notification};
     userIds.forEach((userId) => {
-      getPubSub().publish(`${NOTIFICATION_ADDED}.${userId}`, {notificationAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded});
     });
   }
   // invalidate the upcomingInvoice

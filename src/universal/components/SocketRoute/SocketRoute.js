@@ -7,7 +7,7 @@ import {socketClusterReducer} from 'redux-socket-cluster';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-import NotificationAddedSubscription from 'universal/subscriptions/NotificationAddedSubscription';
+import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
 import {DEFAULT_TTL} from 'universal/utils/constants';
 import withReducer from '../../decorators/withReducer/withReducer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -70,7 +70,7 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  NotificationAddedSubscription,
+  NotificationsAddedSubscription,
   NotificationClearedSubscription
 ];
 

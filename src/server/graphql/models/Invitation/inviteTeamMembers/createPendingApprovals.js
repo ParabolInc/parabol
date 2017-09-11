@@ -1,10 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
 import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
-import {BILLING_LEADER, NOTIFICATION_ADDED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {BILLING_LEADER, NOTIFICATIONS_ADDED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default async function createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName, userId) {
-  if (outOfOrgEmails.length === 0) return;
+  if (outOfOrgEmails.length === 0) return [];
   const r = getRethink();
   const now = new Date();
   // add a notification to the Billing Leaders
@@ -41,10 +41,12 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
     notifications: r.table('Notification').insert(notifications),
     approvals: r.table('OrgApproval').insert(pendingApprovals)
   });
+  const pendingApprovalNotifications = {};
   notifications.forEach((notification) => {
-    const notificationAdded = {notification};
     notification.userIds.forEach((notifiedUserId) => {
-      getPubSub().publish(`${NOTIFICATION_ADDED}.${notifiedUserId}`, {notificationAdded});
+      pendingApprovalNotifications[notifiedUserId] = pendingApprovalNotifications[notifiedUserId] || [];
+      pendingApprovalNotifications[notifiedUserId].push(notification);
     });
   });
+  return pendingApprovalNotifications;
 }

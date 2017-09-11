@@ -1,7 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
-import {NOTIFICATION_ADDED, TEAM_INVITE} from 'universal/utils/constants';
+import {TEAM_INVITE} from 'universal/utils/constants';
 
 const sendInvitationViaNotification = async (invitees, inviter) => {
   if (invitees.length === 0) return;
@@ -19,9 +18,9 @@ const sendInvitationViaNotification = async (invitees, inviter) => {
     teamName
   }));
   await r.table('Notification').insert(invitations);
+  const notificationsToSend = {};
   invitations.forEach((notification) => {
-    const notificationAdded = {notification};
-    getPubSub().publish(`${NOTIFICATION_ADDED}.${notification.userId}`, {notificationAdded});
+    notificationsToSend[notification.userId] = [notification];
   });
 };
 

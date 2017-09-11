@@ -4,12 +4,12 @@ import {REQUEST_NEW_USER} from 'universal/utils/constants';
 const removeOrgApprovalAndNotification = async (orgId, maybeEmails) => {
   const emails = Array.isArray(maybeEmails) ? maybeEmails : [maybeEmails];
   const r = getRethink();
-  const {removedNotification} = await r({
+  const {removedNotifications} = await r({
     removedApproval: r.table('OrgApproval')
       .getAll(r.args(emails), {index: 'email'})
       .filter({orgId})
       .delete(),
-    removedNotification: r.table('Notification')
+    removedNotifications: r.table('Notification')
       .getAll(orgId, {index: 'orgId'})
       .filter({
         type: REQUEST_NEW_USER
@@ -22,7 +22,14 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails) => {
       .map((change) => change('old_val'))
       .default([])
   });
-  return removedNotification;
+  const notificationsToClear = {};
+  removedNotifications.forEach((removedNotification) => {
+    const notificationToClear = {deletedId: removedNotification.id};
+    removedNotification.userIds.forEach((userId) => {
+      notificationsToClear[userId] = [notificationToClear]
+    })
+  });
+  return notificationsToClear;
 };
 
 export default removeOrgApprovalAndNotification;

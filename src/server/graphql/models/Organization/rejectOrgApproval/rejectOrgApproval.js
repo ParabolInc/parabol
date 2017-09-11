@@ -10,7 +10,7 @@ import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import rejectOrgApprovalValidation from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApprovalValidation';
 import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATION_ADDED, NOTIFICATION_CLEARED} from 'universal/utils/constants';
+import {DENY_NEW_USER, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 import getPubSub from 'server/utils/getPubSub';
 
 export default {
@@ -60,16 +60,16 @@ export default {
       inviteeEmail
     };
 
-    const [removedNotification] = await Promise.all([
+    const [notificationsToClear] = await Promise.all([
       removeOrgApprovalAndNotification(orgId, inviteeEmail),
       r.table('Notification').insert(notification)
     ]);
-    const notificationAdded = {notification};
-    const notificationCleared = {deletedId: removedNotification.id};
-    removedNotification.userIds.forEach((notifiedUserId) => {
-      getPubSub().publish(`${NOTIFICATION_CLEARED}.${notifiedUserId}`, {notificationCleared});
-    });
-    getPubSub().publish(`${NOTIFICATION_ADDED}.${inviterUserId}`, {notificationAdded});
+    //const notificationAdded = {notification};
+    //const notificationCleared = {deletedId: removedNotification.id};
+    //removedNotification.userIds.forEach((notifiedUserId) => {
+    //  getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationCleared});
+    //});
+    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${inviterUserId}`, {notificationAdded});
     return true;
   }
 };
