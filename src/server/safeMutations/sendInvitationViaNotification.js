@@ -3,7 +3,7 @@ import shortid from 'shortid';
 import {TEAM_INVITE} from 'universal/utils/constants';
 
 const sendInvitationViaNotification = async (invitees, inviter) => {
-  if (invitees.length === 0) return;
+  if (invitees.length === 0) return [];
   const r = getRethink();
   const now = new Date();
   const {orgId, inviterName, teamId, teamName} = inviter;
@@ -20,8 +20,9 @@ const sendInvitationViaNotification = async (invitees, inviter) => {
   await r.table('Notification').insert(invitations);
   const notificationsToSend = {};
   invitations.forEach((notification) => {
-    notificationsToSend[notification.userId] = [notification];
+    notificationsToSend[notification.userIds[0]] = [notification];
   });
+  return notificationsToSend;
 };
 
 export default sendInvitationViaNotification;
