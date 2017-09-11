@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import AuthToken from 'server/graphql/types/AuthToken';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 
 const NotifyAddedToTeam = new GraphQLObjectType({
@@ -8,9 +7,9 @@ const NotifyAddedToTeam = new GraphQLObjectType({
   interfaces: () => [Notification],
   fields: () => ({
     ...notificationInterfaceFields,
-    _authToken: {
-      type: AuthToken,
-      description: 'The new auth token for the user. Requested by, but not sent to the client'
+    authToken: {
+      type: GraphQLString,
+      description: 'The new auth token for the user. The client will usually send this back to the client via a setAuthToken call'
     },
     inviterName: {
       type: new GraphQLNonNull(GraphQLString),

@@ -1,5 +1,5 @@
-//import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
-//import {REACTIVATED} from 'universal/utils/constants';
+// import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
+// import {REACTIVATED} from 'universal/utils/constants';
 
 const subscription = graphql`
   subscription TeamMembersInvitedSubscription($teamId: ID!) {
@@ -26,18 +26,18 @@ const TeamMembersInvitedSubscription = (environment, queryVariables) => {
   const {teamId} = queryVariables;
   return ensureSubscription({
     subscription,
-    variables: {teamId},
-    //updater: (store) => {
-      //const payload = store.getRootField('teamMembersInvited');
-      //const results = payload.getLinkedRecords('results')
-      //  .map((result) => ({
-      //    result: result.getValue('result'),
-      //    preferredName: result.getValue('preferredName'),
-      //    inviterName: result.getValue('inviterName')
-      //  }));
-      // TODO in the future, when we're 100% relay, we can look up the teamName here instead of fetching it
-      // teamMembersInvitedUpdater(results, teamName, dispatch);
-    //}
+    variables: {teamId}
+    // updater: (store) => {
+    // const payload = store.getRootField('teamMembersInvited');
+    // const results = payload.getLinkedRecords('results')
+    //  .map((result) => ({
+    //    result: result.getValue('result'),
+    //    preferredName: result.getValue('preferredName'),
+    //    inviterName: result.getValue('inviterName')
+    //  }));
+    // TODO in the future, when we're 100% relay, we can look up the teamName here instead of fetching it
+    // teamMembersInvitedUpdater(results, teamName, dispatch);
+    // }
   });
 };
 

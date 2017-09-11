@@ -2,7 +2,7 @@ import {parse, subscribe} from 'graphql';
 import {forAwaitEach} from 'iterall';
 import Schema from 'server/graphql/rootSchema';
 
-//const handleGqlResponse = (value, socket) => {
+// const handleGqlResponse = (value, socket) => {
 //  if (value.clientValue) {
 //    const {_authToken: clientAuthToken, ...clientValue} = value;
 //    socket.setAuthToken({
@@ -12,7 +12,7 @@ import Schema from 'server/graphql/rootSchema';
 //    return clientValue;
 //  }
 //  return value;
-//};
+// };
 
 export default function scRelaySubscribeHandler(exchange, socket) {
   socket.subs = socket.subs || [];

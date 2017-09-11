@@ -13,9 +13,7 @@ const subscription = graphql`
         startAt
         type
         ... on NotifyAddedToTeam {
-          _authToken {
-            sub
-          }
+          authToken
           inviterName
           teamName
           teamId

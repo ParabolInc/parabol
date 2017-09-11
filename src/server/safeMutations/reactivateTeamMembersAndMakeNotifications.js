@@ -1,39 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
-import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
-import {ADD_TO_TEAM, REJOIN_TEAM} from 'universal/utils/constants';
-
-
-const makeReactivationNotifications = (reactivatedUsers, teamMembers, inviter) => {
-  const {teamId, teamName, inviterName, userId} = inviter;
-  const restOfTeamUserIds = teamMembers
-    .filter((m) => m.isNotRemoved === true && m.id !== userId)
-    .map((m) => m.userId);
-  const notificationsToSend = {};
-  reactivatedUsers.forEach((user) => {
-    const {preferredName, id: reactivatedUserId, tms} = user;
-
-    // make a notification to the person being reactivated
-    notificationsToSend[reactivatedUserId] = [{
-      _authToken: tmsSignToken({sub: reactivatedUserId}, tms),
-      inviterName,
-      teamId,
-      teamName,
-      type: ADD_TO_TEAM
-    }];
-
-    // make a notification for the other team members annoucing the reactivation
-    const rejoinNotification = {
-      teamName,
-      preferredName,
-      type: REJOIN_TEAM
-    };
-    restOfTeamUserIds.forEach((notificationUserId) => {
-      notificationsToSend[notificationUserId] = [rejoinNotification];
-    });
-  });
-  return notificationsToSend;
-};
+import {ADD_TO_TEAM} from 'universal/utils/constants';
+import makeReactivationNotifications from 'server/safeMutations/helpers/makeReactivationNotifications';
 
 const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, teamMembers) => {
   if (invitees.length === 0) return [];
@@ -52,8 +20,9 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
         return user.merge({
           tms: user('tms').append(teamId)
         });
-      }, {returnChanges: true})('changes')('new_val')
-      .default(null)
+      }, {returnChanges: true})('changes')
+      .map((change) => change('new_val'))
+      .default([])
   });
   const notifications = reactivatedUsers.map((user) => ({
     id: shortid.generate(),

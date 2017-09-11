@@ -16,6 +16,7 @@ import NotificationClearedSubscription from 'universal/subscriptions/Notificatio
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingContainer = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer');
 
+// TODO remove ephemeral things like NotifyAddedToTeam and facilitatorRequest
 const query = graphql`
   query SocketRouteQuery {
     viewer {
@@ -27,9 +28,7 @@ const query = graphql`
             startAt
             type
             ... on NotifyAddedToTeam {
-              _authToken {
-                sub
-              }
+              authToken
               inviterName
               teamName
               teamId
