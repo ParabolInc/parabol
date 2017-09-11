@@ -1,5 +1,5 @@
 import asyncInviteTeam from './asyncInviteTeam';
-import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
+import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 
 export default async function inviteAsBillingLeader(invitees, orgId, inviterUserId, teamId) {
   const inviteeEmails = invitees.map((i) => i.email);

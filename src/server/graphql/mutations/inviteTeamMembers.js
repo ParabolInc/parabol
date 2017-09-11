@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
 import createPendingApprovals from 'server/graphql/models/Invitation/inviteTeamMembers/createPendingApprovals';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
-import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
+import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import getResults from 'server/graphql/mutations/helpers/inviteTeamMembers/getResults';
 import makeDetailedInvitations from 'server/graphql/mutations/helpers/inviteTeamMembers/makeDetailedInvitations';
 import publishNotifications from 'server/graphql/mutations/helpers/inviteTeamMembers/publishNotifications';

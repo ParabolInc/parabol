@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`removeOrgApprovalAndNotification removes approvals and approval notifications, returns an object full of the notifications removed 1`] = `
+Object {
+  "notification": Array [],
+  "orgApproval": Array [],
+}
+`;

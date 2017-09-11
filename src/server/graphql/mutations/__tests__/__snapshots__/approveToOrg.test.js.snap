@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`approveToOrg throws if the caller does not own the notification 1`] = `"Notification 0 does not exist or 1 does not have access to it"`;

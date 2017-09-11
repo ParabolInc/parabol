@@ -1,5 +1,6 @@
 import MockDate from 'mockdate';
 import {__now} from 'server/__tests__/setup/mockTimes';
+import newInvitee from 'server/__tests__/utils/newInvitee';
 import {TRIAL_EXPIRES_SOON_DELAY} from 'server/utils/serverConstants';
 import {
   ADD_TO_TEAM,
@@ -13,14 +14,9 @@ import {
   TRIAL_EXPIRED,
   TRIAL_EXPIRES_SOON
 } from 'universal/utils/constants';
-import * as shortid from 'shortid';
 
 MockDate.set(__now);
 const now = new Date();
-
-const newInvitee = () => ({
-  email: `invitee@mockTeam+${shortid.generate()}.co`
-});
 
 const billingLeadersOnly = (users, orgId) => users.reduce((list, user) => {
   const isBillingLeader = user.userOrgs.find((org) => org.id === orgId && org.role === BILLING_LEADER);
@@ -60,7 +56,7 @@ export default function notificationTemplate(template) {
       type,
       inviterUserId: inviter.id,
       inviterName: inviter.preferredName,
-      inviteeEmail: newInvitee().email,
+      inviteeEmail: template.email || newInvitee().email,
       teamId: this.context.team.id,
       teamName: this.context.team.name,
       userIds: billingLeadersOnly(this.db.user, this.context.organization.id)

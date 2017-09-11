@@ -14,6 +14,7 @@ import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeChec
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import convertToRichText from './convertToRichText';
+import newInvitee from 'server/__tests__/utils/newInvitee';
 
 const meetingProject = ({id, content, status, teamMemberId}) => ({
   id,
@@ -29,6 +30,7 @@ class MockDB {
       meeting: [],
       notification: [],
       organization: [],
+      orgApproval: [],
       project: [],
       projectHistory: [],
       team: [],
@@ -36,15 +38,17 @@ class MockDB {
       user: []
     };
     this.context = {};
-  }
 
-  _selector = (name) => (contextIdx, updates) => {
-    this.context[name] = this.db[name][contextIdx];
-    if (updates) {
-      Object.assign(this.context[name], updates);
-    }
-    return this;
-  };
+    // create the methods to update entities
+    const selector = (name) => (contextIdx, updates) => {
+      this.context[name] = this.db[name][contextIdx];
+      if (updates) {
+        Object.assign(this.context[name], updates);
+      }
+      return this;
+    };
+    Object.keys(this.db).forEach((table) => this[table] = selector(table));
+  }
 
   closeout(table, doc) {
     this.db[table] = this.db[table] || [];
@@ -193,6 +197,18 @@ class MockDB {
     });
   }
 
+  newOrgApproval(overrides = {}) {
+    const anHourAgo = new Date(__anHourAgo);
+    return this.closeout('orgApproval', {
+      id: shortid.generate(),
+      createdAt: anHourAgo,
+      email: newInvitee().email,
+      orgId: this.context.organization.id,
+      teamId: this.context.team.id,
+      ...overrides
+    });
+  }
+
   newProject(overrides = {}) {
     const teamMemberId = this.context.teamMember.id;
     const [userId] = teamMemberId.split('::');
@@ -284,9 +300,6 @@ class MockDB {
     });
   }
 
-  notification = this._selector('notification');
-  org = this._selector('organization');
-
   async run() {
     const r = getRethink();
     const tables = Object.keys(this.db).map((name) => name[0].toUpperCase() + name.substr(1));
@@ -296,15 +309,10 @@ class MockDB {
     return this.db;
   }
 
-  team = this._selector('team');
-  teamMember = this._selector('teamMember');
-
   // sugar so we don't have to call run all the time
   then(resolve, reject) {
     return this.run().then(resolve, reject);
   }
-
-  user = this._selector('user');
 }
 
 export default MockDB;
