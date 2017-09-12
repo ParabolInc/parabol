@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver';
 import rejectOrgApprovalValidation from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApprovalValidation';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
-import publishNotifications from 'server/graphql/mutations/helpers/inviteTeamMembers/publishNotifications';
+import publishNotifications from 'server/utils/publishNotifications';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';

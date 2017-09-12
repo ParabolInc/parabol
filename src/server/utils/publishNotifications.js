@@ -9,7 +9,9 @@ const publishNotifications = ({notificationsToAdd, notificationsToClear}) => {
     getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
   });
   Object.keys(notificationsToClear).forEach((userId) => {
-    const notificationsCleared = notificationsToClear[userId];
+    const notificationsCleared = {
+      deletedIds: notificationsToClear[userId]
+    };
     getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
   });
 };

@@ -1,5 +1,5 @@
 import makeMockPubSub from 'server/__mocks__/makeMockPubSub';
-import publishNotifications from 'server/graphql/mutations/helpers/inviteTeamMembers/publishNotifications';
+import publishNotifications from 'server/utils/publishNotifications';
 import * as getPubSub from 'server/utils/getPubSub';
 import {REACTIVATED} from 'universal/utils/constants';
 

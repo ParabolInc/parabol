@@ -4,7 +4,13 @@ import getRethink from 'server/database/rethinkDriver';
 import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
 import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
-import {BILLING_LEADER, NOTIFICATIONS_ADDED, TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {
+  BILLING_LEADER,
+  NOTIFICATIONS_ADDED,
+  NOTIFICATIONS_CLEARED,
+  TRIAL_EXPIRED,
+  TRIAL_EXPIRES_SOON
+} from 'universal/utils/constants';
 
 /*
  * Used as a pseudo hook for trial ending. We could use payment_failed, but that hook is sent 1 hr after this one
@@ -38,16 +44,19 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
       userIds,
       expiresAt: now
     };
-    await r({
+    const {deletedId} = await r({
       insert: r.table('Notification').insert(notification),
-      remove: r.table('Notification')
+      deletedId: r.table('Notification')
         .getAll(orgId, {index: 'orgId'})
         .filter({type: TRIAL_EXPIRES_SOON})
-        .delete()
+        .delete({returnChanges: true})('changes')(0)('old_val')('id')
+        .default(null)
     });
-    const notificationAdded = {notification};
+    const notificationsAdded = {notifications: [notification]};
+    const notificationsCleared = {deletedIds: [deletedId]};
     userIds.forEach((userId) => {
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
+      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
     });
   }
   // invalidate the upcomingInvoice

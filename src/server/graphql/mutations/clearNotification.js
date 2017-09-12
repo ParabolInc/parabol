@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLList} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import DefaultRemovalPayload from 'server/graphql/types/DefaultRemovalPayload';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
@@ -6,7 +6,7 @@ import getPubSub from 'server/utils/getPubSub';
 import {NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(DefaultRemovalPayload))),
+  type: DefaultRemovalPayload,
   description: 'Remove a notification by ID',
   args: {
     dbNotificationId: {
@@ -25,10 +25,10 @@ export default {
     // RESOLUTION
     await r.table('Notification').get(dbNotificationId).delete();
 
-    const notificationsCleared = [{
-      deletedId: dbNotificationId
-    }];
+    const notificationsCleared = {
+      deletedIds: [dbNotificationId]
+    };
     getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, mutatorId: socket.id});
-    return notificationsCleared;
+    return {deletedId: dbNotificationId};
   }
 };

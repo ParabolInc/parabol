@@ -70,7 +70,7 @@ export default {
       }));
 
     const {teamResults: {notification}, teamName, userDocs} = dbResult;
-    const notificationAdded = {notification};
+    const notificationsAdded = {notifications: [notification]};
     userDocs.forEach((user) => {
       const {id, tms} = user;
       // update the tms on auth0 in async
@@ -78,7 +78,7 @@ export default {
       // update the server socket, if they're logged in
       const channel = `${USER_MEMO}/${id}`;
       exchange.publish(channel, {type: KICK_OUT, teamId, teamName});
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${id}`, {notificationAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${id}`, {notificationsAdded});
     });
 
     return true;

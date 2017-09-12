@@ -65,6 +65,7 @@ export default {
       });
 
       const {id, current_period_end, current_period_start} = subscription;
+      // DOES NOT UPDATE NOTIFICATIONS IN REAL TIME
       return r.table('Organization').get(orgId).update({
         periodEnd: fromEpochSeconds(current_period_end),
         periodStart: fromEpochSeconds(current_period_start),

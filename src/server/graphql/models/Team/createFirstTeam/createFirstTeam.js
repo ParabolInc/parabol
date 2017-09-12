@@ -80,9 +80,9 @@ export default {
         trialExpiresAt: periodEnd
       };
       await r.table('Notification').insert(notification);
-      const notificationAdded = {notification};
+      const notificationsAdded = {notifications: [notification]};
       // this probably doesn't do anything since they haven't subscribed yet, but a nice safety measure
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
       if (unitTestCb) {
         unitTestCb();
       }

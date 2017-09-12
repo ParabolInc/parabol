@@ -24,9 +24,9 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails) => {
   });
   const notificationsToClear = {};
   removedNotifications.forEach((removedNotification) => {
-    const notificationToClear = {deletedId: removedNotification.id};
     removedNotification.userIds.forEach((userId) => {
-      notificationsToClear[userId] = [notificationToClear];
+      notificationsToClear[userId] = notificationsToClear[userId] || [];
+      notificationsToClear[userId].push(removedNotification.id);
     });
   });
   return notificationsToClear;

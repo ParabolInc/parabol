@@ -23,7 +23,8 @@ import shortid from 'shortid';
 import {
   BILLING_LEADER,
   billingLeaderTypes,
-  NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED,
+  NOTIFICATIONS_ADDED,
+  NOTIFICATIONS_CLEARED,
   PROMOTE_TO_BILLING_LEADER
 } from 'universal/utils/constants';
 import {GraphQLURLType} from '../../types';
@@ -129,35 +130,34 @@ export default {
         .getAll(orgId, {index: 'orgId'})('id');
       const teamMemberIds = teamIds.map((teamId) => `${userId}::${teamId}`);
       await removeAllTeamMembers(teamMemberIds, exchange);
-      await r.table('Organization').get(orgId)
-        .update((org) => ({
-          orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
-          updatedAt: now
-        }))
-        .do(() => {
-          return r.table('User').get(userId)
-            .update((row) => ({
-              userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
-              updatedAt: now
-            }));
-        })
-        .do(() => {
-          // remove stale notifications
-          return r.table('Notification')
-            .getAll(userId, {index: 'userIds'})
-            .filter({orgId})
-            .forEach((notification) => {
-              return r.branch(
-                notification('userIds').count().eq(1),
-                // if this was for them, delete it
-                notification.delete(),
-                // if this was for many people, remove them from it
-                notification.update({
-                  userIds: notification('userIds').filter((id) => id.ne(userId))
-                })
-              );
-            });
-        });
+      await r({
+        updatedOrg: r.table('Organization').get(orgId)
+          .update((org) => ({
+            orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
+            updatedAt: now
+          })),
+        updatedUser: r.table('User').get(userId)
+          .update((row) => ({
+            userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
+            updatedAt: now
+          })),
+        // remove stale notifications
+        // TODO I think this may be broken. see #1334
+        removedNotifications: r.table('Notification')
+          .getAll(userId, {index: 'userIds'})
+          .filter({orgId})
+          .forEach((notification) => {
+            return r.branch(
+              notification('userIds').count().eq(1),
+              // if this was for them, delete it
+              notification.delete(),
+              // if this was for many people, remove them from it
+              notification.update({
+                userIds: notification('userIds').filter((id) => id.ne(userId))
+              })
+            );
+          })
+      });
       // need to make sure the org doc is updated before adjusting this
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;
@@ -287,20 +287,17 @@ export default {
             .map((change) => change('new_val'))
             .default([])
         });
-        const notificationAdded = {notification: promotionNotification};
-        getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded});
-        existingNotifications.forEach((notification) => {
-          getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded: {notification}});
-        });
+        const notificationsAdded = {notifications: existingNotifications.concat(promotionNotification)};
+        getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
       } else if (role === null) {
-        const {removedNotificationIds} = await r({
-          demotion: r.table('Notification')
+        const {oldPromotionId, removedNotificationIds} = await r({
+          oldPromotionId: r.table('Notification')
             .getAll(userId, {index: 'userIds'})
             .filter({
               orgId,
               type: PROMOTE_TO_BILLING_LEADER
             })
-            .delete(),
+            .delete({returnChanges: true})('changes')(0)('old_val')('id').default(null),
           removedNotificationIds: r.table('Notification')
             .getAll(orgId, {index: 'orgId'})
             .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
@@ -310,10 +307,11 @@ export default {
             .map((change) => change('new_val'))('id')
             .default([])
         });
-        removedNotificationIds.forEach((deletedId) => {
-          const notificationCleared = {deletedId};
-          getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationCleared});
-        });
+        const deletedIds = oldPromotionId ? removedNotificationIds.concat(oldPromotionId) : removedNotificationIds;
+        if (deletedIds.length > 0) {
+          const notificationsCleared = {deletedIds};
+          getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
+        }
       }
       return true;
     }

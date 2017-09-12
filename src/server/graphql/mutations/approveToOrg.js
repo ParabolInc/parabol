@@ -49,11 +49,11 @@ export default {
     } else {
       await asyncInviteTeam(inviterUserId, teamId, invitees);
     }
-    const notificationCleared = {deletedId: dbNotificationId};
+    const notificationsCleared = {deletedIds: [dbNotificationId]};
     userIds.forEach((notifiedUserId) => {
-      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationCleared, mutatorId: socket.id});
+      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared, mutatorId: socket.id});
     });
-    return notificationCleared;
+    return {deletedId: dbNotificationId};
   }
 };
 

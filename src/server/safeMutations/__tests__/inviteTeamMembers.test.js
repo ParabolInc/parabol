@@ -3,7 +3,7 @@ import MockDate from 'mockdate';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import newInvitee from 'server/__tests__/utils/newInvitee';
-import * as publishNotifications from 'server/graphql/mutations/helpers/inviteTeamMembers/publishNotifications';
+import * as publishNotifications from 'server/utils/publishNotifications';
 import * as asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import * as createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';

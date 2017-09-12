@@ -68,9 +68,9 @@ export default async function invoicePaymentFailed(invoiceId) {
       update: r.table('Invoice').get(invoiceId).update({status: FAILED}),
       insert: r.table('Notification').insert(notification)
     });
-    const notificationAdded = {notification};
+    const notificationsAdded = {notifications: [notification]};
     userIds.forEach((userId) => {
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
     });
   }
 }

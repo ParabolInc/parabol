@@ -1,11 +1,10 @@
-import {GraphQLNonNull, GraphQLList} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import DefaultRemovalPayload from 'server/graphql/types/DefaultRemovalPayload';
+import NotificationsClearedPayload from 'server/graphql/types/NotificationsClearedPayload';
 import {getUserId} from 'server/utils/authorization';
 import {NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(DefaultRemovalPayload))),
+  type: NotificationsClearedPayload,
   subscribe: (source, args, {authToken, socketId}) => {
     // AUTH
     const userId = getUserId(authToken);
