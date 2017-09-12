@@ -1,15 +1,16 @@
 import getRethink from 'server/database/rethinkDriver';
 import getResults from 'server/graphql/mutations/helpers/inviteTeamMembers/getResults';
 import makeDetailedInvitations from 'server/graphql/mutations/helpers/inviteTeamMembers/makeDetailedInvitations';
-import publishNotifications from 'server/utils/publishNotifications';
 import asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reactivateTeamMembersAndMakeNotifications';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
+import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
 import {isBillingLeader} from 'server/utils/authorization';
+import publishNotifications from 'server/utils/publishNotifications';
 import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
-import {REACTIVATED, TEAM_INVITE} from 'universal/utils/constants';
+import {REACTIVATED} from 'universal/utils/constants';
 import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 
@@ -31,14 +32,7 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
       .getAll(r.args(emailArr), {index: 'email'})
       .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
       .coerceTo('array'),
-    pendingNotificationInvitations: r.table('Notification')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({
-        type: TEAM_INVITE,
-        teamId
-      })
-      .filter((doc) => r.expr(emailArr).includes(doc('inviteeEmail')))('inviteeEmail')
-      .coerceTo('array'),
+    pendingNotificationInvitations: getTeamInviteNotifications(orgId, teamId, emailArr).coerceTo('array'),
     pendingApprovals: r.table('OrgApproval')
       .getAll(r.args(emailArr), {index: 'email'})
       .filter({teamId})

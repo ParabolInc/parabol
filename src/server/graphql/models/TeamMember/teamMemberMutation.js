@@ -1,26 +1,20 @@
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLBoolean
-} from 'graphql';
-import {errorObj, getOldVal} from 'server/utils/utils';
-import {
-  requireWebsocket,
-  requireSUOrTeamMember,
-  requireSUOrLead,
-  requireAuth
-} from 'server/utils/authorization';
 import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
 import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
-import tmsSignToken from 'server/utils/tmsSignToken';
-import {JOIN_TEAM, PRESENCE} from 'universal/subscriptions/constants';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {
-  ADD_USER
-} from 'server/utils/serverConstants';
-import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import removeTeamMember from 'server/graphql/models/TeamMember/removeTeamMember/removeTeamMember';
+import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {requireAuth, requireSUOrLead, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {ADD_USER} from 'server/utils/serverConstants';
+import tmsSignToken from 'server/utils/tmsSignToken';
+import {errorObj, getOldVal} from 'server/utils/utils';
+import {JOIN_TEAM, PRESENCE} from 'universal/subscriptions/constants';
+import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg';
+import {NOTIFICATIONS_CLEARED, TEAM_INVITE} from 'universal/utils/constants';
+import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
+import getPubSub from 'server/utils/getPubSub';
 
 export default {
   checkIn: {
@@ -117,7 +111,7 @@ export default {
       }
 
       // RESOLUTION
-      const {orgId, user} = await r.expr({
+      const {orgId, user} = await r({
         orgId: r.table('Team').get(teamId)('orgId'),
         user: r.table('User').get(userId)
       });
@@ -125,64 +119,36 @@ export default {
       const userTeams = user.tms || [];
       const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
       const tms = [...userTeams, teamId];
-      const teamMemberId = `${user.id}::${teamId}`;
-      const dbWork = r.table('User')
-      // add the team to the user doc
-        .get(userId)
-        .update((userDoc) => {
-          return {
-            tms: userDoc('tms')
-              .default([])
-              .append(teamId)
-              .distinct()
-          };
-        })
-        // get number of users
-        .do(() => {
-          return r.table('TeamMember')
-            .getAll(teamId, {index: 'teamId'})
-            .filter({isNotRemoved: true})
-            .count();
-        })
-        // insert team member
-        .do((teamCount) =>
-          r.table('TeamMember').insert({
-            id: teamMemberId,
-            checkInOrder: teamCount.add(1),
-            email: user.email,
-            teamId,
-            userId,
-            isCheckedIn: null,
-            isNotRemoved: true,
-            isLead: false,
-            isFacilitator: true,
-            picture: user.picture,
-            preferredName: user.preferredName
-            // conflict is possible if person was removed from the team + org & then rejoined (isNotRemoved would be false)
-          }, {conflict: 'update'})
-        )
+      const {expireInviteNotificationIds} = await r({
+        // add the team to the user doc
+        userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
+        newTeamMember: insertNewTeamMember(userId, teamId),
         // find all possible emails linked to this person and mark them as accepted
-        .do(() =>
-          r.table('Invitation')
-            .getAll(user.email, email, {index: 'email'})
-            .update({
-              acceptedAt: now,
-              // flag the token as expired so they cannot reuse the token
-              tokenExpiration: new Date(0),
-              updatedAt: now
-            })
-        );
-      const asyncPromises = [
-        dbWork,
-        auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-      ];
-      await Promise.all(asyncPromises);
+        expireEmailInvitations: r.table('Invitation')
+          .getAll(user.email, email, {index: 'email'})
+          .update({
+            acceptedAt: now,
+            // flag the token as expired so they cannot reuse the token
+            tokenExpiration: new Date(0),
+            updatedAt: now
+          }),
+        expireInviteNotificationIds: getTeamInviteNotifications(orgId, teamId, [email])
+          .delete({returnChanges: true})('changes')
+          .map((change) => change('new_val')('id'))
+          .default([])
+      });
+
+      if (expireInviteNotificationIds.length > 0) {
+        const notificationsCleared = {deletedIds: expireInviteNotificationIds};
+        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
+      }
 
       if (!userInOrg) {
         await adjustUserCount(userId, orgId, ADD_USER);
       }
       const payload = {type: JOIN_TEAM, name: user.email};
       exchange.publish(`${PRESENCE}/${teamId}`, payload);
+      auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       return tmsSignToken(authToken, tms);
     }
   },
@@ -213,12 +179,12 @@ export default {
 
       // RESOLUTION
       await r.table('TeamMember')
-        // remove leadership from the caller
+      // remove leadership from the caller
         .get(myTeamMemberId)
         .update({
           isLead: false
         })
-      // give leadership to the new person
+        // give leadership to the new person
         .do(() => {
           return r.table('TeamMember')
             .get(teamMemberId)

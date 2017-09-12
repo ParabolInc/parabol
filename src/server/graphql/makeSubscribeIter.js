@@ -1,6 +1,5 @@
 import {$$asyncIterator} from 'iterall';
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
 const defaultFilterFn = () => true;
 
@@ -20,9 +19,6 @@ const makeSubscribeIter = (channelName, options = {}) => {
           done: false,
           value: await resolve(value)
         };
-      }
-      if (channelName.startsWith(NOTIFICATIONS_ADDED)) {
-        console.log('nextRes', nextRes);
       }
       return nextRes;
     }

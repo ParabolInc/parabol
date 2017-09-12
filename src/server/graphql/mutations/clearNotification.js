@@ -20,7 +20,7 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const notification = await r.table('Notification').get(dbNotificationId);
-    await requireNotificationOwner(userId, notification);
+    requireNotificationOwner(userId, notification);
 
     // RESOLUTION
     await r.table('Notification').get(dbNotificationId).delete();

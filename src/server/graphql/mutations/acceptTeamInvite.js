@@ -14,7 +14,7 @@ export default {
   args: {
     dbNotificationId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The notification the billing leader is accepting'
+      description: 'The notification id of the team invite'
     }
   },
   async resolve(source, {dbNotificationId}, {authToken, socket}) {
@@ -26,34 +26,34 @@ export default {
     requireNotificationOwner(userId, notification);
 
     // RESOLUTION
-    const {inviterUserId, teamId, inviteeEmail, orgId, userIds} = notification;
-    const {inviterName, teamName} = await getInviterInfoAndTeamName(teamId, inviterUserId);
-    const inviterDetails = {
-      inviterName,
-      teamName,
-      orgId,
-      teamId
-    };
-
-    // invitee
-    const invitee = await r.table('User')
-      .getAll(inviteeEmail, {index: 'email'})
-      .nth(0)
-      .pluck('inactive')
-      .default(null);
-
-    const invitees = [{email: inviteeEmail}];
-    const isActive = invitee && !invitee.inactive;
-    if (isActive) {
-      await sendInvitationViaNotification(invitees, inviterDetails);
-    } else {
-      await asyncInviteTeam(inviterUserId, teamId, invitees);
-    }
-    const notificationsCleared = {deletedIds: [dbNotificationId]};
-    userIds.forEach((notifiedUserId) => {
-      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared, mutatorId: socket.id});
-    });
-    return {deletedId: dbNotificationId};
+    //const {inviterUserId, teamId, inviteeEmail, orgId, userIds} = notification;
+    //const {inviterName, teamName} = await getInviterInfoAndTeamName(teamId, inviterUserId);
+    //const inviterDetails = {
+    //  inviterName,
+    //  teamName,
+    //  orgId,
+    //  teamId
+    //};
+    //
+    //// invitee
+    //const invitee = await r.table('User')
+    //  .getAll(inviteeEmail, {index: 'email'})
+    //  .nth(0)
+    //  .pluck('inactive')
+    //  .default(null);
+    //
+    //const invitees = [{email: inviteeEmail}];
+    //const isActive = invitee && !invitee.inactive;
+    //if (isActive) {
+    //  await sendInvitationViaNotification(invitees, inviterDetails);
+    //} else {
+    //  await asyncInviteTeam(inviterUserId, teamId, invitees);
+    //}
+    //const notificationsCleared = {deletedIds: [dbNotificationId]};
+    //userIds.forEach((notifiedUserId) => {
+    //  getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared, mutatorId: socket.id});
+    //});
+    //return {deletedId: dbNotificationId};
   }
 };
 

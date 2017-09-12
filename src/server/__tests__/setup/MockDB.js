@@ -243,8 +243,8 @@ class MockDB {
   }
 
   newTeam(overrides = {}) {
-    const {id = shortid.generate()} = this.context.team || {};
-    const {id: orgId = shortid.generate()} = this.context.organization || {};
+    const id = shortid.generate();
+    const orgId = shortid.generate();
     return this.closeout('team', {
       id,
       orgId,
@@ -305,8 +305,14 @@ class MockDB {
     const r = getRethink();
     const tables = Object.keys(this.db).map((name) => name[0].toUpperCase() + name.substr(1));
     const docsToInsert = Object.values(this.db);
-    const promises = docsToInsert.map((docs, idx) => docs.length && r.table(tables[idx]).insert(docs));
-    await Promise.all(promises);
+    const promises = docsToInsert.reduce((obj, docs, idx) => {
+      if (docs.length) {
+        const table = tables[idx];
+        obj[table] = r.table(table).insert(docs)
+      }
+      return obj;
+    }, {});
+    await r.expr(promises);
     return this.db;
   }
 

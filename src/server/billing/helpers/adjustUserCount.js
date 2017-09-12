@@ -41,7 +41,8 @@ const addUser = (orgIds, userId) => {
   }));
   return r.table('User').get(userId)
     .update((user) => ({
-      userOrgs: user('userOrgs').add(userOrgAdditions)
+      // we may have already added them in the previous step, so use distinct
+      userOrgs: user('userOrgs').add(userOrgAdditions).distinct()
     }))
     .do(() => {
       return r.table('Organization')
