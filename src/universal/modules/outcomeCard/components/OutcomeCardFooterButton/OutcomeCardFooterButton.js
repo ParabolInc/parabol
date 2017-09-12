@@ -28,8 +28,15 @@ const OutcomeCardFooterButton = (props) => {
     // e.currentTarget.blur();
   };
 
+  // NOTE: name="cardButton" used to detect activeElement (SEE: MeetingContainer.js)
   return (
-    <button className={buttonStyles} onClick={handleOnClick} onMouseEnter={onMouseEnter}>
+    <button
+      className={buttonStyles}
+      name="cardButton"
+      onClick={handleOnClick}
+      onMouseEnter={onMouseEnter}
+      type="button"
+    >
       <FontAwesome name={icon} style={faStyle} />
     </button>
   );

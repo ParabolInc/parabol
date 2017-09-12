@@ -9,10 +9,12 @@ const ProjectIntegrationLink = (props) => {
   const {nameWithOwner, issueNumber} = integration || {};
   if (!issueNumber) return null;
   // TODO make this async and point to subcomponents when we have more than github
+  // NOTE: name="cardLink" used to detect activeElement (SEE: MeetingContainer.js)
   return (
     <a
       className={css(styles.demoLink)}
       href={`https://www.github.com/${nameWithOwner}/issues/${issueNumber}`}
+      name="cardLink"
       rel="noopener noreferrer"
       target="_blank"
       title={`GitHub Issue #${issueNumber} on ${nameWithOwner}`}

@@ -93,16 +93,22 @@ class OutcomeCardFooter extends Component {
     );
 
     const {error} = this.state;
+    // NOTE: name="cardButton" used to detect activeElement (SEE: MeetingContainer.js)
     const ownerAvatarOrTeamName = (
       showTeam ?
         <div className={css(styles.teamName)}>{teamName}</div> :
-        (<div className={avatarStyles} tabIndex="0">
+        (<button
+          className={avatarStyles}
+          name="cardButton"
+          tabIndex={service && '-1'}
+          type="button"
+        >
           <img
             alt={owner.preferredName}
             className={css(styles.avatarImg)}
             src={owner.picture}
           />
-        </div>)
+        </button>)
     );
 
     return (
@@ -203,8 +209,10 @@ const styleThunk = () => ({
   },
 
   avatar: {
+    appearance: 'none',
     borderRadius: '100%',
     border: '.0625rem solid transparent',
+    boxShadow: 'none',
     cursor: 'pointer',
     height: '1.75rem',
     marginLeft: '-.125rem',

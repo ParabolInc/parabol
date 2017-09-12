@@ -57,7 +57,7 @@ const MenuItem = (props) => {
   return (
     <div title={titleStr}>
       {hr === 'before' && <hr className={css(styles.hr)} />}
-      <div className={rootStyles} onClick={handleClick} >
+      <div className={rootStyles} onClick={handleClick}>
         {avatar && makeAvatar()}
         {!avatar && icon && makeIcon()}
         {labelEl}

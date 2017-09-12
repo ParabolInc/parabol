@@ -277,6 +277,10 @@ export default class MeetingContainer extends Component {
   gotoNext = () => {
     const {localPhase, localPhaseItem} = this.props;
     const nextPhaseInfo = actionMeeting[localPhase];
+    const activeElement = document.activeElement;
+    if (activeElement.name === 'cardButton' || activeElement.name === 'cardLink') {
+      return;
+    }
     if (nextPhaseInfo.items) {
       this.gotoItem(localPhaseItem + 1);
     } else {
