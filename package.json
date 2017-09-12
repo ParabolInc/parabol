@@ -201,7 +201,7 @@
   },
   "engines": {
     "node": "8.4.0",
-    "yarn": "1.0.1"
+    "yarn": "^1.0.1"
   },
   "jest": {
     "modulePaths": [
