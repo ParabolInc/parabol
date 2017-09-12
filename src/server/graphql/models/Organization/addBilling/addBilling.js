@@ -71,8 +71,8 @@ export default {
         if (removedNotification) {
           const notificationsCleared = {deletedIds: [removedNotification.id]};
           removedNotification.userIds.forEach((notifiedUserId) => {
-            getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared})
-          })
+            getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared});
+          });
         }
         sendSegmentEvent('addBilling Free Trial Extended', userId, {orgId});
       }
@@ -112,8 +112,8 @@ export default {
       if (removedNotification) {
         const notificationsCleared = {deletedIds: [removedNotification.id]};
         removedNotification.userIds.forEach((notifiedUserId) => {
-          getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared})
-        })
+          getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared});
+        });
       }
       sendSegmentEvent('addBilling New Payment Success', userId, {orgId, quantity});
     }

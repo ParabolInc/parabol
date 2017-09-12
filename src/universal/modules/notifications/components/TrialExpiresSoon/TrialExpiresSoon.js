@@ -14,9 +14,9 @@ import fromNow from 'universal/utils/fromNow';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const TrialExpiresSoon = (props) => {
-  const {atmosphere, orgId, history, styles, varList} = props;
-  const [expiresAt] = varList;
-  const daysLeft = fromNow(expiresAt);
+  const {atmosphere, notification, history, styles} = props;
+  const {orgId, trialExpiresAt} = notification;
+  const daysLeft = fromNow(trialExpiresAt);
   const addBilling = () => {
     SendClientSegmentEventMutation(atmosphere, 'Notification TrialExpiresSoon Click', {orgId});
     history.push(`/me/organizations/${orgId}`);
@@ -50,10 +50,12 @@ const TrialExpiresSoon = (props) => {
 
 TrialExpiresSoon.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  orgId: PropTypes.string.isRequired,
   history: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  varList: PropTypes.array.isRequired
+  notification: PropTypes.shape({
+    orgId: PropTypes.string.isRequired,
+    trialExpiresAt: PropTypes.string.isRequired
+  })
 };
 
 const avatarPlaceholderSize = '2.75rem';

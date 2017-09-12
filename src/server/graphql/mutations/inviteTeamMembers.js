@@ -19,8 +19,6 @@ export default {
     }
   },
   async resolve(source, {invitees, teamId}, {authToken}) {
-
-
     // AUTH
     await requireOrgLeaderOrTeamMember(authToken, teamId);
     const userId = getUserId(authToken);

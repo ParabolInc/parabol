@@ -39,7 +39,7 @@ const AddedToTeam = (props) => {
       <div className={css(styles.button)}>
         <Button
           colorPalette="cool"
-          disabled={submitting}
+          waiting={submitting}
           isBlock
           label="Great!"
           size={ui.notificationButtonSize}

@@ -47,8 +47,8 @@ export default {
     if (removedNotification) {
       const notificationsCleared = {deletedIds: [removedNotification.id]};
       removedNotification.userIds.forEach((userId) => {
-        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared})
-      })
+        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
+      });
     }
 
     return true;

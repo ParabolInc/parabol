@@ -57,12 +57,12 @@ const RejectOrgApprovalModal = (props) => {
         <div className={css(styles.buttonBlock)}>
           <Button
             colorPalette="cool"
-            disabled={submitting}
             isBlock
             label={`Reject ${inviteeEmail}`}
             size={ui.modalButtonSize}
             type="submit"
             onClick={handleSubmit(onSubmit)}
+            waiting={submitting}
           />
         </div>
       </form>

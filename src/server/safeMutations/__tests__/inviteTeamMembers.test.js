@@ -39,7 +39,6 @@ describe('inviteTeamMembers', () => {
   });
 
   test('invites a new person via email', async () => {
-
     // SETUP
     asyncInviteTeam.default = jest.fn(() => []);
     sendInvitationViaNotification.default = jest.fn(() => []);
@@ -49,7 +48,7 @@ describe('inviteTeamMembers', () => {
     publishNotifications.default = jest.fn(() => []);
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    await mockDB.init()
+    await mockDB.init();
     const firstUser = mockDB.db.user[0];
     const invitee = newInvitee();
     const invitees = [{email: invitee.email}];

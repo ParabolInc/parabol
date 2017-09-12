@@ -56,12 +56,12 @@ const RequestNewUser = (props) => {
         <div className={css(styles.button)}>
           <Button
             colorPalette="cool"
-            disabled={submitting}
             isBlock
             label="Accept"
             size={ui.notificationButtonSize}
             type="submit"
             onClick={acceptInvite}
+            waiting={submitting}
           />
         </div>
         <div className={css(styles.button)}>
