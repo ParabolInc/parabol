@@ -1,24 +1,12 @@
-import {
-  getUserId,
-  getUserOrgDoc,
-  isBillingLeader,
-  ensureUniqueId,
-  requireUserInOrg,
-  requireWebsocket
-} from 'server/utils/authorization';
-import {handleSchemaErrors} from 'server/utils/utils';
+import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLList
-} from 'graphql';
-import {TeamInput} from '../teamSchema';
-import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
-import addTeamValidation from './addTeamValidation';
-import inviteAsBillingLeader from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsBillingLeader';
-import inviteAsUser from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsUser';
+import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
+import {ensureUniqueId, getUserId, getUserOrgDoc, requireUserInOrg, requireWebsocket} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import {handleSchemaErrors} from 'server/utils/utils';
+import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
+import {TeamInput} from '../teamSchema';
+import addTeamValidation from './addTeamValidation';
 
 export default {
   type: GraphQLBoolean,
@@ -42,7 +30,7 @@ export default {
 
     // VALIDATION
     const {data: {invitees, newTeam}, errors} = addTeamValidation()(args);
-    const {id: teamId, name: teamName} = newTeam;
+    const {id: teamId} = newTeam;
     handleSchemaErrors(errors);
     await ensureUniqueId('Team', teamId);
 
@@ -59,19 +47,10 @@ export default {
     sendSegmentEvent('New Team', userId, {teamId, orgId, inviteeCount});
 
     // handle invitees
-    if (inviteeCount === 0) {
-      return true;
+    if (inviteeCount > 0) {
+      await inviteTeamMembers(invitees, teamId, userId);
     }
-
-    const inviterIsBillingLeader = isBillingLeader(userOrgDoc);
-
-    // sidestep approval process
-    if (inviterIsBillingLeader) {
-      await inviteAsBillingLeader(invitees, orgId, userId, teamId);
-    } else {
-      await inviteAsUser(invitees, orgId, userId, teamId, teamName);
-    }
-
+    // TODO return a real payload when we move teams to relay
     return true;
   }
 };
