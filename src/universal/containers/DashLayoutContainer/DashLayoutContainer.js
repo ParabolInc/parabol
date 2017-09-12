@@ -5,7 +5,7 @@ import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 import {TEAM} from 'universal/subscriptions/constants';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
-import {setDashAlertPresence} from 'universal/modules/dashboard/ducks/dashDuck';
+import {setMeetingAlertState, setTrialAlertState} from 'universal/modules/dashboard/ducks/dashDuck';
 
 const resolveActiveMeetings = (teams) => {
   if (teams !== resolveActiveMeetings.teams) {
@@ -58,21 +58,27 @@ const mapStateToProps = (state, {notifications}) => {
     activeMeetings: resolveActiveMeetings(teams),
     tms: state.auth.obj.tms,
     userId: state.auth.sub,
-    hasDashAlert: state.dash.hasDashAlert,
-    trialNotification: getTrialNotification(notifications)
+    trialNotification: getTrialNotification(notifications),
+    hasMeetingAlert: state.dash.hasMeetingAlert,
+    hasTrialAlert: state.dash.hasTrialAlert
   };
 };
 
 const maybeSetDashAlert = (props) => {
   const {
     activeMeetings,
-    hasDashAlert,
-    dispatch,
-    trialNotification
+    trialNotification,
+    hasMeetingAlert,
+    hasTrialAlert,
+    dispatch
   } = props;
-  const shouldHaveDashAlert = activeMeetings.length > 0 || (trialNotification && trialNotification.type);
-  if (shouldHaveDashAlert !== hasDashAlert) {
-    dispatch(setDashAlertPresence(shouldHaveDashAlert));
+  const shouldHaveMeetingAlert = activeMeetings.length > 0;
+  const shouldHaveTrialAlert = trialNotification && trialNotification.type;
+  if (shouldHaveMeetingAlert !== hasMeetingAlert) {
+    dispatch(setMeetingAlertState(shouldHaveMeetingAlert));
+  }
+  if (shouldHaveTrialAlert !== hasTrialAlert) {
+    dispatch(setTrialAlertState(shouldHaveTrialAlert));
   }
 };
 

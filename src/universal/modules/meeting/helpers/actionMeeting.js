@@ -14,7 +14,7 @@ export default {
       countName: 'teamMemberCount',
       arrayName: 'members'
     },
-    name: 'Check-in',
+    name: 'Check-In',
     next: UPDATES,
     route: 'checkin',
     visitOnce: false
@@ -32,7 +32,7 @@ export default {
   },
   [FIRST_CALL]: {
     index: 3,
-    name: 'First call',
+    name: 'First Call',
     next: AGENDA_ITEMS,
     route: 'firstcall',
     visitOnce: true
@@ -43,14 +43,14 @@ export default {
       countName: 'agendaCount',
       arrayName: 'agenda'
     },
-    name: 'Agenda items',
+    name: 'Agenda Items',
     next: LAST_CALL,
     route: 'agenda',
     visitOnce: false
   },
   [LAST_CALL]: {
     index: 5,
-    name: 'Last call',
+    name: 'Last Call',
     next: SUMMARY,
     route: 'lastcall',
     visitOnce: true

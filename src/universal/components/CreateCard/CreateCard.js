@@ -68,10 +68,10 @@ const styleThunk = () => ({
       color: appTheme.palette.mid
     },
     ':hover': {
-      boxShadow: ui.cardBoxShadow[1]
+      boxShadow: ui.shadow[1]
     },
     ':focus': {
-      boxShadow: ui.cardBoxShadow[2]
+      boxShadow: ui.shadow[2]
     }
   },
 

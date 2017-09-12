@@ -9,7 +9,7 @@ const DashNavItemBaseStyles = {
   fontSize: appTheme.typography.s4,
   margin: '.5rem 0',
   padding: '.3125rem .5rem .3125rem 1rem',
-  transition: `background-color ${ui.transitionFastest}`,
+  transition: `background-color ${ui.transition[0]}`,
   userSelect: 'none',
   width: '100%'
 };

@@ -72,17 +72,25 @@ const iconSize3x = '42px'; // FontAwesome 3x
 // Modals
 const MODAL_LAYOUT_MAIN = 'main';
 const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert';
+const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
+// Panels
+const panelInnerBorderColor = appTheme.palette.mid20l;
+
 // Transitions
-const transitionFastest = '100ms ease-in';
-const transitionFaster = '200ms ease-in';
-const transitionFast = '400ms ease-in';
-const transitionSlow = '800ms ease-in';
-const transitionSlower = '1600ms ease-in';
-const transitionSlowest = '3200ms ease-in';
+// NOTE: increases on a scale of 2x
+const transition = [
+  '100ms ease-in',
+  '200ms ease-in',
+  '400ms ease-in',
+  '800ms ease-in',
+  '1600ms ease-in',
+  '3200ms ease-in'
+];
 
 // Shadows
+// NOTE: levels increase on a scale of 2x
 const shadow = [
   '0 .0625rem .125rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
   '0 .125rem .25rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
@@ -134,7 +142,7 @@ const ui = {
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
-    transition: `transform ${transitionFastest}`,
+    transition: `transform ${transition[0]}`,
     userSelect: 'none',
     verticalAlign: 'middle',
     ':hover': {
@@ -142,7 +150,7 @@ const ui = {
       textDecoration: 'none'
     },
     ':focus': {
-      boxShadow: shadow[1],
+      boxShadow: shadow[0],
       textDecoration: 'none'
     }
   },
@@ -201,12 +209,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
-  // boxShadow color with some mid hue rgba(103, 107, 139, .75) for reference (TA)
-  cardBoxShadow: [
-    shadow[0],
-    shadow[1],
-    shadow[2]
-  ],
   cardMaxWidth: '17.5rem',
   cardMinHeight: '8.1875rem',
   cardPaddingBase: '.5rem',
@@ -234,6 +236,7 @@ const ui = {
   },
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
+  dashAlertsHeight: '5.25rem',
   dashSectionHeaderLineHeight: '2rem',
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
@@ -360,7 +363,7 @@ const ui = {
   menuBackgroundColor: '#fff',
   menuBorderColor: appTheme.palette.mid30l,
   menuBorderRadius: borderRadiusSmall,
-  menuBoxShadow: shadow[2],
+  menuBoxShadow: shadow[3],
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',
   menuGutterVertical: '.5rem',
@@ -375,14 +378,16 @@ const ui = {
   // ---------------------------------------------------------------------------
   modalBackdropBackgroundColor: 'rgba(78, 73, 95, .25)',
   modalBorderRadius: borderRadiusLarge,
-  modalBoxShadow: `${shadow[3]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
+  modalBoxShadow: `${shadow[4]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
   modalButtonSize: BUTTON_SIZE_MEDIUM,
   modalLayoutMain: MODAL_LAYOUT_MAIN,
   modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
+  modalLayoutMainWithDashAlerts: MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS,
   modalLayoutViewport: MODAL_LAYOUT_VIEWPORT,
   modalLayout: [
     MODAL_LAYOUT_MAIN,
     MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
+    MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS,
     MODAL_LAYOUT_VIEWPORT
   ],
 
@@ -393,6 +398,7 @@ const ui = {
   // Panels
   // ---------------------------------------------------------------------------
   panelBorderColor: appTheme.palette.mid40l,
+  panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
   panelMarginVertical: '1.5rem',
@@ -428,7 +434,7 @@ const ui = {
 
   // Rows
   // ---------------------------------------------------------------------------
-  rowBorderColor: appTheme.palette.mid20l,
+  rowBorderColor: panelInnerBorderColor,
   rowHeadingColor: appTheme.palette.dark,
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
@@ -459,12 +465,7 @@ const ui = {
 
   // Transitions
   // ---------------------------------------------------------------------------
-  transitionFastest,
-  transitionFaster,
-  transitionFast,
-  transitionSlow,
-  transitionSlower,
-  transitionSlowest,
+  transition,
 
   // Generic zIndex scale
   // ---------------------------------------------------------------------------
@@ -482,7 +483,8 @@ const ui = {
   // …and then component-specific constants:
 
   ziMenu: zIndexScale(4),
-  ziCardDragLayer: zIndexScale(6)
+  ziCardDragLayer: zIndexScale(6),
+  ziRejoinFacilitatorButton: zIndexScale(4)
 };
 
 export default ui;

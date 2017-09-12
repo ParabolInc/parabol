@@ -5,8 +5,8 @@ import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -33,8 +33,8 @@ const MeetingAgendaFirstCall = (props) => {
 
           <AgendaShortcutHint />
 
-          {!hideMoveMeetingControls ?
-            <div className={css(styles.buttonBlock)}>
+          <div className={css(styles.controlBlock)}>
+            {!hideMoveMeetingControls ?
               <Button
                 buttonStyle="flat"
                 colorPalette="cool"
@@ -43,16 +43,12 @@ const MeetingAgendaFirstCall = (props) => {
                 label="Let’s begin: Agenda"
                 onClick={gotoNext}
                 size="largest"
-              />
-            </div> :
-            <div className={css(styles.warmHighlight)}>
-              <Type align="center" scale="s4" colorPalette="black">
-                <span className={css(styles.highlight)}>
-                  Waiting for <b>{getFacilitatorName(team, members)}</b> to advance the meeting<Ellipsis />
-                </span>
-              </Type>
-            </div>
-          }
+              /> :
+              <MeetingFacilitationHint>
+                {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {'to start the Agenda'}
+              </MeetingFacilitationHint>
+            }
+          </div>
         </MeetingSection>
       </MeetingSection>
     </MeetingMain>
@@ -72,7 +68,7 @@ const styleThunk = () => ({
     color: appTheme.palette.warm
   },
 
-  buttonBlock: {
+  controlBlock: {
     marginTop: '2.5rem'
   },
 

@@ -22,7 +22,7 @@ const MeetingAvatarMenu = (props) => {
       {handleNavigate &&
       <MenuItem
         key="handleNavigate"
-        label={`See ${preferredName}'s ${phaseName}`}
+        label={`See ${preferredName}’s ${phaseName}`}
         onClick={handleNavigate}
         closePortal={closePortal}
       />
@@ -30,7 +30,7 @@ const MeetingAvatarMenu = (props) => {
       {handlePromote &&
       <MenuItem
         key="promoteToFacilitator"
-        label={`Promote ${preferredName} to facilitator`}
+        label={`Promote ${preferredName} to Facilitator`}
         onClick={handlePromote}
         closePortal={closePortal}
       />
@@ -38,7 +38,7 @@ const MeetingAvatarMenu = (props) => {
       {handleRequest &&
       <MenuItem
         key="requestFacilitator"
-        label={'Request to become facilitator'}
+        label={'Request to become Facilitator'}
         onClick={handleRequest}
         closePortal={closePortal}
       />
