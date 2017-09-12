@@ -25,14 +25,11 @@ const OutcomeCardFooterButton = (props) => {
 
   const handleOnClick = (e) => {
     if (onClick) onClick(e);
-    // e.currentTarget.blur();
   };
 
-  // NOTE: name="cardButton" used to detect activeElement (SEE: MeetingContainer.js)
   return (
     <button
       className={buttonStyles}
-      name="cardButton"
       onClick={handleOnClick}
       onMouseEnter={onMouseEnter}
       type="button"

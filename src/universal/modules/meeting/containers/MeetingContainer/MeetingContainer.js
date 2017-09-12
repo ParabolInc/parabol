@@ -93,6 +93,10 @@ const mutationHandlers = {
   updateAgendaItem: handleAgendaSort
 };
 
+const handleHotkey = (gotoFunc) => () => {
+  if (document.activeElement === document.body) gotoFunc();
+};
+
 const mapStateToProps = (state, props) => {
   const {match: {params: {localPhase, localPhaseItem, teamId}}} = props;
   const {sub: userId} = state.auth.obj;
@@ -160,8 +164,8 @@ export default class MeetingContainer extends Component {
   componentWillMount() {
     const {bindHotkey, teamId} = this.props;
     handleRedirects({}, this.props);
-    bindHotkey(['enter', 'right'], this.gotoNext);
-    bindHotkey('left', this.gotoPrev);
+    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext));
+    bindHotkey('left', handleHotkey(this.gotoPrev));
     bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
   }
 
@@ -277,10 +281,6 @@ export default class MeetingContainer extends Component {
   gotoNext = () => {
     const {localPhase, localPhaseItem} = this.props;
     const nextPhaseInfo = actionMeeting[localPhase];
-    const activeElement = document.activeElement;
-    if (activeElement.name === 'cardButton' || activeElement.name === 'cardLink') {
-      return;
-    }
     if (nextPhaseInfo.items) {
       this.gotoItem(localPhaseItem + 1);
     } else {

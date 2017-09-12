@@ -81,25 +81,20 @@ class OutcomeCardFooter extends Component {
     const {teamMember: owner, integration, team: {name: teamName}} = outcome;
     const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
-
     const buttonBlockStyles = css(
       styles.buttonBlock,
       cardIsActive && styles.showBlock
     );
-
     const avatarStyles = css(
       styles.avatar,
       cardIsActive && styles.activeAvatar
     );
-
     const {error} = this.state;
-    // NOTE: name="cardButton" used to detect activeElement (SEE: MeetingContainer.js)
     const ownerAvatarOrTeamName = (
       showTeam ?
         <div className={css(styles.teamName)}>{teamName}</div> :
         (<button
           className={avatarStyles}
-          name="cardButton"
           tabIndex={service && '-1'}
           type="button"
         >
