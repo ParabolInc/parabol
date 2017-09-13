@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -11,6 +9,7 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import {MEETING} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
+import MeetingUpdatesEmptyModal from 'universal/modules/meeting/components/MeetingUpdatesEmptyModal/MeetingUpdatesEmptyModal';
 
 const MeetingUpdates = (props) => {
   const {
@@ -54,22 +53,18 @@ const MeetingUpdates = (props) => {
           }
         </div>
         <div className={css(styles.body)}>
-          {showEmpty &&
-            <div className={css(styles.noProjectsMessage)}>
-              <div className={css(styles.noProjectsHeading)}>
-                {'No projects; any updates?'}
-              </div>
-              <p>{'We’re not currently tracking any projects for'} <b>{currentTeamMember.preferredName}</b>.</p>
-              <p>{'You can add projects during the Agenda.'}</p>
-              <p>{'Just press “'}<b>{'+'}</b>{'” to add an Agenda Item.'}</p>
-              {showMoveMeetingControls &&
-                <div className={css(styles.noProjectsButtonBlock)}>
-                  {advanceButton()}
-                </div>
-              }
-            </div>
-          }
-          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING} />
+          <MeetingUpdatesEmptyModal
+            advanceButton={showMoveMeetingControls && advanceButton}
+            currentTeamMemberName={currentTeamMember.preferredName}
+            isOpen={showEmpty}
+          />
+          <ProjectColumns
+            alignColumns="center"
+            area={MEETING}
+            myTeamMemberId={self && self.id}
+            projects={projects}
+            queryKey={queryKey}
+          />
         </div>
       </MeetingSection>
     </MeetingMain>
@@ -103,37 +98,7 @@ const styleThunk = () => ({
     flex: 1,
     flexDirection: 'column',
     padding: '1rem 1rem 0',
-    position: 'relative',
     width: '100%'
-  },
-
-  noProjectsMessage: {
-    backgroundColor: appTheme.palette.light50l,
-    borderRadius: ui.modalBorderRadius,
-    boxShadow: ui.modalBoxShadow,
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s4,
-    left: '50%',
-    lineHeight: '1.5',
-    maxWidth: '36rem',
-    padding: '1.5rem',
-    position: 'absolute',
-    textAlign: 'center',
-    top: '6rem',
-    transform: 'translate3d(-50%, 0, 0)',
-    width: '100%',
-    zIndex: ui.zi7
-  },
-
-  noProjectsHeading: {
-    fontSize: appTheme.typography.s6,
-    fontWeight: 700,
-    lineHeight: '2',
-    margin: '0 0 1rem'
-  },
-
-  noProjectsButtonBlock: {
-    marginTop: '1rem'
   }
 });
 
