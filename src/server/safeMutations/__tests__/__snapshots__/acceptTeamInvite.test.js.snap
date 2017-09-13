@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`acceptTeamInvite adds an invitee who was not previously in the org 1`] = `
+Object {
+  "invitation": Array [],
+  "notification": Array [],
+  "teamMember": Object {
+    "checkInOrder": 4,
+    "email": "invitee@mockTeam+acceptTeamInvite1.co",
+    "id": 3,
+    "isCheckedIn": null,
+    "isFacilitator": true,
+    "isLead": true,
+    "isNotRemoved": true,
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "inviteeGuy",
+    "teamId": 1,
+    "userId": 0,
+  },
+  "user": Object {
+    "cachedAt": 2017-01-01T07:00:00.000Z,
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "email": "invitee@mockTeam+acceptTeamInvite1.co",
+    "emailVerified": false,
+    "id": 0,
+    "identities": Array [],
+    "inactive": false,
+    "lastLogin": 2017-01-01T07:00:00.000Z,
+    "lastSeenAt": 2017-01-01T07:00:00.000Z,
+    "name": "inviteeGuy",
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "inviteeGuy",
+    "tms": Array [
+      1,
+    ],
+    "updatedAt": 2017-01-01T07:00:00.000Z,
+    "userOrgs": Array [
+      Object {
+        "id": 2,
+        "role": null,
+      },
+    ],
+    "welcomeSentAt": 2017-01-01T07:00:00.000Z,
+  },
+}
+`;
+
+exports[`acceptTeamInvite adds an invitee who was previously in the org 1`] = `
+Object {
+  "invitation": Array [],
+  "notification": Array [],
+  "teamMember": Object {
+    "checkInOrder": 5,
+    "email": "vision@avengers.org",
+    "id": 4,
+    "isCheckedIn": null,
+    "isFacilitator": true,
+    "isLead": true,
+    "isNotRemoved": true,
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "Vision",
+    "teamId": 2,
+    "userId": 0,
+  },
+  "user": Object {
+    "cachedAt": 2017-01-01T07:00:00.000Z,
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "email": "vision@avengers.org",
+    "emailVerified": false,
+    "id": 0,
+    "identities": Array [],
+    "inactive": false,
+    "lastLogin": 2017-01-01T07:00:00.000Z,
+    "lastSeenAt": 2017-01-01T07:00:00.000Z,
+    "name": "Jonas",
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "Vision",
+    "tms": Array [
+      1,
+      2,
+    ],
+    "trialOrg": null,
+    "updatedAt": 2017-01-01T07:00:00.000Z,
+    "userOrgs": Array [
+      Object {
+        "id": 3,
+        "role": null,
+      },
+    ],
+    "welcomeSentAt": 2017-01-01T07:00:00.000Z,
+  },
+}
+`;

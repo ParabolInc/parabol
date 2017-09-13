@@ -11,6 +11,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import inviteUserValidation from './inviteUserValidation';
+import SubmissionError from 'redux-form/es/SubmissionError';
 
 const makeSchemaProps = (props) => {
   const {invitations, orgApprovals, teamMembers} = props;
@@ -39,19 +40,22 @@ const InviteUser = (props) => {
     dispatch,
     handleSubmit,
     styles,
+    submitting,
     teamId,
     touch,
-    untouch
+    untouch,
   } = props;
 
   const updateEditable = async (submissionData) => {
     const schemaProps = makeSchemaProps(props);
     const schema = inviteUserValidation(schemaProps);
-    const {data: {inviteTeamMember}} = schema(submissionData);
+    const {data: {inviteTeamMember}, errors} = schema(submissionData);
+    if (Object.keys(errors).length) {
+      throw new SubmissionError(errors);
+    }
     const invitees = [{email: inviteTeamMember}];
     InviteTeamMembersMutation(atmosphere, invitees, teamId, dispatch);
   };
-
   return (
     <div className={css(styles.inviteUser)}>
       <AvatarPlaceholder />
@@ -73,6 +77,7 @@ const InviteUser = (props) => {
           label="Send Invite"
           size="smallest"
           onClick={handleSubmit(updateEditable)}
+          waiting={submitting}
         />
       </div>
     </div>
@@ -86,6 +91,7 @@ InviteUser.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   onInviteSubmitted: PropTypes.func,
   picture: PropTypes.string,
+  submitting: PropTypes.bool.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string,
   touch: PropTypes.func.isRequired,

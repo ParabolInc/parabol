@@ -20,16 +20,18 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
     meetingPhase: LOBBY,
     meetingPhaseItem: null
   };
-  const role = isNewOrg ? BILLING_LEADER : null;
-  const {updatedUser} = await r({
+  const options = {
+    returnChanges:true,
+    role: isNewOrg ? BILLING_LEADER : null
+  };
+  const {tms} = await r({
     // insert team
     newTeam: r.table('Team').insert(verifiedTeam),
     // denormalize common fields to team member
     newTeamMember: insertNewTeamMember(userId, teamId, 0),
     // add teamId to user tms array
-    updatedUser: addUserToTMSUserOrg(userId, teamId, orgId, role)
+    tms: addUserToTMSUserOrg(userId, teamId, orgId, options)('changes')(0)('new_val')('tms')
   });
-  const {tms} = updatedUser.new_val;
 
   // no need to wait for auth0
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});

@@ -41,7 +41,7 @@ export default function notificationTemplate(template) {
       type,
       reason: 'Do not like them',
       deniedByName: this.context.user[0].preferredName,
-      inviteeEmail: newInvitee().email
+      inviteeEmail: template.email || newInvitee().email
     };
   }
   if (type === PROMOTE_TO_BILLING_LEADER) {
@@ -73,7 +73,7 @@ export default function notificationTemplate(template) {
       type,
       inviterUserId: this.db.user[0].id,
       inviterName: this.db.user[0].preferredName,
-      inviteeEmail: newInvitee().email,
+      inviteeEmail: template.email || newInvitee().email,
       teamId: this.context.team.id,
       teamName: this.context.team.name
     };

@@ -14,6 +14,7 @@ export default {
     'projects.teamMemberId',
     'teamId'
   ],
+  invitation: ['id', 'email', 'invitedBy', 'teamId'],
   notification: ['id', 'inviteeEmail', 'inviterUserId', 'orgId', 'requestorId', 'teamId', 'userIds'],
   organization: ['id', 'stripeId', 'stripeSubscriptionId', 'orgUsers.id'],
   orgApproval: ['id', 'email', 'orgId', 'teamId'],

@@ -15,9 +15,8 @@ const acceptTeamInvite = async (teamId, authToken, email, mutatorId) => {
   const r = getRethink();
   const now = new Date();
   const userId = getUserId(authToken);
-
   const {team: {orgId, name: teamName}, user} = await r({
-    orgId: r.table('Team').get(teamId).pluck('orgId', 'name'),
+    team: r.table('Team').get(teamId).pluck('orgId', 'name'),
     user: r.table('User').get(userId)
   });
   const userOrgs = user.userOrgs || [];
@@ -39,7 +38,7 @@ const acceptTeamInvite = async (teamId, authToken, email, mutatorId) => {
       }),
     expireInviteNotificationIds: getTeamInviteNotifications(orgId, teamId, [email])
       .delete({returnChanges: true})('changes')
-      .map((change) => change('new_val')('id'))
+      .map((change) => change('old_val')('id'))
       .default([])
   });
 

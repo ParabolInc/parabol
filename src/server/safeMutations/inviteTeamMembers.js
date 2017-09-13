@@ -5,7 +5,6 @@ import createPendingApprovals from 'server/safeMutations/createPendingApprovals'
 import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reactivateTeamMembersAndMakeNotifications';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
-import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
 import {isBillingLeader} from 'server/utils/authorization';
 import publishNotifications from 'server/utils/publishNotifications';
 import {ASK_APPROVAL, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
@@ -29,7 +28,6 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
       .getAll(r.args(emailArr), {index: 'email'})
       .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
       .coerceTo('array'),
-    //pendingNotificationInvitations: getTeamInviteNotifications(orgId, teamId, emailArr).coerceTo('array'),
     pendingApprovals: r.table('OrgApproval')
       .getAll(r.args(emailArr), {index: 'email'})
       .filter({teamId})

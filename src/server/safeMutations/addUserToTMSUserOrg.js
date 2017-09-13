@@ -1,6 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 
-const addUserToTMSUserOrg = (userId, teamId, orgId, role = null) => {
+const addUserToTMSUserOrg = (userId, teamId, orgId, options = {}) => {
+  const {returnChanges, role = null} = options;
   const r = getRethink();
   return r.table('User')
     .get(userId)
@@ -18,7 +19,7 @@ const addUserToTMSUserOrg = (userId, teamId, orgId, role = null) => {
         userDoc('tms'),
         userDoc('tms').default([]).append(teamId)
       )
-    }), {returnChanges: true})('changes')(0);
+    }), {returnChanges});
 };
 
 export default addUserToTMSUserOrg;

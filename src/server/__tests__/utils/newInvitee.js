@@ -1,7 +1,7 @@
 import shortid from 'shortid';
 
-const newInvitee = () => ({
-  email: `invitee@mockTeam+${shortid.generate()}.co`
+const newInvitee = (randSeed) => ({
+  email: `invitee@mockTeam+${randSeed || shortid.generate()}.co`
 });
 
 export default newInvitee;
