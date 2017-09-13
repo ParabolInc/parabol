@@ -61,6 +61,8 @@ DashModal.propTypes = {
   styles: PropTypes.object
 };
 
+// TODO: move common modal animations to ui.js
+
 const animateIn = {
   '0%': {
     opacity: '0',
