@@ -1,6 +1,7 @@
 import {parse, subscribe} from 'graphql';
 import {forAwaitEach} from 'iterall';
 import Schema from 'server/graphql/rootSchema';
+import handleGraphQLResult from 'server/utils/handleGraphQLResult';
 
 // const handleGqlResponse = (value, socket) => {
 //  if (value.clientValue) {
@@ -24,7 +25,8 @@ export default function scRelaySubscribeHandler(exchange, socket) {
     const asyncIterator = subscribe(Schema, document, {}, context, variables);
     socket.subs[opId] = asyncIterator;
     const iterableCb = (value) => {
-      socket.emit(`gqlData.${opId}`, value);
+      const clientValue = handleGraphQLResult(value, socket);
+      socket.emit(`gqlData.${opId}`, clientValue);
     };
 
     // Use this to kick clients out of the sub

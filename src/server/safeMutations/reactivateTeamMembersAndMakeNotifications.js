@@ -5,7 +5,7 @@ import makeReactivationNotifications from 'server/safeMutations/helpers/makeReac
 
 const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, teamMembers) => {
   if (invitees.length === 0) return [];
-  const {orgId, teamId, teamName, inviterName} = inviter;
+  const {orgId, teamId, teamName} = inviter;
   const r = getRethink();
   const now = new Date();
   const userIds = invitees.map(({userId}) => userId);
@@ -30,7 +30,7 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
     startAt: now,
     orgId,
     userIds: [user.id],
-    inviterName,
+    //inviterName,
     teamName
   }));
   await r.table('Notification').insert(notifications);

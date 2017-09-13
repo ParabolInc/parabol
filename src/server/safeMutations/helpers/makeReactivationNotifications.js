@@ -3,7 +3,7 @@ import {ADD_TO_TEAM, REJOIN_TEAM} from 'universal/utils/constants';
 
 
 const makeReactivationNotifications = (reactivatedUsers, teamMembers, inviter) => {
-  const {teamId, teamName, inviterName, userId} = inviter;
+  const {teamId, teamName, userId} = inviter;
   const restOfTeamUserIds = teamMembers
     .filter((m) => m.isNotRemoved === true && m.id !== userId)
     .map((m) => m.userId);
@@ -14,7 +14,7 @@ const makeReactivationNotifications = (reactivatedUsers, teamMembers, inviter) =
     // make a notification to the person being reactivated
     notificationsToSend[reactivatedUserId] = [{
       authToken: tmsSignToken({sub: reactivatedUserId}, tms),
-      inviterName,
+      //inviterName,
       teamId,
       teamName,
       type: ADD_TO_TEAM

@@ -1,37 +1,35 @@
 import {commitMutation} from 'react-relay';
-import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
   mutation AcceptTeamInviteMutation($dbNotificationId: ID!) {
-    clearNotification(dbNotificationId: $dbNotificationId) {
-      deletedId
+    acceptTeamInvite(dbNotificationId: $dbNotificationId) {
+      authToken
+      teamName
+      teamId
     }
   }
 `;
 
-export const clearNotificationUpdater = (viewer, deletedGlobalIds) => {
-  const notifications = viewer.getLinkedRecords('notifications');
-  if (notifications) {
-    const newNodes = getArrayWithoutIds(notifications, deletedGlobalIds);
-    viewer.setLinkedRecords(newNodes, 'notifications');
-  }
-};
+//export const clearNotificationUpdater = (viewer, deletedGlobalIds) => {
+//  const notifications = viewer.getLinkedRecords('notifications');
+//  if (notifications) {
+//    const newNodes = getArrayWithoutIds(notifications, deletedGlobalIds);
+//    viewer.setLinkedRecords(newNodes, 'notifications');
+//  }
+//};
 
 const AcceptTeamInviteMutation = (environment, dbNotificationId, onError, onCompleted) => {
-  const {viewerId} = environment;
+  //const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {dbNotificationId},
-    // updater: (store) => {
-    //  const viewer = store.get(viewerId);
-    //  const deletedId = store.getRootField('clearNotification').getValue('deletedId');
-    //  clearNotificationUpdater(viewer, deletedId);
-    // },
+    //updater: (store) => {
+    // const viewer = store.get(viewerId);
+    // const deletedId = store.getRootField('acceptTeamInvite').getValue('deletedId');
+    // clearNotificationUpdater(viewer, deletedId);
+    //},
     // optimisticUpdater: (store) => {
-    //  const viewer = store.get(viewerId);
-    //  const notificationId = toGlobalId('Notification', dbNotificationId);
-    //  clearNotificationUpdater(viewer, notificationId);
+    // TODO add the team to the sidebar when we move teams to relay
     // },
     onCompleted,
     onError

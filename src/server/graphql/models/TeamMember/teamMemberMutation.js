@@ -1,20 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
 import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
 import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
 import removeTeamMember from 'server/graphql/models/TeamMember/removeTeamMember/removeTeamMember';
-import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {requireAuth, requireSUOrLead, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {ADD_USER} from 'server/utils/serverConstants';
-import tmsSignToken from 'server/utils/tmsSignToken';
+import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
+import {requireSUOrLead, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj, getOldVal} from 'server/utils/utils';
-import {JOIN_TEAM, PRESENCE} from 'universal/subscriptions/constants';
-import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg';
-import {NOTIFICATIONS_CLEARED, TEAM_INVITE} from 'universal/utils/constants';
-import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
-import getPubSub from 'server/utils/getPubSub';
 
 export default {
   checkIn: {
@@ -55,12 +46,9 @@ export default {
         description: 'The invitation token (first 6 bytes are the id, next 8 are the pre-hash)'
       }
     },
-    async resolve(source, {inviteToken}, {authToken, exchange}) {
+    async resolve(source, {inviteToken}, {authToken}) {
       const r = getRethink();
       const now = new Date();
-
-      // AUTH
-      const userId = requireAuth(authToken);
 
       // VALIDATION
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
@@ -111,45 +99,8 @@ export default {
       }
 
       // RESOLUTION
-      const {orgId, user} = await r({
-        orgId: r.table('Team').get(teamId)('orgId'),
-        user: r.table('User').get(userId)
-      });
-      const userOrgs = user.userOrgs || [];
-      const userTeams = user.tms || [];
-      const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
-      const tms = [...userTeams, teamId];
-      const {expireInviteNotificationIds} = await r({
-        // add the team to the user doc
-        userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
-        newTeamMember: insertNewTeamMember(userId, teamId),
-        // find all possible emails linked to this person and mark them as accepted
-        expireEmailInvitations: r.table('Invitation')
-          .getAll(user.email, email, {index: 'email'})
-          .update({
-            acceptedAt: now,
-            // flag the token as expired so they cannot reuse the token
-            tokenExpiration: new Date(0),
-            updatedAt: now
-          }),
-        expireInviteNotificationIds: getTeamInviteNotifications(orgId, teamId, [email])
-          .delete({returnChanges: true})('changes')
-          .map((change) => change('new_val')('id'))
-          .default([])
-      });
-
-      if (expireInviteNotificationIds.length > 0) {
-        const notificationsCleared = {deletedIds: expireInviteNotificationIds};
-        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
-      }
-
-      if (!userInOrg) {
-        await adjustUserCount(userId, orgId, ADD_USER);
-      }
-      const payload = {type: JOIN_TEAM, name: user.email};
-      exchange.publish(`${PRESENCE}/${teamId}`, payload);
-      auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-      return tmsSignToken(authToken, tms);
+      const addedToTeam = await acceptTeamInvite(teamId, authToken, email);
+      return addedToTeam.authToken;
     }
   },
   removeTeamMember,

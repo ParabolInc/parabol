@@ -27,6 +27,7 @@ import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel';
 import requestFacilitator from 'server/graphql/mutations/requestFacilitator';
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
+import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite';
 
 const rootFields = Object.assign({},
   agenda,
@@ -45,10 +46,11 @@ export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     ...rootFields,
-    approveToOrg,
+    acceptTeamInvite,
     addGitHubRepo,
     addProvider,
     addSlackChannel,
+    approveToOrg,
     clearNotification,
     createGitHubIssue,
     githubAddAssignee,

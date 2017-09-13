@@ -29,7 +29,6 @@ const query = graphql`
             type
             ... on NotifyAddedToTeam {
               authToken
-              inviterName
               teamName
               teamId
             }
