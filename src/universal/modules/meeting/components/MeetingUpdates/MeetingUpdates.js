@@ -16,6 +16,7 @@ import checkForProjects from 'universal/utils/checkForProjects';
 const MeetingUpdates = (props) => {
   const {
     gotoNext,
+    canShowEmptyState,
     localPhaseItem,
     members,
     queryKey,
@@ -55,7 +56,7 @@ const MeetingUpdates = (props) => {
           }
         </div>
         <div className={css(styles.body)}>
-          {!hasProjects &&
+          {(!hasProjects && canShowEmptyState) &&
             <div className={css(styles.noProjectsMessage)}>
               <div className={css(styles.noProjectsHeading)}>
                 {'No projects; any updates?'}
@@ -80,6 +81,7 @@ const MeetingUpdates = (props) => {
 MeetingUpdates.propTypes = {
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
+  canShowEmptyState: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   onFacilitatorPhase: PropTypes.bool,
@@ -122,7 +124,7 @@ const styleThunk = () => ({
     top: '6rem',
     transform: 'translate3d(-50%, 0, 0)',
     width: '100%',
-    zIndex: 200
+    zIndex: ui.zi7
   },
 
   noProjectsHeading: {

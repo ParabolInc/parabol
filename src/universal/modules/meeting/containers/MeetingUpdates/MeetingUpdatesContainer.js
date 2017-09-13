@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
@@ -78,25 +78,43 @@ const mapStateToProps = (state, props) => {
   const projects = makeProjectsByStatus(memberProjects);
   return {
     projects,
-    queryKey: teamMemberId
+    queryKey: teamMemberId,
+    canShowEmptyState: false
   };
 };
 
-const MeetingUpdatesContainer = (props) => {
-  if (!props.projects) {
-    return <LoadingView />;
+@connect(mapStateToProps)
+export default class MeetingUpdatesContainer extends Component {
+  static propTypes = {
+    gotoItem: PropTypes.func.isRequired,
+    gotoNext: PropTypes.func.isRequired,
+    canShowEmptyState: PropTypes.bool,
+    localPhaseItem: PropTypes.number.isRequired,
+    members: PropTypes.array.isRequired,
+    projects: PropTypes.object.isRequired,
+    queryKey: PropTypes.string,
+    team: PropTypes.object.isRequired
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      canShowEmptyState: false
+    };
   }
-  return <MeetingUpdates {...props} />;
-};
 
-MeetingUpdatesContainer.propTypes = {
-  gotoItem: PropTypes.func.isRequired,
-  gotoNext: PropTypes.func.isRequired,
-  localPhaseItem: PropTypes.number.isRequired,
-  members: PropTypes.array.isRequired,
-  projects: PropTypes.object.isRequired,
-  queryKey: PropTypes.string,
-  team: PropTypes.object.isRequired
-};
+  componentDidMount() {
+    setTimeout(() => {
+      if (!this.state.canShowEmptyState) {
+        this.setState({canShowEmptyState: true});
+      }
+    }, 1000);
+  }
 
-export default connect(mapStateToProps)(MeetingUpdatesContainer);
+  render() {
+    if (!this.props.projects) {
+      return <LoadingView />;
+    }
+    return <MeetingUpdates {...this.props} />;
+  }
+}
