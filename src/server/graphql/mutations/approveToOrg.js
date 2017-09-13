@@ -7,6 +7,7 @@ import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
+import publishNotifications from 'server/utils/publishNotifications';
 
 export default {
   type: new GraphQLNonNull(DefaultRemovalPayload),
@@ -45,7 +46,9 @@ export default {
     const invitees = [{email: inviteeEmail}];
     const isActive = invitee && !invitee.inactive;
     if (isActive) {
-      await sendInvitationViaNotification(invitees, inviterDetails);
+      const notificationsToAdd = await sendInvitationViaNotification(invitees, inviterDetails);
+      publishNotifications({notificationsToAdd});
+
     } else {
       await asyncInviteTeam(inviterUserId, teamId, invitees);
     }

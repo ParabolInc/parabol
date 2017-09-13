@@ -11,7 +11,7 @@ import NotificationsAddedSubscription from 'universal/subscriptions/Notification
 import {DEFAULT_TTL} from 'universal/utils/constants';
 import withReducer from '../../decorators/withReducer/withReducer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import NotificationClearedSubscription from 'universal/subscriptions/NotificationClearedSubscription';
+import NotificationsClearedSubscription from 'universal/subscriptions/NotificationsClearedSubscription';
 
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingContainer = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer');
@@ -69,7 +69,7 @@ const query = graphql`
 
 const subscriptions = [
   NotificationsAddedSubscription,
-  NotificationClearedSubscription
+  NotificationsClearedSubscription
 ];
 
 const cacheConfig = {ttl: DEFAULT_TTL};

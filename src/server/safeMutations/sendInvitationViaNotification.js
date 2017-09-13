@@ -18,11 +18,11 @@ const sendInvitationViaNotification = async (invitees, inviter) => {
     teamName
   }));
   await r.table('Notification').insert(invitations);
-  const notificationsToSend = {};
+  const notificationsToAdd = {};
   invitations.forEach((notification) => {
-    notificationsToSend[notification.userIds[0]] = [notification];
+    notificationsToAdd[notification.userIds[0]] = [notification];
   });
-  return notificationsToSend;
+  return notificationsToAdd;
 };
 
 export default sendInvitationViaNotification;
