@@ -5,6 +5,7 @@ import {cashay} from 'cashay';
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import checkForProjects from 'universal/utils/checkForProjects';
 
 const meetingUpdatesQuery = `
 query {
@@ -78,8 +79,7 @@ const mapStateToProps = (state, props) => {
   const projects = makeProjectsByStatus(memberProjects);
   return {
     projects,
-    queryKey: teamMemberId,
-    canShowEmptyState: false
+    queryKey: teamMemberId
   };
 };
 
@@ -88,7 +88,7 @@ export default class MeetingUpdatesContainer extends Component {
   static propTypes = {
     gotoItem: PropTypes.func.isRequired,
     gotoNext: PropTypes.func.isRequired,
-    canShowEmptyState: PropTypes.bool,
+    showEmpty: PropTypes.bool,
     localPhaseItem: PropTypes.number.isRequired,
     members: PropTypes.array.isRequired,
     projects: PropTypes.object.isRequired,
@@ -99,22 +99,25 @@ export default class MeetingUpdatesContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      canShowEmptyState: false
+      hasWaited: false,
+      showEmpty: false
     };
   }
 
-  componentDidMount() {
-    setTimeout(() => {
-      if (!this.state.canShowEmptyState) {
-        this.setState({canShowEmptyState: true});
-      }
-    }, 1000);
+  componentWillMount() {
+    setTimeout(() => {this.setState({hasWaited: true})}, 1000);
+  }
+
+  componentWillReceiveProps() {
+    if (this.state.hasWaited) {
+      this.setState({showEmpty: !checkForProjects(this.props.projects)});
+    }
   }
 
   render() {
     if (!this.props.projects) {
       return <LoadingView />;
     }
-    return <MeetingUpdates {...this.props} />;
+    return <MeetingUpdates {...this.props} showEmpty={this.state.showEmpty} />;
   }
 }

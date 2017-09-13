@@ -11,12 +11,11 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import {MEETING} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
-import checkForProjects from 'universal/utils/checkForProjects';
 
 const MeetingUpdates = (props) => {
   const {
     gotoNext,
-    canShowEmptyState,
+    showEmpty,
     localPhaseItem,
     members,
     queryKey,
@@ -28,7 +27,6 @@ const MeetingUpdates = (props) => {
   const self = members.find((m) => m.isSelf);
   const currentTeamMember = members[localPhaseItem - 1];
   const isLastMember = localPhaseItem === members.length;
-  const hasProjects = checkForProjects(projects);
   const advanceButton = () => (
     <Button
       buttonStyle="flat"
@@ -56,7 +54,7 @@ const MeetingUpdates = (props) => {
           }
         </div>
         <div className={css(styles.body)}>
-          {(!hasProjects && canShowEmptyState) &&
+          {showEmpty &&
             <div className={css(styles.noProjectsMessage)}>
               <div className={css(styles.noProjectsHeading)}>
                 {'No projects; any updates?'}
@@ -81,7 +79,7 @@ const MeetingUpdates = (props) => {
 MeetingUpdates.propTypes = {
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
-  canShowEmptyState: PropTypes.bool,
+  showEmpty: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   onFacilitatorPhase: PropTypes.bool,
