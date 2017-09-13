@@ -105,7 +105,9 @@ export default class MeetingUpdatesContainer extends Component {
   }
 
   componentWillMount() {
-    setTimeout(() => {this.setState({hasWaited: true})}, 1000);
+    setTimeout(() => {
+      this.setState({hasWaited: true});
+    }, 1000);
   }
 
   componentWillReceiveProps() {
