@@ -52,7 +52,7 @@ describe('addBilling', () => {
     const stripeToken = 'tok_4242424242424242';
     const {user, team, organization} = await mockDB.init()
       .newNotification(undefined, {type: TRIAL_EXPIRED})
-      .org(0, {periodEnd: new Date(now.getTime() - 1)})
+      .organization(0, {periodEnd: new Date(now.getTime() - 1)})
       .team(0, {isPaid: false});
     const org = organization[0];
     stripe.__setMockData(org);
@@ -80,7 +80,7 @@ describe('addBilling', () => {
     const mockDB = new MockDB();
     const oldToken = 'tok_4012888888881881';
     const {user, organization} = await mockDB.init()
-      .org(0, {creditCard: creditCardByToken[oldToken]});
+      .organization(0, {creditCard: creditCardByToken[oldToken]});
     const org = organization[0];
     stripe.__setMockData(org);
     const orgId = org.id;
@@ -106,7 +106,7 @@ describe('addBilling', () => {
     const mockDB = new MockDB();
     const oldToken = 'tok_4000000000000341';
     const {user, team, organization} = await mockDB.init()
-      .org(0, {
+      .organization(0, {
         creditCard: creditCardByToken[oldToken],
         periodEnd: new Date(now.getTime() - 1)
       })

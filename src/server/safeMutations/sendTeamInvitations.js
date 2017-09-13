@@ -9,7 +9,7 @@ const sendTeamInvitations = async (invitees, inviter) => {
   const now = new Date();
   const {orgId, inviterName, teamId, teamName} = inviter;
   const invitations = invitees
-    .filter((invitee) => invitee.isUser)
+    .filter((invitee) => Boolean(invitee.userId))
     .map((invitee) => ({
       id: shortid.generate(),
       type: TEAM_INVITE,
