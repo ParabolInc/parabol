@@ -1,5 +1,5 @@
 import getResults from 'server/graphql/mutations/helpers/inviteTeamMembers/getResults';
-import {ASK_APPROVAL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
+import {ASK_APPROVAL, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
 import {PENDING_APPROVAL, REACTIVATED, SUCCESS} from 'universal/utils/constants';
 
 describe('getResults', () => {
@@ -18,7 +18,7 @@ describe('getResults', () => {
   test('sending a notification turns into SUCCESS', () => {
     // SETUP
     const invitations = [{
-      action: SEND_NOTIFICATION
+      action: SEND_INVITATION
     }];
 
     // TEST
@@ -30,7 +30,7 @@ describe('getResults', () => {
   test('reactivated actions turn into reactivated results', () => {
     // SETUP
     const invitations = [{
-      action: REACTIVATED
+      action: REACTIVATE
     }];
 
     // TEST

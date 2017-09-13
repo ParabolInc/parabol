@@ -1,16 +1,14 @@
 import getRethink from 'server/database/rethinkDriver';
 import getResults from 'server/graphql/mutations/helpers/inviteTeamMembers/getResults';
 import makeDetailedInvitations from 'server/graphql/mutations/helpers/inviteTeamMembers/makeDetailedInvitations';
-import asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reactivateTeamMembersAndMakeNotifications';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
-import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
+import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
 import {isBillingLeader} from 'server/utils/authorization';
 import publishNotifications from 'server/utils/publishNotifications';
-import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
-import {REACTIVATED} from 'universal/utils/constants';
+import {ASK_APPROVAL, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
 import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 
@@ -22,17 +20,16 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
   const emailArr = invitees.map((invitee) => invitee.email);
   const {
     inviterDoc,
-    pendingEmailInvitations,
-    pendingNotificationInvitations,
+    pendingInvitations,
     pendingApprovals,
     teamMembers,
     users
   } = await r.expr({
-    pendingEmailInvitations: r.table('Invitation')
+    pendingInvitations: r.table('Invitation')
       .getAll(r.args(emailArr), {index: 'email'})
       .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
       .coerceTo('array'),
-    pendingNotificationInvitations: getTeamInviteNotifications(orgId, teamId, emailArr).coerceTo('array'),
+    //pendingNotificationInvitations: getTeamInviteNotifications(orgId, teamId, emailArr).coerceTo('array'),
     pendingApprovals: r.table('OrgApproval')
       .getAll(r.args(emailArr), {index: 'email'})
       .filter({teamId})
@@ -51,31 +48,29 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
       }))
       .pluck('email', 'picture', 'preferredName', 'userOrgs')
   });
-  const pendingInvitations = pendingEmailInvitations.concat(pendingNotificationInvitations);
   const userOrgDoc = inviterDoc.userOrgs.find((userOrg) => userOrg.id === orgId);
   const inviter = {
     ...inviterDoc,
-    userId,
     orgId,
     teamId,
     teamName,
+    userId,
     isBillingLeader: isBillingLeader(userOrgDoc)
   };
 
   const detailedInvitations = makeDetailedInvitations(teamMembers, emailArr, users, pendingApprovals, pendingInvitations, inviter);
-  const inviteesToReactivate = detailedInvitations.filter(({action}) => action === REACTIVATED);
-  const inviteesToNotify = detailedInvitations.filter(({action}) => action === SEND_NOTIFICATION);
-  const inviteesToEmail = detailedInvitations.filter(({action}) => action === SEND_EMAIL);
+  const inviteesToReactivate = detailedInvitations.filter(({action}) => action === REACTIVATE);
+  const inviteesToInvite = detailedInvitations.filter(({action}) => action === SEND_INVITATION);
   const inviteesToApprove = detailedInvitations.filter(({action}) => action === ASK_APPROVAL);
+
   const approvalEmails = inviteesToApprove.map(({email}) => email);
-  const approvalsToClear = inviteesToNotify.concat(inviteesToEmail).map(({email}) => email);
+  const approvalsToClear = inviteesToInvite.map(({email}) => email);
 
   const {reactivations, notificationsToClear, teamInvites, approvals} = await resolvePromiseObj({
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers),
     notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear),
-    teamInvites: sendInvitationViaNotification(inviteesToNotify, inviter),
+    teamInvites: sendTeamInvitations(inviteesToInvite, inviter),
     approvals: createPendingApprovals(approvalEmails, inviter),
-    emailInvites: asyncInviteTeam(userId, teamId, inviteesToEmail)
   });
 
   const notificationsToAdd = mergeObjectsWithArrValues(reactivations, teamInvites, approvals);

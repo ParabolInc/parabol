@@ -4,21 +4,24 @@ import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
-import * as asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
-import * as sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
+import * as sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import * as getPubSub from 'server/utils/getPubSub';
 import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
 import makeMockPubSub from 'server/__mocks__/makeMockPubSub';
+import * as publishNotifications from 'server/utils/publishNotifications';
 
 MockDate.set(__now);
 console.error = jest.fn();
 
 describe('approveToOrg', () => {
-  test('sends an invitation via parabol if the user is active', async () => {
+  test('sends an invitation, clears billing leader notifications, notifies invitee of invitation', async () => {
     // SETUP
-    asyncInviteTeam.default = jest.fn();
-    sendInvitationViaNotification.default = jest.fn();
+    sendTeamInvitations.default = jest.fn();
+    publishNotifications.default = jest.fn();
+    const mockPubSub = makeMockPubSub();
+    getPubSub.default = () => mockPubSub;
+
     const mockDB = new MockDB();
     await mockDB.init()
       .newNotification(undefined, {type: REQUEST_NEW_USER})
@@ -39,50 +42,9 @@ describe('approveToOrg', () => {
     await approveToOrg.resolve(undefined, {dbNotificationId}, {authToken, socket});
 
     // VERIFY
-    expect(sendInvitationViaNotification.default).toHaveBeenCalledWith(invitees, inviter);
-    expect(asyncInviteTeam.default).toHaveBeenCalledTimes(0);
-  });
-
-  test('sends an invitation via email if the user is new/inactive', async () => {
-    // SETUP
-    asyncInviteTeam.default = jest.fn();
-    sendInvitationViaNotification.default = jest.fn();
-    const mockDB = new MockDB();
-    await mockDB.init()
-      .newNotification(undefined, {type: REQUEST_NEW_USER});
-    const {notification} = mockDB.context;
-    const firstUser = mockDB.db.user[0];
-    const authToken = mockAuthToken(firstUser);
-    const invitees = [{email: notification.inviteeEmail}];
-
-    // TEST
-    const {id: dbNotificationId} = notification;
-    sendInvitationViaNotification.default = jest.fn();
-    await approveToOrg.resolve(undefined, {dbNotificationId}, {authToken, socket});
-
-    // VERIFY
-    expect(sendInvitationViaNotification.default).toHaveBeenCalledTimes(0);
-    expect(asyncInviteTeam.default).toHaveBeenCalledWith(firstUser.id, mockDB.context.team.id, invitees);
-  });
-
-  test('clears the request for all notification owners', async () => {
-    // SETUP
-    const mockDB = new MockDB();
-    await mockDB.init()
-      .user(1, {userOrgs: [{role: BILLING_LEADER, id: mockDB.context.organization.id}]})
-      .newNotification(undefined, {type: REQUEST_NEW_USER});
-    const {notification} = mockDB.context;
-    const firstUser = mockDB.db.user[0];
-    const authToken = mockAuthToken(firstUser);
-    const mockPubSub = makeMockPubSub();
-    getPubSub.default = () => mockPubSub;
-
-    // TEST
-    const {id: dbNotificationId} = notification;
-    await approveToOrg.resolve(undefined, {dbNotificationId}, {authToken, socket});
-
-    // VERIFY
-    expect(mockPubSub.publish).toHaveBeenCalledTimes(2);
+    expect(sendTeamInvitations.default).toHaveBeenCalledWith(invitees, inviter);
+    expect(publishNotifications.default).toHaveBeenCalledTimes(1);
+    expect(mockPubSub.publish).toHaveBeenCalledTimes(1);
   });
 
   test('throws if the caller does not own the notification', async () => {

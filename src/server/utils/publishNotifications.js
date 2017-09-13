@@ -1,7 +1,7 @@
 import getPubSub from 'server/utils/getPubSub';
 import {NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 
-const publishNotifications = ({notificationsToAdd, notificationsToClear}) => {
+const publishNotifications = ({notificationsToAdd = {}, notificationsToClear = {}}) => {
   Object.keys(notificationsToAdd).forEach((userId) => {
     const notificationsAdded = {
       notifications: notificationsToAdd[userId]

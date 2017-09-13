@@ -12,25 +12,13 @@ Object {
 }
 `;
 
-exports[`inviteTeamMembers invites a new person via email 1`] = `
-Object {
-  "results": Array [
-    Object {
-      "email": 0,
-      "preferredName": undefined,
-      "result": "SUCCESS",
-    },
-  ],
-}
-`;
-
-exports[`inviteTeamMembers invites a new person via notification 1`] = `
+exports[`inviteTeamMembers invites a new person via notification and email 1`] = `
 Object {
   "results": Array [
     Object {
       "email": 0,
       "preferredName": "Leader of One",
-      "result": "ALREADY_ON_TEAM",
+      "result": undefined,
     },
   ],
 }

@@ -4,22 +4,24 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
-import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
-import * as shortid from 'shortid';
+import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
+import shortid from 'shortid';
+import * as emailTeamInvitations from 'server/safeMutations/emailTeamInvitations';
 
 MockDate.set(__now);
 console.error = jest.fn();
 
-describe('sendInvitationViaNotification', () => {
+describe('sendTeamInvitations', () => {
   test('returns an empty array if there are no people to invite', async () => {
     // TEST
-    const res = await sendInvitationViaNotification([], {});
+    const res = await sendTeamInvitations([], {});
 
     // VERIFY
     expect(res).toEqual([]);
   });
   test('inserts invitation notifications, returns an object full of the notifications removed', async () => {
     // SETUP
+    emailTeamInvitations.default = jest.fn();
     const r = getRethink();
     const mockDB = new MockDB();
     const dynamicSerializer = new DynamicSerializer();
@@ -34,9 +36,10 @@ describe('sendInvitationViaNotification', () => {
     };
 
     // TEST
-    const res = await sendInvitationViaNotification([invitee], inviter);
+    const res = await sendTeamInvitations([invitee], inviter);
 
     // VERIFY
+    expect(emailTeamInvitations.default).toHaveBeenCalledTimes(1);
     expect(res[invitee.userId].length).toEqual(1);
     const db = await fetchAndSerialize({
       notification: r.table('Notification').getAll(inviter.orgId, {index: 'orgId'}).orderBy('userIds')

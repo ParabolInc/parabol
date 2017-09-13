@@ -4,12 +4,11 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import newInvitee from 'server/__tests__/utils/newInvitee';
 import * as publishNotifications from 'server/utils/publishNotifications';
-import * as asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import * as createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import * as reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reactivateTeamMembersAndMakeNotifications';
 import * as removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
-import * as sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
+import * as sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -17,8 +16,7 @@ console.error = jest.fn();
 describe('inviteTeamMembers', () => {
   test('reactivates a team member that has been invited back to the team', async () => {
     // SETUP
-    asyncInviteTeam.default = jest.fn(() => []);
-    sendInvitationViaNotification.default = jest.fn(() => []);
+    sendTeamInvitations.default = jest.fn(() => []);
     reactivateTeamMembersAndMakeNotifications.default = jest.fn(() => []);
     removeOrgApprovalAndNotification.default = jest.fn(() => []);
     createPendingApprovals.default = jest.fn(() => []);
@@ -38,34 +36,9 @@ describe('inviteTeamMembers', () => {
     expect(res).toMatchSnapshot();
   });
 
-  test('invites a new person via email', async () => {
+  test('invites a new person via notification and email', async () => {
     // SETUP
-    asyncInviteTeam.default = jest.fn(() => []);
-    sendInvitationViaNotification.default = jest.fn(() => []);
-    reactivateTeamMembersAndMakeNotifications.default = jest.fn(() => []);
-    removeOrgApprovalAndNotification.default = jest.fn(() => []);
-    createPendingApprovals.default = jest.fn(() => []);
-    publishNotifications.default = jest.fn(() => []);
-    const dynamicSerializer = new DynamicSerializer();
-    const mockDB = new MockDB();
-    await mockDB.init();
-    const firstUser = mockDB.db.user[0];
-    const invitee = newInvitee();
-    const invitees = [{email: invitee.email}];
-    const teamId = mockDB.context.team.id;
-    // TEST
-    const res = await inviteTeamMembers(invitees, teamId, firstUser.id);
-
-    // VERIFY
-    expect(asyncInviteTeam.default).toHaveBeenCalledTimes(1);
-    const staticRes = dynamicSerializer.toStatic(res, ['results.email']);
-    expect(staticRes).toMatchSnapshot();
-  });
-
-  test('invites a new person via notification', async () => {
-    // SETUP
-    asyncInviteTeam.default = jest.fn(() => []);
-    sendInvitationViaNotification.default = jest.fn(() => []);
+    sendTeamInvitations.default = jest.fn(() => []);
     reactivateTeamMembersAndMakeNotifications.default = jest.fn(() => []);
     removeOrgApprovalAndNotification.default = jest.fn(() => []);
     createPendingApprovals.default = jest.fn(() => []);
@@ -85,7 +58,7 @@ describe('inviteTeamMembers', () => {
     const res = await inviteTeamMembers(invitees, teamId, firstUser.id);
 
     // VERIFY
-    expect(sendInvitationViaNotification.default).toHaveBeenCalledTimes(1);
+    expect(sendTeamInvitations.default).toHaveBeenCalledTimes(1);
     expect(removeOrgApprovalAndNotification.default).toHaveBeenCalledTimes(1);
     const staticRes = dynamicSerializer.toStatic(res, ['results.email']);
     expect(staticRes).toMatchSnapshot();
@@ -93,8 +66,7 @@ describe('inviteTeamMembers', () => {
 
   test('asks the billing leader for approval', async () => {
     // SETUP
-    asyncInviteTeam.default = jest.fn(() => []);
-    sendInvitationViaNotification.default = jest.fn(() => []);
+    sendTeamInvitations.default = jest.fn(() => []);
     reactivateTeamMembersAndMakeNotifications.default = jest.fn(() => []);
     removeOrgApprovalAndNotification.default = jest.fn(() => []);
     createPendingApprovals.default = jest.fn(() => []);

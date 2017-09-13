@@ -1,13 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import asyncInviteTeam from 'server/safeMutations/asyncInviteTeam';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import DefaultRemovalPayload from 'server/graphql/types/DefaultRemovalPayload';
+import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
-import sendInvitationViaNotification from 'server/safeMutations/sendInvitationViaNotification';
 import publishNotifications from 'server/utils/publishNotifications';
+import {NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(DefaultRemovalPayload),
@@ -36,22 +35,9 @@ export default {
       teamId
     };
 
-    // invitee
-    const invitee = await r.table('User')
-      .getAll(inviteeEmail, {index: 'email'})
-      .nth(0)
-      .pluck('inactive')
-      .default(null);
-
     const invitees = [{email: inviteeEmail}];
-    const isActive = invitee && !invitee.inactive;
-    if (isActive) {
-      const notificationsToAdd = await sendInvitationViaNotification(invitees, inviterDetails);
-      publishNotifications({notificationsToAdd});
-
-    } else {
-      await asyncInviteTeam(inviterUserId, teamId, invitees);
-    }
+    const notificationsToAdd = await sendTeamInvitations(invitees, inviterDetails);
+    publishNotifications({notificationsToAdd});
     const notificationsCleared = {deletedIds: [dbNotificationId]};
     userIds.forEach((notifiedUserId) => {
       getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared, mutatorId: socket.id});

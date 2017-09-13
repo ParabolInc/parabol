@@ -40,21 +40,6 @@ describe('makeDetailedInvitations', () => {
     expect(result[0].isPendingInvitation).toEqual(true);
     expect(result[1].isPendingInvitation).toEqual(false);
   });
-  test('detects inactive users', () => {
-    // SETUP
-    const emailArr = ['1@foo.co', '2@foo.co'];
-    const users = [
-      {id: 1, inactive: false, email: '1@foo.co', userOrgs: [{id: 1}]},
-      {id: 2, inactive: true, email: '2@foo.co', userOrgs: [{id: 1}]}
-    ];
-
-    // TEST
-    const result = makeDetailedInvitations([], emailArr, users);
-
-    // VERIFY
-    expect(result[0].isActiveUser).toEqual(true);
-    expect(result[1].isActiveUser).toEqual(false);
-  });
   test('detects if in same org as the inviting team', () => {
     // SETUP
     const emailArr = ['1@foo.co', '2@foo.co'];

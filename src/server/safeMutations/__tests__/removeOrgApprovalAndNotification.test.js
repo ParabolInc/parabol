@@ -35,7 +35,7 @@ describe('removeOrgApprovalAndNotification', () => {
     expect(db).toMatchSnapshot();
 
     const [firstUser, secondUser] = mockDB.db.user;
-    const notificationsToClear = [{deletedId: mockDB.context.notification.id}];
+    const notificationsToClear = [mockDB.context.notification.id];
     expect(res[firstUser.id]).toEqual((notificationsToClear));
     expect(res[secondUser.id]).toEqual((notificationsToClear));
   });

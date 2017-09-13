@@ -1,18 +1,18 @@
-import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
-import {PENDING_APPROVAL, SUCCESS} from 'universal/utils/constants';
+import {ASK_APPROVAL, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
+import {PENDING_APPROVAL, REACTIVATED, SUCCESS} from 'universal/utils/constants';
+
+const resultLookup = {
+  [ASK_APPROVAL]: PENDING_APPROVAL,
+  [SEND_INVITATION]: SUCCESS,
+  [REACTIVATE]: REACTIVATED
+};
 
 const getResults = (detailedInvitations) => {
   return detailedInvitations.map((invitee) => {
     const {email, action, preferredName} = invitee;
-    let result = action;
-    if (action === ASK_APPROVAL) {
-      result = PENDING_APPROVAL;
-    } else if (action === SEND_EMAIL || action === SEND_NOTIFICATION) {
-      result = SUCCESS;
-    }
     return {
       email,
-      result,
+      result: resultLookup[action],
       preferredName
     };
   });

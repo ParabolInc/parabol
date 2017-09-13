@@ -1,12 +1,11 @@
-import {ASK_APPROVAL, SEND_EMAIL, SEND_NOTIFICATION} from 'server/utils/serverConstants';
-import {ALREADY_ON_TEAM, PENDING_APPROVAL, REACTIVATED, SUCCESS} from 'universal/utils/constants';
+import {ASK_APPROVAL, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
+import {ALREADY_ON_TEAM, PENDING_APPROVAL, SUCCESS} from 'universal/utils/constants';
 
 const getAction = (invitee, inviterIsBillingLeader) => {
   const {
     isActiveTeamMember,
     isPendingApproval,
     isPendingInvitation,
-    isActiveUser,
     isNewTeamMember,
     isOrgMember
   } = invitee;
@@ -14,15 +13,9 @@ const getAction = (invitee, inviterIsBillingLeader) => {
   if (isPendingApproval && !inviterIsBillingLeader) return PENDING_APPROVAL;
   if (isPendingInvitation) return SUCCESS;
   if (isOrgMember) {
-    if (isNewTeamMember) {
-      return isActiveUser ? SEND_NOTIFICATION : SEND_EMAIL;
-    }
-    return REACTIVATED;
+    return isNewTeamMember ? SEND_INVITATION : REACTIVATE;
   }
-  if (inviterIsBillingLeader) {
-    return isActiveUser ? SEND_NOTIFICATION : SEND_EMAIL;
-  }
-  return ASK_APPROVAL;
+  return inviterIsBillingLeader ? SEND_INVITATION : ASK_APPROVAL;
 };
 
 export default getAction;
