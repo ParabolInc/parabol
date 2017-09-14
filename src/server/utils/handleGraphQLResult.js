@@ -16,8 +16,8 @@ const handleGraphQLResult = (result, socket) => {
     if (updateTokenNotification) {
       setSocketAuth(socket, updateTokenNotification.authToken);
     }
-  } else if (data.acceptTeamInvite) {
-    setSocketAuth(socket, data.acceptTeamInvite.authToken);
+  } else if (data.acceptTeamInviteNotification) {
+    setSocketAuth(socket, data.acceptTeamInviteNotification.authToken);
   }
   return result;
 };

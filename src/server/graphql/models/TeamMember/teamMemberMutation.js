@@ -1,11 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
-import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
 import removeTeamMember from 'server/graphql/models/TeamMember/removeTeamMember/removeTeamMember';
-import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {requireSUOrLead, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {errorObj, getOldVal} from 'server/utils/utils';
+import {errorObj} from 'server/utils/utils';
 
 export default {
   checkIn: {
@@ -32,75 +29,6 @@ export default {
 
       // RESOLUTION
       await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
-    }
-  },
-  acceptInvitation: {
-    type: GraphQLID,
-    description: `Add a user to a Team given an invitationToken.
-    If the invitationToken is valid, returns the auth token with the new team added to tms.
-
-    Side effect: deletes all other outstanding invitations for user.`,
-    args: {
-      inviteToken: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The invitation token (first 6 bytes are the id, next 8 are the pre-hash)'
-      }
-    },
-    async resolve(source, {inviteToken}, {authToken}) {
-      const r = getRethink();
-      const now = new Date();
-
-      // VALIDATION
-      const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
-
-      // see if the invitation exists
-      const invitationRes = await r.table('Invitation').get(inviteId).update({
-        tokenExpiration: new Date(0),
-        updatedAt: now
-      }, {returnChanges: true});
-      const invitation = getOldVal(invitationRes);
-
-      if (!invitation) {
-        throw errorObj({
-          _error: 'unable to find invitation',
-          type: 'acceptInvitation',
-          subtype: 'notFound'
-        });
-      }
-
-      const {tokenExpiration, hashedToken, teamId, email} = invitation;
-      // see if the invitation has expired
-      if (tokenExpiration < now) {
-        throw errorObj({
-          _error: 'invitation has expired',
-          type: 'acceptInvitation',
-          subtype: 'expiredInvitation'
-        });
-      }
-
-      // see if the invitation hash is valid
-      const isCorrectToken = await validateInviteTokenKey(tokenKey, hashedToken);
-      if (!isCorrectToken) {
-        throw errorObj({
-          _error: 'invalid invitation token',
-          type: 'acceptInvitation',
-          subtype: 'invalidToken'
-        });
-      }
-      const oldtms = authToken.tms || [];
-      // Check if TeamMember already exists (i.e. user invited themselves):
-      const teamMemberExists = oldtms.includes(teamId);
-      if (teamMemberExists) {
-        throw errorObj({
-          _error: 'Cannot accept invitation, already a member of team.',
-          type: 'acceptInvitation',
-          subtype: 'alreadyJoined'
-        });
-      }
-
-      // RESOLUTION
-      const addedToTeam = await acceptTeamInvite(teamId, authToken, email);
-      return addedToTeam.authToken;
     }
   },
   removeTeamMember,

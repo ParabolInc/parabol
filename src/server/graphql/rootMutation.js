@@ -26,7 +26,8 @@ import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel';
 import requestFacilitator from 'server/graphql/mutations/requestFacilitator';
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
-import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite';
+import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
+import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
 import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
 
@@ -46,7 +47,8 @@ export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     ...rootFields,
-    acceptTeamInvite,
+    acceptTeamInviteEmail,
+    acceptTeamInviteNotification,
     addGitHubRepo,
     addProvider,
     addSlackChannel,

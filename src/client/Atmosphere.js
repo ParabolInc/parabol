@@ -86,7 +86,7 @@ export default class Atmosphere extends Environment {
         variables
       })
     });
-    const resJson = res.json();
+    const resJson = await res.json();
     const {errors} = resJson;
     if (!errors) return resJson;
     const errorObj = makeErrorObj(errors);

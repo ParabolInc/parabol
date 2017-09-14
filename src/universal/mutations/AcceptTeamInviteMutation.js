@@ -2,7 +2,7 @@ import {commitMutation} from 'react-relay';
 
 const mutation = graphql`
   mutation AcceptTeamInviteMutation($dbNotificationId: ID!) {
-    acceptTeamInvite(dbNotificationId: $dbNotificationId) {
+    acceptTeamInviteNotification(dbNotificationId: $dbNotificationId) {
       authToken
       teamName
       teamId
