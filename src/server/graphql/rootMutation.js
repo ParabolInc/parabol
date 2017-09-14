@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
 import agenda from 'server/graphql/models/AgendaItem/agendaItemMutation';
-import invitation from 'server/graphql/models/Invitation/invitationMutation';
 import meeting from 'server/graphql/models/Meeting/meetingMutation';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
@@ -29,10 +28,10 @@ import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
 import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite';
 import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
+import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
 
 const rootFields = Object.assign({},
   agenda,
-  invitation,
   meeting,
   orgApproval,
   organization,
@@ -52,6 +51,7 @@ export default new GraphQLObjectType({
     addProvider,
     addSlackChannel,
     approveToOrg,
+    cancelTeamInvite,
     clearNotification,
     createGitHubIssue,
     githubAddAssignee,

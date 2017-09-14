@@ -18,6 +18,7 @@ import withStyles from 'universal/styles/withStyles';
 import fromNow from 'universal/utils/fromNow';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import ResendTeamInviteMutation from 'universal/mutations/ResendTeamInviteMutation';
+import CancelTeamInviteMutation from 'universal/mutations/CancelTeamInviteMutation';
 
 const TeamSettings = (props) => {
   const {
@@ -37,11 +38,6 @@ const TeamSettings = (props) => {
   const teamLead = teamLeadObj && teamLeadObj.preferredName;
 
   const invitationRowActions = (invitation) => {
-    const cashayOptions = {
-      variables: {
-        inviteId: invitation.id
-      }
-    };
     const resend = () => {
       submitMutation();
       const onResendCompleted = () => {
@@ -54,7 +50,8 @@ const TeamSettings = (props) => {
       ResendTeamInviteMutation(atmosphere, invitation.id, onError, onResendCompleted);
     };
     const cancel = () => {
-      cashay.mutate('cancelInvite', cashayOptions);
+      submitMutation();
+      CancelTeamInviteMutation(atmosphere, invitation.id, onError, onCompleted);
     };
     return (
       <div className={css(styles.actionLinkBlock)}>
