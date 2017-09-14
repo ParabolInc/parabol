@@ -2,6 +2,7 @@ import {ConnectionHandler} from 'relay-runtime';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {ADD_TO_TEAM, FACILITATOR_REQUEST, REQUEST_NEW_USER} from 'universal/utils/constants';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const subscription = graphql`
   subscription NotificationsAddedSubscription {
@@ -55,7 +56,6 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
     viewer,
     'SocketRoute_notifications'
   );
-  console.log('connection', conn);
   if (conn) {
     const newEdge = ConnectionHandler.createEdge(
       store,
@@ -68,7 +68,7 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
   }
 };
 
-const NotificationsAddedSubscription = (environment, queryVariables, dispatch) => {
+const NotificationsAddedSubscription = (environment, queryVariables, {dispatch, history}) => {
   const {ensureSubscription, viewerId} = environment;
   return ensureSubscription({
     subscription,
@@ -100,6 +100,21 @@ const NotificationsAddedSubscription = (environment, queryVariables, dispatch) =
             message: `You've been added to team ${teamName}`
           }));
         } else if (type === REQUEST_NEW_USER) {
+          const inviterName = payload.getValue('inviterName');
+          // TODO highlight the id, but don't store the state in the url cuz ugly
+          // const globalId = payload.getValue('id');
+          // const {id: dbId} = fromGlobalId(globalId);
+          dispatch(showInfo({
+            title: 'Approval Requested!',
+            message: `${inviterName} would like to invite someone to their team`,
+            action: {
+              label: 'Check it out',
+              callback: () => {
+                history.push('/me/notifications');
+              }
+            }
+          }));
+
           addNotificationUpdater(store, viewerId, payload);
         }
       });

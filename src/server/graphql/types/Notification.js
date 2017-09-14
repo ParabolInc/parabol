@@ -1,5 +1,6 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
 import {globalIdField} from 'graphql-relay';
+import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import NotificationEnum from 'server/graphql/types/NotificationEnum';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
@@ -11,7 +12,6 @@ import NotifyPayment from 'server/graphql/types/NotifyPayment';
 import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
 import NotifyTrial from 'server/graphql/types/NotifyTrial';
-import connectionDefinitions from 'server/graphql/connectionDefinitions';
 
 import {
   ADD_TO_TEAM,

@@ -22,7 +22,8 @@ export default class QueryRenderer extends React.Component {
     query: PropTypes.func,
     render: PropTypes.func.isRequired,
     variables: PropTypes.object,
-    subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired)
+    subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired),
+    subParams: PropTypes.object
   };
 
   static contextTypes = {
@@ -34,7 +35,7 @@ export default class QueryRenderer extends React.Component {
   constructor(props, context) {
     super(props, context);
     let {query, variables} = props;
-    const {cacheConfig, environment, subscriptions} = props;
+    const {cacheConfig, environment, subscriptions, subParams} = props;
     let operation = null;
     if (query) {
       const {
@@ -74,7 +75,7 @@ export default class QueryRenderer extends React.Component {
           readyState: getStateWithProps()
         };
         this._fetch(operation, cacheConfig);
-        this._subscribe(subscriptions);
+        this._subscribe(subscriptions, subParams);
       }
     }
   }
@@ -86,7 +87,7 @@ export default class QueryRenderer extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {cacheConfig, environment, subscriptions, query, variables} = nextProps;
+    const {cacheConfig, environment, subscriptions, subParams, query, variables} = nextProps;
     if (
       query !== this.props.query ||
       environment !== this.props.environment ||
@@ -112,7 +113,7 @@ export default class QueryRenderer extends React.Component {
           this.release();
           this._fetch(operation, cacheConfig);
           // Note: cannot change the subscription array without changing vars
-          this._subscribe(subscriptions);
+          this._subscribe(subscriptions, subParams);
           this.setState({
             readyState: getStateWithProps()
           });
@@ -185,13 +186,11 @@ export default class QueryRenderer extends React.Component {
     }
   };
 
-  _subscribe(subscriptions) {
+  _subscribe(subscriptions, subParams) {
     if (subscriptions) {
       const {environment, variables} = this._relayContext;
-      const {store} = this.context;
-      const {dispatch} = store || {};
       // subscribe to each new sub, or return the subKey of an already existing sub
-      const subscriptionKeys = subscriptions.map((sub) => sub(environment, variables, dispatch));
+      const subscriptionKeys = subscriptions.map((sub) => sub(environment, variables, subParams));
       // provide an unsub prop to the component so we can unsub whenever we want
       // when we call unsub we want to:
       //   release immediately if component is unmounted

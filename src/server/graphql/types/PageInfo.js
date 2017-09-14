@@ -19,7 +19,7 @@ const PageInfo = new GraphQLObjectType({
     endCursor: {
       type: GraphQLString,
       description: 'When paginating forwards, the cursor to continue.'
-    },
+    }
   })
 });
 

@@ -14,7 +14,7 @@ export default function connectionDefinitions(config) {
   const resolveNode = config.resolveNode;
   const resolveCursor = config.resolveCursor;
   const edgeType = new GraphQLObjectType({
-    name: name + 'Edge',
+    name: `${name}Edge`,
     description: 'An edge in a connection.',
     fields: () => ({
       node: {
@@ -32,7 +32,7 @@ export default function connectionDefinitions(config) {
   });
 
   const connectionType = new GraphQLObjectType({
-    name: name + 'Connection',
+    name: `${name}Connection`,
     description: 'A connection to a list of items.',
     fields: () => ({
       pageInfo: {
@@ -47,4 +47,4 @@ export default function connectionDefinitions(config) {
     })
   });
   return {edgeType, connectionType};
-};
+}
