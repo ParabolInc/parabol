@@ -37,7 +37,7 @@ export default {
       teamId
     };
     const invitees = [{email, fullName}];
-    const notificationsToAdd = sendTeamInvitations(invitees, inviter);
+    const notificationsToAdd = sendTeamInvitations(invitees, inviter, inviteId);
     publishNotifications({notificationsToAdd});
     return true;
   }

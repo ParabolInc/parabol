@@ -8,7 +8,8 @@ const setSocketAuth = (socket, authTokenStr) => {
 };
 
 const handleGraphQLResult = (result, socket) => {
-  const {data} = result;
+  const {data, errors} = result;
+  if (errors) return result;
   if (data.notificationsAdded) {
     const {notifications} = data.notificationsAdded;
     const updateTokenNotification = notifications.find((notification) => notification.authToken);

@@ -37,16 +37,14 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
       .getAll(r.args(emailArr), {index: 'email'})
       .coerceTo('array'),
     inviterDoc: r.table('User').get(userId)
-      .merge((doc) => ({
-        inviterAvatar: doc('picture'),
-        inviterEmail: doc('email'),
-        inviterName: doc('preferredName')
-      }))
       .pluck('email', 'picture', 'preferredName', 'userOrgs')
   });
   const userOrgDoc = inviterDoc.userOrgs.find((userOrg) => userOrg.id === orgId);
   const inviter = {
-    ...inviterDoc,
+    userOrgs: inviterDoc.userOrgs,
+    inviterAvatar: inviterDoc.picture,
+    inviterEmail: inviterDoc.email,
+    inviterName: inviterDoc.preferredName,
     orgId,
     teamId,
     teamName,

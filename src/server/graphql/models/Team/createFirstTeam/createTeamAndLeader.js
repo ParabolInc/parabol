@@ -28,7 +28,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
     // insert team
     newTeam: r.table('Team').insert(verifiedTeam),
     // denormalize common fields to team member
-    newTeamMember: insertNewTeamMember(userId, teamId, 0),
+    newTeamMember: insertNewTeamMember(userId, teamId, {isLead: true, checkInOrder: 0}),
     // add teamId to user tms array
     tms: addUserToTMSUserOrg(userId, teamId, orgId, options)('changes')(0)('new_val')('tms')
   });

@@ -1,8 +1,7 @@
+import {ConnectionHandler} from 'relay-runtime';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {ADD_TO_TEAM, FACILITATOR_REQUEST} from 'universal/utils/constants';
-import isNotificationEphemeral from 'universal/utils/isNotificationEphemeral';
-import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
+import {ADD_TO_TEAM, FACILITATOR_REQUEST, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 const subscription = graphql`
   subscription NotificationsAddedSubscription {
@@ -52,10 +51,20 @@ const subscription = graphql`
 
 export const addNotificationUpdater = (store, viewerId, newNode) => {
   const viewer = store.get(viewerId);
-  const notifications = viewer.getLinkedRecords('notifications');
-  if (notifications) {
-    const newNodes = insertNodeBefore(notifications, newNode, 'startAt');
-    viewer.setLinkedRecords(newNodes, 'notifications');
+  const conn = ConnectionHandler.getConnection(
+    viewer,
+    'SocketRoute_notifications'
+  );
+  console.log('connection', conn);
+  if (conn) {
+    const newEdge = ConnectionHandler.createEdge(
+      store,
+      conn,
+      newNode,
+      'NotificationEdge'
+    );
+    newEdge.setValue(newNode.startAt, 'cursor');
+    ConnectionHandler.insertEdgeBefore(conn, newEdge);
   }
 };
 
@@ -64,7 +73,7 @@ const NotificationsAddedSubscription = (environment, queryVariables, dispatch) =
   return ensureSubscription({
     subscription,
     updater: (store) => {
-      const notifications = store.getRootField('notificationAdded').getLinkedRecords('notifications');
+      const notifications = store.getRootField('notificationsAdded').getLinkedRecords('notifications');
       notifications.forEach((payload) => {
         const type = payload.getValue('type');
         if (type === FACILITATOR_REQUEST) {
@@ -90,8 +99,7 @@ const NotificationsAddedSubscription = (environment, queryVariables, dispatch) =
             title: 'Congratulations!',
             message: `You've been added to team ${teamName}`
           }));
-        }
-        if (isNotificationEphemeral(type)) {
+        } else if (type === REQUEST_NEW_USER) {
           addNotificationUpdater(store, viewerId, payload);
         }
       });

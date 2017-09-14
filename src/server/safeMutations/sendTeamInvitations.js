@@ -3,7 +3,7 @@ import emailTeamInvitations from 'server/safeMutations/emailTeamInvitations';
 import shortid from 'shortid';
 import {TEAM_INVITE} from 'universal/utils/constants';
 
-const sendTeamInvitations = async (invitees, inviter) => {
+const sendTeamInvitations = async (invitees, inviter, inviteId) => {
   if (invitees.length === 0) return [];
   const r = getRethink();
   const now = new Date();
@@ -28,7 +28,7 @@ const sendTeamInvitations = async (invitees, inviter) => {
         return r.expr(invitations).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
       })
       .do((newNotifications) => r.table('Notification').insert(newNotifications)),
-    emailTeamInvitations(invitees, inviter)
+    emailTeamInvitations(invitees, inviter, inviteId)
   ]);
 
   // do not filter out duplicates! that way if someone resends an invite, the invitee will always get a toast

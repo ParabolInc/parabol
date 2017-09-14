@@ -20,7 +20,7 @@ const meetingContainer = () => System.import('universal/modules/meeting/containe
 const query = graphql`
   query SocketRouteQuery {
     viewer {
-      notifications {
+      notifications(first: 100) @connection(key: "SocketRoute_notifications") {
         edges {
           node {
             id

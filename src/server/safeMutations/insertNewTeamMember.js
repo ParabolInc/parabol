@@ -1,7 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 
-const insertNewTeamMember = (userId, teamId, checkInOrder) => {
+const insertNewTeamMember = (userId, teamId, options = {}) => {
   const r = getRethink();
+  const {isLead = false, checkInOrder} = options;
   const teamMemberId = `${userId}::${teamId}`;
   return r.table('User').get(userId)
     .pluck('email', 'picture', 'preferredName')
@@ -10,7 +11,7 @@ const insertNewTeamMember = (userId, teamId, checkInOrder) => {
         id: teamMemberId,
         isCheckedIn: null,
         isNotRemoved: true,
-        isLead: true,
+        isLead,
         isFacilitator: true,
         checkInOrder: checkInOrder !== undefined ? checkInOrder : r.table('TeamMember')
           .getAll(teamId, {index: 'teamId'})
