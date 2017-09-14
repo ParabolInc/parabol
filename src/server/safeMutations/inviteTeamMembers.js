@@ -10,10 +10,10 @@ import publishNotifications from 'server/utils/publishNotifications';
 import {ASK_APPROVAL, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
 import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
+import getPendingInvitations from 'server/safeQueries/getPendingInvitations';
 
 const inviteTeamMembers = async (invitees, teamId, userId) => {
   const r = getRethink();
-  const now = Date.now();
   const {name: teamName, orgId} = await r.table('Team').get(teamId).pluck('name', 'orgId');
 
   const emailArr = invitees.map((invitee) => invitee.email);
@@ -24,9 +24,7 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
     teamMembers,
     users
   } = await r.expr({
-    pendingInvitations: r.table('Invitation')
-      .getAll(r.args(emailArr), {index: 'email'})
-      .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
+    pendingInvitations: getPendingInvitations(emailArr, teamId)('email')
       .coerceTo('array'),
     pendingApprovals: r.table('OrgApproval')
       .getAll(r.args(emailArr), {index: 'email'})
@@ -68,7 +66,7 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers),
     notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear),
     teamInvites: sendTeamInvitations(inviteesToInvite, inviter),
-    approvals: createPendingApprovals(approvalEmails, inviter),
+    approvals: createPendingApprovals(approvalEmails, inviter)
   });
 
   const notificationsToAdd = mergeObjectsWithArrValues(reactivations, teamInvites, approvals);

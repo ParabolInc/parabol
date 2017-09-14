@@ -9,7 +9,7 @@ const getTeamInviteNotifications = (orgId, teamId, emailArr) => {
       type: TEAM_INVITE,
       teamId
     })
-    .filter((doc) => r.expr(emailArr).contains(doc('inviteeEmail')))
+    .filter((doc) => r.expr(emailArr).contains(doc('inviteeEmail')));
 };
 
 export default getTeamInviteNotifications;

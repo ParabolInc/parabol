@@ -43,7 +43,7 @@ const InviteUser = (props) => {
     submitting,
     teamId,
     touch,
-    untouch,
+    untouch
   } = props;
 
   const updateEditable = async (submissionData) => {

@@ -31,7 +31,7 @@ describe('acceptTeamInvite', () => {
     const invitee = newInvitee('acceptTeamInvite1');
     await mockDB.init()
       .newUser({name: 'inviteeGuy', tms: [], userOrgs: [], email: invitee.email})
-      .newNotification(undefined, {type: TEAM_INVITE, email: invitee.email})
+      .newNotification(undefined, {type: TEAM_INVITE, email: invitee.email});
     const teamId = mockDB.context.team.id;
     const inviteeUser = mockDB.context.user;
     const authToken = mockAuthToken(inviteeUser);
@@ -39,7 +39,7 @@ describe('acceptTeamInvite', () => {
     auth0ManagementClient.__initMock(mockDB.db);
     const mockPubSub = makeMockPubSub();
     getPubSub.default = () => mockPubSub;
-    const tms = [teamId]
+    const tms = [teamId];
     // TEST
     const res = await acceptTeamInvite(teamId, authToken, inviteeUser.email);
 
@@ -57,7 +57,7 @@ describe('acceptTeamInvite', () => {
     expect(mockPubSub.publish.mock.calls[2][0]).toEqual(`${NOTIFICATIONS_ADDED}.${inviteeUser.id}`);
     expect(mockPubSub.publish.mock.calls[2][1].notificationsAdded.notifications[0]).toEqual(res);
     expect(adjustUserCount.default).toHaveBeenCalledWith(inviteeUser.id, orgId, ADD_USER);
-    expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms})
+    expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms});
   });
   test('adds an invitee who was previously in the org', async () => {
     // SETUP
@@ -67,7 +67,7 @@ describe('acceptTeamInvite', () => {
     const mockDB = new MockDB();
     await mockDB.init()
       .newTeam({orgId: mockDB.context.organization.id})
-      .newNotification(undefined, {type: TEAM_INVITE, email: mockDB.db.user[1].email})
+      .newNotification(undefined, {type: TEAM_INVITE, email: mockDB.db.user[1].email});
     const teamId = mockDB.context.team.id;
     const inviteeUser = mockDB.db.user[1];
     const authToken = mockAuthToken(inviteeUser);
@@ -94,6 +94,6 @@ describe('acceptTeamInvite', () => {
     expect(mockPubSub.publish.mock.calls[2][0]).toEqual(`${NOTIFICATIONS_ADDED}.${inviteeUser.id}`);
     expect(mockPubSub.publish.mock.calls[2][1].notificationsAdded.notifications[0]).toEqual(res);
     expect(adjustUserCount.default).toHaveBeenCalledTimes(0);
-    expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms})
+    expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms});
   });
 });

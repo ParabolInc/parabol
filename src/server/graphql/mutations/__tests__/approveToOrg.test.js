@@ -7,7 +7,7 @@ import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
 import * as sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import * as getPubSub from 'server/utils/getPubSub';
-import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {REQUEST_NEW_USER} from 'universal/utils/constants';
 import makeMockPubSub from 'server/__mocks__/makeMockPubSub';
 import * as publishNotifications from 'server/utils/publishNotifications';
 

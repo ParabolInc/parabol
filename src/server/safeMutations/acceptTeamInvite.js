@@ -29,7 +29,7 @@ const acceptTeamInvite = async (teamId, authToken, email, mutatorId) => {
     newTeamMember: insertNewTeamMember(userId, teamId),
     // find all possible emails linked to this person and mark them as accepted
     expireEmailInvitations: r.table('Invitation')
-      .getAll(user.email, email, {index: 'email'})
+      .getAll(email, {index: 'email'})
       .update({
         acceptedAt: now,
         // flag the token as expired so they cannot reuse the token

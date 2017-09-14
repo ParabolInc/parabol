@@ -1,20 +1,15 @@
-import getRethink from 'server/database/rethinkDriver';
-import testUsers from 'server/__tests__/setup/testUsers';
-import shortid from 'shortid';
-import {
-  BILLING_LEADER,
-  LOBBY,
-  ACTIVE,
-  CHECKIN
-} from 'universal/utils/constants';
-import {TRIAL_PERIOD} from 'server/utils/serverConstants';
-import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import {__anHourAgo} from 'server/__tests__/setup/mockTimes';
-import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
+import testUsers from 'server/__tests__/setup/testUsers';
+import newInvitee from 'server/__tests__/utils/newInvitee';
+import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
+import getRethink from 'server/database/rethinkDriver';
+import {TRIAL_PERIOD} from 'server/utils/serverConstants';
+import shortid from 'shortid';
+import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
+import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import convertToRichText from './convertToRichText';
-import newInvitee from 'server/__tests__/utils/newInvitee';
 
 const meetingProject = ({id, content, status, teamMemberId}) => ({
   id,
@@ -27,6 +22,7 @@ class MockDB {
   constructor() {
     this.db = {
       agendaItem: [],
+      invitation: [],
       meeting: [],
       notification: [],
       organization: [],
@@ -47,7 +43,9 @@ class MockDB {
       }
       return this;
     };
-    Object.keys(this.db).forEach((table) => this[table] = selector(table));
+    Object.keys(this.db).forEach((table) => {
+      this[table] = selector(table);
+    });
   }
 
   closeout(table, doc) {
@@ -103,6 +101,24 @@ class MockDB {
       teamId,
       teamMemberId,
       updatedAt: new Date(__anHourAgo - table.length),
+      ...overrides
+    });
+  }
+
+  newInvitation(overrides = {}) {
+    const invitee = newInvitee();
+    return this.closeout('invitation', {
+      id: shortid.generate(),
+      // acceptedAt: null,
+      createdAt: new Date(__anHourAgo),
+      email: invitee.email,
+      // fullName: overrides.email || invitee.email,
+      hashedToken: shortid.generate(),
+      invitedBy: this.context.teamMember.id,
+      inviteCount: 1,
+      teamId: this.context.team.id,
+      tokenExpiration: new Date(__anHourAgo + TRIAL_PERIOD),
+      updatedAt: new Date(__anHourAgo),
       ...overrides
     });
   }
@@ -308,7 +324,7 @@ class MockDB {
     const promises = docsToInsert.reduce((obj, docs, idx) => {
       if (docs.length) {
         const table = tables[idx];
-        obj[table] = r.table(table).insert(docs)
+        obj[table] = r.table(table).insert(docs);
       }
       return obj;
     }, {});

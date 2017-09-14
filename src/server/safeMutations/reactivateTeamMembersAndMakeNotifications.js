@@ -30,7 +30,7 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
     startAt: now,
     orgId,
     userIds: [user.id],
-    //inviterName,
+    // inviterName,
     teamName
   }));
   await r.table('Notification').insert(notifications);

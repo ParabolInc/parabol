@@ -14,7 +14,7 @@ const makeReactivationNotifications = (reactivatedUsers, teamMembers, inviter) =
     // make a notification to the person being reactivated
     notificationsToSend[reactivatedUserId] = [{
       authToken: tmsSignToken({sub: reactivatedUserId}, tms),
-      //inviterName,
+      // inviterName,
       teamId,
       teamName,
       type: ADD_TO_TEAM

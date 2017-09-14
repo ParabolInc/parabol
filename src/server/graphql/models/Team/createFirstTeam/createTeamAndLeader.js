@@ -21,7 +21,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
     meetingPhaseItem: null
   };
   const options = {
-    returnChanges:true,
+    returnChanges: true,
     role: isNewOrg ? BILLING_LEADER : null
   };
   const {tms} = await r({

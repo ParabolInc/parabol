@@ -29,8 +29,8 @@ export const INVITE_TOKEN_INVITE_ID_LEN = 6;
 export const INVITE_TOKEN_KEY_LEN = 8;
 
 /* invitation actions */
-//export const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
-//export const SEND_EMAIL = 'SEND_EMAIL';
+// export const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
+// export const SEND_EMAIL = 'SEND_EMAIL';
 export const REACTIVATE = 'REACTIVATE';
 export const SEND_INVITATION = 'SEND_INVITIATION';
 export const ASK_APPROVAL = 'ASK_APPROVAL';

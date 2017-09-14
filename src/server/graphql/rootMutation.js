@@ -28,6 +28,7 @@ import requestFacilitator from 'server/graphql/mutations/requestFacilitator';
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
 import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite';
+import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
 
 const rootFields = Object.assign({},
   agenda,
@@ -64,6 +65,7 @@ export default new GraphQLObjectType({
     removeSlackChannel,
     removeGitHubRepo,
     requestFacilitator,
+    resendTeamInvite,
     segmentEventTrack
   })
 });

@@ -10,24 +10,24 @@ const mutation = graphql`
   }
 `;
 
-//export const clearNotificationUpdater = (viewer, deletedGlobalIds) => {
+// export const clearNotificationUpdater = (viewer, deletedGlobalIds) => {
 //  const notifications = viewer.getLinkedRecords('notifications');
 //  if (notifications) {
 //    const newNodes = getArrayWithoutIds(notifications, deletedGlobalIds);
 //    viewer.setLinkedRecords(newNodes, 'notifications');
 //  }
-//};
+// };
 
 const AcceptTeamInviteMutation = (environment, dbNotificationId, onError, onCompleted) => {
-  //const {viewerId} = environment;
+  // const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {dbNotificationId},
-    //updater: (store) => {
+    // updater: (store) => {
     // const viewer = store.get(viewerId);
     // const deletedId = store.getRootField('acceptTeamInvite').getValue('deletedId');
     // clearNotificationUpdater(viewer, deletedId);
-    //},
+    // },
     // optimisticUpdater: (store) => {
     // TODO add the team to the sidebar when we move teams to relay
     // },

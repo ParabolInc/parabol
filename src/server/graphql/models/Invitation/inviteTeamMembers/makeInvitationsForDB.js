@@ -1,6 +1,6 @@
 import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
-import parseInviteToken from './parseInviteToken';
-import hashInviteTokenKey from './hashInviteTokenKey';
+import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
+import hashInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/hashInviteTokenKey';
 
 export default async function makeInvitationsForDB(invitees, teamId, userId) {
   const now = new Date();

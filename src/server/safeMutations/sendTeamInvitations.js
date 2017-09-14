@@ -8,24 +8,30 @@ const sendTeamInvitations = async (invitees, inviter) => {
   const r = getRethink();
   const now = new Date();
   const {orgId, inviterName, teamId, teamName} = inviter;
-  const invitations = invitees
-    .filter((invitee) => Boolean(invitee.userId))
-    .map((invitee) => ({
-      id: shortid.generate(),
-      type: TEAM_INVITE,
-      startAt: now,
-      orgId,
-      userIds: [invitee.userId],
-      inviterName,
-      teamId,
-      teamName
-    }));
+  const userIds = invitees.map(({userId}) => userId).filter(Boolean);
+  const invitations = userIds.map((userId) => ({
+    id: shortid.generate(),
+    type: TEAM_INVITE,
+    startAt: now,
+    orgId,
+    userIds: [userId],
+    inviterName,
+    teamId,
+    teamName
+  }));
 
   await Promise.all([
-    r.table('Notification').insert(invitations),
+    r.table('Notification')
+      .getAll(r.args(userIds), {index: 'userIds'})
+      .filter({type: TEAM_INVITE, orgId})('userIds')(0).default([])
+      .do((userIdsWithNote) => {
+        return r.expr(invitations).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
+      })
+      .do((newNotifications) => r.table('Notification').insert(newNotifications)),
     emailTeamInvitations(invitees, inviter)
   ]);
 
+  // do not filter out duplicates! that way if someone resends an invite, the invitee will always get a toast
   const notificationsToAdd = {};
   invitations.forEach((notification) => {
     notificationsToAdd[notification.userIds[0]] = [notification];
