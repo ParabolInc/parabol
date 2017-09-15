@@ -217,7 +217,6 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s6,
     margin: '0',
-    overflowX: 'scroll',
     padding: '0 .5rem'
   }
 });
