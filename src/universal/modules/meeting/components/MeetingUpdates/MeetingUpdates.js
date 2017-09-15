@@ -9,10 +9,12 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import {MEETING} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
+import MeetingUpdatesEmptyModal from 'universal/modules/meeting/components/MeetingUpdatesEmptyModal/MeetingUpdatesEmptyModal';
 
 const MeetingUpdates = (props) => {
   const {
     gotoNext,
+    showEmpty,
     localPhaseItem,
     members,
     queryKey,
@@ -24,21 +26,24 @@ const MeetingUpdates = (props) => {
   const self = members.find((m) => m.isSelf);
   const currentTeamMember = members[localPhaseItem - 1];
   const isLastMember = localPhaseItem === members.length;
+  const advanceButton = () => (
+    <Button
+      buttonStyle="flat"
+      colorPalette="cool"
+      icon="arrow-circle-right"
+      iconPlacement="right"
+      key={`update${localPhaseItem}`}
+      label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
+      onClick={gotoNext}
+      size="small"
+    />
+  );
   return (
     <MeetingMain>
       <MeetingSection flexToFill>
         <div className={css(styles.layout)}>
           {showMoveMeetingControls ?
-            <Button
-              buttonStyle="flat"
-              colorPalette="cool"
-              icon="arrow-circle-right"
-              iconPlacement="right"
-              key={`update${localPhaseItem}`}
-              label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
-              onClick={gotoNext}
-              size="small"
-            /> :
+            advanceButton() :
             <MeetingFacilitationHint>
               {isLastMember ?
                 <span>{'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {'to advance to the Agenda'}</span> :
@@ -48,7 +53,18 @@ const MeetingUpdates = (props) => {
           }
         </div>
         <div className={css(styles.body)}>
-          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING} />
+          <MeetingUpdatesEmptyModal
+            advanceButton={showMoveMeetingControls && advanceButton}
+            currentTeamMemberName={currentTeamMember.preferredName}
+            isOpen={showEmpty}
+          />
+          <ProjectColumns
+            alignColumns="center"
+            area={MEETING}
+            myTeamMemberId={self && self.id}
+            projects={projects}
+            queryKey={queryKey}
+          />
         </div>
       </MeetingSection>
     </MeetingMain>
@@ -58,6 +74,7 @@ const MeetingUpdates = (props) => {
 MeetingUpdates.propTypes = {
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
+  showEmpty: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   onFacilitatorPhase: PropTypes.bool,
@@ -79,6 +96,7 @@ const styleThunk = () => ({
   body: {
     display: 'flex',
     flex: 1,
+    flexDirection: 'column',
     padding: '1rem 1rem 0',
     width: '100%'
   }
