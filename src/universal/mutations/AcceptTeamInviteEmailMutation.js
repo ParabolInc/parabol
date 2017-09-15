@@ -45,7 +45,7 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
     // optimisticUpdater: (store) => {
     // TODO add the team to the sidebar when we move teams to relay
     // },
-    //onCompleted,
+    // onCompleted,
     onError: (error) => {
       const {_error: errorType} = error || {};
       if (errorType === 'alreadyJoined') {

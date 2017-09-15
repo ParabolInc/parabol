@@ -13,7 +13,7 @@ import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 
 const APP_VERSION = packageJSON.version;
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
-const isTmsValid = (tmsFromDB, tmsFromToken) => {
+const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
   for (let i = 0; i < tmsFromDB.length; i++) {
     if (tmsFromDB[i] !== tmsFromToken[i]) return false;

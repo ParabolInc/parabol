@@ -60,7 +60,10 @@ export const USER_DASH = 'userDash';
 // Send to folks that got reactivated on a team
 // annoucements to the rest of the team
 
+// Sent to the meeting facilitator by someone who wants to lead
 export const FACILITATOR_REQUEST = 'FACILITATOR_REQUEST';
+// Sent when a billing leader approves an invitee to the org
+export const INVITEE_APPROVED = 'INVITEE_APPROVED';
 export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 // Sent to Billing Leaders when their trial will expire in < 2 weeks
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
@@ -76,9 +79,7 @@ export const DENY_NEW_USER = 'DENY_NEW_USER';
 // sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
 export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
 // sent to members of team that was archived
-// [teamName]
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
-// sent to parabol users who got invited to a new team and maybe a new org
 
 
 export const notificationTypes = [

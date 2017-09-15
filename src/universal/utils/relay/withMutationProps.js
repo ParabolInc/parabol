@@ -6,29 +6,47 @@ export default (ComposedComponent) => {
   // eslint-disable-next-line react/prefer-stateless-function
   return class WithMutationProps extends Component {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`;
-    state = {
-      submitting: false,
-      error: undefined
-    };
 
-    onCompleted = () => {
-      this.setState({
+    constructor(props) {
+      super(props);
+      this.state = {
         submitting: false,
         error: undefined
-      });
+      };
+    }
+
+    componentWillMount() {
+      this._mounted = true;
+    }
+
+    componentWillUnmount() {
+      this._mounted = false;
+    }
+
+    onCompleted = () => {
+      if (this._mounted) {
+        this.setState({
+          submitting: false,
+          error: undefined
+        });
+      }
     };
 
     onError = (error) => {
-      this.setState({
-        submitting: false,
-        error
-      });
+      if (this._mounted) {
+        this.setState({
+          submitting: false,
+          error
+        });
+      }
     };
 
     submitMutation = () => {
-      this.setState({
-        submitting: true
-      });
+      if (this._mounted) {
+        this.setState({
+          submitting: true
+        });
+      }
     };
 
     render() {

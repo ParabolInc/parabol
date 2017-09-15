@@ -14,7 +14,7 @@ export default {
       description: 'The id of the notification to remove'
     }
   },
-  async resolve(source, {dbNotificationId}, {authToken}) {
+  async resolve(source, {dbNotificationId}, {authToken, socket}) {
     const r = getRethink();
 
     // AUTH

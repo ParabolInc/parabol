@@ -1,6 +1,5 @@
 import {commitMutation} from 'react-relay';
 import {clearNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
   mutation ApproveToOrgMutation($dbNotificationId: ID!) {
@@ -18,12 +17,11 @@ const ApproveToOrgMutation = (environment, dbNotificationId, onError, onComplete
     updater: (store) => {
       const viewer = store.get(viewerId);
       const deletedId = store.getRootField('approveToOrg').getValue('deletedId');
-      clearNotificationUpdater(viewer, deletedId);
+      clearNotificationUpdater(viewer, [deletedId]);
     },
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId);
-      const notificationId = toGlobalId('Notification', dbNotificationId);
-      clearNotificationUpdater(viewer, notificationId);
+      clearNotificationUpdater(viewer, [dbNotificationId]);
     },
     onCompleted,
     onError

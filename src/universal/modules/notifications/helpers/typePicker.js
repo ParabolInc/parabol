@@ -1,6 +1,7 @@
 import {
   ADD_TO_TEAM,
   DENY_NEW_USER,
+  INVITEE_APPROVED,
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
@@ -11,6 +12,7 @@ import {
 
 export default {
   [ADD_TO_TEAM]: () => System.import('universal/modules/notifications/components/AddedToTeam/AddedToTeam'),
+  [INVITEE_APPROVED]: () => System.import('universal/modules/notifications/components/InviteeApproved'),
   [DENY_NEW_USER]: () => System.import('universal/modules/notifications/components/DenyNewUser/DenyNewUser'),
   [PAYMENT_REJECTED]: () => System.import('universal/modules/notifications/components/PaymentRejected/PaymentRejected'),
   // eslint-disable-next-line max-len

@@ -1,4 +1,4 @@
-import {removeNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
+import {clearNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
 
 const subscription = graphql`
   subscription NotificationsClearedSubscription {
@@ -15,7 +15,7 @@ const NotificationsClearedSubscription = (environment) => {
     updater: (store) => {
       const viewer = store.get(viewerId);
       const deletedIds = store.getRootField('notificationsCleared').getValue('deletedIds');
-      removeNotificationUpdater(viewer, deletedIds);
+      clearNotificationUpdater(viewer, deletedIds);
     }
   });
 };

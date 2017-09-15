@@ -56,6 +56,7 @@ export default (ComposedComponent) => {
     onDisconnect: () => {
       cashay.create({priorityTransport: null});
       props.atmosphere.socket = null;
+      props.atmosphere.setNet('http');
     },
     keepAlive: 3000
   });

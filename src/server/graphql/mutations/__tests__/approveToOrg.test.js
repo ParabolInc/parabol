@@ -10,15 +10,18 @@ import * as getPubSub from 'server/utils/getPubSub';
 import {REQUEST_NEW_USER} from 'universal/utils/constants';
 import makeMockPubSub from 'server/__mocks__/makeMockPubSub';
 import * as publishNotifications from 'server/utils/publishNotifications';
+import * as addInviteeApproved from 'server/safeMutations/helpers/addInviteeApproved';
 
 MockDate.set(__now);
 console.error = jest.fn();
 
 describe('approveToOrg', () => {
-  test('sends an invitation, clears billing leader notifications, notifies invitee of invitation', async () => {
+  test('sends an invitation, clears billing leader notifications, notifies invitee and inviter of invitation', async () => {
     // SETUP
     sendTeamInvitations.default = jest.fn();
     publishNotifications.default = jest.fn();
+    addInviteeApproved.default = jest.fn();
+
     const mockPubSub = makeMockPubSub();
     getPubSub.default = () => mockPubSub;
 
@@ -45,6 +48,7 @@ describe('approveToOrg', () => {
     expect(sendTeamInvitations.default).toHaveBeenCalledWith(invitees, inviter);
     expect(publishNotifications.default).toHaveBeenCalledTimes(1);
     expect(mockPubSub.publish).toHaveBeenCalledTimes(1);
+    expect(addInviteeApproved.default).toHaveBeenCalledTimes(1);
   });
 
   test('throws if the caller does not own the notification', async () => {

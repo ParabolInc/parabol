@@ -11,8 +11,9 @@ export default {
 
     // RESOLUTION
 
+    const teamIds = authToken.tms || [];
     // note for this one we pass in an array of channel names. a userId & all the teamIds
-    const channelNames = authToken.tms.concat(userId).map((id) => `${NOTIFICATIONS_ADDED}.${id}`);
+    const channelNames = teamIds.concat(userId).map((id) => `${NOTIFICATIONS_ADDED}.${id}`);
     const filterFn = (value) => value.mutatorId !== socketId;
     return makeSubscribeIter(channelNames, {filterFn});
   }

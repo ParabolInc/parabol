@@ -1,8 +1,8 @@
 import {ConnectionHandler} from 'relay-runtime';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {ADD_TO_TEAM, FACILITATOR_REQUEST, REQUEST_NEW_USER} from 'universal/utils/constants';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import {ADD_TO_TEAM, FACILITATOR_REQUEST, INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import findIdInConnection from 'universal/utils/relay/findIdInConnection';
 
 const subscription = graphql`
   subscription NotificationsAddedSubscription {
@@ -56,7 +56,8 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
     viewer,
     'SocketRoute_notifications'
   );
-  if (conn) {
+  const nodeId = newNode.getValue('id');
+  if (conn && findIdInConnection(nodeId, conn) === -1) {
     const newEdge = ConnectionHandler.createEdge(
       store,
       conn,
@@ -113,6 +114,14 @@ const NotificationsAddedSubscription = (environment, queryVariables, {dispatch, 
                 history.push('/me/notifications');
               }
             }
+          }));
+
+          addNotificationUpdater(store, viewerId, payload);
+        } else if (type === INVITEE_APPROVED) {
+          const inviteeEmail = payload.getValue('inviteeEmail');
+          dispatch(showInfo({
+            title: 'Approved!',
+            message: `${inviteeEmail} has been approved by your organization. We just sent them an invitation.`
           }));
 
           addNotificationUpdater(store, viewerId, payload);

@@ -88,7 +88,7 @@ const SocketRoute = ({atmosphere, dispatch, history}) => {
         const notifications = renderProps ? renderProps.viewer.notifications : undefined;
         return (
           <Switch>
-            <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} extraProps={{notifications}}/>
+            <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} extraProps={{notifications}} />
             <AsyncRoute
               path="/meeting/:teamId/:localPhase?/:localPhaseItem?"
               mod={meetingContainer}
@@ -105,6 +105,7 @@ const SocketRoute = ({atmosphere, dispatch, history}) => {
 SocketRoute.propTypes = {
   match: PropTypes.object.isRequired,
   atmosphere: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 
 };
