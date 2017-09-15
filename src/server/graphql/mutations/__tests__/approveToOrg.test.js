@@ -18,9 +18,9 @@ console.error = jest.fn();
 describe('approveToOrg', () => {
   test('sends an invitation, clears billing leader notifications, notifies invitee and inviter of invitation', async () => {
     // SETUP
-    sendTeamInvitations.default = jest.fn();
+    sendTeamInvitations.default = jest.fn(() => ({}));
     publishNotifications.default = jest.fn();
-    addInviteeApproved.default = jest.fn();
+    addInviteeApproved.default = jest.fn(() => ({}));
 
     const mockPubSub = makeMockPubSub();
     getPubSub.default = () => mockPubSub;
@@ -33,10 +33,13 @@ describe('approveToOrg', () => {
     const firstUser = mockDB.db.user[0];
     const authToken = mockAuthToken(firstUser);
     const inviter = {
+      inviterAvatar: firstUser.picture,
+      inviterEmail: firstUser.email,
       inviterName: firstUser.preferredName,
       teamName: mockDB.context.team.name,
       teamId: mockDB.context.team.id,
-      orgId: mockDB.context.organization.id
+      orgId: mockDB.context.organization.id,
+      userId: firstUser.id
     };
     const invitees = [{email: notification.inviteeEmail}];
 
