@@ -22,11 +22,11 @@ const RequestNewUser = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id, inviterName, inviteeEmail, teamName} = notification;
+  const {id, inviterName, inviteeEmail, orgId, teamName} = notification;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acceptInvite = () => {
     submitMutation();
-    ApproveToOrgMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted);
   };
 
   const rejectToggle = (

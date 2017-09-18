@@ -56,7 +56,7 @@ export default {
     };
 
     const [notificationsToClear] = await Promise.all([
-      removeOrgApprovalAndNotification(orgId, inviteeEmail),
+      removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: userId}),
       r.table('Notification').insert(notification)
     ]);
     const notificationsToAdd = {

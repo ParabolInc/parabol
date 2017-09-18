@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {NOTIFICATIONS_CLEARED, REQUEST_NEW_USER} from 'universal/utils/constants';
 import getPubSub from 'server/utils/getPubSub';
+import {NOTIFICATIONS_CLEARED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default {
   type: GraphQLBoolean,
@@ -23,27 +23,21 @@ export default {
     requireWebsocket(socket);
 
     // RESOLUTION
-    const removedNotification = await r.table('OrgApproval')
-      .get(id)
-      .delete({returnChanges: true})('changes')(0)('old_val')
-      .default(null)
-      .do((removedApproval) => {
-        // removal notifications concerning the approval
-        return r.branch(
-          removedApproval,
-          r.table('Notification')
-            .getAll(orgId, {index: 'orgId'})
-            .filter({
-              type: REQUEST_NEW_USER,
-              teamId: removedApproval('teamId')
-            })
-            .filter((notification) => {
-              return r.and(notification('inviteeEmail').eq(email), notification('teamId').eq(teamId));
-            })
-            .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null),
-          null
-        );
-      });
+    const {removedNotification} = await r({
+      removedApproval: r.table('OrgApproval')
+        .get(id)
+        .delete({returnChanges: true})('changes')(0)('old_val')
+        .default(null),
+      removedNotification: r.table('Notification')
+        .getAll(orgId, {index: 'orgId'})
+        .filter({
+          type: REQUEST_NEW_USER,
+          teamId,
+          inviteeEmail: email
+        })
+        .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null)
+    });
+
     if (removedNotification) {
       const notificationsCleared = {deletedIds: [removedNotification.id]};
       removedNotification.userIds.forEach((userId) => {

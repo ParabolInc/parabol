@@ -1,14 +1,23 @@
 import getRethink from 'server/database/rethinkDriver';
 import {REQUEST_NEW_USER} from 'universal/utils/constants';
+import {APPROVED, DENIED, PENDING} from 'server/utils/serverConstants';
 
-const removeOrgApprovalAndNotification = async (orgId, maybeEmails) => {
+const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
+  const now = new Date();
+  const {approvedBy, deniedBy} = type;
+  const status = approvedBy ? APPROVED : DENIED;
   const emails = Array.isArray(maybeEmails) ? maybeEmails : [maybeEmails];
   const r = getRethink();
   const {removedNotifications} = await r({
     removedApproval: r.table('OrgApproval')
       .getAll(r.args(emails), {index: 'email'})
-      .filter({orgId})
-      .delete(),
+      .filter({orgId, status: PENDING})
+      .update({
+        status,
+        approvedBy,
+        deniedBy,
+        updatedAt: now
+      }),
     removedNotifications: r.table('Notification')
       .getAll(orgId, {index: 'orgId'})
       .filter({

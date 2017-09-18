@@ -1,6 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
 import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {PENDING} from 'server/utils/serverConstants';
 
 export default async function createPendingApprovals(outOfOrgEmails, {orgId, teamId, teamName, userId} = {}) {
   if (outOfOrgEmails.length === 0) return [];
@@ -33,6 +34,7 @@ export default async function createPendingApprovals(outOfOrgEmails, {orgId, tea
     createdAt: now,
     email: inviteeEmail,
     orgId,
+    status: PENDING,
     teamId
   }));
   // send a new notification to each Billing Leader concerning each out-of-org invitee

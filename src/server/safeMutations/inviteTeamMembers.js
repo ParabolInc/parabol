@@ -7,7 +7,7 @@ import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgAppr
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import {isBillingLeader} from 'server/utils/authorization';
 import publishNotifications from 'server/utils/publishNotifications';
-import {ASK_APPROVAL, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
+import {ASK_APPROVAL, PENDING, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
 import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import getPendingInvitations from 'server/safeQueries/getPendingInvitations';
@@ -28,7 +28,7 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
       .coerceTo('array'),
     pendingApprovals: r.table('OrgApproval')
       .getAll(r.args(emailArr), {index: 'email'})
-      .filter({teamId})
+      .filter({teamId, status: PENDING})
       .coerceTo('array'),
     teamMembers: r.table('TeamMember')
       .getAll(teamId, {index: 'teamId'})
@@ -62,7 +62,7 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
 
   const {reactivations, notificationsToClear, teamInvites, approvals} = await resolvePromiseObj({
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers),
-    notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear),
+    notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
     teamInvites: sendTeamInvitations(inviteesToInvite, inviter),
     approvals: createPendingApprovals(approvalEmails, inviter)
   });

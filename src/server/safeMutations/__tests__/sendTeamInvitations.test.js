@@ -55,6 +55,7 @@ describe('sendTeamInvitations', () => {
     const dynamicSerializer = new DynamicSerializer();
     const invitee = {userId: `invitee|${shortid.generate()}`};
     await mockDB.init()
+      .user(0)
       .newNotification({userIds: [invitee.userId]}, {type: TEAM_INVITE});
     const firstUser = mockDB.db.user[0];
     const inviter = {

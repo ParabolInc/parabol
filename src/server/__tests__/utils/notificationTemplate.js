@@ -31,7 +31,7 @@ export default function notificationTemplate(template) {
   if (type === ADD_TO_TEAM) {
     return {
       type,
-      inviterName: this.db.user[0].preferredName,
+      inviterName: this.context.user.preferredName,
       teamName: this.context.team.name,
       teamId: this.context.team.id
     };
@@ -40,7 +40,7 @@ export default function notificationTemplate(template) {
     return {
       type,
       reason: 'Do not like them',
-      deniedByName: this.context.user[0].preferredName,
+      deniedByName: this.context.user.preferredName,
       inviteeEmail: template.email || newInvitee().email
     };
   }
@@ -51,7 +51,7 @@ export default function notificationTemplate(template) {
     };
   }
   if (type === REQUEST_NEW_USER) {
-    const inviter = this.db.user[0];
+    const inviter = this.context.user;
     return {
       type,
       inviterUserId: inviter.id,
@@ -71,8 +71,8 @@ export default function notificationTemplate(template) {
   if (type === TEAM_INVITE) {
     return {
       type,
-      inviterUserId: this.db.user[0].id,
-      inviterName: this.db.user[0].preferredName,
+      inviterUserId: this.context.user.id,
+      inviterName: this.context.user.preferredName,
       inviteeEmail: template.email || newInvitee().email,
       teamId: this.context.team.id,
       teamName: this.context.team.name

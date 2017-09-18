@@ -3,7 +3,7 @@ import testUsers from 'server/__tests__/setup/testUsers';
 import newInvitee from 'server/__tests__/utils/newInvitee';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import getRethink from 'server/database/rethinkDriver';
-import {TRIAL_PERIOD} from 'server/utils/serverConstants';
+import {PENDING, TRIAL_PERIOD} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
@@ -183,7 +183,7 @@ class MockDB {
   newNotification(overrides = {}, template = {}) {
     return this.closeout('notification', {
       id: `${template.type}|${shortid.generate()}`,
-      startAt: new Date(__anHourAgo),
+      startAt: new Date(__anHourAgo + this.db.notification.length),
       orgId: this.context.organization.id,
       userIds: [this.context.user.id],
       ...notificationTemplate.call(this, template),
@@ -217,9 +217,10 @@ class MockDB {
     const anHourAgo = new Date(__anHourAgo);
     return this.closeout('orgApproval', {
       id: shortid.generate(),
-      createdAt: anHourAgo,
+      createdAt: new Date(anHourAgo.getTime() + this.db.orgApproval.length),
       email: newInvitee().email,
       orgId: this.context.organization.id,
+      status: PENDING,
       teamId: this.context.team.id,
       ...overrides
     });

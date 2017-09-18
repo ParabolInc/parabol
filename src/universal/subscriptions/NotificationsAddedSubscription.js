@@ -2,7 +2,7 @@ import {ConnectionHandler} from 'relay-runtime';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {ADD_TO_TEAM, FACILITATOR_REQUEST, INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants';
-import findIdInConnection from 'universal/utils/relay/findIdInConnection';
+import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
 const subscription = graphql`
   subscription NotificationsAddedSubscription {
@@ -57,7 +57,8 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
     'SocketRoute_notifications'
   );
   const nodeId = newNode.getValue('id');
-  if (conn && findIdInConnection(nodeId, conn) === -1) {
+  const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('id') === nodeId);
+  if (conn && matchingNodes.length === 0) {
     const newEdge = ConnectionHandler.createEdge(
       store,
       conn,

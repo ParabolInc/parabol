@@ -1,8 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`removeOrgApprovalAndNotification removes approvals and approval notifications, returns an object full of the notifications removed 1`] = `
+exports[`removeOrgApprovalAndNotification approves orgApproval, returns an object full of the notifications removed 1`] = `
 Object {
   "notification": Array [],
-  "orgApproval": Array [],
+  "orgApproval": Array [
+    Object {
+      "approvedBy": 1,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": 2,
+      "id": 0,
+      "orgId": 3,
+      "status": "APPROVED",
+      "teamId": 4,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`removeOrgApprovalAndNotification rejects approvals and approval notifications, returns an object full of the notifications removed 1`] = `
+Object {
+  "notification": Array [],
+  "orgApproval": Array [
+    Object {
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "deniedBy": 1,
+      "email": 2,
+      "id": 0,
+      "orgId": 3,
+      "status": "DENIED",
+      "teamId": 4,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
 }
 `;

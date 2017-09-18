@@ -34,3 +34,8 @@ export const INVITE_TOKEN_KEY_LEN = 8;
 export const REACTIVATE = 'REACTIVATE';
 export const SEND_INVITATION = 'SEND_INVITIATION';
 export const ASK_APPROVAL = 'ASK_APPROVAL';
+
+/* Org Approval Status */
+export const APPROVED = 'APPROVED';
+export const DENIED = 'DENIED';
+export const PENDING = 'PENDING';

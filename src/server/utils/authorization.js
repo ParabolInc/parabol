@@ -108,7 +108,8 @@ export const requireWebsocketExchange = (exchange) => {
   }
 };
 
-export const getUserOrgDoc = (userId, orgId) => {
+// undefined orgId will disable the filter
+export const getUserOrgDoc = (userId, orgId = '') => {
   const r = getRethink();
   return r.table('User').get(userId)('userOrgs')
     .filter({id: orgId})
@@ -124,7 +125,7 @@ export const isBillingLeader = (userOrgDoc) => {
 export const requireOrgLeader = (userOrgDoc) => {
   const legit = isBillingLeader(userOrgDoc);
   if (!legit) {
-    throw errorObj({_error: 'Unauthorized. User is not a Billing Leader for that organization'});
+    throw new Error('Unauthorized. User is not a Billing Leader for that organization');
   }
 };
 
