@@ -81,28 +81,29 @@ class OutcomeCardFooter extends Component {
     const {teamMember: owner, integration, team: {name: teamName}} = outcome;
     const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
-
     const buttonBlockStyles = css(
       styles.buttonBlock,
       cardIsActive && styles.showBlock
     );
-
     const avatarStyles = css(
       styles.avatar,
       cardIsActive && styles.activeAvatar
     );
-
     const {error} = this.state;
     const ownerAvatarOrTeamName = (
       showTeam ?
         <div className={css(styles.teamName)}>{teamName}</div> :
-        (<div className={avatarStyles} tabIndex="0">
+        (<button
+          className={avatarStyles}
+          tabIndex={service && '-1'}
+          type="button"
+        >
           <img
             alt={owner.preferredName}
             className={css(styles.avatarImg)}
             src={owner.picture}
           />
-        </div>)
+        </button>)
     );
 
     return (
@@ -203,8 +204,10 @@ const styleThunk = () => ({
   },
 
   avatar: {
+    appearance: 'none',
     borderRadius: '100%',
     border: '.0625rem solid transparent',
+    boxShadow: 'none',
     cursor: 'pointer',
     height: '1.75rem',
     marginLeft: '-.125rem',
