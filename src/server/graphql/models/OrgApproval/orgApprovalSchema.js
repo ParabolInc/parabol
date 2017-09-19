@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import {GraphQLEmailType} from 'server/graphql/types';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import OrgApprovalStatusEnum from 'server/graphql/types/OrgApprovalStatusEnum';
@@ -23,6 +23,10 @@ const OrgApproval = new GraphQLObjectType({
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
       description: '*The email seeking approval'
+    },
+    isActive: {
+      type: GraphQLBoolean,
+      description: 'true if it applies to a user that was not removed from the org, else false'
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),

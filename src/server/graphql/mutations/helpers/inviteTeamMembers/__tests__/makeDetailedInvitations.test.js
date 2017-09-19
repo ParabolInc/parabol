@@ -1,4 +1,5 @@
 import makeDetailedInvitations from 'server/graphql/mutations/helpers/inviteTeamMembers/makeDetailedInvitations';
+import {APPROVED, PENDING} from 'server/utils/serverConstants';
 
 describe('makeDetailedInvitations', () => {
   test('detects active team members', () => {
@@ -19,10 +20,10 @@ describe('makeDetailedInvitations', () => {
   test('detects pending approvals', () => {
     // SETUP
     const emailArr = ['1@foo.co', '2@foo.co'];
-    const pendingApprovals = ['1@foo.co'];
-
+    const orgApprovals = [{email: '1@foo.co', teamId: 123, status: PENDING}];
+    const inviter = {orgId: 1, teamId: 123};
     // TEST
-    const result = makeDetailedInvitations([], emailArr, [], pendingApprovals);
+    const result = makeDetailedInvitations([], emailArr, [], orgApprovals, [], inviter);
 
     // VERIFY
     expect(result[0].isPendingApproval).toEqual(true);
@@ -69,6 +70,17 @@ describe('makeDetailedInvitations', () => {
     expect(result[0].isNewTeamMember).toEqual(false);
     expect(result[1].isNewTeamMember).toEqual(false);
     expect(result[2].isNewTeamMember).toEqual(true);
+  });
+  test.only('detects approved emails from the OrgApproval table', () => {
+    // SETUP
+    const emailArr = ['1@foo.co', '2@foo.co'];
+    const orgApprovals = [{email: '1@foo.co', teamId: 123, status: APPROVED}];
+    const inviter = {orgId: 1, teamId: 123};
+    // TEST
+    const result = makeDetailedInvitations([], emailArr, [], orgApprovals, [], inviter);
+    // VERIFY
+    expect(result[0].isApproved).toEqual(true);
+    expect(result[1].isApproved).toEqual(false);
   });
 });
 

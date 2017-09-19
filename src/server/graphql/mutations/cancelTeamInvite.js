@@ -18,7 +18,8 @@ export default {
     const now = new Date();
 
     // AUTH
-    const teamId = await r.table('Invitation').get(inviteId)('teamId').default(null);
+    const invitation = await r.table('Invitation').get(inviteId).default(null);
+    const {email, teamId} = invitation;
     if (!teamId) {
       throw new Error('Invitation not found!');
     }
@@ -27,10 +28,18 @@ export default {
 
 
     // RESOLUTION
-    await r.table('Invitation').get(inviteId).update({
-      // set expiration to epoch
-      tokenExpiration: new Date(0),
-      updatedAt: now
+    await r({
+      invitation: r.table('Invitation').get(inviteId).update({
+        // set expiration to epoch
+        tokenExpiration: new Date(0),
+        updatedAt: now
+      }),
+      orgApproval: r.table('OrgApproval')
+        .getAll(email, {index: 'email'})
+        .filter({teamId})
+        .update({
+          isActive: false
+        })
     });
     return true;
   }

@@ -63,7 +63,11 @@ export default {
     ]);
 
     if (invitees && invitees.length) {
-      const inviter = await getInviterInfoAndTeamName(teamId, userId);
+      const inviterDetails = await getInviterInfoAndTeamName(teamId, userId);
+      const inviter = {
+        ...inviterDetails,
+        isBillingLeader: true
+      };
       await sendTeamInvitations(invitees, inviter);
     }
     sendSegmentEvent('New Org', userId, {orgId, teamId});

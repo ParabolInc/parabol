@@ -30,7 +30,7 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('OrgApproval')
         .getAll(teamId, {index: 'teamId'})
-        .filter({status: PENDING})
+        .filter({status: PENDING, isActive: true})
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

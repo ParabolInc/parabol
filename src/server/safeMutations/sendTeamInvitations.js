@@ -2,6 +2,25 @@ import getRethink from 'server/database/rethinkDriver';
 import emailTeamInvitations from 'server/safeMutations/emailTeamInvitations';
 import shortid from 'shortid';
 import {TEAM_INVITE} from 'universal/utils/constants';
+import {APPROVED} from 'server/utils/serverConstants';
+
+const maybeAutoApproveToOrg = (invitees, inviter) => {
+  const r = getRethink();
+  const now = new Date();
+  const {orgId, teamId} = inviter;
+  if (!inviter.isBillingLeader) return undefined;
+  const approvals = invitees.map((invitee) => ({
+    id: shortid.generate(),
+    createdAt: now,
+    email: invitee.email,
+    isActive: true,
+    orgId,
+    status: APPROVED,
+    teamId,
+    updatedAt: now
+  }));
+  return r.table('OrgApproval').insert(approvals);
+}
 
 const sendTeamInvitations = async (invitees, inviter, inviteId) => {
   if (invitees.length === 0) return [];
@@ -28,7 +47,8 @@ const sendTeamInvitations = async (invitees, inviter, inviteId) => {
         return r.expr(invitations).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
       })
       .do((newNotifications) => r.table('Notification').insert(newNotifications)),
-    emailTeamInvitations(invitees, inviter, inviteId)
+    emailTeamInvitations(invitees, inviter, inviteId),
+    maybeAutoApproveToOrg(invitees,inviter)
   ]);
 
   // do not filter out duplicates! that way if someone resends an invite, the invitee will always get a toast

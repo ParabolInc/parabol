@@ -219,6 +219,7 @@ class MockDB {
       id: shortid.generate(),
       createdAt: new Date(anHourAgo.getTime() + this.db.orgApproval.length),
       email: newInvitee().email,
+      isActive: true,
       orgId: this.context.organization.id,
       status: PENDING,
       teamId: this.context.team.id,

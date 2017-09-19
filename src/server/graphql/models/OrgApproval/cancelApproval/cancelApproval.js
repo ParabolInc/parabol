@@ -26,7 +26,9 @@ export default {
     const {removedNotification} = await r({
       removedApproval: r.table('OrgApproval')
         .get(id)
-        .delete({returnChanges: true})('changes')(0)('old_val')
+        .update({
+          isActive: false
+        }, {returnChanges: true})('changes')(0)('old_val')
         .default(null),
       removedNotification: r.table('Notification')
         .getAll(orgId, {index: 'orgId'})

@@ -33,9 +33,11 @@ export default async function createPendingApprovals(outOfOrgEmails, {orgId, tea
     id: shortid.generate(),
     createdAt: now,
     email: inviteeEmail,
+    isActive: true,
     orgId,
     status: PENDING,
-    teamId
+    teamId,
+    updatedAt: now
   }));
   // send a new notification to each Billing Leader concerning each out-of-org invitee
   await r({

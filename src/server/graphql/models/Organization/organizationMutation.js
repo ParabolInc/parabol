@@ -156,6 +156,15 @@ export default {
                 userIds: notification('userIds').filter((id) => id.ne(userId))
               })
             );
+          }),
+        inactivatedApprovals: r.table('User').get(userId)('email')
+          .do((email) => {
+            return r.table('OrgApproval')
+              .getAll(orgId, {index: 'orgId'})
+              .filter({email})
+              .update({
+                isActive: false
+              })
           })
       });
       // need to make sure the org doc is updated before adjusting this
