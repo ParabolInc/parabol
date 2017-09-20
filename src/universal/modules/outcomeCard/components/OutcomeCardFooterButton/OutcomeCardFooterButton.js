@@ -55,15 +55,15 @@ const styleThunk = () => ({
     boxShadow: 'none',
     color: ui.palette.dark,
     cursor: 'pointer',
-    height: '1.5rem',
-    lineHeight: '1.5rem',
+    height: ui.cardButtonHeight,
+    lineHeight: ui.cardButtonHeight,
     opacity: '.5',
     outline: 'none',
     padding: 0,
     textAlign: 'center',
     userSelect: 'none',
     verticalAlign: 'middle',
-    width: '1.5rem',
+    width: ui.cardButtonHeight,
 
     ':hover': {
       opacity: 1

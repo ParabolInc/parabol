@@ -131,7 +131,8 @@ EditorLinkChanger.propTypes = {
 const styleThunk = () => ({
   modal: {
     color: ui.palette.dark,
-    padding: '.5rem .5rem .5rem 1rem'
+    padding: '.5rem .5rem .5rem 1rem',
+    minWidth: '20rem'
   },
 
   form: {
