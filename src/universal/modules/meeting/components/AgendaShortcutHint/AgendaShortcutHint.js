@@ -6,6 +6,7 @@ import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
+import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const inlineBlock = {
   display: 'inline-block',
@@ -24,7 +25,9 @@ const AgendaShortcutHint = (props) => {
           style={inlineBlock}
         />
       </span>
-      <span className={css(styles.linkText)}>Press “<b>+</b>” to add an agenda item to the left column.</span>
+      <span className={css(styles.linkText)}>
+        {'Press “'}<b>{'+'}</b>{`” to add an ${AGENDA_ITEM_LABEL} to the left column.`}
+      </span>
     </div>
   );
 };

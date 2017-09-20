@@ -11,6 +11,8 @@ import MeetingAgendaCardsContainer from 'universal/modules/meeting/containers/Me
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
+import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const MeetingAgendaItems = (props) => {
   const {
@@ -48,7 +50,7 @@ const MeetingAgendaItems = (props) => {
             <div className={css(styles.nav)}>
               {hideMoveMeetingControls ?
                 <MeetingFacilitationHint>
-                  {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {'to wrap up the Agenda'}
+                  {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to wrap up the ${actionMeeting.agendaitems.name}`}
                 </MeetingFacilitationHint> :
                 <Button
                   buttonStyle="flat"
@@ -56,7 +58,7 @@ const MeetingAgendaItems = (props) => {
                   icon="arrow-circle-right"
                   iconPlacement="right"
                   key={`agendaItem${localPhaseItem}`}
-                  label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
+                  label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
                   onClick={gotoNext}
                   size="small"
                 />

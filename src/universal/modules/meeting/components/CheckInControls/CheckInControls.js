@@ -6,6 +6,7 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 import withHotkey from 'react-hotkey-hoc';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const CheckInControls = (props) => {
   const {
@@ -34,23 +35,23 @@ const CheckInControls = (props) => {
     fontSize: ui.iconSize2x
   };
 
+  const nextPhaseName = actionMeeting.updates.name;
+
   bindHotkey('h', handleOnClickPresent);
   bindHotkey('n', handleOnClickAbsent);
 
   return (
     <div className={css(styles.controlBlock)}>
-
       <div className={css(styles.control, styles.nextControl)} onClick={handleOnClickPresent}>
         <FontAwesome name="check-circle" style={nextIcon} />
         <span className={css(styles.label)}>
-          <u>H</u>ere – {nextMember ? `move to ${nextMember.preferredName}` : 'move to Updates'}
+          <u>{'H'}</u>{'ere – '}{nextMember ? `move to ${nextMember.preferredName}` : `move to ${nextPhaseName}`}
         </span>
       </div>
-
       <div className={css(styles.control, styles.skipControl)} onClick={handleOnClickAbsent}>
         <FontAwesome name="minus-circle" style={skipIcon} />
         <span className={css(styles.label)}>
-          <u>N</u>ot here – {nextMember ? `skip to ${nextMember.preferredName}` : 'skip to Updates'}
+          <u>{'N'}</u>{'ot here – '}{nextMember ? `skip to ${nextMember.preferredName}` : `skip to ${nextPhaseName}`}
         </span>
       </div>
     </div>

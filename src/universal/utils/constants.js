@@ -24,6 +24,11 @@ export const APP_UPGRADE_PENDING_DONE = 'done';
 export const APP_VERSION_KEY = `${APP_NAME}:version`; // in localStorage
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 
+/* Meeting Misc. */
+export const MEETING_NAME = 'Action Meeting';
+export const MEETING_SUMMARY_LABEL = 'Summary';
+export const AGENDA_ITEM_LABEL = 'Agenda Item';
+
 /* Phases */
 export const LOBBY = 'lobby';
 // lowercase here to match url

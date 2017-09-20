@@ -1,4 +1,5 @@
 import ms from 'ms';
+import {MEETING_NAME} from 'universal/utils/constants';
 
 // the ICS doesn't get the 'Add your conference' line because it doesn't accept line breaks. that's cool though because it isn't editable
 // eslint-disable-next-line max-len
@@ -33,9 +34,9 @@ const getStartTime = (createdAt) => {
 };
 
 export const createGoogleCalendarInviteURL = (createdAt, meetingUrl, teamName) => {
-  const text = `Action Meeting for ${teamName}`;
+  const text = `${MEETING_NAME} for ${teamName}`;
   // eslint-disable-next-line max-len
-  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} Action Meeting`);
+  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} ${MEETING_NAME}`);
 };
 
 export const createICS = (createdAt, meetingUrl, teamName) => {
@@ -56,7 +57,7 @@ LOCATION:${meetingUrl}
 SUMMARY:Star Wars Day Party
 DESCRIPTION:${description}
 CLASS:PUBLIC
-SUMMARY:Action Meeting for ${teamName}
+SUMMARY:${MEETING_NAME} for ${teamName}
 CLASS:PUBLIC
 DTSTAMP:${startTime}
 RRULE:FREQ=WEEKLY;COUNT=8

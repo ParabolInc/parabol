@@ -1,5 +1,6 @@
 import sendEmail from 'server/email/sendEmail';
 import templates from 'server/email/templates';
+import {MEETING_NAME, MEETING_SUMMARY_LABEL} from 'universal/utils/constants';
 
 // erica.seldin.contractor@pepsico.com
 // jordan@parabol.co
@@ -8,8 +9,8 @@ const EMAIL_DESTINATION = 'terry@parabol.co, terry_acker@yahoo.com';
 const EMAIL_TEMPLATE = 'summaryEmail';
 const EMAIL_ALL_PROPS = {
   summaryEmail: {
-    title: 'Action Meeting Summary from Parabol',
-    previewText: 'Action Meeting Summary from Parabol'
+    title: `${MEETING_NAME} ${MEETING_SUMMARY_LABEL} from Parabol`,
+    previewText: `${MEETING_NAME} ${MEETING_SUMMARY_LABEL} from Parabol`
   }
 };
 

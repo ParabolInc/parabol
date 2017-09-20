@@ -13,6 +13,7 @@ import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
 import UserProjects from '../UserProjects/UserProjects';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
+import {MEETING_NAME, AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const ruleStyle = {
   backgroundColor: ui.emailRuleColor,
@@ -88,13 +89,13 @@ const quickStatsBlock = {
 
 const makeBannerMessage = (referrer, url) => {
   if (referrer === 'meeting') {
-    return <span>All team members will receive this summary in their inbox.</span>;
+    return <span>{'All team members will receive this summary in their inbox.'}</span>;
   }
   if (referrer === 'email') {
-    return <span><a href={url} style={bannerLink}>View this summary in your web browser</a></span>;
+    return <span><a href={url} style={bannerLink}>{'View this summary in your web browser'}</a></span>;
   }
   if (referrer === 'history') {
-    return <span><a href={url} style={bannerLink}>See all meeting summaries here</a></span>;
+    return <span><a href={url} style={bannerLink}>{'See all meeting summaries here'}</a></span>;
   }
   return null;
 };
@@ -204,7 +205,7 @@ const SummaryEmail = (props) => {
                 <td align="center" style={{padding: 0}}>
                   <div style={message}>
                     <div style={greetingStyles}>{makeSuccessExpression()}!</div>
-                    {`Way to go on your first Action Meeting!
+                    {`Way to go on your first ${MEETING_NAME}!
                       You are unlocking new superpowers.
                       High-performing teams have regular habits!
                       Create a 30-minute meeting at the start of each week.`}
@@ -225,7 +226,7 @@ const SummaryEmail = (props) => {
                             height={iconSize}
                             width={iconSize}
                           />
-                          <span style={iconLinkLabel}>Google Calendar</span>
+                          <span style={iconLinkLabel}>{'Google Calendar'}</span>
                         </a>
                       </div>
                       <div style={iconLinkBlock}>
@@ -241,7 +242,7 @@ const SummaryEmail = (props) => {
                             height={iconSize}
                             width={iconSize}
                           />
-                          <span style={iconLinkLabel}>Outlook, etc.</span>
+                          <span style={iconLinkLabel}>{'Outlook, etc.'}</span>
                         </a>
                       </div>
                     </div>
@@ -266,9 +267,9 @@ const SummaryEmail = (props) => {
           <div>
             {agendaItemsCompleted === 0 ?
               <div style={message}>
-                {/* No agenda items? */}
+                {/* No Agenda Items? */}
                 <div style={greetingStyles}>{'Hey there!'}</div>
-                {`It looks like there weren’t any agenda items.
+                {`It looks like there weren’t any ${AGENDA_ITEM_LABEL}s.
                   Did our software give you trouble?
                   Let us know: `}
                 <a href="mailto:love@parabol.co" style={linkStyles} title="Email us at: love@parabol.co">love@parabol.co</a>
@@ -277,7 +278,7 @@ const SummaryEmail = (props) => {
                 fontSize={18}
                 hasLearningLink
                 lineHeight={1.5}
-                prompt="How’d your meeting go?"
+                prompt={`How’d your ${MEETING_NAME} go?`}
                 tagline="We’re eager for your feedback!"
                 vSpacing={0}
               />
