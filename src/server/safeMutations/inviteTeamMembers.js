@@ -17,7 +17,7 @@ const safeApproveToOrg = async (...args) => {
   let res = {};
   try {
     res = await approveToOrg(...args);
-  } catch(e) {
+  } catch (e) {
     // noop
   }
   return res;

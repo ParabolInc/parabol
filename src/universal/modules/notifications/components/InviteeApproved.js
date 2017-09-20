@@ -5,10 +5,9 @@ import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const InviteeApproved = (props) => {
@@ -75,4 +74,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withStyles(styleThunk)(InviteeApproved));
+export default withStyles(styleThunk)(InviteeApproved);

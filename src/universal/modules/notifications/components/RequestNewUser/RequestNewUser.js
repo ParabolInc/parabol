@@ -4,7 +4,6 @@ import React from 'react';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation';
 import ui from 'universal/styles/ui';
@@ -98,4 +97,4 @@ const styleThunk = () => ({
   ...defaultStyles
 });
 
-export default withAtmosphere(withStyles(styleThunk)(RequestNewUser));
+export default withStyles(styleThunk)(RequestNewUser);

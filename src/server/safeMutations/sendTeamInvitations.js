@@ -20,25 +20,27 @@ const maybeAutoApproveToOrg = (invitees, inviter) => {
     updatedAt: now
   }));
   return r.table('OrgApproval').insert(approvals);
-}
+};
 
 const sendTeamInvitations = async (invitees, inviter, inviteId) => {
   if (invitees.length === 0) return [];
   const r = getRethink();
   const now = new Date();
   const {orgId, inviterName, teamId, teamName} = inviter;
-  const userIds = invitees.map(({userId}) => userId).filter(Boolean);
-  const invitations = userIds.map((userId) => ({
+
+  const invitations = invitees.map((invitee) => ({
     id: shortid.generate(),
     type: TEAM_INVITE,
     startAt: now,
     orgId,
-    userIds: [userId],
+    userIds: [invitee.userId],
+    inviteeEmail: invitee.email,
     inviterName,
     teamId,
     teamName
   }));
 
+  const userIds = invitees.map(({userId}) => userId).filter(Boolean);
   await Promise.all([
     r.table('Notification')
       .getAll(r.args(userIds), {index: 'userIds'})
@@ -48,7 +50,7 @@ const sendTeamInvitations = async (invitees, inviter, inviteId) => {
       })
       .do((newNotifications) => r.table('Notification').insert(newNotifications)),
     emailTeamInvitations(invitees, inviter, inviteId),
-    maybeAutoApproveToOrg(invitees,inviter)
+    maybeAutoApproveToOrg(invitees, inviter)
   ]);
 
   // do not filter out duplicates! that way if someone resends an invite, the invitee will always get a toast

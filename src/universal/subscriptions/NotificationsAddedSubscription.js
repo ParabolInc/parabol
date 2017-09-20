@@ -1,7 +1,10 @@
 import {ConnectionHandler} from 'relay-runtime';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {ADD_TO_TEAM, FACILITATOR_REQUEST, INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {
+  ADD_TO_TEAM, FACILITATOR_REQUEST, INVITEE_APPROVED, REQUEST_NEW_USER,
+  TEAM_INVITE
+} from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
 const subscription = graphql`
@@ -101,6 +104,14 @@ const NotificationsAddedSubscription = (environment, queryVariables, {dispatch, 
             title: 'Congratulations!',
             message: `You've been added to team ${teamName}`
           }));
+        } else if (type === INVITEE_APPROVED) {
+          const inviteeEmail = payload.getValue('inviteeEmail');
+          dispatch(showInfo({
+            title: 'Approved!',
+            message: `${inviteeEmail} has been approved by your organization. We just sent them an invitation.`
+          }));
+
+          addNotificationUpdater(store, viewerId, payload);
         } else if (type === REQUEST_NEW_USER) {
           const inviterName = payload.getValue('inviterName');
           // TODO highlight the id, but don't store the state in the url cuz ugly
@@ -116,15 +127,19 @@ const NotificationsAddedSubscription = (environment, queryVariables, {dispatch, 
               }
             }
           }));
-
           addNotificationUpdater(store, viewerId, payload);
-        } else if (type === INVITEE_APPROVED) {
-          const inviteeEmail = payload.getValue('inviteeEmail');
+        } else if (type === TEAM_INVITE) {
+          const inviterName = payload.getValue('inviterName');
           dispatch(showInfo({
-            title: 'Approved!',
-            message: `${inviteeEmail} has been approved by your organization. We just sent them an invitation.`
+            title: 'You\'re invited!',
+            message: `${inviterName} would like you to join their team`,
+            action: {
+              label: 'Check it out',
+              callback: () => {
+                history.push('/me/notifications');
+              }
+            }
           }));
-
           addNotificationUpdater(store, viewerId, payload);
         }
       });

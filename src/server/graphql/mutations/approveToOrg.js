@@ -16,7 +16,6 @@ export default {
     }
   },
   async resolve(source, {email, orgId}, {authToken, socket}) {
-
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);

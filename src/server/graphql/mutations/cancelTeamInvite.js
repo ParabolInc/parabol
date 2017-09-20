@@ -1,11 +1,14 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import NotificationsClearedPayload from 'server/graphql/types/NotificationsClearedPayload';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {NOTIFICATIONS_CLEARED, TEAM_INVITE} from 'universal/utils/constants';
 
 
 export default {
   name: 'CancelTeamInvite',
-  type: GraphQLBoolean,
+  type: NotificationsClearedPayload,
   description: 'Cancel an invitation',
   args: {
     inviteId: {
@@ -28,7 +31,7 @@ export default {
 
 
     // RESOLUTION
-    await r({
+    const {notificationsToClear} = await r({
       invitation: r.table('Invitation').get(inviteId).update({
         // set expiration to epoch
         tokenExpiration: new Date(0),
@@ -39,8 +42,29 @@ export default {
         .filter({teamId})
         .update({
           isActive: false
+        }),
+      notificationsToClear: r.table('User')
+        .getAll(email, {index: 'email'})
+        .nth(0)('id').default(null)
+        .do((userId) => {
+          return r({
+            deletedIds: r.table('Notification')
+              .getAll(userId, {index: 'userIds'})
+              .filter({
+                type: TEAM_INVITE,
+                teamId
+              })
+              .delete({returnChanges: true})('changes')('old_val')('id')
+              .default([]),
+            userId
+          });
         })
     });
-    return true;
+    const {userId, deletedIds} = notificationsToClear;
+    const notificationsCleared = {deletedIds};
+    if (deletedIds.length > 0) {
+      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, mutatorId: socket.id});
+    }
+    return {deletedIds};
   }
 };

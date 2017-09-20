@@ -10,7 +10,6 @@ import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmen
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const TrialExpired = (props) => {
   const {atmosphere, notification, history, styles} = props;
@@ -94,8 +93,7 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(
-  withRouter(
-    withStyles(styleThunk)(TrialExpired)
-  )
+export default
+withRouter(
+  withStyles(styleThunk)(TrialExpired)
 );

@@ -5,10 +5,10 @@ exports.up = async (r) => {
   await r.table('OrgApproval').update({
     updatedAt: now,
     status: PENDING
-  })
+  });
 };
 
-exports.down = async () => {
+exports.down = async (r) => {
   await r.table('OrgApproval').replace((row) => {
     return row.without('updatedAt', 'status');
   });

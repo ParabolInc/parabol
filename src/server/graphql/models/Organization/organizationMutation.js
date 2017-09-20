@@ -164,7 +164,7 @@ export default {
               .filter({email})
               .update({
                 isActive: false
-              })
+              });
           })
       });
       // need to make sure the org doc is updated before adjusting this
