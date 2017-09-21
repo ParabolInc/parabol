@@ -1,4 +1,3 @@
-import {ConnectionHandler} from 'relay-runtime';
 import notificationHandler from 'universal/subscriptions/helpers/notificationHandler';
 
 const subscription = graphql`

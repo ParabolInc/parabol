@@ -360,8 +360,6 @@ export default class MeetingContainer extends Component {
 
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
     const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, members, agenda);
-    console.log(`isBehindMeeting: ${isBehindMeeting}`);
-    console.log(`isLastPhaseItem: ${isLastPhaseItem}`);
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
     const showMoveMeetingControls = isFacilitating || isBehindMeeting;
 

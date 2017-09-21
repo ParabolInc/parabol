@@ -103,7 +103,6 @@ export default {
           .default([])
       });
       const notificationsAdded = {notifications: existingNotifications.concat(promotionNotification)};
-      console.log('notadded', notificationsAdded)
       getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
     } else if (role === null) {
       const {oldPromotionId, removedNotificationIds} = await r({

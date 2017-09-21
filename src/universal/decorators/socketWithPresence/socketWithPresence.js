@@ -22,6 +22,32 @@ const mapStateToProps = (state) => {
 };
 
 const tmsSubs = [];
+const subscribeToPresence = (oldProps, props) => {
+  const {tms} = props;
+  if (!tms) {
+    throw new Error('Did not finish the welcome wizard! How did you get here?');
+    // TODO redirect?
+  }
+  if (oldProps.tms.length < tms.length) {
+    const socket = socketCluster.connect();
+    for (let i = 0; i < tms.length; i++) {
+      const teamId = tms[i];
+      if (tmsSubs.includes(teamId)) continue;
+      tmsSubs.push(teamId);
+      cashay.subscribe(PRESENCE, teamId, presenceSubscriber);
+      cashay.subscribe(TEAM_MEMBERS, teamId);
+      socket.on('subscribe', (channelName) => {
+        if (channelName === `${PRESENCE}/${teamId}`) {
+          const options = {variables: {teamId}};
+          cashay.mutate('soundOff', options);
+        }
+      });
+    }
+  } else if (oldProps.tms.length > tms.length) {
+    tmsSubs.length = 0;
+    tmsSubs.push(...tms);
+  }
+};
 
 export default (ComposedComponent) => {
   const reduxSocketOptions = (props) => ({
@@ -71,13 +97,13 @@ export default (ComposedComponent) => {
     };
 
     componentDidMount() {
-      this.subscribeToPresence({tms: []}, this.props);
+      subscribeToPresence({tms: []}, this.props);
       this.watchForKickout();
       this.listenForVersion();
     }
 
     componentWillReceiveProps(nextProps) {
-      this.subscribeToPresence(this.props, nextProps);
+      subscribeToPresence(this.props, nextProps);
     }
 
     componentWillUnmount() {
@@ -95,33 +121,6 @@ export default (ComposedComponent) => {
     watchForKickout() {
       const socket = socketCluster.connect();
       socket.on('kickOut', this.kickoutHandler);
-    }
-
-    subscribeToPresence(oldProps, props) {
-      const {tms} = props;
-      if (!tms) {
-        throw new Error('Did not finish the welcome wizard! How did you get here?');
-        // TODO redirect?
-      }
-      if (oldProps.tms.length < tms.length) {
-        const socket = socketCluster.connect();
-        for (let i = 0; i < tms.length; i++) {
-          const teamId = tms[i];
-          if (tmsSubs.includes(teamId)) continue;
-          tmsSubs.push(teamId);
-          cashay.subscribe(PRESENCE, teamId, presenceSubscriber);
-          cashay.subscribe(TEAM_MEMBERS, teamId);
-          socket.on('subscribe', (channelName) => {
-            if (channelName === `${PRESENCE}/${teamId}`) {
-              const options = {variables: {teamId}};
-              cashay.mutate('soundOff', options);
-            }
-          });
-        }
-      } else if (oldProps.tms.length > tms.length) {
-        tmsSubs.length = 0;
-        tmsSubs.push(...tms);
-      }
     }
 
     versionHandler = (versionOnServer) => {

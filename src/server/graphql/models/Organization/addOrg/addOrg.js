@@ -1,10 +1,9 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
-import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import addOrgValidation from 'server/graphql/models/Organization/addOrg/addOrgValidation';
 import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
 import {TeamInput} from 'server/graphql/models/Team/teamSchema';
-import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
+import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {ensureUniqueId, getUserId, requireWebsocket} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -63,12 +62,7 @@ export default {
     ]);
 
     if (invitees && invitees.length) {
-      const inviterDetails = await getInviterInfoAndTeamName(teamId, userId);
-      const inviter = {
-        ...inviterDetails,
-        isBillingLeader: true
-      };
-      await sendTeamInvitations(invitees, inviter);
+      await inviteTeamMembers(invitees, teamId, userId);
     }
     sendSegmentEvent('New Org', userId, {orgId, teamId});
     return true;

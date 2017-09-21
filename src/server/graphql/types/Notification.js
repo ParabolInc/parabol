@@ -73,9 +73,6 @@ const Notification = new GraphQLInterfaceType({
       [TEAM_ARCHIVED]: NotifyTeamArchived
     };
 
-    if (!resolveTypeLookup[value.type]) {
-      console.log('value', value, value.type, resolveTypeLookup[value.type], resolveTypeLookup, NotifyDenial)
-    }
     return resolveTypeLookup[value.type];
   }
 });

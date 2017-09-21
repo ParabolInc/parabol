@@ -140,17 +140,14 @@ export default class Atmosphere extends Environment {
     this.socket.on(`gqlData.${opId}`, (gqlResponse) => {
       if (gqlResponse) {
         observer.onNext(gqlResponse);
+      } else if (JSON.parse(subKey).name === 'NotificationsAddedSubscription') {
+        // resubscribe without the client knowing we unsubbed when tms gets changed
+        this.emitSubscribe(text, variables, opId);
       } else {
-        // the server kicked us out
-        if (JSON.parse(subKey).name === 'NotificationsAddedSubscription') {
-          // resubscribe without the client knowing we unsubbed when tms gets changed
-          this.emitSubscribe(text, variables, opId);
-        } else {
-          this.socketUnsubscribe(subKey, true);
-          // the sub might wanna pop a toast or do something fancy
-          if (observer.onCompleted) {
-            observer.onCompleted();
-          }
+        this.socketUnsubscribe(subKey, true);
+        // the sub might wanna pop a toast or do something fancy
+        if (observer.onCompleted) {
+          observer.onCompleted();
         }
       }
     });

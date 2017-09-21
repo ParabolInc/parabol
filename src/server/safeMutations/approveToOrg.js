@@ -91,7 +91,7 @@ const approveToOrg = async (email, orgId, userId, mutatorId) => {
   });
 
   const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
-  
+
   const teamInvitesToAdd = await Promise.all(inviters.map((inviter) => {
     return sendTeamInvitations(invitees, inviter);
   }));

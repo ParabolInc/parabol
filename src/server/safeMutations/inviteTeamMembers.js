@@ -81,7 +81,6 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
 
   const pendingApprovalEmails = inviteesNeedingApproval.map(({email}) => email);
   const approvalsToClear = inviteesToInvite.map(({email}) => email);
-
   const {reactivations, notificationsToClear, teamInvites, newPendingApprovals} = await resolvePromiseObj({
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers),
     notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),

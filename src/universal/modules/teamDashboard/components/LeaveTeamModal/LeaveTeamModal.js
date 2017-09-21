@@ -22,8 +22,8 @@ const LeaveTeamModal = (props) => {
         Are you sure?
       </Type>
       <Type align="center" bold marginBottom="1.5rem" scale="s4">
-        This will remove you from the team. <br/>
-        All of your projects will be given to {teamLead} <br/>
+        This will remove you from the team. <br />
+        All of your projects will be given to {teamLead} <br />
       </Type>
       <Button
         buttonStyle="flat"

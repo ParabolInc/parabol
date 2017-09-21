@@ -43,6 +43,7 @@ const notificationHandler = {
     const {viewerId} = environment;
     const teamName = payload.getValue('teamName');
     const id = payload.getValue('id');
+    // localId isn't always present because if i accept to join i want the authToken but no notification
     const {id: localId} = fromGlobalId(id);
     dispatch(showInfo({
       title: 'Congratulations!',
@@ -50,7 +51,9 @@ const notificationHandler = {
       action: {
         label: 'Great!',
         callback: () => {
-          ClearNotificationMutation(environment, localId);
+          if (localId) {
+            ClearNotificationMutation(environment, localId);
+          }
         }
       }
     }));
