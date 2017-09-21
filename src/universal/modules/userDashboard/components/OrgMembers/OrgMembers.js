@@ -13,6 +13,8 @@ import {Menu, MenuItem} from 'universal/modules/menu';
 import {cashay} from 'cashay';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
+import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const originAnchor = {
   vertical: 'top',
@@ -26,6 +28,7 @@ const targetAnchor = {
 
 const OrgMembers = (props) => {
   const {
+    atmosphere,
     billingLeaderCount,
     dispatch,
     users,
@@ -36,12 +39,7 @@ const OrgMembers = (props) => {
   const {id: orgId} = org;
 
   const setRole = (userId, role = null) => () => {
-    const variables = {
-      orgId,
-      userId,
-      role
-    };
-    cashay.mutate('setOrgUserRole', {variables});
+    SetOrgUserRoleMutation(atmosphere, orgId, userId, role);
   };
 
   const userRowActions = (orgUser) => {
@@ -115,7 +113,7 @@ const OrgMembers = (props) => {
           <Menu
             itemFactory={itemFactory}
             originAnchor={originAnchor}
-            menuWidth="12rem"
+            menuWidth="14rem"
             targetAnchor={targetAnchor}
             toggle={
               <Button
@@ -149,6 +147,7 @@ const OrgMembers = (props) => {
 };
 
 OrgMembers.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   billingLeaderCount: PropTypes.number,
   dispatch: PropTypes.func,
   users: PropTypes.array,
@@ -175,4 +174,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OrgMembers);
+export default withAtmosphere(withStyles(styleThunk)(OrgMembers));

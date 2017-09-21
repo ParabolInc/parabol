@@ -13,7 +13,7 @@ export default {
       description: 'The notification id of the team invite'
     }
   },
-  async resolve(source, {dbNotificationId}, {authToken, socket}) {
+  async resolve(source, {dbNotificationId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
@@ -23,7 +23,7 @@ export default {
 
     // RESOLUTION
     const {inviteeEmail, teamId} = notification;
-    return acceptTeamInvite(teamId, authToken, inviteeEmail, socket.id);
+    return acceptTeamInvite(teamId, authToken, inviteeEmail);
   }
 };
 

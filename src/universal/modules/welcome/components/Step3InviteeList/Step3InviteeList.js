@@ -6,7 +6,6 @@ import {destroy, reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 import withStyles from 'universal/styles/withStyles';
@@ -15,11 +14,6 @@ import makeStep3Schema from 'universal/validation/makeStep3Schema';
 const validate = (values) => {
   const schema = makeStep3Schema();
   return schema(values).errors;
-};
-
-const emailInviteSuccess = {
-  title: 'Invitation sent!',
-  message: 'Your team members will get their invite via email'
 };
 
 const Step3InviteeList = (props) => {
@@ -42,7 +36,6 @@ const Step3InviteeList = (props) => {
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {
       SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {inviteeCount});
-      dispatch(showSuccess(emailInviteSuccess)); // trumpet our leader's brilliance!
       dispatch(destroy('welcomeWizard')); // bye bye form data!
     }, 1000);
   };

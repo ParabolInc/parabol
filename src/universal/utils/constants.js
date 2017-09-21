@@ -60,28 +60,33 @@ export const USER_DASH = 'userDash';
 // Send to folks that got reactivated on a team
 // annoucements to the rest of the team
 
+export const ADD_TO_TEAM = 'ADD_TO_TEAM';
+// Sent to the orgMember that generated the new user request
+export const DENY_NEW_USER = 'DENY_NEW_USER';
 // Sent to the meeting facilitator by someone who wants to lead
 export const FACILITATOR_REQUEST = 'FACILITATOR_REQUEST';
 // Sent when a billing leader approves an invitee to the org
 export const INVITEE_APPROVED = 'INVITEE_APPROVED';
-export const ADD_TO_TEAM = 'ADD_TO_TEAM';
+// sent to the rest of the team when someone has just joined
+export const JOIN_TEAM = 'JOIN_TEAM';
+// sent to someone just kicked out of a team
+export const KICKED_OUT = 'KICKED_OUT';
+// Sent to Billing Leaders when a reoccuring payment gets rejected
+export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
+// sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
+export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
+// sent to the rest of the team when someone just rejoined
+export const REJOIN_TEAM = 'REJOIN_TEAM';
+// Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
+export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
+// Sent along with an email to someone invited to join the team
+export const TEAM_INVITE = 'TEAM_INVITE';
+// sent to members of team that was archived
+export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
 // Sent to Billing Leaders when their trial will expire in < 2 weeks
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
 // Sent to Billing Leaders when their trial has expired
 export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
-// Sent to Billing Leaders when a reoccuring payment gets rejected
-export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
-// Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
-export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
-export const TEAM_INVITE = 'TEAM_INVITE';
-// Sent to the orgMember that generated the new user request
-export const DENY_NEW_USER = 'DENY_NEW_USER';
-// sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
-export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
-// sent to members of team that was archived
-export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
-// sent to someone just kicked out of a team
-export const KICKED_OUT = 'KICKED_OUT';
 
 
 export const notificationTypes = [
@@ -174,5 +179,3 @@ export const REACTIVATED = 'REACTIVATED';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
-export const JOIN_TEAM = 'JOIN_TEAM';
-export const REJOIN_TEAM = 'REJOIN_TEAM';

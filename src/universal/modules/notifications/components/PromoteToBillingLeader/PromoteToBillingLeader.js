@@ -14,6 +14,7 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 const PromoteToBillingLeader = (props) => {
   const {
     atmosphere,
+    history,
     styles,
     notification,
     submitting,

@@ -20,8 +20,8 @@ export default {
   // eslint-disable-next-line max-len
   [PROMOTE_TO_BILLING_LEADER]: () => System.import('universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader'),
   [REQUEST_NEW_USER]: () => System.import('universal/modules/notifications/components/RequestNewUser/RequestNewUser'),
+  [TEAM_ARCHIVED]: () => System.import('universal/modules/notifications/components/TeamArchived/TeamArchived'),
   [TEAM_INVITE]: () => System.import('universal/modules/notifications/components/TeamInvite/TeamInvite'),
   [TRIAL_EXPIRED]: () => System.import('universal/modules/notifications/components/TrialExpired/TrialExpired'),
-  [TRIAL_EXPIRES_SOON]: () => System.import('universal/modules/notifications/components/TrialExpiresSoon/TrialExpiresSoon'),
-  [TEAM_ARCHIVED]: () => System.import('universal/modules/notifications/components/TeamArchived/TeamArchived')
+  [TRIAL_EXPIRES_SOON]: () => System.import('universal/modules/notifications/components/TrialExpiresSoon/TrialExpiresSoon')
 };
