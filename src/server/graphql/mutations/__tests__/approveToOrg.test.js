@@ -48,7 +48,9 @@ describe('approveToOrg', () => {
       orgId,
       userId: mockInviter.id
     };
-    const invitees = [{email}];
+
+    const invitee = mockDB.db.user[8];
+    const invitees = [{email, userId: invitee.id}];
 
     // TEST
     const res = await approveToOrg.resolve(undefined, {email, orgId}, {authToken, socket});
@@ -111,7 +113,8 @@ describe('approveToOrg', () => {
       userId: mockInviter.id
     };
 
-    const invitees = [{email}];
+    const invitee = mockDB.db.user[8];
+    const invitees = [{email, userId: invitee.id}];
 
     // TEST
     await approveToOrg.resolve(undefined, {email, orgId}, {authToken, socket});
@@ -175,7 +178,8 @@ describe('approveToOrg', () => {
       userId: mockInviter2.id
     };
 
-    const invitees = [{email}];
+    const invitee = mockDB.db.user[8];
+    const invitees = [{email, userId: invitee.id}];
 
     // TEST
     await approveToOrg.resolve(undefined, {email, orgId}, {authToken, socket});

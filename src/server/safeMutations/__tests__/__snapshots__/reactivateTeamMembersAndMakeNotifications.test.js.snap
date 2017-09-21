@@ -7,6 +7,7 @@ Object {
       "id": 5,
       "orgId": 4,
       "startAt": 2017-01-01T08:00:00.000Z,
+      "teamId": 2,
       "teamName": "Team America",
       "type": "ADD_TO_TEAM",
       "userIds": Array [

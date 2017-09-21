@@ -2693,9 +2693,9 @@ duplexer2@~0.0.2:
   dependencies:
     readable-stream "~1.1.9"
 
-dynamic-serializer@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/dynamic-serializer/-/dynamic-serializer-0.1.0.tgz#a9445c28e4a00938e05332f39e706fd570a9f394"
+dynamic-serializer@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/dynamic-serializer/-/dynamic-serializer-0.1.1.tgz#26803b9bf152cccb8deae873c7483834443c5856"
 
 ecc-jsbn@~0.1.1:
   version "0.1.1"

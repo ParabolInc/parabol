@@ -9,6 +9,9 @@ console.error = jest.fn();
 describe('makeReactivationNotifications', () => {
   test('creates a notification for the reactivated user giving them a new authToken', () => {
     // SETUP
+    const notifications = [{
+      id: 1
+    }];
     const reactivatedUsers = [{
       id: 1,
       tms: ['team123']
@@ -17,7 +20,7 @@ describe('makeReactivationNotifications', () => {
     tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
 
     // TEST
-    const result = makeReactivationNotifications(reactivatedUsers, [], inviter);
+    const result = makeReactivationNotifications(notifications, reactivatedUsers, [], inviter);
     // VERIFY
     expect(result).toMatchSnapshot();
   });
@@ -27,6 +30,9 @@ describe('makeReactivationNotifications', () => {
       id: 1,
       tms: ['team123'],
       preferredName: 'One'
+    }];
+    const notifications = [{
+      id: 1
     }];
     const teamMembers = [
       {id: '2:team456', preferredName: 'Two', userId: 2, isNotRemoved: true},
@@ -38,7 +44,7 @@ describe('makeReactivationNotifications', () => {
     tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
 
     // TEST
-    const result = makeReactivationNotifications(reactivatedUsers, teamMembers, inviter);
+    const result = makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);
     // VERIFY
     expect(result).toMatchSnapshot();
   });

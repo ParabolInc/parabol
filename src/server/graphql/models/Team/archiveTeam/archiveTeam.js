@@ -68,8 +68,10 @@ export default {
         )
       }));
 
-    const notificationsAdded = {notifications: [notification]};
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
+    if (notification) {
+      const notificationsAdded = {notifications: [notification]};
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
+    }
     userDocs.forEach((user) => {
       const {id, tms} = user;
       // update the tms on auth0 in async
