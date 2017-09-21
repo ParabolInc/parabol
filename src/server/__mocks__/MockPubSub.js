@@ -26,5 +26,5 @@ export default class MockPubSub {
     this.db[channelName] = this.db[channelName] || [];
     this.db[channelName].push({channelId, message});
   }
-};
+}
 
