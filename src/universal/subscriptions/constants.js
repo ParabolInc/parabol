@@ -3,7 +3,6 @@ export const EDIT = 'EDIT';
 export const LEAVE = 'LEAVE';
 export const PRESENT = 'PRESENT';
 export const SOUNDOFF = 'SOUNDOFF';
-export const KICK_OUT = 'KICK_OUT';
 
 // CHANNELS
 export const ARCHIVED_PROJECTS = 'archivedProjects';

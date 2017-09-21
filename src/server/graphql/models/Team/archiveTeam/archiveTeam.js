@@ -2,11 +2,11 @@ import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireSUOrLead, requireWebsocket} from 'server/utils/authorization';
-import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import shortid from 'shortid';
-import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
-import {NOTIFICATIONS_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
 import getPubSub from 'server/utils/getPubSub';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import tmsSignToken from 'server/utils/tmsSignToken';
+import shortid from 'shortid';
+import {KICKED_OUT, NOTIFICATIONS_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
 
 export default {
   type: GraphQLBoolean,
@@ -16,7 +16,7 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(source, {teamId}, {authToken, exchange, socket}) {
+  async resolve(source, {teamId}, {authToken, socket}) {
     const r = getRethink();
     const now = new Date();
 
@@ -28,7 +28,7 @@ export default {
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', userId, {teamId});
-    const dbResult = await r.table('Team')
+    const {teamResults: {notification}, userDocs} = await r.table('Team')
       .get(teamId)
       .pluck('name', 'orgId')
       .do((team) => ({
@@ -68,16 +68,18 @@ export default {
         )
       }));
 
-    const {teamResults: {notification}, teamName, userDocs} = dbResult;
     const notificationsAdded = {notifications: [notification]};
+    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
     userDocs.forEach((user) => {
       const {id, tms} = user;
       // update the tms on auth0 in async
       auth0ManagementClient.users.updateAppMetadata({id}, {tms});
       // update the server socket, if they're logged in
-      const channel = `${USER_MEMO}/${id}`;
-      exchange.publish(channel, {type: KICK_OUT, teamId, teamName});
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${id}`, {notificationsAdded});
+      const notifications = [{
+        authToken: tmsSignToken({sub: userId}, tms),
+        type: KICKED_OUT
+      }];
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${id}`, {notificationsAdded: {notifications}});
     });
 
     return true;

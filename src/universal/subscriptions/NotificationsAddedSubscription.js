@@ -1,16 +1,17 @@
+import {matchPath} from 'react-router-dom';
 import {ConnectionHandler} from 'relay-runtime';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
   ADD_TO_TEAM,
   FACILITATOR_REQUEST,
-  INVITEE_APPROVED,
-  KICKED_OUT, REJOIN_TEAM,
+  INVITEE_APPROVED, JOIN_TEAM,
+  KICKED_OUT,
+  REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_INVITE
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
-import {matchPath} from 'react-router-dom';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const subscription = graphql`
@@ -131,8 +132,14 @@ const NotificationsAddedSubscription = (environment, queryVariables, {dispatch, 
             title: 'Approved!',
             message: `${inviteeEmail} has been approved by your organization. We just sent them an invitation.`
           }));
-
           addNotificationUpdater(store, viewerId, payload);
+        } else if (type === JOIN_TEAM) {
+          const preferredName = payload.getValue('preferredName');
+          const teamName = payload.getValue('teamName');
+          dispatch(showInfo({
+            title: 'Ahoy, a new crewmate!',
+            message: `${preferredName} just joined team ${teamName}`
+          }));
         } else if (type === KICKED_OUT) {
           const teamName = payload.getValue('teamName');
           const teamId = payload.getValue('teamId');
@@ -172,7 +179,7 @@ const NotificationsAddedSubscription = (environment, queryVariables, {dispatch, 
           const teamName = payload.getValue('teamName');
           dispatch(showInfo({
             title: 'They\'re back!',
-            message: `${preferredName} has rejoined ${teamName}`,
+            message: `${preferredName} has rejoined ${teamName}`
           }));
         } else if (type === TEAM_INVITE) {
           const inviterName = payload.getValue('inviterName');

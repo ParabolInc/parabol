@@ -11,7 +11,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 const LeaveTeamModal = (props) => {
   const {atmosphere, closeAfter, closePortal, isClosing, history, teamLead, teamMemberId} = props;
   const handleClick = () => {
-    // the KICK_OUT message will handle this anyways, but it's great to do it here to avoid the ducks of doom
+    // the KICKED_OUT message will handle this anyways, but it's great to do it here to avoid the ducks of doom
     history.push('/me');
     closePortal();
     RemoveTeamMemberMutation(atmosphere, teamMemberId);

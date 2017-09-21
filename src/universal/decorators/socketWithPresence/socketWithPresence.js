@@ -6,19 +6,13 @@ import {withRouter} from 'react-router-dom';
 import {reduxSocket} from 'redux-socket-cluster';
 import socketCluster from 'socketcluster-client';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AuthEngine from 'universal/redux/AuthEngine';
-import {JOIN_TEAM, PRESENCE, TEAM_MEMBERS} from 'universal/subscriptions/constants';
+import {PRESENCE, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import subscriber from 'universal/subscriptions/subscriber';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import parseChannel from 'universal/utils/parseChannel';
-
-const getTeamName = (teamId) => {
-  const cashayState = cashay.store.getState().cashay;
-  const team = cashayState.entities.Team && cashayState.entities.Team[teamId];
-  return team && team.name || teamId;
-};
 
 const mapStateToProps = (state) => {
   return {
@@ -98,22 +92,6 @@ export default (ComposedComponent) => {
       setTimeout(() => cashay.unsubscribe(channel, teamId), 100);
     };
 
-    watchForJoin(teamId) {
-      const socket = socketCluster.connect();
-      const channelName = `${PRESENCE}/${teamId}`;
-      const {dispatch} = this.props;
-      socket.watch(channelName, (data) => {
-        if (data.type === JOIN_TEAM) {
-          const {name} = data;
-          const teamName = getTeamName(teamId);
-          dispatch(showInfo({
-            title: 'Ahoy, a new crewmate!',
-            message: `${name} just joined team ${teamName}`
-          }));
-        }
-      });
-    }
-
     watchForKickout() {
       const socket = socketCluster.connect();
       socket.on('kickOut', this.kickoutHandler);
@@ -139,7 +117,6 @@ export default (ComposedComponent) => {
               cashay.mutate('soundOff', options);
             }
           });
-          this.watchForJoin(teamId);
         }
       } else if (oldProps.tms.length > tms.length) {
         tmsSubs.length = 0;
