@@ -16,7 +16,6 @@ import {
   TEAM,
   TEAM_MEMBERS,
   UPCOMING_INVOICE,
-  USER_MEMO,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
@@ -34,17 +33,14 @@ const dechannelfy = {
   [ORGANIZATION]: (variableString) => ({orgId: variableString}),
   [ORGANIZATIONS]: (userId) => ({userId}),
   [OWNED_ORGANIZATIONS]: (userId) => ({userId}),
-  // [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
   [UPCOMING_INVOICE]: (orgId) => ({orgId}),
   [USERS_BY_ORG]: (orgId) => ({orgId})
-  // [USER_MEMO]: (userId) => ({userId})
-  // [USERS_BY_IDS]: (variableString) => ({userIds: variableString})
 };
 
-const temporalSubs = [PRESENCE, USER_MEMO];
+const temporalSubs = [PRESENCE];
 export default function scSubscribeHandler(exchange, socket) {
   return async function subscribeHandler(subbedChannelName = '') {
     const {channel, variableString} = parseChannel(subbedChannelName);

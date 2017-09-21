@@ -19,5 +19,3 @@ export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';
 export const UPCOMING_INVOICE = 'upcomingInvoice';
 export const USERS_BY_ORG = 'usersByOrg';
-// user-specific message channel, not persisted
-export const USER_MEMO = 'userMemo';

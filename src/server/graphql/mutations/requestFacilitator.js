@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {FACILITATOR_REQUEST, USER_MEMO} from 'universal/subscriptions/constants';
+import {FACILITATOR_REQUEST, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
 export default {
   name: 'RequestFacilitator',
@@ -36,13 +36,15 @@ export default {
 
     // RESOLUTION
     const [currentFacilitatorUserId] = activeFacilitator.split('::');
-    const userMemo = {
-      requestorId,
-      requestorName,
-      type: FACILITATOR_REQUEST
+    const notificationsAdded = {
+      notifications: [{
+        requestorId,
+        requestorName,
+        type: FACILITATOR_REQUEST
+      }]
     };
 
-    getPubSub().publish(`${USER_MEMO}.${currentFacilitatorUserId}`, {userMemo});
+    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${currentFacilitatorUserId}`, {notificationsAdded});
     return true;
   }
 };
