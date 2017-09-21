@@ -158,6 +158,10 @@ const rallyList = [
   {
     phrase: 'Time To Set Up Shop',
     link: 'https://youtu.be/tvy5TGLUls8'
+  },
+  {
+    phrase: 'Just Do It',
+    link: 'https://youtu.be/ZXsQAXx_ao0'
   }
 ];
 
@@ -165,16 +169,12 @@ const rally = rallyList[Math.floor(Math.random() * rallyList.length)];
 
 const rallyPhrase = `${rally.phrase}!`;
 
-const style = {
-  color: 'inherit'
-};
-
-export default function getRallyLink(hasStyle = true) {
+export default function getRallyLink() {
   return (
     <a
       href={rally.link}
       rel="noopener noreferrer"
-      style={hasStyle ? style : null}
+      style={{color: 'inherit'}}
       target="_blank"
       title={rallyPhrase}
     >

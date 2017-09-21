@@ -4,6 +4,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import plural from 'universal/utils/plural';
+import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const QuickStats = (props) => {
   const {
@@ -64,7 +65,7 @@ const QuickStats = (props) => {
             <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{agendaItems}</div>
-                <div style={statLabel}>Agenda {plural(agendaItems, 'Item')}</div>
+                <div style={statLabel}>{plural(agendaItems, AGENDA_ITEM_LABEL)}</div>
               </div>
             </td>
             <td style={cellStyles}>

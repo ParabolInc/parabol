@@ -12,6 +12,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const MeetingCheckin = (props) => {
   const {
@@ -90,7 +91,7 @@ const MeetingCheckin = (props) => {
               <MeetingFacilitationHint>
                 {nextMember ?
                   <span>{'Waiting for'} <b>{currentMember.preferredName}</b> {'to share with the team'}</span> :
-                  <span>{'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {'to advance to Updates'}</span>
+                  <span>{'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
                 }
               </MeetingFacilitationHint>
             </div>

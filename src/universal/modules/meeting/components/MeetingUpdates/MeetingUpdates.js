@@ -9,6 +9,7 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import {MEETING} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const MeetingUpdates = (props) => {
   const {
@@ -24,6 +25,7 @@ const MeetingUpdates = (props) => {
   const self = members.find((m) => m.isSelf);
   const currentTeamMember = members[localPhaseItem - 1];
   const isLastMember = localPhaseItem === members.length;
+  const nextPhaseName = actionMeeting.agendaitems.name;
   return (
     <MeetingMain>
       <MeetingSection flexToFill>
@@ -35,14 +37,14 @@ const MeetingUpdates = (props) => {
               icon="arrow-circle-right"
               iconPlacement="right"
               key={`update${localPhaseItem}`}
-              label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
+              label={isLastMember ? `Move on to the ${nextPhaseName}` : 'Next team member '}
               onClick={gotoNext}
               size="small"
             /> :
             <MeetingFacilitationHint>
               {isLastMember ?
-                <span>{'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {'to advance to the Agenda'}</span> :
-                <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {'to give Updates'}</span>
+                <span>{'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {`to advance to the ${nextPhaseName}`}</span> :
+                <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {`to give ${actionMeeting.updates.name}`}</span>
               }
             </MeetingFacilitationHint>
           }

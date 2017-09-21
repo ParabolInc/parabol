@@ -67,7 +67,8 @@ const styleThunk = () => ({
     alignItems: 'center',
     color: ui.palette.dark,
     display: 'flex',
-    fontSize: appTheme.typography.s5
+    fontSize: appTheme.typography.s5,
+    padding: '0 .5rem'
   },
 
   url: {
@@ -77,9 +78,9 @@ const styleThunk = () => ({
     display: 'flex',
     flexShrink: 2,
     fontSize: appTheme.typography.s3,
-    height: '100%',
-    marginRight: '.25rem',
-    padding: '.75rem'
+    lineHeight: '2rem',
+    marginRight: '.5rem',
+    padding: '0 .75rem'
   },
 
   linkText: {

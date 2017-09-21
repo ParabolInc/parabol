@@ -7,6 +7,7 @@ import SummaryEmail from 'universal/modules/email/components/SummaryEmail/Summar
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import makeHref from 'universal/utils/makeHref';
 import {maintainSocket} from 'redux-socket-cluster';
+import {MEETING_NAME, MEETING_SUMMARY_LABEL} from 'universal/utils/constants';
 
 const meetingSummaryQuery = `
 query{
@@ -89,7 +90,7 @@ export default class MeetingSummaryContainer extends Component {
       return <LoadingView />;
     }
     const {teamId} = meeting;
-    const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;
+    const title = `${MEETING_NAME} #${meeting.meetingNumber} ${MEETING_SUMMARY_LABEL} for ${meeting.teamName}`;
     const meetingUrl = makeHref(`/meeting/${teamId}`);
     const teamDashUrl = `/team/${teamId}`;
 
