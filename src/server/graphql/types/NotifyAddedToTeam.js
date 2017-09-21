@@ -9,7 +9,7 @@ const NotifyAddedToTeam = new GraphQLObjectType({
     ...notificationInterfaceFields,
     authToken: {
       type: GraphQLString,
-      description: 'The new auth token for the user. The client will usually send this back to the client via a setAuthToken call'
+      description: 'The new auth token for the user.'
     },
     // inviterName: {
     //  type: new GraphQLNonNull(GraphQLString),

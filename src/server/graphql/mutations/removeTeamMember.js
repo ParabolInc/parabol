@@ -15,17 +15,17 @@ export default {
   args: {
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The teamMemberId of the person who is being checked in'
+      description: 'The teamMemberId of the person who is being removed'
     }
   },
-  async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
+  async resolve(source, {teamMemberId}, {authToken, socket}) {
     // AUTH
     const [userId, teamId] = teamMemberId.split('::');
     await requireSUOrSelfOrLead(authToken, userId, teamId);
     requireWebsocket(socket);
-
+    const isKickout = authToken.sub !== userId;
     // RESOLUTION
-    await removeAllTeamMembers(teamMemberId, exchange);
+    await removeAllTeamMembers(teamMemberId, {isKickout});
     return true;
   }
 };

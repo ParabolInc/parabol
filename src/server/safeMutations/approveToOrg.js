@@ -77,7 +77,7 @@ const approveToOrg = async (email, orgId, userId, mutatorId) => {
   });
   // tell the inviters that their friend was approved
   // send the invitee a series of team invites
-  await r({
+  const {inviteeUser} = await r({
     insertInviteeApproved: r.table('Notification').insert(inviteeApprovedNotifications),
     approveToOrg: r.table('OrgApproval')
       .getAll(email, {index: 'email'})
@@ -86,10 +86,12 @@ const approveToOrg = async (email, orgId, userId, mutatorId) => {
         status: APPROVED,
         approvedBy: userId,
         updatedAt: now
-      })
+      }),
+    inviteeUser: r.table('User').getAll(email, {index: 'email'}).nth(0).default(null)
   });
 
-  const invitees = [{email}];
+  const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
+  
   const teamInvitesToAdd = await Promise.all(inviters.map((inviter) => {
     return sendTeamInvitations(invitees, inviter);
   }));

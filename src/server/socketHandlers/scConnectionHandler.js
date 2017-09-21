@@ -30,7 +30,7 @@ export default function scConnectionHandler(exchange) {
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
     const graphQLHandler = scGraphQLHandler(exchange, socket);
-    const relaySubscribeHandler = scRelaySubscribeHandler(exchange, socket);
+    const relaySubscribeHandler = scRelaySubscribeHandler(socket);
     socket.on('message', (message) => {
       // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
       if (isObject(message) && message.event === '#authenticate') {

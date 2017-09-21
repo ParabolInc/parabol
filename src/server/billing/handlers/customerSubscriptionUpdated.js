@@ -42,7 +42,7 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
       startAt: now,
       orgId,
       userIds,
-      expiresAt: now
+      trialExpiresAt: now
     };
     const {deletedId} = await r({
       insert: r.table('Notification').insert(notification),

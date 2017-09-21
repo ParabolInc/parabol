@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import {GraphQLSchema} from 'graphql';
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
@@ -12,16 +11,17 @@ import NotifyTrial from 'server/graphql/types/NotifyTrial';
 import mutation from './rootMutation';
 import query from './rootQuery';
 import subscription from './rootSubscription';
+import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 
 export default new GraphQLSchema({
   query,
   mutation,
   subscription,
   types: [
-    NotifyAddedToTeam,
     NotifyDenial,
     NotifyFacilitatorRequest,
     NotifyInvitation,
+    NotifyKickedOut,
     NotifyNewTeamMember,
     NotifyPayment,
     NotifyPromotion,

@@ -28,7 +28,7 @@ exports.up = async (r) => {
       .replace((row) => {
         return row
           .merge({
-            expiresAt: row('varList')(0)
+            trialExpiresAt: row('varList')(0)
           })
           .without('varList');
       })

@@ -6,8 +6,7 @@ import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifica
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getPubSub from 'server/utils/getPubSub';
 import {ADD_USER} from 'server/utils/serverConstants';
-import {JOIN_TEAM} from 'universal/subscriptions/constants';
-import {ADD_TO_TEAM, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
+import {ADD_TO_TEAM, JOIN_TEAM, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 import {getUserId} from 'server/utils/authorization';
 import tmsSignToken from 'server/utils/tmsSignToken';
 
@@ -65,8 +64,10 @@ const acceptTeamInvite = async (teamId, authToken, email, mutatorId) => {
 
   // Send the new team member a welcome & a new token
   const addedToTeam = {
-    type: ADD_TO_TEAM,
     authToken: tmsSignToken(authToken, tms),
+    orgId,
+    startAt: now,
+    type: ADD_TO_TEAM,
     teamName,
     teamId
   };

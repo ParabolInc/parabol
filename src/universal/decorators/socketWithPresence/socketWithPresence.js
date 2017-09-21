@@ -2,19 +2,13 @@ import {cashay, Transport} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {matchPath, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {reduxSocket} from 'redux-socket-cluster';
 import socketCluster from 'socketcluster-client';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AuthEngine from 'universal/redux/AuthEngine';
-import {
-  JOIN_TEAM,
-  KICK_OUT,
-  PRESENCE,
-  TEAM_MEMBERS,
-  USER_MEMO
-} from 'universal/subscriptions/constants';
+import {JOIN_TEAM, PRESENCE, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import subscriber from 'universal/subscriptions/subscriber';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
@@ -94,36 +88,14 @@ export default (ComposedComponent) => {
 
     componentWillUnmount() {
       const socket = socketCluster.connect();
-      const {userId} = this.props;
-      const userMemoChannel = `${USER_MEMO}/${userId}`;
       socket.off('kickOut', this.kickoutHandler);
       socket.off('version', this.versionHandler);
-      socket.unwatch(userMemoChannel, this.memoHandler);
     }
 
     kickoutHandler = (error, channelName) => {
       const {channel, variableString: teamId} = parseChannel(channelName);
       // important to flag these as unsubscribed so resubs can ocur.
       setTimeout(() => cashay.unsubscribe(channel, teamId), 100);
-    };
-
-    memoHandler = (data) => {
-      const {type} = data;
-      const {dispatch} = this.props;
-      if (type === KICK_OUT) {
-        const {teamId, teamName} = data;
-        const {history, location: {pathname}} = this.props;
-        const onExTeamRoute = Boolean(matchPath(pathname, {
-          path: `(/team/:${teamId}|/meeting/${teamId})`
-        }));
-        if (onExTeamRoute) {
-          history.push('/me');
-        }
-        dispatch(showWarning({
-          title: 'So long!',
-          message: `You have been removed from ${teamName}`
-        }));
-      }
     };
 
     watchForJoin(teamId) {
@@ -204,5 +176,6 @@ export default (ComposedComponent) => {
       return <ComposedComponent {...this.props} />;
     }
   }
+
   return SocketWithPresence;
 };

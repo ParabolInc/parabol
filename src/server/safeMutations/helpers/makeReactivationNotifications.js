@@ -1,23 +1,21 @@
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {ADD_TO_TEAM, REJOIN_TEAM} from 'universal/utils/constants';
+import {REJOIN_TEAM} from 'universal/utils/constants';
 
 
-const makeReactivationNotifications = (reactivatedUsers, teamMembers, inviter) => {
-  const {teamId, teamName, userId} = inviter;
+const makeReactivationNotifications = (notifications, reactivatedUsers, teamMembers, inviter) => {
+  const {teamName, userId} = inviter;
   const restOfTeamUserIds = teamMembers
     .filter((m) => m.isNotRemoved === true && m.id !== userId)
     .map((m) => m.userId);
   const notificationsToSend = {};
-  reactivatedUsers.forEach((user) => {
+  reactivatedUsers.forEach((user, idx) => {
+    const notification = notifications[idx];
     const {preferredName, id: reactivatedUserId, tms} = user;
 
     // make a notification to the person being reactivated
     notificationsToSend[reactivatedUserId] = [{
-      authToken: tmsSignToken({sub: reactivatedUserId}, tms),
-      // inviterName,
-      teamId,
-      teamName,
-      type: ADD_TO_TEAM
+      ...notification,
+      authToken: tmsSignToken({sub: reactivatedUserId}, tms)
     }];
 
     // make a notification for the other team members annoucing the reactivation
@@ -27,7 +25,9 @@ const makeReactivationNotifications = (reactivatedUsers, teamMembers, inviter) =
       type: REJOIN_TEAM
     };
     restOfTeamUserIds.forEach((notificationUserId) => {
-      notificationsToSend[notificationUserId] = [rejoinNotification];
+      if (inviter.userId === notificationUserId) return;
+      notificationsToSend[notificationUserId] = notificationsToSend[notificationUserId] || [];
+      notificationsToSend[notificationUserId].push(rejoinNotification);
     });
   });
   return notificationsToSend;

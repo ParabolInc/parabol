@@ -7,6 +7,7 @@ import extendTrial from 'server/graphql/models/Organization/extendTrial/extendTr
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
 import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
+
 import {
   getUserId,
   getUserOrgDoc,
@@ -116,7 +117,7 @@ export default {
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken, exchange, socket}) {
+    async resolve(source, {orgId, userId}, {authToken, socket}) {
       const r = getRethink();
       const now = new Date();
 
@@ -129,7 +130,7 @@ export default {
       const teamIds = await r.table('Team')
         .getAll(orgId, {index: 'orgId'})('id');
       const teamMemberIds = teamIds.map((teamId) => `${userId}::${teamId}`);
-      await removeAllTeamMembers(teamMemberIds, exchange);
+      await removeAllTeamMembers(teamMemberIds, {isKickout: true});
       await r({
         updatedOrg: r.table('Organization').get(orgId)
           .update((org) => ({
@@ -292,8 +293,7 @@ export default {
             .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
             .update((notification) => ({
               userIds: notification('userIds').append(userId)
-            }), {returnChanges: true})('changes')
-            .map((change) => change('new_val'))
+            }), {returnChanges: true})('changes')('new_val')
             .default([])
         });
         const notificationsAdded = {notifications: existingNotifications.concat(promotionNotification)};
@@ -312,8 +312,7 @@ export default {
             .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
             .update((notification) => ({
               userIds: notification('userIds').filter((id) => id.ne(userId))
-            }), {returnChanges: true})('changes')
-            .map((change) => change('new_val'))('id')
+            }), {returnChanges: true})('changes')('new_val')('id')
             .default([])
         });
         const deletedIds = oldPromotionId ? removedNotificationIds.concat(oldPromotionId) : removedNotificationIds;

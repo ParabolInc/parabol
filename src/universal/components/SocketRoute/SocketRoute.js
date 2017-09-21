@@ -29,7 +29,6 @@ const query = graphql`
             startAt
             type
             ... on NotifyAddedToTeam {
-              authToken
               teamName
               teamId
             }
@@ -47,6 +46,10 @@ const query = graphql`
               inviteeEmail
               teamId
               teamName
+            }
+            ... on NotifyKickedOut {
+              teamName
+              teamId
             }
             ... on NotifyPayment {
               last4
@@ -75,7 +78,7 @@ const subscriptions = [
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const SocketRoute = ({atmosphere, dispatch, history}) => {
+const SocketRoute = ({atmosphere, dispatch, history, location}) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -83,7 +86,7 @@ const SocketRoute = ({atmosphere, dispatch, history}) => {
       query={query}
       variables={{}}
       subscriptions={subscriptions}
-      subParams={{dispatch, history}}
+      subParams={{dispatch, history, location}}
       render={({props: renderProps}) => {
         const notifications = renderProps ? renderProps.viewer.notifications : undefined;
         return (
@@ -106,7 +109,8 @@ SocketRoute.propTypes = {
   match: PropTypes.object.isRequired,
   atmosphere: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 
 };
 

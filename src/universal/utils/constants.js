@@ -80,6 +80,8 @@ export const DENY_NEW_USER = 'DENY_NEW_USER';
 export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
+// sent to someone just kicked out of a team
+export const KICKED_OUT = 'KICKED_OUT';
 
 
 export const notificationTypes = [

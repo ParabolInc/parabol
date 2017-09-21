@@ -122,6 +122,14 @@ export default class Atmosphere extends Environment {
     this.setNet('socket');
   };
 
+  emitSubscribe = (query, variables, opId) => {
+    this.socket.emit('gqlSub', {
+      query,
+      variables,
+      opId
+    });
+  };
+
   socketSubscribe = (operation, variables, cacheConfig, observer) => {
     const {name, text} = operation;
     const subKey = Atmosphere.getKey(name, variables);
@@ -134,18 +142,19 @@ export default class Atmosphere extends Environment {
         observer.onNext(gqlResponse);
       } else {
         // the server kicked us out
-        this.socketUnsubscribe(subKey, true);
-        // the sub might wanna pop a toast or do something fancy
-        if (observer.onCompleted) {
-          observer.onCompleted();
+        if (JSON.parse(subKey).name === 'NotificationsAddedSubscription') {
+          // resubscribe without the client knowing we unsubbed when tms gets changed
+          this.emitSubscribe(text, variables, opId);
+        } else {
+          this.socketUnsubscribe(subKey, true);
+          // the sub might wanna pop a toast or do something fancy
+          if (observer.onCompleted) {
+            observer.onCompleted();
+          }
         }
       }
     });
-    this.socket.emit('gqlSub', {
-      query: text,
-      variables,
-      opId
-    });
+    this.emitSubscribe(text, variables, opId);
   };
 
   ensureSubscription = (config) => {

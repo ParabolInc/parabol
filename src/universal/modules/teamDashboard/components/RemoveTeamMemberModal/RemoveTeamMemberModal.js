@@ -3,15 +3,15 @@ import React from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
-import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
+import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const RemoveTeamMemberModal = (props) => {
-  const {closeAfter, closePortal, isClosing, preferredName, teamMemberId} = props;
+  const {atmosphere, closeAfter, closePortal, isClosing, preferredName, teamMemberId} = props;
   const handleClick = () => {
-    const variables = {teamMemberId};
-    cashay.mutate('removeTeamMember', {variables});
     closePortal();
+    RemoveTeamMemberMutation(atmosphere, teamMemberId);
   };
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
@@ -36,6 +36,7 @@ const RemoveTeamMemberModal = (props) => {
 };
 
 RemoveTeamMemberModal.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
@@ -44,4 +45,4 @@ RemoveTeamMemberModal.propTypes = {
   toggle: PropTypes.any
 };
 
-export default portal({escToClose: true, closeAfter: 100})(RemoveTeamMemberModal);
+export default portal({escToClose: true, closeAfter: 100})(withAtmosphere(RemoveTeamMemberModal));

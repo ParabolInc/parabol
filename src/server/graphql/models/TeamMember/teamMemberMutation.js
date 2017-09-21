@@ -1,6 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import removeTeamMember from 'server/graphql/models/TeamMember/removeTeamMember/removeTeamMember';
 import {requireSUOrLead, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
 
@@ -31,7 +30,6 @@ export default {
       await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
     }
   },
-  removeTeamMember,
   promoteToLead: {
     type: GraphQLBoolean,
     description: 'Promote another team member to be the leader',

@@ -3,7 +3,6 @@ import {globalIdField} from 'graphql-relay';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import NotificationEnum from 'server/graphql/types/NotificationEnum';
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
@@ -12,6 +11,7 @@ import NotifyPayment from 'server/graphql/types/NotifyPayment';
 import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
 import NotifyTrial from 'server/graphql/types/NotifyTrial';
+import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 
 import {
   ADD_TO_TEAM,
@@ -19,6 +19,7 @@ import {
   FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
+  KICKED_OUT,
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   REJOIN_TEAM,
@@ -28,6 +29,7 @@ import {
   TRIAL_EXPIRED,
   TRIAL_EXPIRES_SOON
 } from 'universal/utils/constants';
+import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 
 const resolveTypeLookup = {
   [ADD_TO_TEAM]: NotifyAddedToTeam,
@@ -35,6 +37,7 @@ const resolveTypeLookup = {
   [FACILITATOR_REQUEST]: NotifyFacilitatorRequest,
   [INVITEE_APPROVED]: NotifyInvitation,
   [JOIN_TEAM]: NotifyNewTeamMember,
+  [KICKED_OUT]: NotifyKickedOut,
   [PAYMENT_REJECTED]: NotifyPayment,
   [REJOIN_TEAM]: NotifyNewTeamMember,
   [REQUEST_NEW_USER]: NotifyInvitation,
@@ -59,7 +62,7 @@ export const notificationInterfaceFields = {
     type: NotificationEnum
   },
   userIds: {
-    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
+    type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
     description: '*The userId that should see this notification'
   }
 };

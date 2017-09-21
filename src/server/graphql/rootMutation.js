@@ -30,6 +30,7 @@ import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInv
 import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
 import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
+import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
 
 const rootFields = Object.assign({},
   agenda,
@@ -66,6 +67,7 @@ export default new GraphQLObjectType({
     removeProvider,
     removeSlackChannel,
     removeGitHubRepo,
+    removeTeamMember,
     requestFacilitator,
     resendTeamInvite,
     segmentEventTrack

@@ -1,8 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 import emailTeamInvitations from 'server/safeMutations/emailTeamInvitations';
+import {APPROVED} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {TEAM_INVITE} from 'universal/utils/constants';
-import {APPROVED} from 'server/utils/serverConstants';
 
 const maybeAutoApproveToOrg = (invitees, inviter) => {
   const r = getRethink();
@@ -27,20 +27,22 @@ const sendTeamInvitations = async (invitees, inviter, inviteId) => {
   const r = getRethink();
   const now = new Date();
   const {orgId, inviterName, teamId, teamName} = inviter;
+  const inviteeUsers = invitees.filter((invitee) => Boolean(invitee.userId));
 
-  const invitations = invitees.map((invitee) => ({
-    id: shortid.generate(),
-    type: TEAM_INVITE,
-    startAt: now,
-    orgId,
-    userIds: [invitee.userId],
-    inviteeEmail: invitee.email,
-    inviterName,
-    teamId,
-    teamName
-  }));
+  const invitations = inviteeUsers
+    .map((invitee) => ({
+      id: shortid.generate(),
+      type: TEAM_INVITE,
+      startAt: now,
+      orgId,
+      userIds: [invitee.userId],
+      inviteeEmail: invitee.email,
+      inviterName,
+      teamId,
+      teamName
+    }));
 
-  const userIds = invitees.map(({userId}) => userId).filter(Boolean);
+  const userIds = inviteeUsers.map(({userId}) => userId);
   await Promise.all([
     r.table('Notification')
       .getAll(r.args(userIds), {index: 'userIds'})

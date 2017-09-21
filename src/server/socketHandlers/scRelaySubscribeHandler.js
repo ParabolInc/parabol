@@ -3,19 +3,7 @@ import {forAwaitEach} from 'iterall';
 import Schema from 'server/graphql/rootSchema';
 import handleGraphQLResult from 'server/utils/handleGraphQLResult';
 
-// const handleGqlResponse = (value, socket) => {
-//  if (value.clientValue) {
-//    const {_authToken: clientAuthToken, ...clientValue} = value;
-//    socket.setAuthToken({
-//      ...clientAuthToken,
-//      exp: undefined
-//    });
-//    return clientValue;
-//  }
-//  return value;
-// };
-
-export default function scRelaySubscribeHandler(exchange, socket) {
+export default function scRelaySubscribeHandler(socket) {
   socket.subs = socket.subs || [];
   return async function relaySubscribeHandler(body) {
     const {opId, query, variables} = body;
@@ -25,8 +13,12 @@ export default function scRelaySubscribeHandler(exchange, socket) {
     const asyncIterator = subscribe(Schema, document, {}, context, variables);
     socket.subs[opId] = asyncIterator;
     const iterableCb = (value) => {
-      const clientValue = handleGraphQLResult(value, socket);
-      socket.emit(`gqlData.${opId}`, clientValue);
+      const changedAuth = handleGraphQLResult(value, socket);
+      socket.emit(`gqlData.${opId}`, value);
+      if (changedAuth) {
+        // end the notification subscription. the client will start a new one with an updated tms
+        setTimeout(() => asyncIterator.return());
+      }
     };
 
     // Use this to kick clients out of the sub

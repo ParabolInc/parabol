@@ -42,8 +42,7 @@ export default {
       .do((doc) => ({
         userDocs: r.table('User')
           .getAll(r.args(doc('userIds')), {index: 'id'})
-          .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})('changes')
-          .map((change) => change('new_val'))
+          .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})('changes')('new_val')
           .pluck('id', 'tms')
           .default([]),
         teamName: doc('team')('name'),

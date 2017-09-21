@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
+import makeReactivationNotifications from 'server/safeMutations/helpers/makeReactivationNotifications';
 import shortid from 'shortid';
 import {ADD_TO_TEAM} from 'universal/utils/constants';
-import makeReactivationNotifications from 'server/safeMutations/helpers/makeReactivationNotifications';
 
 const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, teamMembers) => {
   if (invitees.length === 0) return [];
@@ -20,9 +20,7 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
         return user.merge({
           tms: user('tms').append(teamId)
         });
-      }, {returnChanges: true})('changes')
-      .map((change) => change('new_val'))
-      .default([])
+      }, {returnChanges: true})('changes')('new_val')
   });
   const notifications = reactivatedUsers.map((user) => ({
     id: shortid.generate(),
@@ -30,11 +28,12 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
     startAt: now,
     orgId,
     userIds: [user.id],
+    teamId,
     // inviterName,
     teamName
   }));
   await r.table('Notification').insert(notifications);
-  return makeReactivationNotifications(reactivatedUsers, teamMembers, inviter.userId);
+  return makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);
 };
 
 export default reactivateTeamMembersAndMakeNotifications;
