@@ -209,8 +209,9 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
+  cardButtonHeight: '1.5rem',
   cardMaxWidth: '17.5rem',
-  cardMinHeight: '8.1875rem',
+  cardMinHeight: '6.875rem',
   cardPaddingBase: '.5rem',
   cardDragStyle: {
     boxShadow: shadow[3]

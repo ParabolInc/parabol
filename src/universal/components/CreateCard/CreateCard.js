@@ -6,7 +6,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import CreateCardRootStyles from './CreateCardRootStyles';
 import {cardBorderTop} from 'universal/styles/helpers';
-import FontAwesome from 'react-fontawesome';
 
 const CreateCard = (props) => {
   const {
@@ -20,25 +19,16 @@ const CreateCard = (props) => {
     (hasControls) && styles.hasControls
   );
 
-  const iconStyle = {
-    display: 'block',
-    fontSize: ui.iconSize2x,
-    lineHeight: ui.iconSize2x,
-    margin: '0 auto'
-  };
-
   return (
     <div className={cardStyles}>
       {hasControls &&
-        <div className={css(styles.controlsBlock)} onClick={handleAddProject} title="Add a Project or Task (just press “p”)">
-          <FontAwesome
-            name="plus-square-o"
-            style={iconStyle}
-          />
-          <span>
-            <b>{'Add a Project or Task'}</b><br />
-            {'(tag '}<b>{'#private'}</b>{' for personal Tasks)'}
-          </span>
+        <div className={css(styles.controlsBlock)} onClick={handleAddProject} title="Add a Project (just press “p”)">
+          <div className={css(styles.label)}>
+            {'Add a '}<u>{'P'}</u>{'roject'}
+          </div>
+          <div className={css(styles.hint)}>
+            {'(tag '}<b>{'#private'}</b>{' for personal Projects)'}
+          </div>
         </div>
       }
     </div>
@@ -81,9 +71,8 @@ const styleThunk = () => ({
     color: appTheme.palette.cool,
     display: 'flex',
     flexDirection: 'column',
-    fontSize: appTheme.typography.s2,
     justifyContent: 'center',
-    lineHeight: appTheme.typography.s5,
+    lineHeight: '1.5',
     textAlign: 'center',
     width: '100%',
 
@@ -95,6 +84,15 @@ const styleThunk = () => ({
       color: appTheme.palette.cool80d,
       cursor: 'pointer'
     }
+  },
+
+  label: {
+    fontSize: appTheme.typography.s4,
+    fontWeight: 700
+  },
+
+  hint: {
+    fontSize: appTheme.typography.s2
   }
 });
 

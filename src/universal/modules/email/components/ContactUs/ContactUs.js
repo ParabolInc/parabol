@@ -3,6 +3,7 @@ import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import {MEETING_NAME} from 'universal/utils/constants';
 
 const ContactUs = (props) => {
   const cellStyle = {
@@ -35,9 +36,9 @@ const ContactUs = (props) => {
               {props.prompt}
             </span><br />
             {props.tagline}<br />
-            Email us:&nbsp;
+            {'Email us:'}&nbsp;
             <a href="mailto:love@parabol.co" style={linkStyle} title="Email us: love@parabol.co">
-              love@parabol.co
+              {'love@parabol.co'}
             </a>
             {props.hasLearningLink &&
               <span>
@@ -50,7 +51,7 @@ const ContactUs = (props) => {
                   title="How to Navigate Uncertainty using the Action Rhythm"
                 >
                   Learn More
-                </a> about the Action Meeting Process.
+                </a> {`about the ${MEETING_NAME} Process.`}
               </span>
             }
             <EmptySpace height={props.vSpacing} />

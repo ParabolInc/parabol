@@ -271,7 +271,7 @@ const withLinks = (ComposedComponent) => {
           clickToClose={false}
           marginFromOrigin={ui.draftModalMargin}
           fetchMenu={fetchEditorLinkChanger}
-          maxWidth={230}
+          maxWidth={320}
           maxHeight={200}
           originAnchor={originAnchor}
           originCoords={this.cachedCoords}

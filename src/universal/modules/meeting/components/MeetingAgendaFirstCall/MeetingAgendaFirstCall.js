@@ -11,6 +11,8 @@ import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import {css} from 'aphrodite-local-styles/no-important';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const MeetingAgendaFirstCall = (props) => {
   const {
@@ -20,6 +22,7 @@ const MeetingAgendaFirstCall = (props) => {
     hideMoveMeetingControls,
     styles
   } = props;
+  const phaseName = actionMeeting.agendaitems.name;
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -28,7 +31,7 @@ const MeetingAgendaFirstCall = (props) => {
             {'Now, what do you need?'}
           </MeetingPhaseHeading>
           <Type align="center" bold marginBottom="2.5rem" marginTop=".5rem" scale="s5" colorPalette="black">
-            (Time to add your agenda items to the list.)
+            {`(Time to add your ${AGENDA_ITEM_LABEL}s to the list.)`}
           </Type>
 
           <AgendaShortcutHint />
@@ -40,12 +43,12 @@ const MeetingAgendaFirstCall = (props) => {
                 colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
-                label="Let’s begin: Agenda"
+                label={`Let’s begin: ${phaseName}`}
                 onClick={gotoNext}
                 size="largest"
               /> :
               <MeetingFacilitationHint>
-                {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {'to start the Agenda'}
+                {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to start the ${phaseName}`}
               </MeetingFacilitationHint>
             }
           </div>

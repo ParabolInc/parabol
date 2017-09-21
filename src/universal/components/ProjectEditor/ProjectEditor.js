@@ -205,13 +205,19 @@ const styleThunk = () => ({
 
   editorBlockquote: {
     fontStyle: 'italic',
-    borderLeft: `.25rem ${appTheme.palette.mid40l} solid`,
-    paddingLeft: '.5rem'
+    borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
+    margin: '1rem 0',
+    padding: '0 .5rem'
   },
+
   codeBlock: {
-    // overflowX: 'scroll'
-    // background: 'blue',
-    // whiteSpace: 'pre!important'
+    backgroundColor: appTheme.palette.mid10a,
+    color: appTheme.palette.warm,
+    fontFamily: appTheme.typography.monospace,
+    fontSize: appTheme.typography.s2,
+    lineHeight: appTheme.typography.s6,
+    margin: '0',
+    padding: '0 .5rem'
   }
 });
 
