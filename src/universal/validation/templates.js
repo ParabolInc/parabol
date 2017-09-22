@@ -84,6 +84,7 @@ export const orgName = (value) => value
 
 export const orgRejectionReason = (value) => value
   .trim()
+  .required()
   .min(2, 'Maybe a couple more words?')
   .max(PROJECT_MAX_CHARS, 'That seems like a good enough reason');
 

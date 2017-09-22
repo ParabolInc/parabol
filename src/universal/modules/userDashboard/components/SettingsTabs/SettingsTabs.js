@@ -12,7 +12,7 @@
 // const iconStyle = {opacity: '.5'};
 //
 // const SettingsTabs = (props) => {
-//   const {notificationCount, history, styles} = props;
+//   const {notificationsCount, history, styles} = props;
 //   let currentPath = SETTINGS;
 //   const makeOnClick = (path) => {
 //     const fullPath = `/me/${path}`;
@@ -31,7 +31,7 @@
 //     return (
 //       <div className={css(styles.badgeAndBell)}>
 //         <FontAwesome name="bell" style={iconStyle} />
-//         {notificationCount > 0 ? <div className={css(styles.badge)}>{notificationCount}</div> : null}
+//         {notificationsCount > 0 ? <div className={css(styles.badge)}>{notificationsCount}</div> : null}
 //       </div>
 //
 //     );
@@ -59,7 +59,7 @@
 // };
 //
 // SettingsTabs.propTypes = {
-//   notificationCount: PropTypes.number,
+//   notificationsCount: PropTypes.number,
 //   history: PropTypes.object,
 //   styles: PropTypes.object
 // };

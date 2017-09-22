@@ -1,0 +1,150 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`approveToOrg for a 1-team approval, sends teamInvite, clears requestNewUser, sends inviteeApproved 1`] = `
+Object {
+  "notification": Array [
+    Object {
+      "id": 0,
+      "inviteeEmail": 1,
+      "inviterName": "Vision",
+      "orgId": 2,
+      "startAt": 2017-01-01T08:00:00.000Z,
+      "teamId": 3,
+      "teamName": "Team America",
+      "type": "INVITEE_APPROVED",
+      "userIds": Array [
+        4,
+      ],
+    },
+  ],
+  "orgApproval": Array [
+    Object {
+      "approvedBy": 6,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": 1,
+      "id": 5,
+      "isActive": true,
+      "orgId": 2,
+      "status": "APPROVED",
+      "teamId": 3,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`approveToOrg for a 2-team approval with different inviters, sends teamInvite, clears requestNewUser, sends inviteeApproved 1`] = `
+Object {
+  "notification": Array [
+    Object {
+      "id": 0,
+      "inviteeEmail": 2,
+      "inviterName": "Vision",
+      "orgId": 3,
+      "startAt": 2017-01-01T08:00:00.000Z,
+      "teamId": 4,
+      "teamName": "Team America",
+      "type": "INVITEE_APPROVED",
+      "userIds": Array [
+        6,
+      ],
+    },
+    Object {
+      "id": 1,
+      "inviteeEmail": 2,
+      "inviterName": "War Machine",
+      "orgId": 3,
+      "startAt": 2017-01-01T08:00:00.000Z,
+      "teamId": 5,
+      "teamName": "team 2",
+      "type": "INVITEE_APPROVED",
+      "userIds": Array [
+        7,
+      ],
+    },
+  ],
+  "orgApproval": Array [
+    Object {
+      "approvedBy": 10,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": 2,
+      "id": 8,
+      "isActive": true,
+      "orgId": 3,
+      "status": "APPROVED",
+      "teamId": 4,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+    Object {
+      "approvedBy": 10,
+      "createdAt": 2017-01-01T07:00:00.001Z,
+      "email": 2,
+      "id": 9,
+      "isActive": true,
+      "orgId": 3,
+      "status": "APPROVED",
+      "teamId": 5,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`approveToOrg for a 2-team approval with the same inviter, sends teamInvite, clears requestNewUser, sends inviteeApproved 1`] = `
+Object {
+  "notification": Array [
+    Object {
+      "id": 0,
+      "inviteeEmail": 2,
+      "inviterName": "Vision",
+      "orgId": 3,
+      "startAt": 2017-01-01T08:00:00.000Z,
+      "teamId": 4,
+      "teamName": "Team America",
+      "type": "INVITEE_APPROVED",
+      "userIds": Array [
+        6,
+      ],
+    },
+    Object {
+      "id": 1,
+      "inviteeEmail": 2,
+      "inviterName": "Vision",
+      "orgId": 3,
+      "startAt": 2017-01-01T08:00:00.000Z,
+      "teamId": 5,
+      "teamName": "team 2",
+      "type": "INVITEE_APPROVED",
+      "userIds": Array [
+        6,
+      ],
+    },
+  ],
+  "orgApproval": Array [
+    Object {
+      "approvedBy": 9,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": 2,
+      "id": 7,
+      "isActive": true,
+      "orgId": 3,
+      "status": "APPROVED",
+      "teamId": 4,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+    Object {
+      "approvedBy": 9,
+      "createdAt": 2017-01-01T07:00:00.001Z,
+      "email": 2,
+      "id": 8,
+      "isActive": true,
+      "orgId": 3,
+      "status": "APPROVED",
+      "teamId": 5,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`approveToOrg throws if the caller does not own the notification 1`] = `"Unauthorized. User is not a Billing Leader for that organization"`;

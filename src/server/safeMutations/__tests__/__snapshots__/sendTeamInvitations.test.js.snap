@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sendTeamInvitations does not add a duplicate notification 1`] = `
+Object {
+  "notification": Array [
+    Object {
+      "id": 0,
+      "inviteeEmail": 1,
+      "inviterName": "Captain America",
+      "inviterUserId": 2,
+      "orgId": 3,
+      "startAt": 2017-01-01T07:00:00.000Z,
+      "teamId": 4,
+      "teamName": "Team America",
+      "type": "TEAM_INVITE",
+      "userIds": Array [
+        5,
+      ],
+    },
+  ],
+}
+`;
+
+exports[`sendTeamInvitations inserts invitation notifications, returns an object full of the notifications removed 1`] = `
+Object {
+  "notification": Array [
+    Object {
+      "id": 0,
+      "inviterName": "Captain America",
+      "orgId": 1,
+      "startAt": 2017-01-01T08:00:00.000Z,
+      "teamId": 2,
+      "teamName": "Team America",
+      "type": "TEAM_INVITE",
+      "userIds": Array [
+        3,
+      ],
+    },
+  ],
+}
+`;

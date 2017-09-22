@@ -1,25 +1,32 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Row from 'universal/components/Row/Row';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import {cashay} from 'cashay';
-import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
+import Row from 'universal/components/Row/Row';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const TeamArchived = (props) => {
   const {
+    atmosphere,
     styles,
-    varList,
-    notificationId
+    notification,
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
   } = props;
-  const [teamName] = varList;
+  const {id, teamName} = notification;
   const acknowledge = () => {
-    const variables = {notificationId};
-    cashay.mutate('clearNotification', {variables});
+    const {id: dbNotificationId} = fromGlobalId(id);
+    submitMutation();
+    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
   };
+
   return (
     <Row>
       <div className={css(styles.icon)}>
@@ -35,9 +42,10 @@ const TeamArchived = (props) => {
           colorPalette="cool"
           isBlock
           label="Okay"
+          onClick={acknowledge}
           size={ui.notificationButtonSize}
           type="submit"
-          onClick={acknowledge}
+          waiting={submitting}
         />
       </div>
     </Row>
@@ -45,9 +53,16 @@ const TeamArchived = (props) => {
 };
 
 TeamArchived.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
-  varList: PropTypes.array.isRequired,
-  notificationId: PropTypes.string.isRequired
+  submitMutation: PropTypes.func.isRequired,
+  submitting: PropTypes.bool,
+  notification: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    teamName: PropTypes.string.isRequired
+  })
 };
 
 const styleThunk = () => ({

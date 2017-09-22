@@ -18,6 +18,7 @@ import githubRepos from 'server/graphql/queries/githubRepos';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import TeamMember from 'server/graphql/types/TeamMember';
+import notifications from 'server/graphql/queries/notifications';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -182,10 +183,11 @@ export const User = new GraphQLObjectType({
           .run();
       }
     },
+    githubRepos,
+    integrationProvider,
+    notifications,
     providerMap,
     slackChannels,
-    integrationProvider,
-    githubRepos,
     jwt: {
       type: GraphQLID,
       description: 'a refreshed JWT'

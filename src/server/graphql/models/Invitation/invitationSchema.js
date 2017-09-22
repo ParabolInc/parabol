@@ -16,11 +16,7 @@ export const Invitation = new GraphQLObjectType({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique invitation Id'},
     acceptedAt: {
       type: GraphQLISO8601Type,
-      description: 'The datetime the invitation was accepted was created'
-    },
-    fullName: {
-      type: GraphQLString,
-      description: 'The name of the invitee, derived from the email address'
+      description: 'The datetime the invitation was accepted'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
@@ -30,6 +26,10 @@ export const Invitation = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The email of the invitee'
     },
+    fullName: {
+      type: GraphQLString,
+      description: 'The name of the invitee, derived from the email address'
+    },
     hashedToken: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'Secret token used when inviting a user',
@@ -37,7 +37,7 @@ export const Invitation = new GraphQLObjectType({
       resolve: () => null
     },
     invitedBy: {type: GraphQLID, description: 'The teamMemberId of the person that sent the invitation'},
-    invitationNumber: {
+    inviteCount: {
       type: GraphQLInt,
       description: 'How many invites have been sent to this email address?'
     },

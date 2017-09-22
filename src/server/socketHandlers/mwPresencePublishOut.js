@@ -1,5 +1,5 @@
 import parseChannel from 'universal/utils/parseChannel';
-import {EDIT, PRESENT, SOUNDOFF, PRESENCE, REJOIN_TEAM} from 'universal/subscriptions/constants';
+import {EDIT, PRESENT, SOUNDOFF, PRESENCE} from 'universal/subscriptions/constants';
 
 export default function mwPresencePublishOut(req, next) {
   const {channel} = parseChannel(req.channel);
@@ -22,13 +22,6 @@ export default function mwPresencePublishOut(req, next) {
       const {socketId: senderSocketId} = req.data;
       // do not send back to self
       if (senderSocketId && senderSocketId === req.socket.id) {
-        next(true);
-        return;
-      }
-      // reinvited to the team
-    } else if (type === REJOIN_TEAM) {
-      const authToken = req.socket.getAuthToken();
-      if (authToken.sub === req.data.sender) {
         next(true);
         return;
       }

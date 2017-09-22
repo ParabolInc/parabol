@@ -1,19 +1,6 @@
 import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 
-// const mutations = Schema._mutationType && Schema._mutationType._fields || {};
-// const whitelist = [
-//   'addBilling',
-//   'createOrgPicturePutUrl',
-//   'createUserPicturePutUrl',
-//   'orgDetails',
-//   'updateOrg',
-//   'updateUserProfile',
-//   'summarizeMeeting'
-// ];
-// const mutationNames = Object.keys(mutations);
-const blacklist = [];
-
 export default function wsGraphQLHandler(exchange, socket) {
   return async function graphQLHandler(body, cb) {
     const {query, variables} = body;
@@ -27,12 +14,7 @@ export default function wsGraphQLHandler(exchange, socket) {
     const result = await graphql(Schema, query, {}, context, variables);
     if (result.errors) {
       console.log('DEBUG GraphQL Error:', result.errors);
-      cb(null, result);
-    } else {
-      const resolvedQueries = Object.keys(result.data);
-      const firstQuery = resolvedQueries[0];
-      const clientValue = blacklist.includes(firstQuery) ? true : result;
-      cb(null, clientValue);
     }
+    cb(null, result);
   };
 }

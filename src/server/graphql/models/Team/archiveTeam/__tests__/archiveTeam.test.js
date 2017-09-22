@@ -9,6 +9,8 @@ import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import exchange from 'server/__mocks__/exchange';
 import socket from 'server/__mocks__/socket';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import MockPubSub from 'server/__mocks__/MockPubSub';
+import * as getPubSub from 'server/utils/getPubSub';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -18,6 +20,7 @@ describe('ArchiveTeam', () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
+    const mockPubSub = new MockPubSub();
     const mockDB = new MockDB();
     const {user, team: [updatedTeam], teamMember} = await mockDB.init();
     updatedTeam.isArchived = true;
@@ -26,7 +29,7 @@ describe('ArchiveTeam', () => {
     const authToken = mockAuthToken(teamLead);
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
-    exchange.publish.mockReset();
+    getPubSub.default = () => mockPubSub;
 
     // TEST
     await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, exchange, socket});
@@ -39,13 +42,14 @@ describe('ArchiveTeam', () => {
     expect(db).toMatchSnapshot();
     expect(auth0ManagementClient.users.updateAppMetadata.mock.calls.length)
       .toBe(teamMember.length);
-    expect(exchange.publish.mock.calls.length).toBe(teamMember.length);
+    expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 
   test('deletes a team when it has no projects or other team members', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
+    const mockPubSub = new MockPubSub();
     const mockDB = new MockDB();
     const {user: [user], team: [updatedTeam]} = await mockDB
       .newOrg({name: 'Sad Sacks, Inc.'})
@@ -57,7 +61,7 @@ describe('ArchiveTeam', () => {
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     exchange.publish.mockReset();
-
+    getPubSub.default = () => mockPubSub;
     // TEST
     await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, exchange, socket});
 
@@ -71,6 +75,6 @@ describe('ArchiveTeam', () => {
     expect(db).toMatchSnapshot();
     expect(auth0ManagementClient.users.updateAppMetadata.mock.calls.length)
       .toBe(1);
-    expect(exchange.publish.mock.calls.length).toBe(1);
+    expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 });

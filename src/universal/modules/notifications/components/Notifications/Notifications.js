@@ -1,13 +1,13 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
 import Panel from 'universal/components/Panel/Panel';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const Notifications = (props) => {
   const {
@@ -20,16 +20,13 @@ const Notifications = (props) => {
       <Helmet title="My Notifications | Parabol" />
       <div className={css(styles.wrapper)}>
         <Panel label="Notifications">
-          {notifications.length ?
+          {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
-              {notifications.map((notification) =>
+              {notifications.edges.map(({node}) =>
                 (<NotificationRow
                   dispatch={dispatch}
-                  key={`notification${notification.id}`}
-                  orgId={notification.orgId}
-                  notificationId={notification.id}
-                  type={notification.type}
-                  varList={notification.varList}
+                  key={`notification${node.id}`}
+                  notification={node}
                 />)
               )}
             </div> :
@@ -45,7 +42,7 @@ const Notifications = (props) => {
 
 Notifications.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  notifications: PropTypes.array,
+  notifications: PropTypes.object,
   styles: PropTypes.object
 };
 

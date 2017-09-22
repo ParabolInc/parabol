@@ -62,26 +62,37 @@ export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
 /* NotificationRow Types */
-// Sent to Billing Leaders when their trial will expire in < 2 weeks
-// varList = [trialExpiresAt]
-export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
-// Sent to Billing Leaders when their trial has expired
-// varList = [trialExpiresAt]
-export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
-// Sent to Billing Leaders when a reoccuring payment gets rejected
-// varList = [last4, brand]
-export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
-// Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
-// [inviterId, inviterName, inviteeEmail, invitedTeamId, invitedTeamName]
-export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
+// Send to folks that got reactivated on a team
+// annoucements to the rest of the team
+
+export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 // Sent to the orgMember that generated the new user request
-// [reason, billingLeaderName, inviteeEmail]
 export const DENY_NEW_USER = 'DENY_NEW_USER';
+// Sent to the meeting facilitator by someone who wants to lead
+export const FACILITATOR_REQUEST = 'FACILITATOR_REQUEST';
+// Sent when a billing leader approves an invitee to the org
+export const INVITEE_APPROVED = 'INVITEE_APPROVED';
+// sent to the rest of the team when someone has just joined
+export const JOIN_TEAM = 'JOIN_TEAM';
+// sent to someone just kicked out of a team
+export const KICKED_OUT = 'KICKED_OUT';
+// Sent to Billing Leaders when a reoccuring payment gets rejected
+export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
 // sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
-// [orgName]
 export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
+// sent to the rest of the team when someone just rejoined
+export const REJOIN_TEAM = 'REJOIN_TEAM';
+// Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
+export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
+// Sent along with an email to someone invited to join the team
+export const TEAM_INVITE = 'TEAM_INVITE';
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
+// Sent to Billing Leaders when their trial will expire in < 2 weeks
+export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
+// Sent to Billing Leaders when their trial has expired
+export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
+
 
 export const notificationTypes = [
   TRIAL_EXPIRES_SOON,
@@ -157,3 +168,19 @@ export const GITHUB_ENDPOINT = 'https://api.github.com/graphql';
 
 /* JavaScript specifics */
 export const MAX_TIMEOUT = 2147483647;
+
+
+// InvitationResultTypes
+// the invitation has been sent
+export const SUCCESS = 'SUCCESS';
+// the approval request has been sent to the billing leader
+export const PENDING_APPROVAL = 'PENDING_APPROVAL';
+// that email has already been invited
+export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
+// that email used to be on the team, and now they are again
+export const REACTIVATED = 'REACTIVATED';
+
+/* Relay Subscription Channels */
+export const NOTIFICATIONS_ADDED = 'notificationsAdded';
+export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
+export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';

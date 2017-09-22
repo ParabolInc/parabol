@@ -13,7 +13,7 @@ import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 
 const APP_VERSION = packageJSON.version;
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
-const isTmsValid = (tmsFromDB, tmsFromToken) => {
+const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
   for (let i = 0; i < tmsFromDB.length; i++) {
     if (tmsFromDB[i] !== tmsFromToken[i]) return false;
@@ -30,7 +30,7 @@ export default function scConnectionHandler(exchange) {
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
     const graphQLHandler = scGraphQLHandler(exchange, socket);
-    const relaySubscribeHandler = scRelaySubscribeHandler(exchange, socket);
+    const relaySubscribeHandler = scRelaySubscribeHandler(socket);
     socket.on('message', (message) => {
       // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
       if (isObject(message) && message.event === '#authenticate') {

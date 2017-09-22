@@ -1,8 +1,6 @@
 import {GraphQLObjectType} from 'graphql';
 import agenda from 'server/graphql/models/AgendaItem/agendaItemMutation';
-import invitation from 'server/graphql/models/Invitation/invitationMutation';
 import meeting from 'server/graphql/models/Meeting/meetingMutation';
-import notification from 'server/graphql/models/Notification/notificationMutation';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import presence from 'server/graphql/models/Presence/presenceMutation';
@@ -10,27 +8,34 @@ import project from 'server/graphql/models/Project/projectMutation';
 import team from 'server/graphql/models/Team/teamMutation';
 import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
-import addSlackChannel from 'server/graphql/mutations/addSlackChannel';
-import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel';
-import removeProvider from 'server/graphql/mutations/removeProvider';
-import addProvider from 'server/graphql/mutations/addProvider';
 import addGitHubRepo from 'server/graphql/mutations/addGitHubRepo';
-import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo';
-import leaveIntegration from 'server/graphql/mutations/leaveIntegration';
-import joinIntegration from 'server/graphql/mutations/joinIntegration';
+import addProvider from 'server/graphql/mutations/addProvider';
+import addSlackChannel from 'server/graphql/mutations/addSlackChannel';
+import clearNotification from 'server/graphql/mutations/clearNotification';
 import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue';
-import githubAddMember from 'server/graphql/mutations/githubAddMember';
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee';
+import githubAddMember from 'server/graphql/mutations/githubAddMember';
 import githubRemoveMember from 'server/graphql/mutations/githubRemoveMember';
+import inviteTeamMembers from 'server/graphql/mutations/inviteTeamMembers';
+import joinIntegration from 'server/graphql/mutations/joinIntegration';
+import leaveIntegration from 'server/graphql/mutations/leaveIntegration';
+import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
+import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo';
+import removeProvider from 'server/graphql/mutations/removeProvider';
+import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel';
 import requestFacilitator from 'server/graphql/mutations/requestFacilitator';
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
-import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
+import approveToOrg from 'server/graphql/mutations/approveToOrg';
+import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
+import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
+import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
+import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
+import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
+import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole';
 
 const rootFields = Object.assign({},
   agenda,
-  invitation,
   meeting,
-  notification,
   orgApproval,
   organization,
   presence,
@@ -44,20 +49,29 @@ export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     ...rootFields,
+    acceptTeamInviteEmail,
+    acceptTeamInviteNotification,
     addGitHubRepo,
     addProvider,
     addSlackChannel,
+    approveToOrg,
+    cancelTeamInvite,
+    clearNotification,
     createGitHubIssue,
     githubAddAssignee,
     githubAddMember,
     githubRemoveMember,
+    inviteTeamMembers,
     joinIntegration,
     leaveIntegration,
     promoteFacilitator,
     removeProvider,
     removeSlackChannel,
     removeGitHubRepo,
+    removeTeamMember,
     requestFacilitator,
-    segmentEventTrack
+    resendTeamInvite,
+    segmentEventTrack,
+    setOrgUserRole
   })
 });

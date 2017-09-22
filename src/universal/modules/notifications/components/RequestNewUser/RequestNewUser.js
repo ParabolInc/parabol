@@ -1,27 +1,31 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Button from 'universal/components/Button/Button';
-import Row from 'universal/components/Row/Row';
-import {cashay} from 'cashay';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
+import Row from 'universal/components/Row/Row';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
 const RequestNewUser = (props) => {
-  const {notificationId, styles, varList} = props;
-  const [, inviterName, inviteeEmail, teamId, teamName] = varList;
-
+  const {
+    atmosphere,
+    styles,
+    notification,
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } = props;
+  const {id, inviterName, inviteeEmail, orgId, teamName} = notification;
+  const {id: dbNotificationId} = fromGlobalId(id);
   const acceptInvite = () => {
-    const variables = {
-      teamId,
-      invitees: [{
-        email: inviteeEmail
-      }]
-    };
-    cashay.mutate('inviteTeamMembers', {variables});
+    submitMutation();
+    ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted);
   };
 
   const rejectToggle = (
@@ -56,11 +60,12 @@ const RequestNewUser = (props) => {
             size={ui.notificationButtonSize}
             type="submit"
             onClick={acceptInvite}
+            waiting={submitting}
           />
         </div>
         <div className={css(styles.button)}>
           <RejectOrgApprovalModal
-            notificationId={notificationId}
+            dbNotificationId={dbNotificationId}
             inviteeEmail={inviteeEmail}
             inviterName={inviterName}
             toggle={rejectToggle}
@@ -72,9 +77,20 @@ const RequestNewUser = (props) => {
 };
 
 RequestNewUser.propTypes = {
-  notificationId: PropTypes.string.isRequired,
+  atmosphere: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
-  varList: PropTypes.array.isRequired
+  submitMutation: PropTypes.func.isRequired,
+  submitting: PropTypes.bool,
+  notification: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    inviterName: PropTypes.string.isRequired,
+    inviteeEmail: PropTypes.string.isRequired,
+    teamName: PropTypes.string.isRequired,
+    teamId: PropTypes.string.isRequired
+  })
 };
 
 const styleThunk = () => ({

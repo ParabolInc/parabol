@@ -1,50 +1,57 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import {reduxForm} from 'redux-form';
-import InviteUser from 'universal/components/InviteUser/InviteUser';
-import UserRow from 'universal/components/UserRow/UserRow';
-import fromNow from 'universal/utils/fromNow';
 import {cashay} from 'cashay';
-import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
-import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
-import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import PropTypes from 'prop-types';
+import React from 'react';
+import InviteUser from 'universal/components/InviteUser/InviteUser';
 import Panel from 'universal/components/Panel/Panel';
-import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
-import ui from 'universal/styles/ui';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import UserRow from 'universal/components/UserRow/UserRow';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
+import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
+import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
+import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import fromNow from 'universal/utils/fromNow';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
+import ResendTeamInviteMutation from 'universal/mutations/ResendTeamInviteMutation';
+import CancelTeamInviteMutation from 'universal/mutations/CancelTeamInviteMutation';
 
 const TeamSettings = (props) => {
   const {
+    atmosphere,
     dispatch,
     invitations,
     orgApprovals,
     myTeamMember,
     team,
     teamMembers,
-    styles
+    styles,
+    submitMutation,
+    onCompleted,
+    onError
   } = props;
   const teamLeadObj = teamMembers.find((m) => m.isLead === true);
   const teamLead = teamLeadObj && teamLeadObj.preferredName;
 
   const invitationRowActions = (invitation) => {
-    const cashayOptions = {
-      variables: {
-        inviteId: invitation.id
-      }
-    };
     const resend = () => {
-      cashay.mutate('resendInvite', cashayOptions);
-      dispatch(showSuccess({
-        title: 'Invitation sent!',
-        message: 'We sent your friend a nice little reminder'
-      }));
+      submitMutation();
+      const onResendCompleted = () => {
+        dispatch(showSuccess({
+          title: 'Invitation sent!',
+          message: 'We sent your friend a nice little reminder'
+        }));
+        onCompleted();
+      };
+      ResendTeamInviteMutation(atmosphere, invitation.id, onError, onResendCompleted);
     };
     const cancel = () => {
-      cashay.mutate('cancelInvite', cashayOptions);
+      submitMutation();
+      CancelTeamInviteMutation(atmosphere, invitation.id, onError, onCompleted);
     };
     return (
       <div className={css(styles.actionLinkBlock)}>
@@ -79,29 +86,29 @@ const TeamSettings = (props) => {
     return (
       <div className={css(styles.actionLinkBlock)}>
         {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
-          <PromoteTeamMemberModal
-            toggle={
-              <div className={css(styles.actionLink)}>
-                Promote {teamMember.preferredName} to Team Lead
-              </div>
-            }
-            preferredName={preferredName}
-            teamMemberId={id}
-          />
+        <PromoteTeamMemberModal
+          toggle={
+            <div className={css(styles.actionLink)}>
+              Promote {teamMember.preferredName} to Team Lead
+            </div>
+          }
+          preferredName={preferredName}
+          teamMemberId={id}
+        />
         }
         {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
-          <RemoveTeamMemberModal
-            toggle={<div className={css(styles.actionLink)}>Remove</div>}
-            preferredName={preferredName}
-            teamMemberId={id}
-          />
+        <RemoveTeamMemberModal
+          toggle={<div className={css(styles.actionLink)}>Remove</div>}
+          preferredName={preferredName}
+          teamMemberId={id}
+        />
         }
         {!myTeamMember.isLead && myTeamMember.id === teamMember.id &&
-          <LeaveTeamModal
-            toggle={<div className={css(styles.actionLink)}>Leave Team</div>}
-            teamLead={teamLead}
-            teamMemberId={id}
-          />
+        <LeaveTeamModal
+          toggle={<div className={css(styles.actionLink)}>Leave Team</div>}
+          teamLead={teamLead}
+          teamMemberId={id}
+        />
 
         }
       </div>
@@ -157,14 +164,14 @@ const TeamSettings = (props) => {
           </div>
         </Panel>
         {myTeamMember.isLead &&
-          <Panel label="Danger Zone">
-            <div className={css(styles.panelRow)}>
-              <ArchiveTeamContainer
-                teamId={team.id}
-                teamName={team.name}
-              />
-            </div>
-          </Panel>
+        <Panel label="Danger Zone">
+          <div className={css(styles.panelRow)}>
+            <ArchiveTeamContainer
+              teamId={team.id}
+              teamName={team.name}
+            />
+          </div>
+        </Panel>
         }
       </div>
     </div>
@@ -172,14 +179,19 @@ const TeamSettings = (props) => {
 };
 
 TeamSettings.propTypes = {
-  beta: PropTypes.number,
+  atmosphere: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMember: PropTypes.object.isRequired,
   orgApprovals: PropTypes.array,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired
+  teamMembers: PropTypes.array.isRequired,
+  error: PropTypes.any,
+  submitting: PropTypes.bool,
+  submitMutation: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({
@@ -224,6 +236,8 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'teamSettings'})(
-  withStyles(styleThunk)(TeamSettings)
+export default withAtmosphere(
+  withMutationProps(
+    withStyles(styleThunk)(TeamSettings)
+  )
 );

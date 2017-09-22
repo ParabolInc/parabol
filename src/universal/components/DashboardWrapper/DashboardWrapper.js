@@ -8,19 +8,21 @@ const userDashboard = () => System.import('universal/modules/userDashboard/compo
 const teamContainer = () => System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
 const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer');
 
-const DashboardWrapper = () => {
+const DashboardWrapper = (props) => {
+  const {notifications} = props;
+  const notificationsCount = notifications ? notifications.edges.length : 0;
   return (
-    <DashLayoutContainer>
-      <DashSidebar />
-      <AsyncRoute isAbstract path="/me" mod={userDashboard} />
-      <AsyncRoute isAbstract path="/team/:teamId" mod={teamContainer} />
-      <AsyncRoute path="/newteam/:newOrgRoute?" mod={newTeam} />
+    <DashLayoutContainer notifications={notifications}>
+      <DashSidebar notificationsCount={notificationsCount} />
+      <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
+      <AsyncRoute isAbstract path="/team/:teamId" mod={teamContainer} extraProps={{notifications}} />
+      <AsyncRoute path="/newteam/:newOrgRoute?" mod={newTeam} extraProps={{notifications}} />
     </DashLayoutContainer>
   );
 };
 
 DashboardWrapper.propTypes = {
-  title: PropTypes.string
+  notifications: PropTypes.object
 };
 
 export default DashboardWrapper;

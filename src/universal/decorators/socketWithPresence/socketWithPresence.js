@@ -2,32 +2,17 @@ import {cashay, Transport} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {matchPath, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {reduxSocket} from 'redux-socket-cluster';
 import socketCluster from 'socketcluster-client';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AuthEngine from 'universal/redux/AuthEngine';
-import {
-  ADD_TO_TEAM,
-  JOIN_TEAM,
-  KICK_OUT,
-  NOTIFICATIONS,
-  PRESENCE,
-  REJOIN_TEAM,
-  TEAM_MEMBERS,
-  USER_MEMO
-} from 'universal/subscriptions/constants';
+import {PRESENCE, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import subscriber from 'universal/subscriptions/subscriber';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import parseChannel from 'universal/utils/parseChannel';
-
-const getTeamName = (teamId) => {
-  const cashayState = cashay.store.getState().cashay;
-  const team = cashayState.entities.Team && cashayState.entities.Team[teamId];
-  return team && team.name || teamId;
-};
 
 const mapStateToProps = (state) => {
   return {
@@ -37,6 +22,32 @@ const mapStateToProps = (state) => {
 };
 
 const tmsSubs = [];
+const subscribeToPresence = (oldProps, props) => {
+  const {tms} = props;
+  if (!tms) {
+    throw new Error('Did not finish the welcome wizard! How did you get here?');
+    // TODO redirect?
+  }
+  if (oldProps.tms.length < tms.length) {
+    const socket = socketCluster.connect();
+    for (let i = 0; i < tms.length; i++) {
+      const teamId = tms[i];
+      if (tmsSubs.includes(teamId)) continue;
+      tmsSubs.push(teamId);
+      cashay.subscribe(PRESENCE, teamId, presenceSubscriber);
+      cashay.subscribe(TEAM_MEMBERS, teamId);
+      socket.on('subscribe', (channelName) => {
+        if (channelName === `${PRESENCE}/${teamId}`) {
+          const options = {variables: {teamId}};
+          cashay.mutate('soundOff', options);
+        }
+      });
+    }
+  } else if (oldProps.tms.length > tms.length) {
+    tmsSubs.length = 0;
+    tmsSubs.push(...tms);
+  }
+};
 
 export default (ComposedComponent) => {
   const reduxSocketOptions = (props) => ({
@@ -59,6 +70,7 @@ export default (ComposedComponent) => {
     onDisconnect: () => {
       cashay.create({priorityTransport: null});
       props.atmosphere.socket = null;
+      props.atmosphere.setNet('http');
     },
     keepAlive: 3000
   });
@@ -85,23 +97,19 @@ export default (ComposedComponent) => {
     };
 
     componentDidMount() {
-      this.subscribeToPresence({tms: []}, this.props);
-      this.subscribeToNotifications();
+      subscribeToPresence({tms: []}, this.props);
       this.watchForKickout();
       this.listenForVersion();
     }
 
     componentWillReceiveProps(nextProps) {
-      this.subscribeToPresence(this.props, nextProps);
+      subscribeToPresence(this.props, nextProps);
     }
 
     componentWillUnmount() {
       const socket = socketCluster.connect();
-      const {userId} = this.props;
-      const userMemoChannel = `${USER_MEMO}/${userId}`;
       socket.off('kickOut', this.kickoutHandler);
       socket.off('version', this.versionHandler);
-      socket.unwatch(userMemoChannel, this.memoHandler);
     }
 
     kickoutHandler = (error, channelName) => {
@@ -110,94 +118,9 @@ export default (ComposedComponent) => {
       setTimeout(() => cashay.unsubscribe(channel, teamId), 100);
     };
 
-    memoHandler = (data) => {
-      const {type} = data;
-      const {dispatch} = this.props;
-      if (type === ADD_TO_TEAM) {
-        const {teamName} = data;
-        dispatch(showInfo({
-          title: 'Congratulations!',
-          message: `You've been added to team ${teamName}`
-        }));
-      } else if (type === KICK_OUT) {
-        const {teamId, teamName} = data;
-        const {history, location: {pathname}} = this.props;
-        const onExTeamRoute = Boolean(matchPath(pathname, {
-          path: `(/team/:${teamId}|/meeting/${teamId})`
-        }));
-        if (onExTeamRoute) {
-          history.push('/me');
-        }
-        dispatch(showWarning({
-          title: 'So long!',
-          message: `You have been removed from ${teamName}`
-        }));
-      }
-    };
-
-    watchForJoin(teamId) {
-      const socket = socketCluster.connect();
-      const channelName = `${PRESENCE}/${teamId}`;
-      const {dispatch} = this.props;
-      socket.watch(channelName, (data) => {
-        if (data.type === JOIN_TEAM) {
-          const {name} = data;
-          const teamName = getTeamName(teamId);
-          dispatch(showInfo({
-            title: 'Ahoy, a new crewmate!',
-            message: `${name} just joined team ${teamName}`
-          }));
-        } else if (data.type === REJOIN_TEAM) {
-          const {name} = data;
-          const teamName = getTeamName(teamId);
-          dispatch(showInfo({
-            title: `${name} is back!`,
-            message: `${name} just rejoined team ${teamName}`
-          }));
-        }
-      });
-    }
-
     watchForKickout() {
       const socket = socketCluster.connect();
       socket.on('kickOut', this.kickoutHandler);
-    }
-
-    subscribeToNotifications() {
-      const {userId} = this.props;
-      const socket = socketCluster.connect();
-      cashay.subscribe(NOTIFICATIONS, userId);
-      const userMemoChannel = `${USER_MEMO}/${userId}`;
-      socket.subscribe(userMemoChannel, {waitForAuth: true});
-      socket.watch(userMemoChannel, this.memoHandler);
-    }
-
-    subscribeToPresence(oldProps, props) {
-      const {tms} = props;
-      if (!tms) {
-        throw new Error('Did not finish the welcome wizard! How did you get here?');
-        // TODO redirect?
-      }
-      if (oldProps.tms.length < tms.length) {
-        const socket = socketCluster.connect();
-        for (let i = 0; i < tms.length; i++) {
-          const teamId = tms[i];
-          if (tmsSubs.includes(teamId)) continue;
-          tmsSubs.push(teamId);
-          cashay.subscribe(PRESENCE, teamId, presenceSubscriber);
-          cashay.subscribe(TEAM_MEMBERS, teamId);
-          socket.on('subscribe', (channelName) => {
-            if (channelName === `${PRESENCE}/${teamId}`) {
-              const options = {variables: {teamId}};
-              cashay.mutate('soundOff', options);
-            }
-          });
-          this.watchForJoin(teamId);
-        }
-      } else if (oldProps.tms.length > tms.length) {
-        tmsSubs.length = 0;
-        tmsSubs.push(...tms);
-      }
     }
 
     versionHandler = (versionOnServer) => {
@@ -229,5 +152,6 @@ export default (ComposedComponent) => {
       return <ComposedComponent {...this.props} />;
     }
   }
+
   return SocketWithPresence;
 };

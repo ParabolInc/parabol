@@ -12,10 +12,7 @@ import {clientSecret as secretKey} from './utils/auth0Helpers';
 import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
-import mwMemoPublishOut from './socketHandlers/mwMemoPublishOut';
-import mwBroadcast from './socketHandlers/mwBroadcast';
 import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
-import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
 import handleIntegration from './integrations/handleIntegration';
@@ -104,11 +101,8 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   // handle sockets
   const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
-  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwBroadcast);
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwPresencePublishOut);
-  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwMemoPublishOut);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwPresenceSubscribe);
-  scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwMemoSubscribe);
   const connectionHandler = scConnectionHandler(exchange);
   scServer.on('connection', connectionHandler);
 }

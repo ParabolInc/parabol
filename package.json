@@ -74,7 +74,7 @@
     "codecov": "^2.3.0",
     "concurrently": "^3.5.0",
     "css-loader": "^0.28.2",
-    "dynamic-serializer": "^0.1.0",
+    "dynamic-serializer": "^0.1.1",
     "eslint": "^4.4.1",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-import-resolver-webpack": "^0.8.3",

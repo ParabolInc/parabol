@@ -14,10 +14,10 @@ import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
 import {NavLink} from 'react-router-dom';
 
 const DashSidebar = (props) => {
-  const {styles} = props;
+  const {notificationsCount, styles} = props;
   return (
     <div className={css(styles.root)}>
-      <StandardHubContainer />
+      <StandardHubContainer notificationsCount={notificationsCount} />
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem
@@ -48,6 +48,7 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
+  notificationsCount: PropTypes.number.isRequired,
   styles: PropTypes.object
 };
 

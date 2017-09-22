@@ -5,9 +5,10 @@ import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoi
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime';
+import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY, TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
-import {PAYMENT_REJECTED, TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {NOTIFICATIONS_CLEARED, PAYMENT_REJECTED, TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 
 export default {
   type: GraphQLBoolean,
@@ -55,19 +56,24 @@ export default {
         stripe.subscriptions.update(stripeSubscriptionId, {
           trial_end: toEpochSeconds(extendedPeriodEnd)
         });
-        await r.table('Organization').get(orgId).update({
-          creditCard: getCCFromCustomer(customer),
-          periodEnd: extendedPeriodEnd
-        })
-        // remove the oustanding notifications
-          .do(() => {
-            return r.table('Notification')
-              .getAll(orgId, {index: 'orgId'})
-              .filter({
-                type: TRIAL_EXPIRES_SOON
-              })
-              .delete();
+        const {removedNotification} = await r({
+          orgUpdated: r.table('Organization').get(orgId).update({
+            creditCard: getCCFromCustomer(customer),
+            periodEnd: extendedPeriodEnd
+          }),
+          removedNotification: r.table('Notification')
+            .getAll(orgId, {index: 'orgId'})
+            .filter({
+              type: TRIAL_EXPIRES_SOON
+            })
+            .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null)
+        });
+        if (removedNotification) {
+          const notificationsCleared = {deletedIds: [removedNotification.id]};
+          removedNotification.userIds.forEach((notifiedUserId) => {
+            getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared});
           });
+        }
         sendSegmentEvent('addBilling Free Trial Extended', userId, {orgId});
       }
     } else {
@@ -84,27 +90,31 @@ export default {
         quantity
       });
       const {id, current_period_end, current_period_start} = subscription;
-      await r.table('Organization').get(orgId).update({
-        creditCard: getCCFromCustomer(customer),
-        periodEnd: fromEpochSeconds(current_period_end),
-        periodStart: fromEpochSeconds(current_period_start),
-        stripeSubscriptionId: id
-      })
-        .do(() => {
-          return r.table('Team')
-            .getAll(orgId, {index: 'orgId'})
-            .update({
-              isPaid: true
-            });
-        })
-        .do(() => {
-          return r.table('Notification')
-            .getAll(orgId, {index: 'orgId'})
-            .filter({
-              type: notificationToClear
-            })
-            .delete();
+      const {removedNotification} = await r({
+        updatedOrg: r.table('Organization').get(orgId).update({
+          creditCard: getCCFromCustomer(customer),
+          periodEnd: fromEpochSeconds(current_period_end),
+          periodStart: fromEpochSeconds(current_period_start),
+          stripeSubscriptionId: id
+        }),
+        updatedTeam: r.table('Team')
+          .getAll(orgId, {index: 'orgId'})
+          .update({
+            isPaid: true
+          }),
+        removedNotification: r.table('Notification')
+          .getAll(orgId, {index: 'orgId'})
+          .filter({
+            type: notificationToClear
+          })
+          .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null)
+      });
+      if (removedNotification) {
+        const notificationsCleared = {deletedIds: [removedNotification.id]};
+        removedNotification.userIds.forEach((notifiedUserId) => {
+          getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared});
         });
+      }
       sendSegmentEvent('addBilling New Payment Success', userId, {orgId, quantity});
     }
     // nuke the upcoming invoice if it existed
