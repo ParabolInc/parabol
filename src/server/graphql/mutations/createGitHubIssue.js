@@ -30,7 +30,7 @@ const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner) => {
       }
     } else if (code === 'missing_field') {
       if (field === 'title') {
-        throw new Error('The first line is the title. It can\'t be empty');
+        throw new Error('The first line is the title. It can’t be empty');
       }
     }
     throw new Error(`GitHub: ${message}. ${code}: ${field}`);
