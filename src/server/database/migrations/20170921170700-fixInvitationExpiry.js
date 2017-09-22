@@ -5,8 +5,8 @@ exports.up = async (r) => {
         doc('tokenExpiration').typeOf().eq('NUMBER').default(false),
         {tokenExpiration: r.epochTime(doc('tokenExpiration'))},
         null
-      )
-    })
+      );
+    });
 };
 
 exports.down = async () => {

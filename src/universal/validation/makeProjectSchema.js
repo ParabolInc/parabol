@@ -33,7 +33,7 @@ export default function makeProjectSchema() {
         if (firstBlockIdx > 0) {
           return JSON.stringify({
             ...parsedContent,
-            blocks: parsedContent.blocks.slice(firstBlockIdx)
+            blocks: blocks.slice(firstBlockIdx)
           });
         }
         return str;
