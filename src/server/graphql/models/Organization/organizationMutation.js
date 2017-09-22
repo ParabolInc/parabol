@@ -143,9 +143,9 @@ export default {
             return r.branch(
               notification('userIds').count().eq(1),
               // if this was for them, delete it
-              notification.delete(),
+              r.table('Notification').get(notification('id')).delete(),
               // if this was for many people, remove them from it
-              notification.update({
+              r.table('Notification').get(notification('id')).update({
                 userIds: notification('userIds').filter((id) => id.ne(userId))
               })
             );
@@ -153,8 +153,8 @@ export default {
         inactivatedApprovals: r.table('User').get(userId)('email')
           .do((email) => {
             return r.table('OrgApproval')
-              .getAll(orgId, {index: 'orgId'})
-              .filter({email})
+              .getAll(email, {index: 'email'})
+              .filter({orgId})
               .update({
                 isActive: false
               });

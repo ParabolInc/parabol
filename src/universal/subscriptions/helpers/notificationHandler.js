@@ -172,7 +172,7 @@ const notificationHandler = {
       action: {
         label: 'Check it out!',
         callback: () => {
-          history.push(`/me/organizations/${orgId}`);
+          history.push(`/me/organizations/${orgId}/members`);
         }
       }
     }));
