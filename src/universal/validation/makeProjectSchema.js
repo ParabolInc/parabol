@@ -24,6 +24,18 @@ export default function makeProjectSchema() {
           parsedContent.blocks.length === 0)) {
           return makeEmptyStr();
         }
+        // remove empty first block
+        const {blocks} = parsedContent;
+        const firstBlockIdx = blocks.findIndex((block) => Boolean(block.text));
+        if (firstBlockIdx === -1) {
+          return makeEmptyStr();
+        }
+        if (firstBlockIdx > 0) {
+          return JSON.stringify({
+            ...parsedContent,
+            blocks: parsedContent.blocks.slice(firstBlockIdx)
+          });
+        }
         return str;
       })
       .max(PROJECT_MAX_CHARS, 'Whoa! That looks like 2 projects'),
