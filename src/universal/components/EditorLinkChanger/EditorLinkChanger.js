@@ -56,6 +56,7 @@ class EditorLinkChanger extends Component {
 
   render() {
     const {
+      link,
       styles,
       handleSubmit,
       valid,
@@ -87,7 +88,7 @@ class EditorLinkChanger extends Component {
           <div className={css(styles.textBlock)}>
             <span className={css(styles.inputLabel)}>{'Link'}</span>
             <Field
-              autoFocus={text === null}
+              autoFocus={link === null && text !== ''}
               colorPalette="link"
               component={PlainInputField}
               name="link"
@@ -117,6 +118,7 @@ EditorLinkChanger.propTypes = {
   editorState: PropTypes.object,
   isClosing: PropTypes.bool,
   left: PropTypes.number,
+  link: PropTypes.string,
   removeModal: PropTypes.func.isRequired,
   selectionState: PropTypes.object.isRequired,
   setEditorState: PropTypes.func.isRequired,
