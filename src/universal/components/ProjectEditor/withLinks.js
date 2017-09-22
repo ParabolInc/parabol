@@ -281,6 +281,7 @@ const withLinks = (ComposedComponent) => {
             setEditorState,
             removeModal: this.removeModal,
             text,
+            link,
             initialValues: {text, link},
             editorRef,
             trackEditingComponent

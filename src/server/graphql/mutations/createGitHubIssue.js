@@ -28,8 +28,12 @@ const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner) => {
         const assigneeName = await r.table('TeamMember').get(assigneeTeamMemberId)('preferredName');
         throw new Error(`${assigneeName} cannot be assigned to ${nameWithOwner}. Make sure they have access`);
       }
+    } else if (code === 'missing_field') {
+      if (field === 'title') {
+        throw new Error('The first line is the title. It can’t be empty');
+      }
     }
-    throw new Error(`GitHub: ${field} ${code}.${message}`);
+    throw new Error(`GitHub: ${message}. ${code}: ${field}`);
   } else if (message) {
     // this means it's our bad:
     throw new Error(`GitHub: ${message}.`);

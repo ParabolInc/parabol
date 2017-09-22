@@ -2,6 +2,7 @@ import shortid from 'shortid';
 import getRethink from '../../../../database/rethinkDriver';
 import {ACTIVE, FUTURE} from '../../../../../universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 
 const SEED_PROJECTS = [
@@ -48,7 +49,7 @@ export default (userId, teamId) => {
     id: `${teamId}::${shortid.generate()}`,
     createdAt: now,
     createdBy: userId,
-    tags: [],
+    tags: getTagsFromEntityMap(JSON.parse(proj.content).entityMap),
     teamId,
     teamMemberId: `${userId}::${teamId}`,
     userId,
