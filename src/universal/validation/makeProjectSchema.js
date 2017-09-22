@@ -26,7 +26,7 @@ export default function makeProjectSchema() {
         }
         // remove empty first block
         const {blocks} = parsedContent;
-        const firstBlockIdx = blocks.findIndex((block) => Boolean(block.text));
+        const firstBlockIdx = blocks.findIndex((block) => Boolean(block.text.replace(/\s/g, '')));
         if (firstBlockIdx === -1) {
           return makeEmptyStr();
         }
