@@ -46,6 +46,7 @@ const notificationHandler = {
     // localId isn't always present because if i accept to join i want the authToken but no notification
     const {id: localId} = fromGlobalId(id);
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'Congratulations!',
       message: `You've been added to team ${teamName}`,
       action: {
@@ -65,6 +66,7 @@ const notificationHandler = {
     const {viewerId} = environment;
     const inviteeEmail = payload.getValue('inviteeEmail');
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'Oh no!',
       message: `${inviteeEmail} was denied to join the team.`,
       action: {
@@ -98,6 +100,7 @@ const notificationHandler = {
     const {viewerId} = environment;
     const inviteeEmail = payload.getValue('inviteeEmail');
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'Approved!',
       message: `${inviteeEmail} has been approved by your organization. We just sent them an invitation.`,
       action: {
@@ -115,6 +118,7 @@ const notificationHandler = {
     const preferredName = payload.getValue('preferredName');
     const teamName = payload.getValue('teamName');
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'Ahoy, a new crewmate!',
       message: `${preferredName} just joined team ${teamName}`
     }));
@@ -126,6 +130,7 @@ const notificationHandler = {
     const isKickout = payload.getValue('isKickout');
     if (isKickout) {
       dispatch(showWarning({
+        autoDismiss: 10,
         title: 'So long!',
         message: `You have been removed from ${teamName}`,
         action: {
@@ -151,6 +156,7 @@ const notificationHandler = {
     const {viewerId} = environment;
     const orgId = payload.getValue('orgId');
     dispatch(showWarning({
+      autoDismiss: 10,
       title: 'Oh no!',
       message: 'Your credit card was rejected.',
       action: {
@@ -167,6 +173,7 @@ const notificationHandler = {
     const orgId = payload.getValue('orgId');
     const groupName = payload.getValue('groupName');
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'Congratulations!',
       message: `You've been promoted to billing leader for ${groupName}`,
       action: {
@@ -182,6 +189,7 @@ const notificationHandler = {
     const preferredName = payload.getValue('preferredName');
     const teamName = payload.getValue('teamName');
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'They\'re back!',
       message: `${preferredName} has rejoined ${teamName}`
     }));
@@ -193,6 +201,7 @@ const notificationHandler = {
     // const globalId = payload.getValue('id');
     // const {id: dbId} = fromGlobalId(globalId);
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'Approval Requested!',
       message: `${inviterName} would like to invite someone to their team`,
       action: {
@@ -208,6 +217,7 @@ const notificationHandler = {
     const {viewerId} = environment;
     const teamName = payload.getValue('teamName');
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'That\'s it, folks!',
       message: `${teamName} has been archived.`,
       action: {
@@ -226,6 +236,7 @@ const notificationHandler = {
     const inviterName = payload.getValue('inviterName');
     const teamName = payload.getValue('teamName');
     dispatch(showInfo({
+      autoDismiss: 10,
       title: 'You\'re invited!',
       message: `${inviterName} would like you to join their team ${teamName}`,
       action: {
