@@ -5,12 +5,14 @@ import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import {css} from 'aphrodite-local-styles/no-important';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const MeetingAgendaFirstCall = (props) => {
   const {
@@ -20,6 +22,7 @@ const MeetingAgendaFirstCall = (props) => {
     hideMoveMeetingControls,
     styles
   } = props;
+  const phaseName = actionMeeting.agendaitems.name;
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -28,31 +31,27 @@ const MeetingAgendaFirstCall = (props) => {
             {'Now, what do you need?'}
           </MeetingPhaseHeading>
           <Type align="center" bold marginBottom="2.5rem" marginTop=".5rem" scale="s5" colorPalette="black">
-            (Time to add your agenda items to the list.)
+            {`(Time to add your ${AGENDA_ITEM_LABEL}s to the list.)`}
           </Type>
 
           <AgendaShortcutHint />
 
-          {!hideMoveMeetingControls ?
-            <div className={css(styles.buttonBlock)}>
+          <div className={css(styles.controlBlock)}>
+            {!hideMoveMeetingControls ?
               <Button
                 buttonStyle="flat"
                 colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
-                label="Let’s begin: Agenda"
+                label={`Let’s begin: ${phaseName}`}
                 onClick={gotoNext}
                 size="largest"
-              />
-            </div> :
-            <div className={css(styles.warmHighlight)}>
-              <Type align="center" scale="s4" colorPalette="black">
-                <span className={css(styles.highlight)}>
-                  Waiting for <b>{getFacilitatorName(team, members)}</b> to advance the meeting<Ellipsis />
-                </span>
-              </Type>
-            </div>
-          }
+              /> :
+              <MeetingFacilitationHint>
+                {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to start the ${phaseName}`}
+              </MeetingFacilitationHint>
+            }
+          </div>
         </MeetingSection>
       </MeetingSection>
     </MeetingMain>
@@ -72,7 +71,7 @@ const styleThunk = () => ({
     color: appTheme.palette.warm
   },
 
-  buttonBlock: {
+  controlBlock: {
     marginTop: '2.5rem'
   },
 

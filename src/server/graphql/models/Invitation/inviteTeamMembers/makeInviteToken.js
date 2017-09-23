@@ -14,6 +14,6 @@ const randomSafeString = (length = 8, chars = asciiAlphabet) => {
   return result.join('');
 };
 
-export default function makeInviteToken() {
-  return `${randomSafeString(INVITE_TOKEN_INVITE_ID_LEN)}${randomSafeString(INVITE_TOKEN_KEY_LEN)}`;
+export default function makeInviteToken(inviteId = randomSafeString(INVITE_TOKEN_INVITE_ID_LEN)) {
+  return `${inviteId}${randomSafeString(INVITE_TOKEN_KEY_LEN)}`;
 }

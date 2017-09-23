@@ -1,17 +1,16 @@
+import {css} from 'aphrodite-local-styles/no-important';
+import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {DashModal} from 'universal/components/Dashboard';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
+import portal from 'react-portal-hoc';
+import {Field, reduxForm, SubmissionError} from 'redux-form';
 import Button from 'universal/components/Button/Button';
+import {DashModal} from 'universal/components/Dashboard';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import Type from 'universal/components/Type/Type';
-import {cashay} from 'cashay';
-import portal from 'react-portal-hoc';
-import {reduxForm, Field, SubmissionError} from 'redux-form';
-import shouldValidate from 'universal/validation/shouldValidate';
 import formError from 'universal/styles/helpers/formError';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 import rejectOrgApprovalValidation from './rejectOrgApprovalValidation';
 
 const validate = (values) => {
@@ -26,7 +25,7 @@ const RejectOrgApprovalModal = (props) => {
     error,
     handleSubmit,
     isClosing,
-    notificationId,
+    dbNotificationId,
     inviteeEmail,
     inviterName,
     submitting,
@@ -35,7 +34,7 @@ const RejectOrgApprovalModal = (props) => {
   const onSubmit = async (submissionData) => {
     const schema = rejectOrgApprovalValidation();
     const {data: {reason}} = schema(submissionData);
-    const variables = {reason, notificationId};
+    const variables = {reason, dbNotificationId};
     const {error: anError} = await cashay.mutate('rejectOrgApproval', {variables});
     if (anError) throw new SubmissionError(anError);
     closePortal();
@@ -58,12 +57,12 @@ const RejectOrgApprovalModal = (props) => {
         <div className={css(styles.buttonBlock)}>
           <Button
             colorPalette="cool"
-            disabled={submitting}
             isBlock
             label={`Reject ${inviteeEmail}`}
             size={ui.modalButtonSize}
             type="submit"
             onClick={handleSubmit(onSubmit)}
+            waiting={submitting}
           />
         </div>
       </form>
@@ -79,12 +78,9 @@ RejectOrgApprovalModal.propTypes = {
   isClosing: PropTypes.bool,
   inviteeEmail: PropTypes.string,
   inviterName: PropTypes.string,
-  notificationId: PropTypes.string.isRequired,
-  orgId: PropTypes.string.isRequired,
-  preferredName: PropTypes.string.isRequired,
+  dbNotificationId: PropTypes.string.isRequired,
   submitting: PropTypes.bool,
-  styles: PropTypes.object,
-  userId: PropTypes.string.isRequired
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -98,7 +94,7 @@ const styleThunk = () => ({
 });
 
 export default portal({escToClose: true, closeAfter: 100})(
-  reduxForm({form: 'rejectOrgApproval', validate, shouldValidate})(
+  reduxForm({form: 'rejectOrgApproval', validate})(
     withStyles(styleThunk)(RejectOrgApprovalModal)
   )
 );

@@ -14,8 +14,10 @@ export default {
     'projects.teamMemberId',
     'teamId'
   ],
-  notification: ['id', 'orgId', 'userIds'],
+  invitation: ['id', 'email', 'invitedBy', 'teamId'],
+  notification: ['id', 'inviteeEmail', 'inviterUserId', 'orgId', 'requestorId', 'teamId', 'userIds'],
   organization: ['id', 'stripeId', 'stripeSubscriptionId', 'orgUsers.id'],
+  orgApproval: ['id', 'approvedBy', 'deniedBy', 'email', 'orgId', 'teamId'],
   project: ['id', 'agendaId', 'createdBy', 'teamId', 'teamMemberId', 'userId'],
   projectHistory: ['id', 'projectId', 'teamMemberId'],
   team: ['id', 'activeFacilitator', 'meetingId', 'orgId'],

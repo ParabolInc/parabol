@@ -57,7 +57,7 @@ const MenuItem = (props) => {
   return (
     <div title={titleStr}>
       {hr === 'before' && <hr className={css(styles.hr)} />}
-      <div className={rootStyles} onClick={handleClick} >
+      <div className={rootStyles} onClick={handleClick}>
         {avatar && makeAvatar()}
         {!avatar && icon && makeIcon()}
         {labelEl}
@@ -101,7 +101,7 @@ const styleThunk = () => ({
     color: ui.menuItemColor,
     cursor: 'pointer',
     display: 'flex',
-    transition: `background-color ${ui.transitionFastest}`,
+    transition: `background-color ${ui.transition[0]}`,
 
     ':hover': {
       ...hoverFocusStyles

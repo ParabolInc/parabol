@@ -164,7 +164,7 @@ const TeamInvite = (props) => {
 
 TeamInvite.propTypes = {
   inviterAvatar: PropTypes.string.isRequired,
-  inviteeName: PropTypes.string.isRequired,
+  inviteeName: PropTypes.string,
   inviteeEmail: PropTypes.string.isRequired,
   inviterName: PropTypes.string.isRequired,
   inviterEmail: PropTypes.string.isRequired,

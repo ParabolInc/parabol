@@ -22,8 +22,9 @@ export default {
       requireOrgLeader(userOrgDoc);
 
       // RESOLUTION
-      const stripeId = await r.table('Organization').get(orgId)('stripeId');
-      const upcomingInvoice = await makeUpcomingInvoice(orgId, stripeId);
+      const {stripeId, stripeSubscriptionId} = await r.table('Organization').get(orgId)
+        .pluck('stripeId', 'stripeSubscriptionId');
+      const upcomingInvoice = await makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId);
       const payload = {
         type: 'add',
         fields: upcomingInvoice

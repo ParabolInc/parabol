@@ -307,12 +307,10 @@ Object {
       "id": 11,
       "orgId": 0,
       "startAt": 2017-01-01T08:00:00.000Z,
+      "trialExpiresAt": 2017-01-01T08:00:00.000Z,
       "type": "TRIAL_EXPIRED",
       "userIds": Array [
         2,
-      ],
-      "varList": Array [
-        2017-01-01T08:00:00.000Z,
       ],
     },
   ],

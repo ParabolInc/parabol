@@ -7,6 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {cashay} from 'cashay';
 import makeHref from 'universal/utils/makeHref';
 import Button from 'universal/components/Button/Button';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
@@ -29,27 +30,29 @@ const MeetingLobby = (props) => {
     <MeetingMain>
       {/* */}
       <div className={css(styles.root)}>
-        <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
-        <div className={css(styles.helpText)}>Is the whole team here?</div>
+        <MeetingPhaseHeading>{`Hi, ${teamName} Team!`}</MeetingPhaseHeading>
+        <div className={css(styles.helpText)}>
+          {'Is the whole team here?'}
+        </div>
         <div className={css(styles.prompt)}>
-          The person who presses “Start Meeting” will facilitate the meeting.<br />
-          Everyone’s display automatically follows the Facilitator.
+          {'The person who presses “Start Meeting” will facilitate the meeting.'}<br />
+          {'Everyone’s display automatically follows the Facilitator.'}
         </div>
         <div className={css(styles.helpText)}>
-          <b>Today’s Facilitator</b>: begin the Check-In Round!
+          <b>{'Today’s Facilitator'}</b>{`: begin the ${actionMeeting.checkin.name}!`}
         </div>
         <div className={css(styles.buttonBlock)}>
           <Button
             buttonStyle="solid"
             colorPalette="cool"
+            depth={1}
             label="Start Meeting"
             onClick={onStartMeetingClick}
-            raised
             size="largest"
             textTransform="uppercase"
           />
         </div>
-        <p className={css(styles.label)}>MEETING LINK:</p>
+        <p className={css(styles.label)}>{'Meeting Link:'}</p>
         <div className={css(styles.urlBlock)}>
           <CopyShortLink url={shortUrl} />
         </div>

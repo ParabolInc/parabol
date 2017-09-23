@@ -66,7 +66,6 @@ export default async (req, res) => {
   const [shaType, hash] = hexDigest.split('=');
   const githubSecret = signPayload(process.env.GITHUB_WEBHOOK_SECRET, publicKey);
   const myHash = signPayload(githubSecret, JSON.stringify(body), shaType);
-  console.log('Got event', event, publicKey, githubSecret, myHash, hash);
   if (!secureCompare(hash, myHash)) return;
 
   const {getVars, query} = actionHandler;

@@ -6,14 +6,12 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {cardBorderTop} from 'universal/styles/helpers';
 
-//    TODO:
-//  • To-do item (TA)
-
 const Panel = (props) => {
   const {
     children,
     controls,
     hasHeader,
+    hideFirstRowBorder,
     label,
     styles
   } = props;
@@ -30,7 +28,14 @@ const Panel = (props) => {
           </div>
         </div>
       }
-      <div className={css(styles.children)}>
+      {/*
+          NOTE: “hideFirstRowBorder”
+          children may only be a set of rows,
+          and in the absense of a panel header,
+          we may want to avoid fuzzies by hiding
+          the first row’s top border
+      */}
+      <div className={css(styles.children, hideFirstRowBorder && styles.hideFirstRowBorder)}>
         {children}
       </div>
     </div>
@@ -41,6 +46,7 @@ Panel.propTypes = {
   children: PropTypes.any,
   controls: PropTypes.any,
   hasHeader: PropTypes.bool,
+  hideFirstRowBorder: PropTypes.bool,
   label: PropTypes.any,
   styles: PropTypes.object
 };
@@ -94,6 +100,10 @@ const styleThunk = () => ({
   children: {
     display: 'block',
     width: '100%'
+  },
+
+  hideFirstRowBorder: {
+    marginTop: '-.0625rem'
   }
 });
 

@@ -7,23 +7,29 @@ import Button from 'universal/components/Button/Button';
 import Row from 'universal/components/Row/Row';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import {cashay} from 'cashay';
 import {withRouter} from 'react-router-dom';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 
 const PromoteToBillingLeader = (props) => {
   const {
-    notificationId,
-    orgId,
+    atmosphere,
     history,
     styles,
-    varList
+    notification,
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
   } = props;
-  const [orgName] = varList;
+  const {id, groupName: orgName, orgId} = notification;
+  const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
-    const variables = {notificationId};
-    cashay.mutate('clearNotification', {variables});
+    submitMutation();
+    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
     history.push(`/me/organizations/${orgId}`);
   };
+
   return (
     <Row>
       <div className={css(styles.icon)}>
@@ -41,6 +47,7 @@ const PromoteToBillingLeader = (props) => {
           size={ui.notificationButtonSize}
           type="submit"
           onClick={acknowledge}
+          waiting={submitting}
         />
       </div>
     </Row>
@@ -48,11 +55,18 @@ const PromoteToBillingLeader = (props) => {
 };
 
 PromoteToBillingLeader.propTypes = {
-  notificationId: PropTypes.string.isRequired,
-  orgId: PropTypes.string.isRequired,
+  atmosphere: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
-  varList: PropTypes.array.isRequired
+  submitMutation: PropTypes.func.isRequired,
+  submitting: PropTypes.bool,
+  notification: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    groupName: PropTypes.string.isRequired,
+    orgId: PropTypes.string.isRequired
+  })
 };
 
 const styleThunk = () => ({

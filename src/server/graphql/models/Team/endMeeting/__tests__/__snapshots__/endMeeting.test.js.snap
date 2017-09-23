@@ -238,10 +238,10 @@ Object {
   "team": Object {
     "activeFacilitator": 24,
     "checkInGreeting": Object {
-      "content": "Salut",
-      "language": "Catalan",
+      "content": "Shalom",
+      "language": "Hebrew",
     },
-    "checkInQuestion": "Anything inspire you recently",
+    "checkInQuestion": "What’s something you’ve learned recently",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
     "id": 6,
@@ -604,10 +604,10 @@ Object {
   "team": Object {
     "activeFacilitator": 25,
     "checkInGreeting": Object {
-      "content": "Salut",
-      "language": "Catalan",
+      "content": "Shalom",
+      "language": "Hebrew",
     },
-    "checkInQuestion": "Anything inspire you recently",
+    "checkInQuestion": "What’s something you’ve learned recently",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
     "id": 6,

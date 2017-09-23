@@ -1,16 +1,17 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import {Field, reduxForm} from 'redux-form';
+import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import Button from 'universal/components/Button/Button';
 import Editable from 'universal/components/Editable/Editable';
-import {cashay} from 'cashay';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
-import {reduxForm, Field} from 'redux-form';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 import inviteUserValidation from './inviteUserValidation';
+import SubmissionError from 'redux-form/es/SubmissionError';
 
 const makeSchemaProps = (props) => {
   const {invitations, orgApprovals, teamMembers} = props;
@@ -35,9 +36,11 @@ const fieldStyles = {
 
 const InviteUser = (props) => {
   const {
+    atmosphere,
     dispatch,
     handleSubmit,
     styles,
+    submitting,
     teamId,
     touch,
     untouch
@@ -46,32 +49,13 @@ const InviteUser = (props) => {
   const updateEditable = async (submissionData) => {
     const schemaProps = makeSchemaProps(props);
     const schema = inviteUserValidation(schemaProps);
-    const {data: {inviteTeamMember}} = schema(submissionData);
-    const variables = {
-      teamId,
-      invitees: [{
-        email: inviteTeamMember
-      }]
-    };
-    const {data: {inviteTeamMembers: inviteSent}} = await cashay.mutate('inviteTeamMembers', {variables});
-    if (inviteSent === true) {
-      dispatch(showSuccess({
-        title: 'Invitation sent!',
-        message: `An invitation has been sent to ${inviteTeamMember}`
-      }));
-    } else if (inviteSent === false) {
-      dispatch(showSuccess({
-        title: 'Request sent to admin',
-        message: `A request to add ${inviteTeamMember} has been sent to your organization admin`
-      }));
-    } else if (inviteSent === null) {
-      dispatch(showSuccess({
-        title: `${inviteTeamMember} reactivated!`,
-        message: `${inviteTeamMember} used to be on this team, so they were automatically approved`
-      }));
+    const {data: {inviteTeamMember}, errors} = schema(submissionData);
+    if (Object.keys(errors).length) {
+      throw new SubmissionError(errors);
     }
+    const invitees = [{email: inviteTeamMember}];
+    InviteTeamMembersMutation(atmosphere, invitees, teamId, dispatch);
   };
-
   return (
     <div className={css(styles.inviteUser)}>
       <AvatarPlaceholder />
@@ -93,6 +77,7 @@ const InviteUser = (props) => {
           label="Send Invite"
           size="smallest"
           onClick={handleSubmit(updateEditable)}
+          waiting={submitting}
         />
       </div>
     </div>
@@ -100,11 +85,13 @@ const InviteUser = (props) => {
 };
 
 InviteUser.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   actions: PropTypes.any,
   dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   onInviteSubmitted: PropTypes.func,
   picture: PropTypes.string,
+  submitting: PropTypes.bool.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string,
   touch: PropTypes.func.isRequired,
@@ -137,6 +124,8 @@ const styleThunk = () => ({
  *
  * See: universal/redux/makeReducer.js
  */
-export default reduxForm({form: 'inviteTeamMember', validate})(
-  withStyles(styleThunk)(InviteUser)
+export default withAtmosphere(
+  reduxForm({form: 'inviteTeamMember', validate})(
+    withStyles(styleThunk)(InviteUser)
+  )
 );

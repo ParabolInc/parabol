@@ -1,14 +1,10 @@
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLID
-} from 'graphql';
-import {getUserId, getUserOrgDoc, requireWebsocket, requireOrgLeader} from 'server/utils/authorization';
-import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import rejectOrgApprovalValidation from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApprovalValidation';
-import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
+import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
+import publishNotifications from 'server/utils/publishNotifications';
+import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {DENY_NEW_USER} from 'universal/utils/constants';
 
@@ -16,7 +12,7 @@ export default {
   type: GraphQLBoolean,
   description: 'Create a new team and add the first team member',
   args: {
-    notificationId: {
+    dbNotificationId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The notification to which the Billing Leader is responding'
     },
@@ -29,16 +25,16 @@ export default {
     const now = new Date();
 
     // AUTH
+    const {dbNotificationId} = args;
     const userId = getUserId(authToken);
-    const {notificationId} = args;
     requireWebsocket(socket);
-    const notification = await r.table('Notification').get(notificationId)
-      .pluck('orgId', 'varList')
+    const rejectionNotification = await r.table('Notification').get(dbNotificationId)
+      .pluck('orgId', 'inviterUserId', 'inviteeEmail')
       .default(null);
-    if (!notification) {
-      throw errorObj({reason: `Notification ${notificationId} no longer exists!`});
+    if (!rejectionNotification) {
+      throw errorObj({reason: `Notification ${dbNotificationId} no longer exists!`});
     }
-    const {orgId, varList} = notification;
+    const {orgId, inviterUserId, inviteeEmail} = rejectionNotification;
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
     requireOrgLeader(userOrgDoc);
 
@@ -47,19 +43,27 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const [inviterId, , inviteeEmail] = varList;
-    const billingLeaderName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
-    await Promise.all([
-      removeOrgApprovalAndNotification(orgId, inviteeEmail),
-      r.table('Notification').insert({
-        id: shortid.generate(),
-        type: DENY_NEW_USER,
-        startAt: now,
-        orgId,
-        userIds: [inviterId],
-        varList: [reason, billingLeaderName, inviteeEmail]
-      })
+    const deniedByName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
+    const notification = {
+      id: shortid.generate(),
+      type: DENY_NEW_USER,
+      startAt: now,
+      orgId,
+      userIds: [inviterUserId],
+      reason,
+      deniedByName,
+      inviteeEmail
+    };
+
+    const [notificationsToClear] = await Promise.all([
+      removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: userId}),
+      r.table('Notification').insert(notification)
     ]);
+    const notificationsToAdd = {
+      [inviterUserId]: [notification]
+    };
+
+    publishNotifications({notificationsToAdd, notificationsToClear});
     return true;
   }
 };

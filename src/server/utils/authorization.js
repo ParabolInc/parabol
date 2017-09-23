@@ -1,6 +1,6 @@
-import {errorObj} from './utils';
-import getRethink from '../database/rethinkDriver';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import getRethink from '../database/rethinkDriver';
+import {errorObj} from './utils';
 
 export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -108,7 +108,8 @@ export const requireWebsocketExchange = (exchange) => {
   }
 };
 
-export const getUserOrgDoc = (userId, orgId) => {
+// undefined orgId will disable the filter
+export const getUserOrgDoc = (userId, orgId = '') => {
   const r = getRethink();
   return r.table('User').get(userId)('userOrgs')
     .filter({id: orgId})
@@ -124,7 +125,7 @@ export const isBillingLeader = (userOrgDoc) => {
 export const requireOrgLeader = (userOrgDoc) => {
   const legit = isBillingLeader(userOrgDoc);
   if (!legit) {
-    throw errorObj({_error: 'Unauthorized. User is not a Billing Leader for that organization'});
+    throw new Error('Unauthorized. User is not a Billing Leader for that organization');
   }
 };
 
@@ -183,11 +184,7 @@ export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
   return true;
 };
 
-export const requireNotificationOwner = async (userId, notificationId) => {
-  const r = getRethink();
-  const res = await r.table('Notification').get(notificationId)('userIds').contains(userId).default(null);
-  if (!res) {
-    throw errorObj({_error: `Notification ${notificationId} does not exist or ${userId} does not have access to it`});
-  }
-  return true;
+export const requireNotificationOwner = (userId, notification) => {
+  if (notification && notification.userIds.includes(userId)) return true;
+  throw new Error('Notification not found!');
 };

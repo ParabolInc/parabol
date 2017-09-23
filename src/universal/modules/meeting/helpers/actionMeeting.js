@@ -1,4 +1,4 @@
-import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
+import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY, MEETING_SUMMARY_LABEL} from 'universal/utils/constants';
 
 export default {
   [LOBBY]: {
@@ -14,7 +14,7 @@ export default {
       countName: 'teamMemberCount',
       arrayName: 'members'
     },
-    name: 'Check-in',
+    name: 'Social Check-In',
     next: UPDATES,
     route: 'checkin',
     visitOnce: false
@@ -25,14 +25,14 @@ export default {
       countName: 'teamMemberCount',
       arrayName: 'members'
     },
-    name: 'Updates',
+    name: 'Solo Updates',
     next: FIRST_CALL,
     route: 'updates',
     visitOnce: false
   },
   [FIRST_CALL]: {
     index: 3,
-    name: 'First call',
+    name: 'First Call',
     next: AGENDA_ITEMS,
     route: 'firstcall',
     visitOnce: true
@@ -43,21 +43,21 @@ export default {
       countName: 'agendaCount',
       arrayName: 'agenda'
     },
-    name: 'Agenda items',
+    name: 'Team Agenda',
     next: LAST_CALL,
     route: 'agenda',
     visitOnce: false
   },
   [LAST_CALL]: {
     index: 5,
-    name: 'Last call',
+    name: 'Last Call',
     next: SUMMARY,
     route: 'lastcall',
     visitOnce: true
   },
   [SUMMARY]: {
     index: 6,
-    name: 'Summary',
+    name: MEETING_SUMMARY_LABEL,
     route: 'summary',
     visitOnce: false
   }

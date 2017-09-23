@@ -122,7 +122,7 @@ const styleThunk = () => ({
     ...cardRootStyles,
     outline: 'none',
     paddingTop: '.1875rem',
-
+    transition: `box-shadow ${ui.transition[0]}`,
     '::after': {
       ...cardBorderTop
     }
@@ -155,11 +155,11 @@ const styleThunk = () => ({
   // hover before focus, it matters
 
   cardHasHover: {
-    boxShadow: ui.cardBoxShadow[1]
+    boxShadow: ui.shadow[1]
   },
 
   cardHasFocus: {
-    boxShadow: ui.cardBoxShadow[2]
+    boxShadow: ui.shadow[2]
   },
 
   hasDragStyles: {

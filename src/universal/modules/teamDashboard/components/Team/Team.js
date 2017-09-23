@@ -22,7 +22,8 @@ const initialValues = {teamName: ''};
 const Team = (props) => {
   const {
     children,
-    hasDashAlert,
+    hasMeetingAlert,
+    hasTrialAlert,
     isSettings,
     history,
     styles,
@@ -34,7 +35,8 @@ const Team = (props) => {
   const hasOverlay = hasActiveMeeting || !isPaid;
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
-  const modalLayout = hasDashAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
+  const singleAlertModalLayout = (hasMeetingAlert || hasTrialAlert) ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
+  const modalLayout = (hasMeetingAlert && hasTrialAlert) ? ui.modalLayoutMainWithDashAlerts : singleAlertModalLayout;
   const goToMeetingLobby = () =>
     history.push(`/meeting/${teamId}/`);
   const goToTeamSettings = () =>
@@ -48,13 +50,14 @@ const Team = (props) => {
         modalLayout={modalLayout}
         teamId={teamId}
         teamName={teamName}
-        key={teamId}
+        key={`${teamId}MeetingModal`}
       />
       <UnpaidTeamModalContainer
         isOpen={!isPaid}
         teamId={teamId}
         modalLayout={modalLayout}
         teamName={teamName}
+        key={`${teamId}UnpaidModal`}
       />
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
@@ -62,11 +65,11 @@ const Team = (props) => {
             <Button
               buttonStyle="solid"
               colorPalette="warm"
+              depth={1}
               icon="users"
               iconPlacement="left"
               label="Meeting Lobby"
               onClick={goToMeetingLobby}
-              raised
               size="smallest"
             />
           }
@@ -108,7 +111,8 @@ const Team = (props) => {
 
 Team.propTypes = {
   children: PropTypes.any,
-  hasDashAlert: PropTypes.bool,
+  hasMeetingAlert: PropTypes.bool,
+  hasTrialAlert: PropTypes.bool,
   isSettings: PropTypes.bool.isRequired,
   history: PropTypes.object,
   styles: PropTypes.object,

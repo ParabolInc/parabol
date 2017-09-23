@@ -11,8 +11,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const PaymentRejected = (props) => {
-  const {orgId, history, styles, varList} = props;
-  const [last4, brand] = varList;
+  const {history, styles, notification} = props;
+  const {last4, brand, orgId} = notification;
   const addBilling = () => {
     history.push(`/me/organizations/${orgId}`);
   };
@@ -45,10 +45,13 @@ const PaymentRejected = (props) => {
 };
 
 PaymentRejected.propTypes = {
-  orgId: PropTypes.string.isRequired,
   history: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  varList: PropTypes.array.isRequired
+  notification: PropTypes.shape({
+    brand: PropTypes.string.isRequired,
+    last4: PropTypes.string.isRequired,
+    orgId: PropTypes.string.isRequired
+  })
 };
 
 const avatarPlaceholderSize = '2.75rem';

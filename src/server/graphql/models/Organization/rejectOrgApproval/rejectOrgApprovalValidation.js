@@ -3,7 +3,7 @@ import {orgRejectionReason, requiredId} from 'universal/validation/templates';
 
 export default function rejectOrgApprovalValidation() {
   return legitify({
-    notificationId: requiredId,
+    dbNotificationId: requiredId,
     reason: orgRejectionReason
   });
 }

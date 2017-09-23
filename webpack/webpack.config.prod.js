@@ -1,7 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'assets-webpack-plugin';
-import WebpackShellPlugin from 'webpack-shell-plugin';
 import S3Plugin from 'webpack-s3-plugin';
 import getDotenv from '../src/universal/utils/dotenv';
 import {getS3BasePath} from './utils/getS3BasePath';
@@ -104,11 +103,6 @@ export default {
       __GITHUB_CLIENT_ID__: JSON.stringify(process.env.GITHUB_CLIENT_ID),
       __SLACK_CLIENT_ID__: JSON.stringify(process.env.SLACK_CLIENT_ID),
       'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    new WebpackShellPlugin({
-      onBuildStart: [
-        'node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js'
-      ]
     })
   ],
   module: {

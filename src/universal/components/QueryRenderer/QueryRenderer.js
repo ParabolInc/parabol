@@ -15,21 +15,27 @@ const makeProps = (snapshotData, unsubscribe) => unsubscribe ? {...snapshotData,
 
 const isCacheable = (subs, cacheConfig = {}) => subs || cacheConfig.force === false || cacheConfig.ttl;
 // cacheable logic borrowed from https://github.com/robrichard/relay-query-lookup-renderer
-export default class ReactRelayQueryRenderer extends React.Component {
+export default class QueryRenderer extends React.Component {
   static propTypes = {
     cacheConfig: PropTypes.object,
     environment: PropTypes.object,
     query: PropTypes.func,
     render: PropTypes.func.isRequired,
     variables: PropTypes.object,
-    subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired)
+    subscriptions: PropTypes.arrayOf(PropTypes.func.isRequired),
+    subParams: PropTypes.object
   };
+
+  static contextTypes = {
+    store: PropTypes.object
+  };
+
   static timeouts = {};
 
   constructor(props, context) {
     super(props, context);
     let {query, variables} = props;
-    const {cacheConfig, environment, subscriptions} = props;
+    const {cacheConfig, environment, subscriptions, subParams} = props;
     let operation = null;
     if (query) {
       const {
@@ -42,8 +48,8 @@ export default class ReactRelayQueryRenderer extends React.Component {
     }
     const operationName = operation ? operation.name : 'queryless';
     this._queryKey = Atmosphere.getKey(operationName, variables);
-    clearTimeout(ReactRelayQueryRenderer.timeouts[this._queryKey]);
-    delete ReactRelayQueryRenderer.timeouts[this._queryKe];
+    clearTimeout(QueryRenderer.timeouts[this._queryKey]);
+    delete QueryRenderer.timeouts[this._queryKe];
 
     this._pendingFetch = null;
     this._relayContext = {
@@ -69,7 +75,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
           readyState: getStateWithProps()
         };
         this._fetch(operation, cacheConfig);
-        this._subscribe(subscriptions);
+        this._subscribe(subscriptions, subParams);
       }
     }
   }
@@ -81,7 +87,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {cacheConfig, environment, subscriptions, query, variables} = nextProps;
+    const {cacheConfig, environment, subscriptions, subParams, query, variables} = nextProps;
     if (
       query !== this.props.query ||
       environment !== this.props.environment ||
@@ -107,7 +113,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
           this.release();
           this._fetch(operation, cacheConfig);
           // Note: cannot change the subscription array without changing vars
-          this._subscribe(subscriptions);
+          this._subscribe(subscriptions, subParams);
           this.setState({
             readyState: getStateWithProps()
           });
@@ -146,7 +152,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
     // if the client is unlikely to return after X, the subscription has a TTL of X
     // when that time has be reached, then we unsub
     if (ttl !== undefined && ttl <= MAX_TIMEOUT) {
-      const {timeouts} = ReactRelayQueryRenderer;
+      const {timeouts} = QueryRenderer;
       timeouts[this._queryKey] = setTimeout(() => {
         this.release();
         delete timeouts[this._queryKey];
@@ -180,11 +186,11 @@ export default class ReactRelayQueryRenderer extends React.Component {
     }
   };
 
-  _subscribe(subscriptions) {
+  _subscribe(subscriptions, subParams) {
     if (subscriptions) {
       const {environment, variables} = this._relayContext;
       // subscribe to each new sub, or return the subKey of an already existing sub
-      const subscriptionKeys = subscriptions.map((sub) => sub(environment, variables));
+      const subscriptionKeys = subscriptions.map((sub) => sub(environment, variables, subParams));
       // provide an unsub prop to the component so we can unsub whenever we want
       // when we call unsub we want to:
       //   release immediately if component is unmounted
@@ -298,7 +304,7 @@ export default class ReactRelayQueryRenderer extends React.Component {
   }
 }
 
-ReactRelayQueryRenderer.childContextTypes = {
+QueryRenderer.childContextTypes = {
   relay: PropTypes.object.isRequired
 };
 

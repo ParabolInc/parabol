@@ -12,6 +12,7 @@ import isProjectArchived from 'universal/utils/isProjectArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 import {USER_DASH} from 'universal/utils/constants';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
@@ -81,28 +82,35 @@ class OutcomeCardFooter extends Component {
     const {teamMember: owner, integration, team: {name: teamName}} = outcome;
     const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
-
     const buttonBlockStyles = css(
       styles.buttonBlock,
-      cardIsActive && styles.showBlock
+      cardIsActive && styles.showButtonBlock
     );
-
     const avatarStyles = css(
       styles.avatar,
       cardIsActive && styles.activeAvatar
     );
-
     const {error} = this.state;
     const ownerAvatarOrTeamName = (
       showTeam ?
-        <div className={css(styles.teamName)}>{teamName}</div> :
-        (<div className={avatarStyles} tabIndex="0">
-          <img
-            alt={owner.preferredName}
-            className={css(styles.avatarImg)}
-            src={owner.picture}
-          />
-        </div>)
+        <div className={css(styles.teamNameLabel)}>{teamName}</div> :
+        (<button
+          className={css(styles.avatarButton)}
+          tabIndex={service && '-1'}
+          title={`Assigned to ${owner.preferredName}`}
+          type="button"
+        >
+          <div className={avatarStyles}>
+            <img
+              alt={owner.preferredName}
+              className={css(styles.avatarImg)}
+              src={owner.picture}
+            />
+          </div>
+          <div className={css(styles.avatarLabel)}>
+            {owner.preferredName}
+          </div>
+        </button>)
     );
 
     return (
@@ -133,23 +141,25 @@ class OutcomeCardFooter extends Component {
             {isArchived ?
               <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" /> :
               <div>
-                {!service &&
-                <AsyncMenuContainer
-                  fetchMenu={fetchGitHubRepos}
-                  maxWidth={350}
-                  maxHeight={225}
-                  originAnchor={originAnchor}
-                  queryVars={{
-                    area,
-                    handleAddProject,
-                    projectId: outcome.id,
-                    setError: this.setError,
-                    clearError: this.clearError
-                  }}
-                  targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="github" />}
-                  toggleMenuState={toggleMenuState}
-                />
+                {/* buttonSpacer helps truncated names (…) be consistent */}
+                {!service ?
+                  <AsyncMenuContainer
+                    fetchMenu={fetchGitHubRepos}
+                    maxWidth={350}
+                    maxHeight={225}
+                    originAnchor={originAnchor}
+                    queryVars={{
+                      area,
+                      handleAddProject,
+                      projectId: outcome.id,
+                      setError: this.setError,
+                      clearError: this.clearError
+                    }}
+                    targetAnchor={targetAnchor}
+                    toggle={<OutcomeCardFooterButton icon="github" />}
+                    toggleMenuState={toggleMenuState}
+                  /> :
+                  <div className={css(styles.buttonSpacer)} />
                 }
                 <AsyncMenuContainer
                   fetchMenu={fetchStatusMenu}
@@ -197,61 +207,109 @@ OutcomeCardFooter.propTypes = {
   toggleMenuState: PropTypes.func.isRequired
 };
 
+const height = ui.cardButtonHeight;
+const label = {
+  ...textOverflow,
+  color: appTheme.palette.dark,
+  display: 'block',
+  flex: 1,
+  fontSize: appTheme.typography.s2,
+  fontWeight: 700,
+  lineHeight: height,
+  maxWidth: '100%',
+  textAlign: 'left'
+};
+
 const styleThunk = () => ({
-  activeAvatar: {
-    borderColor: appTheme.palette.mid50l
+  footer: {
+    // NOTE: height = ui.cardButtonHeight + (ui.cardPaddingBase * 2)
+    display: 'flex',
+    height: '2.5rem',
+    justifyContent: 'space-between',
+    maxWidth: '100%',
+    padding: ui.cardPaddingBase
   },
 
-  avatar: {
-    borderRadius: '100%',
-    border: '.0625rem solid transparent',
+  avatarButton: {
+    appearance: 'none',
+    backgroundColor: 'transparent',
+    border: 0,
+    boxShadow: 'none',
     cursor: 'pointer',
-    height: '1.75rem',
-    marginLeft: '-.125rem',
+    display: 'flex',
+    height,
     outline: 'none',
-    padding: '.0625rem',
-    position: 'relative',
-    width: '1.75rem',
+    margin: 0,
+    maxWidth: '100%',
+    padding: 0,
 
-    ':hover': {
-      borderColor: appTheme.palette.dark
+    ':hover > div': {
+      borderColor: appTheme.palette.dark,
+      color: appTheme.palette.dark10d
     },
-    ':focus': {
-      borderColor: appTheme.palette.dark
+    ':focus > div': {
+      borderColor: appTheme.palette.dark,
+      color: appTheme.palette.dark10d
     }
   },
 
   avatarBlock: {
-    flex: 1
+    flex: 1,
+    height,
+    minWidth: 0
+  },
+
+  avatar: {
+    // NOTE: height = ui.cardButtonHeight + .25rem (border + padding)
+    backgroundColor: 'transparent',
+    borderRadius: '100%',
+    border: '.0625rem solid transparent',
+    height: '1.75rem',
+    marginLeft: '-.125rem',
+    marginRight: '.25rem',
+    padding: '.0625rem',
+    position: 'relative',
+    top: '-.125rem',
+    width: '1.75rem'
+  },
+
+  activeAvatar: {
+    borderColor: appTheme.palette.mid50l
   },
 
   avatarImg: {
     borderRadius: '100%',
-    height: '1.5rem',
-    width: '1.5rem'
+    height,
+    marginRight: '.25rem',
+    width: height
+  },
+
+  avatarLabel: {
+    ...label,
+    flex: 1,
+    minWidth: 0
+  },
+
+  teamNameLabel: {
+    ...label
   },
 
   buttonBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end',
     opacity: 0
   },
 
-  footer: {
-    display: 'flex',
-    height: '2.5rem',
-    padding: ui.cardPaddingBase
-  },
-
-  teamName: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: '1.5rem',
-    verticalAlign: 'middle'
-  },
-
-  showBlock: {
+  showButtonBlock: {
     opacity: 1
+  },
+
+  // buttonSpacer helps truncated names (…) be consistent
+  buttonSpacer: {
+    display: 'inline-block',
+    height,
+    verticalAlign: 'middle',
+    width: height
   }
 });
 

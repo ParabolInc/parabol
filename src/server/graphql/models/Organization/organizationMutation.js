@@ -1,11 +1,13 @@
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
+import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLString
-} from 'graphql';
+import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
+import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
+import extendTrial from 'server/graphql/models/Organization/extendTrial/extendTrial';
+import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
+import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
+import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
+
 import {
   getUserId,
   getUserOrgDoc,
@@ -13,24 +15,12 @@ import {
   requireOrgLeaderOfUser,
   requireWebsocket
 } from 'server/utils/authorization';
-import {errorObj, validateAvatarUpload} from 'server/utils/utils';
-import getS3PutUrl from 'server/utils/getS3PutUrl';
-import {
-  PAUSE_USER,
-  REMOVE_USER,
-  MAX_MONTHLY_PAUSES
-} from 'server/utils/serverConstants';
-import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import {GraphQLURLType} from '../../types';
-import shortid from 'shortid';
-import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
-import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
-import extendTrial from 'server/graphql/models/Organization/extendTrial/extendTrial';
-import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
-import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
-import {BILLING_LEADER, PROMOTE_TO_BILLING_LEADER, billingLeaderTypes} from 'universal/utils/constants';
 import {toEpochSeconds} from 'server/utils/epochTime';
-import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
+import getS3PutUrl from 'server/utils/getS3PutUrl';
+import {MAX_MONTHLY_PAUSES, PAUSE_USER, REMOVE_USER} from 'server/utils/serverConstants';
+import {errorObj, validateAvatarUpload} from 'server/utils/utils';
+import shortid from 'shortid';
+import {GraphQLURLType} from '../../types';
 
 export default {
   updateOrg,
@@ -119,7 +109,7 @@ export default {
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken, exchange, socket}) {
+    async resolve(source, {orgId, userId}, {authToken, socket}) {
       const r = getRethink();
       const now = new Date();
 
@@ -132,36 +122,44 @@ export default {
       const teamIds = await r.table('Team')
         .getAll(orgId, {index: 'orgId'})('id');
       const teamMemberIds = teamIds.map((teamId) => `${userId}::${teamId}`);
-      await removeAllTeamMembers(teamMemberIds, exchange);
-      await r.table('Organization').get(orgId)
-        .update((org) => ({
-          orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
-          updatedAt: now
-        }))
-        .do(() => {
-          return r.table('User').get(userId)
-            .update((row) => ({
-              userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
-              updatedAt: now
-            }));
-        })
-        .do(() => {
-          // remove stale notifications
-          return r.table('Notification')
-            .getAll(userId, {index: 'userIds'})
-            .filter({orgId})
-            .forEach((notification) => {
-              return r.branch(
-                notification('userIds').count().eq(1),
-                // if this was for them, delete it
-                notification.delete(),
-                // if this was for many people, remove them from it
-                notification.update({
-                  userIds: notification('userIds').filter((id) => id.ne(userId))
-                })
-              );
-            });
-        });
+      await removeAllTeamMembers(teamMemberIds, {isKickout: true});
+      await r({
+        updatedOrg: r.table('Organization').get(orgId)
+          .update((org) => ({
+            orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
+            updatedAt: now
+          })),
+        updatedUser: r.table('User').get(userId)
+          .update((row) => ({
+            userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
+            updatedAt: now
+          })),
+        // remove stale notifications
+        // TODO I think this may be broken. see #1334
+        removedNotifications: r.table('Notification')
+          .getAll(userId, {index: 'userIds'})
+          .filter({orgId})
+          .forEach((notification) => {
+            return r.branch(
+              notification('userIds').count().eq(1),
+              // if this was for them, delete it
+              r.table('Notification').get(notification('id')).delete(),
+              // if this was for many people, remove them from it
+              r.table('Notification').get(notification('id')).update({
+                userIds: notification('userIds').filter((id) => id.ne(userId))
+              })
+            );
+          }),
+        inactivatedApprovals: r.table('User').get(userId)('email')
+          .do((email) => {
+            return r.table('OrgApproval')
+              .getAll(email, {index: 'email'})
+              .filter({orgId})
+              .update({
+                isActive: false
+              });
+          })
+      });
       // need to make sure the org doc is updated before adjusting this
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;
@@ -198,114 +196,5 @@ export default {
       return getS3PutUrl(contentType, contentLength, partialPath);
     }
   },
-  addOrg,
-  setOrgUserRole: {
-    type: GraphQLBoolean,
-    description: 'Set the role of a user',
-    args: {
-      orgId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The org to affect'
-      },
-      userId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the user who is receiving a role change'
-      },
-      role: {
-        type: GraphQLString,
-        description: 'the user’s new role'
-      }
-    },
-    async
-    resolve(source, {orgId, userId, role}, {authToken}) {
-      const r = getRethink();
-      const now = new Date();
-
-      // AUTH
-      const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
-      requireOrgLeader(userOrgDoc);
-
-      // VALIDATION
-      if (role && role !== BILLING_LEADER) {
-        throw errorObj({_error: 'invalid role'});
-      }
-      // if someone is leaving, make sure there is someone else to take their place
-      if (userId === authToken.sub) {
-        const leaderCount = await r.table('Organization').get(orgId)('orgUsers')
-          .filter({
-            role: BILLING_LEADER
-          })
-          .count();
-        if (leaderCount === 1) {
-          throw errorObj({_error: 'You’re the last leader, you can’t give that up'});
-        }
-      }
-
-      // RESOLUTION
-      const orgName = await r.table('User').get(userId)
-        .update((user) => ({
-          userOrgs: user('userOrgs').map((userOrg) => {
-            return r.branch(
-              userOrg('id').eq(orgId),
-              userOrg.merge({
-                role
-              }),
-              userOrg
-            );
-          }),
-          updatedAt: now
-        }))
-        .do(() => {
-          return r.table('Organization').get(orgId)
-            .update((org) => ({
-              orgUsers: org('orgUsers').map((orgUser) => {
-                return r.branch(
-                  orgUser('id').eq(userId),
-                  orgUser.merge({
-                    role
-                  }),
-                  orgUser
-                );
-              }),
-              updatedAt: now
-            }), {returnChanges: true})('changes')(0)('old_val')('name').default(null);
-        });
-      if (role === BILLING_LEADER) {
-        // add a notification
-        await r.table('Notification').insert({
-          id: shortid.generate(),
-          type: PROMOTE_TO_BILLING_LEADER,
-          startAt: now,
-          orgId,
-          userIds: [userId],
-          varList: [orgName]
-        })
-          .do(() => {
-            return r.table('Notification')
-              .getAll(orgId, {index: 'orgId'})
-              .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
-              .update((notification) => ({
-                userIds: notification('userIds').append(userId)
-              }));
-          });
-      } else if (role === null) {
-        await r.table('Notification')
-          .getAll(userId, {index: 'userIds'})
-          .filter({
-            orgId,
-            type: PROMOTE_TO_BILLING_LEADER
-          })
-          .delete()
-          .do(() => {
-            return r.table('Notification')
-              .getAll(orgId, {index: 'orgId'})
-              .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
-              .update((notification) => ({
-                userIds: notification('userIds').filter((id) => id.ne(userId))
-              }));
-          });
-      }
-      return true;
-    }
-  }
+  addOrg
 };

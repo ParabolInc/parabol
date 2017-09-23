@@ -1,9 +1,9 @@
-import {cashay} from 'cashay';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
+import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 
 const electFacilitatorIfNone = (nextProps, oldMembers) => {
   // when the meeting starts, we'll be guaranteed an activeFacilitator
-  const {dispatch, team: {activeFacilitator}, members} = nextProps;
+  const {atmosphere, dispatch, team: {activeFacilitator}, members} = nextProps;
   if (!activeFacilitator) return;
   const facilitator = members.find((m) => m.isFacilitating && m.isConnected);
   if (!facilitator) {
@@ -14,8 +14,10 @@ const electFacilitatorIfNone = (nextProps, oldMembers) => {
       const callingMember = onlineMembers[0];
       const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
       if (callingMember.isSelf) {
-        const options = {variables: {facilitatorId: nextFacilitator.id}};
-        cashay.mutate('changeFacilitator', options);
+        const onError = (err) => {
+          console.error(err);
+        };
+        PromoteFacilitatorMutation(atmosphere, nextFacilitator.id, onError);
       }
 
       const facilitatorIntro = nextFacilitator.isSelf ? 'You are' : `${nextFacilitator} is`;

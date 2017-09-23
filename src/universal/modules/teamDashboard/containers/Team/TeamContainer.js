@@ -31,7 +31,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {match: {params: {teamId}}} = props;
-  const {hasDashAlert} = state.dash;
+  const {hasMeetingAlert, hasTrialAlert} = state.dash;
   const userId = state.auth.obj.sub;
   const teamContainer = cashay.query(teamContainerSub, {
     op: 'teamContainer',
@@ -41,7 +41,8 @@ const mapStateToProps = (state, props) => {
   });
   const {team, teamMembers} = teamContainer.data;
   return {
-    hasDashAlert,
+    hasMeetingAlert,
+    hasTrialAlert,
     team,
     teamMembers,
     teamMemberId: `${userId}::${teamId}`
@@ -56,7 +57,8 @@ const TeamContainer = (props) => {
   const {
     location: {pathname},
     match,
-    hasDashAlert,
+    hasMeetingAlert,
+    hasTrialAlert,
     team,
     teamMembers,
     teamMemberId
@@ -64,13 +66,13 @@ const TeamContainer = (props) => {
   if (!team.id) {
     return <LoadingView />;
   }
-
   const isSettings = Boolean(matchPath(pathname, {
     path: '/team/:teamId/settings'
   }));
   return (
     <Team
-      hasDashAlert={hasDashAlert}
+      hasMeetingAlert={hasMeetingAlert}
+      hasTrialAlert={hasTrialAlert}
       isSettings={isSettings}
       team={team}
       teamMembers={teamMembers}
@@ -86,7 +88,8 @@ const TeamContainer = (props) => {
 };
 
 TeamContainer.propTypes = {
-  hasDashAlert: PropTypes.bool,
+  hasMeetingAlert: PropTypes.bool,
+  hasTrialAlert: PropTypes.bool,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired
   }),

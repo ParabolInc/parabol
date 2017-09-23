@@ -1,9 +1,13 @@
 import {GraphQLScalarType} from 'graphql';
 import {Kind} from 'graphql/language';
 
+const isValidDate = (maybeDate) => {
+  return !isNaN(maybeDate.getTime());
+};
+
 function parseDate(value) {
   const result = new Date(value);
-  if (isNaN(result.getTime())) {
+  if (!isValidDate(result)) {
     throw new Error(`Invalid date: ${value}`);
   }
   if (value !== result.toJSON()) {
@@ -17,13 +21,12 @@ const GraphQLISO8601Type = new GraphQLScalarType({
 
   // Serialize a date to send to the client.
   serialize(value) {
-    if (!(value instanceof Date)) {
-      throw new Error('Field error: value is not an instance of Date');
-    }
-    if (isNaN(value.getTime())) {
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) {
       throw new Error('Field error: value is an invalid Date');
     }
-    return value.toJSON();
+    return date.toJSON();
   },
 
   // Parse a date received as a query variable.

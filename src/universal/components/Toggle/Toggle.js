@@ -69,7 +69,7 @@ const styleThunk = () => ({
     ':after': {
       backgroundColor: appTheme.palette.mid10l,
       borderRadius: size,
-      boxShadow: '0 1px 0 rgba(0, 0, 0, .2)',
+      boxShadow: '0 .0625rem 0 rgba(0, 0, 0, .2)',
       display: 'block',
       content: '""',
       height: innerSize,

@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`inviteTeamMembers throws in the caller is not on the team 1`] = `"{\\"_error\\":\\"Unauthorized to view details for team 0 with token {\\\\\\"iss\\\\\\":\\\\\\"action-test\\\\\\",\\\\\\"sub\\\\\\":1,\\\\\\"aud\\\\\\":\\\\\\"test-audience\\\\\\",\\\\\\"exp\\\\\\":1485849600,\\\\\\"iat\\\\\\":1483257600,\\\\\\"tms\\\\\\":[\\\\\\"fakeTeam\\\\\\"]}\\"}"`;

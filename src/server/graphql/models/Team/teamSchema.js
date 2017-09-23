@@ -1,33 +1,19 @@
-import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLBoolean,
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
-  GraphQLEnumType,
-  GraphQLInputObjectType
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql';
+import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import MeetingPhaseEnum from 'server/graphql/types/MeetingPhaseEnum';
 import TeamMember from 'server/graphql/types/TeamMember';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
-import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
 
-export const Phase = new GraphQLEnumType({
-  name: 'Phase',
-  description: 'The phase of the meeting',
-  values: {
-    [LOBBY]: {},
-    [CHECKIN]: {},
-    [UPDATES]: {},
-    [FIRST_CALL]: {},
-    [AGENDA_ITEMS]: {},
-    [LAST_CALL]: {},
-    [SUMMARY]: {}
-  }
-});
 
 export const Greeting = new GraphQLObjectType({
   name: 'Greeting',
@@ -89,7 +75,7 @@ export const Team = new GraphQLObjectType({
       description: 'The current facilitator teamMemberId for this meeting'
     },
     facilitatorPhase: {
-      type: Phase,
+      type: MeetingPhaseEnum,
       description: 'The phase of the facilitator'
     },
     facilitatorPhaseItem: {
@@ -97,7 +83,7 @@ export const Team = new GraphQLObjectType({
       description: 'The current item number for the current phase for the facilitator, 1-indexed'
     },
     meetingPhase: {
-      type: Phase,
+      type: MeetingPhaseEnum,
       description: 'The phase of the meeting, usually matches the facilitator phase, be could be further along'
     },
     meetingPhaseItem: {

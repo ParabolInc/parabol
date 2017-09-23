@@ -9,9 +9,9 @@ const getTraits = (userIds) => {
     .map({
       avatar: r.row('picture').default(''),
       createdAt: r.row('createdAt').default(0),
-      email: r.row('email'),
-      id: r.row('id'),
-      name: r.row('preferredName')
+      email: r.row('email').default(''),
+      id: r.row('id').default(''),
+      name: r.row('preferredName').default('')
     });
 };
 

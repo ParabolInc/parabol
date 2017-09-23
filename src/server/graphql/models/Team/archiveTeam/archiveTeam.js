@@ -1,19 +1,12 @@
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  getUserId,
-  requireSUOrLead,
-  requireWebsocket
-} from 'server/utils/authorization';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLString
-} from 'graphql';
-import shortid from 'shortid';
-import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
-import {TEAM_ARCHIVED} from 'universal/utils/constants';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {getUserId, requireSUOrLead, requireWebsocket} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import tmsSignToken from 'server/utils/tmsSignToken';
+import shortid from 'shortid';
+import {KICKED_OUT, NOTIFICATIONS_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
 
 export default {
   type: GraphQLBoolean,
@@ -23,7 +16,7 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(source, {teamId}, {authToken, exchange, socket}) {
+  async resolve(source, {teamId}, {authToken, socket}) {
     const r = getRethink();
     const now = new Date();
 
@@ -35,51 +28,60 @@ export default {
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', userId, {teamId});
-    const dbResult = await r.table('Team')
+    const {teamResults: {notification}, userDocs} = await r.table('Team')
       .get(teamId)
       .pluck('name', 'orgId')
       .do((team) => ({
         projectCount: r.table('Project').getAll(teamId, {index: 'teamId'}).count(),
         team,
-        userIds: r.table('TeamMember').getAll(teamId, {index: 'teamId'})('userId').coerceTo('array')
+        userIds: r.table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isNotRemoved: true})('userId')
+          .coerceTo('array')
       }))
-      .do((doc) => r.table('User')
-        .getAll(r.args(doc('userIds')), {index: 'id'})
-        .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})
-        .do((userResult) => r.branch(
+      .do((doc) => ({
+        userDocs: r.table('User')
+          .getAll(r.args(doc('userIds')), {index: 'id'})
+          .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})('changes')('new_val')
+          .pluck('id', 'tms')
+          .default([]),
+        teamName: doc('team')('name'),
+        teamResults: r.branch(
           r.and(doc('projectCount').eq(0), doc('userIds').count().eq(1)),
           {
             // Team has no projects nor addn'l TeamMembers, hard delete it:
-            team: doc('team'),
             teamResult: r.table('Team').get(teamId).delete(),
-            teamMemberResult: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).delete(),
-            userResult
+            teamMemberResult: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).delete()
           },
           {
             // Team has data or TeamMembers, archive team:
-            notificationResult: r.table('Notification').insert({
+            notification: r.table('Notification').insert({
               id: shortid.generate(),
               orgId: doc('team')('orgId'),
               startAt: now,
               type: TEAM_ARCHIVED,
               userIds: doc('userIds'),
-              varList: [doc('team')('name')]
-            }),
-            team: doc('team'),
-            teamResult: r.table('Team').get(teamId).update({isArchived: true}),
-            userResult
+              teamName: doc('team')('name')
+            }, {returnChanges: true})('changes')(0)('new_val').default(null),
+            teamResult: r.table('Team').get(teamId).update({isArchived: true})
           }
-        ))
-      );
+        )
+      }));
 
-    const {team: {name: teamName}, userResult: {changes: userChanges}} = dbResult;
-    userChanges.forEach((change) => {
-      const {id, tms} = change.new_val;
+    if (notification) {
+      const notificationsAdded = {notifications: [notification]};
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
+    }
+    userDocs.forEach((user) => {
+      const {id, tms} = user;
       // update the tms on auth0 in async
       auth0ManagementClient.users.updateAppMetadata({id}, {tms});
       // update the server socket, if they're logged in
-      const channel = `${USER_MEMO}/${id}`;
-      exchange.publish(channel, {type: KICK_OUT, teamId, teamName});
+      const notifications = [{
+        authToken: tmsSignToken({sub: userId}, tms),
+        type: KICKED_OUT
+      }];
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${id}`, {notificationsAdded: {notifications}});
     });
 
     return true;

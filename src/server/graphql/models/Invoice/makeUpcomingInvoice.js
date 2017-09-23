@@ -2,8 +2,8 @@ import {UPCOMING} from 'universal/utils/constants';
 import stripe from 'server/billing/stripe';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 
-export default async function makeUpcomingInvoice(orgId, stripeId) {
-  const stripeInvoice = await stripe.invoices.retrieveUpcoming(stripeId);
+export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId) {
+  const stripeInvoice = await stripe.invoices.retrieveUpcoming(stripeId, {subscription: stripeSubscriptionId});
   return {
     id: `upcoming_${orgId}`,
     amountDue: stripeInvoice.amount_due,

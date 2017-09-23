@@ -44,7 +44,7 @@ describe('customerSubscriptionUpdated', () => {
     const stripeToken = 'tok_4242424242424242';
     const {organization, team} = await mockDB
       .init()
-      .org(0, {creditCard: creditCardByToken[stripeToken]});
+      .organization(0, {creditCard: creditCardByToken[stripeToken]});
     const org = organization[0];
     stripe.__setMockData(org);
     const {id: orgId, stripeSubscriptionId} = org;
@@ -71,7 +71,7 @@ describe('customerSubscriptionUpdated', () => {
     const stripeToken = 'tok_4242424242424242';
     const {organization, team} = await mockDB
       .init()
-      .org(0, {creditCard: creditCardByToken[stripeToken]});
+      .organization(0, {creditCard: creditCardByToken[stripeToken]});
     const org = organization[0];
     stripe.__setMockData(org);
     const {id: orgId, stripeSubscriptionId} = org;

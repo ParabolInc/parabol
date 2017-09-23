@@ -165,8 +165,7 @@ export default class AsyncMenuContainer extends Component {
     }
   };
 
-  makeSmartToggle() {
-    const {toggle} = this.props;
+  makeSmartToggle(toggle) {
     return React.cloneElement(toggle, {
       onClick: (e) => {
         // the toggle shouldn't move, so it's safe to save it as a constant

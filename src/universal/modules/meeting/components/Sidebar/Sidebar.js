@@ -11,7 +11,6 @@ import makeHref from 'universal/utils/makeHref';
 import {Link} from 'react-router-dom';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
-import labels from 'universal/styles/theme/labels';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const Sidebar = (props) => {
@@ -58,6 +57,11 @@ const Sidebar = (props) => {
   const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
   const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS);
   const agendaListDisabled = meetingPhase === CHECKIN;
+  // Phase labels
+  const checkinLabel = actionMeeting.checkin.name;
+  const updatesLabel = actionMeeting.updates.name;
+  const agendaitemsLabel = actionMeeting.agendaitems.name;
+  const summaryLabel = actionMeeting.summary.name;
   return (
     <div className={css(styles.sidebar)}>
       <div className={css(styles.sidebarHeader)}>
@@ -73,30 +77,30 @@ const Sidebar = (props) => {
             <div
               className={checkInLinkStyles}
               onClick={() => gotoItem(null, CHECKIN)}
-              title={labels.meetingPhase.checkIn.label}
+              title={checkinLabel}
             >
               <span className={css(styles.bullet)}>i.</span>
-              <span className={css(styles.label)}>{labels.meetingPhase.checkIn.label}</span>
+              <span className={css(styles.label)}>{checkinLabel}</span>
             </div>
           </li>
           <li className={updatesNavItemStyles}>
             <div
               className={updatesLinkStyles}
               onClick={() => gotoItem(null, UPDATES)}
-              title={labels.meetingPhase.updates.label}
+              title={updatesLabel}
             >
               <span className={css(styles.bullet)}>ii.</span>
-              <span className={css(styles.label)}>{labels.meetingPhase.updates.label}</span>
+              <span className={css(styles.label)}>{updatesLabel}</span>
             </div>
           </li>
           <li className={agendaNavItemStyles}>
             <div
               className={agendaLinkStyles}
               onClick={() => gotoItem(null, FIRST_CALL)}
-              title={labels.meetingPhase.agenda.label}
+              title={agendaitemsLabel}
             >
               <span className={css(styles.bullet)}>iii.</span>
-              <span className={css(styles.label)}>{labels.meetingPhase.agenda.label}</span>
+              <span className={css(styles.label)}>{agendaitemsLabel}</span>
             </div>
           </li>
           {localPhase === SUMMARY &&
@@ -104,10 +108,10 @@ const Sidebar = (props) => {
               <div
                 className={css(styles.navListItemLink, styles.navListItemLinkActive)}
                 onClick={() => gotoItem(null, SUMMARY)}
-                title={labels.meetingPhase.summary.label}
+                title={summaryLabel}
               >
                 <span className={css(styles.bullet)}>{' '}</span>
-                <span className={css(styles.label)}>{labels.meetingPhase.summary.label}</span>
+                <span className={css(styles.label)}>{summaryLabel}</span>
               </div>
             </li>
           }

@@ -1,17 +1,13 @@
-import getRethink from 'server/database/rethinkDriver';
-import testUsers from 'server/__tests__/setup/testUsers';
-import shortid from 'shortid';
-import {
-  BILLING_LEADER,
-  LOBBY,
-  ACTIVE,
-  CHECKIN
-} from 'universal/utils/constants';
-import {TRIAL_PERIOD} from 'server/utils/serverConstants';
-import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import {__anHourAgo} from 'server/__tests__/setup/mockTimes';
-import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
+import testUsers from 'server/__tests__/setup/testUsers';
+import newInvitee from 'server/__tests__/utils/newInvitee';
+import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
+import getRethink from 'server/database/rethinkDriver';
+import {PENDING, TRIAL_PERIOD} from 'server/utils/serverConstants';
+import shortid from 'shortid';
+import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
+import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import convertToRichText from './convertToRichText';
 
@@ -26,9 +22,11 @@ class MockDB {
   constructor() {
     this.db = {
       agendaItem: [],
+      invitation: [],
       meeting: [],
       notification: [],
       organization: [],
+      orgApproval: [],
       project: [],
       projectHistory: [],
       team: [],
@@ -36,15 +34,19 @@ class MockDB {
       user: []
     };
     this.context = {};
-  }
 
-  _selector = (name) => (contextIdx, updates) => {
-    this.context[name] = this.db[name][contextIdx];
-    if (updates) {
-      Object.assign(this.context[name], updates);
-    }
-    return this;
-  };
+    // create the methods to update entities
+    const selector = (name) => (contextIdx, updates) => {
+      this.context[name] = this.db[name][contextIdx];
+      if (updates) {
+        Object.assign(this.context[name], updates);
+      }
+      return this;
+    };
+    Object.keys(this.db).forEach((table) => {
+      this[table] = selector(table);
+    });
+  }
 
   closeout(table, doc) {
     this.db[table] = this.db[table] || [];
@@ -55,7 +57,8 @@ class MockDB {
 
   init() {
     const orgId = shortid.generate();
-    const teamId = shortid.generate();
+    // underscore for a static seed based on the first char
+    const teamId = `_${shortid.generate()}`;
     // this.context.team = {id: shortid.generate()};
     const users = testUsers.map((user, idx) => ({
       ...user,
@@ -102,6 +105,24 @@ class MockDB {
     });
   }
 
+  newInvitation(overrides = {}) {
+    const invitee = newInvitee();
+    return this.closeout('invitation', {
+      id: shortid.generate(),
+      // acceptedAt: null,
+      createdAt: new Date(__anHourAgo),
+      email: invitee.email,
+      // fullName: overrides.email || invitee.email,
+      hashedToken: shortid.generate(),
+      invitedBy: this.context.teamMember.id,
+      inviteCount: 1,
+      teamId: this.context.team.id,
+      tokenExpiration: new Date(__anHourAgo + TRIAL_PERIOD),
+      updatedAt: new Date(__anHourAgo),
+      ...overrides
+    });
+  }
+
   newMeeting(overrides, template = {}) {
     const {inProgress, activeFacilitatorIdx = 0} = template;
     const meetingId = shortid.generate();
@@ -130,8 +151,8 @@ class MockDB {
       const week = getWeekOfYear(new Date());
       this.teamMember(activeFacilitatorIdx);
       Object.assign(this.context.team, {
-        checkInGreeting: makeCheckinGreeting(week),
-        checkInQuestion: makeCheckinQuestion(week),
+        checkInGreeting: makeCheckinGreeting(week, teamId),
+        checkInQuestion: makeCheckinQuestion(week, teamId),
         meetingId,
         activeFacilitator: this.context.teamMember,
         facilitatorPhase: CHECKIN,
@@ -161,8 +182,8 @@ class MockDB {
 
   newNotification(overrides = {}, template = {}) {
     return this.closeout('notification', {
-      id: `${overrides.type}|${shortid.generate()}`,
-      startAt: new Date(__anHourAgo),
+      id: `${template.type}|${shortid.generate()}`,
+      startAt: new Date(__anHourAgo + this.db.notification.length),
       orgId: this.context.organization.id,
       userIds: [this.context.user.id],
       ...notificationTemplate.call(this, template),
@@ -188,6 +209,20 @@ class MockDB {
       updatedAt: anHourAgo,
       periodEnd: new Date(anHourAgo.getTime() + TRIAL_PERIOD),
       periodStart: anHourAgo,
+      ...overrides
+    });
+  }
+
+  newOrgApproval(overrides = {}) {
+    const anHourAgo = new Date(__anHourAgo);
+    return this.closeout('orgApproval', {
+      id: shortid.generate(),
+      createdAt: new Date(anHourAgo.getTime() + this.db.orgApproval.length),
+      email: newInvitee().email,
+      isActive: true,
+      orgId: this.context.organization.id,
+      status: PENDING,
+      teamId: this.context.team.id,
       ...overrides
     });
   }
@@ -226,8 +261,8 @@ class MockDB {
   }
 
   newTeam(overrides = {}) {
-    const {id = shortid.generate()} = this.context.team || {};
-    const {id: orgId = shortid.generate()} = this.context.organization || {};
+    const id = shortid.generate();
+    const orgId = shortid.generate();
     return this.closeout('team', {
       id,
       orgId,
@@ -272,6 +307,7 @@ class MockDB {
       inactive: false,
       identities: [],
       picture: 'https://placeimg.com/100/100/animals',
+      preferredName: overrides.name,
       tms: [teamId],
       updatedAt: anHourAgo,
       userOrgs: [{
@@ -283,27 +319,25 @@ class MockDB {
     });
   }
 
-  notification = this._selector('notification');
-  org = this._selector('organization');
-
   async run() {
     const r = getRethink();
     const tables = Object.keys(this.db).map((name) => name[0].toUpperCase() + name.substr(1));
     const docsToInsert = Object.values(this.db);
-    const promises = docsToInsert.map((docs, idx) => docs.length && r.table(tables[idx]).insert(docs));
-    await Promise.all(promises);
+    const promises = docsToInsert.reduce((obj, docs, idx) => {
+      if (docs.length) {
+        const table = tables[idx];
+        obj[table] = r.table(table).insert(docs);
+      }
+      return obj;
+    }, {});
+    await r.expr(promises);
     return this.db;
   }
-
-  team = this._selector('team');
-  teamMember = this._selector('teamMember');
 
   // sugar so we don't have to call run all the time
   then(resolve, reject) {
     return this.run().then(resolve, reject);
   }
-
-  user = this._selector('user');
 }
 
 export default MockDB;

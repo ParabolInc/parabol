@@ -38,7 +38,7 @@ export default {
     const userId = user.id;
     const orgs = await r.table('Organization')
       .getAll(user.id, {index: 'orgUsers'})
-      .pluck('id', 'orgUsers', 'stripeId');
+      .pluck('id', 'orgUsers', 'stripeId', 'stripeSubscriptionId');
 
     if (orgs.length === 0) {
       throw new Error(`${email} is not a member of any organizations`);
@@ -46,11 +46,15 @@ export default {
 
     const trialArr = [TRIAL_EXPIRED, TRIAL_EXPIRES_SOON];
 
-    const updates = orgs.map((org) => {
-      const {id: orgId, orgUsers, stripeId} = org;
+    await Promise.all(orgs.map(async (org) => {
+      const {id: orgId, orgUsers, stripeId, stripeSubscriptionId} = org;
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
       sendSegmentEvent('Manual trial extension', userId, {orgId});
-      return stripe.subscriptions.create({
+      // delete existing sub
+      await stripe.subscriptions.del(stripeSubscriptionId);
+
+      // create a fresh one with a new trial period
+      const subscription = await stripe.subscriptions.create({
         customer: stripeId,
         metadata: {
           orgId
@@ -58,33 +62,30 @@ export default {
         plan: ACTION_MONTHLY,
         quantity,
         trial_period_days: days
+      });
+
+      const {id, current_period_end, current_period_start} = subscription;
+      // DOES NOT UPDATE NOTIFICATIONS IN REAL TIME
+      return r.table('Organization').get(orgId).update({
+        periodEnd: fromEpochSeconds(current_period_end),
+        periodStart: fromEpochSeconds(current_period_start),
+        stripeSubscriptionId: id
       })
-        .then((subscription) => {
-          const {id, current_period_end, current_period_start} = subscription;
-          return r.table('Organization').get(orgId).update({
-            periodEnd: fromEpochSeconds(current_period_end),
-            periodStart: fromEpochSeconds(current_period_start),
-            stripeSubscriptionId: id
-          })
-            .do(() => {
-              return r.table('Team')
-                .getAll(orgId, {index: 'orgId'})
-                .update({
-                  isPaid: true
-                });
-            })
-            .do(() => {
-              return r.table('Notification')
-                .getAll(orgId, {index: 'orgId'})
-                .filter((n) => r.expr(trialArr).contains(n('type')))
-                .delete();
-            })
-            .run();
-        });
-    });
-    await Promise.all(updates);
-
-
+        .do(() => {
+          return r.table('Team')
+            .getAll(orgId, {index: 'orgId'})
+            .update({
+              isPaid: true
+            });
+        })
+        .do(() => {
+          return r.table('Notification')
+            .getAll(orgId, {index: 'orgId'})
+            .filter((n) => r.expr(trialArr).contains(n('type')))
+            .delete();
+        })
+        .run();
+    }));
     return `${email} had ${orgs.length} trials extended to ${days} from now`;
   }
 };

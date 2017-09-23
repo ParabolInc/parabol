@@ -1,18 +1,13 @@
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLList
-} from 'graphql';
-import {ensureUniqueId, getUserId, requireWebsocket} from 'server/utils/authorization';
-import {handleSchemaErrors} from 'server/utils/utils';
-import {TeamInput} from 'server/graphql/models/Team/teamSchema';
+import {GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import addOrgValidation from 'server/graphql/models/Organization/addOrg/addOrgValidation';
-import createTeamAndLeader from '../../Team/createFirstTeam/createTeamAndLeader';
-import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
 import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
+import {TeamInput} from 'server/graphql/models/Team/teamSchema';
+import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
+import {ensureUniqueId, getUserId, requireWebsocket} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import {handleSchemaErrors} from 'server/utils/utils';
+import createTeamAndLeader from '../../Team/createFirstTeam/createTeamAndLeader';
 
 export default {
   type: GraphQLBoolean,
@@ -61,14 +56,14 @@ export default {
     };
     socket.setAuthToken(newAuthToken);
 
-    const teamOrgInvitations = [
+    await Promise.all([
       createTeamAndLeader(userId, newTeam, true),
       createNewOrg(orgId, orgName, userId, stripeToken)
-    ];
+    ]);
+
     if (invitees && invitees.length) {
-      teamOrgInvitations.push(asyncInviteTeam(userId, teamId, invitees));
+      await inviteTeamMembers(invitees, teamId, userId);
     }
-    await Promise.all(teamOrgInvitations);
     sendSegmentEvent('New Org', userId, {orgId, teamId});
     return true;
   }

@@ -5,12 +5,14 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import plural from 'universal/utils/plural';
 import Button from 'universal/components/Button/Button';
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import Type from 'universal/components/Type/Type';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
+import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const MeetingAgendaLastCall = (props) => {
   const {
@@ -21,14 +23,16 @@ const MeetingAgendaLastCall = (props) => {
     styles
   } = props;
 
+  const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL);
+
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>
             {agendaItemCount === 0 ?
-              <span>{'No agenda items?'}</span> :
-              <span>{'That wraps up the agenda!'}</span>
+              <span>{`No ${labelAgendaItems}?`}</span> :
+              <span>{`That wraps up the ${actionMeeting.agendaitems.name}!`}</span>
             }
           </MeetingPhaseHeading>
           {agendaItemCount === 0 ?
@@ -40,9 +44,9 @@ const MeetingAgendaLastCall = (props) => {
               colorPalette="black"
             >
               <span>
-                {'Looks like you didn’t process any agenda items.'}
+                {`Looks like you didn’t process any ${labelAgendaItems}.`}
                 <br />
-                {'You can add agenda items in the left sidebar before ending the meeting.'}
+                {`You can add ${labelAgendaItems} in the left sidebar before ending the meeting.`}
                 <br />
                 {'Simply tap on any items you create to process them.'}
               </span>
@@ -55,31 +59,32 @@ const MeetingAgendaLastCall = (props) => {
               scale="s5"
               colorPalette="black"
             >
-              We worked on <span className={css(styles.highlight)}>{`${agendaItemCount} ${plural(agendaItemCount, 'Agenda Item')}`}</span>
+              {'We worked on '}
+              <span className={css(styles.highlight)}>
+                {`${agendaItemCount} ${plural(agendaItemCount, AGENDA_ITEM_LABEL)}`}
+              </span>
               {'—need anything else?'}
             </Type>
           }
 
           <AgendaShortcutHint />
 
-          {!hideMoveMeetingControls ?
-            <div className={css(styles.buttonBlock)}>
+          <div className={css(styles.controlBlock)}>
+            {!hideMoveMeetingControls ?
               <Button
                 buttonStyle="solid"
                 colorPalette="cool"
+                depth={1}
                 label="End Meeting"
                 onClick={gotoNext}
                 size="largest"
-                raised
                 textTransform="uppercase"
-              />
-            </div> :
-            <div className={css(styles.warmHighlight)}>
-              <Type align="center" scale="s4" colorPalette="black">
-                <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis /></span>
-              </Type>
-            </div>
-          }
+              /> :
+              <MeetingFacilitationHint>
+                {'Waiting for'} <b>{facilitatorName}</b> {'to end the meeting'}
+              </MeetingFacilitationHint>
+            }
+          </div>
         </MeetingSection>
       </MeetingSection>
     </MeetingMain>
@@ -99,7 +104,7 @@ const styleThunk = () => ({
     color: appTheme.palette.warm
   },
 
-  buttonBlock: {
+  controlBlock: {
     marginTop: '2.5rem'
   },
 

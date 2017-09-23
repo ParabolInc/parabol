@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`makeReactivationNotifications creates a notification for the reactivated user giving them a new authToken 1`] = `
+Object {
+  "1": Array [
+    Object {
+      "authToken": "FAKEENCODEDJWT",
+      "id": 1,
+    },
+  ],
+}
+`;
+
+exports[`makeReactivationNotifications creates a notification for the team (less the inviter) 1`] = `
+Object {
+  "1": Array [
+    Object {
+      "authToken": "FAKEENCODEDJWT",
+      "id": 1,
+    },
+  ],
+  "2": Array [
+    Object {
+      "preferredName": "One",
+      "teamName": "The 456s",
+      "type": "REJOIN_TEAM",
+    },
+  ],
+  "3": Array [
+    Object {
+      "preferredName": "One",
+      "teamName": "The 456s",
+      "type": "REJOIN_TEAM",
+    },
+  ],
+}
+`;

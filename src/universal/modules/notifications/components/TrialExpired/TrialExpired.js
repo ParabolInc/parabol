@@ -10,11 +10,11 @@ import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmen
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const TrialExpired = (props) => {
-  const {atmosphere, orgId, history, styles} = props;
+  const {atmosphere, notification, history, styles} = props;
   const addBilling = () => {
+    const {orgId} = notification;
     SendClientSegmentEventMutation(atmosphere, 'Notification TrialExpired Click', {orgId});
     history.push(`/me/organizations/${orgId}`);
   };
@@ -47,7 +47,9 @@ const TrialExpired = (props) => {
 
 TrialExpired.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  orgId: PropTypes.string.isRequired,
+  notification: PropTypes.shape({
+    orgId: PropTypes.string.isRequired
+  }),
   history: PropTypes.object.isRequired,
   styles: PropTypes.string
 };
@@ -91,8 +93,7 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(
-  withRouter(
-    withStyles(styleThunk)(TrialExpired)
-  )
+export default
+withRouter(
+  withStyles(styleThunk)(TrialExpired)
 );

@@ -1,6 +1,5 @@
 import path from 'path';
 import webpack from 'webpack';
-import WebpackShellPlugin from 'webpack-shell-plugin';
 import npmPackage from '../package.json';
 
 const root = process.cwd();
@@ -44,11 +43,6 @@ export default {
       __APP_VERSION__: JSON.stringify(npmPackage.version),
 
       'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    new WebpackShellPlugin({
-      onBuildStart: [
-        'node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js'
-      ]
     })
   ],
   module: {
