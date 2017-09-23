@@ -4,6 +4,42 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.21.0 - 23-Sep-2017
+### Added
+- When a user already belongs to Parabol, invitations arrive as notifications,
+  not emails
+- Moved the changeFacilitator, notification, invitation, and acceptance logic
+  from cashay to relay
+- Facilitation hints added to Updates, last Agenda Item
+- Many new unit tests
+- Smaller stuff:
+  - Bumped node version to v8.5.0, bumped yarn version to v1.0.1
+  - Card footer, owner label updates, ProjectEditor styles updated
+  - Now loads Notifications system asynchronously
+  - Improved leading blank line validation
+  - Added more robust mock pub/sub for testing
+
+### Fixed
+- #788 adds meeting count to summary header
+- #883 double alert modal layout
+- #964 no same-day, same check-in question
+- #1023, #1069, #1181, #1164, #1197, #1198, #1202, #1291, #1251, #1282 meeting
+  process updates and fixes
+- #1056, #1283 summary email content order
+- #1119 correctly end stripe subscription for extendTrial
+- #1175 focus url field when making link
+- #1194 remove empty blocks from project top
+- #1277 trial modal blocks left nav
+- #1318 tagging seed projects
+- #1340 bad invitation expirations on prod
+- Fixed infinite loop & upgrade front-end router
+- Segment event error when creating first team
+
+### Removed
+- Removed `webpack-shell-plugin`, `appTheme.json` now build from
+  `npm run build:theme` and `npm run build:deps`; eliminates race condition
+  during build
+
 ## v0.20.9 - 02-Sep-2017
 ### Added
 - Upgrade to Node.js v8.4.0
