@@ -26,6 +26,7 @@ export function show(opts, level = SUCCESS) {
     type: TOAST_SHOW,
     payload: {
       ...opts,
+      autoDismiss: 10,
       level,
       nid: ++nid
     }
