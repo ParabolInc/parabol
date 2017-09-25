@@ -1,36 +1,81 @@
+import React, {Children, cloneElement, Component} from 'react';
+import TooltipModal from 'universal/components/Tooltip/TooltipModal';
+import withCoords from 'universal/decorators/withCoords';
 import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 
-// TODO: make this a tooltip module where the container controls tooltip position and opened/closed states
-
-const Tooltip = (props) => {
-  const {
-    children,
-    styles
-  } = props;
-  return (
-    <div className={css(styles.meetingPromptRoot)}>
-      {children}
-    </div>
-  );
-};
-
-Tooltip.propTypes = {
-  children: PropTypes.any,
-  orientation: PropTypes.object,
-  styles: PropTypes.object
-};
-
-const styleThunk = (theme, {orientation}) => ({
-  tooltip: {
-    backgroundColor: appTheme.palette.dark80a,
-    content: `"${orientation}"`,
-    maxWidth: '16rem',
-    width: 'auto'
+class Tooltip extends Component {
+  static propTypes = {
+    children: PropTypes.any.isRequired,
+    tip: PropTypes.any.isRequired,
+    setOriginCoords: PropTypes.func.isRequired
   }
-});
+  state = {
+    inTip: false,
+    inToggle: false
+  };
 
-export default withStyles(styleThunk)(Tooltip);
+  componentWillMount() {
+    this.makeSmartChildren(this.props.children);
+    this.makeSmartTip(this.props.tip);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.makeSmartChildren(nextProps.children);
+    this.makeSmartTip(nextProps.tip);
+  }
+
+  makeSmartChildren(children) {
+    const child = Children.only(children);
+    this.children = cloneElement(child, {
+      onMouseEnter: (e) => {
+        const {setOriginCoords} = this.props;
+        this.setState({
+          inToggle: true,
+          inTip: false
+        });
+        setOriginCoords(e.currentTarget.getBoundingClientRect());
+
+        // if the menu was gonna do something, do it
+        const {onMouseEnter} = child.props;
+        if (onMouseEnter) {
+          onMouseEnter(e);
+        }
+      },
+      onMouseLeave: () => {
+        this.setState({
+          inToggle: false
+        });
+      }
+    });
+  }
+
+  // this is useful if the tooltip is positioned over the toggle due to small screens, etc.
+  makeSmartTip(tip) {
+    this.tip = cloneElement(tip, {
+      onMouseEnter: () => {
+        this.setState({
+          inToggle: false,
+          inTip: true
+        });
+      },
+      onMouseLeave: () => {
+        this.setState({
+          inTip: false
+        });
+      }
+    });
+  }
+
+  render() {
+    const {inTip, inToggle} = this.state;
+    const isOpen = inTip || inToggle;
+    return (
+      <div>
+        <TooltipModal {...this.props} isOpen={isOpen} tip={this.tip} />
+        {this.children}
+      </div>
+    );
+  }
+}
+
+export default withCoords(Tooltip);

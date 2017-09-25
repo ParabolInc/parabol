@@ -34,14 +34,14 @@ class AsyncMenu extends Component {
       maxWidth,
       maxHeight,
       Mod,
-      setCoords,
-      setMenuRef,
+      updateModalCoords,
+      setModalRef,
       styles,
       queryVars
     } = this.props;
     const menuStyles = css(styles.menuBlock, isClosing && styles.closing);
     return (
-      <div className={menuStyles} style={coords} ref={setMenuRef}>
+      <div className={menuStyles} style={coords} ref={setModalRef}>
         <div className={css(styles.menu)}>
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {Mod && !isClosing &&
@@ -51,7 +51,7 @@ class AsyncMenu extends Component {
                 maxHeight={maxHeight}
                 maxWidth={maxWidth}
                 closePortal={closePortal}
-                setCoords={setCoords}
+                updateModalCoords={updateModalCoords}
               />
             </AnimatedFade>
             }
@@ -81,8 +81,8 @@ AsyncMenu.propTypes = {
   maxHeight: PropTypes.number.isRequired,
   Mod: PropTypes.any,
   queryVars: PropTypes.object,
-  setCoords: PropTypes.func.isRequired,
-  setMenuRef: PropTypes.func.isRequired,
+  updateModalCoords: PropTypes.func.isRequired,
+  setModalRef: PropTypes.func.isRequired,
   styles: PropTypes.object,
   toggleMenuState: PropTypes.func
 };
