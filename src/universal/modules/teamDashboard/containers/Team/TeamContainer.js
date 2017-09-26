@@ -31,7 +31,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {match: {params: {teamId}}} = props;
-  const {hasMeetingAlert, hasTrialAlert} = state.dash;
+  const {hasMeetingAlert} = state.dash;
   const userId = state.auth.obj.sub;
   const teamContainer = cashay.query(teamContainerSub, {
     op: 'teamContainer',
@@ -42,7 +42,6 @@ const mapStateToProps = (state, props) => {
   const {team, teamMembers} = teamContainer.data;
   return {
     hasMeetingAlert,
-    hasTrialAlert,
     team,
     teamMembers,
     teamMemberId: `${userId}::${teamId}`
@@ -58,7 +57,6 @@ const TeamContainer = (props) => {
     location: {pathname},
     match,
     hasMeetingAlert,
-    hasTrialAlert,
     team,
     teamMembers,
     teamMemberId
@@ -72,7 +70,6 @@ const TeamContainer = (props) => {
   return (
     <Team
       hasMeetingAlert={hasMeetingAlert}
-      hasTrialAlert={hasTrialAlert}
       isSettings={isSettings}
       team={team}
       teamMembers={teamMembers}
@@ -89,7 +86,6 @@ const TeamContainer = (props) => {
 
 TeamContainer.propTypes = {
   hasMeetingAlert: PropTypes.bool,
-  hasTrialAlert: PropTypes.bool,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired
   }),

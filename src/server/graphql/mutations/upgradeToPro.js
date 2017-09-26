@@ -33,21 +33,24 @@ export default {
     requireOrgLeader(userOrgDoc);
 
     // VALIDATION
-    const {orgUsers, stripeSubscriptionId: startingSubId} = await r.table('Organization')
+    const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r.table('Organization')
       .get(orgId)
-      .pluck('orgUsers', 'stripeSubscriptionId');
+      .pluck('orgUsers', 'stripeId', 'stripeSubscriptionId');
 
     if (startingSubId) {
       throw new Error('You are already pro!');
     }
 
     // RESOLUTION
-    const customer = await stripe.customers.create({
-      source: stripeToken,
-      metadata: {
-        orgId
-      }
-    });
+    // if they downgrade & are re-upgrading, they'll already have a stripeId
+    const customer = stripeId ?
+      await stripe.customers.update(stripeId, {source: stripeToken}) :
+      await stripe.customers.create({
+        source: stripeToken,
+        metadata: {
+          orgId
+        }
+      });
 
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,

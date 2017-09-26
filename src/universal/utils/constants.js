@@ -88,15 +88,9 @@ export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 export const TEAM_INVITE = 'TEAM_INVITE';
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
-// Sent to Billing Leaders when their trial will expire in < 2 weeks
-export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
-// Sent to Billing Leaders when their trial has expired
-export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
 
 
 export const notificationTypes = [
-  TRIAL_EXPIRES_SOON,
-  TRIAL_EXPIRED,
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
@@ -105,8 +99,6 @@ export const notificationTypes = [
 ];
 
 export const billingLeaderTypes = [
-  TRIAL_EXPIRES_SOON,
-  TRIAL_EXPIRED,
   PAYMENT_REJECTED,
   REQUEST_NEW_USER
 ];

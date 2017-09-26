@@ -62,7 +62,6 @@ class MockDB {
     // this.context.team = {id: shortid.generate()};
     const users = testUsers.map((user, idx) => ({
       ...user,
-      //trialOrg: idx === 0 ? orgId : null,
       userOrgs: [{
         id: orgId,
         role: idx === 0 ? BILLING_LEADER : null
@@ -207,7 +206,6 @@ class MockDB {
       //stripeId: `cus_${id}`,
       //stripeSubscriptionId: `sub_${id}`,
       updatedAt: anHourAgo,
-      //periodEnd: new Date(anHourAgo.getTime() + TRIAL_PERIOD),
       periodStart: anHourAgo,
       ...overrides
     });
