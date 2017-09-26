@@ -3,7 +3,7 @@ import testUsers from 'server/__tests__/setup/testUsers';
 import newInvitee from 'server/__tests__/utils/newInvitee';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import getRethink from 'server/database/rethinkDriver';
-import {PENDING, TRIAL_PERIOD} from 'server/utils/serverConstants';
+import {PENDING, INVITATION_LIFESPAN} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
@@ -62,7 +62,7 @@ class MockDB {
     // this.context.team = {id: shortid.generate()};
     const users = testUsers.map((user, idx) => ({
       ...user,
-      trialOrg: idx === 0 ? orgId : null,
+      //trialOrg: idx === 0 ? orgId : null,
       userOrgs: [{
         id: orgId,
         role: idx === 0 ? BILLING_LEADER : null
@@ -117,7 +117,7 @@ class MockDB {
       invitedBy: this.context.teamMember.id,
       inviteCount: 1,
       teamId: this.context.team.id,
-      tokenExpiration: new Date(__anHourAgo + TRIAL_PERIOD),
+      tokenExpiration: new Date(__anHourAgo + INVITATION_LIFESPAN),
       updatedAt: new Date(__anHourAgo),
       ...overrides
     });
@@ -204,10 +204,10 @@ class MockDB {
         role: BILLING_LEADER,
         inactive: false
       }] : [],
-      stripeId: `cus_${id}`,
-      stripeSubscriptionId: `sub_${id}`,
+      //stripeId: `cus_${id}`,
+      //stripeSubscriptionId: `sub_${id}`,
       updatedAt: anHourAgo,
-      periodEnd: new Date(anHourAgo.getTime() + TRIAL_PERIOD),
+      //periodEnd: new Date(anHourAgo.getTime() + TRIAL_PERIOD),
       periodStart: anHourAgo,
       ...overrides
     });

@@ -3,7 +3,7 @@ import stripe from 'server/billing/stripe';
 import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from 'server/utils/serverConstants';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import {BILLING_LEADER} from 'universal/utils/constants';
-import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
+import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 
 export default async function createNewOrg(orgId, orgName, leaderUserId, stripeToken) {
   const r = getRethink();

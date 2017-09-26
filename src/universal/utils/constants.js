@@ -184,3 +184,15 @@ export const REACTIVATED = 'REACTIVATED';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
+export const INVOICES = 'invoices';
+
+/* Relay Subscription Event Types */
+export const ADD = 'add';
+export const UPDATE = 'update';
+export const DELETE = 'delete';
+
+/* Parabol Payment level */
+export const FREE = 'free';
+export const PRO = 'pro';
+export const ENTERPRISE = 'enterprise';
+

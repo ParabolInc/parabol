@@ -32,6 +32,8 @@ import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
 import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole';
+import updateCreditCard from 'server/graphql/mutations/updateCreditCard';
+import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 
 const rootFields = Object.assign({},
   agenda,
@@ -72,6 +74,8 @@ export default new GraphQLObjectType({
     requestFacilitator,
     resendTeamInvite,
     segmentEventTrack,
-    setOrgUserRole
+    setOrgUserRole,
+    updateCreditCard,
+    upgradeToPro
   })
 });

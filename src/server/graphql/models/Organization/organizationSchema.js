@@ -14,6 +14,8 @@ import {GraphQLURLType} from 'server/graphql/types';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import getRethink from 'server/database/rethinkDriver';
 import {User} from 'server/graphql/models/User/userSchema';
+import CreditCard from 'server/graphql/types/CreditCard';
+import ParabolPlanEnum from 'server/graphql/types/ParabolPlanEnum';
 
 // const RemovedUser = new GraphQLObjectType({
 //   name: 'RemovedUser',
@@ -29,25 +31,6 @@ import {User} from 'server/graphql/models/User/userSchema';
 //     }
 //   })
 // });
-
-export const CreditCard = new GraphQLObjectType({
-  name: 'CreditCard',
-  description: 'A credit card',
-  fields: () => ({
-    brand: {
-      type: GraphQLString,
-      description: 'The brand of the credit card, as provided by skype'
-    },
-    expiry: {
-      type: GraphQLString,
-      description: 'The MM/YY string of the expiration date'
-    },
-    last4: {
-      type: GraphQLInt,
-      description: 'The last 4 digits of a credit card'
-    }
-  })
-});
 
 export const OrgUserRole = new GraphQLEnumType({
   name: 'OrgUserRole',
@@ -101,6 +84,10 @@ export const Organization = new GraphQLObjectType({
     picture: {
       type: GraphQLURLType,
       description: 'The org avatar'
+    },
+    plan: {
+      type: ParabolPlanEnum,
+      description: 'The level of access to features on the parabol site'
     },
     periodEnd: {
       type: GraphQLISO8601Type,
