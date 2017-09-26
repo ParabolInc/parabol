@@ -19,11 +19,11 @@ const UpdateCreditCardMutation = (environment, orgId, stripeToken, onError, onCo
       orgId,
       stripeToken
     },
-    //updater: (store) => {
+    // updater: (store) => {
     //  const slackIntegration = store.getRootField('updateCreditCard').getLinkedRecord('creditCard');
     //  const [, teamId] = teamMemberId.split('::');
     //  addSlackChannelUpdater(store, viewerId, teamId, slackIntegration);
-    //}
+    // }
     onCompleted,
     onError
   });

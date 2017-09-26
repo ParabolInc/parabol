@@ -7,7 +7,7 @@ const CreditCard = new GraphQLObjectType({
     id: {
       type: GraphQLID,
       resolve: (source) => {
-        return source.id
+        return source.id;
       }
     },
     brand: {

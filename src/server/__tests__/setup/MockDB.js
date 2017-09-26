@@ -203,8 +203,8 @@ class MockDB {
         role: BILLING_LEADER,
         inactive: false
       }] : [],
-      //stripeId: `cus_${id}`,
-      //stripeSubscriptionId: `sub_${id}`,
+      // stripeId: `cus_${id}`,
+      // stripeSubscriptionId: `sub_${id}`,
       updatedAt: anHourAgo,
       periodStart: anHourAgo,
       ...overrides

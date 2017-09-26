@@ -34,6 +34,7 @@ import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole';
 import updateCreditCard from 'server/graphql/mutations/updateCreditCard';
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
+import createProject from 'server/graphql/mutations/createProject';
 
 const rootFields = Object.assign({},
   agenda,
@@ -60,6 +61,7 @@ export default new GraphQLObjectType({
     cancelTeamInvite,
     clearNotification,
     createGitHubIssue,
+    createProject,
     githubAddAssignee,
     githubAddMember,
     githubRemoveMember,

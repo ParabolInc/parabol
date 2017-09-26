@@ -1,16 +1,17 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import {cashay} from 'cashay';
+import withHotkey from 'react-hotkey-hoc';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
-import {ACTIVE, MEETING} from 'universal/utils/constants';
-import withHotkey from 'react-hotkey-hoc';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {ACTIVE, MEETING} from 'universal/utils/constants';
 
-const handleAddProjectFactory = (teamMemberId, agendaId) => (content) => () => {
+const handleAddProjectFactory = (atmosphere, teamMemberId, agendaId) => (content) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
@@ -20,7 +21,7 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => (content) => () => {
     sortOrder: 0,
     agendaId
   };
-  cashay.mutate('createProject', {variables: {newProject}});
+  CreateProjectMutation(atmosphere, newProject);
 };
 
 const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject) => {
@@ -57,8 +58,8 @@ const makePlaceholders = (length, itemStyle) => {
 };
 
 const MeetingAgendaCards = (props) => {
-  const {agendaId, bindHotkey, dispatch, myTeamMemberId, outcomes, styles} = props;
-  const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
+  const {agendaId, atmosphere, bindHotkey, dispatch, myTeamMemberId, outcomes, styles} = props;
+  const handleAddProject = handleAddProjectFactory(atmosphere, myTeamMemberId, agendaId);
   const addBlankProject = handleAddProject();
   bindHotkey('p', addBlankProject);
   return (
@@ -82,6 +83,7 @@ const MeetingAgendaCards = (props) => {
 
 MeetingAgendaCards.propTypes = {
   agendaId: PropTypes.string.isRequired,
+  atmosphere: PropTypes.object.isRequired,
   bindHotkey: PropTypes.func,
   dispatch: PropTypes.func,
   myTeamMemberId: PropTypes.string,
@@ -111,4 +113,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withHotkey(withStyles(styleThunk)(MeetingAgendaCards));
+export default withAtmosphere(withHotkey(withStyles(styleThunk)(MeetingAgendaCards)));

@@ -1,7 +1,7 @@
 const DASH_HAS_MEETING_ALERT = 'dash/DASH_HAS_MEETING_ALERT';
 
 const initialState = {
-  hasMeetingAlert: false,
+  hasMeetingAlert: false
 };
 
 export default function reducer(state = initialState, action = {}) {

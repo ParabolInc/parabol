@@ -7,11 +7,11 @@ const UpdateCreditCardPayload = new GraphQLObjectType({
     creditCard: {
       type: CreditCard,
       description: 'the credit card details that got updated'
-    },
-    //upcomingInvoice: {
+    }
+    // upcomingInvoice: {
     //  type: Invoice,
     //  description: 'The new upcoming invoice'
-    //}
+    // }
   })
 });
 
