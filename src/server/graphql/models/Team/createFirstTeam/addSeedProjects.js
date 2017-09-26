@@ -69,5 +69,4 @@ export default (userId, teamId) => {
         }))
       );
     })
-    .run();
 };
