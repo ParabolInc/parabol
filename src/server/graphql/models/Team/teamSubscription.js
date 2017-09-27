@@ -22,7 +22,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       const {isArchived} = await r.table('Team').get(teamId)
         .do((team) => ({
-          isArchived: team('isArchived').default(false),
+          isArchived: team('isArchived').default(false)
         }));
       if (isArchived) throw errorObj({_error: 'That team is archived!'});
       // TODO update subscription on the client when a new team gets added. So rare, it's OK to resend all 3-4 docs

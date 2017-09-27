@@ -39,7 +39,6 @@ class ProjectEditor extends Component {
   componentDidMount() {
     const {editorState} = this.props;
     if (!editorState.getCurrentContent().hasText()) {
-
       setTimeout(() => {
         // don't pull it from this.props above because react will mutate this.props to our advantage
         const {editorRef} = this.props;

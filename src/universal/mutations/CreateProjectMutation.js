@@ -46,14 +46,14 @@ const CreateProjectMutation = (environment, newProject, dispatch, history) => {
                 history.push(`/me/organizations/${error.orgId}/billing`);
               }
             }
-          }))
-        } else if (error.billingLeader){
+          }));
+        } else if (error.billingLeader) {
           const {preferredName, email} = error.billingLeader;
           dispatch(showError({
             autoDismiss: 10,
             title: 'Awh shoot',
-            message: `You've hit the project limit for a personal account. Tell ${preferredName} at ${email} to upgrade!`,
-          }))
+            message: `You've hit the project limit for a personal account. Tell ${preferredName} at ${email} to upgrade!`
+          }));
         }
       }
     }

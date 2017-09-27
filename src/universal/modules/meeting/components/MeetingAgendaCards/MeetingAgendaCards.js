@@ -53,7 +53,7 @@ const makePlaceholders = (length, itemStyle) => {
       className={css(itemStyle)}
       key={`CreateCardPlaceholder${idx}`}
     >
-      <CreateCard/>
+      <CreateCard />
     </div>));
   /* eslint-enable */
 };
