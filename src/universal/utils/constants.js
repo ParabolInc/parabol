@@ -184,7 +184,10 @@ export const UPDATE = 'update';
 export const DELETE = 'delete';
 
 /* Parabol Payment level */
-export const FREE = 'free';
+export const PERSONAL = 'personal';
 export const PRO = 'pro';
 export const ENTERPRISE = 'enterprise';
+
+/* Server error types */
+export const MAX_PROJECTS_HIT = 'mph';
 

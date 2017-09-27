@@ -3,8 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import ProjectInput from 'server/graphql/types/ProjectInput';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {handleSchemaErrors} from 'server/utils/utils';
+import {MAX_PERSONAL_PROJECTS} from 'server/utils/serverConstants';
+import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
+import {BILLING_LEADER, MAX_PROJECTS_HIT, PERSONAL} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
@@ -47,17 +49,60 @@ export default {
       teamId,
       updatedAt: now
     };
-    await r({
+    const history = {
+      id: shortid.generate(),
+      content: project.content,
+      projectId: project.id,
+      status: project.status,
+      teamMemberId: project.teamMemberId,
+      updatedAt: project.updatedAt
+    };
+    const {orgProjectCount} = await r({
       project: r.table('Project').insert(project),
-      history: r.table('ProjectHistory').insert({
-        id: shortid.generate(),
-        content: project.content,
-        projectId: project.id,
-        status: project.status,
-        teamMemberId: project.teamMemberId,
-        updatedAt: project.updatedAt
-      })
+      history: r.table('ProjectHistory').insert(history),
+      orgProjectCount: r.table('Team').get(teamId).pluck('tier', 'orgId')
+        .do((team) => {
+          return r.branch(
+            team('tier').eq(PERSONAL),
+            r.table('Team').getAll(team('orgId'), {index: 'orgId'})('id')
+              .coerceTo('array')
+              .do((teamIds) => r.table('Project').getAll(r.args(teamIds), {index: 'teamId'}).count()),
+            1
+          )
+        })
     });
+    if (orgProjectCount > MAX_PERSONAL_PROJECTS) {
+      const {response: {billingLeaderUserIds, orgId}} = await r({
+        removedProject: r.table('Project').get(project.id).delete(),
+        removedHistory: r.table('ProjectHistory').get(history.id).delete(),
+        response: r.table('Team').get(teamId)('orgId')
+          .do((orgId) => r.table('Organization')
+            .get(orgId)('orgUsers')
+            .filter({
+              role: BILLING_LEADER
+            })('id')
+            .coerceTo('array')
+            .do((billingLeaderUserIds) => ({
+              billingLeaderUserIds,
+              orgId
+            }))
+          )
+      });
+      if (billingLeaderUserIds.includes(userId)) {
+        throw errorObj({
+          _error: MAX_PROJECTS_HIT,
+          orgId
+        })
+      } else {
+        const billingLeader = await r.table('User').get(billingLeaderUserIds[0])
+          .pluck('email', 'preferredName');
+        throw errorObj({
+          _error: MAX_PROJECTS_HIT,
+          billingLeader
+        })
+      }
+    }
+
     return {project};
   }
 };

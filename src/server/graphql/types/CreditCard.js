@@ -4,12 +4,12 @@ const CreditCard = new GraphQLObjectType({
   name: 'CreditCard',
   description: 'A credit card',
   fields: () => ({
-    id: {
-      type: GraphQLID,
-      resolve: (source) => {
-        return source.id;
-      }
-    },
+    //id: {
+    //  type: GraphQLID,
+    //  resolve: (source) => {
+    //    return source.id;
+    //  }
+    //},
     brand: {
       type: GraphQLString,
       description: 'The brand of the credit card, as provided by skype'

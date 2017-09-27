@@ -7,6 +7,7 @@ import shortid from 'shortid';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
 import Badge from 'universal/components/Badge/Badge';
 import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import handleColumnHover from 'universal/dnd/handleColumnHover';
 import handleDrop from 'universal/dnd/handleDrop';
 import withDragState from 'universal/dnd/withDragState';
@@ -21,7 +22,8 @@ import withStyles from 'universal/styles/withStyles';
 import {PROJECT, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import dndNoise from 'universal/utils/dndNoise';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {connect} from 'react-redux';
+import {withRouter} from 'react-router';
 
 const columnTarget = {
   drop: handleDrop,
@@ -45,7 +47,7 @@ const badgeColor = {
   future: 'mid'
 };
 
-const handleAddProjectFactory = (atmosphere, status, teamMemberId, sortOrder) => () => {
+const handleAddProjectFactory = (atmosphere, dispatch, history, status, teamMemberId, sortOrder) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
@@ -53,7 +55,7 @@ const handleAddProjectFactory = (atmosphere, status, teamMemberId, sortOrder) =>
     teamMemberId,
     sortOrder
   };
-  CreateProjectMutation(atmosphere, newProject);
+  CreateProjectMutation(atmosphere, newProject, dispatch, history);
 };
 
 class ProjectColumn extends Component {
@@ -61,6 +63,8 @@ class ProjectColumn extends Component {
     const {
       area,
       atmosphere,
+      dispatch,
+      history,
       status,
       projects,
       myTeamMemberId,
@@ -72,17 +76,17 @@ class ProjectColumn extends Component {
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH) {
       const teamMemberId = queryKey.indexOf('::') === -1 ? myTeamMemberId : queryKey;
-      const handleAddProject = handleAddProjectFactory(atmosphere, status, teamMemberId, sortOrder);
-      return <AddProjectButton onClick={handleAddProject} label={label} />;
+      const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, teamMemberId, sortOrder);
+      return <AddProjectButton onClick={handleAddProject} label={label}/>;
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const generatedMyTeamMemberId = `${userId}::${teamId}`;
-        const handleAddProject = handleAddProjectFactory(atmosphere, status, generatedMyTeamMemberId, sortOrder);
-        return <AddProjectButton onClick={handleAddProject} label={label} />;
+        const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, generatedMyTeamMemberId, sortOrder);
+        return <AddProjectButton onClick={handleAddProject} label={label}/>;
       }
       const itemFactory = () => {
-        const menuItems = this.makeTeamMenuItems(atmosphere, sortOrder);
+        const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder);
         return menuItems.map((item) =>
           (<MenuItem
             key={`MenuItem${item.label}`}
@@ -92,7 +96,7 @@ class ProjectColumn extends Component {
         );
       };
 
-      const toggle = <AddProjectButton label={label} />;
+      const toggle = <AddProjectButton label={label}/>;
       return (
         <Menu
           itemFactory={itemFactory}
@@ -107,7 +111,7 @@ class ProjectColumn extends Component {
     return null;
   };
 
-  makeTeamMenuItems = (atmosphere, sortOrder) => {
+  makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
     const {
       status,
       teams,
@@ -122,7 +126,7 @@ class ProjectColumn extends Component {
           teamMemberId: `${userId}::${team.id}`,
           sortOrder
         };
-        CreateProjectMutation(atmosphere, newProject);
+        CreateProjectMutation(atmosphere, newProject, dispatch, history);
       }
     }));
   };
@@ -153,14 +157,14 @@ class ProjectColumn extends Component {
         <div className={css(styles.columnHeader)}>
           <div className={css(styles.statusLabelBlock)}>
             <span className={css(styles.statusIcon, styles[status])}>
-              <FontAwesome name={themeLabels.projectStatus[status].icon} />
+              <FontAwesome name={themeLabels.projectStatus[status].icon}/>
             </span>
             <span className={css(styles.statusLabel, styles[status])}>
               {label}
             </span>
             {(projects.length > 0) &&
             <span className={css(styles.statusBadge)}>
-              <Badge colorPalette={badgeColor[status]} flat value={projects.length} />
+              <Badge colorPalette={badgeColor[status]} flat value={projects.length}/>
             </span>
             }
           </div>
@@ -194,8 +198,10 @@ ProjectColumn.propTypes = {
   area: PropTypes.string,
   atmosphere: PropTypes.object.isRequired,
   connectDropTarget: PropTypes.func,
+  dispatch: PropTypes.func.isRequired,
   dragState: PropTypes.object,
   firstColumn: PropTypes.bool,
+  history: PropTypes.object.isRequired,
   lastColumn: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
@@ -278,10 +284,14 @@ const dropTargetCb = (connectTarget) => ({
   connectDropTarget: connectTarget.dropTarget()
 });
 
-export default withAtmosphere(
-  withDragState(
-    dropTarget(PROJECT, columnTarget, dropTargetCb)(
-      withStyles(styleThunk)(ProjectColumn)
+export default connect()(
+  withAtmosphere(
+    withRouter(
+      withDragState(
+        dropTarget(PROJECT, columnTarget, dropTargetCb)(
+          withStyles(styleThunk)(ProjectColumn)
+        )
+      )
     )
   )
 );

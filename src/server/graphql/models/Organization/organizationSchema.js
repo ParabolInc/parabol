@@ -15,7 +15,7 @@ import {BILLING_LEADER} from 'universal/utils/constants';
 import getRethink from 'server/database/rethinkDriver';
 import {User} from 'server/graphql/models/User/userSchema';
 import CreditCard from 'server/graphql/types/CreditCard';
-import ParabolPlanEnum from 'server/graphql/types/ParabolPlanEnum';
+import TierEnum from 'server/graphql/types/TierEnum';
 
 // const RemovedUser = new GraphQLObjectType({
 //   name: 'RemovedUser',
@@ -85,8 +85,8 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLURLType,
       description: 'The org avatar'
     },
-    plan: {
-      type: ParabolPlanEnum,
+    tier: {
+      type: TierEnum,
       description: 'The level of access to features on the parabol site'
     },
     periodEnd: {

@@ -10,8 +10,9 @@ import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
+import {withRouter} from 'react-router';
 
-const handleAddProjectFactory = (atmosphere, teamMemberId, agendaId) => (content) => () => {
+const handleAddProjectFactory = (atmosphere, dispatch, history, teamMemberId, agendaId) => (content) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
@@ -21,7 +22,7 @@ const handleAddProjectFactory = (atmosphere, teamMemberId, agendaId) => (content
     sortOrder: 0,
     agendaId
   };
-  CreateProjectMutation(atmosphere, newProject);
+  CreateProjectMutation(atmosphere, newProject, dispatch, history);
 };
 
 const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject) => {
@@ -52,14 +53,14 @@ const makePlaceholders = (length, itemStyle) => {
       className={css(itemStyle)}
       key={`CreateCardPlaceholder${idx}`}
     >
-      <CreateCard />
+      <CreateCard/>
     </div>));
   /* eslint-enable */
 };
 
 const MeetingAgendaCards = (props) => {
-  const {agendaId, atmosphere, bindHotkey, dispatch, myTeamMemberId, outcomes, styles} = props;
-  const handleAddProject = handleAddProjectFactory(atmosphere, myTeamMemberId, agendaId);
+  const {agendaId, atmosphere, bindHotkey, dispatch, history, myTeamMemberId, outcomes, styles} = props;
+  const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, myTeamMemberId, agendaId);
   const addBlankProject = handleAddProject();
   bindHotkey('p', addBlankProject);
   return (
@@ -86,6 +87,7 @@ MeetingAgendaCards.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   bindHotkey: PropTypes.func,
   dispatch: PropTypes.func,
+  history: PropTypes.object.isRequired,
   myTeamMemberId: PropTypes.string,
   outcomes: PropTypes.array.isRequired,
   styles: PropTypes.object
@@ -113,4 +115,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withHotkey(withStyles(styleThunk)(MeetingAgendaCards)));
+export default withRouter(withAtmosphere(withHotkey(withStyles(styleThunk)(MeetingAgendaCards))));

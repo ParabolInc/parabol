@@ -67,7 +67,7 @@ export default {
     await r({
       updatedOrg: r.table('Organization').get(orgId).update({
         creditCard,
-        plan: PRO,
+        tier: PRO,
         periodEnd: fromEpochSeconds(current_period_end),
         periodStart: fromEpochSeconds(current_period_start),
         stripeId: customer.id,
@@ -78,6 +78,7 @@ export default {
         .getAll(orgId, {index: 'orgId'})
         .update({
           isPaid: true,
+          tier: PRO,
           updatedAt: now
         })
     });
