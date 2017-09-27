@@ -95,7 +95,6 @@ const TeamSettings = (props) => {
       cashay.mutate('cancelApproval', options);
     };
     const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
-    // const tip = (<div>{'Action Label'}</div>);
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.actionLink)} onClick={cancel}>

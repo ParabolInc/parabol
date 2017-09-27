@@ -73,7 +73,6 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
   contents: {
     color: 'white',
     backgroundColor: appTheme.palette.dark,
-    // backgroundColor: 'rgba(47, 44, 57, .75)',
     borderRadius: ui.tooltipBorderRadius,
     boxShadow: ui.tooltipBoxShadow,
     fontSize: appTheme.typography.s2,
@@ -81,7 +80,6 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
     lineHeight: appTheme.typography.s5,
     maxHeight,
     overflow: 'hidden',
-    // padding: '.5rem .75rem',
     padding: '.375rem .625rem',
     textAlign: 'left',
     textShadow: '0 .0625rem 0 rgba(0, 0, 0, .25)',
