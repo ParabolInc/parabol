@@ -193,6 +193,13 @@ class MockDB {
   newOrg(overrides = {}) {
     const anHourAgo = new Date(__anHourAgo);
     const {id = shortid.generate()} = this.context.organizaton || {};
+    const newOverrides = {...overrides};
+    if (newOverrides.stripeId === true) {
+      newOverrides.stripeId = `cus_${id}`;
+    }
+    if (newOverrides.stripeSubscriptionId === true) {
+      newOverrides.stripeSubscriptionId = `sub_${id}`
+    }
     return this.closeout('organization', {
       id,
       createdAt: anHourAgo,
@@ -203,11 +210,9 @@ class MockDB {
         role: BILLING_LEADER,
         inactive: false
       }] : [],
-      // stripeId: `cus_${id}`,
-      // stripeSubscriptionId: `sub_${id}`,
       updatedAt: anHourAgo,
       periodStart: anHourAgo,
-      ...overrides
+      ...newOverrides
     });
   }
 

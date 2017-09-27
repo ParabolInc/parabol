@@ -3,7 +3,6 @@ import * as invoicePaymentFailed from 'server/billing/handlers/invoicePaymentFai
 import * as customerSourceUpdated from 'server/billing/handlers/customerSourceUpdated';
 import * as invoiceItemCreated from 'server/billing/handlers/invoiceItemCreated';
 import * as invoiceCreated from 'server/billing/handlers/invoiceCreated';
-import * as customerSubscriptionUpdated from 'server/billing/handlers/customerSubscriptionUpdated';
 import * as invoicePaymentSucceeded from 'server/billing/handlers/invoicePaymentSucceeded';
 import customerSourceUpdatedEvent from 'server/billing/__tests__/events/customerSourceUpdatedEvent';
 import invoiceCreatedEvent from 'server/billing/__tests__/events/invoiceCreatedEvent';
@@ -96,22 +95,6 @@ describe('stripeWebhookHandler', () => {
 
     // VERIFY
     expect(mockFn).toBeCalledWith(objectId);
-    expect(res.sendStatus).toBeCalledWith(200);
-  });
-
-  test('handles customer.subscription.updated webhooks', async () => {
-    // SETUP
-    const objectId = customerSubscriptionUpdatedEvent.data.object.id;
-    const {status} = customerSubscriptionUpdatedEvent.data.previous_attributes;
-    const req = {body: customerSubscriptionUpdatedEvent};
-    const res = mockRes();
-    const mockFn = customerSubscriptionUpdated.default = jest.fn();
-
-    // TEST
-    await stripeWebhookHandler(exchange)(req, res);
-
-    // VERIFY
-    expect(mockFn).toBeCalledWith(objectId, status, exchange);
     expect(res.sendStatus).toBeCalledWith(200);
   });
 });

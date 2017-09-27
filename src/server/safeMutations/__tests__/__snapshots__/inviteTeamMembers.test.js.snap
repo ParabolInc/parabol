@@ -23,15 +23,3 @@ Object {
   ],
 }
 `;
-
-exports[`inviteTeamMembers reactivates a team member that has been invited back to the team 1`] = `
-Object {
-  "results": Array [
-    Object {
-      "email": "bruce.banner@avengers.org",
-      "preferredName": "Hulk",
-      "result": "SUCCESS",
-    },
-  ],
-}
-`;
