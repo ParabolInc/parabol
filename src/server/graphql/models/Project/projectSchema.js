@@ -3,7 +3,7 @@ import GitHubProject from 'server/graphql/types/GitHubProject';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 
-export const Project = new GraphQLObjectType({
+const Project = new GraphQLObjectType({
   name: 'Project',
   description: 'A long-term project shared across the team, assigned to a single user',
   fields: () => ({
@@ -59,3 +59,5 @@ export const Project = new GraphQLObjectType({
     }
   })
 });
+
+export default Project;

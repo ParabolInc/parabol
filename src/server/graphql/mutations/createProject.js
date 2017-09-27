@@ -68,7 +68,7 @@ export default {
               .coerceTo('array')
               .do((teamIds) => r.table('Project').getAll(r.args(teamIds), {index: 'teamId'}).count()),
             1
-          )
+          );
         })
     });
     if (orgProjectCount > MAX_PERSONAL_PROJECTS) {
@@ -76,15 +76,15 @@ export default {
         removedProject: r.table('Project').get(project.id).delete(),
         removedHistory: r.table('ProjectHistory').get(history.id).delete(),
         response: r.table('Team').get(teamId)('orgId')
-          .do((orgId) => r.table('Organization')
-            .get(orgId)('orgUsers')
+          .do((teamOrgId) => r.table('Organization')
+            .get(teamOrgId)('orgUsers')
             .filter({
               role: BILLING_LEADER
             })('id')
             .coerceTo('array')
-            .do((billingLeaderUserIds) => ({
-              billingLeaderUserIds,
-              orgId
+            .do((userIds) => ({
+              billingLeaderUserIds: userIds,
+              orgId: teamOrgId
             }))
           )
       });
@@ -92,14 +92,14 @@ export default {
         throw errorObj({
           _error: MAX_PROJECTS_HIT,
           orgId
-        })
+        });
       } else {
         const billingLeader = await r.table('User').get(billingLeaderUserIds[0])
           .pluck('email', 'preferredName');
         throw errorObj({
           _error: MAX_PROJECTS_HIT,
           billingLeader
-        })
+        });
       }
     }
 
