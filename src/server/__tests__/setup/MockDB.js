@@ -5,7 +5,7 @@ import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import getRethink from 'server/database/rethinkDriver';
 import {PENDING, INVITATION_LIFESPAN} from 'server/utils/serverConstants';
 import shortid from 'shortid';
-import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY} from 'universal/utils/constants';
+import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY, PERSONAL} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -273,6 +273,7 @@ class MockDB {
       meetingId: null,
       meetingPhase: LOBBY,
       meetingPhaseItem: null,
+      tier: PERSONAL,
       ...overrides
     });
   }

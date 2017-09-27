@@ -31,20 +31,6 @@ query {
   }
 }`;
 
-// const mutationHandlers = {
-//   updateProject(optimisticVariables, queryResponse, currentResponse) {
-//     if (optimisticVariables && optimisticVariables.updatedProject.isArchived === false) {
-//       const projectId = optimisticVariables.updatedProject.id;
-//       const projectIdx = currentResponse.archivedProjects.findIndex(p => p.id === projectId);
-//       if (projectIdx !== -1) {
-//         currentResponse.archivedProjects.splice(projectIdx, 1);
-//         return currentResponse;
-//       }
-//     }
-//     return undefined;
-//   }
-// };
-
 const mapStateToProps = (state, props) => {
   const {match: {params: {teamId}}} = props;
   const userId = state.auth.obj.sub;
