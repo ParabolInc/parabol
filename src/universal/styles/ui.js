@@ -464,6 +464,11 @@ const ui = {
     'white'
   ],
 
+  // Tooltips
+  // ---------------------------------------------------------------------------
+  tooltipBorderRadius: borderRadiusSmall,
+  tooltipBoxShadow: shadow[2],
+
   // Transitions
   // ---------------------------------------------------------------------------
   transition,
@@ -485,7 +490,8 @@ const ui = {
 
   ziMenu: zIndexScale(4),
   ziCardDragLayer: zIndexScale(6),
-  ziRejoinFacilitatorButton: zIndexScale(4)
+  ziRejoinFacilitatorButton: zIndexScale(4),
+  ziTooltip: zIndexScale(4)
 };
 
 export default ui;

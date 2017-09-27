@@ -26,7 +26,7 @@ export default {
   resolve: async (source, {code, state, service}, {serverSecret}) => {
     // AUTH
     if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
-      throw new Error('Don\'t be rude.');
+      throw new Error('Don’t be rude.');
     }
 
     // RESOLUTION
