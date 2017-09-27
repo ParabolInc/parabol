@@ -198,7 +198,7 @@ class MockDB {
       newOverrides.stripeId = `cus_${id}`;
     }
     if (newOverrides.stripeSubscriptionId === true) {
-      newOverrides.stripeSubscriptionId = `sub_${id}`
+      newOverrides.stripeSubscriptionId = `sub_${id}`;
     }
     return this.closeout('organization', {
       id,

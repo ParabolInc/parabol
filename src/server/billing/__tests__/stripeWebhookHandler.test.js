@@ -1,16 +1,15 @@
-import stripeWebhookHandler from 'server/billing/stripeWebhookHandler';
-import * as invoicePaymentFailed from 'server/billing/handlers/invoicePaymentFailed';
-import * as customerSourceUpdated from 'server/billing/handlers/customerSourceUpdated';
-import * as invoiceItemCreated from 'server/billing/handlers/invoiceItemCreated';
-import * as invoiceCreated from 'server/billing/handlers/invoiceCreated';
-import * as invoicePaymentSucceeded from 'server/billing/handlers/invoicePaymentSucceeded';
+import exchange from 'server/__mocks__/exchange';
 import customerSourceUpdatedEvent from 'server/billing/__tests__/events/customerSourceUpdatedEvent';
 import invoiceCreatedEvent from 'server/billing/__tests__/events/invoiceCreatedEvent';
-import customerSubscriptionUpdatedEvent from 'server/billing/__tests__/events/customerSubscriptionUpdatedEvent';
 import invoiceItemCreatedEvent from 'server/billing/__tests__/events/invoiceItemCreatedEvent';
-import invoicePaymentSucceededEvent from 'server/billing/__tests__/events/invoicePaymentSucceededEvent';
 import invoicePaymentFailedEvent from 'server/billing/__tests__/events/invoicePaymentFailedEvent';
-import exchange from 'server/__mocks__/exchange';
+import invoicePaymentSucceededEvent from 'server/billing/__tests__/events/invoicePaymentSucceededEvent';
+import * as customerSourceUpdated from 'server/billing/handlers/customerSourceUpdated';
+import * as invoiceCreated from 'server/billing/handlers/invoiceCreated';
+import * as invoiceItemCreated from 'server/billing/handlers/invoiceItemCreated';
+import * as invoicePaymentFailed from 'server/billing/handlers/invoicePaymentFailed';
+import * as invoicePaymentSucceeded from 'server/billing/handlers/invoicePaymentSucceeded';
+import stripeWebhookHandler from 'server/billing/stripeWebhookHandler';
 
 const mockRes = () => ({
   sendStatus: jest.fn()

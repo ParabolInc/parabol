@@ -28,7 +28,7 @@ describe('inviteTeamMembers', () => {
     await mockDB.init()
       .newUser({name: 'Leader of One', email: invitee.email})
       .newTeamMember()
-      .teamMember(8, {isNotRemoved: false})
+      .teamMember(8, {isNotRemoved: false});
     const firstUser = mockDB.db.user[0];
     const invitees = [{email: invitee.email}];
     const teamId = mockDB.context.team.id;

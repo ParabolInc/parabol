@@ -4,7 +4,7 @@ import invoiceItemCreated from './handlers/invoiceItemCreated';
 import invoiceCreated from './handlers/invoiceCreated';
 import invoicePaymentSucceeded from './handlers/invoicePaymentSucceeded';
 
-export default (exchange) => async function stripeWebhookHandler(req, res) {
+export default async function stripeWebhookHandler(req, res) {
   // code defensively here because anyone can call this endpoint
   const event = req.body || {};
   const {data = {}, type} = event;

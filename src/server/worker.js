@@ -86,8 +86,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   app.get('/email/createics', sendICS);
 
   // stripe webhooks
-  const stripeHandler = stripeWebhookHandler(exchange);
-  app.post('/stripe', stripeHandler);
+  app.post('/stripe', stripeWebhookHandler);
 
   app.get('/auth/github', handleIntegration(GITHUB));
   app.get('/auth/slack', handleIntegration(SLACK));
