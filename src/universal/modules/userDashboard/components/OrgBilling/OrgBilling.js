@@ -12,14 +12,13 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
 class OrgBilling extends Component {
-  _loadMore() {
+  loadMore = () => {
     const {relay: {hasMore, isLoading, loadMore}} = this.props;
     if (!hasMore() || isLoading()) return;
-
     loadMore(
-      10, // Fetch the next 10 feed items
+      5,
       (e) => {
-        console.log(e);
+        console.error(e);
       }
     );
   }
@@ -28,7 +27,8 @@ class OrgBilling extends Component {
     const {
       styles,
       org,
-      viewer: {invoices}
+      viewer: {invoices},
+      relay: {hasMore}
     } = this.props;
     const hasInvoices = invoices.edges.length > 0;
     const {creditCard = {}, id: orgId} = org;
@@ -43,21 +43,32 @@ class OrgBilling extends Component {
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
-              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
+              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card"/>
               <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
               <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
               <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
               <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
             </div>
-            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
+            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update}/>
           </div>
         </Panel>
         <Panel label="Invoices">
           <div className={css(styles.listOfInvoices)}>
             {hasInvoices &&
             invoices.edges.map(({node: invoice}) =>
-              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
+              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)}/>
             )
+            }
+            {hasMore() &&
+              <div className={css(styles.loadMore)}>
+            <Button
+              buttonStyle="flat"
+              colorPalette="cool"
+              label="LOAD MORE"
+              onClick={this.loadMore}
+              size="large"
+            />
+              </div>
             }
           </div>
         </Panel>
@@ -105,6 +116,14 @@ const styleThunk = () => ({
     padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
   },
 
+  loadMore: {
+    color: appTheme.palette.cool,
+    display: 'flex',
+    fontSize: '1.25rem',
+    fontWeight: 700,
+    justifyContent: 'center',
+    textTransform: 'uppercase'
+  },
   noInvoices: {
     textAlign: 'center',
     margin: '1rem'
@@ -117,6 +136,7 @@ export default createPaginationContainer(
     fragment OrgBilling_viewer on User {
       invoices(first: $first, orgId: $orgId, after: $after) @connection(key: "OrgBilling_invoices") {
         edges {
+          cursor
           node {
             id
             amountDue
@@ -125,6 +145,10 @@ export default createPaginationContainer(
             startAt
             status
           }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
         }
       }
     }
@@ -145,13 +169,10 @@ export default createPaginationContainer(
         ...fragmentVariables,
         first: count,
         after: cursor
-        // in most cases, for variables other than connection filters like
-        // `first`, `after`, etc. you may want to use the previous values.
-        // orderBy: fragmentVariables.orderBy,
       };
     },
     query: graphql`
-      query OrgBillingPaginationQuery($first: Int!, $after: String, $orgId: ID!) {
+      query OrgBillingPaginationQuery($first: Int!, $after: DateTime, $orgId: ID!) {
         viewer {
           ...OrgBilling_viewer
         }

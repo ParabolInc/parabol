@@ -10,7 +10,7 @@ import AnimatedFade from 'universal/components/AnimatedFade';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 
 const query = graphql`
-  query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: String) {
+  query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {
     viewer {
       ...OrgBilling_viewer
     }
@@ -25,7 +25,7 @@ const OrgBillingRoot = ({atmosphere, orgId, org}) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
-      variables={{orgId, first: 1}}
+      variables={{orgId, first: 3}}
       // subscriptions={subscriptions}
       render={({error, props: queryProps}) => {
         return (

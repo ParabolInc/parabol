@@ -6,6 +6,7 @@ import InvoiceChargeNextMonth from 'server/graphql/types/InvoiceChargeNextMonth'
 import InvoiceLineItem from 'server/graphql/types/InvoiceLineItem';
 import InvoiceStatusEnum from 'server/graphql/types/InvoiceStatusEnum';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
+import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 
 /* Each invoice has 3 levels.
@@ -95,6 +96,12 @@ const {connectionType, edgeType} = connectionDefinitions({
   edgeFields: () => ({
     cursor: {
       type: GraphQLISO8601Type
+    }
+  }),
+  connectionFields: () => ({
+    pageInfo: {
+      type: PageInfoDateCursor,
+      description: 'Page info with cursors coerced to ISO8601 dates'
     }
   })
 });
