@@ -1,25 +1,27 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
-import {Link} from 'react-router-dom';
-import goBackLabel from 'universal/styles/helpers/goBackLabel';
-import {BILLING_PAGE} from 'universal/utils/constants';
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import appTheme from 'universal/styles/theme/appTheme';
-import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
-import makeDateString from 'universal/utils/makeDateString';
-import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
-import OrgBillingContainer from 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingContainer';
-import OrgMembersContainer from 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer';
+import {createFragmentContainer} from 'react-relay';
+import {Link, Switch, withRouter} from 'react-router-dom';
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
-import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
-import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
-import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
+import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
+import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
+import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import goBackLabel from 'universal/styles/helpers/goBackLabel';
+import appTheme from 'universal/styles/theme/appTheme';
+import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
+import makeDateString from 'universal/utils/makeDateString';
 
+const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingContainer');
+const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer');
 const inlineBlockStyle = {
   display: 'inline-block',
   lineHeight: ui.dashSectionHeaderLineHeight,
@@ -31,46 +33,50 @@ const initialValues = {orgName: ''};
 
 const Organization = (props) => {
   const {
-    activeOrgDetail,
+    match,
     styles,
-    org
+    viewer
   } = props;
+  const org = viewer ? viewer.organization : {};
   const {id: orgId, createdAt, name: orgName, picture: orgAvatar} = org;
   initialValues.orgName = orgName;
-  const OrgSection = activeOrgDetail === BILLING_PAGE ? OrgBillingContainer : OrgMembersContainer;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
-  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
+  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled/>;
   return (
     <UserSettingsWrapper>
-      <Helmet title={`${orgName} | Parabol`} />
+      <Helmet title={`${orgName} | Parabol`}/>
       <div className={css(styles.wrapper)}>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
-          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
+          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
           <div style={inlineBlockStyle}>Back to Organizations</div>
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
           <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
-            <OrgAvatarInput orgId={orgId} />
+            <OrgAvatarInput orgId={orgId}/>
           </PhotoUploadModal>
           <div className={css(styles.orgNameAndDetails)}>
-            <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId} />
+            <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>
               Created {makeDateString(createdAt, false)}
             </div>
-            <BillingMembersToggle orgId={orgId} activeOrgDetail={activeOrgDetail} />
+            <BillingMembersToggle orgId={orgId}/>
           </div>
         </div>
-        <OrgSection orgId={orgId} />
+        <Switch>
+          <AsyncRoute exact path={`${match.url}`} mod={orgBilling}/>
+          <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling}/>
+          <AsyncRoute path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers}/>
+        </Switch>
       </div>
-    </UserSettingsWrapper >
+    </UserSettingsWrapper>
   );
 };
 
 Organization.propTypes = {
-  activeOrgDetail: PropTypes.string,
-  org: PropTypes.object,
-  styles: PropTypes.object
+  match: PropTypes.object.isRequired,
+  styles: PropTypes.object,
+  viewer: PropTypes.object
 };
 
 Organization.defaultProps = {
@@ -134,4 +140,19 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(Organization);
+export default createFragmentContainer(
+  withRouter(withStyles(styleThunk)(Organization)),
+  graphql`
+    fragment Organization_viewer on User {
+      organization(orgId: $orgId) {
+        id
+        activeUserCount
+        createdAt
+        inactiveUserCount
+        name
+        picture
+        periodEnd
+      }
+    }
+  `
+);

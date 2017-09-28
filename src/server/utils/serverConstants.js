@@ -3,7 +3,6 @@ import ms from 'ms';
 export const JWT_LIFESPAN = ms('30d');
 export const INVITATION_LIFESPAN = ms('30d');
 export const REFRESH_JWT_AFTER = ms('15d');
-export const INACTIVE_DAYS_THRESH = ms('7d');
 export const AUTO_PAUSE_THRESH = ms('30d');
 export const OLD_MEETING_AGE = ms('1d');
 export const MAX_PERSONAL_PROJECTS = 500;

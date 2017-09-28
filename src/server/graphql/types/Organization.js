@@ -1,65 +1,15 @@
-import {
-  GraphQLList,
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLBoolean,
-  GraphQLInt,
-  GraphQLInputObjectType,
-  GraphQLEnumType
-} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {GraphQLURLType} from 'server/graphql/types';
-import {BILLING_LEADER} from 'universal/utils/constants';
+import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {User} from 'server/graphql/models/User/userSchema';
+import {GraphQLURLType} from 'server/graphql/types';
 import CreditCard from 'server/graphql/types/CreditCard';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import OrgUser from 'server/graphql/types/OrgUser';
 import TierEnum from 'server/graphql/types/TierEnum';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
-// const RemovedUser = new GraphQLObjectType({
-//   name: 'RemovedUser',
-//   description: 'A user removed from the org',
-//   fields: () => ({
-//     removedAt: {
-//       type: new GraphQLNonNull(GraphQLISO8601Type),
-//       description: 'The datetime the user was removed from the org'
-//     },
-//     userId: {
-//       type: new GraphQLNonNull(GraphQLID),
-//       description: 'The userId removed from the org'
-//     }
-//   })
-// });
 
-export const OrgUserRole = new GraphQLEnumType({
-  name: 'OrgUserRole',
-  description: 'The role of the org user',
-  values: {
-    [BILLING_LEADER]: {}
-  }
-});
-
-const OrgUser = new GraphQLObjectType({
-  name: 'OrgUser',
-  description: 'The user/org M:F join, denormalized on the user/org tables',
-  fields: () => ({
-    id: {
-      type: GraphQLID,
-      description: 'The userId'
-    },
-    role: {
-      type: OrgUserRole,
-      description: 'role of the user in the org'
-    },
-    inactive: {
-      type: GraphQLBoolean,
-      description: 'true if the user is paused and the orgs are not being billed'
-    }
-  })
-});
-
-export const Organization = new GraphQLObjectType({
+const Organization = new GraphQLObjectType({
   name: 'Organization',
   description: 'An organization',
   fields: () => ({
@@ -130,17 +80,4 @@ export const Organization = new GraphQLObjectType({
   })
 });
 
-export const UpdateOrgInput = new GraphQLInputObjectType({
-  name: 'UpdateOrgInput',
-  fields: () => ({
-    id: {type: GraphQLID, description: 'The unique action ID'},
-    name: {
-      type: GraphQLString,
-      description: 'The name of the org'
-    },
-    picture: {
-      type: GraphQLURLType,
-      description: 'The org avatar'
-    }
-  })
-});
+export default Organization;

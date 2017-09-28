@@ -1,5 +1,4 @@
 import getRethink from 'server/database/rethinkDriver';
-import {UpdateOrgInput} from '../organizationSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean
@@ -12,6 +11,7 @@ import {
 } from 'server/utils/authorization';
 import updateOrgValidation from './updateOrgValidation';
 import {handleSchemaErrors} from 'server/utils/utils';
+import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput';
 
 export default {
   type: GraphQLBoolean,

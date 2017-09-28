@@ -61,6 +61,7 @@ const GitHubReposMenuRoot = (rootProps) => {
       variables={{teamId, service: GITHUB}}
       subscriptions={subscriptions}
       render={({error, props}) => {
+        // TODO refactor animation into a wrapper and GitHubRepoListMenu is the child
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {error && <ErrorComponent height={'14rem'} width={maxWidth} error={error} />}

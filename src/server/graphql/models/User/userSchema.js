@@ -10,7 +10,6 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import getRethink from 'server/database/rethinkDriver';
-import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema';
 import integrationProvider from 'server/graphql/queries/integrationProvider';
 import providerMap from 'server/graphql/queries/providerMap';
 import slackChannels from 'server/graphql/queries/slackChannels';
@@ -19,6 +18,8 @@ import {BILLING_LEADER} from 'universal/utils/constants';
 import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import TeamMember from 'server/graphql/types/TeamMember';
 import notifications from 'server/graphql/queries/notifications';
+import organization from 'server/graphql/queries/organization';
+import OrgUserRole from 'server/graphql/types/OrgUserRoleEnum';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -184,6 +185,7 @@ export const User = new GraphQLObjectType({
     notifications,
     providerMap,
     slackChannels,
+    organization,
     jwt: {
       type: GraphQLID,
       description: 'a refreshed JWT'
