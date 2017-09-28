@@ -5,6 +5,9 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import OrgBilling from 'universal/modules/userDashboard/components/OrgBilling/OrgBilling';
 import {DEFAULT_TTL} from 'universal/utils/constants';
+import {TransitionGroup} from 'react-transition-group';
+import AnimatedFade from 'universal/components/AnimatedFade';
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 
 const query = graphql`
   query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: String) {
@@ -16,8 +19,7 @@ const query = graphql`
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const OrgBillingRoot = (props) => {
-  const {atmosphere, orgId, org} = props;
+const OrgBillingRoot = ({atmosphere, orgId, org}) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -25,12 +27,20 @@ const OrgBillingRoot = (props) => {
       query={query}
       variables={{orgId, first: 1}}
       // subscriptions={subscriptions}
-      render={({error, renderProps}) => {
-        if (error) {
-          return <ErrorComponent height={'14rem'} error={error}/>;
-        }
-        const viewer = renderProps ? renderProps.viewer : null;
-        return <OrgBilling viewer={viewer} org={org}/>;
+      render={({error, props: queryProps}) => {
+        return (
+          <TransitionGroup appear style={{overflow: 'hidden'}}>
+            {error && <ErrorComponent height={'14rem'} error={error} />}
+            {queryProps && <AnimatedFade key="1">
+              <OrgBilling viewer={queryProps.viewer} org={org} />
+            </AnimatedFade>}
+            {!queryProps && !error &&
+            <AnimatedFade key="2" unmountOnExit exit={false}>
+              <LoadingComponent height={'5rem'} />
+            </AnimatedFade>
+            }
+          </TransitionGroup>
+        );
       }}
     />
   );

@@ -16,7 +16,7 @@ const query = graphql`
   }
 `;
 
-//const subscriptions = [];
+// const subscriptions = [];
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
@@ -32,11 +32,11 @@ const OrganizationRoot = (rootProps) => {
       query={query}
       variables={{orgId}}
       // subscriptions={subscriptions}
-      render={({error, renderProps}) => {
+      render={({error, props: queryProps}) => {
         if (error) {
           return <ErrorComponent height={'14rem'} error={error} />;
         }
-        const viewer = renderProps ? renderProps.viewer : null;
+        const viewer = queryProps ? queryProps.viewer : null;
         return <Organization orgId={orgId} viewer={viewer} />;
       }}
     />

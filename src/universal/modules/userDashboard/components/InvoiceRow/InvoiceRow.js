@@ -25,6 +25,8 @@ const InvoiceRow = (props) => {
     },
     styles
   } = props;
+  const endAtDate = new Date(endAt);
+  const paidAtDate = new Date(paidAt);
   const isEstimate = status === UPCOMING;
   const invoiceAvatarStyles = css(
     styles.invoiceAvatar,
@@ -41,7 +43,7 @@ const InvoiceRow = (props) => {
         <div className={css(styles.infoRow)}>
           <div className={css(styles.infoRowLeft)}>
             <div className={css(styles.invoiceTitle)}>
-              {makeMonthString(endAt)}
+              {makeMonthString(endAtDate)}
             </div>
             {isEstimate &&
               <Tag colorPalette="light" label="Current Estimate" />
@@ -62,12 +64,12 @@ const InvoiceRow = (props) => {
           <div className={css(styles.infoRowRight)}>
             {isEstimate ?
               <span className={css(styles.date, styles.toPay)}>
-                {hasCard ? `card will be charged on ${makeDateString(endAt, false)}` :
-                  `Make sure to add billing info before ${makeDateString(endAt, false)}!`
+                {hasCard ? `card will be charged on ${makeDateString(endAtDate, false)}` :
+                  `Make sure to add billing info before ${makeDateString(endAtDate, false)}!`
                 }
               </span> :
               <span className={css(styles.date, styles.paid)}>
-                Paid on {makeDateString(paidAt, false)}
+                Paid on {makeDateString(paidAtDate, false)}
               </span>
             }
           </div>

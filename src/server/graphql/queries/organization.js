@@ -27,7 +27,7 @@ export default {
       throw new Error('Must be a billing leader');
     }
 
-    const inactiveUserCount = orgUsers.filter((user) => user.inactive);
+    const inactiveUserCount = orgUsers.filter((user) => user.inactive).length;
     const activeUserCount = orgUsers.length - inactiveUserCount;
 
     return {

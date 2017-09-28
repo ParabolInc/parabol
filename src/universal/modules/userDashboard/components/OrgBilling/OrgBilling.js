@@ -18,7 +18,7 @@ class OrgBilling extends Component {
 
     loadMore(
       10, // Fetch the next 10 feed items
-      e => {
+      (e) => {
         console.log(e);
       }
     );
@@ -26,11 +26,11 @@ class OrgBilling extends Component {
 
   render() {
     const {
-      invoices,
-      invoicesReady,
       styles,
-      org
+      org,
+      viewer: {invoices}
     } = this.props;
+    const hasInvoices = invoices.edges.length > 0;
     const {creditCard = {}, id: orgId} = org;
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
@@ -43,26 +43,21 @@ class OrgBilling extends Component {
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
-              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card"/>
+              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
               <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
               <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
               <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
               <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
             </div>
-            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update}/>
+            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
           </div>
         </Panel>
         <Panel label="Invoices">
           <div className={css(styles.listOfInvoices)}>
-            {invoicesReady &&
-            invoices.map((invoice) =>
-              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)}/>
+            {hasInvoices &&
+            invoices.edges.map(({node: invoice}) =>
+              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
             )
-            }
-            {!invoicesReady &&
-            <div className={css(styles.noInvoices)}>
-              Loading Invoices...
-            </div>
             }
           </div>
         </Panel>
@@ -142,17 +137,17 @@ export default createPaginationContainer(
     getFragmentVariables(prevVars, totalCount) {
       return {
         ...prevVars,
-        first: totalCount,
+        first: totalCount
       };
     },
     getVariables(props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,
-        after: cursor,
+        after: cursor
         // in most cases, for variables other than connection filters like
         // `first`, `after`, etc. you may want to use the previous values.
-        //orderBy: fragmentVariables.orderBy,
+        // orderBy: fragmentVariables.orderBy,
       };
     },
     query: graphql`

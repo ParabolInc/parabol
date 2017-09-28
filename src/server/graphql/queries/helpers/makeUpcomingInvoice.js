@@ -4,7 +4,13 @@ import {fromEpochSeconds} from 'server/utils/epochTime';
 
 export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId) {
   if (!stripeId || !stripeSubscriptionId) return undefined;
-  const stripeInvoice = await stripe.invoices.retrieveUpcoming(stripeId, {subscription: stripeSubscriptionId});
+  let stripeInvoice;
+  try {
+    stripeInvoice = await stripe.invoices.retrieveUpcoming(stripeId, {subscription: stripeSubscriptionId});
+  } catch (e) {
+    // useful for debugging prod accounts in dev
+    return undefined;
+  }
   return {
     id: `upcoming_${orgId}`,
     amountDue: stripeInvoice.amount_due,

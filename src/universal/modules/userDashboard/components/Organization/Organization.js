@@ -21,15 +21,13 @@ import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 
 const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
-const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer');
+const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot');
 const inlineBlockStyle = {
   display: 'inline-block',
   lineHeight: ui.dashSectionHeaderLineHeight,
   marginRight: '.5rem',
   verticalAlign: 'middle'
 };
-
-const initialValues = {orgName: ''};
 
 const Organization = (props) => {
   const {
@@ -40,35 +38,35 @@ const Organization = (props) => {
   } = props;
   const org = viewer ? viewer.organization : {};
   const {createdAt, name: orgName, picture: orgAvatar} = org;
-  initialValues.orgName = orgName;
+  const createdAtDate = new Date(createdAt);
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
-  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled/>;
+  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
   const extraProps = {orgId, org};
   return (
     <UserSettingsWrapper>
-      <Helmet title={`${orgName} | Parabol`}/>
+      <Helmet title={`${orgName} | Parabol`} />
       <div className={css(styles.wrapper)}>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
-          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
+          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
           <div style={inlineBlockStyle}>Back to Organizations</div>
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
           <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
-            <OrgAvatarInput orgId={orgId}/>
+            <OrgAvatarInput orgId={orgId} />
           </PhotoUploadModal>
           <div className={css(styles.orgNameAndDetails)}>
-            <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
+            <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
             <div className={css(styles.orgDetails)}>
-              Created {makeDateString(createdAt, false)}
+              Created {makeDateString(createdAtDate, false)}
             </div>
-            <BillingMembersToggle orgId={orgId}/>
+            <BillingMembersToggle orgId={orgId} />
           </div>
         </div>
         <Switch>
-          <AsyncRoute path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={extraProps} />
+          <AsyncRoute exact path={`${match.url}`} mod={orgBilling} extraProps={extraProps} />
           <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling} extraProps={extraProps} />
-          <AsyncRoute path={`${match.url}`} mod={orgMembers} extraProps={extraProps} />
+          <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={extraProps} />
         </Switch>
       </div>
     </UserSettingsWrapper>
@@ -81,12 +79,6 @@ Organization.propTypes = {
   viewer: PropTypes.object
 };
 
-Organization.defaultProps = {
-  org: {
-    createdAt: new Date(),
-    name: 'Parabol'
-  }
-};
 const styleThunk = () => ({
   avatarAndName: {
     alignItems: 'flex-start',
