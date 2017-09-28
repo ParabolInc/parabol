@@ -2,9 +2,11 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
+import FontAwesome from 'react-fontawesome';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import Panel from 'universal/components/Panel/Panel';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Tooltip from 'universal/components/Tooltip/Tooltip';
 import UserRow from 'universal/components/UserRow/UserRow';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
@@ -12,13 +14,32 @@ import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/P
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import CancelTeamInviteMutation from 'universal/mutations/CancelTeamInviteMutation';
+import ResendTeamInviteMutation from 'universal/mutations/ResendTeamInviteMutation';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromNow from 'universal/utils/fromNow';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import ResendTeamInviteMutation from 'universal/mutations/ResendTeamInviteMutation';
-import CancelTeamInviteMutation from 'universal/mutations/CancelTeamInviteMutation';
+
+const tooltipIconStyle = {
+  color: appTheme.palette.dark70a,
+  fontSize: ui.iconSize,
+  lineHeight: '1.25rem',
+  verticalAlign: 'middle',
+  marginLeft: '.25rem',
+  marginTop: '-.0625rem'
+};
+
+const originAnchor = {
+  vertical: 'center',
+  horizontal: 'right'
+};
+
+const targetAnchor = {
+  vertical: 'center',
+  horizontal: 'left'
+};
 
 const TeamSettings = (props) => {
   const {
@@ -73,13 +94,26 @@ const TeamSettings = (props) => {
     const cancel = () => {
       cashay.mutate('cancelApproval', options);
     };
+    const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.actionLink)} onClick={cancel}>
-          Cancel Pending Approval
+          {'Cancel Pending Approval'}
         </div>
+        <span>
+          <Tooltip
+            maxHeight={40}
+            maxWidth={500}
+            originAnchor={originAnchor}
+            targetAnchor={targetAnchor}
+            tip={tip}
+          >
+            <FontAwesome name="question-circle" style={tooltipIconStyle} />
+          </Tooltip>
+        </span>
       </div>
-    );
+    )
+    ;
   };
   const teamMemberRowActions = (teamMember) => {
     const {id, preferredName} = teamMember;
@@ -207,6 +241,8 @@ const styleThunk = () => ({
   },
 
   actionLinkBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end',
     fontSize: 0,
     textAlign: 'right'
   },
