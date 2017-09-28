@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
 import agenda from './models/AgendaItem/agendaItemQuery';
-import invoice from './models/Invoice/invoiceQuery';
 import meeting from './models/Meeting/meetingQuery';
 // import {nodeField} from './models/Node/nodeQuery';
 import organization from './models/Organization/organizationQuery';
@@ -22,7 +21,6 @@ export default new GraphQLObjectType({
       })
     },
     ...agenda,
-    ...invoice,
     ...meeting,
     ...organization,
     ...project,

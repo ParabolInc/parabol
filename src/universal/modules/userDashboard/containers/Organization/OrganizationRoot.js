@@ -25,8 +25,6 @@ const OrganizationRoot = (rootProps) => {
     atmosphere,
     match: {params: {orgId}}
   } = rootProps;
-  console.log('root', rootProps);
-  // const activeOrgDetail = orgArea || BILLING_PAGE
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -39,7 +37,7 @@ const OrganizationRoot = (rootProps) => {
           return <ErrorComponent height={'14rem'} error={error} />;
         }
         const viewer = renderProps ? renderProps.viewer : null;
-        return <Organization viewer={viewer} />;
+        return <Organization orgId={orgId} viewer={viewer} />;
       }}
     />
   );

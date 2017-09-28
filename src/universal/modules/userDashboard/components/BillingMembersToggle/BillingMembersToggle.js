@@ -32,7 +32,7 @@ BillingMembersToggle.propTypes = {
   orgId: PropTypes.string.isRequired,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  match: Proptypes.object.isRequired
+  match: PropTypes.object.isRequired
 };
 
 export default withRouter(BillingMembersToggle);

@@ -3,6 +3,7 @@ import stripe from 'server/billing/stripe';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 
 export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId) {
+  if (!stripeId || !stripeSubscriptionId) return undefined;
   const stripeInvoice = await stripe.invoices.retrieveUpcoming(stripeId, {subscription: stripeSubscriptionId});
   return {
     id: `upcoming_${orgId}`,

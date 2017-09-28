@@ -4,13 +4,11 @@ import {
   ARCHIVED_PROJECTS,
   INVITATIONS,
   ORG_APPROVALS,
-  ORGANIZATION,
   ORGANIZATIONS,
   OWNED_ORGANIZATIONS,
   PROJECTS,
   TEAM,
   TEAM_MEMBERS,
-  UPCOMING_INVOICE,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
@@ -109,27 +107,6 @@ export default [
     }`
   },
   {
-    channel: ORGANIZATION,
-    string: `
-    subscription($orgId: ID!) {
-      organization(orgId: $orgId) {
-        id
-        activeUserCount
-        createdAt
-        creditCard {
-          brand
-          expiry
-          last4
-        }
-        inactiveUserCount
-        name
-        periodEnd
-        periodStart
-        picture
-      }
-    }`
-  },
-  {
     channel: ORGANIZATIONS,
     string: `
     subscription($userId: ID!) {
@@ -214,21 +191,6 @@ export default [
          picture,
          preferredName
        }
-    }`
-  },
-  {
-    channel: UPCOMING_INVOICE,
-    string: `
-    subscription($orgId: ID!) {
-      upcomingInvoice(orgId: $orgId) {
-        id
-        amountDue
-        cursor
-        endAt
-        paidAt
-        startAt
-        status
-      }
     }`
   },
   {

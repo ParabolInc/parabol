@@ -20,7 +20,7 @@ import withStyles from 'universal/styles/withStyles';
 import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 
-const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingContainer');
+const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
 const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer');
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -34,14 +34,16 @@ const initialValues = {orgName: ''};
 const Organization = (props) => {
   const {
     match,
+    orgId,
     styles,
     viewer
   } = props;
   const org = viewer ? viewer.organization : {};
-  const {id: orgId, createdAt, name: orgName, picture: orgAvatar} = org;
+  const {createdAt, name: orgName, picture: orgAvatar} = org;
   initialValues.orgName = orgName;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled/>;
+  const extraProps = {orgId, org};
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`}/>
@@ -64,9 +66,9 @@ const Organization = (props) => {
           </div>
         </div>
         <Switch>
-          <AsyncRoute exact path={`${match.url}`} mod={orgBilling}/>
-          <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling}/>
-          <AsyncRoute path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers}/>
+          <AsyncRoute path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={extraProps} />
+          <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling} extraProps={extraProps} />
+          <AsyncRoute path={`${match.url}`} mod={orgMembers} extraProps={extraProps} />
         </Switch>
       </div>
     </UserSettingsWrapper>
@@ -151,6 +153,11 @@ export default createFragmentContainer(
         inactiveUserCount
         name
         picture
+        creditCard {
+          brand
+          expiry
+          last4
+        }
         periodEnd
       }
     }

@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
+import makeUpcomingInvoice from 'server/graphql/queries/helpers/makeUpcomingInvoice';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';

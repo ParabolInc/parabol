@@ -20,6 +20,8 @@ import TeamMember from 'server/graphql/types/TeamMember';
 import notifications from 'server/graphql/queries/notifications';
 import organization from 'server/graphql/queries/organization';
 import OrgUserRole from 'server/graphql/types/OrgUserRoleEnum';
+import invoiceDetails from 'server/graphql/queries/invoiceDetails';
+import invoices from 'server/graphql/queries/invoices';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -182,6 +184,8 @@ export const User = new GraphQLObjectType({
     },
     githubRepos,
     integrationProvider,
+    invoices,
+    invoiceDetails,
     notifications,
     providerMap,
     slackChannels,
