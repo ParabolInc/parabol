@@ -38,7 +38,7 @@ const TeamArchiveSqueeze = (props) => {
             <Button
               colorPalette="cool"
               depth={1}
-              label={`Update to a ${PRO_LABEL} Account`}
+              label={`Upgrade to a ${PRO_LABEL} Account`}
               onClick={handleUpdate}
               size="large"
             />
