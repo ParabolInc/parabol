@@ -52,9 +52,7 @@ const TeamArchiveSqueeze = (props) => {
 TeamArchiveSqueeze.propTypes = {
   cardsUnavailableCount: PropTypes.number,
   handleUpdate: PropTypes.func,
-  styles: PropTypes.object,
-  teamId: PropTypes.string,
-  userId: PropTypes.string.isRequired
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
