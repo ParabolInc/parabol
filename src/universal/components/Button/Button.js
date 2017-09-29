@@ -51,6 +51,7 @@ const makePropColors = (buttonStyle, colorPalette) => {
 
 class Button extends Component {
   static propTypes = {
+    'aria-label': PropTypes.string,
     colorPalette: PropTypes.oneOf(ui.paletteOptions),
     compact: PropTypes.bool,
     // depth: up to 3 + 1 (for :hover, :focus) = up to ui.shadow[4]
@@ -116,6 +117,7 @@ class Button extends Component {
 
   render() {
     const {
+      'aria-label': ariaLabel,
       compact,
       depth,
       disabled,
@@ -186,6 +188,7 @@ class Button extends Component {
         onMouseLeave={this.onMouseLeave}
         title={title || label}
         type={type || 'button'}
+        aria-label={ariaLabel}
       >
         {icon ?
           makeIconLabel() :
@@ -197,6 +200,10 @@ class Button extends Component {
     );
   }
 }
+
+const icon = {
+  fontSize: ui.iconSize2x
+};
 
 const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransform}) => ({
   // Button base
@@ -239,10 +246,12 @@ const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransfor
   },
 
   iconLeft: {
+    ...icon,
     marginRight: '.375em'
   },
 
   iconRight: {
+    ...icon,
     marginLeft: '.375em'
   },
 
