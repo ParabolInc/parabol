@@ -6,6 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {ib, overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
+import TeamArchiveSqueeze from 'universal/modules/teamDashboard/components/TeamArchiveSqueeze/TeamArchiveSqueeze';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import FontAwesome from 'react-fontawesome';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
@@ -20,6 +21,8 @@ const iconStyle = {
 
 const TeamArchive = (props) => {
   const {archivedProjects, styles, teamId, teamName, userId} = props;
+  const isPaid = false;
+  const handleUpdate = () => console.log(`handleUpdate to Pro™ for ${teamId}`);
   return (
     <div className={css(styles.root)}>
       <Helmet title={`${teamName} Archive | Parabol`} />
@@ -41,6 +44,11 @@ const TeamArchive = (props) => {
                   />
                 </div>)
               )}
+              {!isPaid &&
+                <div className={css(styles.archiveSqueezeBlock)}>
+                  <TeamArchiveSqueeze cardsUnavailableCount={128} handleUpdate={handleUpdate} />
+                </div>
+              }
             </div> :
             <div className={css(styles.emptyMsg)}>
               <FontAwesome name="smile-o" style={iconStyle} />
@@ -93,7 +101,7 @@ const styleThunk = () => ({
     ...overflowTouch,
     bottom: 0,
     left: 0,
-    padding: '1rem 0 0 1.0625rem',
+    padding: '1rem 0 0 1rem',
     position: 'absolute',
     right: 0,
     top: 0
@@ -140,6 +148,12 @@ const styleThunk = () => ({
 
   link: {
     color: appTheme.palette.cool
+  },
+
+  archiveSqueezeBlock: {
+    paddingBottom: '1rem',
+    paddingRight: '1rem',
+    width: '100%'
   }
 });
 

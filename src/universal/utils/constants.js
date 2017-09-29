@@ -61,6 +61,10 @@ export const MEETING = 'meeting';
 export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
+/* Accounts */
+export const PERSONAL_LABEL = 'Personal';
+export const PRO_LABEL = 'Pro';
+
 /* NotificationRow Types */
 // Send to folks that got reactivated on a team
 // annoucements to the rest of the team
