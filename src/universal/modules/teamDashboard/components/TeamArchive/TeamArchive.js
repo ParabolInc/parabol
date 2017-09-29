@@ -53,9 +53,9 @@ const TeamArchive = (props) => {
             <div className={css(styles.emptyMsg)}>
               <FontAwesome name="smile-o" style={iconStyle} />
               <span style={ib}>
-                Hi there! There are zero archived projects.
-                Nothing to see here. How about a fun rally video?
-                {' '}<span className={css(styles.link)}>{getRallyLink()}!</span>
+                {'Hi there! There are zero archived projects. '}
+                {'Nothing to see here. How about a fun rally video? '}
+                <span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
             </div>
           }
