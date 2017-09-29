@@ -25,7 +25,7 @@ const MeetingLobby = (props) => {
   const {members, team, styles} = props;
   const {id: teamId, name: teamName} = team;
   const onStartMeetingClick = createStartMeetingHandler(members);
-  const shortUrl = makeHref(`/team/${teamId}`);
+  const shortUrl = makeHref(`/meeting/${teamId}/lobby`);
   return (
     <MeetingMain>
       {/* */}
@@ -52,7 +52,7 @@ const MeetingLobby = (props) => {
             textTransform="uppercase"
           />
         </div>
-        <p className={css(styles.label)}>{'Meeting Link:'}</p>
+        <p className={css(styles.label)}>{'Copy Meeting Link:'}</p>
         <div className={css(styles.urlBlock)}>
           <CopyShortLink url={shortUrl} />
         </div>
