@@ -12,6 +12,15 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
 class OrgBilling extends Component {
+  static propTypes = {
+    invoices: PropTypes.array,
+    invoicesReady: PropTypes.bool,
+    styles: PropTypes.object,
+    org: PropTypes.object,
+    relay: PropTypes.object.isRequired,
+    viewer: PropTypes.object
+  };
+
   loadMore = () => {
     const {relay: {hasMore, isLoading, loadMore}} = this.props;
     if (!hasMore() || isLoading()) return;
@@ -43,31 +52,31 @@ class OrgBilling extends Component {
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
-              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card"/>
+              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
               <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
               <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
               <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
               <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
             </div>
-            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update}/>
+            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
           </div>
         </Panel>
         <Panel label="Invoices">
           <div className={css(styles.listOfInvoices)}>
             {hasInvoices &&
             invoices.edges.map(({node: invoice}) =>
-              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)}/>
+              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
             )
             }
             {hasMore() &&
               <div className={css(styles.loadMore)}>
-            <Button
-              buttonStyle="flat"
-              colorPalette="cool"
-              label="LOAD MORE"
-              onClick={this.loadMore}
-              size="large"
-            />
+                <Button
+                  buttonStyle="flat"
+                  colorPalette="cool"
+                  label="LOAD MORE"
+                  onClick={this.loadMore}
+                  size="large"
+                />
               </div>
             }
           </div>
@@ -76,13 +85,6 @@ class OrgBilling extends Component {
     );
   }
 }
-
-OrgBilling.propTypes = {
-  invoices: PropTypes.array,
-  invoicesReady: PropTypes.bool,
-  styles: PropTypes.object,
-  org: PropTypes.object
-};
 
 const styleThunk = () => ({
   creditCardInfo: {

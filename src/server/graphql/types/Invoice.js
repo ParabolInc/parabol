@@ -7,6 +7,7 @@ import InvoiceLineItem from 'server/graphql/types/InvoiceLineItem';
 import InvoiceStatusEnum from 'server/graphql/types/InvoiceStatusEnum';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
+import {globalIdField} from 'graphql-relay';
 
 
 /* Each invoice has 3 levels.
@@ -19,7 +20,7 @@ const Invoice = new GraphQLObjectType({
   name: 'Invoice',
   description: 'A monthly billing invoice for an organization',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique invoice Id'},
+    id: globalIdField('Invoice', ({id}) => id),
     amountDue: {
       type: GraphQLFloat,
       description: 'The amount the card will be charged (total + startingBalance with a min value of 0)'
@@ -40,10 +41,6 @@ const Invoice = new GraphQLObjectType({
       type: CreditCard,
       description: 'the card used to pay the invoice'
     },
-    cursor: {
-      type: GraphQLFloat,
-      description: 'the string interpretation of startAt'
-    },
     endAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp for the end of the billing cycle'
@@ -61,7 +58,7 @@ const Invoice = new GraphQLObjectType({
       description: 'The details that comprise the charges for next month'
     },
     orgId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: '*The organization id to charge'
     },
     orgName: {

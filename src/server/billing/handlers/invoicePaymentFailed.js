@@ -5,7 +5,12 @@ import getRethink from 'server/database/rethinkDriver';
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {BILLING_LEADER, FAILED, NOTIFICATIONS_ADDED, PAYMENT_REJECTED} from 'universal/utils/constants';
+import {
+  BILLING_LEADER,
+  FAILED,
+  NOTIFICATIONS_ADDED,
+  PAYMENT_REJECTED
+} from 'universal/utils/constants';
 
 export default async function invoicePaymentFailed(invoiceId) {
   const r = getRethink();
@@ -63,6 +68,7 @@ export default async function invoicePaymentFailed(invoiceId) {
       insert: r.table('Notification').insert(notification)
     });
     const notificationsAdded = {notifications: [notification]};
+
     userIds.forEach((userId) => {
       getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
     });

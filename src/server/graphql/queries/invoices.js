@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
+import makeUpcomingInvoice from 'server/graphql/queries/helpers/makeUpcomingInvoice';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {InvoiceConnection} from 'server/graphql/types/Invoice';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import {UPCOMING} from 'universal/utils/constants';
-import {forwardConnectionArgs} from 'graphql-relay';
-import makeUpcomingInvoice from 'server/graphql/queries/helpers/makeUpcomingInvoice';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 
 export default {
   type: InvoiceConnection,
@@ -39,7 +39,6 @@ export default {
         .between([orgId, r.minval], [orgId, dbAfter], {index: 'orgIdStartAt', leftBound: 'open'})
         .filter((invoice) => invoice('status').ne(UPCOMING).and(invoice('total').ne(0)))
         .orderBy(r.desc('startAt'))
-        // remove upcoming invoices
         .limit(first + 1),
       upcomingInvoice: after ? Promise.resolve(undefined) : makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId)
     });
@@ -55,7 +54,7 @@ export default {
       edges,
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,
-        endCursor: firstEdge && edges[edges.length -1].cursor,
+        endCursor: firstEdge && edges[edges.length - 1].cursor,
         hasNextPage: allInvoices.length > nodes.length
       }
     };

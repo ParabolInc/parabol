@@ -75,6 +75,7 @@ const Organization = (props) => {
 
 Organization.propTypes = {
   match: PropTypes.object.isRequired,
+  orgId: PropTypes.string.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object
 };

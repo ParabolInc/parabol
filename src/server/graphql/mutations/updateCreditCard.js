@@ -1,12 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import makeUpcomingInvoice from 'server/graphql/queries/helpers/makeUpcomingInvoice';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
-import {INVOICES, UPDATE} from 'universal/utils/constants';
+import {INVOICE_CHANGED} from 'universal/utils/constants';
 
 export default {
   type: UpdateCreditCardPayload,
@@ -54,17 +52,8 @@ export default {
           updatedAt: now
         })
     });
-    const upcomingInvoice = await makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId);
 
-    const invoices = {
-      type: UPDATE,
-      fields: upcomingInvoice
-    };
-
-    getPubSub().publish(`${INVOICES}.${orgId}`, {invoices, mutatorId: socketId});
-    return {
-      creditCard,
-      upcomingInvoice
-    };
+    // TODO make a CC_CHANGED subscription and update the CC object in it
+    return {creditCard};
   }
 };

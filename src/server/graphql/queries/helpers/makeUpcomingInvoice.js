@@ -14,7 +14,6 @@ export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscri
   return {
     id: `upcoming_${orgId}`,
     amountDue: stripeInvoice.amount_due,
-    cursor: 0,
     total: stripeInvoice.total,
     endAt: fromEpochSeconds(stripeInvoice.period_end),
     invoiceDate: fromEpochSeconds(stripeInvoice.date),
