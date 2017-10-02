@@ -1,9 +1,6 @@
 import {GraphQLScalarType} from 'graphql';
 import {Kind} from 'graphql/language';
-
-const isValidDate = (maybeDate) => {
-  return !isNaN(maybeDate.getTime());
-};
+import isValidDate from 'universal/utils/isValidDate';
 
 function parseDate(value) {
   const result = new Date(value);

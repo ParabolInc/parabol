@@ -38,7 +38,6 @@ const Organization = (props) => {
   } = props;
   const org = viewer ? viewer.organization : {};
   const {createdAt, name: orgName, picture: orgAvatar} = org;
-  const createdAtDate = new Date(createdAt);
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
   const extraProps = {orgId, org};
@@ -58,7 +57,7 @@ const Organization = (props) => {
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
             <div className={css(styles.orgDetails)}>
-              Created {makeDateString(createdAtDate, false)}
+              Created {makeDateString(createdAt)}
             </div>
             <BillingMembersToggle orgId={orgId} />
           </div>

@@ -230,7 +230,7 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
       type: OTHER_ADJUSTMENTS
     })),
     ...quantityChangeLineItems
-  ];
+  ].sort((a, b) => a.type > b.type ? 1 : -1);
 
   // sanity check
   const calculatedTotal = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount;

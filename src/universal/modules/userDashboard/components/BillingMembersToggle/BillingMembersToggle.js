@@ -7,7 +7,7 @@ import {matchPath, withRouter} from 'react-router-dom';
 const BillingMembersToggle = (props) => {
   const {history, location: {pathname}, match, orgId} = props;
   const areaMatch = matchPath(pathname, {path: `${match.url}/:area?`});
-  const activeOrgDetail = areaMatch.params.area;
+  const activeOrgDetail = areaMatch.params.area || BILLING_PAGE;
   const items = [
     {
       label: 'Billing',

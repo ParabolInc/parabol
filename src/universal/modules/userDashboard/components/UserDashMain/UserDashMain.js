@@ -23,7 +23,7 @@ const UserDashMain = (props) => {
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
           <div className={css(styles.headerCopy)}>
-            {makeDateString()}<br />
+            {makeDateString(new Date(), {showDay: true})}<br />
             <span className={css(styles.rallyLink)}>
               <i>{getRallyLink()}!</i>
             </span>

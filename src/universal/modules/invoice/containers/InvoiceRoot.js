@@ -6,28 +6,28 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import OrgBilling from 'universal/modules/userDashboard/components/OrgBilling/OrgBilling';
+import Invoice from 'universal/modules/invoice/components/Invoice/Invoice';
 
 const query = graphql`
-  query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {
+  query InvoiceRootQuery($invoiceId: ID!) {
     viewer {
-      ...OrgBilling_viewer
+      ...Invoice_viewer
     }
   }
 `;
 
-const OrgBillingRoot = ({atmosphere, orgId, org}) => {
+const InvoiceRoot = ({atmosphere, match: {params: {invoiceId}}}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{orgId, first: 3}}
+      variables={{invoiceId}}
       render={({error, props: queryProps}) => {
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {queryProps && <AnimatedFade key="1">
-              <OrgBilling viewer={queryProps.viewer} org={org} />
+              <Invoice viewer={queryProps.viewer} />
             </AnimatedFade>}
             {!queryProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
@@ -41,10 +41,9 @@ const OrgBillingRoot = ({atmosphere, orgId, org}) => {
   );
 };
 
-OrgBillingRoot.propTypes = {
+InvoiceRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  org: PropTypes.object,
-  orgId: PropTypes.string.isRequired
+  match: PropTypes.object.isRequired
 };
 
-export default withAtmosphere(OrgBillingRoot);
+export default withAtmosphere(InvoiceRoot);
