@@ -9,7 +9,7 @@ import shortid from 'shortid';
 import {BILLING_LEADER, FAILED, NOTIFICATIONS_ADDED, PAYMENT_REJECTED} from 'universal/utils/constants';
 
 export default {
-  name: 'FailPayment',
+  name: 'StripeFailPayment',
   description: 'When stripe tells us an invoice payment failed, update it in our DB',
   type: GraphQLBoolean,
   args: {

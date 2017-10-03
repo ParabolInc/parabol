@@ -5,7 +5,7 @@ import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 
 export default {
-  name: 'CreateInvoice',
+  name: 'StripeCreateInvoice',
   description: 'When stripe tells us an invoice is ready, create a pretty version',
   type: GraphQLBoolean,
   args: {

@@ -5,11 +5,12 @@ import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import getRethink from 'server/database/rethinkDriver';
 import {PENDING, INVITATION_LIFESPAN} from 'server/utils/serverConstants';
 import shortid from 'shortid';
-import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY, PERSONAL} from 'universal/utils/constants';
+import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY, PERSONAL, PRO} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import convertToRichText from './convertToRichText';
+import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 
 const meetingProject = ({id, content, status, teamMemberId}) => ({
   id,
@@ -55,7 +56,7 @@ class MockDB {
     return this;
   }
 
-  init() {
+  init(template = {}) {
     const orgId = shortid.generate();
     // underscore for a static seed based on the first char
     const teamId = `_${shortid.generate()}`;
@@ -81,7 +82,12 @@ class MockDB {
       inactive: false,
       role: user.userOrgs.find((org) => org.id === orgId).role
     }));
-    this.newOrg({id: orgId, orgUsers});
+    if (template.plan === PRO) {
+      const creditCard = creditCardByToken.tok_4012888888881881;
+      this.newOrg({id: orgId, orgUsers, stripeId: true, stripeSubscriptionId: true, creditCard});
+    } else {
+      this.newOrg({id: orgId, orgUsers});
+    }
     return this;
   }
 
@@ -200,6 +206,13 @@ class MockDB {
     if (newOverrides.stripeSubscriptionId === true) {
       newOverrides.stripeSubscriptionId = `sub_${id}`;
     }
+    this.db.user.forEach((user, idx) => {
+      this.db.user[idx].userOrgs = this.db.user[idx].userOrgs || [];
+      this.db.user[idx].userOrgs.push({
+        id,
+        role: this.context.user.id === user.id ? BILLING_LEADER : null
+      })
+    });
     return this.closeout('organization', {
       id,
       createdAt: anHourAgo,

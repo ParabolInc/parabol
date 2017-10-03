@@ -1,4 +1,4 @@
-export default {
+export default (id) => ({
   created: 1326853478,
   livemode: false,
   id: 'evt_00000000000000',
@@ -9,7 +9,7 @@ export default {
   api_version: '2016-10-19',
   data: {
     object: {
-      id: 'in_00000000000000',
+      id,
       object: 'invoice',
       amount_due: 0,
       application_fee: null,
@@ -42,4 +42,4 @@ export default {
       webhooks_delivered_at: 1488909040
     }
   }
-};
+});

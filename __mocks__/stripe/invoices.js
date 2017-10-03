@@ -40,11 +40,10 @@ const makeNextMonthChargesLine = (subscription) => makeInvoiceLine({
 });
 
 const makeInvoiceLines = (id, subscription, lineTypes) => {
-  const totalCount = Object.keys(lineTypes).reduce((count, type) => count + lineTypes[type], 0);
+  const totalCount = lineTypes ? Object.keys(lineTypes).reduce((count, type) => count + lineTypes[type], 0) : undefined;
   return {
     "data": [
-      makeNextMonthChargesLine(),
-
+      makeNextMonthChargesLine(subscription),
     ],
     "total_count": totalCount,
     "object": "list",
@@ -52,7 +51,7 @@ const makeInvoiceLines = (id, subscription, lineTypes) => {
   }
 };
 
-export const createNewInvoice = (overrides, lineTypes, reject) => {
+export const createNewInvoice = (overrides, reject) => {
   const {id, customer, subscription} = overrides;
   return {
     "id": id,
@@ -70,7 +69,7 @@ export const createNewInvoice = (overrides, lineTypes, reject) => {
     "discount": null,
     "ending_balance": 0,
     "forgiven": false,
-    "lines": makeInvoiceLines(id, subscription, lineTypes),
+    "lines": makeInvoiceLines(id, subscription),
     "livemode": false,
     "metadata": {},
     "next_payment_attempt": null,
@@ -90,14 +89,18 @@ export const createNewInvoice = (overrides, lineTypes, reject) => {
 };
 
 export default (stripe) => ({
-  // create: jest.fn((options) => new Promise((resolve, reject) => {
-  //   const id = `cus_${shortid.generate()}`;
-  //   const customerDoc = stripe.__db.customers[id] = createNewCustomer(options, {id}, reject);
-  //   resolve(customerDoc);
-  // })),
+   create: jest.fn((options) => new Promise((resolve, reject) => {
+     const {id} = options;
+     const invoiceDoc = stripe.__db.invoices[id] = createNewInvoice(options, reject);
+     resolve(invoiceDoc);
+   })),
   retrieve: jest.fn((id) => new Promise((resolve, reject) => {
     const doc = getDoc(stripe.__db.invoices[id], reject);
     resolve(doc);
+  })),
+  retrieveLines: jest.fn((id) => new Promise((resolve, reject) => {
+    const doc = getDoc(stripe.__db.invoices[id], reject);
+    resolve(doc.lines);
   })),
   //TODO
   retrieveUpcoming: jest.fn((id) => new Promise((resolve, reject) => {
@@ -117,6 +120,8 @@ export default (stripe) => ({
   })),
   __trimFields: [
     'id',
+    'customer',
+    'metadata.orgId',
     'subscription',
     'lines.url',
     'lines.data.id',

@@ -5,7 +5,7 @@ import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustome
 
 
 export default {
-  name: 'UpdateStripeCreditCard',
+  name: 'StripeUpdateCreditCard',
   description: 'When stripe tells us a credit card was updated, update the details in our own DB',
   type: GraphQLBoolean,
   args: {

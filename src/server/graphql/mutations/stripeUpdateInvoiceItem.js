@@ -3,7 +3,7 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 
 export default {
-  name: 'UpdateStripeInvoiceItem',
+  name: 'StripeUpdateInvoiceItem',
   description: 'When a new invoiceitem is sent from stripe, tag it with metadata',
   type: GraphQLBoolean,
   args: {
