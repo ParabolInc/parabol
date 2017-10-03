@@ -207,7 +207,7 @@ const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransfor
     lineHeight: ui.buttonLineHeight,
     padding: ui.buttonPadding[size] || ui.buttonPadding.medium,
     textTransform: textTransform || 'none',
-    transition: `box-shadow ${ui.transition[0]}`
+    transition: `box-shadow ${ui.transition[0]}, transform ${ui.transition[0]}`
   },
 
   depth: {

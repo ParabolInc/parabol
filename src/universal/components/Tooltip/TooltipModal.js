@@ -4,6 +4,7 @@ import React from 'react';
 import portal from 'react-portal-hoc';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 import {TransitionGroup} from 'react-transition-group';
 
@@ -52,7 +53,7 @@ const animateOut = {
   },
   '100%': {
     opacity: '0',
-    transform: 'translate3d(0, -32px, 0)'
+    transform: 'translate3d(0, -2rem, 0)'
   }
 };
 
@@ -66,24 +67,24 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
     maxWidth,
     padding: '.25rem .5rem',
     position: 'absolute',
-    zIndex: ui.ziMenu
+    zIndex: ui.ziTooltip
   },
 
   contents: {
-    padding: '.5rem',
     color: 'white',
-    backgroundColor: 'black',
-    borderRadius: ui.menuBorderRadius,
-    boxShadow: ui.menuBoxShadow,
+    backgroundColor: appTheme.palette.dark,
+    borderRadius: ui.tooltipBorderRadius,
+    boxShadow: ui.tooltipBoxShadow,
+    fontSize: appTheme.typography.s2,
+    fontWeight: 700,
+    lineHeight: appTheme.typography.s5,
     maxHeight,
-    outline: 0,
-    opacity: 0.7,
     overflow: 'hidden',
-    paddingBottom: ui.menuGutterVertical,
-    paddingTop: ui.menuGutterVertical,
+    padding: '.375rem .625rem',
     textAlign: 'left',
-    width: '100%',
-    whiteSpace: 'nowrap'
+    textShadow: '0 .0625rem 0 rgba(0, 0, 0, .25)',
+    whiteSpace: 'nowrap',
+    width: '100%'
   }
 });
 

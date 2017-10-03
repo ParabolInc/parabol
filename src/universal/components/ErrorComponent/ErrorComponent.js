@@ -4,7 +4,7 @@ import React from 'react';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
-const defaultMessage = 'An error has occurred! We\'ll alert the developers. Try refreshing the page';
+const defaultMessage = 'An error has occurred! We’ll alert the developers. Try refreshing the page';
 const LoadingComponent = (props) => {
   const {error, styles} = props;
   console.error(error);

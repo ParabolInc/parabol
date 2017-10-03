@@ -48,7 +48,7 @@ const notificationHandler = {
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Congratulations!',
-      message: `You've been added to team ${teamName}`,
+      message: `You’ve been added to team ${teamName}`,
       action: {
         label: 'Great!',
         callback: () => {
@@ -83,7 +83,7 @@ const notificationHandler = {
     const requestorId = payload.getValue('requestorId');
     dispatch(showInfo({
       title: `${requestorName} wants to facilitate`,
-      message: 'Click \'Promote\' to hand over the reigns',
+      message: 'Click ‘Promote’ to hand over the reigns',
       autoDismiss: 0,
       action: {
         label: 'Promote',
@@ -175,7 +175,7 @@ const notificationHandler = {
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Congratulations!',
-      message: `You've been promoted to billing leader for ${groupName}`,
+      message: `You’ve been promoted to billing leader for ${groupName}`,
       action: {
         label: 'Check it out!',
         callback: () => {
@@ -190,7 +190,7 @@ const notificationHandler = {
     const teamName = payload.getValue('teamName');
     dispatch(showInfo({
       autoDismiss: 10,
-      title: 'They\'re back!',
+      title: 'They’re back!',
       message: `${preferredName} has rejoined ${teamName}`
     }));
   },
@@ -218,7 +218,7 @@ const notificationHandler = {
     const teamName = payload.getValue('teamName');
     dispatch(showInfo({
       autoDismiss: 10,
-      title: 'That\'s it, folks!',
+      title: 'That’s it, folks!',
       message: `${teamName} has been archived.`,
       action: {
         label: 'OK',
@@ -237,7 +237,7 @@ const notificationHandler = {
     const teamName = payload.getValue('teamName');
     dispatch(showInfo({
       autoDismiss: 10,
-      title: 'You\'re invited!',
+      title: 'You’re invited!',
       message: `${inviterName} would like you to join their team ${teamName}`,
       action: {
         label: 'Accept!',
