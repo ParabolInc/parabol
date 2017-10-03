@@ -4,7 +4,6 @@ import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
-import {INVOICE_CHANGED} from 'universal/utils/constants';
 
 export default {
   type: UpdateCreditCardPayload,

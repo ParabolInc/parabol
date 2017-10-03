@@ -1,84 +1,33 @@
 import {
   GraphQLBoolean,
   GraphQLID,
-  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import getRethink from 'server/database/rethinkDriver';
-import integrationProvider from 'server/graphql/queries/integrationProvider';
-import providerMap from 'server/graphql/queries/providerMap';
-import slackChannels from 'server/graphql/queries/slackChannels';
 import githubRepos from 'server/graphql/queries/githubRepos';
-import {BILLING_LEADER} from 'universal/utils/constants';
-import {GraphQLEmailType, GraphQLURLType} from '../../types';
-import TeamMember from 'server/graphql/types/TeamMember';
-import notifications from 'server/graphql/queries/notifications';
-import organization from 'server/graphql/queries/organization';
-import OrgUserRole from 'server/graphql/types/OrgUserRoleEnum';
+import integrationProvider from 'server/graphql/queries/integrationProvider';
 import invoiceDetails from 'server/graphql/queries/invoiceDetails';
 import invoices from 'server/graphql/queries/invoices';
+import notifications from 'server/graphql/queries/notifications';
+import organization from 'server/graphql/queries/organization';
+import providerMap from 'server/graphql/queries/providerMap';
+import slackChannels from 'server/graphql/queries/slackChannels';
+import AuthIdentityType from 'server/graphql/types/AuthIdentityType';
+import BlockedUserType from 'server/graphql/types/BlockedUserType';
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import TeamMember from 'server/graphql/types/TeamMember';
+import UserOrg from 'server/graphql/types/UserOrg';
+import {BILLING_LEADER} from 'universal/utils/constants';
+import connectionDefinitions from 'server/graphql/connectionDefinitions';
+import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 
-const IdentityType = new GraphQLObjectType({
-  name: 'IdentityType',
-  fields: () => ({
-    connection: {
-      type: GraphQLString,
-      description: `The connection name.
-      This field is not itself updateable
-      but is needed when updating email, email_verified, username or password.`
-    },
-    userId: {
-      type: GraphQLID,
-      description: 'The unique identifier for the user for the identity.'
-    },
-    provider: {
-      type: GraphQLString,
-      description: 'The type of identity provider.'
-    },
-    isSocial: {
-      type: GraphQLBoolean,
-      description: 'true if the identity provider is a social provider, false otherwise'
-    }
-  })
-});
-
-const BlockedUserType = new GraphQLObjectType({
-  name: 'BlockedUserType',
-  description: 'Identifier and IP address blocked',
-  fields: () => ({
-    identifier: {
-      type: GraphQLString,
-      description: 'The identifier (usually email) of blocked user'
-    },
-    id: {
-      type: GraphQLString,
-      description: 'The IP address of the blocked user'
-    }
-  })
-});
-
-const UserOrg = new GraphQLObjectType({
-  name: 'UserOrg',
-  description: 'The user/org M:F join, denormalized on the user/org tables',
-  fields: () => ({
-    id: {
-      type: GraphQLID,
-      description: 'The orgId'
-    },
-    role: {
-      type: OrgUserRole,
-      description: 'role of the user in the org'
-    }
-  })
-});
-
-
-export const User = new GraphQLObjectType({
+const User = new GraphQLObjectType({
   name: 'User',
   description: 'The user account profile',
   fields: () => ({
@@ -111,7 +60,7 @@ export const User = new GraphQLObjectType({
       description: 'true if email is verified, false otherwise'
     },
     identities: {
-      type: new GraphQLList(IdentityType),
+      type: new GraphQLList(AuthIdentityType),
       description: `An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked`
     },
@@ -148,13 +97,7 @@ export const User = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if the user is not currently being billed for service. removed on every websocket handshake'
     },
-    isBillingLeader: {
-      type: GraphQLBoolean,
-      description: 'true if the user is a part of the supplied orgId',
-      resolve: (source, {orgId}) => {
-        return Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
-      }
-    },
+    isBillingLeader,
     preferredName: {
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
@@ -190,6 +133,8 @@ export const User = new GraphQLObjectType({
     providerMap,
     slackChannels,
     organization,
+    // hack until we can move to ES6 immutable bindings
+    orgMembers: require('../queries/orgMembers').default,
     jwt: {
       type: GraphQLID,
       description: 'a refreshed JWT'
@@ -197,17 +142,10 @@ export const User = new GraphQLObjectType({
   })
 });
 
-export const UserInput = new GraphQLInputObjectType({
-  name: 'UserInput',
-  fields: () => ({
-    id: {type: GraphQLID, description: 'The unique userId'},
-    picture: {
-      type: GraphQLURLType,
-      description: 'A link to the user’s profile image.'
-    },
-    preferredName: {
-      type: GraphQLString,
-      description: 'The name, as confirmed by the user'
-    }
-  })
+const {connectionType, edgeType} = connectionDefinitions({
+  nodeType: User
 });
+
+export const UserConnection = connectionType;
+export const UserEdge = edgeType;
+export default User;

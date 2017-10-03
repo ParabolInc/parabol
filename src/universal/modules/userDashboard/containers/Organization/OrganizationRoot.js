@@ -23,8 +23,9 @@ const cacheConfig = {ttl: DEFAULT_TTL};
 const OrganizationRoot = (rootProps) => {
   const {
     atmosphere,
-    match: {params: {orgId}}
+    match
   } = rootProps;
+  const {params: {orgId}} = match;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -37,7 +38,8 @@ const OrganizationRoot = (rootProps) => {
           return <ErrorComponent height={'14rem'} error={error} />;
         }
         const viewer = queryProps ? queryProps.viewer : null;
-        return <Organization orgId={orgId} viewer={viewer} />;
+        // pass in match to mitigate update blocker
+        return <Organization orgId={orgId} viewer={viewer} match={match} />;
       }}
     />
   );

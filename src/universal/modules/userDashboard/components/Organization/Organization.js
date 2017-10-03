@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import {Link, Switch, withRouter} from 'react-router-dom';
+import {Link, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
@@ -39,33 +39,33 @@ const Organization = (props) => {
   const org = viewer ? viewer.organization : {};
   const {createdAt, name: orgName, picture: orgAvatar} = org;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
-  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
+  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled/>;
   const extraProps = {orgId, org};
   return (
     <UserSettingsWrapper>
-      <Helmet title={`${orgName} | Parabol`} />
+      <Helmet title={`${orgName} | Parabol`}/>
       <div className={css(styles.wrapper)}>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
-          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
+          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
           <div style={inlineBlockStyle}>Back to Organizations</div>
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
           <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
-            <OrgAvatarInput orgId={orgId} />
+            <OrgAvatarInput orgId={orgId}/>
           </PhotoUploadModal>
           <div className={css(styles.orgNameAndDetails)}>
-            <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
+            <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>
               Created {makeDateString(createdAt)}
             </div>
-            <BillingMembersToggle orgId={orgId} />
+            <BillingMembersToggle orgId={orgId}/>
           </div>
         </div>
         <Switch>
-          <AsyncRoute exact path={`${match.url}`} mod={orgBilling} extraProps={extraProps} />
-          <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling} extraProps={extraProps} />
-          <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={extraProps} />
+          <AsyncRoute exact path={`${match.url}`} mod={orgBilling} extraProps={extraProps}/>
+          <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling} extraProps={extraProps}/>
+          <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={extraProps}/>
         </Switch>
       </div>
     </UserSettingsWrapper>
@@ -135,7 +135,7 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withRouter(withStyles(styleThunk)(Organization)),
+  withStyles(styleThunk)(Organization),
   graphql`
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {
@@ -150,6 +150,7 @@ export default createFragmentContainer(
           expiry
           last4
         }
+        periodStart
         periodEnd
       }
     }

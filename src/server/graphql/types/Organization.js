@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {User} from 'server/graphql/models/User/userSchema';
-import {GraphQLURLType} from 'server/graphql/types';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import CreditCard from 'server/graphql/types/CreditCard';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import OrgUser from 'server/graphql/types/OrgUser';
 import TierEnum from 'server/graphql/types/TierEnum';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import User from 'server/graphql/types/User';
 
 
 const Organization = new GraphQLObjectType({

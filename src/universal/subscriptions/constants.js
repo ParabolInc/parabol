@@ -16,4 +16,3 @@ export const PROJECTS = 'projects';
 export const AGENDA_PROJECTS = 'agendaProjects';
 export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';
-export const USERS_BY_ORG = 'usersByOrg';

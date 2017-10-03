@@ -164,8 +164,7 @@ const Invoice = (props) => {
 };
 
 Invoice.propTypes = {
-  invoice: PropTypes.object,
-  subject: PropTypes.string,
+  viewer: PropTypes.object.isRequired,
   styles: PropTypes.object
 };
 

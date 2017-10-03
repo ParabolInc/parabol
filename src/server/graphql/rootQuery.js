@@ -7,8 +7,8 @@ import project from './models/Project/projectQuery';
 import team from './models/Team/teamQuery';
 import teamMember from './models/TeamMember/teamMemberQuery';
 import user from './models/User/userQuery';
-import {User} from './models/User/userSchema';
 import {toGlobalId} from 'graphql-relay';
+import User from 'server/graphql/types/User';
 
 export default new GraphQLObjectType({
   name: 'Query',

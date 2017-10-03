@@ -1,82 +1,50 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {cashay} from 'cashay';
-import {connect} from 'react-redux';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {TransitionGroup} from 'react-transition-group';
+import AnimatedFade from 'universal/components/AnimatedFade';
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import OrgMembers from 'universal/modules/userDashboard/components/OrgMembers/OrgMembers';
 
-// const organizationContainerQuery = `
-// query {
-//  usersByOrg(orgId: $orgId) @live {
-//    id
-//    isBillingLeader
-//    email
-//    inactive
-//    picture
-//    preferredName
-//  }
-//  organization(orgId: $orgId) @live {
-//    id
-//    periodStart
-//    periodEnd
-//  }
-// }
-// `;
-
-// memoized
-const countBillingLeaders = (users) => {
-  if (users !== countBillingLeaders.users) {
-    countBillingLeaders.users = users;
-    countBillingLeaders.cache = users.reduce((count, user) => user.isBillingLeader ? count + 1 : count, 0);
+const query = graphql`
+  query OrgMembersRootQuery($orgId: ID!, $first: Int!, $after: String) {
+    viewer {
+      ...OrgMembers_viewer
+    }
   }
-  return countBillingLeaders.cache;
-};
+`;
 
-const mapStateToProps = (state, props) => {
-  const {orgId} = props;
-  // const {usersByOrg: users, organization: org} = cashay.query(organizationContainerQuery, {
-  //  op: 'orgMembersContainer',
-  //  key: orgId,
-  //  sort: {
-  //    usersByOrg: (a, b) => {
-  //      if (a.isBillingLeader === b.isBillingLeader) {
-  //        return a.preferredName > b.preferredName ? 1 : -1;
-  //      }
-  //      return a.isBillingLeader ? -1 : 1;
-  //    }
-  //  },
-  //  variables: {orgId}
-  // }).data;
-  return {
-    // billingLeaderCount: countBillingLeaders(users),
-    myUserId: state.auth.obj.sub
-    // users,
-    // org
-  };
-};
-
-const OrgMembersRoot = (props) => {
-  const {billingLeaderCount, dispatch, myUserId, users, org} = props;
-  if (users.length < 1) {
-    return <LoadingView />;
-  }
+const OrgMembersRoot = ({atmosphere, orgId, org}) => {
   return (
-    <OrgMembers
-      billingLeaderCount={billingLeaderCount}
-      dispatch={dispatch}
-      myUserId={myUserId}
-      org={org}
-      users={users}
+    <QueryRenderer
+      environment={atmosphere}
+      query={query}
+      variables={{orgId, first: 10000}}
+      render={({error, props: queryProps}) => {
+        return (
+          <TransitionGroup appear style={{overflow: 'hidden'}}>
+            {error && <ErrorComponent height={'14rem'} error={error}/>}
+            {queryProps && <AnimatedFade key="1">
+              <OrgMembers viewer={queryProps.viewer} org={org} />
+            </AnimatedFade>}
+            {!queryProps && !error &&
+            <AnimatedFade key="2" unmountOnExit exit={false}>
+              <LoadingComponent height={'5rem'}/>
+            </AnimatedFade>
+            }
+          </TransitionGroup>
+        );
+      }}
     />
   );
 };
 
 OrgMembersRoot.propTypes = {
-  billingLeaderCount: PropTypes.number,
-  dispatch: PropTypes.func,
-  myUserId: PropTypes.string,
+  atmosphere: PropTypes.object.isRequired,
   org: PropTypes.object,
-  users: PropTypes.array
+  orgId: PropTypes.string.isRequired
 };
 
-export default connect(mapStateToProps)(OrgMembersRoot);
+export default withAtmosphere(OrgMembersRoot);

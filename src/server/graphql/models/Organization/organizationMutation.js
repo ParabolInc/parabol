@@ -18,7 +18,7 @@ import getS3PutUrl from 'server/utils/getS3PutUrl';
 import {MAX_MONTHLY_PAUSES, PAUSE_USER, REMOVE_USER} from 'server/utils/serverConstants';
 import {errorObj, validateAvatarUpload} from 'server/utils/utils';
 import shortid from 'shortid';
-import {GraphQLURLType} from '../../types';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 
 export default {
   updateOrg,

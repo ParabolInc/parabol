@@ -8,8 +8,7 @@ import {
   OWNED_ORGANIZATIONS,
   PROJECTS,
   TEAM,
-  TEAM_MEMBERS,
-  USERS_BY_ORG
+  TEAM_MEMBERS
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
@@ -66,20 +65,6 @@ export default [
         isComplete
         sortOrder
         teamMemberId
-      }
-    }`
-  },
-  {
-    channel: USERS_BY_ORG,
-    string: `
-    subscription($orgId: ID!) {
-      usersByOrg(orgId: $orgId) {
-        id
-        isBillingLeader
-        email
-        inactive
-        picture
-        preferredName
       }
     }`
   },

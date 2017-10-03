@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql';
-import {GraphQLURLType} from 'server/graphql/types';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 
 
 const UpdateOrgInput = new GraphQLInputObjectType({
