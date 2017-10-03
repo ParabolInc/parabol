@@ -44,6 +44,7 @@ class CopyShortLink extends Component {
       <CopyToClipboard text={url} onCopy={this.confirmCopied}>
         <Button
           aria-label={callToAction}
+          size="small"
           buttonStyle="inverted"
           colorPalette="cool"
           disabled={confirmingCopied}

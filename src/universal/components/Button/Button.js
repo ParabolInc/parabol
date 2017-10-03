@@ -127,7 +127,6 @@ class Button extends Component {
       label,
       onClick,
       onMouseEnter,
-      size,
       styles,
       title,
       type,
@@ -151,18 +150,13 @@ class Button extends Component {
     const makeIconLabel = () => {
       const defaultIconPlacement = icon && label ? 'left' : '';
       const thisIconPlacement = iconPlacement || defaultIconPlacement;
-      const iconPlacementStyle = css(
+      const iconStyle = css(
+        styles.icon,
         thisIconPlacement === 'left' && styles.iconLeft,
         thisIconPlacement === 'right' && styles.iconRight,
       );
-      const iconMargin = iconOnly ? '' : iconPlacementStyle;
-      const iconStyle = {
-        fontSize: ui.buttonIconSize[size],
-        lineHeight: 'inherit',
-        verticalAlign: 'middle'
-      };
       const makeIcon = () =>
-        <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
+        <FontAwesome className={iconStyle} name={icon} />;
       return (
         <span className={css(styles.buttonInner)}>
           {iconOnly ?
@@ -200,10 +194,6 @@ class Button extends Component {
     );
   }
 }
-
-const icon = {
-  fontSize: ui.iconSize2x
-};
 
 const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransform}) => ({
   // Button base
@@ -245,13 +235,17 @@ const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransfor
     ...ui.buttonDisabledStyles
   },
 
+  icon: {
+    fontSize: ui.buttonIconSize[size] || ui.buttonIconSize.medium,
+    lineHeight: 'inherit',
+    verticalAlign: 'middle'
+  },
+
   iconLeft: {
-    ...icon,
     marginRight: '.375em'
   },
 
   iconRight: {
-    ...icon,
     marginLeft: '.375em'
   },
 
