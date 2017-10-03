@@ -52,7 +52,7 @@ const MeetingLobby = (props) => {
             textTransform="uppercase"
           />
         </div>
-        <p className={css(styles.label)}>{'Copy Meeting Link:'}</p>
+        <p className={css(styles.label)}>{'Meeting Link:'}</p>
         <div className={css(styles.urlBlock)}>
           <CopyShortLink url={meetingUrl} />
         </div>

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Button from 'universal/components/Button/Button';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import Tooltip from 'universal/components/Tooltip/Tooltip';
 import voidClick from 'universal/utils/voidClick';
 
 class CopyShortLink extends Component {
@@ -31,30 +32,39 @@ class CopyShortLink extends Component {
   confirmCopied = () => {
     this.clearConfirmationTimeout();
     this.confirmationTimeout = setTimeout(() => {
-      this.setState({ confirmingCopied: false });
+      this.setState({confirmingCopied: false});
     }, 1500);
-    this.setState({ confirmingCopied: true });
+    this.setState({confirmingCopied: true});
   };
 
   render() {
     const {url} = this.props;
     const {confirmingCopied} = this.state;
-    const callToAction = 'Copy link to meeting';
+    const callToAction = 'Copy the meeting link';
     return (
-      <CopyToClipboard text={url} onCopy={this.confirmCopied}>
-        <Button
-          aria-label={callToAction}
-          size="small"
-          buttonStyle="inverted"
-          colorPalette="cool"
-          disabled={confirmingCopied}
-          title={callToAction}
-          icon={confirmingCopied ? 'check' : 'copy'}
-          iconPlacement="left"
-          label={confirmingCopied ? 'Copied!' : url}
-          onClick={voidClick}
-        />
-      </CopyToClipboard>
+      <Tooltip
+        isOpen={confirmingCopied}
+        tip={<div>Copied the meeting link!</div>}
+        maxHeight={40}
+        maxWidth={500}
+        originAnchor={{vertical: 'bottom', horizontal: 'center'}}
+        targetAnchor={{vertical: 'top', horizontal: 'center'}}
+      >
+        <CopyToClipboard text={url} onCopy={this.confirmCopied}>
+          <Button
+            aria-label={callToAction}
+            size="small"
+            buttonStyle="inverted"
+            colorPalette="cool"
+            disabled={confirmingCopied}
+            title={callToAction}
+            icon="copy"
+            iconPlacement="left"
+            label={url}
+            onClick={voidClick}
+          />
+        </CopyToClipboard>
+      </Tooltip>
     );
   }
 }
