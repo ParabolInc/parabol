@@ -8,10 +8,12 @@ import {
   GraphQLString
 } from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import githubRepos from 'server/graphql/queries/githubRepos';
 import integrationProvider from 'server/graphql/queries/integrationProvider';
 import invoiceDetails from 'server/graphql/queries/invoiceDetails';
 import invoices from 'server/graphql/queries/invoices';
+import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import notifications from 'server/graphql/queries/notifications';
 import organization from 'server/graphql/queries/organization';
 import providerMap from 'server/graphql/queries/providerMap';
@@ -23,9 +25,6 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
-import {BILLING_LEADER} from 'universal/utils/constants';
-import connectionDefinitions from 'server/graphql/connectionDefinitions';
-import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 
 const User = new GraphQLObjectType({
   name: 'User',

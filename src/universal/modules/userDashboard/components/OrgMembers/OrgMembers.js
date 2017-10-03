@@ -1,5 +1,4 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createPaginationContainer} from 'react-relay';
@@ -10,12 +9,15 @@ import {Menu, MenuItem} from 'universal/modules/menu';
 import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
 import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal';
+import InactivateUserMutation from 'universal/mutations/InactivateUserMutation';
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {BILLING_LEADER} from 'universal/utils/constants';
-import OrgUserRow from '../OrgUserRow/OrgUserRow';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
+import OrgUserRow from '../OrgUserRow/OrgUserRow';
+import {connect} from 'react-redux';
 
 const originAnchor = {
   vertical: 'top',
@@ -30,12 +32,14 @@ const targetAnchor = {
 const OrgMembers = (props) => {
   const {
     dispatch,
-    org,
+    orgId,
     viewer: {orgMembers},
     relay: {environment},
+    submitMutation,
+    onError,
+    onCompleted,
     styles
   } = props;
-  const {id: orgId} = org;
 
   const setRole = (userId, role = null) => () => {
     SetOrgUserRoleMutation(environment, orgId, userId, role);
@@ -48,9 +52,6 @@ const OrgMembers = (props) => {
       const {viewerId} = environment;
       const {id: myUserId} = fromGlobalId(viewerId);
       const listItems = [];
-        console.log('OU', orgUser)
-      if (orgUser.preferredName === 'Jordan H') {
-      }
       if (orgUser.isBillingLeader) {
         if (billingLeaderCount > 1) {
           listItems.push(
@@ -88,16 +89,17 @@ const OrgMembers = (props) => {
 
       return listItems;
     };
-    const toggleHandler = async () => {
+    const toggleHandler = () => {
       if (!inactive) {
-        const variables = {userId: orgUser.id};
-        const {error} = await cashay.mutate('inactivateUser', {variables});
-        if (error) {
+        submitMutation();
+        const handleError = (error) => {
           dispatch(showError({
-            title: 'Oh dear…',
+            title: 'Oh no',
             message: error._error || 'Cannot pause user'
           }));
-        }
+          onError(error);
+        };
+        InactivateUserMutation(environment, orgUser.id, handleError, onCompleted);
       } else {
         dispatch(
           showInfo({
@@ -153,9 +155,14 @@ const OrgMembers = (props) => {
 
 OrgMembers.propTypes = {
   relay: PropTypes.object.isRequired,
-  dispatch: PropTypes.func,
-  org: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
+  orgId: PropTypes.string.isRequired,
   viewer: PropTypes.object.isRequired,
+  error: PropTypes.any,
+  submitting: PropTypes.bool,
+  submitMutation: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired,
   styles: PropTypes.object
 };
 
@@ -178,7 +185,7 @@ const styleThunk = () => ({
 });
 
 export default createPaginationContainer(
-  withStyles(styleThunk)(OrgMembers),
+  connect()(withMutationProps(withStyles(styleThunk)(OrgMembers))),
   graphql`
     fragment OrgMembers_viewer on User {
       orgMembers(first: $first, orgId: $orgId, after: $after) @connection(key: "OrgMembers_orgMembers") {

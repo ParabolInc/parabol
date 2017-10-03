@@ -3,7 +3,6 @@ import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import {UserConnection} from 'server/graphql/types/User';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import {BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
   args: {
@@ -25,11 +24,6 @@ export default {
     // RESOLUTION
     const nodes = await r.table('User')
       .getAll(orgId, {index: 'userOrgs'})
-      //.merge((user) => ({
-      //  isBillingLeader: user('userOrgs')
-      //    .contains((org) => org('id').eq(orgId).and(org('role').eq(BILLING_LEADER)))
-      //    .default(false)
-      //}))
       .orderBy(r.row('preferredName').downcase())
       .limit(first);
 

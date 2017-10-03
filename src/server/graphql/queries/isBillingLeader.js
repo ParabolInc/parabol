@@ -13,4 +13,4 @@ export default {
   resolve: (source, {orgId}) => {
     return Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
   }
-}
+};
