@@ -56,7 +56,6 @@ class CopyShortLink extends Component {
             size="small"
             buttonStyle="inverted"
             colorPalette="cool"
-            disabled={confirmingCopied}
             title={callToAction}
             icon="copy"
             iconPlacement="left"
