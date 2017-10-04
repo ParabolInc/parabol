@@ -33,7 +33,7 @@ const eventLookup = {
     created: {
       getVars: ({id: invoiceItemId}) => ({invoiceItemId}),
       query: `
-        mutation StripeUpdateInvoiceItem($invoiceId: ID!) {
+        mutation StripeUpdateInvoiceItem($invoiceItemId: ID!) {
           stripeUpdateInvoiceItem(invoiceItemId: $invoiceItemId)
         }
       `

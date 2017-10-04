@@ -27,6 +27,7 @@ export default {
       .filter({stripeSubscriptionId: subscription})
       .nth(0)
       .default(null);
+
     if (!hook) return false;
 
     const {type, userId} = hook;

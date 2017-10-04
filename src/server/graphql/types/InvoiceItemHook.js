@@ -1,37 +1,13 @@
-import {
-  GraphQLObjectType,
-  GraphQLEnumType,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLFloat
-} from 'graphql';
-import {
-  ADD_USER,
-  AUTO_PAUSE_USER,
-  REMOVE_USER,
-  PAUSE_USER,
-  UNPAUSE_USER
-} from 'server/utils/serverConstants';
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import InvoiceItemHookEnum from 'server/graphql/types/InvoiceItemHookEnum';
 
-export const HookType = new GraphQLEnumType({
-  name: 'HookType',
-  description: 'The cause of the invoice item line being created',
-  values: {
-    [ADD_USER]: {},
-    [AUTO_PAUSE_USER]: {},
-    [REMOVE_USER]: {},
-    [PAUSE_USER]: {},
-    [UNPAUSE_USER]: {}
-  }
-});
-
-export const InvoiceItemHook = new GraphQLObjectType({
+const InvoiceItemHook = new GraphQLObjectType({
   name: 'InvoiceItemHook',
   description: 'A hook to link the subscription update to the correlating invoice items that stripe will make',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'shortid'},
     type: {
-      type: HookType,
+      type: InvoiceItemHookEnum,
       description: 'The reason for the subscription quantity update'
     },
     prorationDate: {
@@ -48,3 +24,5 @@ export const InvoiceItemHook = new GraphQLObjectType({
     }
   })
 });
+
+export default InvoiceItemHook;

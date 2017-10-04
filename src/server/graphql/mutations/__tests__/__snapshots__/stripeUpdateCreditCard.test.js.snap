@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`customerSourceUpdated handles stripe updating the credit card 1`] = `
+exports[`stripeUpdateCreditCard handles customer.sources.updated 1`] = `
 Object {
   "organization": Object {
     "createdAt": 2017-01-01T07:00:00.000Z,

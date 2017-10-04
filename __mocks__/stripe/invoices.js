@@ -4,10 +4,10 @@ import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import {makeSubscriptionPlan} from './subscriptions';
 
-const makeInvoiceLine = (overrides, type) => {
+export const makeInvoiceLine = (overrides) => {
   const now = new Date();
   const nowInSeconds = toEpochSeconds(now);
-  const {id, metadata, periodStart, periodEnd} = overrides;
+  const {id, metadata, periodStart, subscription} = overrides;
   return {
     "id": id,
     "object": "line_item",
@@ -18,13 +18,13 @@ const makeInvoiceLine = (overrides, type) => {
     "livemode": true,
     "metadata": metadata,
     "period": {
-      "start": 1488909033,
+      "start": periodStart || 1488909033,
       "end": 1491501033
     },
     "plan": makeSubscriptionPlan(nowInSeconds),
     "proration": false,
     "quantity": 1,
-    "subscription": null,
+    "subscription": subscription,
     "subscription_item": `si_${shortid.generate()}`,
     "type": "subscription"
   }
@@ -35,8 +35,6 @@ const makeNextMonthChargesLine = (subscription) => makeInvoiceLine({
   metadata: {
     orgId: subscription.metadata.orgId
   },
-
-
 });
 
 const makeInvoiceLines = (id, subscription, lineTypes) => {
@@ -129,5 +127,6 @@ export default (stripe) => ({
     'lines.data.subscription_item'
   ],
   __triggers: ['update', 'del'],
+  __uniqueKeyField: 'customer',
   __updateHandlers: {}
 });

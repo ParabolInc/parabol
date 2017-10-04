@@ -3,7 +3,7 @@ import testUsers from 'server/__tests__/setup/testUsers';
 import newInvitee from 'server/__tests__/utils/newInvitee';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import getRethink from 'server/database/rethinkDriver';
-import {PENDING, INVITATION_LIFESPAN} from 'server/utils/serverConstants';
+import {PENDING, INVITATION_LIFESPAN, ADD_USER} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {ACTIVE, ADDED_USERS, BILLING_LEADER, CHECKIN, LOBBY, PERSONAL, PRO} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
@@ -25,6 +25,7 @@ class MockDB {
       agendaItem: [],
       invitation: [],
       invoice: [],
+      invoiceItemHook: [],
       meeting: [],
       notification: [],
       organization: [],
@@ -166,6 +167,17 @@ class MockDB {
       startAt: new Date(__anHourAgo - 102),
       startingBalance: 0,
       status: PENDING,
+      ...overrides
+    });
+  }
+
+  newInvoiceItemHook(overrides = {}) {
+    return this.closeout('invoiceItemHook', {
+      id: shortid.generate(),
+      type: ADD_USER,
+      prorationDate: __anHourAgo / 1000,
+      stripeSubscriptionId: this.context.organization.stripeSubscriptionId,
+      userId: this.context.user.id,
       ...overrides
     });
   }

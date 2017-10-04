@@ -84,6 +84,7 @@ export default (stripe) => ({
   })),
     __trimFields: ['id', 'metadata.orgId', 'sources.url', 'sources.data.customer'],
     __triggers: ['update', 'del', 'create'],
+      __uniqueKeyField: 'id',
     __updateHandlers: {
     source: (mockDoc, source, reject) => {
       const card = creditCardByToken[source];

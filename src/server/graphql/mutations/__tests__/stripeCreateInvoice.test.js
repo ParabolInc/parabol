@@ -8,6 +8,7 @@ import invoiceCreatedEvent from 'server/graphql/mutations/__tests__/mockStripeEv
 import shortid from 'shortid';
 import {PRO} from 'universal/utils/constants';
 import MockRes from 'server/__mocks__/MockRes';
+import MockReq from 'server/__mocks__/MockReq';
 
 console.error = jest.fn();
 
@@ -15,7 +16,7 @@ describe('stripeCreateInvoice', () => {
   test('handles invoice.created', async () => {
     // SETUP
     const invoiceId = `in_${shortid.generate()}`;
-    const req = {body: invoiceCreatedEvent(invoiceId)};
+    const req = new MockReq({body: invoiceCreatedEvent(invoiceId)});
     const res = new MockRes();
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();

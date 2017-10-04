@@ -27,7 +27,7 @@ Object {
             "email": "thor@avengers.org",
             "endAt": 2017-01-01T07:00:00.000Z,
             "id": 2,
-            "parentId": "SkTdZw48Be",
+            "parentId": 1,
             "startAt": 2017-01-01T06:59:59.900Z,
           },
         ],

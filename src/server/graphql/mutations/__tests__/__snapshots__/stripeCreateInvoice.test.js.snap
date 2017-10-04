@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`invoiceCreated handles invoice.created 1`] = `
+exports[`stripeCreateInvoice handles invoice.created 1`] = `
 Object {
   "invoice": Object {
     "amountDue": 0,
@@ -37,7 +37,7 @@ Object {
 }
 `;
 
-exports[`invoiceCreated handles invoice.created 2`] = `
+exports[`stripeCreateInvoice handles invoice.created 2`] = `
 Object {
   "invoices": Array [
     Object {
@@ -62,7 +62,7 @@ Object {
             "currency": "usd",
             "description": null,
             "discountable": true,
-            "id": 5,
+            "id": 3,
             "livemode": true,
             "metadata": Object {
               "orgId": 1,
@@ -88,8 +88,8 @@ Object {
             },
             "proration": false,
             "quantity": 1,
-            "subscription": null,
-            "subscription_item": 6,
+            "subscription": undefined,
+            "subscription_item": 5,
             "type": "subscription",
           },
         ],
