@@ -1,6 +1,5 @@
 import React, {Children, cloneElement, Component} from 'react';
 import TooltipModal from 'universal/components/Tooltip/TooltipModal';
-import withCoords from 'universal/decorators/withCoords';
 import PropTypes from 'prop-types';
 
 class HoverTooltip extends Component {
@@ -78,4 +77,4 @@ class HoverTooltip extends Component {
   }
 }
 
-export default withCoords(HoverTooltip);
+export default HoverTooltip;

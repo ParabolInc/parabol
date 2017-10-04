@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
 import TooltipModal from 'universal/components/Tooltip/TooltipModal';
-import withCoords from 'universal/decorators/withCoords';
 
 /**
  * A "controlled" tooltip is a tooltip which appears and disappears when you
@@ -38,4 +37,4 @@ class ControlledTooltip extends Component {
   }
 }
 
-export default withCoords(ControlledTooltip);
+export default ControlledTooltip;

@@ -3,6 +3,7 @@ import React from 'react';
 
 import ControlledTooltip from 'universal/components/Tooltip/ControlledTooltip';
 import HoverTooltip from 'universal/components/Tooltip/HoverTooltip';
+import withCoords from 'universal/decorators/withCoords';
 
 const Tooltip = (props) =>
   typeof props.isOpen === 'boolean' ? (
@@ -18,4 +19,4 @@ Tooltip.propTypes = {
   isOpen: PropTypes.bool
 };
 
-export default Tooltip;
+export default withCoords(Tooltip);
