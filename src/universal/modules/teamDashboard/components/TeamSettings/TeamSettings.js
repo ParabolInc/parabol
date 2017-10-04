@@ -22,11 +22,13 @@ import withStyles from 'universal/styles/withStyles';
 import fromNow from 'universal/utils/fromNow';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
-const tooltipStyle = {
-  fontSize: '1rem',
+const tooltipIconStyle = {
+  color: appTheme.palette.dark70a,
+  fontSize: ui.iconSize,
   lineHeight: '1.25rem',
   verticalAlign: 'middle',
-  marginLeft: '.25rem'
+  marginLeft: '.25rem',
+  marginTop: '-.0625rem'
 };
 
 const originAnchor = {
@@ -92,20 +94,21 @@ const TeamSettings = (props) => {
     const cancel = () => {
       cashay.mutate('cancelApproval', options);
     };
+    const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.actionLink)} onClick={cancel}>
-          Cancel Pending Approval
+          {'Cancel Pending Approval'}
         </div>
         <span>
           <Tooltip
+            maxHeight={40}
+            maxWidth={500}
             originAnchor={originAnchor}
             targetAnchor={targetAnchor}
-            tip={<div>Waiting for the organiation billing leader to approve</div>}
-            maxWidth={500}
-            maxHeight={40}
+            tip={tip}
           >
-            <FontAwesome name="question-circle" style={tooltipStyle} />
+            <FontAwesome name="question-circle" style={tooltipIconStyle} />
           </Tooltip>
         </span>
       </div>
