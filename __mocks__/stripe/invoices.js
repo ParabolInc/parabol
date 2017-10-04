@@ -79,7 +79,7 @@ export const createNewInvoice = (overrides, reject) => {
     "receipt_number": null,
     "starting_balance": 0,
     "statement_descriptor": null,
-    "subscription": "sub_AFH0shSUqlu8Vq",
+    "subscription": subscription.id,
     "subtotal": 0,
     "tax": null,
     "tax_percent": null,

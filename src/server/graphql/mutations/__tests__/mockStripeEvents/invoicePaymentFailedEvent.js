@@ -1,4 +1,4 @@
-export default {
+export default (invoiceId, customer, subscription) => ({
   created: 1326853478,
   livemode: false,
   id: 'evt_00000000000000',
@@ -9,7 +9,7 @@ export default {
   api_version: '2016-10-19',
   data: {
     object: {
-      id: 'in_00000000000000',
+      id: invoiceId,
       object: 'invoice',
       amount_due: 0,
       application_fee: null,
@@ -18,7 +18,7 @@ export default {
       charge: null,
       closed: false,
       currency: 'usd',
-      customer: 'cus_00000000000000',
+      customer,
       date: 1488909033,
       description: null,
       discount: null,
@@ -34,7 +34,7 @@ export default {
       receipt_number: null,
       starting_balance: 0,
       statement_descriptor: null,
-      subscription: 'sub_00000000000000',
+      subscription,
       subtotal: 0,
       tax: null,
       tax_percent: null,
@@ -42,4 +42,4 @@ export default {
       webhooks_delivered_at: 1488909040
     }
   }
-};
+});

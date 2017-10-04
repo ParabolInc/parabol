@@ -5,7 +5,7 @@ import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import getRethink from 'server/database/rethinkDriver';
 import {PENDING, INVITATION_LIFESPAN} from 'server/utils/serverConstants';
 import shortid from 'shortid';
-import {ACTIVE, BILLING_LEADER, CHECKIN, LOBBY, PERSONAL, PRO} from 'universal/utils/constants';
+import {ACTIVE, ADDED_USERS, BILLING_LEADER, CHECKIN, LOBBY, PERSONAL, PRO} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -24,6 +24,7 @@ class MockDB {
     this.db = {
       agendaItem: [],
       invitation: [],
+      invoice: [],
       meeting: [],
       notification: [],
       organization: [],
@@ -128,6 +129,47 @@ class MockDB {
     });
   }
 
+  newInvoice(overrides = {}) {
+    const {id: orgId, name: orgName, picture} = this.context.organization;
+    const addedUsersLineId = shortid.generate();
+    return this.closeout('invoice', {
+      id: shortid.generate(),
+      amountDue: 500,
+      createdAt: new Date(__anHourAgo),
+      total: 500,
+      billingLeaderEmails:
+        this.db.user
+          .filter((user) => user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER))
+          .map((user) => user.email),
+      creditCard: this.context.organization.creditCard,
+      endAt: new Date(__anHourAgo),
+      invoiceDate: new Date(__anHourAgo),
+      lines: [{
+        id: addedUsersLineId,
+        amount: 10,
+        details: [{
+          id: shortid.generate(),
+          amount: 10,
+          email: this.db.user[7].email,
+          endAt: new Date(__anHourAgo),
+          startAt: new Date(__anHourAgo - 100),
+          parentId: addedUsersLineId
+        }],
+        quantity: 1,
+        type: ADDED_USERS
+      }],
+      nextMonthCharges: 1000,
+      orgId,
+      orgName,
+      paidAt: new Date(__anHourAgo - 5),
+      picture,
+      startAt: new Date(__anHourAgo - 102),
+      startingBalance: 0,
+      status: PENDING,
+      ...overrides
+    });
+  }
+
   newMeeting(overrides, template = {}) {
     const {inProgress, activeFacilitatorIdx = 0} = template;
     const meetingId = shortid.generate();
@@ -211,7 +253,7 @@ class MockDB {
       this.db.user[idx].userOrgs.push({
         id,
         role: this.context.user.id === user.id ? BILLING_LEADER : null
-      })
+      });
     });
     return this.closeout('organization', {
       id,

@@ -1,4 +1,4 @@
-export default {
+export default (stripeId) => ({
   created: 1326853478,
   livemode: false,
   id: 'evt_00000000000000',
@@ -21,7 +21,7 @@ export default {
       address_zip_check: null,
       brand: 'Visa',
       country: 'US',
-      customer: null,
+      customer: stripeId,
       cvc_check: 'unchecked',
       dynamic_last4: null,
       exp_month: 1,
@@ -34,4 +34,4 @@ export default {
     },
     previous_attributes: {exp_year: '2013'}
   }
-};
+});

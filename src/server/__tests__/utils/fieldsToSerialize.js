@@ -15,7 +15,7 @@ export default {
     'teamId'
   ],
   invitation: ['id', 'email', 'invitedBy', 'teamId'],
-  invoice: ['id', 'orgId'],
+  invoice: ['id', 'lines.id', 'lines.details.id', 'lines.datails.parentId', 'orgId'],
   notification: ['id', 'inviteeEmail', 'inviterUserId', 'orgId', 'requestorId', 'teamId', 'userIds'],
   organization: ['id', 'stripeId', 'stripeSubscriptionId', 'orgUsers.id'],
   orgApproval: ['id', 'approvedBy', 'deniedBy', 'email', 'orgId', 'teamId'],

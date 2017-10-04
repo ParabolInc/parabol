@@ -5,11 +5,13 @@ import customers, {createNewCustomer} from './stripe/customers';
 import invoices from './stripe/invoices';
 import {getQuantity} from './stripe/utils';
 import {usedResources} from 'server/billing/constants';
+import webhooks from './stripe/webhooks';
 
 const stripe = jest.genMockFromModule('stripe');
 stripe.customers = customers(stripe);
 stripe.subscriptions = subscriptions(stripe);
 stripe.invoices = invoices(stripe);
+stripe.webhooks = webhooks;
 stripe.invoiceItems = {};
 stripe.__db = usedResources.reduce((db, key) => {
   db[key] = {};

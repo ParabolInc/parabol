@@ -1,5 +1,6 @@
 import schema from 'server/graphql/rootSchema';
 import {graphql} from 'graphql';
+import stripe from 'server/billing/stripe';
 
 const eventLookup = {
   invoice: {
@@ -43,7 +44,7 @@ const eventLookup = {
       updated: {
         getVars: ({customer: customerId}) => ({customerId}),
         query: `
-        mutation StripeUpdateCreditCard($invoiceId: ID!) {
+        mutation StripeUpdateCreditCard($customerId: ID!) {
           stripeUpdateCreditCard(customerId: $customerId)
         }
       `
@@ -61,12 +62,22 @@ const splitType = (type = '') => {
   };
 };
 
-export default async function stripeWebhookHandler(req, res) {
-  // TODO refactor using stripes newish secret hashes
-  res.sendStatus(200);
-  if (!req.body || !req.body.data || !req.body.type || !req.body.data.object) return;
+const verifyBody = (req) => {
+  const sig = req.get('stripe-signature');
+  try {
+    return stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (e) {
+    return null;
+  }
+};
 
-  const {data: {object: payload}, type} = req.body;
+export default async function stripeWebhookHandler(req, res) {
+  res.sendStatus(200);
+
+  const verifiedBody = verifyBody(req);
+  if (!verifiedBody) return;
+
+  const {data: {object: payload}, type} = verifiedBody;
   const {event, subEvent, action} = splitType(type);
 
   const parentHandler = eventLookup[event];

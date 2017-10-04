@@ -7,18 +7,16 @@ import getRethink from 'server/database/rethinkDriver';
 import invoiceCreatedEvent from 'server/graphql/mutations/__tests__/mockStripeEvents/invoiceCreatedEvent';
 import shortid from 'shortid';
 import {PRO} from 'universal/utils/constants';
+import MockRes from 'server/__mocks__/MockRes';
 
 console.error = jest.fn();
-const mockRes = () => ({
-  sendStatus: jest.fn()
-});
 
-describe('invoiceCreated', () => {
+describe('stripeCreateInvoice', () => {
   test('handles invoice.created', async () => {
     // SETUP
     const invoiceId = `in_${shortid.generate()}`;
     const req = {body: invoiceCreatedEvent(invoiceId)};
-    const res = mockRes();
+    const res = new MockRes();
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
@@ -39,6 +37,6 @@ describe('invoiceCreated', () => {
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
-  })
+  });
 });
 
