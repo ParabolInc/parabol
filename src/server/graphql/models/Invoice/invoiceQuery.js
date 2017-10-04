@@ -88,7 +88,7 @@ export default {
       return r.table('Invoice')
         .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
         .orderBy(r.desc('startAt'))
-        // remove upcoming & trial invoices
+        // remove upcoming invoices
         .filter((invoice) => invoice('status').ne(UPCOMING).and(invoice('total').ne(0)))
         .limit(count)
         .run();

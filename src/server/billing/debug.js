@@ -1,7 +1,6 @@
 import stripe from './stripe';
 // import ms from 'ms';
 // import MockDB from '../__tests__/setup/MockDB';
-// import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 // import fieldsToSerialize from 'server/__tests__/utils/fieldsToSerialize';
 // import fs from 'fs';
 

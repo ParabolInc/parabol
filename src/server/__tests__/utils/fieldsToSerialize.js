@@ -22,5 +22,5 @@ export default {
   projectHistory: ['id', 'projectId', 'teamMemberId'],
   team: ['id', 'activeFacilitator', 'meetingId', 'orgId'],
   teamMember: ['id', 'checkInOrder', 'teamId', 'userId'],
-  user: ['id', 'tms', 'trialOrg', 'userOrgs.id']
+  user: ['id', 'tms', 'userOrgs.id']
 };

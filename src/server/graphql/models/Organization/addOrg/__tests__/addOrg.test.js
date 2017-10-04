@@ -1,16 +1,14 @@
-import getRethink from 'server/database/rethinkDriver';
-import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
-import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
-import stripe from 'server/billing/stripe';
+import DynamicSerializer from 'dynamic-serializer';
 import MockDate from 'mockdate';
+import socket from 'server/__mocks__/socket';
+import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
+import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
-import DynamicSerializer from 'dynamic-serializer';
-import MockDB from 'server/__tests__/setup/MockDB';
-import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
-import socket from 'server/__mocks__/socket';
-import shortid from 'shortid';
+import getRethink from 'server/database/rethinkDriver';
+import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import shortid from 'shortid';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -21,11 +19,9 @@ describe('addOrg', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const stripeToken = 'tok_4242424242424242';
     const {organization, user} = await mockDB.init()
-      .organization(0, {creditCard: creditCardByToken[stripeToken]});
+      .organization(0);
     const org = organization[0];
-    stripe.__setMockData(org);
     auth0ManagementClient.__initMock(mockDB.db);
     const authToken = mockAuthToken(user[0]);
 
@@ -36,7 +32,7 @@ describe('addOrg', () => {
       orgId: shortid.generate()
     };
     const orgName = 'addOrg|1|NewOrgName';
-    await addOrg.resolve(undefined, {newTeam, orgName, stripeToken}, {authToken, socket});
+    await addOrg.resolve(undefined, {newTeam, orgName}, {authToken, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -46,6 +42,5 @@ describe('addOrg', () => {
       user: r.table('User').getAll(org.id, newTeam.orgId, {index: 'userOrgs'}).orderBy('preferredName')
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 });

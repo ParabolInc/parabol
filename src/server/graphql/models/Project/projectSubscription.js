@@ -1,10 +1,10 @@
-import ms from 'ms';
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
+import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import getRequestedFields from 'server/graphql/getRequestedFields';
-import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
+import {requireSUOrTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
-import {Project} from './projectSchema';
+import Project from './projectSchema';
 
 export default {
   agendaProjects: {
@@ -22,7 +22,6 @@ export default {
       // teamMemberId is of format 'userId::teamId'
       const teamId = await r.table('AgendaItem').get(agendaId)('teamId');
       requireSUOrTeamMember(authToken, teamId);
-      await requireTeamIsPaid(teamId);
 
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);
@@ -49,7 +48,6 @@ export default {
       // teamMemberId is of format 'userId::teamId'
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
-      await requireTeamIsPaid(teamId);
       const myTeamMemberId = `${authToken.sub}::${teamId}`;
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);

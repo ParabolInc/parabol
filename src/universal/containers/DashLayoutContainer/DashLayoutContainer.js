@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import {connect} from 'react-redux';
 import {cashay} from 'cashay';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
+import {setMeetingAlertState} from 'universal/modules/dashboard/ducks/dashDuck';
 import {TEAM} from 'universal/subscriptions/constants';
-import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
-import {setMeetingAlertState, setTrialAlertState} from 'universal/modules/dashboard/ducks/dashDuck';
 
 const resolveActiveMeetings = (teams) => {
   if (teams !== resolveActiveMeetings.teams) {
@@ -34,15 +33,7 @@ query {
 }
 `;
 
-const getTrialNotification = (notifications) => {
-  if (!notifications || !notifications.edges[0]) return undefined;
-  const edge = notifications.edges.find(({node}) =>
-    (node.type === TRIAL_EXPIRED || node.type === TRIAL_EXPIRES_SOON) && node.startAt < new Date());
-  if (!edge) return undefined;
-  return edge ? edge.node : undefined;
-};
-
-const mapStateToProps = (state, {notifications}) => {
+const mapStateToProps = (state) => {
   const userId = state.auth.obj.sub;
   const {teams} = cashay.query(dashNavListQuery, {
     op: 'dashLayoutContainer',
@@ -58,27 +49,19 @@ const mapStateToProps = (state, {notifications}) => {
     activeMeetings: resolveActiveMeetings(teams),
     tms: state.auth.obj.tms,
     userId: state.auth.sub,
-    trialNotification: getTrialNotification(notifications),
-    hasMeetingAlert: state.dash.hasMeetingAlert,
-    hasTrialAlert: state.dash.hasTrialAlert
+    hasMeetingAlert: state.dash.hasMeetingAlert
   };
 };
 
 const maybeSetDashAlert = (props) => {
   const {
     activeMeetings,
-    trialNotification,
     hasMeetingAlert,
-    hasTrialAlert,
     dispatch
   } = props;
   const shouldHaveMeetingAlert = activeMeetings.length > 0;
-  const shouldHaveTrialAlert = trialNotification && trialNotification.type;
   if (shouldHaveMeetingAlert !== hasMeetingAlert) {
     dispatch(setMeetingAlertState(shouldHaveMeetingAlert));
-  }
-  if (shouldHaveTrialAlert !== hasTrialAlert) {
-    dispatch(setTrialAlertState(shouldHaveTrialAlert));
   }
 };
 
@@ -95,8 +78,7 @@ export default class DashLayoutContainer extends Component {
     activeMeetings: PropTypes.array,
     children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
-    tms: PropTypes.array,
-    trialNotification: PropTypes.object
+    tms: PropTypes.array
     // userId: PropTypes.string
   };
 
@@ -107,7 +89,6 @@ export default class DashLayoutContainer extends Component {
   componentDidMount() {
     const {tms} = this.props;
     subToAllTeams(tms);
-    // cashay.subscribe(NOTIFICATIONS, userId)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -118,12 +99,9 @@ export default class DashLayoutContainer extends Component {
   }
 
   render() {
-    const {activeMeetings, children, trialNotification} = this.props;
+    const {activeMeetings, children} = this.props;
     return (
-      <DashLayout
-        activeMeetings={activeMeetings}
-        trialNotification={trialNotification}
-      >
+      <DashLayout activeMeetings={activeMeetings}>
         {children}
       </DashLayout>
     );

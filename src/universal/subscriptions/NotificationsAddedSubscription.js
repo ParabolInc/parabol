@@ -48,9 +48,6 @@ const subscription = graphql`
         ... on NotifyTeamArchived {
           teamName
         }
-        ... on NotifyTrial {
-          trialExpiresAt
-        }
       }
     }
   }

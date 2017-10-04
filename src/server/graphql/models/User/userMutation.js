@@ -119,7 +119,6 @@ export default {
         preferredName: userInfo.nickname,
         identities: userInfo.identities || [],
         createdAt: new Date(userInfo.created_at),
-        trialOrg: null,
         userOrgs: [],
         welcomeSentAt: now
       };

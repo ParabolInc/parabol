@@ -7,11 +7,11 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {textTags} from 'universal/utils/constants';
+import entitizeText from 'universal/utils/draftjs/entitizeText';
+import './Draft.css';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
-import entitizeText from 'universal/utils/draftjs/entitizeText';
-import './Draft.css';
 
 class ProjectEditor extends Component {
   static propTypes = {
@@ -39,8 +39,15 @@ class ProjectEditor extends Component {
   componentDidMount() {
     const {editorState} = this.props;
     if (!editorState.getCurrentContent().hasText()) {
-      // don't pull it from this.props because react will mutate this.props to our advantage
-      setTimeout(() => this.props.editorRef.focus());
+      setTimeout(() => {
+        // don't pull it from this.props above because react will mutate this.props to our advantage
+        const {editorRef} = this.props;
+        try {
+          editorRef.focus();
+        } catch (e) {
+          // DraftEditor was unmounted before this was called
+        }
+      });
     }
   }
 
@@ -221,8 +228,7 @@ const styleThunk = () => ({
   }
 });
 
-export default
-withSuggestions(
+export default withSuggestions(
   withLinks(
     withMarkdown(
       withKeyboardShortcuts(

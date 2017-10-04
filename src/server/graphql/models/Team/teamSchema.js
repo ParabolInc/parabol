@@ -13,6 +13,7 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingPhaseEnum from 'server/graphql/types/MeetingPhaseEnum';
 import TeamMember from 'server/graphql/types/TeamMember';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
+import TierEnum from 'server/graphql/types/TierEnum';
 
 
 export const Greeting = new GraphQLObjectType({
@@ -89,6 +90,10 @@ export const Team = new GraphQLObjectType({
     meetingPhaseItem: {
       type: GraphQLInt,
       description: 'The current item number for the current phase for the meeting, 1-indexed'
+    },
+    tier: {
+      type: TierEnum,
+      description: 'The level of access to features on the parabol site'
     },
     /* GraphQL sugar */
     agendaItems: {

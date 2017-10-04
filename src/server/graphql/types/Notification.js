@@ -12,7 +12,6 @@ import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
 import NotifyPayment from 'server/graphql/types/NotifyPayment';
 import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
-import NotifyTrial from 'server/graphql/types/NotifyTrial';
 
 import {
   ADD_TO_TEAM,
@@ -26,9 +25,7 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE,
-  TRIAL_EXPIRED,
-  TRIAL_EXPIRES_SOON
+  TEAM_INVITE
 } from 'universal/utils/constants';
 
 export const notificationInterfaceFields = {
@@ -67,8 +64,6 @@ const Notification = new GraphQLInterfaceType({
       [REJOIN_TEAM]: NotifyNewTeamMember,
       [REQUEST_NEW_USER]: NotifyInvitation,
       [TEAM_INVITE]: NotifyInvitation,
-      [TRIAL_EXPIRES_SOON]: NotifyTrial,
-      [TRIAL_EXPIRED]: NotifyTrial,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromotion,
       [TEAM_ARCHIVED]: NotifyTeamArchived
     };

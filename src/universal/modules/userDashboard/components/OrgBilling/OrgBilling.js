@@ -1,16 +1,14 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
-import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
-import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
-import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
+import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const OrgBilling = (props) => {
   const {
@@ -19,12 +17,8 @@ const OrgBilling = (props) => {
     styles,
     org
   } = props;
-  const {creditCard, id: orgId, periodEnd} = org;
+  const {creditCard, id: orgId} = org;
   const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
-  const isTrial = !creditCard.last4;
-  const now = new Date();
-  const activeTrial = isTrial && periodEnd > now;
-  const expiredTrial = isTrial && periodEnd <= now;
   const update = (<Button
     colorPalette="cool"
     label="Update"
@@ -32,33 +26,29 @@ const OrgBilling = (props) => {
   />);
   return (
     <div>
-      {activeTrial && <ActiveTrialCallOut periodEnd={periodEnd} orgId={orgId} />}
-      {expiredTrial && <ExpiredTrialCallOut periodEnd={periodEnd} orgId={orgId} />}
-      {!activeTrial && !expiredTrial &&
-        <Panel label="Credit Card Information">
-          <div className={css(styles.infoAndUpdate)}>
-            <div className={css(styles.creditCardInfo)}>
-              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
-              <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
-              <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
-              <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
-              <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
-            </div>
-            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
+      <Panel label="Credit Card Information">
+        <div className={css(styles.infoAndUpdate)}>
+          <div className={css(styles.creditCardInfo)}>
+            <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
+            <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
+            <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
+            <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
+            <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
           </div>
-        </Panel>
-      }
+          <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
+        </div>
+      </Panel>
       <Panel label="Invoices">
         <div className={css(styles.listOfInvoices)}>
           {invoicesReady &&
-            invoices.map((invoice) =>
-              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
-            )
+          invoices.map((invoice) =>
+            <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
+          )
           }
           {!invoicesReady &&
-            <div className={css(styles.noInvoices)}>
-              Loading Invoices...
-            </div>
+          <div className={css(styles.noInvoices)}>
+            Loading Invoices...
+          </div>
           }
         </div>
       </Panel>

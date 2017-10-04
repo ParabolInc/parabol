@@ -23,10 +23,6 @@ export default {
     orgName: {
       type: GraphQLString,
       description: 'The name of the new team'
-    },
-    stripeToken: {
-      type: GraphQLString,
-      description: 'The CC info for the new team'
     }
   },
   async resolve(source, args, {authToken, socket}) {
@@ -36,18 +32,16 @@ export default {
     requireWebsocket(socket);
 
     // VALIDATION
-    const {data: {invitees, newTeam, orgName, stripeToken}, errors} = addOrgValidation()(args);
+    const {data: {invitees, newTeam, orgName}, errors} = addOrgValidation()(args);
     const {id: teamId} = newTeam;
     handleSchemaErrors(errors);
     // this isn't concurrent-safe, but it reduces the risk of conflicting writes
-    const ensureUniqueIds = [
+    await Promise.all([
       ensureUniqueId('Team', teamId),
       ensureUniqueId('Organization', orgId)
-    ];
-    await Promise.all(ensureUniqueIds);
+    ]);
 
     // RESOLUTION
-
     // set the token first because it's on the critical path for UX
     const newAuthToken = {
       ...authToken,
@@ -58,7 +52,7 @@ export default {
 
     await Promise.all([
       createTeamAndLeader(userId, newTeam, true),
-      createNewOrg(orgId, orgName, userId, stripeToken)
+      createNewOrg(orgId, orgName, userId)
     ]);
 
     if (invitees && invitees.length) {

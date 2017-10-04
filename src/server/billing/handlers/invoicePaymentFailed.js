@@ -7,9 +7,6 @@ import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {BILLING_LEADER, FAILED, NOTIFICATIONS_ADDED, PAYMENT_REJECTED} from 'universal/utils/constants';
 
-/*
- * Used for failed payments that are not trialing. Trialing orgs will not have a CC
- */
 export default async function invoicePaymentFailed(invoiceId) {
   const r = getRethink();
   const now = new Date();

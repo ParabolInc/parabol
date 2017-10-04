@@ -7,8 +7,10 @@ export default function wsGraphQLHandler(exchange, socket) {
     const authToken = socket.getAuthToken();
     const context = {
       authToken,
+      // TODO remove exchange & socket when we break GraphQL into a microservice
       exchange,
-      socket
+      socket,
+      socketId: socket.id
     };
     // response = {errors, data}
     const result = await graphql(Schema, query, {}, context, variables);

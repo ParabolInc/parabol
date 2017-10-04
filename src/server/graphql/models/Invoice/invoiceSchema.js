@@ -19,8 +19,8 @@ import {
   FAILED,
   UPCOMING
 } from 'universal/utils/constants';
-import {CreditCard} from 'server/graphql/models/Organization/organizationSchema';
 import {GraphQLEmailType, GraphQLURLType} from 'server/graphql/types';
+import CreditCard from 'server/graphql/types/CreditCard';
 
 
 /* Each invoice has 3 levels.

@@ -1,9 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
 import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
-import extendTrial from 'server/graphql/models/Organization/extendTrial/extendTrial';
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
 import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
@@ -24,8 +22,6 @@ import {GraphQLURLType} from '../../types';
 
 export default {
   updateOrg,
-  addBilling,
-  extendTrial,
   inactivateUser: {
     type: GraphQLBoolean,
     description: 'pauses the subscription for a single user',

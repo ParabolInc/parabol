@@ -12,7 +12,6 @@ export default function addOrgValidation() {
       name: teamName,
       orgId: requiredId
     },
-    orgName,
-    stripeToken: requiredId
+    orgName
   });
 }

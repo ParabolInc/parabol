@@ -33,10 +33,13 @@ export default class Invitation extends Component {
     history: PropTypes.object.isRequired
   };
 
+  state = {
+    processedInvitation: false
+  };
+
   // use DidMount to be SSR friendly
   componentDidMount() {
     const {atmosphere, auth, dispatch} = this.props;
-    this.state = {processedInvitation: false};
     if (!auth.sub) {
       showLock(atmosphere, dispatch);
     } else {

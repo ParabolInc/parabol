@@ -252,6 +252,7 @@ Object {
     "meetingPhaseItem": null,
     "name": "Team America",
     "orgId": 25,
+    "tier": "personal",
   },
   "teamMember": Array [
     Object {
@@ -618,6 +619,7 @@ Object {
     "meetingPhaseItem": null,
     "name": "Team America",
     "orgId": 26,
+    "tier": "personal",
   },
   "teamMember": Array [
     Object {
