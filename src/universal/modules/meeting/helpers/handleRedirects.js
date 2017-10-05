@@ -92,7 +92,7 @@ export default function handleRedirects(oldProps, nextProps) {
     // were we n'sync?
     const inSync = localPhase === oldTeam.facilitatorPhase &&
       (localPhaseItem === undefined || localPhaseItem === oldTeam.facilitatorPhaseItem);
-    if (inSync) {
+    if (inSync && document.activeElement === document.body) {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       history.replace(pushURL);
       return false;
