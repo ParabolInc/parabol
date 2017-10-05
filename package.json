@@ -49,7 +49,7 @@
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.1.1",
-    "babel-jest": "^20.0.3",
+    "babel-jest": "^21.2.0",
     "babel-loader": "^7.1.1",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-plugin-react-transform": "2.0.2",
@@ -81,7 +81,7 @@
     "eslint-plugin-jest": "^20.0.3",
     "eslint-plugin-react": "^7.2.1",
     "file-loader": "^0.11.2",
-    "jest": "^20.0.4",
+    "jest": "^21.2.1",
     "jest-junit-reporter": "^1.0.1",
     "jsdom": "^11.1.0",
     "json-loader": "^0.5.7",
@@ -102,8 +102,7 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.5.4",
     "webpack-dev-middleware": "^1.12.0",
-    "webpack-hot-middleware": "^2.18.2",
-    "why-did-you-update": "0.0.8"
+    "webpack-hot-middleware": "^2.18.2"
   },
   "dependencies": {
     "@segment/snippet": "^4.0.1",
