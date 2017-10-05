@@ -145,6 +145,7 @@
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "^7.4.2",
     "jwt-decode": "^2.1.0",
+    "linkify-it": "^2.0.3",
     "mailcomposer": "^4.0.1",
     "mailgun-js": "^0.13.1",
     "migrate-rethinkdb": "^1.5.0",
