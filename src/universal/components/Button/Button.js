@@ -127,6 +127,7 @@ class Button extends Component {
       label,
       onClick,
       onMouseEnter,
+      size,
       styles,
       title,
       type,
@@ -150,13 +151,18 @@ class Button extends Component {
     const makeIconLabel = () => {
       const defaultIconPlacement = icon && label ? 'left' : '';
       const thisIconPlacement = iconPlacement || defaultIconPlacement;
-      const iconStyle = css(
-        styles.icon,
+      const iconStyle = {
+        fontSize: ui.buttonIconSize[size] || ui.buttonIconSize.medium,
+        lineHeight: 'inherit',
+        verticalAlign: 'middle'
+      };
+      const iconPlacementStyle = css(
         thisIconPlacement === 'left' && styles.iconLeft,
         thisIconPlacement === 'right' && styles.iconRight,
       );
+      const iconMargin = iconOnly ? '' : iconPlacementStyle;
       const makeIcon = () =>
-        <FontAwesome className={iconStyle} name={icon} />;
+        <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
       return (
         <span className={css(styles.buttonInner)}>
           {iconOnly ?
@@ -233,12 +239,6 @@ const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransfor
   // Disabled state
   disabled: {
     ...ui.buttonDisabledStyles
-  },
-
-  icon: {
-    fontSize: ui.buttonIconSize[size] || ui.buttonIconSize.medium,
-    lineHeight: 'inherit',
-    verticalAlign: 'middle'
   },
 
   iconLeft: {
