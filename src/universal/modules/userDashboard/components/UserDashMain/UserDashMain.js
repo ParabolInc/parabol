@@ -9,7 +9,7 @@ import {
   DashContent,
   DashHeader,
   DashHeaderInfo,
-  DashMain,
+  DashMain
 } from 'universal/components/Dashboard';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
