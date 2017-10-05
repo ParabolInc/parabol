@@ -21,8 +21,13 @@ const iconStyle = {
 
 const TeamArchive = (props) => {
   const {archivedProjects, styles, teamId, teamName, userId} = props;
-  const isPaid = false;
-  const handleUpdate = () => console.log(`handleUpdate to Pro™ for ${teamId}`);
+
+  // Archive squeeze
+  const isPaid = false; // Just on the Personal Plan
+  const hasHiddenCards = true; // There are cards that have been archived for GT 14 days
+  const showArchiveSqueeze = Boolean(!isPaid && hasHiddenCards);
+  const handleUpdate = () => console.log(`handleUpdate to the Pro Plan for ${teamId}`);
+
   return (
     <div className={css(styles.root)}>
       <Helmet title={`${teamName} Archive | Parabol`} />
@@ -44,7 +49,7 @@ const TeamArchive = (props) => {
                   />
                 </div>)
               )}
-              {!isPaid &&
+              {showArchiveSqueeze &&
                 <div className={css(styles.archiveSqueezeBlock)}>
                   <TeamArchiveSqueeze cardsUnavailableCount={128} handleUpdate={handleUpdate} />
                 </div>

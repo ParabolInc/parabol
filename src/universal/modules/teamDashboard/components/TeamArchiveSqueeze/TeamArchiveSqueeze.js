@@ -12,7 +12,7 @@ import FontAwesome from 'react-fontawesome';
 const TeamArchiveSqueeze = (props) => {
   const {cardsUnavailableCount, handleUpdate, styles} = props;
   const CARDS_COUNT = cardsUnavailableCount;
-  const linkLabel = 'Compare Account Features';
+  const linkLabel = 'Compare Plans';
   const linkURL = '#account-features'; // TODO: Link to new pricing page (TA)
   const iconStyles = {
     fontSize: ui.iconSize,
@@ -27,8 +27,8 @@ const TeamArchiveSqueeze = (props) => {
               {`${CARDS_COUNT} Cards Unavailable!`}
             </h2>
             <p className={css(styles.archiveSqueezeCopy)}>
-              {'With a '}<b>{`${PERSONAL_LABEL} Account`}</b>{' you can access archived cards for '}<b>{'14 days'}</b>{'.'}<br />
-              {'For full access to your team’s archive, upgrade to a '}<b>{`${PRO_LABEL} Account`}</b>{'.'}<br />
+              {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can access archived cards for '}<b>{'14 days'}</b>{'.'}<br />
+              {'For full access to your team’s archive, upgrade to the '}<b>{`${PRO_LABEL} Plan`}</b>{'.'}<br />
               <a href={linkURL} target="_blank" title={linkLabel}>
                 <b>{linkLabel}</b> <FontAwesome name="external-link-square" style={iconStyles} />
               </a>
@@ -38,7 +38,7 @@ const TeamArchiveSqueeze = (props) => {
             <Button
               colorPalette="cool"
               depth={1}
-              label={`Upgrade to a ${PRO_LABEL} Account`}
+              label={`Upgrade to the ${PRO_LABEL} Plan`}
               onClick={handleUpdate}
               size="large"
             />
