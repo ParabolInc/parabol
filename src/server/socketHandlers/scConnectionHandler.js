@@ -69,7 +69,7 @@ export default function scConnectionHandler(exchange) {
         inactive: false,
         updatedAt: now,
         lastSeenAt: now
-      }, {returnChanges: true})('changes')(0)('old_val');
+      }, {returnChanges: true})('changes')(0)('old_val').default({});
 
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {

@@ -17,7 +17,6 @@ import withReducer from '../../decorators/withReducer/withReducer';
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingContainer = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer');
 
-// TODO remove ephemeral things like NotifyAddedToTeam and facilitatorRequest
 const query = graphql`
   query SocketRouteQuery {
     viewer {
@@ -36,10 +35,6 @@ const query = graphql`
               reason
               deniedByName
               inviteeEmail
-            }
-            ... on NotifyFacilitatorRequest {
-              requestorName
-              requestorId
             }
             ... on NotifyInvitation {
               inviterName
@@ -60,9 +55,6 @@ const query = graphql`
             }
             ... on NotifyTeamArchived {
               teamName
-            }
-            ... on NotifyTrial {
-              trialExpiresAt
             }
           }
         }

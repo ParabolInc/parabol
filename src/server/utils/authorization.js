@@ -158,15 +158,6 @@ export const requireOrgLeaderOfUser = async (authToken, userId) => {
   return true;
 };
 
-export const requireTeamIsPaid = async (teamId) => {
-  const r = getRethink();
-  const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
-  if (!isPaid) {
-    throw errorObj({_error: `The org leader has not paid for team ${teamId}. Cannot fetch documents`});
-  }
-  return true;
-};
-
 // VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
 // this still isn't secure because the resolve could get called twice & make it past this point before 1 of them writes the insert
 export const ensureUniqueId = async (table, id) => {

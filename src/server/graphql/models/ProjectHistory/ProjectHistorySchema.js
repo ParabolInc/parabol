@@ -6,8 +6,8 @@ import {
   GraphQLEnumType
 } from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {ProjectStatus} from '../Project/projectSchema';
 import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
+import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 
 export const ChangeModule = new GraphQLEnumType({
   name: 'ChangeModule',
@@ -54,7 +54,7 @@ export const ProjectHistory = new GraphQLObjectType({
       type: GraphQLID,
       description: 'Owner of the task'
     },
-    status: {type: new GraphQLNonNull(ProjectStatus), description: 'The status of the task'},
+    status: {type: new GraphQLNonNull(ProjectStatusEnum), description: 'The status of the task'},
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the task was changed'

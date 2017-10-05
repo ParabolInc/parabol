@@ -17,7 +17,7 @@ describe('customerSourceUpdated', () => {
     const oldToken = 'tok_4012888888881881';
     const oldCard = creditCardByToken[oldToken];
     const {organization} = await mockDB
-      .newOrg({creditCard: oldCard});
+      .newOrg({creditCard: oldCard, stripeId: true, stripeSubscriptionId: true});
     const org = organization[0];
     stripe.__setMockData(org);
     const {id: orgId, stripeId} = org;

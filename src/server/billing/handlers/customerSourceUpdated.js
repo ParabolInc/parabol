@@ -1,6 +1,6 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
+import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 
 /*
  * This may be triggered from stripe since they send renewed expiration dates

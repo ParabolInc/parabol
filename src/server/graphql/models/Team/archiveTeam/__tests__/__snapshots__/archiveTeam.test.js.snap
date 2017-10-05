@@ -33,6 +33,7 @@ Object {
     "meetingPhaseItem": null,
     "name": "Team America",
     "orgId": 1,
+    "tier": "personal",
   },
 }
 `;

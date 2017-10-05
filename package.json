@@ -128,7 +128,8 @@
     "draft-js-export-html": "^0.5.4",
     "draft-js-export-markdown": "^0.3.0",
     "email-addresses": "^3.0.1",
-    "enzyme": "^2.8.2",
+    "enzyme": "^3.0.0",
+    "enzyme-adapter-react-16": "^1.0.0",
     "es6-promisify": "^5.0.0",
     "express": "^4.15.4",
     "express-jwt": "5.3.0",
@@ -158,13 +159,13 @@
     "prop-types": "^15.5.10",
     "raven": "^1.1.4",
     "raven-js": "^3.17.0",
-    "react": "^15.6.1",
+    "react": "^16.0.0",
     "react-addons-css-transition-group": "^15.4.2",
     "react-async-hoc": "^0.3.3",
     "react-copy-to-clipboard": "^5.0.0",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",
-    "react-dom": "^15.6.1",
+    "react-dom": "^16.0.0",
     "react-fontawesome": "^1.5.0",
     "react-helmet": "^5.1.3",
     "react-hotkey-hoc": "^0.2.1",
@@ -174,6 +175,7 @@
     "react-relay": "1.3.0",
     "react-router": "4.2.0",
     "react-router-dom": "4.2.2",
+    "react-test-renderer": "^16.0.0",
     "react-transition-group": "^2.2.0",
     "redux": "^3.7.2",
     "redux-form": "^7.0.3",
@@ -207,6 +209,7 @@
       "<rootDir>/src/"
     ],
     "testRegex": "/__tests__/.*.test\\.jsx?$",
-    "testResultsProcessor": "./src/server/__tests__/teardown"
+    "testResultsProcessor": "./src/server/__tests__/teardown",
+    "setupTestFrameworkScriptFile": "./src/universal/__tests__/enzyme"
   }
 }

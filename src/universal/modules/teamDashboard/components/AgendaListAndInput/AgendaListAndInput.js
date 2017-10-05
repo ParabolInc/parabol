@@ -1,11 +1,10 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {phaseArray} from 'universal/utils/constants';
-import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
-import voidClick from 'universal/utils/voidClick';
+import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
+import withStyles from 'universal/styles/withStyles';
+import {phaseArray} from 'universal/utils/constants';
 
 const AgendaListAndInput = (props) => {
   const {
@@ -27,9 +26,8 @@ const AgendaListAndInput = (props) => {
     styles.root,
     disabled && styles.disabled
   );
-  const handleOnClick = disabled && voidClick;
   return (
-    <div className={rootStyles} onClick={handleOnClick}>
+    <div className={rootStyles}>
       <AgendaInput
         agenda={agenda}
         context={context}

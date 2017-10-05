@@ -113,6 +113,7 @@ Object {
     "meetingPhaseItem": null,
     "name": "Team America",
     "orgId": 14,
+    "tier": "personal",
   },
   "teamMember": Array [
     Object {

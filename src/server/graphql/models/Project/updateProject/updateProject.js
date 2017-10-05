@@ -1,5 +1,4 @@
 import getRethink from 'server/database/rethinkDriver';
-import {ProjectInput} from 'server/graphql/models/Project/projectSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean
@@ -10,6 +9,7 @@ import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import {handleSchemaErrors} from 'server/utils/utils';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
+import ProjectInput from 'server/graphql/types/ProjectInput';
 
 const DEBOUNCE_TIME = ms('5m');
 

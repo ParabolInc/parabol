@@ -43,7 +43,6 @@ Object {
     "tms": Array [
       2,
     ],
-    "trialOrg": null,
     "updatedAt": 2017-01-01T07:00:00.000Z,
     "userOrgs": Array [
       Object {

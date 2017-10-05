@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLList, GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
-import {Project} from './projectSchema';
+import Project from './projectSchema';
 import {errorObj} from 'server/utils/utils';
 import {requireAuth, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 

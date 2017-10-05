@@ -51,6 +51,7 @@ const makePropColors = (buttonStyle, colorPalette) => {
 
 class Button extends Component {
   static propTypes = {
+    'aria-label': PropTypes.string,
     colorPalette: PropTypes.oneOf(ui.paletteOptions),
     compact: PropTypes.bool,
     // depth: up to 3 + 1 (for :hover, :focus) = up to ui.shadow[4]
@@ -116,6 +117,7 @@ class Button extends Component {
 
   render() {
     const {
+      'aria-label': ariaLabel,
       compact,
       depth,
       disabled,
@@ -125,7 +127,6 @@ class Button extends Component {
       label,
       onClick,
       onMouseEnter,
-      size,
       styles,
       title,
       type,
@@ -149,18 +150,13 @@ class Button extends Component {
     const makeIconLabel = () => {
       const defaultIconPlacement = icon && label ? 'left' : '';
       const thisIconPlacement = iconPlacement || defaultIconPlacement;
-      const iconPlacementStyle = css(
+      const iconStyle = css(
+        styles.icon,
         thisIconPlacement === 'left' && styles.iconLeft,
         thisIconPlacement === 'right' && styles.iconRight,
       );
-      const iconMargin = iconOnly ? '' : iconPlacementStyle;
-      const iconStyle = {
-        fontSize: ui.buttonIconSize[size],
-        lineHeight: 'inherit',
-        verticalAlign: 'middle'
-      };
       const makeIcon = () =>
-        <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
+        <FontAwesome className={iconStyle} name={icon} />;
       return (
         <span className={css(styles.buttonInner)}>
           {iconOnly ?
@@ -186,6 +182,7 @@ class Button extends Component {
         onMouseLeave={this.onMouseLeave}
         title={title || label}
         type={type || 'button'}
+        aria-label={ariaLabel}
       >
         {icon ?
           makeIconLabel() :
@@ -236,6 +233,12 @@ const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransfor
   // Disabled state
   disabled: {
     ...ui.buttonDisabledStyles
+  },
+
+  icon: {
+    fontSize: ui.buttonIconSize[size] || ui.buttonIconSize.medium,
+    lineHeight: 'inherit',
+    verticalAlign: 'middle'
   },
 
   iconLeft: {

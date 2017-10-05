@@ -14,7 +14,6 @@ Object {
     "id": 0,
     "name": "The Averagers, Inc.",
     "orgUsers": Array [],
-    "periodEnd": 2017-01-31T07:00:00.000Z,
     "periodStart": 2017-01-01T07:00:00.000Z,
     "stripeId": 1,
     "stripeSubscriptionId": 2,

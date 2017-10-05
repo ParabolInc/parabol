@@ -22,7 +22,6 @@ export default async function invoicePaymentSucceeded(invoiceId) {
   }
 
   // RESOLUTION
-  // this must have not been a trial (or it was and they entered a card that got invalidated <1 hr after entering it)
   await r.table('Invoice').get(invoiceId).update({
     creditCard,
     paidAt: now,

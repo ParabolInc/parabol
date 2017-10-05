@@ -1,29 +1,9 @@
-import {
-  GraphQLEnumType,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLInputObjectType,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GitHubProject from 'server/graphql/types/GitHubProject';
-import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 
-export const ProjectStatus = new GraphQLEnumType({
-  name: 'ProjectStatus',
-  description: 'The status of the project',
-  values: {
-    [ACTIVE]: {},
-    [STUCK]: {},
-    [DONE]: {},
-    [FUTURE]: {}
-  }
-});
-
-export const Project = new GraphQLObjectType({
+const Project = new GraphQLObjectType({
   name: 'Project',
   description: 'A long-term project shared across the team, assigned to a single user',
   fields: () => ({
@@ -56,7 +36,7 @@ export const Project = new GraphQLObjectType({
       type: GraphQLFloat,
       description: 'the shared sort order for projects on the team dash & user dash'
     },
-    status: {type: new GraphQLNonNull(ProjectStatus), description: 'The status of the project'},
+    status: {type: new GraphQLNonNull(ProjectStatusEnum), description: 'The status of the project'},
     tags: {
       type: new GraphQLList(GraphQLString),
       description: 'The tags associated with the project'
@@ -80,16 +60,4 @@ export const Project = new GraphQLObjectType({
   })
 });
 
-export const ProjectInput = new GraphQLInputObjectType({
-  name: 'ProjectInput',
-  fields: () => ({
-    id: {type: GraphQLID, description: 'The unique team ID'},
-    agendaId: {type: GraphQLID},
-    content: {type: GraphQLString},
-    name: {type: GraphQLString, description: 'The name of the team'},
-    orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
-    teamMemberId: {type: GraphQLID},
-    sortOrder: {type: GraphQLFloat},
-    status: {type: GraphQLString}
-  })
-});
+export default Project;
