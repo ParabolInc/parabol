@@ -7,6 +7,7 @@ import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
+import OrgPlanSqueeze from 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -49,12 +50,13 @@ class OrgBilling extends Component {
     />);
     return (
       <div>
+        <OrgPlanSqueeze />
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
               <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
               <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
-              <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
+              <span className={css(styles.creditCardNumber)}>{'•••• •••• •••• '}{last4 || '••••'}</span>
               <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
               <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
             </div>
@@ -73,9 +75,9 @@ class OrgBilling extends Component {
                 <Button
                   buttonStyle="flat"
                   colorPalette="cool"
-                  label="LOAD MORE"
+                  label="Load More"
                   onClick={this.loadMore}
-                  size="large"
+                  size="small"
                 />
               </div>
             }
@@ -124,7 +126,8 @@ const styleThunk = () => ({
     fontSize: '1.25rem',
     fontWeight: 700,
     justifyContent: 'center',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
+    paddingBottom: ui.panelGutter
   },
   noInvoices: {
     textAlign: 'center',
