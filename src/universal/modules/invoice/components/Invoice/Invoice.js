@@ -168,10 +168,6 @@ Invoice.propTypes = {
   styles: PropTypes.object
 };
 
-Invoice.defaultProps = {
-  subject: 'February 2017'
-};
-
 const breakpoint = ui.invoiceBreakpoint;
 const invoiceGutterSmall = '1rem';
 const invoiceGutterLarge = '2rem';
@@ -352,6 +348,8 @@ export default createFragmentContainer(
             id
             amount
             email
+            endAt
+            startAt
           }
           quantity
           type
