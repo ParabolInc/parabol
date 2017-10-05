@@ -32,7 +32,7 @@
     "build:theme": "node ./webpack/utils/buildThemeJSON.babel.js",
     "db:migrate": "npm run db:migrate-up-all",
     "db:migrate-testing": "NODE_ENV=test npm run db:migrate && NODE_ENV=test node ./src/server/__tests__/setup/softenDurability.babel.js",
-    "test": "jest --bail --coverage && codecov",
+    "test": "jest stripeUpdateInvoiceItem --bail --coverage && codecov",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "node ./src/server/database/migrate.babel.js up",
     "db:migrate-up-all": "node ./src/server/database/migrate.babel.js up --all",

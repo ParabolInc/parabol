@@ -10,10 +10,10 @@ import {
   DashHeader,
   DashHeaderInfo,
   DashMain,
-  makeDateString
 } from 'universal/components/Dashboard';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import makeDateString from 'universal/utils/makeDateString';
 
 const UserDashMain = (props) => {
   const {styles} = props;
