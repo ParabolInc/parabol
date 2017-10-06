@@ -11,7 +11,7 @@ import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router-dom';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
-import {PAID, UPCOMING} from 'universal/utils/constants';
+import {PAID, PENDING, UPCOMING} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const InvoiceRow = (props) => {
@@ -32,6 +32,7 @@ const InvoiceRow = (props) => {
     styles.invoiceAvatar,
     isEstimate && styles.invoiceAvatarEstimate
   );
+  const statusStyle = status === PENDING ? styles.paid : styles.unpaid;
   return (
     <Row>
       <div className={invoiceAvatarStyles}>
@@ -58,7 +59,7 @@ const InvoiceRow = (props) => {
         <div className={css(styles.infoRow)}>
           <div className={css(styles.infoRowLeft)}>
             <Link className={css(styles.subHeader)} rel="noopener noreferrer" target="_blank" to={`/invoice/${invoiceId}`}>
-              See Details
+              {'See Details'}
             </Link>
           </div>
           <div className={css(styles.infoRowRight)}>
@@ -71,12 +72,12 @@ const InvoiceRow = (props) => {
             }
             {status === PAID &&
               <span className={css(styles.date, styles.paid)}>
-                Paid on {makeDateString(paidAt)}
+                {'Paid on '}{makeDateString(paidAt)}
               </span>
             }
             {status !== PAID && status !== UPCOMING &&
-              <span className={css(styles.unpaid)}>
-                Status: {status}
+              <span className={css(statusStyle)}>
+                {'Status: '}{status}
               </span>
             }
           </div>
@@ -93,7 +94,6 @@ InvoiceRow.propTypes = {
 };
 
 const lineHeightLarge = '1.625rem';
-// const lineHeightSmall = '1.125rem';
 
 const styleThunk = () => ({
   fileIcon: {
