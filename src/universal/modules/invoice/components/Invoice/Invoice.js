@@ -98,7 +98,7 @@ const Invoice = (props) => {
       <div className={css(styles.panel)}>
         {status === FAILED &&
           <div className={css(styles.failedStamp)}>
-            Payment Failed
+            {'Payment Failed'}
           </div>
         }
         {status === UPCOMING &&
@@ -209,10 +209,13 @@ const styleThunk = () => ({
     fontSize: '2.5rem',
     fontWeight: 700,
     left: '50%',
+    opacity: .5,
     position: 'absolute',
+    textAlign: 'center',
     textTransform: 'uppercase',
     top: '50%',
-    transform: 'translate(-50%, -50%, 0), rotate(-30deg)',
+    transform: 'translate3d(-50%, -50%, 0) rotate(-30deg)',
+    width: '100%',
 
     [breakpoint]: {
       fontSize: '3rem'
