@@ -138,22 +138,22 @@ const Invoice = (props) => {
           {startingBalance !== 0 &&
             <div>
               <div className={css(styles.amountLineSub)}>
-                <div>Total</div>
+                <div>{'Total'}</div>
                 <div>{invoiceLineFormat(total)}</div>
               </div>
               <div className={css(styles.amountLineSub)}>
-                <div>Previous Balance</div>
+                <div>{'Previous Balance'}</div>
                 <div>{invoiceLineFormat(startingBalance)}</div>
               </div>
             </div>
           }
           <div className={css(styles.amountLine)}>
-            <div>Amount due</div>
+            <div>{'Amount due'}</div>
             <div>{invoiceLineFormat(amountDue)}</div>
           </div>
           {brand &&
             <div className={css(styles.meta, status === FAILED && styles.metaError)}>
-              {chargeStatus[status]} to <b>{brand}</b> ending in <b>{last4}</b>
+              {chargeStatus[status]}{' to '}<b>{brand}</b> {'ending in '}<b>{last4}</b>
             </div>
           }
         </div>
