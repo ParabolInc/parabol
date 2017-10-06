@@ -4,6 +4,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import {tagBase} from './tagBase';
 
 const Tag = (props) => {
   const {
@@ -31,21 +32,7 @@ Tag.propTypes = {
 };
 
 const styleThunk = () => ({
-  tagBase: {
-    backgroundColor: 'transparent',
-    borderRadius: '4em',
-    boxShadow: ui.shadow[0],
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: '.625rem',
-    fontWeight: 700,
-    height: '.875rem',
-    lineHeight: '.875rem',
-    marginLeft: ui.tagGutter,
-    padding: '0 .4375rem',
-    textTransform: 'uppercase',
-    verticalAlign: 'middle'
-  },
+  tagBase,
 
   cool: {
     backgroundColor: appTheme.palette.cool10l,

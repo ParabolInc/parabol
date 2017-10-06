@@ -455,7 +455,11 @@ const ui = {
 
   // Tags
   // ---------------------------------------------------------------------------
+  tagFontSize: '.75rem',
+  tagFontWeight: 700,
   tagGutter: '.75rem',
+  tagHeight: '1rem',
+  tagPadding: '0 .5rem',
   tagPalette: [
     'cool',
     'gray',

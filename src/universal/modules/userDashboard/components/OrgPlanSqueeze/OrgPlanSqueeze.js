@@ -8,28 +8,42 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 
-const stackedIcon = (top, bottom) => {
-  // WIP
-  const iconStyle = {
-    fontSize: ui.iconSize,
-    lineHeight: ui.iconSize
-  };
-  return (
-    <div className={css(styles.iconStacked)}>
-      <FontAwesome className={css(styles.iconTop)} name={top} style={iconStyle} />
-      <FontAwesome className={css(styles.iconBottom)} name={bottom} style={iconStyle} />
-    </div>
-  );
-};
-
 const OrgPlanSqueeze = (props) => {
   const {styles} = props;
+
+  const stackedIcon = (top, bottom, color) => {
+    const iconStyle = {
+      fontSize: ui.iconSize,
+      lineHeight: ui.iconSize
+    };
+    const topIconStyle = {
+      ...iconStyle,
+      color
+    };
+    return (
+      <div className={css(styles.iconStacked)}>
+        <FontAwesome className={css(styles.iconTop)} name={top} style={topIconStyle} />
+        <FontAwesome className={css(styles.iconBottom)} name={bottom} style={iconStyle} />
+      </div>
+    );
+  };
+
+  const starIcon = () => stackedIcon('star-o', 'star', appTheme.palette.light60d);
+
+  const noActiveUsers = 7;
+  const subscriptionPrice = 5;
+  const estimatedCost = noActiveUsers * subscriptionPrice;
+  const showCost = true;
+
   return (
     <Panel hasHeader={false}>
       <div className={css(styles.panelInner)}>
         <div className={css(styles.panelCell, styles.panelPersonal)}>
           <h2 className={css(styles.badgePersonal)}>
-            <div className={css(styles.badgeInner)}>{'Personal Badge'}</div>
+            <div className={css(styles.badgeInner)}>
+              {stackedIcon('check-circle-o', 'circle', appTheme.palette.mid70l)}
+              <div className={css(styles.badgeLabel)}>{'Personal Plan'}</div>
+            </div>
           </h2>
           <p className={css(styles.copy)}>
             {'Your current plan.'}<br />
@@ -38,7 +52,13 @@ const OrgPlanSqueeze = (props) => {
         </div>
         <div className={css(styles.panelCell)}>
           <h2 className={css(styles.badgePro)}>
-            <div className={css(styles.badgeInner)}>{'Pro Badge'}</div>
+            <div className={css(styles.badgeInner)}>
+              {starIcon()}
+              {starIcon()}
+              <div className={css(styles.badgeLabel)}>{'Pro Plan'}</div>
+              {starIcon()}
+              {starIcon()}
+            </div>
           </h2>
           <p className={css(styles.copy, styles.copyPro)}>
             {'This could be you.'}<br />
@@ -50,17 +70,27 @@ const OrgPlanSqueeze = (props) => {
               depth={2}
               isBlock
               label="Upgrade to the Pro Plan"
+              onClick={() => (console.log(`
+                Open the CC modal;
+                if they bail, show Billing View !isPaid;
+                otherwise, when CC success, show Billing View isPaid.
+              `))}
               size="small"
             />
           </div>
-          <Button
-            colorPalette="cool"
-            buttonStyle="flat"
-            icon="question-circle"
-            iconPlacement="right"
-            label="How much will it cost?"
-            size="smallest"
-          />
+          {showCost ?
+            <div className={css(styles.costHint)}>
+              {`${noActiveUsers} Active Users x $${subscriptionPrice} = $${estimatedCost}/mo`}
+            </div> :
+            <Button
+              colorPalette="cool"
+              buttonStyle="flat"
+              icon="question-circle"
+              iconPlacement="right"
+              label="How much will it cost?"
+              size="smallest"
+            />
+          }
         </div>
       </div>
       <div className={css(styles.panelCell, styles.panelFooter)}>
@@ -84,14 +114,24 @@ OrgPlanSqueeze.propTypes = {
 
 const panelBorder = `.0625rem solid ${ui.panelInnerBorderColor}`;
 const padding = ui.panelGutter;
+
 const badgeBase = {
   borderRadius: '100em',
   boxShadow: ui.shadow[0],
   fontSize: appTheme.typography.s3,
-  lineHeight: 1,
+  lineHeight: appTheme.typography.s5,
   margin: '1rem auto 0',
+  textShadow: '0 .0625rem 0 rgba(255, 255, 255, .35)',
   textTransform: 'uppercase',
-  width: '12rem'
+  width: '11rem'
+};
+
+const iconBase = {
+  left: 0,
+  position: 'absolute',
+  textAlign: 'center',
+  top: 0,
+  verticalAlign: 'middle'
 };
 
 const styleThunk = () => ({
@@ -131,24 +171,61 @@ const styleThunk = () => ({
   },
 
   badgeInner: {
+    alignItems: 'center',
     backgroundColor: 'transparent',
-    border: `.0625rem solid rgba(255, 255, 255, .85)`,
+    border: '.0625rem solid rgba(255, 255, 255, .85)',
     borderRadius: '100em',
-    padding: '.5rem',
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '.375rem'
+  },
+
+  badgeLabel: {
+    padding: '.125rem .1875rem 0'
   },
 
   badgePersonal: {
     ...badgeBase,
     backgroundColor: appTheme.palette.mid30l,
     border: `.125rem solid ${appTheme.palette.mid50l}`,
-    color: appTheme.palette.dark,
+    color: appTheme.palette.mid
   },
 
   badgePro: {
     ...badgeBase,
     backgroundColor: appTheme.palette.light80d,
     border: `.125rem solid ${appTheme.palette.light70d}`,
-    color: appTheme.palette.light40d,
+    color: appTheme.palette.light40d
+  },
+
+  iconStacked: {
+    height: ui.iconSize,
+    margin: '0 .0625rem',
+    position: 'relative',
+    width: ui.iconSize
+  },
+
+  iconTop: {
+    ...iconBase,
+    zIndex: 200
+  },
+
+  iconBottom: {
+    ...iconBase,
+    color: '#fff',
+    textShadow: '0 .0625rem 0 rgba(255, 255, 255, .35)',
+    zIndex: 100
+  },
+
+  costHint: {
+    backgroundColor: appTheme.palette.cool10l,
+    borderRadius: ui.borderRadiusSmall,
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s2,
+    fontWeight: 700,
+    lineHeight: '2rem',
+    margin: '0 1rem',
+    textAlign: 'center'
   }
 });
 

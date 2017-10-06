@@ -50,7 +50,9 @@ class OrgBilling extends Component {
     />);
     return (
       <div>
+        {/* Plan Squeeze: show when !isPaid */}
         <OrgPlanSqueeze />
+        {/* Credit Card: show when isPaid */}
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
@@ -63,6 +65,7 @@ class OrgBilling extends Component {
             <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
           </div>
         </Panel>
+        {/* Invoices: show when isPaid */}
         <Panel label="Invoices">
           <div className={css(styles.listOfInvoices)}>
             {hasInvoices &&
@@ -83,10 +86,28 @@ class OrgBilling extends Component {
             }
           </div>
         </Panel>
+        {/* Danger Zone: show when isPaid */}
+        <Panel label="Danger Zone">
+          <div className={css(styles.panelRow)}>
+            <Button
+              buttonStyle="flat"
+              colorPalette="mid"
+              icon="envelope"
+              iconPlacement="right"
+              label="Need to cancel? Contact Us"
+              size="smallest"
+            />
+          </div>
+        </Panel>
       </div>
     );
   }
 }
+
+const panelCell = {
+  borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`,
+  padding: ui.panelGutter
+};
 
 const styleThunk = () => ({
   creditCardInfo: {
@@ -114,10 +135,10 @@ const styleThunk = () => ({
   },
 
   infoAndUpdate: {
+    ...panelCell,
     alignItems: 'center',
     display: 'flex',
-    justifyContent: 'space-between',
-    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
+    justifyContent: 'space-between'
   },
 
   loadMore: {
@@ -129,9 +150,15 @@ const styleThunk = () => ({
     textTransform: 'uppercase',
     paddingBottom: ui.panelGutter
   },
+
   noInvoices: {
     textAlign: 'center',
     margin: '1rem'
+  },
+
+  panelRow: {
+    ...panelCell,
+    textAlign: 'center'
   }
 });
 
