@@ -17,6 +17,7 @@ export const auth0ManagementClient = new ManagementClient({
 });
 
 export const clientId = process.env.AUTH0_CLIENT_ID;
+export const AUTH0_AUD = 'https://parabol.auth0.com/api/v2/';
 
 export const clientSecret = process.env.AUTH0_CLIENT_SECRET ||
   'BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ';
