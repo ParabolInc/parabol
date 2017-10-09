@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.21.1 - 09-Oct-2017
+### Fixed
+- #1373 Regression with null aud field on the JWT
+
 ## v0.21.0 - 23-Sep-2017
 ### Added
 - When a user already belongs to Parabol, invitations arrive as notifications,
