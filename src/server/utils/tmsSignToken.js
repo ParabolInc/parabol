@@ -7,7 +7,7 @@ import {clientSecret} from './auth0Helpers';
 import {JWT_LIFESPAN} from './serverConstants';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import makeAppLink from 'server/utils/makeAppLink';
-import {AUTH0_AUD} from 'server/utils/auth0Helpers';
+import {clientId} from 'server/utils/auth0Helpers';
 
 export default function tmsSignToken(authToken = {}, tms) {
   if (!authToken.sub) {
@@ -20,7 +20,7 @@ export default function tmsSignToken(authToken = {}, tms) {
   const iat = toEpochSeconds(now);
   const newToken = {
     ...authToken,
-    aud: AUTH0_AUD,
+    aud: clientId,
     iss: makeAppLink(),
     exp,
     iat,
