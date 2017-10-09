@@ -42,15 +42,10 @@ export default {
       }
 
       // RESOLUTION
-      const newToken = {
-        iss: authToken.iss,
-        sub: user.id,
-        aud: auth0ClientId
+      return {
+        ...user,
+        jwt: tmsSignToken({sub: user.id}, user.tms)
       };
-
-      user.jwt = tmsSignToken(newToken, user.tms);
-
-      return user;
     }
   },
   createUserPicturePutUrl: {
