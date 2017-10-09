@@ -3,15 +3,18 @@
  * This includes storing the team in their JWT
  */
 import {sign} from 'jsonwebtoken';
-import {clientSecret} from './auth0Helpers';
+import {clientId, clientSecret} from './auth0Helpers';
 import {JWT_LIFESPAN} from './serverConstants';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import makeAppLink from 'server/utils/makeAppLink';
-import {clientId} from 'server/utils/auth0Helpers';
 
+/**
+ * Takes a JWT auth token payload, modifies the `tms` (teams) field with the
+ * provided value, and returns a signed JWT with the updated field.
+ */
 export default function tmsSignToken(authToken = {}, tms) {
-  if (!authToken.sub) {
-    throw new Error('Auth token is missing sub');
+  if (!authToken || !authToken.sub) {
+    throw new Error('Must provide valid auth token with `sub`');
   }
   // new token will expire in 30 days
   // JWT timestamps chop off milliseconds
