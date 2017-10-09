@@ -12,7 +12,7 @@ import makeAppLink from 'server/utils/makeAppLink';
  * Takes a JWT auth token payload, modifies the `tms` (teams) field with the
  * provided value, and returns a signed JWT with the updated field.
  */
-export default function tmsSignToken(authToken = {}, tms) {
+export default function tmsSignToken(authToken, tms) {
   if (!authToken || !authToken.sub) {
     throw new Error('Must provide valid auth token with `sub`');
   }
