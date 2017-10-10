@@ -8,6 +8,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {MONTHLY_PRICE, PERSONAL, PRO} from 'universal/utils/constants';
+import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 
 class OrgPlanSqueeze extends Component {
   state = {showCost: false}
@@ -19,10 +20,16 @@ class OrgPlanSqueeze extends Component {
   };
 
   render() {
-    const {activeUserCount, styles} = this.props;
+    const {activeUserCount, orgId, styles} = this.props;
     const estimatedCost = activeUserCount * MONTHLY_PRICE;
     const {showCost} = this.state;
-
+    const toggle = <Button
+      colorPalette="cool"
+      depth={2}
+      isBlock
+      label="Upgrade to the Pro Plan"
+      size="small"
+    />;
     return (
       <Panel hasHeader={false}>
         <div className={css(styles.panelInner)}>
@@ -40,18 +47,11 @@ class OrgPlanSqueeze extends Component {
               {'Ready for the full experience?'}
             </p>
             <div className={css(styles.buttonBlock)}>
-              <Button
-                colorPalette="cool"
-                depth={2}
-                isBlock
-                label="Upgrade to the Pro Plan"
-                onClick={() => (console.log(`
-                Open the CC modal;
-                if they bail, show Billing View !isPaid;
-                otherwise, when CC success, show Billing View isPaid.
-              `))}
-                size="small"
+              <CreditCardModalContainer
+                orgId={orgId}
+                toggle={toggle}
               />
+
             </div>
             {showCost ?
               <div className={css(styles.costHint)}>

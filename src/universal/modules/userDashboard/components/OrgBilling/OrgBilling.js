@@ -52,7 +52,7 @@ class OrgBilling extends Component {
     return (
       <div>
         {tier === PERSONAL ?
-          <OrgPlanSqueeze activeUserCount={activeUserCount}/> :
+          <OrgPlanSqueeze activeUserCount={activeUserCount} orgId={orgId} /> :
           <div className={css(styles.paidSection)}>
             <Panel label="Credit Card Information">
               <div className={css(styles.infoAndUpdate)}>
