@@ -12,6 +12,7 @@ query {
     inactiveUserCount
     name
     picture
+    tier
   }
 }
 `;

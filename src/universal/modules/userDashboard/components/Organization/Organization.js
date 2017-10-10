@@ -19,7 +19,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
+import {BILLING_PAGE, MEMBERS_PAGE, PRO} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 
 const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
@@ -39,16 +39,11 @@ const Organization = (props) => {
     viewer
   } = props;
   const org = viewer ? viewer.organization : {};
-  const {createdAt, name: orgName, picture: orgAvatar} = org;
+  const {createdAt, name: orgName, picture: orgAvatar, tier} = org;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
   const extraProps = {orgId, org};
-  const isPaid = true;
-  const makeProTag = () => (
-    <div className={css(styles.tagBlock)}>
-      <TagPro />
-    </div>
-  );
+
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
@@ -64,7 +59,12 @@ const Organization = (props) => {
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
             <div className={css(styles.orgDetails)}>
-              {'Created '}{makeDateString(createdAt)} {isPaid && makeProTag()}
+              {'Created '}{makeDateString(createdAt)}
+              {tier === PRO &&
+                <div className={css(styles.tagBlock)}>
+                  <TagPro />
+                </div>
+              }
             </div>
             <BillingMembersToggle orgId={orgId} />
           </div>
@@ -166,6 +166,7 @@ export default createFragmentContainer(
         }
         periodStart
         periodEnd
+        tier
       }
     }
   `

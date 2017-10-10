@@ -1,50 +1,33 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import FontAwesome from 'react-fontawesome';
 import {css} from 'aphrodite-local-styles/no-important';
-import withStyles from 'universal/styles/withStyles';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types';
+import React from 'react';
+import StackedIcon from 'universal/modules/userDashboard/components/StackedIcon';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {PERSONAL, PRO} from 'universal/utils/constants';
+
+const StarIcon = () => <StackedIcon top="star-o" bottom="star" color={appTheme.palette.light60d}/>;
 
 const OrgPlanBadge = (props) => {
   const {planType, styles} = props;
-
-  const stackedIcon = (top, bottom, color) => {
-    const iconStyle = {
-      fontSize: ui.iconSize,
-      lineHeight: ui.iconSize
-    };
-    const topIconStyle = {
-      ...iconStyle,
-      color
-    };
-    return (
-      <div className={css(styles.iconStacked)}>
-        <FontAwesome className={css(styles.iconTop)} name={top} style={topIconStyle} />
-        <FontAwesome className={css(styles.iconBottom)} name={bottom} style={iconStyle} />
-      </div>
-    );
-  };
-
-  const starIcon = () => stackedIcon('star-o', 'star', appTheme.palette.light60d);
-
   const badgeStyles = css(
-    planType === 'personal' ? styles.badgePersonal : styles.badgePro
+    planType === PERSONAL ? styles.badgePersonal : styles.badgePro
   );
 
   return (
     <h2 className={badgeStyles}>
-      {planType === 'personal' ?
+      {planType === PERSONAL ?
         <div className={css(styles.badgeInner)}>
-          {stackedIcon('check-circle-o', 'circle', appTheme.palette.mid70l)}
+          <StackedIcon top="check-circle-o" bottom="circle" color={appTheme.palette.mid70l}/>
           <div className={css(styles.badgeLabel)}>{'Personal Plan'}</div>
         </div> :
         <div className={css(styles.badgeInner)}>
-          {starIcon()}
-          {starIcon()}
+          <StarIcon/>
+          <StarIcon/>
           <div className={css(styles.badgeLabel)}>{'Pro Plan'}</div>
-          {starIcon()}
-          {starIcon()}
+          <StarIcon/>
+          <StarIcon/>
         </div>
       }
     </h2>
@@ -54,8 +37,8 @@ const OrgPlanBadge = (props) => {
 
 OrgPlanBadge.propTypes = {
   planType: PropTypes.oneOf([
-    'personal',
-    'pro'
+    PERSONAL,
+    PRO
   ]),
   styles: PropTypes.object
 };
@@ -69,14 +52,6 @@ const badgeBase = {
   textShadow: '0 .0625rem 0 rgba(255, 255, 255, .35)',
   textTransform: 'uppercase',
   width: '11rem'
-};
-
-const iconBase = {
-  left: 0,
-  position: 'absolute',
-  textAlign: 'center',
-  top: 0,
-  verticalAlign: 'middle'
 };
 
 const styleThunk = () => ({
@@ -106,25 +81,6 @@ const styleThunk = () => ({
     backgroundColor: appTheme.palette.light80d,
     border: `.125rem solid ${appTheme.palette.light70d}`,
     color: appTheme.palette.light40d
-  },
-
-  iconStacked: {
-    height: ui.iconSize,
-    margin: '0 .0625rem',
-    position: 'relative',
-    width: ui.iconSize
-  },
-
-  iconTop: {
-    ...iconBase,
-    zIndex: 200
-  },
-
-  iconBottom: {
-    ...iconBase,
-    color: '#fff',
-    textShadow: '0 .0625rem 0 rgba(255, 255, 255, .35)',
-    zIndex: 100
   }
 });
 
