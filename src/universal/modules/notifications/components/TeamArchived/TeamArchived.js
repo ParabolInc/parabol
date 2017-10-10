@@ -43,7 +43,7 @@ const TeamArchived = (props) => {
           isBlock
           label="Okay"
           onClick={acknowledge}
-          size={ui.notificationButtonSize}
+          buttonSize={ui.notificationButtonSize}
           type="submit"
           waiting={submitting}
         />

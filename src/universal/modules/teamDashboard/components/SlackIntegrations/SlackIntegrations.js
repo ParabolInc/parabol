@@ -50,18 +50,18 @@ const SlackIntegrations = (props) => {
         {accessToken &&
         <div className={css(styles.providerActions)}>
           <Button
+            buttonSize="small"
             buttonStyle="flat"
             colorPalette="warm"
             label="Remove Slack"
             onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)}
-            size="smallest"
           />
           <Button
+            buttonSize="small"
             buttonStyle="flat"
             colorPalette="cool"
             label="Refresh Token"
             onClick={openOauth}
-            size="smallest"
           />
         </div>
         }
@@ -79,11 +79,11 @@ const SlackIntegrations = (props) => {
             </div> :
             <div className={css(styles.addSlack)}>
               <Button
+                buttonSize="medium"
                 buttonStyle="solid"
                 colorPalette="cool"
                 label="Authorize Slack to Add a Channel"
                 onClick={openOauth}
-                size="medium"
               />
             </div>
           }
@@ -99,7 +99,7 @@ const SlackIntegrations = (props) => {
                     colorPalette="dark"
                     label="Remove"
                     onClick={handleRemoveChannel(id)}
-                    size="smallest"
+                    buttonSize="small"
                   />
                 </IntegrationRow>
               );

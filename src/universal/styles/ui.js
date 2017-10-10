@@ -21,12 +21,25 @@ const borderRadiusMedium = '.25rem';
 const borderRadiusLarge = '.5rem';
 
 // Button size constants
-const BUTTON_SIZE_SMALLEST = 'smallest';
 const BUTTON_SIZE_SMALL = 'small';
 const BUTTON_SIZE_MEDIUM = 'medium';
 const BUTTON_SIZE_LARGE = 'large';
-const BUTTON_SIZE_LARGEST = 'largest';
-const BUTTON_PADDING_HORIZONTAL_COMPACT = '.5em';
+
+// Control sizes
+const CONTROL_SMALL_FONT_SIZE = '.8125rem';
+const CONTROL_SMALL_LINE_HEIGHT = '1.25rem';
+const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem';
+const CONTROL_SMALL_PADDING_VERTICAL = '.3125rem';
+
+const CONTROL_MEDIUM_FONT_SIZE = '.9375rem';
+const CONTROL_MEDIUM_LINE_HEIGHT = '1.375rem';
+const CONTROL_MEDIUM_PADDING_HORIZONTAL = '.6875rem';
+const CONTROL_MEDIUM_PADDING_VERTICAL = '.5rem';
+
+const CONTROL_LARGE_FONT_SIZE = '1rem';
+const CONTROL_LARGE_LINE_HEIGHT = '1.25rem';
+const CONTROL_LARGE_PADDING_HORIZONTAL = '.9375rem';
+const CONTROL_LARGE_PADDING_VERTICAL = '.625rem';
 
 // Color palette
 const white = '#fff';
@@ -59,6 +72,10 @@ const FIELD_BOX_SHADOW = 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
 const FIELD_BOX_SHADOW_FOCUS = '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
 const FIELD_PADDING_HORIZONTAL = '.75rem';
 const FIELD_PLACEHOLDER_COLOR = appTheme.palette.mid80l;
+
+const FIELD_SIZE_SMALL = 'small';
+const FIELD_SIZE_MEDIUM = 'medium';
+const FIELD_SIZE_LARGE = 'large';
 
 // Filter
 const filterBlur = 'blur(1.5px)';
@@ -156,8 +173,8 @@ const ui = {
   },
   buttonBlockStyles: {
     display: 'block',
-    paddingLeft: BUTTON_PADDING_HORIZONTAL_COMPACT,
-    paddingRight: BUTTON_PADDING_HORIZONTAL_COMPACT,
+    paddingLeft: '.5em',
+    paddingRight: '.5em',
     width: '100%'
   },
   buttonBorderRadius: borderRadiusSmall,
@@ -174,36 +191,28 @@ const ui = {
       animation: 'none'
     }
   },
-  buttonFontSize: {
-    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s3,
-    [BUTTON_SIZE_SMALL]: appTheme.typography.s4,
-    [BUTTON_SIZE_MEDIUM]: appTheme.typography.s5,
-    [BUTTON_SIZE_LARGE]: '1.375rem',
-    [BUTTON_SIZE_LARGEST]: appTheme.typography.s6
-  },
-  buttonIconSize: {
-    [BUTTON_SIZE_SMALLEST]: iconSize,
-    [BUTTON_SIZE_SMALL]: iconSize,
-    [BUTTON_SIZE_MEDIUM]: iconSizeAvatar,
-    [BUTTON_SIZE_LARGE]: iconSizeAvatar,
-    [BUTTON_SIZE_LARGEST]: iconSize2x
-  },
-  buttonLineHeight: '1.5em !important', // 2.5em
-  buttonPadding: {
-    [BUTTON_SIZE_SMALLEST]: '.322em 1em',
-    [BUTTON_SIZE_SMALL]: '.25em 1em',
-    [BUTTON_SIZE_MEDIUM]: '.25em 1em',
-    [BUTTON_SIZE_LARGE]: '.25em 1em',
-    [BUTTON_SIZE_LARGEST]: '.25em 1em'
-  },
-  buttonPaddingHorizontalCompact: BUTTON_PADDING_HORIZONTAL_COMPACT,
   buttonSizes: [
-    BUTTON_SIZE_SMALLEST,
     BUTTON_SIZE_SMALL,
     BUTTON_SIZE_MEDIUM,
-    BUTTON_SIZE_LARGE,
-    BUTTON_SIZE_LARGEST
+    BUTTON_SIZE_LARGE
   ],
+  buttonSizeStyles: {
+    [BUTTON_SIZE_SMALL]: {
+      fontSize: CONTROL_SMALL_FONT_SIZE,
+      lineHeight: CONTROL_SMALL_LINE_HEIGHT,
+      padding: `${CONTROL_SMALL_PADDING_VERTICAL} .625rem`
+    },
+    [BUTTON_SIZE_MEDIUM]: {
+      fontSize: CONTROL_MEDIUM_FONT_SIZE,
+      lineHeight: CONTROL_MEDIUM_LINE_HEIGHT,
+      padding: `${CONTROL_MEDIUM_PADDING_VERTICAL} .75rem`
+    },
+    [BUTTON_SIZE_LARGE]: {
+      fontSize: CONTROL_LARGE_FONT_SIZE,
+      lineHeight: CONTROL_LARGE_LINE_HEIGHT,
+      padding: `${CONTROL_LARGE_PADDING_VERTICAL} 1rem`
+    }
+  },
 
   // Cards
   // ---------------------------------------------------------------------------
@@ -263,7 +272,7 @@ const ui = {
     boxShadow: FIELD_BOX_SHADOW,
     display: 'block',
     fontFamily: appTheme.typography.sansSerif,
-    fontSize: appTheme.typography.s4,
+    fontSize: appTheme.typography.sBase,
     lineHeight: '1.5em',
     margin: '0',
     outline: 0,
@@ -316,6 +325,28 @@ const ui = {
   },
   fieldDisabled: {
     cursor: 'not-allowed'
+  },
+  fieldSizes: [
+    FIELD_SIZE_SMALL,
+    FIELD_SIZE_MEDIUM,
+    FIELD_SIZE_LARGE
+  ],
+  fieldSizeStyles: {
+    [FIELD_SIZE_SMALL]: {
+      fontSize: CONTROL_SMALL_FONT_SIZE,
+      lineHeight: CONTROL_SMALL_LINE_HEIGHT,
+      padding: `${CONTROL_SMALL_PADDING_VERTICAL} ${CONTROL_SMALL_PADDING_HORIZONTAL}`
+    },
+    [FIELD_SIZE_MEDIUM]: {
+      fontSize: CONTROL_MEDIUM_FONT_SIZE,
+      lineHeight: CONTROL_MEDIUM_LINE_HEIGHT,
+      padding: `${CONTROL_MEDIUM_PADDING_VERTICAL} ${CONTROL_MEDIUM_PADDING_HORIZONTAL}`
+    },
+    [FIELD_SIZE_LARGE]: {
+      fontSize: CONTROL_LARGE_FONT_SIZE,
+      lineHeight: CONTROL_LARGE_LINE_HEIGHT,
+      padding: `${CONTROL_LARGE_PADDING_VERTICAL} ${CONTROL_LARGE_PADDING_HORIZONTAL}`
+    }
   },
   fieldReadOnly: {
     cursor: 'default'
@@ -394,7 +425,7 @@ const ui = {
 
   // Notifications
   // ---------------------------------------------------------------------------
-  notificationButtonSize: BUTTON_SIZE_SMALLEST,
+  notificationButtonSize: BUTTON_SIZE_SMALL,
 
   // Panels
   // ---------------------------------------------------------------------------

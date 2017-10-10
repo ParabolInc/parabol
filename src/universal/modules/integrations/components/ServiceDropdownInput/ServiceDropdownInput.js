@@ -80,6 +80,7 @@ const styleThunk = () => ({
 
   inputBlock: {
     ...ui.fieldBaseStyles,
+    ...ui.fieldSizeStyles.medium,
     ...makeFieldColorPalette('gray'),
     ...makeHoverFocus({
       borderColor: ui.fieldColorPalettes.gray.focusBorderColor,

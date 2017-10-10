@@ -120,7 +120,7 @@ const OrgMembers = (props) => {
                 colorPalette="dark"
                 icon="ellipsis-v"
                 isBlock
-                size="smallest"
+                buttonSize="small"
                 buttonStyle="flat"
               />
             }

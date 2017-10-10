@@ -100,7 +100,7 @@ class EditorLinkChanger extends Component {
               colorPalette="dark"
               disabled={!valid}
               label={label}
-              size="smallest"
+              buttonSize="small"
               type="submit"
               onClick={handleSubmit(this.onSubmit)}
             />

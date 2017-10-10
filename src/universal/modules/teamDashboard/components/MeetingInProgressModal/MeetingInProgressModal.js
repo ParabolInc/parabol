@@ -23,6 +23,7 @@ const MeetingInProgressModal = (props) => {
         Projects and Agenda Items.
       </Type>
       <Button
+        buttonSize="large"
         buttonStyle="flat"
         colorPalette="warm"
         icon="arrow-circle-right"
@@ -30,7 +31,6 @@ const MeetingInProgressModal = (props) => {
         label="Join Meeting"
         margin="1.5rem 0 0"
         onClick={handleClick}
-        size="large"
       />
     </DashModal>
   );

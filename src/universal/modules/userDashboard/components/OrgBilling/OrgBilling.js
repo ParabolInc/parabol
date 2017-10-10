@@ -22,7 +22,7 @@ const OrgBilling = (props) => {
   const update = (<Button
     colorPalette="cool"
     label="Update"
-    size="small"
+    buttonSize="small"
   />);
   return (
     <div>

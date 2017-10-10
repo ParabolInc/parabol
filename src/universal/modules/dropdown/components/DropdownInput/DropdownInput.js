@@ -43,7 +43,7 @@ const DropdownInput = (props) => {
         key={'newOrg'}
         label={
           <div className={css(styles.menuButtonBlock)}>
-            <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew} />
+            <Button colorPalette="mid" isBlock label="Create New Organization" buttonSize="small" onClick={handleCreateNew} />
           </div>
         }
       />);
@@ -68,6 +68,7 @@ const DropdownInput = (props) => {
 };
 
 DropdownInput.propTypes = {
+  fieldSize: PropTypes.oneOf(ui.fieldSizes),
   handleCreateNew: PropTypes.func,
   input: PropTypes.shape({
     name: PropTypes.string,
@@ -79,36 +80,40 @@ DropdownInput.propTypes = {
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
-  downButton: {
-    cursor: 'pointer',
-    fontSize: `${ui.iconSize} !important`,
-    height: '100% !important',
-    lineHeight: '2.25rem !important',
-    padding: '0 1rem 0 0',
-    position: 'absolute',
-    right: 0,
-    textAlign: 'right',
-    top: 0,
-    width: '100%'
-  },
+const styleThunk = (theme, {fieldSize}) => {
+  const size = fieldSize || ui.fieldSizes[1];
+  return ({
+    downButton: {
+      cursor: 'pointer',
+      fontSize: `${ui.iconSize} !important`,
+      height: '100% !important',
+      lineHeight: '2.25rem !important',
+      padding: '0 1rem 0 0',
+      position: 'absolute',
+      right: 0,
+      textAlign: 'right',
+      top: 0,
+      width: '100%'
+    },
 
-  inputBlock: {
-    ...ui.fieldBaseStyles,
-    ...makeFieldColorPalette('gray'),
-    ...makeHoverFocus({
-      borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
-      boxShadow: ui.fieldBoxShadow
-    }),
-    position: 'relative'
-  },
+    inputBlock: {
+      ...ui.fieldBaseStyles,
+      ...ui.fieldSizeStyles[size],
+      ...makeFieldColorPalette('gray'),
+      ...makeHoverFocus({
+        borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
+        boxShadow: ui.fieldBoxShadow
+      }),
+      position: 'relative'
+    },
 
-  menuButtonBlock: {
-    backgroundColor: '#fff',
-    borderTop: `1px solid ${ui.menuBorderColor}`,
-    padding: '.5rem .5rem 0',
-    width: '100%'
-  }
-});
+    menuButtonBlock: {
+      backgroundColor: '#fff',
+      borderTop: `1px solid ${ui.menuBorderColor}`,
+      padding: '.5rem .5rem 0',
+      width: '100%'
+    }
+  });
+};
 
 export default withStyles(styleThunk)(DropdownInput);

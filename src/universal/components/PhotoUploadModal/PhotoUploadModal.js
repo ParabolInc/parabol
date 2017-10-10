@@ -34,7 +34,7 @@ const PhotoUploadModal = (props) => {
           iconPlacement="right"
           label="Done"
           onClick={closePortal}
-          size="medium"
+          buttonSize="medium"
           buttonStyle="flat"
         />
       </div>

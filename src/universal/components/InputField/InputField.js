@@ -29,6 +29,8 @@ const InputField = (props) => {
     underline
   } = props;
 
+  console.log(styles);
+
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
     styles.field,
@@ -85,6 +87,7 @@ InputField.propTypes = {
   buttonIcon: PropTypes.string,
   hasButton: PropTypes.bool,
   disabled: PropTypes.bool,
+  fieldSize: PropTypes.oneOf(ui.fieldSizes),
   isLarger: PropTypes.bool,
   readyOnly: PropTypes.bool,
   label: PropTypes.string,
@@ -111,47 +114,51 @@ InputField.propTypes = {
   underline: PropTypes.bool
 };
 
-const styleThunk = () => ({
-  field: {
-    ...ui.fieldBaseStyles
-  },
-
-  cool: makeFieldColorPalette('cool'),
-  gray: makeFieldColorPalette('gray'),
-  warm: makeFieldColorPalette('warm'),
-  white: makeFieldColorPalette('white'),
-
-  disabled: ui.fieldDisabled,
-  readOnly: ui.fieldReadOnly,
-
-  fieldLarger: {
-    fontSize: appTheme.typography.s6,
-    fontWeight: 400,
-    lineHeight: '2.625rem'
-  },
-
-  fieldWider: {
-    minWidth: '30rem'
-  },
-
-  inputBlock: {
-    position: 'relative'
-  },
-
-  underline: {
-    borderRadius: 0,
-    ...underlineStyles,
-
-    ':hover': {
-      underlineStyles
+const styleThunk = (theme, {fieldSize}) => {
+  const size = fieldSize || ui.fieldSizes[1];
+  return ({
+    field: {
+      ...ui.fieldBaseStyles,
+      ...ui.fieldSizeStyles[size]
     },
-    ':focus': {
-      underlineStyles
+
+    cool: makeFieldColorPalette('cool'),
+    gray: makeFieldColorPalette('gray'),
+    warm: makeFieldColorPalette('warm'),
+    white: makeFieldColorPalette('white'),
+
+    disabled: ui.fieldDisabled,
+    readOnly: ui.fieldReadOnly,
+
+    fieldLarger: {
+      fontSize: appTheme.typography.s6,
+      fontWeight: 400,
+      lineHeight: '2.625rem'
     },
-    ':active': {
-      underlineStyles
+
+    fieldWider: {
+      minWidth: '30rem'
+    },
+
+    inputBlock: {
+      position: 'relative'
+    },
+
+    underline: {
+      borderRadius: 0,
+      ...underlineStyles,
+
+      ':hover': {
+        underlineStyles
+      },
+      ':focus': {
+        underlineStyles
+      },
+      ':active': {
+        underlineStyles
+      }
     }
-  }
-});
+  });
+};
 
 export default withStyles(styleThunk)(InputField);

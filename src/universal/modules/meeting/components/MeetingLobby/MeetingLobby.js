@@ -48,7 +48,7 @@ const MeetingLobby = (props) => {
             depth={1}
             label="Start Meeting"
             onClick={onStartMeetingClick}
-            size="largest"
+            buttonSize="large"
             textTransform="uppercase"
           />
         </div>

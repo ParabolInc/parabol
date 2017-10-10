@@ -41,7 +41,7 @@ const OrganizationRow = (props) => {
           colorPalette="dark"
           label="Settings and Billing"
           onClick={onRowClick}
-          size="smallest"
+          buttonSize="small"
         />
       </div>
     </Row>

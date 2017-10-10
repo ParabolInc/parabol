@@ -109,7 +109,7 @@ const CreditCardModal = (props) => {
                 disabled={submitting}
                 isBlock
                 label={crudAction}
-                size="small"
+                buttonSize="medium"
                 type="submit"
                 onClick={handleSubmit(addStripeBilling)}
               />
@@ -120,7 +120,7 @@ const CreditCardModal = (props) => {
                 disabled={submitting}
                 isBlock
                 label="Cancel"
-                size="small"
+                buttonSize="medium"
                 onClick={closePortal}
               />
             </div>

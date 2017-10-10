@@ -77,7 +77,7 @@ const MeetingAgendaLastCall = (props) => {
                 depth={1}
                 label="End Meeting"
                 onClick={gotoNext}
-                size="largest"
+                buttonSize="large"
                 textTransform="uppercase"
               /> :
               <MeetingFacilitationHint>

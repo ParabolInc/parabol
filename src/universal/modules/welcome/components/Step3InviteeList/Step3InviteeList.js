@@ -62,7 +62,7 @@ const Step3InviteeList = (props) => {
               // optimistically fetch the big ol payload
               System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
             }}
-            size="medium"
+            buttonSize="large"
             type="submit"
           />
         </div>

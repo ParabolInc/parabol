@@ -30,7 +30,7 @@ const RemoveFromOrgModal = (props) => {
         iconPlacement="right"
         label={`Remove ${preferredName}`}
         onClick={handleClick}
-        size="large"
+        buttonSize="large"
       />
     </DashModal>
   );

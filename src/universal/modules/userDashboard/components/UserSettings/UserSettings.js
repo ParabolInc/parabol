@@ -62,7 +62,7 @@ const UserSettings = (props) => {
               <Button
                 isBlock
                 label="Update"
-                size="small"
+                buttonSize="medium"
                 colorPalette="cool"
                 type="submit"
               />

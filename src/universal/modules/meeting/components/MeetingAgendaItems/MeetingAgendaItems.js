@@ -60,7 +60,7 @@ const MeetingAgendaItems = (props) => {
                   key={`agendaItem${localPhaseItem}`}
                   label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
                   onClick={gotoNext}
-                  size="small"
+                  buttonSize="medium"
                 />
               }
             </div>

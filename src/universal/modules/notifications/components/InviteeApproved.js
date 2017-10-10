@@ -43,7 +43,7 @@ const InviteeApproved = (props) => {
           waiting={submitting}
           isBlock
           label="OK"
-          size={ui.notificationButtonSize}
+          buttonSize={ui.notificationButtonSize}
           type="submit"
           onClick={acknowledge}
         />

@@ -39,7 +39,7 @@ const Landing = (props) => {
               depth={1}
               label="Get Started"
               onClick={handleLoginClick}
-              size="largest"
+              buttonSize="large"
               textTransform="uppercase"
             />
             <div style={{marginTop: '1rem'}}>
@@ -49,7 +49,7 @@ const Landing = (props) => {
                 depth={1}
                 label="Log In"
                 onClick={handleLoginClick}
-                size="smallest"
+                buttonSize="small"
                 textTransform="uppercase"
               />
             </div>

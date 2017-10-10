@@ -47,6 +47,7 @@ const PlainInputField = (props) => {
 PlainInputField.propTypes = {
   autoFocus: PropTypes.bool,
   disabled: PropTypes.bool,
+  fieldSize: PropTypes.oneOf(ui.fieldSizes),
   placeholder: PropTypes.string,
   input: PropTypes.shape({
     name: PropTypes.string,
@@ -70,35 +71,28 @@ PlainInputField.propTypes = {
 
 // const boxShadow = 'inset 0 0 1px rgba(0, 0, 0, .5)';
 
-const styleThunk = () => ({
-  field: {
-    ...ui.fieldBaseStyles,
-    // border: 0,
-    // boxShadow: 'none',
-    fontSize: '.9375rem',
-    lineHeight: '1.375rem'
-  },
+const styleThunk = (theme, {fieldSize}) => {
+  const size = fieldSize || ui.fieldSizes[0];
+  return ({
+    field: {
+      ...ui.fieldBaseStyles,
+      // fontSize: '.9375rem',
+      // lineHeight: '1.375rem',
+      ...ui.fieldSizeStyles[size]
+    },
 
-  cool: makeFieldColorPalette('cool'),
-  gray: makeFieldColorPalette('gray'),
-  link: makeFieldColorPalette('link'),
-  warm: makeFieldColorPalette('warm'),
-  white: makeFieldColorPalette('white'),
+    cool: makeFieldColorPalette('cool'),
+    gray: makeFieldColorPalette('gray'),
+    link: makeFieldColorPalette('link'),
+    warm: makeFieldColorPalette('warm'),
+    white: makeFieldColorPalette('white'),
 
-  // boxShadow: {
-  //   ':focus': {
-  //     boxShadow
-  //   },
-  //   ':active': {
-  //     boxShadow
-  //   }
-  // },
+    disabled: ui.fieldDisabled,
 
-  disabled: ui.fieldDisabled,
-
-  inputBlock: {
-    position: 'relative'
-  }
-});
+    inputBlock: {
+      position: 'relative'
+    }
+  });
+};
 
 export default withStyles(styleThunk)(PlainInputField);

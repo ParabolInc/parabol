@@ -6,6 +6,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
+import Panel from 'universal/components/Panel/Panel';
 import InputField from 'universal/components/InputField/InputField';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import {Field, reduxForm} from 'redux-form';
@@ -44,103 +45,107 @@ const NewTeamForm = (props) => {
   const handleCreateNew = () => {
     history.push('/newteam/1');
   };
-  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small" />;
+  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" buttonSize="medium" />;
   const resetOrgSelection = () => {
     history.push('/newteam');
   };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
-      <h1 className={css(styles.heading)}>Create a New Team</h1>
-      {isNewOrg ?
-        <div className={css(styles.formBlock)}>
-          <Field
-            colorPalette="gray"
-            component={InputField}
-            label="Organization Name"
-            name="orgName"
-            placeholder={randomPlaceholderTheme.orgName}
-          />
-          <FieldBlock>
-            <div className={css(styles.billingBlock)}>
-              <h3 className={css(styles.billingHeading)}>Billing information (required)</h3>
-              <div className={css(styles.billingCopy)}>
-                Your card will be charged ${MONTHLY_PRICE} for the first month.
-                The members that you invite will be prorated on their
-                join date and added to your second invoice.
-              </div>
+      <Panel label="Create a New Team">
+        <div className={css(styles.formInner)}>
+          {isNewOrg ?
+            <div className={css(styles.formBlock)}>
               <Field
-                component={StripeTokenField}
-                name="stripeToken"
+                colorPalette="gray"
+                component={InputField}
+                label="Organization Name"
+                name="orgName"
+                placeholder={randomPlaceholderTheme.orgName}
               />
-              {last4 === undefined ?
-                <div className={css(styles.billingButtonBlock)}>
-                  <CreditCardModalContainer
-                    handleToken={setToken}
-                    toggle={addBilling}
-                  />
-                  <div className={css(styles.cancelNewOrgButtonBlock)}>
-                    <Button
-                      colorPalette="dark"
-                      isBlock
-                      label="Nevermind, select an existing organization"
-                      onClick={resetOrgSelection}
-                      size="smallest"
-                      buttonStyle="flat"
-                    />
+              <FieldBlock>
+                <div className={css(styles.billingBlock)}>
+                  <h3 className={css(styles.billingHeading)}>Billing information (required)</h3>
+                  <div className={css(styles.billingCopy)}>
+                    Your card will be charged ${MONTHLY_PRICE} for the first month.
+                    The members that you invite will be prorated on their
+                    join date and added to your second invoice.
                   </div>
-                </div> :
-                <div className={css(styles.cardInfoBlock)}>
-                  <div className={css(styles.fill)}>
-                    <FontAwesome name="credit-card" />
-                    <div className={css(styles.cardInfoLabel)}>Info added for <b>{last4}</b></div>
-                  </div>
-                  <CreditCardModalContainer
-                    isUpdate
-                    handleToken={setToken}
-                    toggle={<Button colorPalette="cool" label="Update" size="smallest" buttonStyle="flat" />}
+                  <Field
+                    component={StripeTokenField}
+                    name="stripeToken"
                   />
+                  {last4 === undefined ?
+                    <div className={css(styles.billingButtonBlock)}>
+                      <CreditCardModalContainer
+                        handleToken={setToken}
+                        toggle={addBilling}
+                      />
+                      <div className={css(styles.cancelNewOrgButtonBlock)}>
+                        <Button
+                          colorPalette="dark"
+                          isBlock
+                          label="Nevermind, select an existing organization"
+                          onClick={resetOrgSelection}
+                          buttonSize="small"
+                          buttonStyle="flat"
+                        />
+                      </div>
+                    </div> :
+                    <div className={css(styles.cardInfoBlock)}>
+                      <div className={css(styles.fill)}>
+                        <FontAwesome name="credit-card" />
+                        <div className={css(styles.cardInfoLabel)}>Info added for <b>{last4}</b></div>
+                      </div>
+                      <CreditCardModalContainer
+                        isUpdate
+                        handleToken={setToken}
+                        toggle={<Button colorPalette="cool" label="Update" buttonSize="small" buttonStyle="flat" />}
+                      />
 
+                    </div>
+                  }
                 </div>
-              }
+              </FieldBlock>
             </div>
-          </FieldBlock>
-        </div>
-        :
-        <div className={css(styles.formBlock)}>
-          <Field
-            colorPalette="gray"
-            component={DropdownInput}
-            handleCreateNew={handleCreateNew}
-            label="Add Team to..."
-            name="orgId"
-            organizations={organizations}
+            :
+            <div className={css(styles.formBlock)}>
+              <Field
+                colorPalette="gray"
+                component={DropdownInput}
+                handleCreateNew={handleCreateNew}
+                label="Add Team to..."
+                name="orgId"
+                organizations={organizations}
+              />
+            </div>
+          }
+          <div className={css(styles.formBlock)}>
+            <Field
+              colorPalette="gray"
+              component={InputField}
+              label="Team Name"
+              name="teamName"
+              placeholder={randomPlaceholderTheme.teamName}
+            />
+          </div>
+          <div className={css(styles.formBlock)}>
+            <Field
+              component={TextAreaField}
+              name="inviteesRaw"
+              label="Invite Team Members (optional)"
+              placeholder={randomPlaceholderTheme.emailMulti}
+            />
+          </div>
+          <Button
+            colorPalette="warm"
+            depth={1}
+            isBlock
+            label="Create Team"
+            buttonSize="medium"
+            type="submit"
           />
         </div>
-      }
-      <div className={css(styles.formBlock)}>
-        <Field
-          colorPalette="gray"
-          component={InputField}
-          label="Team Name"
-          name="teamName"
-          placeholder={randomPlaceholderTheme.teamName}
-        />
-      </div>
-      <div className={css(styles.formBlock)}>
-        <Field
-          component={TextAreaField}
-          name="inviteesRaw"
-          label="Invite Team Members (optional)"
-          placeholder={randomPlaceholderTheme.emailMulti}
-        />
-      </div>
-      <Button
-        colorPalette="warm"
-        isBlock
-        label="Create Team"
-        size="medium"
-        type="submit"
-      />
+      </Panel>
     </form>
   );
 };
@@ -159,17 +164,14 @@ NewTeamForm.propTypes = {
 const styleThunk = () => ({
   form: {
     margin: 0,
-    maxWidth: '25rem',
-    padding: '2rem'
+    maxWidth: '37.5rem',
+    padding: '.5rem 2rem',
+    width: '100%'
   },
 
-  heading: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s6,
-    fontWeight: 400,
-    lineHeight: '2rem',
-    margin: '0 auto 1.5rem',
-    padding: `0 ${ui.fieldPaddingHorizontal}`
+  formInner: {
+    borderTop: `.0625rem solid ${ui.panelBorderColor}`,
+    padding: '2rem'
   },
 
   formBlock: {

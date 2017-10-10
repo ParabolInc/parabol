@@ -29,9 +29,9 @@ const ArchiveTeam = (props) => {
       {!showConfirmationField ?
         <div>
           <Button
+            buttonSize="small"
             colorPalette="warm"
             label="Delete Team"
-            size="smallest"
             onClick={archiveTeamClick}
           />
           <Type width="auto" marginTop=".5rem" scale="s2">

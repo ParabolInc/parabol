@@ -199,7 +199,7 @@ class AddGitHubRepo extends Component {
             colorPalette="cool"
             isBlock
             label="Add Repo"
-            size="small"
+            buttonSize="medium"
             onClick={this.handleAddRepo}
           />
         </div>

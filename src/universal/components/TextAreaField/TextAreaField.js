@@ -47,12 +47,10 @@ const TextAreaField = (props) => {
 };
 
 TextAreaField.propTypes = {
-  hasErrorText: PropTypes.bool,
   autoFocus: PropTypes.bool,
   disabled: PropTypes.bool,
-  readOnly: PropTypes.bool,
-  label: PropTypes.string,
-  placeholder: PropTypes.string,
+  fieldSize: PropTypes.oneOf(ui.fieldSizes),
+  hasErrorText: PropTypes.bool,
   input: PropTypes.shape({
     name: PropTypes.string,
     onBlur: PropTypes.func,
@@ -61,18 +59,25 @@ TextAreaField.propTypes = {
     type: PropTypes.string,
     value: PropTypes.string
   }),
+  label: PropTypes.string,
   meta: PropTypes.object.isRequired,
+  placeholder: PropTypes.string,
+  readOnly: PropTypes.bool,
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
-  field: {
-    ...ui.fieldBaseStyles,
-    ...makeFieldColorPalette('gray'),
-    minHeight: '5.75rem'
-  },
-  disabled: ui.fieldDisabled,
-  readOnly: ui.fieldReadOnly
-});
+const styleThunk = (theme, {fieldSize}) => {
+  const size = fieldSize || ui.fieldSizes[1];
+  return ({
+    field: {
+      ...ui.fieldBaseStyles,
+      ...ui.fieldSizeStyles[size],
+      ...makeFieldColorPalette('gray'),
+      minHeight: '5.75rem'
+    },
+    disabled: ui.fieldDisabled,
+    readOnly: ui.fieldReadOnly
+  });
+};
 
 export default withStyles(styleThunk)(TextAreaField);
