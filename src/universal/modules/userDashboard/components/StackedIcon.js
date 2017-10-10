@@ -18,8 +18,8 @@ const StackedIcon = (props) => {
   };
   return (
     <div className={css(styles.iconStacked)}>
-      <FontAwesome className={css(styles.iconTop)} name={top} style={topIconStyle}/>
-      <FontAwesome className={css(styles.iconBottom)} name={bottom} style={iconStyle}/>
+      <FontAwesome className={css(styles.iconTop)} name={top} style={topIconStyle} />
+      <FontAwesome className={css(styles.iconBottom)} name={bottom} style={iconStyle} />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {PERSONAL, PRO} from 'universal/utils/constants';
 
-const StarIcon = () => <StackedIcon top="star-o" bottom="star" color={appTheme.palette.light60d}/>;
+const StarIcon = () => <StackedIcon top="star-o" bottom="star" color={appTheme.palette.light60d} />;
 
 const OrgPlanBadge = (props) => {
   const {planType, styles} = props;
@@ -19,15 +19,15 @@ const OrgPlanBadge = (props) => {
     <h2 className={badgeStyles}>
       {planType === PERSONAL ?
         <div className={css(styles.badgeInner)}>
-          <StackedIcon top="check-circle-o" bottom="circle" color={appTheme.palette.mid70l}/>
+          <StackedIcon top="check-circle-o" bottom="circle" color={appTheme.palette.mid70l} />
           <div className={css(styles.badgeLabel)}>{'Personal Plan'}</div>
         </div> :
         <div className={css(styles.badgeInner)}>
-          <StarIcon/>
-          <StarIcon/>
+          <StarIcon />
+          <StarIcon />
           <div className={css(styles.badgeLabel)}>{'Pro Plan'}</div>
-          <StarIcon/>
-          <StarIcon/>
+          <StarIcon />
+          <StarIcon />
         </div>
       }
     </h2>

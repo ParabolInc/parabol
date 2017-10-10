@@ -23,27 +23,27 @@ class OrgPlanSqueeze extends Component {
     const {activeUserCount, orgId, styles} = this.props;
     const estimatedCost = activeUserCount * MONTHLY_PRICE;
     const {showCost} = this.state;
-    const toggle = <Button
+    const toggle = (<Button
       colorPalette="cool"
       depth={2}
       isBlock
       label="Upgrade to the Pro Plan"
       size="small"
-    />;
+    />);
     return (
       <Panel hasHeader={false}>
         <div className={css(styles.panelInner)}>
           <div className={css(styles.panelCell, styles.panelPersonal)}>
-            <OrgPlanBadge planType={PERSONAL}/>
+            <OrgPlanBadge planType={PERSONAL} />
             <p className={css(styles.copy)}>
-              {'Your current plan.'}<br/>
+              {'Your current plan.'}<br />
               {'The basics, for free!'}
             </p>
           </div>
           <div className={css(styles.panelCell)}>
-            <OrgPlanBadge planType={PRO}/>
+            <OrgPlanBadge planType={PRO} />
             <p className={css(styles.copy, styles.copyPro)}>
-              {'This could be you.'}<br/>
+              {'This could be you.'}<br />
               {'Ready for the full experience?'}
             </p>
             <div className={css(styles.buttonBlock)}>
@@ -82,10 +82,12 @@ class OrgPlanSqueeze extends Component {
       </Panel>
     );
   }
-};
+}
 
 
 OrgPlanSqueeze.propTypes = {
+  activeUserCount: PropTypes.number,
+  orgId: PropTypes.string,
   styles: PropTypes.object
 };
 
