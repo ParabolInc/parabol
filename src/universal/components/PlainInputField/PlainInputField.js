@@ -12,6 +12,7 @@ const PlainInputField = (props) => {
     autoFocus,
     colorPalette,
     disabled,
+    fieldSize,
     input,
     meta: {touched, error},
     placeholder,
@@ -23,7 +24,6 @@ const PlainInputField = (props) => {
     // allow hotkeys to be triggered when inside a field input
     styles.field,
     colorPalette ? styles[colorPalette] : styles.white,
-    // !disabled && styles.boxShadow,
     disabled && styles.disabled,
   );
 
@@ -39,7 +39,7 @@ const PlainInputField = (props) => {
           placeholder={placeholder}
         />
       </div>
-      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
+      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
     </FieldBlock>
   );
 };
@@ -47,7 +47,7 @@ const PlainInputField = (props) => {
 PlainInputField.propTypes = {
   autoFocus: PropTypes.bool,
   disabled: PropTypes.bool,
-  fieldSize: PropTypes.oneOf(ui.fieldSizes),
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
   placeholder: PropTypes.string,
   input: PropTypes.shape({
     name: PropTypes.string,
@@ -69,15 +69,11 @@ PlainInputField.propTypes = {
   meta: PropTypes.object.isRequired
 };
 
-// const boxShadow = 'inset 0 0 1px rgba(0, 0, 0, .5)';
-
 const styleThunk = (theme, {fieldSize}) => {
-  const size = fieldSize || ui.fieldSizes[0];
+  const size = fieldSize || ui.fieldSizeOptions[1];
   return ({
     field: {
       ...ui.fieldBaseStyles,
-      // fontSize: '.9375rem',
-      // lineHeight: '1.375rem',
       ...ui.fieldSizeStyles[size]
     },
 

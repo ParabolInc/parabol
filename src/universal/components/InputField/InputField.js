@@ -16,6 +16,7 @@ const InputField = (props) => {
     shortcutDisabled,
     colorPalette,
     disabled,
+    fieldSize,
     input,
     isLarger,
     isWider,
@@ -28,8 +29,6 @@ const InputField = (props) => {
     styles,
     underline
   } = props;
-
-  console.log(styles);
 
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
@@ -54,7 +53,15 @@ const InputField = (props) => {
 
   return (
     <FieldBlock>
-      {label && <FieldLabel label={label} htmlFor={input.name} />}
+      {label &&
+        <FieldLabel
+          customStyles={{paddingBottom: ui.fieldLabelGutter}}
+          fieldSize={fieldSize}
+          htmlFor={input.name}
+          indent
+          label={label}
+        />
+      }
       <div className={css(styles.inputBlock)}>
         <input
           {...input}
@@ -66,7 +73,7 @@ const InputField = (props) => {
           ref={(c) => { ref = c; }}
         />
       </div>
-      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
+      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
       {shortcutHint && <FieldShortcutHint disabled={shortcutDisabled} hint={shortcutHint} />}
     </FieldBlock>
   );
@@ -87,7 +94,7 @@ InputField.propTypes = {
   buttonIcon: PropTypes.string,
   hasButton: PropTypes.bool,
   disabled: PropTypes.bool,
-  fieldSize: PropTypes.oneOf(ui.fieldSizes),
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
   isLarger: PropTypes.bool,
   readyOnly: PropTypes.bool,
   label: PropTypes.string,
@@ -115,7 +122,7 @@ InputField.propTypes = {
 };
 
 const styleThunk = (theme, {fieldSize}) => {
-  const size = fieldSize || ui.fieldSizes[1];
+  const size = fieldSize || ui.fieldSizeOptions[1];
   return ({
     field: {
       ...ui.fieldBaseStyles,

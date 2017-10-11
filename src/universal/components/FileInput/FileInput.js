@@ -65,7 +65,7 @@ FileInput.propTypes = {
   colorPalette: PropTypes.oneOf(ui.paletteOptions),
   input: PropTypes.object.isRequired,
   meta: PropTypes.object.isRequired,
-  size: PropTypes.oneOf(ui.buttonSizes),
+  size: PropTypes.oneOf(ui.buttonSizeOptions),
   styles: PropTypes.object
 };
 

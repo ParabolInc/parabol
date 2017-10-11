@@ -7,6 +7,8 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
+import Radio from 'universal/components/Radio/Radio';
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import InputField from 'universal/components/InputField/InputField';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import {Field, reduxForm} from 'redux-form';
@@ -49,6 +51,10 @@ const NewTeamForm = (props) => {
   const resetOrgSelection = () => {
     history.push('/newteam');
   };
+  const radioBaseStyles = {
+    color: ui.palette.dark
+  };
+  const controlSize = 'medium';
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
       <Panel label="Create a New Team">
@@ -108,29 +114,77 @@ const NewTeamForm = (props) => {
               </FieldBlock>
             </div>
             :
-            <div className={css(styles.formBlock)}>
-              <Field
-                colorPalette="gray"
-                component={DropdownInput}
-                handleCreateNew={handleCreateNew}
-                label="Add Team to..."
-                name="orgId"
-                organizations={organizations}
-              />
+            <div>
+              <div className={css(styles.formBlock)}>
+                <FieldLabel
+                  fieldSize={controlSize}
+                  indent
+                  label="Add Team to…"
+                />
+              </div>
+              <div className={css(styles.formBlock)}>
+                <Radio
+                  customStyles={radioBaseStyles}
+                  fieldSize={controlSize}
+                  indent
+                  inline
+                  label="an existing organization:"
+                  group="orgRadioGroup"
+                />
+                <div className={css(styles.fieldBlock)}>
+                  <Field
+                    colorPalette="gray"
+                    component={DropdownInput}
+                    fieldSize={controlSize}
+                    handleCreateNew={handleCreateNew}
+                    name="orgId"
+                    organizations={organizations}
+                  />
+                </div>
+              </div>
+              <div className={css(styles.formBlock)}>
+                <Radio
+                  customStyles={radioBaseStyles}
+                  fieldSize={controlSize}
+                  indent
+                  inline
+                  label="a new organization:"
+                  group="orgRadioGroup"
+                />
+                <div className={css(styles.fieldBlock)}>
+                  <Field
+                    colorPalette="gray"
+                    component={InputField}
+                    fieldSize={controlSize}
+                    name="orgName"
+                    placeholder={randomPlaceholderTheme.orgName}
+                  />
+                </div>
+              </div>
             </div>
           }
-          <div className={css(styles.formBlock)}>
-            <Field
-              colorPalette="gray"
-              component={InputField}
+          <div className={css(styles.formBlock, styles.formBlockInline)}>
+            <FieldLabel
+              fieldSize={controlSize}
+              htmlFor="teamName"
+              indent
+              inline
               label="Team Name"
-              name="teamName"
-              placeholder={randomPlaceholderTheme.teamName}
             />
+            <div className={css(styles.fieldBlock)}>
+              <Field
+                colorPalette="gray"
+                component={InputField}
+                fieldSize={controlSize}
+                name="teamName"
+                placeholder={randomPlaceholderTheme.teamName}
+              />
+            </div>
           </div>
-          <div className={css(styles.formBlock)}>
+          <div className={css(styles.textAreaBlock)}>
             <Field
               component={TextAreaField}
+              fieldSize={controlSize}
               name="inviteesRaw"
               label="Invite Team Members (optional)"
               placeholder={randomPlaceholderTheme.emailMulti}
@@ -141,7 +195,7 @@ const NewTeamForm = (props) => {
             depth={1}
             isBlock
             label="Create Team"
-            buttonSize="medium"
+            buttonSize={controlSize}
             type="submit"
           />
         </div>
@@ -164,7 +218,7 @@ NewTeamForm.propTypes = {
 const styleThunk = () => ({
   form: {
     margin: 0,
-    maxWidth: '37.5rem',
+    maxWidth: '38rem',
     padding: '.5rem 2rem',
     width: '100%'
   },
@@ -175,7 +229,23 @@ const styleThunk = () => ({
   },
 
   formBlock: {
-    margin: '0 auto 1.5rem'
+    alignItems: 'flex-start',
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '0 auto 1rem',
+    width: '100%'
+  },
+
+  formBlockInline: {
+    marginTop: '3rem'
+  },
+
+  fieldBlock: {
+    width: '14rem'
+  },
+
+  textAreaBlock: {
+    margin: '2rem auto'
   },
 
   billingBlock: {

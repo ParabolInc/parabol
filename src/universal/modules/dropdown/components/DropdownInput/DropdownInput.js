@@ -22,7 +22,7 @@ const targetAnchor = {
 };
 
 const DropdownInput = (props) => {
-  const {handleCreateNew, input: {name, onChange, value}, label, organizations = [], styles} = props;
+  const {handleCreateNew, fieldSize, input: {name, onChange, value}, label, organizations = [], styles} = props;
   const org = organizations.find((anOrg) => anOrg.id === value);
   const orgName = org && org.name || 'Loading...';
   const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" />;
@@ -50,7 +50,7 @@ const DropdownInput = (props) => {
   };
   return (
     <FieldBlock>
-      {label && <FieldLabel label={label} htmlFor={name} />}
+      {label && <FieldLabel fieldSize={fieldSize} label={label} htmlFor={name} />}
       <div className={css(styles.inputBlock)}>
         <span>{orgName}</span>
         <Menu
@@ -68,7 +68,7 @@ const DropdownInput = (props) => {
 };
 
 DropdownInput.propTypes = {
-  fieldSize: PropTypes.oneOf(ui.fieldSizes),
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
   handleCreateNew: PropTypes.func,
   input: PropTypes.shape({
     name: PropTypes.string,
@@ -81,7 +81,7 @@ DropdownInput.propTypes = {
 };
 
 const styleThunk = (theme, {fieldSize}) => {
-  const size = fieldSize || ui.fieldSizes[1];
+  const size = fieldSize || ui.fieldSizeOptions[1];
   return ({
     downButton: {
       cursor: 'pointer',

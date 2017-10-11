@@ -82,7 +82,7 @@ const Step3InviteeList = (props) => {
       style={{margin: '1rem auto', maxWidth: '45.5rem', padding: '0 2.5rem'}}
       title="I’ll invite them later"
     >
-      Not yet, I just want to kick the tires
+      {'Not yet, I just want to kick the tires'}
     </Link>
   );
 };

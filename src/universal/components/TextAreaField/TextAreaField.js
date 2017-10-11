@@ -14,6 +14,7 @@ const TextAreaField = (props) => {
     autoFocus,
     disabled,
     input,
+    fieldSize,
     label,
     meta: {touched, error},
     placeholder,
@@ -29,7 +30,15 @@ const TextAreaField = (props) => {
 
   return (
     <FieldBlock>
-      {label && <FieldLabel label={label} htmlFor={input.name} />}
+      {label &&
+        <FieldLabel
+          customStyles={{paddingBottom: ui.fieldLabelGutter}}
+          fieldSize={fieldSize}
+          htmlFor={input.name}
+          indent
+          label={label}
+        />
+      }
       <div className={css(styles.inputBlock)}>
         <textarea
           {...input}
@@ -41,7 +50,7 @@ const TextAreaField = (props) => {
           value={undefined}
         />
       </div>
-      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
+      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
     </FieldBlock>
   );
 };
@@ -49,7 +58,7 @@ const TextAreaField = (props) => {
 TextAreaField.propTypes = {
   autoFocus: PropTypes.bool,
   disabled: PropTypes.bool,
-  fieldSize: PropTypes.oneOf(ui.fieldSizes),
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
   hasErrorText: PropTypes.bool,
   input: PropTypes.shape({
     name: PropTypes.string,
@@ -67,7 +76,7 @@ TextAreaField.propTypes = {
 };
 
 const styleThunk = (theme, {fieldSize}) => {
-  const size = fieldSize || ui.fieldSizes[1];
+  const size = fieldSize || ui.fieldSizeOptions[1];
   return ({
     field: {
       ...ui.fieldBaseStyles,

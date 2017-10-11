@@ -65,7 +65,7 @@ class Button extends Component {
     label: PropTypes.string,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
-    buttonSize: PropTypes.oneOf(ui.buttonSizes),
+    buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
     buttonStyle: PropTypes.oneOf([
       'solid',
       'outlined',
@@ -198,7 +198,7 @@ class Button extends Component {
 }
 
 const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, textTransform}) => {
-  const size = buttonSize || ui.buttonSizes[1];
+  const size = buttonSize || ui.buttonSizeOptions[1];
   const buttonSizeStyles = ui.buttonSizeStyles[size];
   return ({
     // Button base

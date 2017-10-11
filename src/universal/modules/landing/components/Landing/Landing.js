@@ -34,22 +34,22 @@ const Landing = (props) => {
                 syncing teams in a single daily dashboard with a weekly ritual.`}
             </h2>
             <Button
+              buttonSize="large"
               buttonStyle="solid"
               colorPalette="warm"
               depth={1}
               label="Get Started"
               onClick={handleLoginClick}
-              buttonSize="large"
               textTransform="uppercase"
             />
             <div style={{marginTop: '1rem'}}>
               <Button
+                buttonSize="small"
                 buttonStyle="outlined"
                 colorPalette="white"
                 depth={1}
                 label="Log In"
                 onClick={handleLoginClick}
-                buttonSize="small"
                 textTransform="uppercase"
               />
             </div>
