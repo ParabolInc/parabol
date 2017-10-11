@@ -3,10 +3,11 @@ import generateInvoice from 'server/billing/helpers/generateInvoice';
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
+import getUpcomingInvoiceId from 'server/utils/getUpcomingInvoiceId';
 
 const generateUpcomingInvoice = async (orgId) => {
   const r = getRethink();
-  const invoiceId = `upcoming_${orgId}`;
+  const invoiceId = getUpcomingInvoiceId(orgId);
   const {stripeId, stripeSubscriptionId} = await r.table('Organization').get(orgId)
     .pluck('stripeId', 'stripeSubscriptionId');
   const {stripeLineItems, upcomingInvoice} = await resolvePromiseObj({

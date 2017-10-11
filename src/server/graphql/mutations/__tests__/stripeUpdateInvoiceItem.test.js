@@ -13,7 +13,7 @@ import {PRO} from 'universal/utils/constants';
 console.error = jest.fn();
 
 describe('stripeUpdateInvoiceItem', () => {
-  test('handles invoiceitem.updated', async () => {
+  test('handles invoiceitem.created', async () => {
     // SETUP
     const hookId = shortid.generate();
     const invoiceItemId = shortid.generate();

@@ -12,7 +12,7 @@ export default {
       description: 'the orgId'
     }
   },
-  description: 'all the notifications for a single user',
+  description: 'get a single organization and the count of users by status',
   resolve: async (source, {orgId}, {authToken}) => {
     const r = getRethink();
 

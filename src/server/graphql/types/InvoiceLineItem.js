@@ -26,7 +26,7 @@ const InvoiceLineItem = new GraphQLObjectType({
     },
     details: {
       type: new GraphQLList(new GraphQLNonNull(InvoiceLineItemDetails)),
-      description: 'Array of user inactivity line items that roll up to total inactivity'
+      description: 'Array of user activity line items that roll up to total activity (add/leave/pause/unpause)'
     },
     quantity: {
       type: GraphQLInt,

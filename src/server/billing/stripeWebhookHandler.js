@@ -94,6 +94,6 @@ export default async function stripeWebhookHandler(req, res) {
   const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET};
   const result = await graphql(schema, query, {}, context, variables);
   if (result.errors) {
-    console.log('GITHUB GraphQL Error:', result.errors);
+    console.log('Stripe GraphQL Error:', result.errors);
   }
 };
