@@ -75,6 +75,7 @@ const MeetingAgendaLastCall = (props) => {
                 buttonStyle="solid"
                 colorPalette="cool"
                 depth={1}
+                isBlock
                 label="End Meeting"
                 onClick={gotoNext}
                 buttonSize="large"
@@ -105,7 +106,9 @@ const styleThunk = () => ({
   },
 
   controlBlock: {
-    marginTop: '2.5rem'
+    margin: '0 auto',
+    paddingTop: '2.25rem',
+    width: '12rem'
   },
 
   warmHighlight: {

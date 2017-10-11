@@ -50,7 +50,7 @@ const DropdownInput = (props) => {
   };
   return (
     <FieldBlock>
-      {label && <FieldLabel fieldSize={fieldSize} label={label} htmlFor={name} />}
+      {label && <FieldLabel fieldSize={fieldSize} label={label} htmlFor={name} indent />}
       <div className={css(styles.inputBlock)}>
         <span>{orgName}</span>
         <Menu

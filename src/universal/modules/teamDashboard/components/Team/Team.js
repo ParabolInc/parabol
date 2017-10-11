@@ -86,15 +86,15 @@ const Team = (props) => {
               buttonSize="small"
             /> :
             <Button
-              key="2"
+              buttonSize="small"
               buttonStyle="flat"
               colorPalette="cool"
               icon="cog"
               iconPlacement="left"
+              key="2"
               isBlock
               label="Team Settings"
               onClick={goToTeamSettings}
-              buttonSize="small"
             />
           }
           <DashboardAvatars teamMembers={teamMembers} />

@@ -33,12 +33,8 @@ class Radio extends Component {
       styles
     } = this.props;
 
-    const radioStyles = css(
-      styles.radioBase
-    );
-
     return (
-      <label className={radioStyles}>
+      <label className={css(styles.radioBase)}>
         <input className={css(styles.radioInput)} group={group} type="radio" />
         {label &&
           <div className={css(styles.radioLabel)}>

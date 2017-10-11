@@ -34,7 +34,7 @@ const FieldArrayRow = (props) => {
           <FieldLabel label={labelHeader} />
         </div>
         <div className={columnRightStyles}>
-          <FieldLabel fieldSize="medium" label={nestedFieldHeader} />
+          <FieldLabel fieldSize="medium" indent label={nestedFieldHeader} />
         </div>
       </div>
       {fields.map((item, index) =>
