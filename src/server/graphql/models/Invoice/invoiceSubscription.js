@@ -1,8 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
-import {Invoice} from './invoiceSchema';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import makeUpcomingInvoice from './makeUpcomingInvoice';
+import makeUpcomingInvoice from '../../queries/helpers/makeUpcomingInvoice';
+import Invoice from 'server/graphql/types/Invoice';
 
 export default {
   upcomingInvoice: {

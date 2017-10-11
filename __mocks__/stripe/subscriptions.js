@@ -108,6 +108,7 @@ export default (stripe) => ({
   })),
   __trimFields: ['customer', 'id', 'items.url', 'metadata.orgId'],
   __triggers: ['update', 'del', 'create'],
+  __uniqueKeyField: 'customer',
   __updateHandlers: {
     customer: (mockDoc, customer) => mockDoc.id = customer,
     plan: (mockDoc, planName) => mockDoc.plan.name = planName,

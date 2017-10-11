@@ -230,11 +230,10 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
       type: OTHER_ADJUSTMENTS
     })),
     ...quantityChangeLineItems
-  ];
+  ].sort((a, b) => a.type > b.type ? 1 : -1);
 
   // sanity check
   const calculatedTotal = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount;
-  // const stripeTotal = invoice.total + invoice.starting_balance;
   if (calculatedTotal !== invoice.total) {
     console.warn('Calculated invoice does not match stripe invoice', invoiceId, calculatedTotal, invoice.total);
   }
@@ -246,9 +245,9 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
   if (status === PENDING && invoice.closed === true) {
     status = invoice.paid ? PAID : FAILED;
   }
-  const paidAt = status === PAID && now;
+  const paidAt = status === PAID ? now : undefined;
 
-  await r.table('Organization').get(orgId)
+  return r.table('Organization').get(orgId)
     .do((org) => {
       return r.table('Invoice').insert({
         id: invoiceId,
@@ -272,6 +271,6 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
         startAt: fromEpochSeconds(invoice.period_start),
         startingBalance: invoice.starting_balance,
         status
-      }, {conflict: 'replace'});
+      }, {conflict: 'replace', returnChanges: true})('changes')(0)('new_val');
     });
 }

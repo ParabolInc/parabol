@@ -1,25 +1,27 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
-import {Link} from 'react-router-dom';
-import goBackLabel from 'universal/styles/helpers/goBackLabel';
-import {BILLING_PAGE} from 'universal/utils/constants';
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import appTheme from 'universal/styles/theme/appTheme';
-import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
-import makeDateString from 'universal/utils/makeDateString';
-import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
-import OrgBillingContainer from 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingContainer';
-import OrgMembersContainer from 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer';
+import {createFragmentContainer} from 'react-relay';
+import {Link, Switch} from 'react-router-dom';
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
-import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
-import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
-import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
+import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
+import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
+import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import goBackLabel from 'universal/styles/helpers/goBackLabel';
+import appTheme from 'universal/styles/theme/appTheme';
+import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
+import makeDateString from 'universal/utils/makeDateString';
 
+const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
+const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot');
 const inlineBlockStyle = {
   display: 'inline-block',
   lineHeight: ui.dashSectionHeaderLineHeight,
@@ -27,19 +29,18 @@ const inlineBlockStyle = {
   verticalAlign: 'middle'
 };
 
-const initialValues = {orgName: ''};
-
 const Organization = (props) => {
   const {
-    activeOrgDetail,
+    match,
+    orgId,
     styles,
-    org
+    viewer
   } = props;
-  const {id: orgId, createdAt, name: orgName, picture: orgAvatar} = org;
-  initialValues.orgName = orgName;
-  const OrgSection = activeOrgDetail === BILLING_PAGE ? OrgBillingContainer : OrgMembersContainer;
+  const org = viewer ? viewer.organization : {};
+  const {createdAt, name: orgName, picture: orgAvatar} = org;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
+  const extraProps = {orgId, org};
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
@@ -54,31 +55,30 @@ const Organization = (props) => {
             <OrgAvatarInput orgId={orgId} />
           </PhotoUploadModal>
           <div className={css(styles.orgNameAndDetails)}>
-            <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId} />
+            <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
             <div className={css(styles.orgDetails)}>
-              Created {makeDateString(createdAt, false)}
+              Created {makeDateString(createdAt)}
             </div>
-            <BillingMembersToggle orgId={orgId} activeOrgDetail={activeOrgDetail} />
+            <BillingMembersToggle orgId={orgId} />
           </div>
         </div>
-        <OrgSection orgId={orgId} />
+        <Switch>
+          <AsyncRoute exact path={`${match.url}`} mod={orgBilling} extraProps={extraProps} />
+          <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling} extraProps={extraProps} />
+          <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={extraProps} />
+        </Switch>
       </div>
-    </UserSettingsWrapper >
+    </UserSettingsWrapper>
   );
 };
 
 Organization.propTypes = {
-  activeOrgDetail: PropTypes.string,
-  org: PropTypes.object,
-  styles: PropTypes.object
+  match: PropTypes.object.isRequired,
+  orgId: PropTypes.string.isRequired,
+  styles: PropTypes.object,
+  viewer: PropTypes.object
 };
 
-Organization.defaultProps = {
-  org: {
-    createdAt: new Date(),
-    name: 'Parabol'
-  }
-};
 const styleThunk = () => ({
   avatarAndName: {
     alignItems: 'flex-start',
@@ -134,4 +134,25 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(Organization);
+export default createFragmentContainer(
+  withStyles(styleThunk)(Organization),
+  graphql`
+    fragment Organization_viewer on User {
+      organization(orgId: $orgId) {
+        id
+        activeUserCount
+        createdAt
+        inactiveUserCount
+        name
+        picture
+        creditCard {
+          brand
+          expiry
+          last4
+        }
+        periodStart
+        periodEnd
+      }
+    }
+  `
+);

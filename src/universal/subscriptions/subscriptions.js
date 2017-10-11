@@ -4,14 +4,11 @@ import {
   ARCHIVED_PROJECTS,
   INVITATIONS,
   ORG_APPROVALS,
-  ORGANIZATION,
   ORGANIZATIONS,
   OWNED_ORGANIZATIONS,
   PROJECTS,
   TEAM,
-  TEAM_MEMBERS,
-  UPCOMING_INVOICE,
-  USERS_BY_ORG
+  TEAM_MEMBERS
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
@@ -72,20 +69,6 @@ export default [
     }`
   },
   {
-    channel: USERS_BY_ORG,
-    string: `
-    subscription($orgId: ID!) {
-      usersByOrg(orgId: $orgId) {
-        id
-        isBillingLeader
-        email
-        inactive
-        picture
-        preferredName
-      }
-    }`
-  },
-  {
     channel: INVITATIONS,
     string: `
     subscription($teamId: ID!) {
@@ -105,27 +88,6 @@ export default [
         id
         createdAt
         email
-      }
-    }`
-  },
-  {
-    channel: ORGANIZATION,
-    string: `
-    subscription($orgId: ID!) {
-      organization(orgId: $orgId) {
-        id
-        activeUserCount
-        createdAt
-        creditCard {
-          brand
-          expiry
-          last4
-        }
-        inactiveUserCount
-        name
-        periodEnd
-        periodStart
-        picture
       }
     }`
   },
@@ -214,21 +176,6 @@ export default [
          picture,
          preferredName
        }
-    }`
-  },
-  {
-    channel: UPCOMING_INVOICE,
-    string: `
-    subscription($orgId: ID!) {
-      upcomingInvoice(orgId: $orgId) {
-        id
-        amountDue
-        cursor
-        endAt
-        paidAt
-        startAt
-        status
-      }
     }`
   },
   {
