@@ -33,56 +33,56 @@ class OrgBilling extends Component {
   }
 
   render() {
-  const {
-    styles,
+    const {
+      styles,
       org,
       viewer: {invoices},
       relay: {hasMore}
     } = this.props;
     const hasInvoices = invoices.edges.length > 0;
     const {creditCard = {}, id: orgId} = org;
-  const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
-  const update = (<Button
-    colorPalette="cool"
-    label="Update"
-    buttonSize="small"
-  />);
-  return (
-    <div>
-      <Panel label="Credit Card Information">
-        <div className={css(styles.infoAndUpdate)}>
-          <div className={css(styles.creditCardInfo)}>
-            <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
-            <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
-            <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
-            <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
-            <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
+    const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
+    const update = (<Button
+      buttonSize="small"
+      colorPalette="cool"
+      label="Update"
+    />);
+    return (
+      <div>
+        <Panel label="Credit Card Information">
+          <div className={css(styles.infoAndUpdate)}>
+            <div className={css(styles.creditCardInfo)}>
+              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
+              <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
+              <span className={css(styles.creditCardNumber)}>{'•••• •••• •••• '}{last4 || '••••'}</span>
+              <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
+              <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
+            </div>
+            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
           </div>
-          <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
-        </div>
-      </Panel>
-      <Panel label="Invoices">
-        <div className={css(styles.listOfInvoices)}>
+        </Panel>
+        <Panel label="Invoices">
+          <div className={css(styles.listOfInvoices)}>
             {hasInvoices &&
             invoices.edges.map(({node: invoice}) =>
-            <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
-          )
-          }
+              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
+            )
+            }
             {hasMore() &&
               <div className={css(styles.loadMore)}>
                 <Button
+                  buttonSize="medium"
                   buttonStyle="flat"
                   colorPalette="cool"
-                  label="LOAD MORE"
+                  label="Load More"
                   onClick={this.loadMore}
-                  size="large"
                 />
+              </div>
+            }
           </div>
-          }
-        </div>
-      </Panel>
-    </div>
-  );
+        </Panel>
+      </div>
+    );
   }
 }
 
