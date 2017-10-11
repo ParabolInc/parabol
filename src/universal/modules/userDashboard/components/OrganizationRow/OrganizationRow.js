@@ -7,6 +7,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import Row from 'universal/components/Row/Row';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
+import TagPro from 'universal/components/Tag/TagPro';
+import {tagBlock} from 'universal/components/Tag/tagBase';
 
 const OrganizationRow = (props) => {
   const {
@@ -16,10 +18,16 @@ const OrganizationRow = (props) => {
       inactiveUserCount,
       picture
     },
+    isPaid,
     onRowClick,
     styles
   } = props;
   const orgAvatar = picture || defaultOrgAvatar;
+  const makeProTag = () => (
+    <div className={css(styles.tagBlock)}>
+      <TagPro />
+    </div>
+  );
   return (
     <Row>
       <div className={css(styles.orgAvatar)} onClick={onRowClick}>
@@ -28,10 +36,10 @@ const OrganizationRow = (props) => {
       <div className={css(styles.orgInfo)}>
         <div className={css(styles.nameAndTags)}>
           <div className={css(styles.name)} onClick={onRowClick}>
-            {name}
+            {name} {isPaid && makeProTag()}
           </div>
           <div className={css(styles.subHeader)}>
-            {activeUserCount + inactiveUserCount} Users ({activeUserCount} Active)
+            {activeUserCount + inactiveUserCount}{' Users ('}{activeUserCount}{' Active)'}
           </div>
         </div>
       </div>
@@ -54,6 +62,7 @@ OrganizationRow.propTypes = {
   invitedAt: PropTypes.string,
   isAdmin: PropTypes.bool,
   isLead: PropTypes.bool,
+  isPaid: PropTypes.bool,
   onRowClick: PropTypes.func,
   organization: PropTypes.object,
   picture: PropTypes.string,
@@ -115,6 +124,12 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4
+  },
+
+  tagBlock: {
+    ...tagBlock,
+    marginLeft: '.125rem',
+    marginTop: '-.5rem'
   }
 });
 
