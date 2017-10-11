@@ -24,6 +24,7 @@ import {
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS
 } from 'universal/utils/constants';
+import {createFragmentContainer} from 'react-relay';
 
 const descriptionMaker = {
   [ADDED_USERS]: (quantity) => `${quantity} new ${plural(quantity, 'user')} added`,
@@ -40,10 +41,11 @@ const chargeStatus = {
 
 const Invoice = (props) => {
   const {
-    invoice,
+    viewer,
     styles
   } = props;
-  const {
+
+  const {invoiceDetails: {
     amountDue,
     total,
     billingLeaderEmails,
@@ -56,7 +58,8 @@ const Invoice = (props) => {
     startAt,
     status,
     startingBalance
-  } = invoice;
+  }} = viewer;
+
   const {nextPeriodEnd} = nextMonthCharges;
   const {brand, last4} = creditCard;
   const subject = makeMonthString(endAt);
@@ -71,8 +74,8 @@ const Invoice = (props) => {
     amount: invoiceLineFormat(nextMonthCharges.amount),
     desc: `${quantity} active ${plural(quantity, 'user')} (${unitPriceString} each)`
   };
-  const chargeDates = `${makeDateString(startAt, false)} to ${makeDateString(endAt, false)}`;
-  const nextChargesDates = `${makeDateString(endAt, false)} to ${makeDateString(nextPeriodEnd, false)}`;
+  const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`;
+  const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`;
   const makeLineItems = (arr) =>
     arr.map((item) => {
       const {id: lineId, amount, description, type, quantity: lineItemQuantity, details} = item;
@@ -161,8 +164,7 @@ const Invoice = (props) => {
 };
 
 Invoice.propTypes = {
-  invoice: PropTypes.object,
-  subject: PropTypes.string,
+  viewer: PropTypes.object.isRequired,
   styles: PropTypes.object
 };
 
@@ -329,4 +331,43 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(Invoice);
+export default createFragmentContainer(
+  withStyles(styleThunk)(Invoice),
+  graphql`
+    fragment Invoice_viewer on User {
+      invoiceDetails(invoiceId: $invoiceId) {
+        id
+        amountDue
+        billingLeaderEmails
+        creditCard {
+          brand
+          last4
+        }
+        endAt
+        lines {
+          id
+          amount
+          description
+          details {
+            id
+            amount
+            email
+          }
+          quantity
+          type
+        }
+        nextMonthCharges {
+          amount
+          nextPeriodEnd
+          quantity
+          unitPrice
+        }
+        orgName
+        startingBalance
+        startAt
+        status
+        total
+      }
+    }
+  `
+);

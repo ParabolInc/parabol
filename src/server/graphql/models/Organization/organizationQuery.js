@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
-import {Organization} from './organizationSchema';
 import {requireSUOrTeamMember, requireSUOrSelf} from 'server/utils/authorization';
+import Organization from 'server/graphql/types/Organization';
 
 export default {
   orgCount: {

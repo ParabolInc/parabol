@@ -9,11 +9,11 @@ import {
   DashContent,
   DashHeader,
   DashHeaderInfo,
-  DashMain,
-  makeDateString
+  DashMain
 } from 'universal/components/Dashboard';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import makeDateString from 'universal/utils/makeDateString';
 
 const UserDashMain = (props) => {
   const {styles} = props;
@@ -23,7 +23,7 @@ const UserDashMain = (props) => {
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
           <div className={css(styles.headerCopy)}>
-            {makeDateString()}<br />
+            {makeDateString(new Date(), {showDay: true})}<br />
             <span className={css(styles.rallyLink)}>
               <i>{getRallyLink()}!</i>
             </span>

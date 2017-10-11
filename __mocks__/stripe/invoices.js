@@ -4,10 +4,10 @@ import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import {makeSubscriptionPlan} from './subscriptions';
 
-const makeInvoiceLine = (overrides, type) => {
+export const makeInvoiceLine = (overrides) => {
   const now = new Date();
   const nowInSeconds = toEpochSeconds(now);
-  const {id, metadata, periodStart, periodEnd} = overrides;
+  const {id, metadata, periodStart, subscription} = overrides;
   return {
     "id": id,
     "object": "line_item",
@@ -18,13 +18,13 @@ const makeInvoiceLine = (overrides, type) => {
     "livemode": true,
     "metadata": metadata,
     "period": {
-      "start": 1488909033,
+      "start": periodStart || 1488909033,
       "end": 1491501033
     },
     "plan": makeSubscriptionPlan(nowInSeconds),
     "proration": false,
     "quantity": 1,
-    "subscription": null,
+    "subscription": subscription,
     "subscription_item": `si_${shortid.generate()}`,
     "type": "subscription"
   }
@@ -35,16 +35,13 @@ const makeNextMonthChargesLine = (subscription) => makeInvoiceLine({
   metadata: {
     orgId: subscription.metadata.orgId
   },
-
-
 });
 
 const makeInvoiceLines = (id, subscription, lineTypes) => {
-  const totalCount = Object.keys(lineTypes).reduce((count, type) => count + lineTypes[type], 0);
+  const totalCount = lineTypes ? Object.keys(lineTypes).reduce((count, type) => count + lineTypes[type], 0) : undefined;
   return {
     "data": [
-      makeNextMonthChargesLine(),
-
+      makeNextMonthChargesLine(subscription),
     ],
     "total_count": totalCount,
     "object": "list",
@@ -52,7 +49,7 @@ const makeInvoiceLines = (id, subscription, lineTypes) => {
   }
 };
 
-export const createNewInvoice = (overrides, lineTypes, reject) => {
+export const createNewInvoice = (overrides, reject) => {
   const {id, customer, subscription} = overrides;
   return {
     "id": id,
@@ -70,7 +67,7 @@ export const createNewInvoice = (overrides, lineTypes, reject) => {
     "discount": null,
     "ending_balance": 0,
     "forgiven": false,
-    "lines": makeInvoiceLines(id, subscription, lineTypes),
+    "lines": makeInvoiceLines(id, subscription),
     "livemode": false,
     "metadata": {},
     "next_payment_attempt": null,
@@ -80,7 +77,7 @@ export const createNewInvoice = (overrides, lineTypes, reject) => {
     "receipt_number": null,
     "starting_balance": 0,
     "statement_descriptor": null,
-    "subscription": "sub_AFH0shSUqlu8Vq",
+    "subscription": subscription.id,
     "subtotal": 0,
     "tax": null,
     "tax_percent": null,
@@ -90,14 +87,18 @@ export const createNewInvoice = (overrides, lineTypes, reject) => {
 };
 
 export default (stripe) => ({
-  // create: jest.fn((options) => new Promise((resolve, reject) => {
-  //   const id = `cus_${shortid.generate()}`;
-  //   const customerDoc = stripe.__db.customers[id] = createNewCustomer(options, {id}, reject);
-  //   resolve(customerDoc);
-  // })),
+   create: jest.fn((options) => new Promise((resolve, reject) => {
+     const {id} = options;
+     const invoiceDoc = stripe.__db.invoices[id] = createNewInvoice(options, reject);
+     resolve(invoiceDoc);
+   })),
   retrieve: jest.fn((id) => new Promise((resolve, reject) => {
     const doc = getDoc(stripe.__db.invoices[id], reject);
     resolve(doc);
+  })),
+  retrieveLines: jest.fn((id) => new Promise((resolve, reject) => {
+    const doc = getDoc(stripe.__db.invoices[id], reject);
+    resolve(doc.lines);
   })),
   //TODO
   retrieveUpcoming: jest.fn((id) => new Promise((resolve, reject) => {
@@ -117,6 +118,8 @@ export default (stripe) => ({
   })),
   __trimFields: [
     'id',
+    'customer',
+    'metadata.orgId',
     'subscription',
     'lines.url',
     'lines.data.id',
@@ -124,5 +127,6 @@ export default (stripe) => ({
     'lines.data.subscription_item'
   ],
   __triggers: ['update', 'del'],
+  __uniqueKeyField: 'customer',
   __updateHandlers: {}
 });

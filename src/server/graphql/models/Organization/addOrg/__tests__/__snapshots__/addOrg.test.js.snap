@@ -73,6 +73,10 @@ Object {
           "id": 13,
           "role": null,
         },
+        Object {
+          "id": 14,
+          "role": null,
+        },
       ],
       "welcomeSentAt": 2017-01-01T07:00:00.000Z,
     },
@@ -98,6 +102,10 @@ Object {
         Object {
           "id": 13,
           "role": "billingLeader",
+        },
+        Object {
+          "id": 14,
+          "role": null,
         },
         Object {
           "id": 0,
@@ -128,6 +136,10 @@ Object {
         Object {
           "id": 13,
           "role": "billingLeader",
+        },
+        Object {
+          "id": 14,
+          "role": null,
         },
         Object {
           "id": 0,
@@ -158,6 +170,10 @@ Object {
           "id": 13,
           "role": null,
         },
+        Object {
+          "id": 14,
+          "role": null,
+        },
       ],
       "welcomeSentAt": 2017-01-01T07:00:00.000Z,
     },
@@ -181,6 +197,10 @@ Object {
       "userOrgs": Array [
         Object {
           "id": 13,
+          "role": null,
+        },
+        Object {
+          "id": 14,
           "role": null,
         },
       ],
@@ -208,6 +228,10 @@ Object {
           "id": 13,
           "role": null,
         },
+        Object {
+          "id": 14,
+          "role": null,
+        },
       ],
       "welcomeSentAt": 2017-01-01T07:00:00.000Z,
     },
@@ -232,6 +256,10 @@ Object {
         Object {
           "id": 13,
           "role": null,
+        },
+        Object {
+          "id": 14,
+          "role": "billingLeader",
         },
       ],
       "welcomeSentAt": 2017-01-01T07:00:00.000Z,
@@ -258,6 +286,10 @@ Object {
           "id": 13,
           "role": null,
         },
+        Object {
+          "id": 14,
+          "role": null,
+        },
       ],
       "welcomeSentAt": 2017-01-01T07:00:00.000Z,
     },
@@ -281,6 +313,10 @@ Object {
       "userOrgs": Array [
         Object {
           "id": 13,
+          "role": null,
+        },
+        Object {
+          "id": 14,
           "role": null,
         },
       ],

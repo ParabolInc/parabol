@@ -12,12 +12,13 @@ import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router-dom';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
 import {UPCOMING} from 'universal/utils/constants';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const InvoiceRow = (props) => {
   const {
     hasCard,
     invoice: {
-      id: invoiceId,
+      id,
       amountDue,
       endAt,
       paidAt,
@@ -25,6 +26,7 @@ const InvoiceRow = (props) => {
     },
     styles
   } = props;
+  const {id: invoiceId} = fromGlobalId(id);
   const isEstimate = status === UPCOMING;
   const invoiceAvatarStyles = css(
     styles.invoiceAvatar,
@@ -62,12 +64,12 @@ const InvoiceRow = (props) => {
           <div className={css(styles.infoRowRight)}>
             {isEstimate ?
               <span className={css(styles.date, styles.toPay)}>
-                {hasCard ? `card will be charged on ${makeDateString(endAt, false)}` :
-                  `Make sure to add billing info before ${makeDateString(endAt, false)}!`
+                {hasCard ? `card will be charged on ${makeDateString(endAt)}` :
+                  `Make sure to add billing info before ${makeDateString(endAt)}!`
                 }
               </span> :
               <span className={css(styles.date, styles.paid)}>
-                Paid on {makeDateString(paidAt, false)}
+                Paid on {makeDateString(paidAt)}
               </span>
             }
           </div>
