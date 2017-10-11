@@ -209,7 +209,7 @@ const styleThunk = () => ({
     fontSize: '2.5rem',
     fontWeight: 700,
     left: '50%',
-    opacity: .5,
+    opacity: 0.5,
     position: 'absolute',
     textAlign: 'center',
     textTransform: 'uppercase',
