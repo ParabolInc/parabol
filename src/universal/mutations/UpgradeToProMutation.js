@@ -3,10 +3,16 @@ import {commitMutation} from 'react-relay';
 const mutation = graphql`
   mutation UpgradeToProMutation($orgId: ID!, $stripeToken: ID!) {
     upgradeToPro(orgId: $orgId, stripeToken: $stripeToken) {
-      creditCard {
-        brand
-        last4
-        expiry
+      organization {
+        creditCard {
+          brand
+          last4
+          expiry
+        }
+        tier
+        periodEnd
+        periodStart
+        updatedAt
       }
     }
   }

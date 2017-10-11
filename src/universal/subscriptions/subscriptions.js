@@ -111,6 +111,7 @@ export default [
         inactiveUserCount
         name
         picture
+        tier
       }
     }`
   },

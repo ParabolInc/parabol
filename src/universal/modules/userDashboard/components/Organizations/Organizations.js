@@ -34,7 +34,6 @@ const Organizations = (props) => {
           <Panel label="Organizations" controls={addNewOrg()}>
             {organizations.map((organization) =>
               (<OrganizationRow
-                isPaid
                 key={`orgRow${organization.id}`}
                 organization={organization}
                 onRowClick={() => history.push(`/me/organizations/${organization.id}`)}

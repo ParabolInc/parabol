@@ -11,6 +11,7 @@ import OrgPlanSqueeze from 'universal/modules/userDashboard/components/OrgPlanSq
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import {PERSONAL} from 'universal/utils/constants';
 
 class OrgBilling extends Component {
   static propTypes = {
@@ -41,7 +42,7 @@ class OrgBilling extends Component {
       relay: {hasMore}
     } = this.props;
     const hasInvoices = invoices.edges.length > 0;
-    const {creditCard = {}, id: orgId} = org;
+    const {activeUserCount, creditCard = {}, id: orgId, tier} = org;
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
       colorPalette="cool"
@@ -50,55 +51,55 @@ class OrgBilling extends Component {
     />);
     return (
       <div>
-        {/* Plan Squeeze: show when !isPaid */}
-        <OrgPlanSqueeze />
-        {/* Credit Card: show when isPaid */}
-        <Panel label="Credit Card Information">
-          <div className={css(styles.infoAndUpdate)}>
-            <div className={css(styles.creditCardInfo)}>
-              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
-              <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
-              <span className={css(styles.creditCardNumber)}>{'•••• •••• •••• '}{last4 || '••••'}</span>
-              <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
-              <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
-            </div>
-            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
-          </div>
-        </Panel>
-        {/* Invoices: show when isPaid */}
-        <Panel label="Invoices">
-          <div className={css(styles.listOfInvoices)}>
-            {hasInvoices &&
-            invoices.edges.map(({node: invoice}) =>
-              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
-            )
-            }
-            {hasMore() &&
-              <div className={css(styles.loadMore)}>
+        {tier === PERSONAL ?
+          <OrgPlanSqueeze activeUserCount={activeUserCount} orgId={orgId} /> :
+          <div className={css(styles.paidSection)}>
+            <Panel label="Credit Card Information">
+              <div className={css(styles.infoAndUpdate)}>
+                <div className={css(styles.creditCardInfo)}>
+                  <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
+                  <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
+                  <span className={css(styles.creditCardNumber)}>{'•••• •••• •••• '}{last4 || '••••'}</span>
+                  <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
+                  <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
+                </div>
+                <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
+              </div>
+            </Panel>
+            <Panel label="Invoices">
+              <div className={css(styles.listOfInvoices)}>
+                {hasInvoices &&
+                invoices.edges.map(({node: invoice}) =>
+                  <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
+                )
+                }
+                {hasMore() &&
+                <div className={css(styles.loadMore)}>
+                  <Button
+                    buttonStyle="flat"
+                    colorPalette="cool"
+                    label="Load More"
+                    onClick={this.loadMore}
+                    size="small"
+                  />
+                </div>
+                }
+              </div>
+            </Panel>
+            <Panel label="Danger Zone">
+              <div className={css(styles.panelRow)}>
                 <Button
                   buttonStyle="flat"
-                  colorPalette="cool"
-                  label="Load More"
-                  onClick={this.loadMore}
-                  size="small"
+                  colorPalette="mid"
+                  icon="envelope"
+                  iconPlacement="right"
+                  label="Need to cancel? Contact Us"
+                  size="smallest"
                 />
               </div>
-            }
+            </Panel>
           </div>
-        </Panel>
-        {/* Danger Zone: show when isPaid */}
-        <Panel label="Danger Zone">
-          <div className={css(styles.panelRow)}>
-            <Button
-              buttonStyle="flat"
-              colorPalette="mid"
-              icon="envelope"
-              iconPlacement="right"
-              label="Need to cancel? Contact Us"
-              size="smallest"
-            />
-          </div>
-        </Panel>
+        }
       </div>
     );
   }
@@ -212,3 +213,4 @@ export default createPaginationContainer(
     `
   }
 );
+

@@ -9,6 +9,7 @@ import Row from 'universal/components/Row/Row';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import TagPro from 'universal/components/Tag/TagPro';
 import {tagBlock} from 'universal/components/Tag/tagBase';
+import {PRO} from 'universal/utils/constants';
 
 const OrganizationRow = (props) => {
   const {
@@ -16,18 +17,13 @@ const OrganizationRow = (props) => {
       name,
       activeUserCount,
       inactiveUserCount,
-      picture
+      picture,
+      tier
     },
-    isPaid,
     onRowClick,
     styles
   } = props;
   const orgAvatar = picture || defaultOrgAvatar;
-  const makeProTag = () => (
-    <div className={css(styles.tagBlock)}>
-      <TagPro />
-    </div>
-  );
   return (
     <Row>
       <div className={css(styles.orgAvatar)} onClick={onRowClick}>
@@ -36,7 +32,12 @@ const OrganizationRow = (props) => {
       <div className={css(styles.orgInfo)}>
         <div className={css(styles.nameAndTags)}>
           <div className={css(styles.name)} onClick={onRowClick}>
-            {name} {isPaid && makeProTag()}
+            {name}
+            {tier === PRO &&
+            <div className={css(styles.tagBlock)}>
+              <TagPro />
+            </div>
+            }
           </div>
           <div className={css(styles.subHeader)}>
             {activeUserCount + inactiveUserCount}{' Users ('}{activeUserCount}{' Active)'}
