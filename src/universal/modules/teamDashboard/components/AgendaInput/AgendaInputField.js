@@ -166,7 +166,7 @@ const styleThunk = (theme, {disabled}) => ({
     outline: 'none',
     padding: '.5rem .5rem .5rem 3rem',
     position: 'relative',
-    textIndent: '.25rem',
+    textIndent: '.1875rem',
     width: '100%',
     zIndex: 200,
     ...makeFieldColorPalette('white', true),

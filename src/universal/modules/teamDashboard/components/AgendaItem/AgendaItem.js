@@ -41,7 +41,7 @@ const AgendaItem = (props) => {
   const isCurrent = idx + 1 === agendaPhaseItem;
   const isLocal = idx + 1 === localPhaseItem;
   const isFacilitator = idx + 1 === facilitatorPhaseItem;
-  const canDelete = !isComplete && !isCurrent;
+  const canDelete = !isComplete && !isCurrent && !disabled;
   const inAgendaGroupLocal = inAgendaGroup(localPhase);
   const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
   const rootStyles = css(
