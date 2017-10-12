@@ -54,49 +54,49 @@ class OrgBilling extends Component {
         {tier === PERSONAL ?
           <OrgPlanSqueeze activeUserCount={activeUserCount} orgId={orgId} /> :
           <div className={css(styles.paidSection)}>
-        <Panel label="Credit Card Information">
-          <div className={css(styles.infoAndUpdate)}>
-            <div className={css(styles.creditCardInfo)}>
-              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
-              <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
-              <span className={css(styles.creditCardNumber)}>{'•••• •••• •••• '}{last4 || '••••'}</span>
-              <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
-              <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
-            </div>
-            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
-          </div>
-        </Panel>
-        <Panel label="Invoices">
-          <div className={css(styles.listOfInvoices)}>
-            {hasInvoices &&
-            invoices.edges.map(({node: invoice}) =>
-              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
-            )
-            }
-            {hasMore() &&
-              <div className={css(styles.loadMore)}>
-                <Button
-                  buttonSize="medium"
-                  buttonStyle="flat"
-                  colorPalette="cool"
-                  label="Load More"
-                  onClick={this.loadMore}
-                />
+            <Panel label="Credit Card Information">
+              <div className={css(styles.infoAndUpdate)}>
+                <div className={css(styles.creditCardInfo)}>
+                  <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
+                  <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
+                  <span className={css(styles.creditCardNumber)}>{'•••• •••• •••• '}{last4 || '••••'}</span>
+                  <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
+                  <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
+                </div>
+                <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
               </div>
-            }
-          </div>
-        </Panel>
+            </Panel>
+            <Panel label="Invoices">
+              <div className={css(styles.listOfInvoices)}>
+                {hasInvoices &&
+                invoices.edges.map(({node: invoice}) =>
+                  <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
+                )
+                }
+                {hasMore() &&
+                <div className={css(styles.loadMore)}>
+                  <Button
+                    buttonSize="medium"
+                    buttonStyle="flat"
+                    colorPalette="cool"
+                    label="Load More"
+                    onClick={this.loadMore}
+                  />
+                </div>
+                }
+              </div>
+            </Panel>
             <Panel label="Danger Zone">
               <div className={css(styles.panelRow)}>
                 <Button
+                  buttonSize="small"
                   buttonStyle="flat"
                   colorPalette="mid"
                   icon="envelope"
                   iconPlacement="right"
                   label="Need to cancel? Contact Us"
-                  size="smallest"
                 />
-      </div>
+              </div>
             </Panel>
           </div>
         }
@@ -213,4 +213,3 @@ export default createPaginationContainer(
     `
   }
 );
-
