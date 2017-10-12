@@ -5,6 +5,7 @@ import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
 import withStyles from 'universal/styles/withStyles';
 import {phaseArray} from 'universal/utils/constants';
+import ui from 'universal/styles/ui';
 
 const AgendaListAndInput = (props) => {
   const {
@@ -76,7 +77,7 @@ const styleThunk = (theme, {context}) => ({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    paddingTop: context === 'dashboard' && '.125rem',
+    paddingTop: context === 'dashboard' ? 0 : ui.meetingSidebarGutter,
     width: '100%'
   },
 

@@ -10,20 +10,21 @@ import FontAwesome from 'react-fontawesome';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {cashay} from 'cashay';
+import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
+import Tooltip from 'universal/components/Tooltip/Tooltip';
 
-const defaultColor = appTheme.palette.dark;
 const iconStyle = {
-  color: defaultColor,
+  color: appTheme.palette.dark,
   display: 'block',
   fontSize: ui.iconSize2x,
   height: ui.iconSize2x,
-  left: '1.5rem',
+  left: '1.25rem',
   lineHeight: ui.iconSize2x,
   position: 'absolute',
   textAlign: 'right',
-  top: '.375rem',
+  top: '.5rem',
   width: ui.iconSize2x,
-  zIndex: 100
+  zIndex: 200
 };
 const AgendaInputField = (props) => {
   const {
@@ -76,23 +77,32 @@ const AgendaInputField = (props) => {
     !disabled && styles.inputNotDisabled
   );
   if (!disabled) { bindHotkey('+', focusOnInput); }
+  const tip = (<div style={{textAlign: 'center'}}>{'Add meeting topics to discuss,'}<br />{'like “upcoming vacation”'}</div>);
   return (
-    <form className={rootStyles} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
-      <input
-        {...props.input}
-        autoCapitalize="off"
-        autoComplete="off"
-        className={inputStyles}
-        disabled={disabled}
-        maxLength="63"
-        onKeyDown={maybeBlur}
-        placeholder="Add Agenda Item"
-        ref={setRef}
-        title="Add Agenda Item"
-        type="text"
-      />
-      <FontAwesome name="plus-square-o" style={iconStyle} />
-    </form>
+    <Tooltip
+      tip={tip}
+      maxHeight={52}
+      maxWidth={224}
+      originAnchor={{vertical: 'bottom', horizontal: 'center'}}
+      targetAnchor={{vertical: 'top', horizontal: 'center'}}
+    >
+      <form className={rootStyles} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
+        <input
+          {...props.input}
+          autoCapitalize="off"
+          autoComplete="off"
+          className={inputStyles}
+          disabled={disabled}
+          maxLength="63"
+          onKeyDown={maybeBlur}
+          placeholder="Add Agenda Item"
+          ref={setRef}
+          title="Add Agenda Item"
+          type="text"
+        />
+        <FontAwesome name="plus-square-o" style={iconStyle} />
+      </form>
+    </Tooltip>
   );
 };
 
@@ -107,26 +117,23 @@ AgendaInputField.propTypes = {
   teamId: PropTypes.string
 };
 
-const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);
+const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.mid60l);
 const inputFocusActivePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
 const inputFocusActive = {
-  backgroundColor: appTheme.palette.light,
+  backgroundColor: appTheme.palette.light70l,
   ...inputFocusActivePlaceholderStyles
 };
 
 
-const styleThunk = () => ({
+const styleThunk = (theme, {disabled}) => ({
   root: {
     backgroundColor: 'transparent',
     color: appTheme.palette.cool,
     fontSize: appTheme.typography.s3,
+    padding: `0 ${ui.meetingSidebarGutter}`,
     position: 'relative',
     width: '100%',
-    zIndex: 100,
-
-    ':hover': {
-      backgroundColor: appTheme.palette.dark20l
-    }
+    zIndex: 100
   },
 
   rootDisabled: {
@@ -136,9 +143,9 @@ const styleThunk = () => ({
   },
 
   input: {
+    ...ui.fieldBaseStyles,
+    ...ui.fieldSizeStyles.medium,
     backgroundColor: 'transparent',
-    border: 0,
-    boxShadow: 'none',
     color: appTheme.palette.dark10d,
     display: 'block',
     fontFamily: appTheme.typography.serif,
@@ -150,9 +157,10 @@ const styleThunk = () => ({
     outline: 'none',
     padding: '.5rem 2.5rem .5rem 3rem',
     position: 'relative',
-    textIndent: '1rem',
+    textIndent: '.25rem',
     width: '100%',
     zIndex: 200,
+    ...makeFieldColorPalette('white', disabled),
 
     ...inputPlaceholderStyles
   },

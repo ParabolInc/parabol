@@ -4,16 +4,20 @@ import ui from 'universal/styles/ui';
 const {fieldColorPalettes} = ui;
 
 export default function makeFieldColorPalette(colorPalette, disabled = false, palettes = fieldColorPalettes) {
+  const hoverFocusActive = {
+    borderColor: palettes[colorPalette].focusBorderColor,
+    boxShadow: ui.fieldFocusBoxShadow,
+    outline: 'none'
+  };
   const states = {
+    ':hover': {
+      ...hoverFocusActive
+    },
     ':focus': {
-      borderColor: palettes[colorPalette].focusBorderColor,
-      boxShadow: ui.fieldFocusBoxShadow,
-      outline: 'none'
+      ...hoverFocusActive
     },
     ':active': {
-      borderColor: palettes[colorPalette].focusBorderColor,
-      boxShadow: ui.fieldFocusBoxShadow,
-      outline: 'none'
+      ...hoverFocusActive
     }
   };
   const addStates = !disabled && states;

@@ -29,7 +29,6 @@ const AgendaList = (props) => {
     agendaPhaseItem,
     canNavigate,
     connectDropTarget,
-    context,
     disabled,
     dragState,
     facilitatorPhase,
@@ -44,6 +43,9 @@ const AgendaList = (props) => {
 
   dragState.clear();
 
+  const makeAgendaItemTeaser = () =>
+    <div className={css(styles.agendaItemTeaser)} />;
+
   return connectDropTarget(
     <div className={css(styles.root)}>
       {agenda.length > 0 ?
@@ -52,6 +54,7 @@ const AgendaList = (props) => {
             (<AgendaItem
               key={`agendaItem${item.id}`}
               agendaItem={item}
+              agendaLength={agenda.length}
               agendaPhaseItem={agendaPhaseItem}
               canNavigate={canNavigateItems}
               disabled={disabled}
@@ -71,13 +74,9 @@ const AgendaList = (props) => {
           )}
         </div> :
         <div className={css(styles.empty)}>
-          <div className={css(styles.emptyInner)}>
-            {context === 'meeting' ?
-              'Add a placeholder to be discussed with others during the meeting. ' :
-              'Add a reminder to be discussed with others during the next meeting. '
-            }
-            {'Use a few short words to jog your memory like: “'}<b>{'upcoming vacation'}</b>{'”'}
-          </div>
+          {makeAgendaItemTeaser()}
+          {makeAgendaItemTeaser()}
+          {makeAgendaItemTeaser()}
         </div>
       }
     </div>
@@ -119,19 +118,34 @@ const styleThunk = () => ({
   },
 
   empty: {
-    padding: '.5rem .5rem 0 1.875rem',
+    padding: ui.meetingSidebarGutter,
+    paddingLeft: '1.625rem',
+    paddingTop: 0,
     width: '100%'
   },
 
-  emptyInner: {
-    backgroundColor: 'rgba(0, 0, 0, .05)',
-    borderRadius: ui.borderRadiusSmall,
-    color: appTheme.palette.dark10d,
-    fontSize: appTheme.typography.s3,
-    fontStyle: 'italic',
-    lineHeight: '1.125rem',
-    padding: '.5rem',
-    width: '100%'
+  agendaItemTeaser: {
+    display: 'flex',
+    padding: `${ui.meetingSidebarGutter} 0`,
+
+    ':before': {
+      backgroundColor: appTheme.palette.mid20l,
+      borderRadius: ui.borderRadiusSmall,
+      display: 'block',
+      content: '""',
+      flex: 1,
+      height: '1.5rem',
+      marginRight: ui.meetingSidebarGutter
+    },
+
+    ':after': {
+      backgroundColor: appTheme.palette.mid50l,
+      borderRadius: '100%',
+      display: 'block',
+      content: '""',
+      height: '1.5rem',
+      width: '1.5rem'
+    }
   }
 });
 
