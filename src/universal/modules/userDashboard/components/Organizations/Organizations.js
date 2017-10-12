@@ -9,13 +9,15 @@ import Panel from 'universal/components/Panel/Panel';
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
 import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOrgsCallOut/EmptyOrgsCallOut';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import {createFragmentContainer} from 'react-relay';
 
 const Organizations = (props) => {
   const {
-    organizations,
     history,
-    styles
+    styles,
+    viewer
   } = props;
+  const {ownedOrganizations} = viewer;
   const gotoNewTeam = () => { history.push('/newteam/1'); };
   const addNewOrg = () =>
     (<IconControl
@@ -30,9 +32,9 @@ const Organizations = (props) => {
     <UserSettingsWrapper>
       <Helmet title="My Organizations | Parabol" />
       <div className={css(styles.wrapper)}>
-        {organizations.length ?
+        {ownedOrganizations.length ?
           <Panel label="Organizations" controls={addNewOrg()}>
-            {organizations.map((organization) =>
+            {ownedOrganizations.map((organization) =>
               (<OrganizationRow
                 key={`orgRow${organization.id}`}
                 organization={organization}
@@ -48,7 +50,7 @@ const Organizations = (props) => {
 };
 
 Organizations.propTypes = {
-  organizations: PropTypes.array,
+  viewer: PropTypes.object,
   history: PropTypes.object,
   styles: PropTypes.object
 };
@@ -59,6 +61,18 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(
-  Organizations
+export default createFragmentContainer(
+  withStyles(styleThunk)(Organizations),
+  graphql`
+    fragment Organizations_viewer on User {
+      ownedOrganizations {
+        id
+        activeUserCount
+        inactiveUserCount
+        name
+        picture
+        tier
+      }
+    }
+  `
 );
