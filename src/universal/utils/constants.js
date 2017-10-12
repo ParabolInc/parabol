@@ -180,12 +180,13 @@ export const REACTIVATED = 'REACTIVATED';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
-export const INVOICES = 'invoices';
+export const ORGANIZATION = 'organization';
 
 /* Relay Subscription Event Types */
 export const ADD = 'add';
 export const UPDATE = 'update';
 export const DELETE = 'delete';
+export const REPLACE = 'replace';
 
 /* Parabol Payment level */
 export const PERSONAL = 'personal';

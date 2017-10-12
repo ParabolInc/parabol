@@ -3,6 +3,12 @@ import {Route} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Bundle from '../Bundle/Bundle';
 
+/*
+* @param {bool} isAbstract - true if this is not the bottom most route or "leaf" route.
+* In other words, there is another call to `AsyncRoute` within this component.
+* Used to determine whether or not to tell segment.io that the page changed
+*
+*/
 const AsyncRoute = ({mod, exact, path, isAbstract, isPrivate, extraProps}) => {
   return (
     <Route

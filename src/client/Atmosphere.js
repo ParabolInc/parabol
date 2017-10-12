@@ -152,6 +152,7 @@ export default class Atmosphere extends Environment {
       }
     });
     this.emitSubscribe(text, variables, opId);
+    // return {dispose: () => this.safeSocketUnsubscribe(subKey)};
   };
 
   ensureSubscription = (config) => {

@@ -33,9 +33,6 @@ const initialState = {};
   } else {
     // eslint-disable-next-line global-require
     const {AppContainer} = require('react-hot-loader'); // eslint-disable-line import/no-extraneous-dependencies
-    // ENABLE THIS FOR EXPLORING FRONT END PERFORMANCE
-    // const {whyDidYouUpdate} = require('why-did-you-update');
-    // whyDidYouUpdate(React);
     render(
       <AppContainer>
         <Root atmosphere={atmosphere} store={store} />

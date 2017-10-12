@@ -27,6 +27,7 @@ import {
   TEAM_ARCHIVED,
   TEAM_INVITE
 } from 'universal/utils/constants';
+import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 export const notificationInterfaceFields = {
   id: globalIdField('Notification', ({id}) => id),
@@ -77,6 +78,12 @@ const {connectionType, edgeType} = connectionDefinitions({
   edgeFields: () => ({
     cursor: {
       type: GraphQLISO8601Type
+    }
+  }),
+  connectionFields: () => ({
+    pageInfo: {
+      type: PageInfoDateCursor,
+      description: 'Page info with cursors coerced to ISO8601 dates'
     }
   })
 });

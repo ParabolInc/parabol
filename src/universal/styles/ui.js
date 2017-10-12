@@ -76,7 +76,7 @@ const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
 // Panels
-const panelInnerBorderColor = appTheme.palette.mid20l;
+const panelInnerBorderColor = appTheme.palette.mid30l;
 
 // Transitions
 // NOTE: increases on a scale of 2x
@@ -398,7 +398,7 @@ const ui = {
 
   // Panels
   // ---------------------------------------------------------------------------
-  panelBorderColor: appTheme.palette.mid40l,
+  panelBorderColor: appTheme.palette.mid50l,
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
@@ -455,7 +455,11 @@ const ui = {
 
   // Tags
   // ---------------------------------------------------------------------------
+  tagFontSize: '.75rem',
+  tagFontWeight: 700,
   tagGutter: '.75rem',
+  tagHeight: '1rem',
+  tagPadding: '0 .5rem',
   tagPalette: [
     'cool',
     'gray',

@@ -1,14 +1,11 @@
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLID
-} from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields';
-import {Organization} from './organizationSchema';
-import {getUserId, getUserOrgDoc, requireSUOrSelf, requireOrgLeader} from 'server/utils/authorization';
+import Organization from 'server/graphql/types/Organization';
+import {requireSUOrSelf} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 import {BILLING_LEADER} from 'universal/utils/constants';
+
 
 const getCounts = (org) => {
   return org('orgUsers')
@@ -48,43 +45,6 @@ export default {
         .merge(getCounts)
         .pluck(requestedFields)
         .changes({includeInitial: true})
-        .run({cursor: true}, changefeedHandler);
-    }
-  },
-  organization: {
-    type: Organization,
-    args: {
-      orgId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the orgId'
-      }
-    },
-    async resolve(source, {orgId}, {authToken, socket, subbedChannelName}, refs) {
-      const r = getRethink();
-
-      // AUTH
-      const userId = getUserId(authToken);
-      const userOrgDoc = await getUserOrgDoc(userId, orgId);
-      requireOrgLeader(userOrgDoc);
-
-      // RESOLUTION
-      const requestedFields = getRequestedFields(refs);
-      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('Organization')
-        .get(orgId)
-        .changes({includeInitial: true})
-        .map((row) => {
-          return {
-            new_val: row('new_val')
-              .merge(getCounts)
-              .pluck(requestedFields)
-              .default(null),
-            old_val: row('old_val')
-              .merge(getCounts)
-              .pluck(requestedFields)
-              .default(null)
-          };
-        })
         .run({cursor: true}, changefeedHandler);
     }
   },

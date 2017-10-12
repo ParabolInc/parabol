@@ -8,10 +8,11 @@ const defaultMessage = 'An error has occurred! We’ll alert the developers. Try
 const LoadingComponent = (props) => {
   const {error, styles} = props;
   console.error(error);
+  // raven.captureException(error.);
   return (
     <div className={css(styles.errorComponent)}>
       <div>{defaultMessage}</div>
-      <div>Error: {error.message}</div>
+      <div>Error: {error._error}</div>
     </div>
   );
 };

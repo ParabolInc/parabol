@@ -1,5 +1,4 @@
 import stripe from '../../billing/stripe';
-import handleInvoiceCreated from '../../billing/handlers/invoiceCreated';
 
 const fetchAllInvoices = async () => {
   const stripeInvoices = [];
@@ -22,6 +21,8 @@ exports.up = async (r) => {
     return;
   }
 
+  // invoiceCreated has been refactored so this migration won't work anymore, which is great. it served its purpose
+  const handleInvoiceCreated = require('../../billing/handlers/invoiceCreated').default;
   const stripeInvoices = await fetchAllInvoices();
   const invoiceIdsInDB = await r.table('Invoice')('id');
   const invoicesToHandle = stripeInvoices.filter((invoice) => !invoiceIdsInDB.includes(invoice.id));
