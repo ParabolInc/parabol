@@ -8,6 +8,7 @@ import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import OrganizationAddedSubscription from 'universal/subscriptions/OrganizationAddedSubscription';
 
 const query = graphql`
   query OrganizationsRootQuery {
@@ -18,7 +19,7 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  // AddOrganizationSubscription,
+  OrganizationAddedSubscription
   // UpdateOrganizationSubscription (name/pic),
   // PAUSE/UNAPUSE user,
   // UPGRADETOPRO
