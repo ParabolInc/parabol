@@ -20,6 +20,7 @@ const iconStyle = {
   height: ui.iconSize2x,
   left: '1.25rem',
   lineHeight: ui.iconSize2x,
+  pointerEvents: 'none',
   position: 'absolute',
   textAlign: 'right',
   top: '.5rem',
@@ -78,31 +79,39 @@ const AgendaInputField = (props) => {
   );
   if (!disabled) { bindHotkey('+', focusOnInput); }
   const tip = (<div style={{textAlign: 'center'}}>{'Add meeting topics to discuss,'}<br />{'like “upcoming vacation”'}</div>);
+  const input = (
+    <form className={rootStyles} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
+      <input
+        {...props.input}
+        autoCapitalize="off"
+        autoComplete="off"
+        className={inputStyles}
+        disabled={disabled}
+        maxLength="63"
+        onKeyDown={maybeBlur}
+        placeholder="Add an Agenda Item…"
+        ref={setRef}
+        title="Add an Agenda Item…"
+        type="text"
+      />
+      <FontAwesome name="plus-square-o" style={iconStyle} />
+    </form>
+  );
   return (
-    <Tooltip
-      tip={tip}
-      maxHeight={52}
-      maxWidth={224}
-      originAnchor={{vertical: 'bottom', horizontal: 'center'}}
-      targetAnchor={{vertical: 'top', horizontal: 'center'}}
-    >
-      <form className={rootStyles} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
-        <input
-          {...props.input}
-          autoCapitalize="off"
-          autoComplete="off"
-          className={inputStyles}
-          disabled={disabled}
-          maxLength="63"
-          onKeyDown={maybeBlur}
-          placeholder="Add Agenda Item"
-          ref={setRef}
-          title="Add Agenda Item"
-          type="text"
-        />
-        <FontAwesome name="plus-square-o" style={iconStyle} />
-      </form>
-    </Tooltip>
+    <div>
+      {disabled ?
+        input :
+        <Tooltip
+          tip={tip}
+          maxHeight={52}
+          maxWidth={224}
+          originAnchor={{vertical: 'top', horizontal: 'center'}}
+          targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
+        >
+          {input}
+        </Tooltip>
+      }
+    </div>
   );
 };
 
@@ -123,7 +132,6 @@ const inputFocusActive = {
   backgroundColor: appTheme.palette.light70l,
   ...inputFocusActivePlaceholderStyles
 };
-
 
 const styleThunk = (theme, {disabled}) => ({
   root: {
@@ -155,17 +163,17 @@ const styleThunk = (theme, {disabled}) => ({
     lineHeight: '1.5rem',
     margin: 0,
     outline: 'none',
-    padding: '.5rem 2.5rem .5rem 3rem',
+    padding: '.5rem .5rem .5rem 3rem',
     position: 'relative',
     textIndent: '.25rem',
     width: '100%',
     zIndex: 200,
-    ...makeFieldColorPalette('white', disabled),
-
+    ...makeFieldColorPalette('white', true),
     ...inputPlaceholderStyles
   },
 
   inputNotDisabled: {
+    ...makeFieldColorPalette('white', false),
     ':focus': {
       ...inputFocusActive
     },
