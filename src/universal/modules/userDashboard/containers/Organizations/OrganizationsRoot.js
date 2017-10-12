@@ -17,7 +17,13 @@ const query = graphql`
   }
 `;
 
-const subscriptions = [];
+const subscriptions = [
+  // AddOrganizationSubscription,
+  // UpdateOrganizationSubscription (name/pic),
+  // PAUSE/UNAPUSE user,
+  // UPGRADETOPRO
+
+];
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 

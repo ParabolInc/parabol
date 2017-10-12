@@ -154,10 +154,12 @@ export default createFragmentContainer(
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {
         id
-        activeUserCount
         createdAt
-        inactiveUserCount
         name
+        orgUserCount {
+          activeUserCount
+          inactiveUserCount
+        }
         picture
         creditCard {
           brand

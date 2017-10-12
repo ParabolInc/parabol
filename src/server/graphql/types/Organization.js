@@ -1,12 +1,13 @@
-import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import CreditCard from 'server/graphql/types/CreditCard';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import OrgUser from 'server/graphql/types/OrgUser';
+import OrgUserCount from 'server/graphql/types/OrgUserCount';
 import TierEnum from 'server/graphql/types/TierEnum';
-import {BILLING_LEADER} from 'universal/utils/constants';
 import User from 'server/graphql/types/User';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 
 const Organization = new GraphQLObjectType({
@@ -14,10 +15,6 @@ const Organization = new GraphQLObjectType({
   description: 'An organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
-    activeUserCount: {
-      type: GraphQLInt,
-      description: 'The number of orgUsers who do not have an inactive flag'
-    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the organization was created'
@@ -25,10 +22,6 @@ const Organization = new GraphQLObjectType({
     creditCard: {
       type: CreditCard,
       description: 'The safe credit card details'
-    },
-    inactiveUserCount: {
-      type: GraphQLInt,
-      description: 'The number of orgUsers who have an inactive flag'
     },
     name: {type: GraphQLString, description: 'The name of the organization'},
     picture: {
@@ -63,6 +56,28 @@ const Organization = new GraphQLObjectType({
     orgUsers: {
       type: new GraphQLList(OrgUser),
       description: 'The users that belong to this org'
+    },
+    orgUserCount: {
+      type: OrgUserCount,
+      description: 'The count of active & inactive users',
+      resolve: async (source) => {
+        const {orgUserCount, id} = source;
+        const r = getRethink();
+        if (orgUserCount) return orgUserCount;
+        return r.table('Organization').get(id)
+          .do((org) => {
+            return org('orgUsers')
+              .filter({inactive: true})
+              .count()
+              .default(0)
+              .do((inactiveUserCount) => {
+                return {
+                  activeUserCount: org('orgUsers').count().sub(inactiveUserCount),
+                  inactiveUserCount
+                };
+              });
+          });
+      }
     },
     /* GraphQL Sugar */
     billingLeaders: {

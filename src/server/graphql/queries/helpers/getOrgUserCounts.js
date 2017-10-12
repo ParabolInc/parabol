@@ -5,8 +5,10 @@ const getOrgUserCounts = (org) => {
     .default(0)
     .do((inactiveUserCount) => {
       return {
-        activeUserCount: org('orgUsers').count().sub(inactiveUserCount),
-        inactiveUserCount
+        orgUserCount: {
+          activeUserCount: org('orgUsers').count().sub(inactiveUserCount),
+          inactiveUserCount
+        }
       };
     });
 };

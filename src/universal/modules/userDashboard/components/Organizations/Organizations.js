@@ -1,15 +1,15 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
+import {createFragmentContainer} from 'react-relay';
 import IconControl from 'universal/components/IconControl/IconControl';
 import Panel from 'universal/components/Panel/Panel';
-import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
-import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOrgsCallOut/EmptyOrgsCallOut';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import {createFragmentContainer} from 'react-relay';
+import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOrgsCallOut/EmptyOrgsCallOut';
+import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const Organizations = (props) => {
   const {
@@ -18,7 +18,9 @@ const Organizations = (props) => {
     viewer
   } = props;
   const {ownedOrganizations} = viewer;
-  const gotoNewTeam = () => { history.push('/newteam/1'); };
+  const gotoNewTeam = () => {
+    history.push('/newteam/1');
+  };
   const addNewOrg = () =>
     (<IconControl
       icon="plus-square-o"
@@ -67,8 +69,10 @@ export default createFragmentContainer(
     fragment Organizations_viewer on User {
       ownedOrganizations {
         id
-        activeUserCount
-        inactiveUserCount
+        orgUserCount {
+          activeUserCount
+          inactiveUserCount
+        }
         name
         picture
         tier

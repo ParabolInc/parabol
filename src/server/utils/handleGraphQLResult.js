@@ -20,6 +20,10 @@ const handleGraphQLResult = (result, socket) => {
   } else if (data.acceptTeamInviteNotification) {
     setSocketAuth(socket, data.acceptTeamInviteNotification.authToken);
     return true;
+  } else if (data.newAuthToken) {
+    // TODO refactor the above 2 clauses so this is the only one
+    setSocketAuth(socket, data.newAuthToken);
+    return true;
   }
   return false;
 };
