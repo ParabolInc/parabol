@@ -155,6 +155,7 @@ const styleThunk = (theme, {disabled}) => ({
     ...ui.fieldSizeStyles.medium,
     backgroundColor: 'transparent',
     color: appTheme.palette.dark10d,
+    cursor: 'not-allowed',
     display: 'block',
     fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
@@ -173,6 +174,7 @@ const styleThunk = (theme, {disabled}) => ({
   },
 
   inputNotDisabled: {
+    cursor: 'text',
     ...makeFieldColorPalette('white', false),
     ':focus': {
       ...inputFocusActive
