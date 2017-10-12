@@ -15,7 +15,6 @@ const CONTROL_SIZE_SMALL = 'small';
 const CONTROL_SIZE_MEDIUM = 'medium';
 const CONTROL_SIZE_LARGE = 'large';
 
-// const CONTROL_SMALL_FONT_SIZE = '.8125rem';
 const CONTROL_SMALL_FONT_SIZE = '.875rem';
 const CONTROL_SMALL_LINE_HEIGHT = '1.25rem';
 const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem';
@@ -23,7 +22,6 @@ const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem';
 const CONTROL_SMALL_PADDING_VERTICAL = '.3125rem';
 const CONTROL_SMALL_BLOCK_PADDING_VERTICAL = '.375rem';
 
-// const CONTROL_MEDIUM_FONT_SIZE = '.9375rem';
 const CONTROL_MEDIUM_FONT_SIZE = '1rem';
 const CONTROL_MEDIUM_LINE_HEIGHT = '1.5rem';
 const CONTROL_MEDIUM_PADDING_HORIZONTAL = '.6875rem';
@@ -31,7 +29,6 @@ const CONTROL_MEDIUM_BLOCK_PADDING_HORIZONTAL = '.75rem';
 const CONTROL_MEDIUM_PADDING_VERTICAL = '.4375rem';
 const CONTROL_MEDIUM_BLOCK_PADDING_VERTICAL = '.5rem';
 
-// const CONTROL_LARGE_FONT_SIZE = '1.0625rem';
 const CONTROL_LARGE_FONT_SIZE = '1.125rem';
 const CONTROL_LARGE_LINE_HEIGHT = '1.75rem';
 const CONTROL_LARGE_PADDING_HORIZONTAL = '.9375rem';
@@ -347,7 +344,8 @@ const ui = {
     }
   },
   fieldDisabled: {
-    cursor: 'not-allowed'
+    cursor: 'not-allowed',
+    opacity: '.5'
   },
   fieldSizeOptions: [
     FIELD_SIZE_SMALL,

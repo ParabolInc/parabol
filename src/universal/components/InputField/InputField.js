@@ -121,7 +121,7 @@ InputField.propTypes = {
   underline: PropTypes.bool
 };
 
-const styleThunk = (theme, {fieldSize}) => {
+const styleThunk = (theme, {disabled, fieldSize}) => {
   const size = fieldSize || ui.fieldSizeOptions[1];
   return ({
     field: {
@@ -129,10 +129,10 @@ const styleThunk = (theme, {fieldSize}) => {
       ...ui.fieldSizeStyles[size]
     },
 
-    cool: makeFieldColorPalette('cool'),
-    gray: makeFieldColorPalette('gray'),
-    warm: makeFieldColorPalette('warm'),
-    white: makeFieldColorPalette('white'),
+    cool: makeFieldColorPalette('cool', disabled),
+    gray: makeFieldColorPalette('gray', disabled),
+    warm: makeFieldColorPalette('warm', disabled),
+    white: makeFieldColorPalette('white', disabled),
 
     disabled: ui.fieldDisabled,
     readOnly: ui.fieldReadOnly,

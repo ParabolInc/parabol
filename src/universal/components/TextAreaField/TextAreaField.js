@@ -75,13 +75,13 @@ TextAreaField.propTypes = {
   styles: PropTypes.object
 };
 
-const styleThunk = (theme, {fieldSize}) => {
+const styleThunk = (theme, {disabled, fieldSize}) => {
   const size = fieldSize || ui.fieldSizeOptions[1];
   return ({
     field: {
       ...ui.fieldBaseStyles,
       ...ui.fieldSizeStyles[size],
-      ...makeFieldColorPalette('gray'),
+      ...makeFieldColorPalette('gray', disabled),
       minHeight: '5.75rem'
     },
     disabled: ui.fieldDisabled,

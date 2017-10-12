@@ -69,7 +69,7 @@ const styleThunk = () => ({
     cursor: 'pointer',
     fontSize: `${ui.iconSize} !important`,
     height: '100% !important',
-    lineHeight: '2.25rem !important',
+    lineHeight: '2.375rem !important',
     padding: '0 1rem 0 0',
     position: 'absolute',
     left: '-1px',
@@ -81,10 +81,10 @@ const styleThunk = () => ({
   inputBlock: {
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
-    ...makeFieldColorPalette('gray'),
+    ...makeFieldColorPalette('white'),
     ...makeHoverFocus({
-      borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
-      boxShadow: ui.fieldBoxShadow
+      borderColor: ui.fieldColorPalettes.white.focusBorderColor,
+      boxShadow: ui.fieldFocusBoxShadow
     }),
     position: 'relative',
     userSelect: 'none'

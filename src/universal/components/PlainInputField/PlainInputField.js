@@ -69,7 +69,7 @@ PlainInputField.propTypes = {
   meta: PropTypes.object.isRequired
 };
 
-const styleThunk = (theme, {fieldSize}) => {
+const styleThunk = (theme, {disabled, fieldSize}) => {
   const size = fieldSize || ui.fieldSizeOptions[1];
   return ({
     field: {
@@ -77,11 +77,11 @@ const styleThunk = (theme, {fieldSize}) => {
       ...ui.fieldSizeStyles[size]
     },
 
-    cool: makeFieldColorPalette('cool'),
-    gray: makeFieldColorPalette('gray'),
-    link: makeFieldColorPalette('link'),
-    warm: makeFieldColorPalette('warm'),
-    white: makeFieldColorPalette('white'),
+    cool: makeFieldColorPalette('cool', disabled),
+    gray: makeFieldColorPalette('gray', disabled),
+    link: makeFieldColorPalette('link', disabled),
+    warm: makeFieldColorPalette('warm', disabled),
+    white: makeFieldColorPalette('white', disabled),
 
     disabled: ui.fieldDisabled,
 

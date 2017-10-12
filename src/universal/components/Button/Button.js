@@ -197,7 +197,7 @@ class Button extends Component {
   }
 }
 
-const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, textTransform}) => {
+const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabled, textTransform}) => {
   const size = buttonSize || ui.buttonSizeOptions[1];
   const buttonSizeStyles = ui.buttonSizeStyles[size];
   return ({
@@ -213,10 +213,10 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, textTr
     depth: {
       boxShadow: ui.shadow[depth],
       ':hover': {
-        boxShadow: ui.shadow[depth + 1]
+        boxShadow: !disabled && ui.shadow[depth + 1]
       },
       ':focus': {
-        boxShadow: ui.shadow[depth + 1]
+        boxShadow: !disabled && ui.shadow[depth + 1]
       }
     },
 
