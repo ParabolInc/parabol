@@ -133,7 +133,7 @@ const inputFocusActive = {
   ...inputFocusActivePlaceholderStyles
 };
 
-const styleThunk = (theme, {disabled}) => ({
+const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
     color: appTheme.palette.cool,
