@@ -158,7 +158,7 @@
     "raven-js": "^3.17.0",
     "react": "^16.0.0",
     "react-addons-css-transition-group": "^15.4.2",
-    "react-async-hoc": "^0.3.3",
+    "react-async-hoc": "^0.4.1",
     "react-copy-to-clipboard": "^5.0.0",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",

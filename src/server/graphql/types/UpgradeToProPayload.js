@@ -1,17 +1,18 @@
-import {GraphQLObjectType} from 'graphql';
-import CreditCard from 'server/graphql/types/CreditCard';
+import {GraphQLObjectType, GraphQLList} from 'graphql';
+import Organization from 'server/graphql/types/Organization';
+import {Team} from 'server/graphql/models/Team/teamSchema';
 
 const UpgradeToProPayload = new GraphQLObjectType({
   name: 'UpgradeToProPayload',
   fields: () => ({
-    creditCard: {
-      type: CreditCard,
-      description: 'the credit card details that got updated'
+    organization: {
+      type: Organization,
+      description: 'The new Pro Org'
+    },
+    teams: {
+      type: new GraphQLList(Team),
+      description: 'The updated teams under the org'
     }
-    // upcomingInvoice: {
-    //  type: Invoice,
-    //  description: 'The new upcoming invoice'
-    // }
   })
 });
 

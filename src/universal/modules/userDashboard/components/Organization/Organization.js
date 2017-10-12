@@ -6,6 +6,8 @@ import {createFragmentContainer} from 'react-relay';
 import {Link, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
+import TagPro from 'universal/components/Tag/TagPro';
+import {tagBlock} from 'universal/components/Tag/tagBase';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
@@ -17,7 +19,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
+import {BILLING_PAGE, MEMBERS_PAGE, PRO} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 
 const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
@@ -37,10 +39,11 @@ const Organization = (props) => {
     viewer
   } = props;
   const org = viewer ? viewer.organization : {};
-  const {createdAt, name: orgName, picture: orgAvatar} = org;
+  const {createdAt, name: orgName, picture: orgAvatar, tier} = org;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
   const extraProps = {orgId, org};
+
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
@@ -49,7 +52,6 @@ const Organization = (props) => {
           <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
           <div style={inlineBlockStyle}>Back to Organizations</div>
         </Link>
-        {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
           <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
             <OrgAvatarInput orgId={orgId} />
@@ -57,7 +59,12 @@ const Organization = (props) => {
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
             <div className={css(styles.orgDetails)}>
-              Created {makeDateString(createdAt)}
+              {'Created '}{makeDateString(createdAt)}
+              {tier === PRO &&
+                <div className={css(styles.tagBlock)}>
+                  <TagPro />
+                </div>
+              }
             </div>
             <BillingMembersToggle orgId={orgId} />
           </div>
@@ -106,6 +113,7 @@ const styleThunk = () => ({
 
   orgDetails: {
     fontSize: appTheme.typography.s3,
+    lineHeight: appTheme.typography.s7,
     paddingBottom: '.75rem'
   },
 
@@ -114,7 +122,7 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     marginLeft: '1.5rem',
-    maxWidth: '24rem',
+    maxWidth: '24.875rem',
     width: '100%'
   },
 
@@ -131,6 +139,12 @@ const styleThunk = () => ({
     display: 'inline-block',
     marginLeft: ui.rowGutter,
     width: '100px'
+  },
+
+  tagBlock: {
+    ...tagBlock,
+    marginLeft: '.25rem',
+    marginTop: '-.375rem'
   }
 });
 
@@ -152,6 +166,7 @@ export default createFragmentContainer(
         }
         periodStart
         periodEnd
+        tier
       }
     }
   `

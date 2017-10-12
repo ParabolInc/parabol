@@ -64,7 +64,7 @@ export default {
 
     const {current_period_end, current_period_start} = subscription;
     const creditCard = getCCFromCustomer(customer);
-    await r({
+    const {updatedOrg, updatedTeams} = await r({
       updatedOrg: r.table('Organization').get(orgId).update({
         creditCard,
         tier: PRO,
@@ -73,16 +73,19 @@ export default {
         stripeId: customer.id,
         stripeSubscriptionId: subscription.id,
         updatedAt: now
-      }),
-      updatedTeam: r.table('Team')
+      }, {returnChanges: true})('changes')(0)('new_val').default({}),
+      updatedTeams: r.table('Team')
         .getAll(orgId, {index: 'orgId'})
         .update({
           isPaid: true,
           tier: PRO,
           updatedAt: now
-        })
+        }, {returnChanges: true})('changes')(0)('new_val').default([])
     });
     sendSegmentEvent('Upgrade to Pro', userId, {orgId});
-    return {creditCard};
+    return {
+      organization: updatedOrg,
+      teams: updatedTeams
+    };
   }
 };

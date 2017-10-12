@@ -7,9 +7,11 @@ import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
+import OrgPlanSqueeze from 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import {PERSONAL} from 'universal/utils/constants';
 
 class OrgBilling extends Component {
   static propTypes = {
@@ -40,7 +42,7 @@ class OrgBilling extends Component {
       relay: {hasMore}
     } = this.props;
     const hasInvoices = invoices.edges.length > 0;
-    const {creditCard = {}, id: orgId} = org;
+    const {activeUserCount, creditCard = {}, id: orgId, tier} = org;
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
       buttonSize="small"
@@ -49,6 +51,9 @@ class OrgBilling extends Component {
     />);
     return (
       <div>
+        {tier === PERSONAL ?
+          <OrgPlanSqueeze activeUserCount={activeUserCount} orgId={orgId} /> :
+          <div className={css(styles.paidSection)}>
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
@@ -81,10 +86,29 @@ class OrgBilling extends Component {
             }
           </div>
         </Panel>
+            <Panel label="Danger Zone">
+              <div className={css(styles.panelRow)}>
+                <Button
+                  buttonStyle="flat"
+                  colorPalette="mid"
+                  icon="envelope"
+                  iconPlacement="right"
+                  label="Need to cancel? Contact Us"
+                  size="smallest"
+                />
+      </div>
+            </Panel>
+          </div>
+        }
       </div>
     );
   }
 }
+
+const panelCell = {
+  borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`,
+  padding: ui.panelGutter
+};
 
 const styleThunk = () => ({
   creditCardInfo: {
@@ -112,10 +136,10 @@ const styleThunk = () => ({
   },
 
   infoAndUpdate: {
+    ...panelCell,
     alignItems: 'center',
     display: 'flex',
-    justifyContent: 'space-between',
-    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
+    justifyContent: 'space-between'
   },
 
   loadMore: {
@@ -124,11 +148,18 @@ const styleThunk = () => ({
     fontSize: '1.25rem',
     fontWeight: 700,
     justifyContent: 'center',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
+    paddingBottom: ui.panelGutter
   },
+
   noInvoices: {
     textAlign: 'center',
     margin: '1rem'
+  },
+
+  panelRow: {
+    ...panelCell,
+    textAlign: 'center'
   }
 });
 
@@ -182,3 +213,4 @@ export default createPaginationContainer(
     `
   }
 );
+
