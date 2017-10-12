@@ -127,11 +127,6 @@ AgendaInputField.propTypes = {
 };
 
 const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.mid60l);
-const inputFocusActivePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
-const inputFocusActive = {
-  backgroundColor: appTheme.palette.light70l,
-  ...inputFocusActivePlaceholderStyles
-};
 
 const styleThunk = () => ({
   root: {
@@ -175,13 +170,7 @@ const styleThunk = () => ({
 
   inputNotDisabled: {
     cursor: 'text',
-    ...makeFieldColorPalette('white', false),
-    ':focus': {
-      ...inputFocusActive
-    },
-    ':active': {
-      ...inputFocusActive
-    }
+    ...makeFieldColorPalette('white', false, {focusActiveBackgroundColor: appTheme.palette.light70l})
   }
 });
 

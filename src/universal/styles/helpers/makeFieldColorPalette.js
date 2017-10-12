@@ -3,7 +3,7 @@ import ui from 'universal/styles/ui';
 
 const {fieldColorPalettes} = ui;
 
-export default function makeFieldColorPalette(colorPalette, disabled = false, palettes = fieldColorPalettes) {
+export default function makeFieldColorPalette(colorPalette, disabled = false, custom, palettes = fieldColorPalettes) {
   const hoverFocusActive = {
     borderColor: palettes[colorPalette].focusBorderColor,
     boxShadow: ui.fieldFocusBoxShadow,
@@ -14,10 +14,12 @@ export default function makeFieldColorPalette(colorPalette, disabled = false, pa
       ...hoverFocusActive
     },
     ':focus': {
-      ...hoverFocusActive
+      ...hoverFocusActive,
+      backgroundColor: custom && custom.focusActiveBackgroundColor
     },
     ':active': {
-      ...hoverFocusActive
+      ...hoverFocusActive,
+      backgroundColor: custom && custom.focusActiveBackgroundColor
     }
   };
   const addStates = !disabled && states;
