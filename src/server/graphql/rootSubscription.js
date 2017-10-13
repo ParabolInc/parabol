@@ -24,6 +24,7 @@ import notificationsCleared from 'server/graphql/subscriptions/notificationsClea
 import teamMembersInvited from 'server/graphql/subscriptions/teamMembersInvited';
 import newAuthToken from 'server/graphql/subscriptions/newAuthToken';
 import organizationAdded from 'server/graphql/subscriptions/organizationAdded';
+import organizationUpdated from 'server/graphql/subscriptions/organizationUpdated';
 
 const rootFields = Object.assign({},
   agenda,
@@ -50,6 +51,7 @@ export default new GraphQLObjectType({
     notificationsAdded,
     notificationsCleared,
     organizationAdded,
+    organizationUpdated,
     slackChannelAdded,
     slackChannelRemoved,
     providerAdded,

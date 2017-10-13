@@ -9,6 +9,7 @@ import AnimatedFade from 'universal/components/AnimatedFade';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import OrganizationAddedSubscription from 'universal/subscriptions/OrganizationAddedSubscription';
+import OrganizationUpdatedSubscription from 'universal/subscriptions/OrganizationUpdatedSubscription';
 
 const query = graphql`
   query OrganizationsRootQuery {
@@ -19,8 +20,8 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  OrganizationAddedSubscription
-  // UpdateOrganizationSubscription (name/pic),
+  OrganizationAddedSubscription,
+  OrganizationUpdatedSubscription
   // PAUSE/UNAPUSE user,
   // UPGRADETOPRO
 
