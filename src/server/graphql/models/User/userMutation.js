@@ -1,7 +1,6 @@
 import shortid from 'shortid';
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLID, GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql';
-import {User, UserInput} from './userSchema';
 import sendEmail from 'server/email/sendEmail';
 import {requireAuth, requireSU, requireSUOrSelf} from 'server/utils/authorization';
 import {errorObj, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
@@ -14,9 +13,11 @@ import {
 import {verify} from 'jsonwebtoken';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {GraphQLURLType} from '../../types';
 import segmentIo from 'server/utils/segmentIo';
 import addFeatureFlag from './addFeatureFlag/addFeatureFlag';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput';
+import User from 'server/graphql/types/User';
 
 export default {
   addFeatureFlag,
@@ -150,7 +151,7 @@ export default {
     type: User,
     args: {
       updatedUser: {
-        type: new GraphQLNonNull(UserInput),
+        type: new GraphQLNonNull(UpdateUserProfileInput),
         description: 'The input object containing the user profile fields that can be changed'
       }
     },

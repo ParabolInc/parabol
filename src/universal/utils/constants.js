@@ -177,21 +177,21 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
+export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
-export const INVOICES = 'invoices';
+export const ORGANIZATION_ADDED = 'organizationAdded';
+export const ORGANIZATION_UPDATED = 'organizationUpdated';
 
 /* Relay Subscription Event Types */
 export const ADD = 'add';
 export const UPDATE = 'update';
 export const DELETE = 'delete';
+export const REPLACE = 'replace';
 
 /* Parabol Payment level */
 export const PERSONAL = 'personal';
 export const PRO = 'pro';
 export const ENTERPRISE = 'enterprise';
-
-/* Server error types */
-export const MAX_PROJECTS_HIT = 'mph';
 

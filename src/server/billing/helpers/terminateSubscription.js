@@ -17,7 +17,7 @@ export default async function terminateSubscription(orgId) {
         // periodEnd should always be redundant, but useful for testing purposes
         periodEnd: now,
         stripeSubscriptionId: null
-      }, {returnChanges: true})('changes')(0)('old_val')('stripeSubscriptionId').default(null)
+      }, {returnChanges: true})('changes')(0)('old_val').default(null)
   });
   // stripe already does this for us (per account settings) but we do it here so we don't have to wait an hour
   // if this function is called by a paymentFailed hook, then the sub may not exist, so catch and release

@@ -9,6 +9,7 @@ import {
   billingLeaderTypes,
   NOTIFICATIONS_ADDED,
   NOTIFICATIONS_CLEARED,
+  ORGANIZATION_ADDED,
   PROMOTE_TO_BILLING_LEADER
 } from 'universal/utils/constants';
 
@@ -29,7 +30,7 @@ export default {
       description: 'the user’s new role'
     }
   },
-  async resolve(source, {orgId, userId, role}, {authToken}) {
+  async resolve(source, {orgId, userId, role}, {authToken, socketId}) {
     const r = getRethink();
     const now = new Date();
 
@@ -54,7 +55,7 @@ export default {
     }
 
     // RESOLUTION
-    const {orgName} = await r({
+    const {organization} = await r({
       userOrgsUpdate: r.table('User').get(userId)
         .update((user) => ({
           userOrgs: user('userOrgs').map((userOrg) => {
@@ -68,7 +69,7 @@ export default {
           }),
           updatedAt: now
         })),
-      orgName: r.table('Organization').get(orgId)
+      organization: r.table('Organization').get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').map((orgUser) => {
             return r.branch(
@@ -80,7 +81,7 @@ export default {
             );
           }),
           updatedAt: now
-        }), {returnChanges: true})('changes')(0)('new_val')('name').default(null)
+        }), {returnChanges: true})('changes')(0)('new_val').default(null)
     });
     if (role === BILLING_LEADER) {
       // add a notification
@@ -90,7 +91,7 @@ export default {
         startAt: now,
         orgId,
         userIds: [userId],
-        groupName: orgName
+        groupName: organization.name
       };
       const {existingNotifications} = await r({
         insert: r.table('Notification').insert(promotionNotification),
@@ -104,6 +105,10 @@ export default {
       });
       const notificationsAdded = {notifications: existingNotifications.concat(promotionNotification)};
       getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
+
+      // add the org to the list of owned orgs
+      const organizationAdded = {organization};
+      getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId: socketId});
     } else if (role === null) {
       const {oldPromotionId, removedNotificationIds} = await r({
         oldPromotionId: r.table('Notification')

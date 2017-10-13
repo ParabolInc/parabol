@@ -15,6 +15,10 @@ const makeErrorObj = (errors) => {
     }, {});
 };
 
+const defaultErrorHandler = (err) => {
+  console.error('Captured error:', err);
+};
+
 export default class Atmosphere extends Environment {
   static getKey = (name, variables) => {
     return stableJSONStringify({name, variables});
@@ -139,6 +143,12 @@ export default class Atmosphere extends Environment {
     }
     this.socket.on(`gqlData.${opId}`, (gqlResponse) => {
       if (gqlResponse) {
+        const {errors} = gqlResponse;
+        if (errors) {
+          const errorObj = makeErrorObj(errors);
+          observer.onError(errorObj);
+          return;
+        }
         observer.onNext(gqlResponse);
       } else if (JSON.parse(subKey).name === 'NotificationsAddedSubscription') {
         // resubscribe without the client knowing we unsubbed when tms gets changed
@@ -152,6 +162,8 @@ export default class Atmosphere extends Environment {
       }
     });
     this.emitSubscribe(text, variables, opId);
+    // currently we don't use this disposable, but Relay does in the subscription observable.onError
+    return {dispose: () => this.safeSocketUnsubscribe(subKey)};
   };
 
   ensureSubscription = (config) => {
@@ -163,7 +175,7 @@ export default class Atmosphere extends Environment {
       this.subLookup[subKey] = {
         opId: this.index++
       };
-      requestSubscription(this, config);
+      requestSubscription(this, {onError: defaultErrorHandler, ...config});
     } else {
       // another component cares about this subscription. if it tries to unsub, don't do it until both want to
       opManager.instances++;

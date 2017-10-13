@@ -55,7 +55,7 @@ const handleAddProjectFactory = (atmosphere, dispatch, history, status, teamMemb
     teamMemberId,
     sortOrder
   };
-  CreateProjectMutation(atmosphere, newProject, dispatch, history);
+  CreateProjectMutation(atmosphere, newProject);
 };
 
 class ProjectColumn extends Component {
@@ -126,7 +126,7 @@ class ProjectColumn extends Component {
           teamMemberId: `${userId}::${team.id}`,
           sortOrder
         };
-        CreateProjectMutation(atmosphere, newProject, dispatch, history);
+        CreateProjectMutation(atmosphere, newProject);
       }
     }));
   };

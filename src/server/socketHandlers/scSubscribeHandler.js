@@ -8,14 +8,11 @@ import {
   ARCHIVED_PROJECTS,
   INVITATIONS,
   ORG_APPROVALS,
-  ORGANIZATION,
   ORGANIZATIONS,
-  OWNED_ORGANIZATIONS,
   PRESENCE,
   PROJECTS,
   TEAM,
   TEAM_MEMBERS,
-  UPCOMING_INVOICE,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
@@ -30,13 +27,10 @@ const dechannelfy = {
   [ARCHIVED_PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [ORG_APPROVALS]: (teamId) => ({teamId}),
-  [ORGANIZATION]: (variableString) => ({orgId: variableString}),
   [ORGANIZATIONS]: (userId) => ({userId}),
-  [OWNED_ORGANIZATIONS]: (userId) => ({userId}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
-  [UPCOMING_INVOICE]: (orgId) => ({orgId}),
   [USERS_BY_ORG]: (orgId) => ({orgId})
 };
 

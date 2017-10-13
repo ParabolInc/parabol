@@ -3,10 +3,8 @@ import getRethink from 'server/database/rethinkDriver';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import ProjectInput from 'server/graphql/types/ProjectInput';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {MAX_PERSONAL_PROJECTS} from 'server/utils/serverConstants';
-import {errorObj, handleSchemaErrors} from 'server/utils/utils';
+import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {BILLING_LEADER, MAX_PROJECTS_HIT, PERSONAL} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
@@ -57,52 +55,10 @@ export default {
       teamMemberId: project.teamMemberId,
       updatedAt: project.updatedAt
     };
-    const {orgProjectCount} = await r({
+    await r({
       project: r.table('Project').insert(project),
-      history: r.table('ProjectHistory').insert(history),
-      orgProjectCount: r.table('Team').get(teamId).pluck('tier', 'orgId')
-        .do((team) => {
-          return r.branch(
-            team('tier').eq(PERSONAL),
-            r.table('Team').getAll(team('orgId'), {index: 'orgId'})('id')
-              .coerceTo('array')
-              .do((teamIds) => r.table('Project').getAll(r.args(teamIds), {index: 'teamId'}).count()),
-            1
-          );
-        })
+      history: r.table('ProjectHistory').insert(history)
     });
-    if (orgProjectCount > MAX_PERSONAL_PROJECTS) {
-      const {response: {billingLeaderUserIds, orgId}} = await r({
-        removedProject: r.table('Project').get(project.id).delete(),
-        removedHistory: r.table('ProjectHistory').get(history.id).delete(),
-        response: r.table('Team').get(teamId)('orgId')
-          .do((teamOrgId) => r.table('Organization')
-            .get(teamOrgId)('orgUsers')
-            .filter({
-              role: BILLING_LEADER
-            })('id')
-            .coerceTo('array')
-            .do((userIds) => ({
-              billingLeaderUserIds: userIds,
-              orgId: teamOrgId
-            }))
-          )
-      });
-      if (billingLeaderUserIds.includes(userId)) {
-        throw errorObj({
-          _error: MAX_PROJECTS_HIT,
-          orgId
-        });
-      } else {
-        const billingLeader = await r.table('User').get(billingLeaderUserIds[0])
-          .pluck('email', 'preferredName');
-        throw errorObj({
-          _error: MAX_PROJECTS_HIT,
-          billingLeader
-        });
-      }
-    }
-
     return {project};
   }
 };
