@@ -141,7 +141,7 @@ class OutcomeCardContainer extends Component {
   handleCardMouseLeave = () => this.setState({cardHasHover: false});
 
   handleCardBlur = (e) => {
-    const cb = !e.currentTarget.contains(e.relatedTarget) && this.handleCardUpdate;
+    const cb = !e.currentTarget.contains(e.relatedTarget) ? this.handleCardUpdate : undefined;
     this.setState({cardHasFocus: false}, cb);
   };
 
