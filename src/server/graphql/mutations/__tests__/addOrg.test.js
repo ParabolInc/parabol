@@ -6,7 +6,7 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
-import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
+import addOrg from 'server/graphql/mutations/addOrg';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import shortid from 'shortid';
 

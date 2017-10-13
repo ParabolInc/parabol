@@ -7,7 +7,8 @@ import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'serv
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
-import {PRO} from 'universal/utils/constants';
+import {ORGANIZATION_UPDATED, PRO} from 'universal/utils/constants';
+import getPubSub from 'server/utils/getPubSub';
 
 export default {
   type: UpgradeToProPayload,
@@ -83,6 +84,8 @@ export default {
         }, {returnChanges: true})('changes')(0)('new_val').default([])
     });
     sendSegmentEvent('Upgrade to Pro', userId, {orgId});
+    const organizationUpdated = {organization: updatedOrg};
+    getPubSub().publish(`${ORGANIZATION_UPDATED}`, {organizationUpdated, mutatorId: socketId});
     return {
       organization: updatedOrg,
       teams: updatedTeams

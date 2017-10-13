@@ -2,12 +2,15 @@ import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import {SubmissionError} from 'redux-form';
 import shortid from 'shortid';
 import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import AddOrgMutation from 'universal/mutations/AddOrgMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const orgDropdownMenuItemsQuery = `
 query {
@@ -58,28 +61,28 @@ class NewTeamFormContainer extends Component {
   }
 
   onSubmit = async (submittedData) => {
-    const {dispatch, isNewOrg, history} = this.props;
+    const {atmosphere, dispatch, isNewOrg, history} = this.props;
     const newTeamId = shortid.generate();
     if (isNewOrg) {
       const schema = addOrgSchema();
-      const {data: {teamName, inviteesRaw, orgName, stripeToken}} = schema(submittedData);
+      const {data: {teamName, inviteesRaw, orgName}} = schema(submittedData);
       const parsedInvitees = parseEmailAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
-      const variables = {
-        newTeam: {
-          id: newTeamId,
-          name: teamName,
-          orgId: shortid.generate()
-        },
-        invitees,
-        orgName,
-        stripeToken
+      const newTeam = {
+        id: newTeamId,
+        name: teamName,
+        orgId: shortid.generate()
       };
-      await cashay.mutate('addOrg', {variables});
-      dispatch(showSuccess({
-        title: 'Organization successfully created!',
-        message: `Here's your new team dashboard for ${teamName}`
-      }));
+      const handleError = (err) => {
+        throw new SubmissionError(err._error);
+      };
+      const handleCompleted = () => {
+        dispatch(showSuccess({
+          title: 'Organization successfully created!',
+          message: `Here's your new team dashboard for ${teamName}`
+        }));
+      };
+      AddOrgMutation(atmosphere, newTeam, invitees, orgName, handleError, handleCompleted);
     } else {
       const schema = makeAddTeamSchema();
       const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
@@ -140,5 +143,5 @@ NewTeamFormContainer.propTypes = {
 };
 
 export default connect(mapStateToProps)(
-  NewTeamFormContainer
+  withAtmosphere(NewTeamFormContainer)
 );

@@ -41,6 +41,8 @@ import stripeFailPayment from 'server/graphql/mutations/stripeFailPayment';
 import stripeSucceedPayment from 'server/graphql/mutations/stripeSucceedPayment';
 import stripeUpdateCreditCard from 'server/graphql/mutations/stripeUpdateCreditCard';
 import stripeUpdateInvoiceItem from 'server/graphql/mutations/stripeUpdateInvoiceItem';
+import addOrg from 'server/graphql/mutations/addOrg';
+import updateOrg from 'server/graphql/mutations/updateOrg';
 
 const rootFields = Object.assign({},
   agenda,
@@ -61,6 +63,7 @@ export default new GraphQLObjectType({
     acceptTeamInviteEmail,
     acceptTeamInviteNotification,
     addGitHubRepo,
+    addOrg,
     addProvider,
     addSlackChannel,
     approveToOrg,
@@ -90,6 +93,7 @@ export default new GraphQLObjectType({
     stripeUpdateCreditCard,
     stripeUpdateInvoiceItem,
     updateCreditCard,
+    updateOrg,
     upgradeToPro
   })
 });

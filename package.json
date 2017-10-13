@@ -134,7 +134,7 @@
     "fbjs": "^0.8.14",
     "fetch-ponyfill": "^4.1.0",
     "graphiql": "^0.11.2",
-    "graphql": "^0.10.5",
+    "graphql": "^0.11.7",
     "graphql-redis-subscriptions": "^1.2.0",
     "graphql-relay": "^0.5.2",
     "graphql-subscriptions": "^0.4.4",
