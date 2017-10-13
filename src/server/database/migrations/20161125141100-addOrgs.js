@@ -1,9 +1,12 @@
 import shortid from 'shortid';
 import {BILLING_LEADER, TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants';
 import stripe from '../../billing/stripe';
-import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS, TRIAL_EXPIRES_SOON_DELAY} from '../../utils/serverConstants';
+import {ACTION_MONTHLY} from '../../utils/serverConstants';
 import {fromEpochSeconds} from '../../utils/epochTime';
+import ms from 'ms';
 
+const TRIAL_PERIOD_DAYS = 30;
+const TRIAL_EXPIRES_SOON_DELAY = ms('14d');
 /* eslint-disable max-len */
 
 exports.up = async (r) => {
