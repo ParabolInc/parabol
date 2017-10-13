@@ -49,8 +49,7 @@ const OrgMembers = (props) => {
     const {id, inactive, preferredName} = orgUser;
     const itemFactory = () => {
       const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
-      const {viewerId} = environment;
-      const {id: myUserId} = fromGlobalId(viewerId);
+      const {userId: myUserId} = environment;
       const listItems = [];
       if (orgUser.isBillingLeader) {
         if (billingLeaderCount > 1) {

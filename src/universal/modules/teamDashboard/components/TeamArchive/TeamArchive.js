@@ -12,6 +12,8 @@ import FontAwesome from 'react-fontawesome';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import {TEAM_DASH} from 'universal/utils/constants';
+import {createPaginationContainer} from 'react-relay';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const iconStyle = {
   ...ib,
@@ -20,8 +22,9 @@ const iconStyle = {
 };
 
 const TeamArchive = (props) => {
-  const {archivedProjects, styles, teamId, teamName, userId} = props;
-
+  const {styles, teamId, teamName, userId, viewer} = props;
+  const {archivedProjects} = viewer;
+  const {edges} = archivedProjects;
   // Archive squeeze
   const isPaid = false; // Just on the Personal Plan
   const hasHiddenCards = true; // There are cards that have been archived for GT 14 days
@@ -37,15 +40,24 @@ const TeamArchive = (props) => {
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>
-          {archivedProjects.length ?
+          {edges.length ?
             <div className={css(styles.cardGrid)}>
-              {archivedProjects.map((project) =>
+              {edges.map(({node: project}) =>
                 (<div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
                   <OutcomeOrNullCard
                     key={project.id}
                     area={TEAM_DASH}
                     myUserId={userId}
-                    outcome={project}
+                    outcome={{
+                      ...project,
+                      id: fromGlobalId(project.id).id,
+                      createdAt: new Date(project.createdAt),
+                      updatedAt: new Date(project.updatedAt),
+                      teamMember: {
+                        ...project.teamMember,
+                        id: fromGlobalId(project.teamMember.id).id
+                      }
+                    }}
                   />
                 </div>)
               )}
@@ -71,12 +83,11 @@ const TeamArchive = (props) => {
 };
 
 TeamArchive.propTypes = {
-  archivedProjects: PropTypes.array,
   styles: PropTypes.object,
   teamId: PropTypes.string,
   teamName: PropTypes.string,
-  teamMembers: PropTypes.array,
-  userId: PropTypes.string.isRequired
+  userId: PropTypes.string.isRequired,
+  viewer: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -107,7 +118,8 @@ const styleThunk = () => ({
     bottom: 0,
     left: 0,
     padding: '1rem 0 0 1rem',
-    position: 'absolute',
+    // @terry everything was hidden unless i nuked this.
+    //position: 'absolute',
     right: 0,
     top: 0
   },
@@ -162,4 +174,64 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(TeamArchive);
+export default createPaginationContainer(
+  withStyles(styleThunk)(TeamArchive),
+  graphql`
+    fragment TeamArchive_viewer on User {
+      archivedProjects(first: $first, teamId: $teamId, after: $after) @connection(key: "TeamArchive_archivedProjects") {
+        edges {
+          cursor
+          node {
+            id
+            content
+            createdAt
+            integration {
+              service
+              nameWithOwner
+              issueNumber
+            }
+            status
+            tags
+            teamMemberId
+            updatedAt
+            teamMember {
+              id
+              picture
+              preferredName
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  `,
+  {
+    direction: 'forward',
+    getConnectionFromProps(props) {
+      return props.viewer && props.viewer.archivedProjects;
+    },
+    getFragmentVariables(prevVars, totalCount) {
+      return {
+        ...prevVars,
+        first: totalCount
+      };
+    },
+    getVariables(props, {count, cursor}, fragmentVariables) {
+      return {
+        ...fragmentVariables,
+        first: count,
+        after: cursor
+      };
+    },
+    query: graphql`
+      query TeamArchivePaginationQuery($first: Int!, $after: DateTime, $teamId: ID!) {
+        viewer {
+          ...TeamArchive_viewer
+        }
+      }
+    `
+  }
+);

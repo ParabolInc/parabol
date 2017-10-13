@@ -26,6 +26,7 @@ import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
 import ownedOrganizations from 'server/graphql/queries/ownedOrganizations';
+import archivedProjects from 'server/graphql/queries/archivedProjects';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -125,6 +126,7 @@ const User = new GraphQLObjectType({
           .run();
       }
     },
+    archivedProjects,
     githubRepos,
     integrationProvider,
     invoices,

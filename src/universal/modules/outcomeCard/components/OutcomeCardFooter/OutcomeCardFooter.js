@@ -79,7 +79,7 @@ class OutcomeCardFooter extends Component {
       toggleMenuState
     } = this.props;
     const showTeam = area === USER_DASH;
-    const {teamMember: owner, integration, team: {name: teamName}} = outcome;
+    const {teamMember: owner, integration, team} = outcome;
     const {service} = integration || {};
     const isArchived = isProjectArchived(outcome.tags);
     const buttonBlockStyles = css(
@@ -93,7 +93,7 @@ class OutcomeCardFooter extends Component {
     const {error} = this.state;
     const ownerAvatarOrTeamName = (
       showTeam ?
-        <div className={css(styles.teamNameLabel)}>{teamName}</div> :
+        <div className={css(styles.teamNameLabel)}>{team.name}</div> :
         (<button
           className={css(styles.avatarButton)}
           tabIndex={service && '-1'}

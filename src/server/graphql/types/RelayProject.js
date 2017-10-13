@@ -5,6 +5,8 @@ import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 import {globalIdField} from 'graphql-relay';
+import TeamMember from 'server/graphql/types/TeamMember';
+import getRethink from 'server/database/rethinkDriver';
 
 const RelayProject = new GraphQLObjectType({
   name: 'RelayProject',
@@ -49,6 +51,18 @@ const RelayProject = new GraphQLObjectType({
     teamId: {
       type: GraphQLID,
       description: 'The id of the team (indexed). Needed for subscribing to archived projects'
+    },
+    teamMember: {
+      type: TeamMember,
+      description: 'The team member that owns this project',
+      resolve: async (source) => {
+        const r = getRethink();
+        const {teamMember, teamMemberId} = source;
+        if (!teamMember && teamMemberId) {
+          return r.table('TeamMember').get(teamMemberId).run();
+        }
+        return undefined;
+      }
     },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
