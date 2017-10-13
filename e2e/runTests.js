@@ -87,7 +87,9 @@ function main() {
 
   setTimeout(async () => {
     const mocha = new Mocha({
-      timeout: 10000,
+      // Note that 20 seconds is a reasonably long timeout.  I'm betting that
+      // tests will generally fail due to errors rather than timeouts.
+      timeout: 20000,
       ui: 'bdd'
     });
     const files = await globP('e2e/tests/**/*.test.js');

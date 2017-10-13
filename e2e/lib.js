@@ -1,5 +1,9 @@
 import { Builder } from 'selenium-webdriver';
 
+export function all(...promises) {
+  return Promise.all(promises);
+}
+
 function mapObj(fn, obj) {
   return Object.keys(obj).reduce(
     (newObj, curKey) => ({
@@ -18,7 +22,7 @@ function bindUserBehaviors(driver, behaviors) {
   }, behaviors);
 }
 
-export async function newUser({ browser, behaviors }) {
+export async function newUserSession({ browser, behaviors }) {
   const driver = await new Builder().forBrowser(browser).build();
   return {
     ...bindUserBehaviors(driver, behaviors),
