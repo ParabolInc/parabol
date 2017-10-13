@@ -2,7 +2,6 @@ import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} fr
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
-import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
@@ -12,7 +11,6 @@ import {validateAvatarUpload} from 'server/utils/utils';
 import shortid from 'shortid';
 
 export default {
-  updateOrg,
   rejectOrgApproval,
   removeOrgUser: {
     type: GraphQLBoolean,

@@ -1,20 +1,13 @@
+import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean
-} from 'graphql';
-import {
-  getUserId,
-  getUserOrgDoc,
-  requireOrgLeader,
-  requireWebsocket
-} from 'server/utils/authorization';
-import updateOrgValidation from './updateOrgValidation';
-import {handleSchemaErrors} from 'server/utils/utils';
 import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput';
+import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
+import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {handleSchemaErrors} from 'server/utils/utils';
+import updateOrgValidation from './helpers/updateOrgValidation';
 
 export default {
-  type: GraphQLBoolean,
+  type: new GraphQLNonNull(UpdateOrgPayload),
   description: 'Update an with a change in name, avatar',
   args: {
     updatedOrg: {
@@ -42,7 +35,9 @@ export default {
       ...org,
       updatedAt: now
     };
-    await r.table('Organization').get(orgId).update(dbUpdate);
-    return true;
+    const organization = await r.table('Organization')
+      .get(orgId)
+      .update(dbUpdate, {returnChanges: true})('changes')(0)('new_val');
+    return {organization};
   }
 };
