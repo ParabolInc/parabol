@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
-import Project from 'server/graphql/models/Project/projectSchema';
+import Project from 'server/graphql/types/Project';
 
 const CreateProjectPayload = new GraphQLObjectType({
   name: 'CreateProjectPayload',

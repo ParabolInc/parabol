@@ -2,6 +2,8 @@ import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType,
 import GitHubProject from 'server/graphql/types/GitHubProject';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
+import connectionDefinitions from 'server/graphql/connectionDefinitions';
+import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 const Project = new GraphQLObjectType({
   name: 'Project',
@@ -60,4 +62,21 @@ const Project = new GraphQLObjectType({
   })
 });
 
+const {connectionType, edgeType} = connectionDefinitions({
+  nodeType: Project,
+  edgeFields: () => ({
+    cursor: {
+      type: GraphQLISO8601Type
+    }
+  }),
+  connectionFields: () => ({
+    pageInfo: {
+      type: PageInfoDateCursor,
+      description: 'Page info with cursors coerced to ISO8601 dates'
+    }
+  })
+});
+
+export const ProjectConnection = connectionType;
+export const ProjectEdge = edgeType;
 export default Project;
