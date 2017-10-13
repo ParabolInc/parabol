@@ -1,16 +1,21 @@
-import {GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
-import addOrgValidation from 'server/graphql/models/Organization/addOrg/addOrgValidation';
-import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
 import {TeamInput} from 'server/graphql/models/Team/teamSchema';
+import addOrgValidation from 'server/graphql/mutations/helpers/addOrgValidation';
+import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
+import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
-import {ensureUniqueId, getUserId, requireWebsocket} from 'server/utils/authorization';
+import {ensureUniqueId, getUserId} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
-import createTeamAndLeader from '../../Team/createFirstTeam/createTeamAndLeader';
+import {NEW_AUTH_TOKEN, ORGANIZATION_ADDED} from 'universal/utils/constants';
+import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
+import createTeamAndLeader from '../models/Team/createFirstTeam/createTeamAndLeader';
+import tmsSignToken from 'server/utils/tmsSignToken';
 
 export default {
-  type: GraphQLBoolean,
+  type: AddOrgPayload,
   description: 'Create a new team and add the first team member',
   args: {
     newTeam: {
@@ -25,11 +30,10 @@ export default {
       description: 'The name of the new team'
     }
   },
-  async resolve(source, args, {authToken, socket}) {
+  async resolve(source, args, {authToken, socketId}) {
     // AUTH
     const {orgId} = args.newTeam;
     const userId = getUserId(authToken);
-    requireWebsocket(socket);
 
     // VALIDATION
     const {data: {invitees, newTeam, orgName}, errors} = addOrgValidation()(args);
@@ -43,22 +47,24 @@ export default {
 
     // RESOLUTION
     // set the token first because it's on the critical path for UX
-    const newAuthToken = {
+    const newAuthToken = tmsSignToken({
       ...authToken,
       tms: authToken.tms.concat(teamId),
       exp: undefined
-    };
-    socket.setAuthToken(newAuthToken);
+    });
+    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, newAuthToken);
 
-    await Promise.all([
-      createTeamAndLeader(userId, newTeam, true),
-      createNewOrg(orgId, orgName, userId)
-    ]);
+    const {newOrg} = await resolvePromiseObj({
+      newTeam: createTeamAndLeader(userId, newTeam, true),
+      newOrg: createNewOrg(orgId, orgName, userId)
+    });
 
     if (invitees && invitees.length) {
       await inviteTeamMembers(invitees, teamId, userId);
     }
     sendSegmentEvent('New Org', userId, {orgId, teamId});
-    return true;
+    const organizationAdded = {organization: newOrg};
+    getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId: socketId});
+    return organizationAdded;
   }
 };

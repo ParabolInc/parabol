@@ -1,6 +1,7 @@
 import {UPCOMING} from 'universal/utils/constants';
 import stripe from 'server/billing/stripe';
 import {fromEpochSeconds} from 'server/utils/epochTime';
+import getUpcomingInvoiceId from 'server/utils/getUpcomingInvoiceId';
 
 export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId) {
   if (!stripeId || !stripeSubscriptionId) return undefined;
@@ -12,7 +13,7 @@ export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscri
     return undefined;
   }
   return {
-    id: `upcoming_${orgId}`,
+    id: getUpcomingInvoiceId(orgId),
     amountDue: stripeInvoice.amount_due,
     total: stripeInvoice.total,
     endAt: fromEpochSeconds(stripeInvoice.period_end),

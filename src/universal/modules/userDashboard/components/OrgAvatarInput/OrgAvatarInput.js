@@ -1,12 +1,14 @@
-import React from 'react';
-import {reduxForm, Field} from 'redux-form';
 import {cashay} from 'cashay';
-import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
-import shouldValidate from 'universal/validation/shouldValidate';
-import sendAssetToS3 from 'universal/utils/sendAssetToS3';
-import FileInput from 'universal/components/FileInput/FileInput';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
+import React from 'react';
+import {Field, reduxForm} from 'redux-form';
+import FileInput from 'universal/components/FileInput/FileInput';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import UpdateOrgMutation from 'universal/mutations/UpdateOrgMutation';
+import sendAssetToS3 from 'universal/utils/sendAssetToS3';
+import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
+import shouldValidate from 'universal/validation/shouldValidate';
 
 const validate = (values) => {
   const schema = makeAvatarSchema();
@@ -29,18 +31,14 @@ const uploadPicture = async (orgId, pictureFile) => {
 };
 
 const OrgAvatarInput = (props) => {
-  const {handleSubmit, orgId} = props;
+  const {atmosphere, handleSubmit, orgId} = props;
 
   const updateOrg = (pictureUrl) => {
-    const options = {
-      variables: {
-        updatedOrg: {
-          id: orgId,
-          picture: pictureUrl
-        }
-      }
+    const updatedOrg = {
+      id: orgId,
+      picture: pictureUrl
     };
-    return cashay.mutate('updateOrg', options);
+    UpdateOrgMutation(atmosphere, updatedOrg);
   };
 
   const onSubmit = async (submissionData) => {
@@ -70,10 +68,13 @@ const OrgAvatarInput = (props) => {
 };
 
 OrgAvatarInput.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func,
   orgId: PropTypes.string
 };
 
-export default reduxForm({form: 'orgAvatar', shouldValidate, validate})(
-  OrgAvatarInput
+export default withAtmosphere(
+  reduxForm({form: 'orgAvatar', shouldValidate, validate})(
+    OrgAvatarInput
+  )
 );

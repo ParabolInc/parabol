@@ -12,7 +12,7 @@ export default {
       description: 'the orgId'
     }
   },
-  description: 'all the notifications for a single user',
+  description: 'get a single organization and the count of users by status',
   resolve: async (source, {orgId}, {authToken}) => {
     const r = getRethink();
 
@@ -29,11 +29,12 @@ export default {
 
     const inactiveUserCount = orgUsers.filter((user) => user.inactive).length;
     const activeUserCount = orgUsers.length - inactiveUserCount;
-
     return {
       ...org,
-      inactiveUserCount,
-      activeUserCount
+      orgUserCount: {
+        inactiveUserCount,
+        activeUserCount
+      }
     };
   }
 };

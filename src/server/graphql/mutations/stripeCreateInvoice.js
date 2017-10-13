@@ -20,7 +20,7 @@ export default {
       throw new Error('Don’t be rude.');
     }
 
-    // look the person up by their github user name on the provider table
+    // RESOLUTION
     const stripeLineItems = await fetchAllLines(invoiceId);
     const invoice = await stripe.invoices.retrieve(invoiceId);
     const {metadata: {orgId}} = await stripe.customers.retrieve(invoice.customer);

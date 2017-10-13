@@ -1,20 +1,26 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import Row from 'universal/components/Row/Row';
+import {tagBlock} from 'universal/components/Tag/tagBase';
+import TagPro from 'universal/components/Tag/TagPro';
+import appTheme from 'universal/styles/theme/appTheme';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {PRO} from 'universal/utils/constants';
 
 const OrganizationRow = (props) => {
   const {
     organization: {
       name,
-      activeUserCount,
-      inactiveUserCount,
-      picture
+      orgUserCount: {
+        activeUserCount,
+        inactiveUserCount
+      },
+      picture,
+      tier
     },
     onRowClick,
     styles
@@ -29,9 +35,14 @@ const OrganizationRow = (props) => {
         <div className={css(styles.nameAndTags)}>
           <div className={css(styles.name)} onClick={onRowClick}>
             {name}
+            {tier === PRO &&
+            <div className={css(styles.tagBlock)}>
+              <TagPro />
+            </div>
+            }
           </div>
           <div className={css(styles.subHeader)}>
-            {activeUserCount + inactiveUserCount} Users ({activeUserCount} Active)
+            {activeUserCount + inactiveUserCount}{' Users ('}{activeUserCount}{' Active)'}
           </div>
         </div>
       </div>
@@ -54,6 +65,7 @@ OrganizationRow.propTypes = {
   invitedAt: PropTypes.string,
   isAdmin: PropTypes.bool,
   isLead: PropTypes.bool,
+  isPaid: PropTypes.bool,
   onRowClick: PropTypes.func,
   organization: PropTypes.object,
   picture: PropTypes.string,
@@ -115,6 +127,12 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4
+  },
+
+  tagBlock: {
+    ...tagBlock,
+    marginLeft: '.125rem',
+    marginTop: '-.5rem'
   }
 });
 

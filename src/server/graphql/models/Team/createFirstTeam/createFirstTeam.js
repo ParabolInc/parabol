@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
+import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
 import {requireAuth} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';

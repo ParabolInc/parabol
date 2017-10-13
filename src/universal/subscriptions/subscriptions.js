@@ -5,7 +5,6 @@ import {
   INVITATIONS,
   ORG_APPROVALS,
   ORGANIZATIONS,
-  OWNED_ORGANIZATIONS,
   PROJECTS,
   TEAM,
   TEAM_MEMBERS
@@ -98,19 +97,6 @@ export default [
       organizations(userId: $userId) {
         id
         name
-      }
-    }`
-  },
-  {
-    channel: OWNED_ORGANIZATIONS,
-    string: `
-    subscription($userId: ID!) {
-      ownedOrganizations(userId: $userId) {
-        id
-        activeUserCount
-        inactiveUserCount
-        name
-        picture
       }
     }`
   },

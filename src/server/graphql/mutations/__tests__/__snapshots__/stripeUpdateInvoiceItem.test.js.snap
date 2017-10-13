@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`stripeUpdateInvoiceItem handles invoiceitem.updated 1`] = `
+exports[`stripeUpdateInvoiceItem handles invoiceitem.created 1`] = `
 Object {
   "invoiceItemHook": Object {
     "id": 0,
@@ -12,7 +12,7 @@ Object {
 }
 `;
 
-exports[`stripeUpdateInvoiceItem handles invoiceitem.updated 2`] = `
+exports[`stripeUpdateInvoiceItem handles invoiceitem.created 2`] = `
 Object {
   "invoiceItems": Array [
     Object {

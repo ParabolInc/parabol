@@ -1,4 +1,8 @@
-{
+const OFF = 0;
+const WARN = 1;
+const ERROR = 2;
+
+module.exports = {
   "extends": [
     "plugin:react/recommended",
     "plugin:import/errors",
@@ -12,16 +16,16 @@
     "jest": true
   },
   "rules": {
-    "arrow-body-style": 0,
+    "arrow-body-style": OFF,
     "arrow-parens": [
-      2,
+      ERROR,
       "always"
     ],
-    "babel/generator-star-spacing": 0,
-    "global-require": 0,
-    "import/default": 0,
+    "babel/generator-star-spacing": OFF,
+    "global-require": OFF,
+    "import/default": OFF,
     "import/extensions": [
-      2,
+      ERROR,
       "never",
       {
         "json": "always",
@@ -32,43 +36,43 @@
         "woff2": "always"
       }
     ],
-    "import/first": 0,
-    "import/no-duplicates": 0,
-    "import/named": 0,
-    "import/namespace": 0,
-    "import/no-extraneous-dependencies": 0,
-    "import/no-unresolved": 0,
-    "import/no-named-as-default": 0,
+    "import/first": OFF,
+    "import/no-duplicates": OFF,
+    "import/named": OFF,
+    "import/namespace": OFF,
+    "import/no-extraneous-dependencies": OFF,
+    "import/no-unresolved": OFF,
+    "import/no-named-as-default": OFF,
     "comma-dangle": ["error", "never"],
-    "id-length": 0,
+    "id-length": OFF,
     "indent": [
-      2,
-      2,
+      ERROR,
+      ERROR,
       {
-        "SwitchCase": 1
+        "SwitchCase": WARN
       }
     ],
-    "no-alert": 0,
-    "no-console": 0,
-    "no-continue": 0,
-    "no-mixed-operators": 0,
-    "no-multi-assign": 0,
-    "no-param-reassign": 0,
-    "no-plusplus": 0,
-    "no-prototype-builtins": 0,
-    "no-confusing-arrow": 0,
-    "no-underscore-dangle": 0,
+    "no-alert": OFF,
+    "no-console": OFF,
+    "no-continue": OFF,
+    "no-mixed-operators": OFF,
+    "no-multi-assign": OFF,
+    "no-param-reassign": OFF,
+    "no-plusplus": OFF,
+    "no-prototype-builtins": OFF,
+    "no-confusing-arrow": OFF,
+    "no-underscore-dangle": OFF,
     "max-len": [
-      1,
+      WARN,
       140
     ],
-    "object-curly-spacing": 0,
-    "react/forbid-prop-types": 0,
-    "react/jsx-filename-extension": 0,
-    "react/jsx-space-before-closing": 0,
-    "react/no-multi-comp": 0,
-    "react/no-unused-prop-types": 0,
-    "react/require-default-props": 0
+    "object-curly-spacing": OFF,
+    "react/forbid-prop-types": OFF,
+    "react/jsx-filename-extension": OFF,
+    "react/jsx-space-before-closing": OFF,
+    "react/no-multi-comp": OFF,
+    "react/no-unused-prop-types": OFF,
+    "react/require-default-props": OFF
   },
   "plugins": [
     "import",

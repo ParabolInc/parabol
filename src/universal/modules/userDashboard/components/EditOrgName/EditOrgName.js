@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {Field, reduxForm} from 'redux-form';
 import Editable from 'universal/components/Editable/Editable';
-import {cashay} from 'cashay';
-import {reduxForm, Field} from 'redux-form';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import UpdateOrgMutation from 'universal/mutations/UpdateOrgMutation';
 import appTheme from 'universal/styles/theme/appTheme';
 import editOrgNameValidation from './editOrgNameValidation';
 
@@ -19,18 +20,16 @@ const validate = (values) => {
 };
 
 const EditOrgName = (props) => {
-  const {orgName, orgId, handleSubmit} = props;
+  const {atmosphere, orgName, orgId, handleSubmit} = props;
   const updateEditable = async (submissionData) => {
     const schema = editOrgNameValidation();
     const {data: {orgName: validatedOrgName}} = schema(submissionData);
     if (validatedOrgName && validatedOrgName !== orgName) {
-      const variables = {
-        updatedOrg: {
-          id: orgId,
-          name: validatedOrgName
-        }
+      const updatedOrg = {
+        id: orgId,
+        name: validatedOrgName
       };
-      cashay.mutate('updateOrg', {variables});
+      UpdateOrgMutation(atmosphere, updatedOrg);
     }
   };
   return (
@@ -47,9 +46,10 @@ const EditOrgName = (props) => {
 };
 
 EditOrgName.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   orgName: PropTypes.string,
   orgId: PropTypes.string,
   handleSubmit: PropTypes.func.isRequired
 };
 
-export default reduxForm({form: 'orgName', enableReinitialize: true, validate})(EditOrgName);
+export default withAtmosphere(reduxForm({form: 'orgName', enableReinitialize: true, validate})(EditOrgName));
