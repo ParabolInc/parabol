@@ -22,17 +22,19 @@ const OrgBillingRoot = ({atmosphere, orgId, org}) => {
       environment={atmosphere}
       query={query}
       variables={{orgId, first: 3}}
-      render={({error, props: queryProps}) => {
+      render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {queryProps && <AnimatedFade key="1">
-              <OrgBilling viewer={queryProps.viewer} org={org} />
-            </AnimatedFade>}
-            {!queryProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} />
-            </AnimatedFade>
+            {renderProps &&
+              <AnimatedFade key="1">
+                <OrgBilling viewer={renderProps.viewer} org={org} />
+              </AnimatedFade>
+            }
+            {!renderProps && !error &&
+              <AnimatedFade key="2" unmountOnExit exit={false}>
+                <LoadingComponent height={'5rem'} />
+              </AnimatedFade>
             }
           </TransitionGroup>
         );
