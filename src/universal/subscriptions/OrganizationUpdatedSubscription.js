@@ -5,6 +5,7 @@ const subscription = graphql`
         id
         name
         picture
+        tier
       }
     }
   }

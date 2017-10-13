@@ -23,8 +23,6 @@ const subscriptions = [
   OrganizationAddedSubscription,
   OrganizationUpdatedSubscription
   // PAUSE/UNAPUSE user,
-  // UPGRADETOPRO
-
 ];
 
 const cacheConfig = {ttl: DEFAULT_TTL};
