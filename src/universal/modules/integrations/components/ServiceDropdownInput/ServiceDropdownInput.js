@@ -5,7 +5,6 @@ import FontAwesome from 'react-fontawesome';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
-import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
@@ -25,7 +24,7 @@ const ServiceDropdownInput = (props) => {
   return (
     <div className={css(styles.dropdownBlock)}>
       <FieldBlock>
-        <div className={css(styles.inputBlock)}>
+        <div className={css(styles.inputBlock)} tabIndex="1">
           <span>{dropdownText}</span>
           <Menu
             isLoaded={isLoaded}
@@ -82,10 +81,6 @@ const styleThunk = () => ({
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
     ...makeFieldColorPalette('white'),
-    ...makeHoverFocus({
-      borderColor: ui.fieldColorPalettes.white.focusBorderColor,
-      boxShadow: ui.fieldFocusBoxShadow
-    }),
     position: 'relative',
     userSelect: 'none'
   },

@@ -77,11 +77,11 @@ const styleThunk = (theme, {disabled, fieldSize}) => {
       ...ui.fieldSizeStyles[size]
     },
 
-    cool: makeFieldColorPalette('cool', disabled),
-    gray: makeFieldColorPalette('gray', disabled),
-    link: makeFieldColorPalette('link', disabled),
-    warm: makeFieldColorPalette('warm', disabled),
-    white: makeFieldColorPalette('white', disabled),
+    cool: makeFieldColorPalette('cool', !disabled),
+    gray: makeFieldColorPalette('gray', !disabled),
+    link: makeFieldColorPalette('link', !disabled),
+    warm: makeFieldColorPalette('warm', !disabled),
+    white: makeFieldColorPalette('white', !disabled),
 
     disabled: ui.fieldDisabled,
 

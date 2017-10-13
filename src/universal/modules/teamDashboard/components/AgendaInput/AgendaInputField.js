@@ -128,6 +128,11 @@ AgendaInputField.propTypes = {
 
 const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.mid60l);
 
+const inputCustomStyles = {
+  focus: { backgroundColor: appTheme.palette.light70l },
+  active: { backgroundColor: appTheme.palette.light70l }
+};
+
 const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
@@ -164,13 +169,13 @@ const styleThunk = () => ({
     textIndent: '.1875rem',
     width: '100%',
     zIndex: 200,
-    ...makeFieldColorPalette('white', true),
+    ...makeFieldColorPalette('white', false),
     ...inputPlaceholderStyles
   },
 
   inputNotDisabled: {
     cursor: 'text',
-    ...makeFieldColorPalette('white', false, {focusActiveBackgroundColor: appTheme.palette.light70l})
+    ...makeFieldColorPalette('white', true, inputCustomStyles)
   }
 });
 
