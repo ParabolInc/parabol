@@ -5,7 +5,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import userDashReducer from 'universal/modules/userDashboard/ducks/userDashDuck';
 import withReducer from '../../../../decorators/withReducer/withReducer';
 
-const organizations = () => System.import('universal/modules/userDashboard/containers/Organizations/OrganizationsContainer');
+const organizations = () => System.import('universal/modules/userDashboard/containers/Organizations/OrganizationsRoot');
 const organization = () => System.import('universal/modules/userDashboard/containers/Organization/OrganizationRoot');
 const userDashMain = () => System.import('universal/modules/userDashboard/components/UserDashMain/UserDashMain');
 const userSettings = () => System.import('universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer');

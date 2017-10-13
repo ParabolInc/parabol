@@ -92,7 +92,8 @@ export default function handleRedirects(oldProps, nextProps) {
     // were we n'sync?
     const inSync = localPhase === oldTeam.facilitatorPhase &&
       (localPhaseItem === undefined || localPhaseItem === oldTeam.facilitatorPhaseItem);
-    if (inSync) {
+    // Ideally, we'd do this without the DOM & ensure it's an active project card, but this works for now
+    if (inSync && document.activeElement.contentEditable !== 'true') {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       history.replace(pushURL);
       return false;

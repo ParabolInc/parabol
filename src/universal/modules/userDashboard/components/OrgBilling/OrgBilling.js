@@ -42,7 +42,7 @@ class OrgBilling extends Component {
       relay: {hasMore}
     } = this.props;
     const hasInvoices = invoices.edges.length > 0;
-    const {activeUserCount, creditCard = {}, id: orgId, tier} = org;
+    const {orgUserCount: {activeUserCount}, creditCard = {}, id: orgId, tier} = org;
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
       buttonSize="small"

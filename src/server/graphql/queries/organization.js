@@ -29,11 +29,12 @@ export default {
 
     const inactiveUserCount = orgUsers.filter((user) => user.inactive).length;
     const activeUserCount = orgUsers.length - inactiveUserCount;
-
     return {
       ...org,
-      inactiveUserCount,
-      activeUserCount
+      orgUserCount: {
+        inactiveUserCount,
+        activeUserCount
+      }
     };
   }
 };
