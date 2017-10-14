@@ -1,15 +1,19 @@
-/* eslint-env mocha */
 /**
  * Tests that users can sign in and sign out.
  */
+
+/* eslint-env mocha */
+
 import expect from 'expect';
 import { By, until } from 'selenium-webdriver';
 import shortid from 'shortid';
 
 import { all, newUserSession } from '../lib';
 
-const BASE_URL = 'http://localhost:3000';
-const BASE_URL_REGEX = /^http:\/\/localhost:3000(\/)?$/;
+const BASE_URL = global.E2E_APP_SERVER_URL;
+const BASE_URL_REGEX = BASE_URL.endsWith('/')
+  ? new RegExp(`^${BASE_URL}?$`)
+  : new RegExp(`^${BASE_URL}(/)?$`);
 
 function generateCredentials() {
   // Note that we want to generate unique credentials, since we're testing
