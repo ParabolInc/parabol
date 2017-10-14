@@ -25,12 +25,25 @@ const iconStyle = {
 
 const COLUMN_COUNT = 4;
 
+const getIndex = (columnIndex, rowIndex) => {
+  return COLUMN_COUNT * rowIndex + columnIndex;
+};
+
 class TeamArchive extends Component {
-  cellCache = new CellMeasurerCache({
-    defaultHeight: 180,
-    minHeight: 106,
-    fixedWidth: true
-  });
+  constructor(props) {
+    super(props);
+    this.gridRowCount = 40;
+    this.infiniteRowCount = 500;
+  }
+  getGridRowCount = () => {
+    const {viewer: {archivedProjects: {edges}}} = this.props;
+    const currentCount = edges.length;
+    return Math.ceil(currentCount / COLUMN_COUNT);
+  };
+
+  isRowLoaded = ({index}) => {
+    return Boolean(this.props.viewer.archivedProjects.edges[index]);
+  };
 
   loadMore = () => {
     const {relay: {hasMore, isLoading, loadMore}} = this.props;
@@ -39,26 +52,18 @@ class TeamArchive extends Component {
     loadMore(COLUMN_COUNT * 10);
   };
 
-  isRowLoaded = ({index}) => {
-    const edge = this.props.viewer.archivedProjects.edges[index];
-    return Boolean(edge && edge.node);
-    //return true;
-  };
+  cellCache = new CellMeasurerCache({
+    defaultHeight: 180,
+    minHeight: 106,
+    fixedWidth: true
+  });
 
-  getRowCount = () => {
-    const {viewer: {archivedProjects: {edges}}} = this.props;
-    const currentCount = edges.length;
-    const currentRows = Math.ceil(currentCount / COLUMN_COUNT);
-    console.log('currentRows', currentRows);
-    return currentRows + 100;
-  }
-  rowRenderer = ({columnIndex, isScrolling, isVisible, parent, rowIndex, key, style}) => {
+  rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
-    const {styles, viewer, userId} = this.props;
-    const index = COLUMN_COUNT * rowIndex + columnIndex;
-    const edge = viewer.archivedProjects.edges[index];
-    if (!edge) return undefined;
-    const project = edge.node;
+    const {styles, viewer: {archivedProjects: {edges}}, userId} = this.props;
+    const index = getIndex(columnIndex, rowIndex);
+    if (!this.isRowLoaded({index})) return undefined;
+    const project = edges[index].node;
     return (
       <CellMeasurer
         cache={this.cellCache}
@@ -67,7 +72,7 @@ class TeamArchive extends Component {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`} style={{...style, width: 300, whiteSpace: 'nowrap'}}>
+        <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`} style={{...style, width: 300}}>
           <OutcomeOrNullCard
             key={key}
             area={TEAM_DASH}
@@ -106,7 +111,7 @@ class TeamArchive extends Component {
             onScroll={onChildScroll}
             onSectionRendered={this._onSectionRendered}
             ref={registerChild}
-            rowCount={this.getRowCount()}
+            rowCount={this.getGridRowCount()}
             rowHeight={this.cellCache.rowHeight}
             scrollTop={scrollTop}
             // px equivalent of ui.projectColumnsMaxWidth
@@ -118,15 +123,11 @@ class TeamArchive extends Component {
   }
 
   _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
-    const columnCount = 5;
-    const startIndex = rowStartIndex * columnCount + columnStartIndex
-    const stopIndex = rowStopIndex * columnCount + columnStopIndex
-
     this._onRowsRendered({
-      startIndex,
-      stopIndex
-    })
-  }
+      startIndex: getIndex(columnStartIndex, rowStartIndex),
+      stopIndex: getIndex(columnStopIndex, rowStopIndex)
+    });
+  };
 
   render() {
     const {styles, teamId, teamName, viewer} = this.props;
@@ -152,7 +153,7 @@ class TeamArchive extends Component {
               <InfiniteLoader
                 isRowLoaded={this.isRowLoaded}
                 loadMoreRows={this.loadMore}
-                rowCount={this.getRowCount()}
+                rowCount={1000}
               >
                 {this._infiniteLoaderChildFunction}
               </InfiniteLoader>
@@ -178,6 +179,7 @@ class TeamArchive extends Component {
 };
 
 TeamArchive.propTypes = {
+  relay: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string,
   teamName: PropTypes.string,

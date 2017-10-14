@@ -24,7 +24,7 @@ const TeamArchiveRoot = ({atmosphere, match, teamName}) => {
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{teamId, first: 20}}
+      variables={{teamId, first: 40}}
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
