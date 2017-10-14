@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLFloat, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 
 const PageInfoDateCursor = new GraphQLObjectType({
@@ -20,11 +20,7 @@ const PageInfoDateCursor = new GraphQLObjectType({
     endCursor: {
       type: GraphQLISO8601Type,
       description: 'When paginating forwards, the cursor to continue.'
-    },
-    //totalCount: {
-    //  type: GraphQLFloat,
-    //  description: 'The count of all the docs in the connection'
-    //}
+    }
   })
 });
 

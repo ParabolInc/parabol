@@ -10,10 +10,11 @@ import getRethink from 'server/database/rethinkDriver';
 
 const RelayProject = new GraphQLObjectType({
   name: 'RelayProject',
-  description: 'A long-term project shared across the team, assigned to a single user -- RelayProject is a temporary fix while Project uses cashay',
+  description: `A long-term project shared across the team, assigned to a single user ' +
+  '-- RelayProject is a temporary fix while Project uses cashay`,
 
   fields: () => ({
-    //'The unique project id, teamId::shortid'
+    // 'The unique project id, teamId::shortid'
     id: globalIdField('Project', ({id}) => id),
     agendaId: {
       type: GraphQLID,

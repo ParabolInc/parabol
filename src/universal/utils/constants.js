@@ -163,7 +163,7 @@ export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:b
 export const GITHUB_ENDPOINT = 'https://api.github.com/graphql';
 
 /* JavaScript specifics */
-export const MAX_TIMEOUT = 2147483647;
+export const MAX_INT = 2147483647;
 
 
 // InvitationResultTypes

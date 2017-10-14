@@ -23,7 +23,7 @@ query {
 const mapStateToProps = (state, props) => {
   // TODO ugly patch until we remove cashay
   const relaySafeId = getRelaySafeProjectId(props.outcome.id);
-  const [teamId] = relaySafeId.split('::')
+  const [teamId] = relaySafeId.split('::');
   const {teamMembers} = cashay.query(teamMembersQuery, {
     op: 'outcomeCardContainer',
     key: teamId,

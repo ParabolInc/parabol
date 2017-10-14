@@ -6,7 +6,6 @@ import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation';
 import {MEETING} from 'universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 class GitHubRepoListMenu extends Component {
   static propTypes = {

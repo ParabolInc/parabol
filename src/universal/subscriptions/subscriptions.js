@@ -138,11 +138,13 @@ export default [
          isPaid,
          name,
          meetingId,
+         orgId,
          activeFacilitator,
          facilitatorPhase,
          facilitatorPhaseItem,
          meetingPhase,
          meetingPhaseItem
+         tier
        }
     }`
   },

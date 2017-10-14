@@ -20,7 +20,7 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve(source, {first, after, teamId}, {authToken, socketId}) {
+  async resolve(source, {first, after, teamId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
@@ -60,4 +60,4 @@ export default {
       }
     };
   }
-}
+};

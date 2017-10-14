@@ -7,15 +7,14 @@ import {CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader, WindowScroller} f
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
-import TeamArchiveSqueeze from 'universal/modules/teamDashboard/components/TeamArchiveSqueeze/TeamArchiveSqueeze';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import {ib} from 'universal/styles/helpers';
-import overflowTouch from 'universal/styles/helpers/overflowTouch';
 import appTheme from 'universal/styles/theme/theme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {TEAM_DASH} from 'universal/utils/constants';
+import {MAX_INT, PERSONAL, TEAM_DASH} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot';
 
 const iconStyle = {
   ...ib,
@@ -30,11 +29,6 @@ const getIndex = (columnIndex, rowIndex) => {
 };
 
 class TeamArchive extends Component {
-  constructor(props) {
-    super(props);
-    this.gridRowCount = 40;
-    this.infiniteRowCount = 500;
-  }
   getGridRowCount = () => {
     const {viewer: {archivedProjects: {edges}}} = this.props;
     const currentCount = edges.length;
@@ -47,7 +41,6 @@ class TeamArchive extends Component {
 
   loadMore = () => {
     const {relay: {hasMore, isLoading, loadMore}} = this.props;
-    console.log('trigger loadMOre')
     if (!hasMore() || isLoading()) return;
     loadMore(COLUMN_COUNT * 10);
   };
@@ -90,7 +83,7 @@ class TeamArchive extends Component {
           />
         </div>
       </CellMeasurer>
-    )
+    );
   };
 
   _infiniteLoaderChildFunction = ({onRowsRendered, registerChild}) => {
@@ -119,7 +112,7 @@ class TeamArchive extends Component {
           />
         )}
       </WindowScroller>
-    )
+    );
   }
 
   _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
@@ -130,21 +123,20 @@ class TeamArchive extends Component {
   };
 
   render() {
-    const {styles, teamId, teamName, viewer} = this.props;
+    // TODO team needs isBillingLeader
+    const {relay: {hasMore}, styles, team, teamId, viewer} = this.props;
+    const {name: teamName, tier, orgId} = team;
     const {archivedProjects} = viewer;
     const {edges} = archivedProjects;
     // Archive squeeze
-    const isPaid = false; // Just on the Personal Plan
-    const hasHiddenCards = true; // There are cards that have been archived for GT 14 days
-    const showArchiveSqueeze = Boolean(!isPaid && hasHiddenCards);
-    const handleUpdate = () => console.log(`handleUpdate to the Pro Plan for ${teamId}`);
+    const showArchiveSqueeze = Boolean(tier === PERSONAL && hasMore());
 
     return (
       <div className={css(styles.root)}>
-        <Helmet title={`${teamName} Archive | Parabol`}/>
+        <Helmet title={`${teamName} Archive | Parabol`} />
         <div className={css(styles.header)}>
-          <TeamArchiveHeader teamId={teamId}/>
-          <div className={css(styles.border)}/>
+          <TeamArchiveHeader teamId={teamId} />
+          <div className={css(styles.border)} />
         </div>
 
         <div className={css(styles.body)}>
@@ -153,18 +145,23 @@ class TeamArchive extends Component {
               <InfiniteLoader
                 isRowLoaded={this.isRowLoaded}
                 loadMoreRows={this.loadMore}
-                rowCount={1000}
+                rowCount={MAX_INT}
               >
                 {this._infiniteLoaderChildFunction}
               </InfiniteLoader>
               {showArchiveSqueeze &&
-              <div className={css(styles.archiveSqueezeBlock)}>
-                <TeamArchiveSqueeze cardsUnavailableCount={128} handleUpdate={handleUpdate}/>
-              </div>
+                <div className={css(styles.archiveSqueezeBlock)}>
+                  <TeamArchiveSqueezeRoot
+                    isBillingLeader={team.isBillingLeader}
+                    projectsAvailableCount={edges.length}
+                    orgId={orgId}
+                    teamId={teamId}
+                  />
+                </div>
               }
             </div> :
             <div className={css(styles.emptyMsg)}>
-              <FontAwesome name="smile-o" style={iconStyle}/>
+              <FontAwesome name="smile-o" style={iconStyle} />
               <span style={ib}>
                 {'Hi there! There are zero archived projects. '}
                 {'Nothing to see here. How about a fun rally video? '}
@@ -176,13 +173,17 @@ class TeamArchive extends Component {
       </div>
     );
   }
-};
+}
 
 TeamArchive.propTypes = {
   relay: PropTypes.object.isRequired,
   styles: PropTypes.object,
+  team: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    orgId: PropTypes.string.isRequired,
+    tier: PropTypes.string.isRequired
+  }),
   teamId: PropTypes.string,
-  teamName: PropTypes.string,
   userId: PropTypes.string.isRequired,
   viewer: PropTypes.object.isRequired
 };
@@ -210,17 +211,6 @@ const styleThunk = () => ({
     flex: 1,
     justifyContent: 'center',
     position: 'relative'
-  },
-
-  scrollable: {
-    ...overflowTouch,
-    bottom: 0,
-    left: 0,
-    padding: '1rem 0 0 1rem',
-    // @terry everything was hidden unless i nuked this.
-    //position: 'absolute',
-    right: 0,
-    top: 0
   },
 
   cardGrid: {

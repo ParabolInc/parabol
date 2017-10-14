@@ -8,15 +8,22 @@ import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import {PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
+import {createFragmentContainer} from 'react-relay';
 
+const linkLabel = 'Compare Plans';
+const linkURL = '#account-features'; // TODO: Link to new pricing page (TA)
+const iconStyles = {
+  fontSize: ui.iconSize,
+  marginLeft: '.125rem'
+};
+
+// TODO needs a design for non-billing leaders
 const TeamArchiveSqueeze = (props) => {
-  const {cardsUnavailableCount, handleUpdate, styles} = props;
-  const CARDS_COUNT = cardsUnavailableCount;
-  const linkLabel = 'Compare Plans';
-  const linkURL = '#account-features'; // TODO: Link to new pricing page (TA)
-  const iconStyles = {
-    fontSize: ui.iconSize,
-    marginLeft: '.125rem'
+  const {isBillingLeader, orgId, projectsAvailableCount, styles, viewer} = props;
+  const unavailableProjects = viewer.archivedProjectsCount - projectsAvailableCount;
+
+  const handleUpgrade = () => {
+    history.push(`/me/organizations/${orgId}`);
   };
   return (
     <div className={css(styles.archiveSqueezeOuter)}>
@@ -24,7 +31,7 @@ const TeamArchiveSqueeze = (props) => {
         <div className={css(styles.archiveSqueezeInner)}>
           <div className={css(styles.archiveSqueezeContent)}>
             <h2 className={css(styles.archiveSqueezeHeading)}>
-              {`${CARDS_COUNT} Cards Unavailable!`}
+              {`${unavailableProjects} Cards Unavailable!`}
             </h2>
             <p className={css(styles.archiveSqueezeCopy)}>
               {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can access archived cards for '}<b>{'14 days'}</b>{'.'}<br />
@@ -35,13 +42,18 @@ const TeamArchiveSqueeze = (props) => {
             </p>
           </div>
           <div className={css(styles.archiveSqueezeButtonBlock)}>
-            <Button
-              colorPalette="cool"
-              depth={1}
-              label={`Upgrade to the ${PRO_LABEL} Plan`}
-              onClick={handleUpdate}
-              size="large"
-            />
+            {isBillingLeader ?
+              <Button
+                colorPalette="cool"
+                depth={1}
+                label={`Upgrade to the ${PRO_LABEL} Plan`}
+                onClick={handleUpgrade}
+                size="large"
+              /> :
+              <div>
+                Tell your billing leader
+              </div>
+            }
           </div>
         </div>
       </Panel>
@@ -50,9 +62,11 @@ const TeamArchiveSqueeze = (props) => {
 };
 
 TeamArchiveSqueeze.propTypes = {
-  cardsUnavailableCount: PropTypes.number,
-  handleUpdate: PropTypes.func,
-  styles: PropTypes.object
+  isBillingLeader: PropTypes.bool,
+  orgId: PropTypes.string.isRequired,
+  projectsAvailableCount: PropTypes.number,
+  styles: PropTypes.object,
+  viewer: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -91,4 +105,11 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(TeamArchiveSqueeze);
+export default createFragmentContainer(
+  withStyles(styleThunk)(TeamArchiveSqueeze),
+  graphql`
+    fragment TeamArchiveSqueeze_viewer on User {
+      archivedProjectsCount(teamId: $teamId)
+    }
+  `
+);

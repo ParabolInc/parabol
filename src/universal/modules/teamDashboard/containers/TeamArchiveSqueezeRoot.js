@@ -6,20 +6,19 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import TeamArchive from 'universal/modules/teamDashboard/components/TeamArchive/TeamArchive';
+import TeamArchiveSqueeze from 'universal/modules/teamDashboard/components/TeamArchiveSqueeze/TeamArchiveSqueeze';
+import ui from 'universal/styles/ui';
 
 
 const query = graphql`
-  query TeamArchiveRootQuery($teamId: ID!, $first: Int!, $after: DateTime) {
+  query TeamArchiveSqueezeRootQuery($teamId: ID!) {
     viewer {
-      ...TeamArchive_viewer
+      ...TeamArchiveSqueeze_viewer
     }
   }
 `;
 
-const TeamArchiveRoot = ({atmosphere, match, team}) => {
-  const {params: {teamId}} = match;
-  const {userId} = atmosphere;
+const TeamArchiveSqueezeRoot = ({atmosphere, isBillingLeader, orgId, projectsAvailableCount, teamId}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -31,17 +30,18 @@ const TeamArchiveRoot = ({atmosphere, match, team}) => {
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">
-              <TeamArchive
+              <TeamArchiveSqueeze
+                isBillingLeader={isBillingLeader}
+                orgId={orgId}
+                projectsAvailableCount={projectsAvailableCount}
                 teamId={teamId}
-                team={team}
-                userId={userId}
                 viewer={renderProps.viewer}
               />
             </AnimatedFade>
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} />
+              <LoadingComponent height={'5rem'} width={ui.projectColumnsMaxWidth} />
             </AnimatedFade>
             }
           </TransitionGroup>
@@ -51,14 +51,12 @@ const TeamArchiveRoot = ({atmosphere, match, team}) => {
   );
 };
 
-TeamArchiveRoot.propTypes = {
+TeamArchiveSqueezeRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  team: PropTypes.shape({
-    orgId: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    tier: PropTypes.string.isRequired
-  })
+  isBillingLeader: PropTypes.bool,
+  orgId: PropTypes.string.isRequired,
+  projectsAvailableCount: PropTypes.number.isRequired,
+  teamId: PropTypes.string.isRequired
 };
 
-export default withAtmosphere(TeamArchiveRoot);
+export default withAtmosphere(TeamArchiveSqueezeRoot);
