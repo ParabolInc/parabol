@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createPaginationContainer} from 'react-relay';
-import {InfiniteLoader, List} from 'react-virtualized';
+import {CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader, WindowScroller} from 'react-virtualized';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
@@ -23,74 +23,113 @@ const iconStyle = {
   marginRight: '.25rem'
 };
 
-class TeamArchive extends Component {
-  componentDidMount() {
-    //window.addEventListener('scroll', this.checkScroll);
-  }
+const COLUMN_COUNT = 4;
 
-  checkScroll = () => {
-    if (!this.ref) return;
-    const {height} = this.ref.getBoundingClientRect();
-    const {scrollHeight, scrollTop} = this.ref;
-    const bottom = scrollTop + height;
-    const distanceFromBottom = 100;
-    if (bottom + distanceFromBottom > scrollHeight) {
-      //this.loadMore();
-    }
-  };
+class TeamArchive extends Component {
+  cellCache = new CellMeasurerCache({
+    defaultHeight: 180,
+    minHeight: 106,
+    fixedWidth: true
+  });
 
   loadMore = () => {
     const {relay: {hasMore, isLoading, loadMore}} = this.props;
+    console.log('trigger loadMOre')
     if (!hasMore() || isLoading()) return;
-    loadMore(20, () => {
-      console.log("CB", this.props.viewer.archivedProjects.edges.length)
-    });
+    loadMore(COLUMN_COUNT * 10);
   };
 
   isRowLoaded = ({index}) => {
     const edge = this.props.viewer.archivedProjects.edges[index];
-    console.log('edge', edge && edge.node)
-    return edge && edge.node;
-    return !!this.props.viewer.archivedProjects.edges[index];
+    return Boolean(edge && edge.node);
+    //return true;
   };
 
   getRowCount = () => {
-    const {relay: {hasMore}, viewer: {archivedProjects: {edges}}} = this.props;
-    if (hasMore()) {
-      //return edges.length + 1;
-    }
-    return 1000
-    //return edges.length;
-  };
-
-  rowRenderer = ({key, index, style}) => {
+    const {viewer: {archivedProjects: {edges}}} = this.props;
+    const currentCount = edges.length;
+    const currentRows = Math.ceil(currentCount / COLUMN_COUNT);
+    console.log('currentRows', currentRows);
+    return currentRows + 100;
+  }
+  rowRenderer = ({columnIndex, isScrolling, isVisible, parent, rowIndex, key, style}) => {
+    // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
     const {styles, viewer, userId} = this.props;
+    const index = COLUMN_COUNT * rowIndex + columnIndex;
     const edge = viewer.archivedProjects.edges[index];
     if (!edge) return undefined;
     const project = edge.node;
     return (
-      <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`} style={style}>
-        <OutcomeOrNullCard
-          key={key}
-          area={TEAM_DASH}
-          myUserId={userId}
-          outcome={{
-            ...project,
-            id: fromGlobalId(project.id).id,
-            createdAt: new Date(project.createdAt),
-            updatedAt: new Date(project.updatedAt),
-            teamMember: {
-              ...project.teamMember,
-              id: fromGlobalId(project.teamMember.id).id
-            }
-          }}
-        />
-      </div>
+      <CellMeasurer
+        cache={this.cellCache}
+        columnIndex={columnIndex}
+        key={key}
+        parent={parent}
+        rowIndex={rowIndex}
+      >
+        <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`} style={{...style, width: 300, whiteSpace: 'nowrap'}}>
+          <OutcomeOrNullCard
+            key={key}
+            area={TEAM_DASH}
+            myUserId={userId}
+            outcome={{
+              ...project,
+              id: fromGlobalId(project.id).id,
+              createdAt: new Date(project.createdAt),
+              updatedAt: new Date(project.updatedAt),
+              teamMember: {
+                ...project.teamMember,
+                id: fromGlobalId(project.teamMember.id).id
+              }
+            }}
+          />
+        </div>
+      </CellMeasurer>
     )
   };
 
+  _infiniteLoaderChildFunction = ({onRowsRendered, registerChild}) => {
+    this._onRowsRendered = onRowsRendered;
+    return (
+      <WindowScroller>
+        {({height, isScrolling, onChildScroll, scrollTop}) => (
+          <Grid
+            autoHeight
+            cellRenderer={this.rowRenderer}
+            columnCount={COLUMN_COUNT}
+            columnWidth={300}
+            deferredMeasurementCache={this.cellCache}
+            estimatedColumnSize={300}
+            height={height}
+            isScrolling={isScrolling}
+            onRowsRendered={onRowsRendered}
+            onScroll={onChildScroll}
+            onSectionRendered={this._onSectionRendered}
+            ref={registerChild}
+            rowCount={this.getRowCount()}
+            rowHeight={this.cellCache.rowHeight}
+            scrollTop={scrollTop}
+            // px equivalent of ui.projectColumnsMaxWidth
+            width={1252}
+          />
+        )}
+      </WindowScroller>
+    )
+  }
+
+  _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
+    const columnCount = 5;
+    const startIndex = rowStartIndex * columnCount + columnStartIndex
+    const stopIndex = rowStopIndex * columnCount + columnStopIndex
+
+    this._onRowsRendered({
+      startIndex,
+      stopIndex
+    })
+  }
+
   render() {
-    const {relay: {isLoading, hasMore, loadMore}, styles, teamId, teamName, userId, viewer} = this.props;
+    const {styles, teamId, teamName, viewer} = this.props;
     const {archivedProjects} = viewer;
     const {edges} = archivedProjects;
     // Archive squeeze
@@ -108,42 +147,30 @@ class TeamArchive extends Component {
         </div>
 
         <div className={css(styles.body)}>
-          <div className={css(styles.scrollable)}>
-            {edges.length ?
-              <div className={css(styles.cardGrid)}>
-                <InfiniteLoader
-                  isRowLoaded={this.isRowLoaded}
-                  loadMoreRows={this.loadMore}
-                  rowCount={this.getRowCount()}
-                >
-                  {({onRowsRendered, registerChild}) => (
-                    <List
-                      height={600}
-                      onRowsRendered={onRowsRendered}
-                      ref={registerChild}
-                      rowCount={this.getRowCount()}
-                      rowHeight={100}
-                      rowRenderer={this.rowRenderer}
-                      width={1200}
-                    />
-                  )}
-                </InfiniteLoader>
-                {showArchiveSqueeze &&
-                <div className={css(styles.archiveSqueezeBlock)}>
-                  <TeamArchiveSqueeze cardsUnavailableCount={128} handleUpdate={handleUpdate}/>
-                </div>
-                }
-              </div> :
-              <div className={css(styles.emptyMsg)}>
-                <FontAwesome name="smile-o" style={iconStyle}/>
-                <span style={ib}>
-                {'Hi there! There are zero archived projects. '}
-                  {'Nothing to see here. How about a fun rally video? '}
-                  <span className={css(styles.link)}>{getRallyLink()}!</span>
-              </span>
+          {edges.length ?
+            <div className={css(styles.cardGrid)}>
+              <InfiniteLoader
+                isRowLoaded={this.isRowLoaded}
+                loadMoreRows={this.loadMore}
+                rowCount={this.getRowCount()}
+              >
+                {this._infiniteLoaderChildFunction}
+              </InfiniteLoader>
+              {showArchiveSqueeze &&
+              <div className={css(styles.archiveSqueezeBlock)}>
+                <TeamArchiveSqueeze cardsUnavailableCount={128} handleUpdate={handleUpdate}/>
               </div>
-            }
-          </div>
+              }
+            </div> :
+            <div className={css(styles.emptyMsg)}>
+              <FontAwesome name="smile-o" style={iconStyle}/>
+              <span style={ib}>
+                {'Hi there! There are zero archived projects. '}
+                {'Nothing to see here. How about a fun rally video? '}
+                <span className={css(styles.link)}>{getRallyLink()}!</span>
+              </span>
+            </div>
+          }
         </div>
       </div>
     );
@@ -177,7 +204,9 @@ const styleThunk = () => ({
   },
 
   body: {
+    display: 'flex',
     flex: 1,
+    justifyContent: 'center',
     position: 'relative'
   },
 
@@ -195,6 +224,7 @@ const styleThunk = () => ({
   cardGrid: {
     display: 'flex',
     flexWrap: 'wrap',
+    margin: '1rem',
     maxWidth: ui.projectColumnsMaxWidth,
     width: '100%'
   },

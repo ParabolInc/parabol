@@ -38,6 +38,8 @@ const assignTargetAnchor = {
   horizontal: 'left'
 };
 
+const height = ui.cardButtonHeight;
+
 class OutcomeCardFooter extends Component {
   constructor(props) {
     super(props);
@@ -105,6 +107,8 @@ class OutcomeCardFooter extends Component {
               alt={owner.preferredName}
               className={css(styles.avatarImg)}
               src={owner.picture}
+              // hack because aphrodite loads styles on next tick, which causes the cell height adjuster to bork >:-(
+              style={{height, width: height }}
             />
           </div>
           <div className={css(styles.avatarLabel)}>
@@ -207,7 +211,6 @@ OutcomeCardFooter.propTypes = {
   toggleMenuState: PropTypes.func.isRequired
 };
 
-const height = ui.cardButtonHeight;
 const label = {
   ...textOverflow,
   color: appTheme.palette.dark,

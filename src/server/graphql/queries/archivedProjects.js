@@ -42,7 +42,8 @@ export default {
           true
         )))
       .orderBy(r.desc('updatedAt'))
-      .limit(first + 1);
+      .limit(first + 1)
+      .coerceTo('array');
 
     const nodes = projects.slice(0, first);
     const edges = nodes.map((node) => ({
