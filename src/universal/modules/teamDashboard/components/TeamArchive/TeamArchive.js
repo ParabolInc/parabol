@@ -1,18 +1,20 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import {ib, overflowTouch} from 'universal/styles/helpers';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import FontAwesome from 'react-fontawesome';
+import {createPaginationContainer} from 'react-relay';
+import {InfiniteLoader, List} from 'react-virtualized';
+import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
 import TeamArchiveSqueeze from 'universal/modules/teamDashboard/components/TeamArchiveSqueeze/TeamArchiveSqueeze';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import FontAwesome from 'react-fontawesome';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
-import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import {ib} from 'universal/styles/helpers';
+import overflowTouch from 'universal/styles/helpers/overflowTouch';
+import appTheme from 'universal/styles/theme/theme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 import {TEAM_DASH} from 'universal/utils/constants';
-import {createPaginationContainer} from 'react-relay';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const iconStyle = {
@@ -21,65 +23,131 @@ const iconStyle = {
   marginRight: '.25rem'
 };
 
-const TeamArchive = (props) => {
-  const {styles, teamId, teamName, userId, viewer} = props;
-  const {archivedProjects} = viewer;
-  const {edges} = archivedProjects;
-  // Archive squeeze
-  const isPaid = false; // Just on the Personal Plan
-  const hasHiddenCards = true; // There are cards that have been archived for GT 14 days
-  const showArchiveSqueeze = Boolean(!isPaid && hasHiddenCards);
-  const handleUpdate = () => console.log(`handleUpdate to the Pro Plan for ${teamId}`);
+class TeamArchive extends Component {
+  componentDidMount() {
+    //window.addEventListener('scroll', this.checkScroll);
+  }
 
-  return (
-    <div className={css(styles.root)}>
-      <Helmet title={`${teamName} Archive | Parabol`} />
-      <div className={css(styles.header)}>
-        <TeamArchiveHeader teamId={teamId} />
-        <div className={css(styles.border)} />
+  checkScroll = () => {
+    if (!this.ref) return;
+    const {height} = this.ref.getBoundingClientRect();
+    const {scrollHeight, scrollTop} = this.ref;
+    const bottom = scrollTop + height;
+    const distanceFromBottom = 100;
+    if (bottom + distanceFromBottom > scrollHeight) {
+      //this.loadMore();
+    }
+  };
+
+  loadMore = () => {
+    const {relay: {hasMore, isLoading, loadMore}} = this.props;
+    if (!hasMore() || isLoading()) return;
+    loadMore(20, () => {
+      console.log("CB", this.props.viewer.archivedProjects.edges.length)
+    });
+  };
+
+  isRowLoaded = ({index}) => {
+    const edge = this.props.viewer.archivedProjects.edges[index];
+    console.log('edge', edge && edge.node)
+    return edge && edge.node;
+    return !!this.props.viewer.archivedProjects.edges[index];
+  };
+
+  getRowCount = () => {
+    const {relay: {hasMore}, viewer: {archivedProjects: {edges}}} = this.props;
+    if (hasMore()) {
+      //return edges.length + 1;
+    }
+    return 1000
+    //return edges.length;
+  };
+
+  rowRenderer = ({key, index, style}) => {
+    const {styles, viewer, userId} = this.props;
+    const edge = viewer.archivedProjects.edges[index];
+    if (!edge) return undefined;
+    const project = edge.node;
+    return (
+      <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`} style={style}>
+        <OutcomeOrNullCard
+          key={key}
+          area={TEAM_DASH}
+          myUserId={userId}
+          outcome={{
+            ...project,
+            id: fromGlobalId(project.id).id,
+            createdAt: new Date(project.createdAt),
+            updatedAt: new Date(project.updatedAt),
+            teamMember: {
+              ...project.teamMember,
+              id: fromGlobalId(project.teamMember.id).id
+            }
+          }}
+        />
       </div>
-      <div className={css(styles.body)}>
-        <div className={css(styles.scrollable)}>
-          {edges.length ?
-            <div className={css(styles.cardGrid)}>
-              {edges.map(({node: project}) =>
-                (<div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
-                  <OutcomeOrNullCard
-                    key={project.id}
-                    area={TEAM_DASH}
-                    myUserId={userId}
-                    outcome={{
-                      ...project,
-                      id: fromGlobalId(project.id).id,
-                      createdAt: new Date(project.createdAt),
-                      updatedAt: new Date(project.updatedAt),
-                      teamMember: {
-                        ...project.teamMember,
-                        id: fromGlobalId(project.teamMember.id).id
-                      }
-                    }}
-                  />
-                </div>)
-              )}
-              {showArchiveSqueeze &&
+    )
+  };
+
+  render() {
+    const {relay: {isLoading, hasMore, loadMore}, styles, teamId, teamName, userId, viewer} = this.props;
+    const {archivedProjects} = viewer;
+    const {edges} = archivedProjects;
+    // Archive squeeze
+    const isPaid = false; // Just on the Personal Plan
+    const hasHiddenCards = true; // There are cards that have been archived for GT 14 days
+    const showArchiveSqueeze = Boolean(!isPaid && hasHiddenCards);
+    const handleUpdate = () => console.log(`handleUpdate to the Pro Plan for ${teamId}`);
+
+    return (
+      <div className={css(styles.root)}>
+        <Helmet title={`${teamName} Archive | Parabol`}/>
+        <div className={css(styles.header)}>
+          <TeamArchiveHeader teamId={teamId}/>
+          <div className={css(styles.border)}/>
+        </div>
+
+        <div className={css(styles.body)}>
+          <div className={css(styles.scrollable)}>
+            {edges.length ?
+              <div className={css(styles.cardGrid)}>
+                <InfiniteLoader
+                  isRowLoaded={this.isRowLoaded}
+                  loadMoreRows={this.loadMore}
+                  rowCount={this.getRowCount()}
+                >
+                  {({onRowsRendered, registerChild}) => (
+                    <List
+                      height={600}
+                      onRowsRendered={onRowsRendered}
+                      ref={registerChild}
+                      rowCount={this.getRowCount()}
+                      rowHeight={100}
+                      rowRenderer={this.rowRenderer}
+                      width={1200}
+                    />
+                  )}
+                </InfiniteLoader>
+                {showArchiveSqueeze &&
                 <div className={css(styles.archiveSqueezeBlock)}>
-                  <TeamArchiveSqueeze cardsUnavailableCount={128} handleUpdate={handleUpdate} />
+                  <TeamArchiveSqueeze cardsUnavailableCount={128} handleUpdate={handleUpdate}/>
                 </div>
-              }
-            </div> :
-            <div className={css(styles.emptyMsg)}>
-              <FontAwesome name="smile-o" style={iconStyle} />
-              <span style={ib}>
+                }
+              </div> :
+              <div className={css(styles.emptyMsg)}>
+                <FontAwesome name="smile-o" style={iconStyle}/>
+                <span style={ib}>
                 {'Hi there! There are zero archived projects. '}
-                {'Nothing to see here. How about a fun rally video? '}
-                <span className={css(styles.link)}>{getRallyLink()}!</span>
+                  {'Nothing to see here. How about a fun rally video? '}
+                  <span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
-            </div>
-          }
+              </div>
+            }
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 TeamArchive.propTypes = {
