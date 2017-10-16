@@ -24,6 +24,9 @@ const iconStyle = {
 
 const COLUMN_COUNT = 4;
 
+const ARCHIVE_WIDTH = 1040;
+const CARD_WIDTH = 256;
+
 const getIndex = (columnIndex, rowIndex) => {
   return COLUMN_COUNT * rowIndex + columnIndex;
 };
@@ -65,7 +68,7 @@ class TeamArchive extends Component {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`} style={{...style, width: 300}}>
+        <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`} style={{...style, width: CARD_WIDTH}}>
           <OutcomeOrNullCard
             key={key}
             area={TEAM_DASH}
@@ -95,9 +98,9 @@ class TeamArchive extends Component {
             autoHeight
             cellRenderer={this.rowRenderer}
             columnCount={COLUMN_COUNT}
-            columnWidth={300}
+            columnWidth={CARD_WIDTH}
             deferredMeasurementCache={this.cellCache}
-            estimatedColumnSize={300}
+            estimatedColumnSize={CARD_WIDTH}
             height={height}
             isScrolling={isScrolling}
             onRowsRendered={onRowsRendered}
@@ -107,8 +110,7 @@ class TeamArchive extends Component {
             rowCount={this.getGridRowCount()}
             rowHeight={this.cellCache.rowHeight}
             scrollTop={scrollTop}
-            // px equivalent of ui.projectColumnsMaxWidth
-            width={1252}
+            width={ARCHIVE_WIDTH}
           />
         )}
       </WindowScroller>
@@ -202,44 +204,25 @@ const styleThunk = () => ({
 
   border: {
     borderTop: `1px solid ${ui.dashBorderColor}`,
-    height: '1px',
+    height: '.0625rem',
     width: '100%'
   },
 
   body: {
     display: 'flex',
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     position: 'relative'
   },
 
   cardGrid: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    margin: '1rem',
-    maxWidth: ui.projectColumnsMaxWidth,
+    padding: '.5rem',
+    maxWidth: ARCHIVE_WIDTH,
     width: '100%'
   },
 
   cardBlock: {
-    flex: '0 0 100%',
-    padding: '0 1rem .5rem 0',
-
-    '@media (min-width: 40rem)': {
-      flex: '0 0 50%'
-    },
-
-    '@media (min-width: 60rem)': {
-      flex: '0 0 33.3333%'
-    },
-
-    '@media (min-width: 80rem)': {
-      flex: '0 0 25%'
-    },
-
-    '@media (min-width: 100rem)': {
-      flex: '0 0 20%'
-    }
+    padding: '.5rem'
   },
 
   emptyMsg: {
@@ -258,8 +241,7 @@ const styleThunk = () => ({
   },
 
   archiveSqueezeBlock: {
-    paddingBottom: '1rem',
-    paddingRight: '1rem',
+    padding: '1rem',
     width: '100%'
   }
 });
