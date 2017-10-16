@@ -183,6 +183,7 @@ export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
 export const ORGANIZATION_ADDED = 'organizationAdded';
 export const ORGANIZATION_UPDATED = 'organizationUpdated';
+export const PROJECT_UPDATED = 'projectUpdated';
 
 /* Relay Subscription Event Types */
 export const ADD = 'add';

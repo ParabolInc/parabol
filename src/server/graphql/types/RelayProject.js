@@ -29,13 +29,6 @@ const RelayProject = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The userId that created the project'
     },
-    cursor: {
-      type: GraphQLISO8601Type,
-      description: 'the pagination cursor (createdAt)',
-      resolve({createdAt}) {
-        return createdAt;
-      }
-    },
     integration: {
       // TODO replace this with ProjectIntegration when we remove cashay. it doens't handle intefaces well
       type: GitHubProject

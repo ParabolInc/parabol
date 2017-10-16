@@ -7,6 +7,7 @@ import {CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader, WindowScroller} f
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
+import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import {ib} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/theme';
@@ -14,7 +15,6 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {MAX_INT, PERSONAL, TEAM_DASH} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot';
 
 const iconStyle = {
   ...ib,
@@ -28,7 +28,19 @@ const getIndex = (columnIndex, rowIndex) => {
   return COLUMN_COUNT * rowIndex + columnIndex;
 };
 
+const getGridIndex = (index) => {
+  const rowIndex = Math.floor(index / COLUMN_COUNT);
+  const columnIndex = index % COLUMN_COUNT;
+  return {rowIndex, columnIndex};
+}
+
 class TeamArchive extends Component {
+  componentWillUpdate(nextProps) {
+    const {viewer: {archivedProjects: {edges: oldEdges}}} = this.props;
+    const {viewer: {archivedProjects: {edges}}} = nextProps;
+    this.invalidateOnAddRemove(oldEdges, edges);
+  }
+
   getGridRowCount = () => {
     const {viewer: {archivedProjects: {edges}}} = this.props;
     const currentCount = edges.length;
@@ -50,6 +62,26 @@ class TeamArchive extends Component {
     minHeight: 106,
     fixedWidth: true
   });
+
+  invalidateOnAddRemove(oldEdges, edges) {
+    if (edges !== oldEdges && edges.length !== oldEdges.length) {
+      const minLen = Math.min(oldEdges.length, edges.length);
+      // if a new page is added, don't bother resizing, it isn't from a subscription or mutation
+      if (oldEdges.length === minLen && oldEdges[minLen - 1].node.id === edges[minLen - 1].node.id) return;
+      // find the edge that changed. imperatively/efficiently since this can get large
+      let ii;
+      for (ii = 0; ii < minLen; ii++) {
+        const oldEdge = oldEdges[ii];
+        const newEdge = edges[ii];
+        if (oldEdge.node.id !== newEdge.node.id) {
+          break;
+        }
+      }
+      const {columnIndex, rowIndex} = getGridIndex(ii);
+      this.gridRef.recomputeGridSize({columnIndex, rowIndex});
+      this.cellCache.clear(rowIndex, columnIndex);
+    }
+  }
 
   rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
@@ -103,7 +135,10 @@ class TeamArchive extends Component {
             onRowsRendered={onRowsRendered}
             onScroll={onChildScroll}
             onSectionRendered={this._onSectionRendered}
-            ref={registerChild}
+            ref={(c) => {
+              this.gridRef = c;
+              registerChild(c);
+            }}
             rowCount={this.getGridRowCount()}
             rowHeight={this.cellCache.rowHeight}
             scrollTop={scrollTop}
@@ -133,10 +168,10 @@ class TeamArchive extends Component {
 
     return (
       <div className={css(styles.root)}>
-        <Helmet title={`${teamName} Archive | Parabol`} />
+        <Helmet title={`${teamName} Archive | Parabol`}/>
         <div className={css(styles.header)}>
-          <TeamArchiveHeader teamId={teamId} />
-          <div className={css(styles.border)} />
+          <TeamArchiveHeader teamId={teamId}/>
+          <div className={css(styles.border)}/>
         </div>
 
         <div className={css(styles.body)}>
@@ -150,18 +185,18 @@ class TeamArchive extends Component {
                 {this._infiniteLoaderChildFunction}
               </InfiniteLoader>
               {showArchiveSqueeze &&
-                <div className={css(styles.archiveSqueezeBlock)}>
-                  <TeamArchiveSqueezeRoot
-                    isBillingLeader={team.isBillingLeader}
-                    projectsAvailableCount={edges.length}
-                    orgId={orgId}
-                    teamId={teamId}
-                  />
-                </div>
+              <div className={css(styles.archiveSqueezeBlock)}>
+                <TeamArchiveSqueezeRoot
+                  isBillingLeader={team.isBillingLeader}
+                  projectsAvailableCount={edges.length}
+                  orgId={orgId}
+                  teamId={teamId}
+                />
+              </div>
               }
             </div> :
             <div className={css(styles.emptyMsg)}>
-              <FontAwesome name="smile-o" style={iconStyle} />
+              <FontAwesome name="smile-o" style={iconStyle}/>
               <span style={ib}>
                 {'Hi there! There are zero archived projects. '}
                 {'Nothing to see here. How about a fun rally video? '}

@@ -1,18 +1,19 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
 import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 import appTheme from 'universal/styles/theme/theme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import {USER_DASH} from 'universal/utils/constants';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
-import {USER_DASH} from 'universal/utils/constants';
-import textOverflow from 'universal/styles/helpers/textOverflow';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
@@ -50,21 +51,15 @@ class OutcomeCardFooter extends Component {
   state = {};
 
   removeContentTag = (tagValue) => () => {
-    const {outcome: {id, content}} = this.props;
+    const {atmosphere, outcome: {id, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
     const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
-    if (nextContent) {
-      const options = {
-        ops: {},
-        variables: {
-          updatedProject: {
-            id,
-            content: nextContent
-          }
-        }
-      };
-      cashay.mutate('updateProject', options);
+    if (!nextContent) return;
+    const updatedProject = {
+      id,
+      content: nextContent
     }
+    UpdateProjectMutation(atmosphere, updatedProject);
   };
 
   render() {
@@ -108,7 +103,7 @@ class OutcomeCardFooter extends Component {
               className={css(styles.avatarImg)}
               src={owner.picture}
               // hack because aphrodite loads styles on next tick, which causes the cell height adjuster to bork >:-(
-              style={{height, width: height }}
+              style={{height, width: height}}
             />
           </div>
           <div className={css(styles.avatarLabel)}>
@@ -143,7 +138,7 @@ class OutcomeCardFooter extends Component {
           </div>
           <div className={buttonBlockStyles}>
             {isArchived ?
-              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" /> :
+              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply"/> :
               <div>
                 {/* buttonSpacer helps truncated names (…) be consistent */}
                 {!service ?
@@ -160,10 +155,10 @@ class OutcomeCardFooter extends Component {
                       clearError: this.clearError
                     }}
                     targetAnchor={targetAnchor}
-                    toggle={<OutcomeCardFooterButton icon="github" />}
+                    toggle={<OutcomeCardFooterButton icon="github"/>}
                     toggleMenuState={toggleMenuState}
                   /> :
-                  <div className={css(styles.buttonSpacer)} />
+                  <div className={css(styles.buttonSpacer)}/>
                 }
                 <AsyncMenuContainer
                   fetchMenu={fetchStatusMenu}
@@ -178,7 +173,7 @@ class OutcomeCardFooter extends Component {
                     removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
+                  toggle={<OutcomeCardFooterButton icon="ellipsis-v"/>}
                   toggleMenuState={toggleMenuState}
                 />
               </div>
@@ -198,6 +193,7 @@ class OutcomeCardFooter extends Component {
 
 OutcomeCardFooter.propTypes = {
   area: PropTypes.string.isRequired,
+  atmosphere: PropTypes.object.isRequired,
   cardIsActive: PropTypes.bool,
   editorState: PropTypes.object,
   handleAddProject: PropTypes.func,
@@ -316,4 +312,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OutcomeCardFooter);
+export default withAtmosphere(
+  withStyles(styleThunk)(OutcomeCardFooter)
+);

@@ -1,20 +1,20 @@
-import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean
-} from 'graphql';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import shortid from 'shortid';
+import {GraphQLNonNull} from 'graphql';
 import ms from 'ms';
-import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import {handleSchemaErrors} from 'server/utils/utils';
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
+import getRethink from 'server/database/rethinkDriver';
 import ProjectInput from 'server/graphql/types/ProjectInput';
+import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
+import {requireSUOrTeamMember} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {handleSchemaErrors} from 'server/utils/utils';
+import shortid from 'shortid';
+import {PROJECT_UPDATED} from 'universal/utils/constants';
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
+import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
 const DEBOUNCE_TIME = ms('5m');
 
 export default {
-  type: GraphQLBoolean,
+  type: UpdateProjectPayload,
   description: 'Update a project with a change in content, ownership, or status',
   args: {
     updatedProject: {
@@ -22,11 +22,10 @@ export default {
       description: 'the updated project including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedProject}, {authToken, socket}) {
+  async resolve(source, {updatedProject}, {authToken, socketId}) {
     const r = getRethink();
 
     // AUTH
-    requireWebsocket(socket);
     // projectId is of format 'teamId::taskId'
     const [teamId] = updatedProject.id.split('::');
     requireSUOrTeamMember(authToken, teamId);
@@ -57,10 +56,10 @@ export default {
       const {entityMap} = JSON.parse(content);
       newProject.tags = getTagsFromEntityMap(entityMap);
     }
-    const dbWork = [];
-
+    let projectHistory;
     if (Object.keys(updatedProject).length > 2 || sortOrder === undefined) {
       // if this is anything but a sort update, log it to history
+      newProject.updatedAt = now;
       const mergeDoc = {
         ...historicalProject,
         content,
@@ -68,7 +67,7 @@ export default {
         projectId,
         tags: newProject.tags
       };
-      const projectHistoryPromise = r.table('ProjectHistory')
+      projectHistory = r.table('ProjectHistory')
         .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
         .orderBy({index: 'projectIdUpdatedAt'})
         .nth(-1)
@@ -80,11 +79,16 @@ export default {
             r.table('ProjectHistory').insert(lastDoc.merge(mergeDoc, {id: shortid.generate()}))
           );
         });
-      dbWork.push(projectHistoryPromise);
-      newProject.updatedAt = now;
+
     }
-    dbWork.push(r.table('Project').get(projectId).update(newProject));
-    await Promise.all(dbWork);
-    return true;
+    const {projectChanges} = await r({
+      projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0),
+      history: projectHistory
+    });
+
+    const project = projectChanges.new_val;
+    const projectUpdated = {project};
+    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, mutatorId: socketId});
+    return projectUpdated;
   }
 };
