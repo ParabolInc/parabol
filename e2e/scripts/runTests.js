@@ -10,18 +10,16 @@ import glob from 'glob';
 import Mocha from 'mocha';
 
 import {MOCHA_TIMEOUT, SERVER_TIMEOUT} from './constants';
-import ensureDrivers from './manageDrivers';
+import {addDriversToPATH, hasDrivers} from './drivers';
 
 const globP = promisify(glob);
-
-process.env.NODE_ENV = 'e2e';
 
 commander
   .version('1.0.0')
   .description('Runs end-to-end tests against the Action app')
   .option(
     '-u',
-    '--url',
+    '--url <url>',
     'URL of the application under test.  If not provided, runs a prod-like server locally.'
   )
   .option('-i', '--inspect', 'Run the test process under the node inspector')
@@ -32,7 +30,7 @@ commander
 function startAppServer(serverTimeout) {
   return new Promise((resolve) => {
     const serverProc = child_process.exec('npm start', {
-      env: Object.assign(process.env, {NODE_ENV: 'e2e'})
+      env: {...process.env, NODE_ENV: 'production'}
     });
     serverProc.stdout.on('data', console.log);
     serverProc.stderr.on('data', console.error);
@@ -59,9 +57,19 @@ async function main({ url, inspect, mochaTimeout = MOCHA_TIMEOUT, serverTimeout 
     process.kill('SIGUSR1');
   }
 
-  ensureDrivers();
+  if (!(await hasDrivers())) {
+    console.log('No webdrivers detected.  Run `npm run test:e2e-deps` to install the drivers locally.');
+    process.exit(1);
+  }
+
+  addDriversToPATH();
 
   let appServerProc;
+  const kill = (proc) => {
+    if (proc) {
+      proc.kill('SIGINT');
+    }
+  };
   if (url) {
     declareAppServerUrl(url);
   } else {
@@ -69,18 +77,21 @@ async function main({ url, inspect, mochaTimeout = MOCHA_TIMEOUT, serverTimeout 
     declareAppServerUrl('http://localhost:3000');
   }
 
-  const mocha = new Mocha({
-    timeout: mochaTimeout,
-    ui: 'bdd'
-  });
-  const files = await globP('e2e/tests/**/*.test.js');
-  files.forEach(mocha.addFile.bind(mocha));
-  mocha.run((failures) => {
-    if (appServerProc) {
-      appServerProc.kill('SIGINT');
-    }
-    process.exit(failures);
-  });
+  try {
+    const mocha = new Mocha({
+      timeout: mochaTimeout,
+      ui: 'bdd'
+    });
+    const files = await globP('e2e/tests/**/*.test.js');
+    files.forEach(mocha.addFile.bind(mocha));
+    mocha.run((failures) => {
+      kill(appServerProc);
+      process.exit(failures);
+    });
+  } catch (error) {
+    console.error(error);
+    kill(appServerProc);
+  }
 }
 
 main(commander);

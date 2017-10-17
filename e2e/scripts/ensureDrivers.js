@@ -1,50 +1,13 @@
 import child_process from 'child_process'; // eslint-disable-line
 import fs from 'fs';
 import https from 'https';
-import os from 'os';
 import path from 'path';
 import {promisify} from 'util';
 
+import {DRIVERS_DIR} from './constants';
+import {Driver, getOsName, getOsArch} from './drivers';
+
 const execP = promisify(child_process.exec);
-
-const driversDir = path.join(process.cwd(), 'webdrivers');
-
-class Driver {
-  constructor({browser, url, driverFilename}) {
-    this.browser = browser;
-    this.url = url;
-    this._driverFilename = driverFilename;
-  }
-
-  get downloadFilename() {
-    const urlPathSegments = this.url.split('/');
-    return urlPathSegments[urlPathSegments.length - 1];
-  }
-
-  get driverFilename() {
-    return this._driverFilename || this.downloadFilename;
-  }
-
-  get pathTo() {
-    return path.join(driversDir, this.driverFilename);
-  }
-}
-
-function getOsName() {
-  return {
-    Darwin: 'mac',
-    Linux: 'linux',
-    Windows_NT: 'win'
-  }[os.type()];
-}
-
-function getOsArch() {
-  return os.arch().slice(1);
-}
-
-function addDriversToPATH() {
-  process.env.PATH = `${process.env.PATH}:${driversDir}`;
-}
 
 async function getDriver({url, downloadFilename}) {
   const filePath = path.join('/tmp', downloadFilename);
@@ -67,7 +30,7 @@ async function getDriver({url, downloadFilename}) {
     );
   });
   if (filePath.endsWith('.zip')) {
-    await execP(`mkdir -p ${driversDir} && tar -xvf ${filePath} -C ${driversDir}`);
+    await execP(`mkdir -p ${DRIVERS_DIR} && unzip ${filePath} -d ${DRIVERS_DIR}`);
   }
 }
 
@@ -81,7 +44,7 @@ async function ensureDriver(driver) {
   }
 }
 
-export default async function ensureDrivers() {
+async function ensureDrivers() {
   const drivers = [
     new Driver({
       browser: 'chrome',
@@ -90,5 +53,6 @@ export default async function ensureDrivers() {
     })
   ];
   await Promise.all(drivers.map(ensureDriver));
-  addDriversToPATH();
 }
+
+ensureDrivers();

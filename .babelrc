@@ -7,13 +7,6 @@
         ["transform-decorators-legacy"]
       ]
     },
-    "e2e": {
-      "presets": ["es2015", "stage-0", "react"],
-      "plugins": [
-        ["relay"],
-        ["transform-decorators-legacy"]
-      ]
-    },
     "development": {
       "presets": ["es2015", "stage-0", "react"],
       "plugins": [
