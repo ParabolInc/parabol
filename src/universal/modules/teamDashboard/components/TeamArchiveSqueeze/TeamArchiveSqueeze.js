@@ -15,7 +15,8 @@ import {PRICING_LINK} from 'universal/utils/externalLinks';
 const linkLabel = 'Compare Plans';
 const iconStyles = {
   fontSize: ui.iconSize,
-  marginLeft: '.125rem'
+  marginLeft: '.25rem',
+  verticalAlign: 'middle'
 };
 
 // TODO needs a design for non-billing leaders
@@ -23,7 +24,6 @@ const TeamArchiveSqueeze = (props) => {
   const {history, orgId, projectsAvailableCount, styles, viewer} = props;
   const {archivedProjectsCount, team: {organization: {isBillingLeader, mainBillingLeader}}} = viewer;
   const unavailableProjects = archivedProjectsCount - projectsAvailableCount;
-
   const handleUpgrade = () => {
     history.push(`/me/organizations/${orgId}`);
   };
@@ -52,9 +52,18 @@ const TeamArchiveSqueeze = (props) => {
                 onClick={handleUpgrade}
                 size="large"
               /> :
-              <div>
-                <div>{`Tell your billing leader ${mainBillingLeader.preferredName}`}</div>
-                <div>{`Their email is: ${mainBillingLeader.email}`}</div>
+              <div className={css(styles.contactCopy)}>
+                {'Talk with your '}<b>{'Billing Leader'}</b>{':'}
+                <a
+                  className={css(styles.contactLink)}
+                  href={`mailto:${mainBillingLeader.email}`}
+                  title={`Email: ${mainBillingLeader.email}`}
+                >
+                  <div className={css(styles.contactLinkLabel)}>
+                    {mainBillingLeader.preferredName}
+                  </div>
+                  <FontAwesome name="envelope" style={iconStyles} />
+                </a>
               </div>
             }
           </div>
@@ -105,6 +114,26 @@ const styleThunk = () => ({
 
   archiveSqueezeButtonBlock: {
     padding: '0 1rem'
+  },
+
+  contactCopy: {
+    color: ui.palette.dark,
+    fontSize: appTheme.typography.sBase,
+    lineHeight: 1.5,
+    textAlign: 'center'
+  },
+
+  contactLink: {
+    display: 'block',
+    fontSize: 0,
+    fontWeight: 700,
+  },
+
+  contactLinkLabel: {
+    display: 'inline-block',
+    fontSize: appTheme.typography.s6,
+    paddingRight: '.25rem',
+    verticalAlign: 'middle'
   }
 });
 

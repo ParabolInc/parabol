@@ -272,6 +272,7 @@ const styleThunk = () => ({
   },
 
   archiveSqueezeBlock: {
+    maxWidth: ARCHIVE_WIDTH,
     padding: '1rem',
     width: '100%'
   }
