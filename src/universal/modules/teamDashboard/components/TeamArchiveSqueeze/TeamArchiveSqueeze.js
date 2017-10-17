@@ -10,9 +10,9 @@ import {PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import withRouter from 'react-router-dom/es/withRouter';
+import {PRICING_LINK} from 'universal/utils/externalLinks';
 
 const linkLabel = 'Compare Plans';
-const linkURL = '#account-features'; // TODO: Link to new pricing page (TA)
 const iconStyles = {
   fontSize: ui.iconSize,
   marginLeft: '.125rem'
@@ -38,7 +38,7 @@ const TeamArchiveSqueeze = (props) => {
             <p className={css(styles.archiveSqueezeCopy)}>
               {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can see cards archived up to '}<b>{'14 days ago'}</b>{'.'}<br />
               {'For full access to your team’s archive, upgrade to the '}<b>{`${PRO_LABEL} Plan`}</b>{'.'}<br />
-              <a href={linkURL} target="_blank" title={linkLabel}>
+              <a href={PRICING_LINK} target="_blank" title={linkLabel}>
                 <b>{linkLabel}</b> <FontAwesome name="external-link-square" style={iconStyles} />
               </a>
             </p>

@@ -9,6 +9,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {MONTHLY_PRICE, PERSONAL, PRO} from 'universal/utils/constants';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
+import {PRICING_LINK} from 'universal/utils/externalLinks';
 
 class OrgPlanSqueeze extends Component {
   state = {showCost: false}
@@ -30,6 +31,7 @@ class OrgPlanSqueeze extends Component {
       label="Upgrade to the Pro Plan"
       size="small"
     />);
+    const openUrl = (url) => () => window.open(url, '_blank');
     return (
       <Panel hasHeader={false}>
         <div className={css(styles.panelInner)}>
@@ -76,6 +78,7 @@ class OrgPlanSqueeze extends Component {
             icon="external-link-square"
             iconPlacement="right"
             label="Learn About Plans & Invoicing"
+            onClick={openUrl(PRICING_LINK)}
             size="smallest"
           />
         </div>
