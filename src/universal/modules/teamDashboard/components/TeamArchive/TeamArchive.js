@@ -22,7 +22,14 @@ const iconStyle = {
   marginRight: '.25rem'
 };
 
-const COLUMN_COUNT = 4;
+const COLUMN_COUNT = 4;    // min-width: 1280px (which is the lowest scoped browser width currently)
+// const COLUMN_COUNT = 5; // min-width: 1536px (or 1600px nice and round)
+// const COLUMN_COUNT = 6; // min-width: 1792px (or 1800px nice and round)
+
+// the maths   256px (card container cell with inner padding [8px]) * N (number of columns)
+//           +  16px (inner padding of grid left + right [8px + 8px])
+//           + 240px (nav width)
+//           = min-width for browser window
 
 const ARCHIVE_WIDTH = 1040;
 const CARD_WIDTH = 256;
