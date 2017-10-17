@@ -82,13 +82,13 @@ class TeamArchive extends Component {
       }
       const {columnIndex, rowIndex} = getGridIndex(ii);
       this.gridRef.recomputeGridSize({columnIndex, rowIndex});
-      this.cellCache.clear(rowIndex, columnIndex);
+      this.cellCache.clearAll();
     }
   }
 
   rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
-    const {styles, viewer: {archivedProjects: {edges}}, userId} = this.props;
+    const {viewer: {archivedProjects: {edges}}, userId} = this.props;
     const index = getIndex(columnIndex, rowIndex);
     if (!this.isRowLoaded({index})) return undefined;
     const project = edges[index].node;
@@ -100,7 +100,8 @@ class TeamArchive extends Component {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`} style={{...style, width: CARD_WIDTH}}>
+        {/* Put padding here because of aphrodite's async annoyance*/}
+        <div key={`cardBlockFor${project.id}`} style={{...style, width: CARD_WIDTH, padding: '0.5rem'}}>
           <OutcomeOrNullCard
             key={key}
             area={TEAM_DASH}
@@ -254,10 +255,6 @@ const styleThunk = () => ({
     padding: '.5rem',
     maxWidth: ARCHIVE_WIDTH,
     width: '100%'
-  },
-
-  cardBlock: {
-    padding: '.5rem'
   },
 
   emptyMsg: {
