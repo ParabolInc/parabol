@@ -97,10 +97,10 @@ const AgendaInputField = (props) => {
       <FontAwesome name="plus-square-o" style={iconStyle} />
     </form>
   );
+  const showTooltip = Boolean(agenda.length > 0 && !disabled);
   return (
     <div>
-      {disabled ?
-        input :
+      {showTooltip ?
         <Tooltip
           tip={tip}
           maxHeight={52}
@@ -109,7 +109,8 @@ const AgendaInputField = (props) => {
           targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
         >
           {input}
-        </Tooltip>
+        </Tooltip> :
+        input
       }
     </div>
   );

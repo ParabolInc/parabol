@@ -29,6 +29,7 @@ const AgendaList = (props) => {
     agendaPhaseItem,
     canNavigate,
     connectDropTarget,
+    context,
     disabled,
     dragState,
     facilitatorPhase,
@@ -43,8 +44,31 @@ const AgendaList = (props) => {
 
   dragState.clear();
 
-  const makeAgendaItemTeaser = () =>
-    <div className={css(styles.agendaItemTeaser)} />;
+  const makeAgendaItemLoader = () =>
+    <div className={css(styles.agendaItemLoader)} />;
+
+  const makeAgendaItemsLoading = () => (
+    <div className={css(styles.agendaItemsLoadingBlock)}>
+      {makeAgendaItemLoader()}
+      {makeAgendaItemLoader()}
+      {makeAgendaItemLoader()}
+    </div>
+  );
+
+  const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting';
+
+  const makeEmptyState = () => (
+    <div className={css(styles.emptyBlock)}>
+      <div className={css(styles.emptyEmoji)}>
+        🤓
+      </div>
+      <div className={css(styles.emptyMessage)}>
+        {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}<b><i>{'upcoming vacation'}</i></b>{'.”'}
+      </div>
+    </div>
+  );
+
+  const isLoading = false;
 
   return connectDropTarget(
     <div className={css(styles.root)}>
@@ -73,10 +97,8 @@ const AgendaList = (props) => {
             />)
           )}
         </div> :
-        <div className={css(styles.empty)}>
-          {makeAgendaItemTeaser()}
-          {makeAgendaItemTeaser()}
-          {makeAgendaItemTeaser()}
+        <div>
+          {isLoading ? makeAgendaItemsLoading() : makeEmptyState()}
         </div>
       }
     </div>
@@ -117,14 +139,36 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  empty: {
+  emptyBlock: {
+    alignItems: 'flex-start',
+    display: 'flex',
+    padding: ui.meetingSidebarGutter,
+    paddingTop: 0
+  },
+
+  emptyEmoji: {
+    fontSize: appTheme.typography.s4,
+    minWidth: '2rem',
+    paddingLeft: '.75rem'
+  },
+
+  emptyMessage: {
+    color: ui.palette.dark,
+    flex: 1,
+    fontSize: appTheme.typography.s2,
+    lineHeight: '1.5',
+    paddingLeft: '.5rem',
+    paddingTop: '.25rem'
+  },
+
+  agendaItemsLoadingBlock: {
     padding: ui.meetingSidebarGutter,
     paddingLeft: '1.625rem',
     paddingTop: 0,
     width: '100%'
   },
 
-  agendaItemTeaser: {
+  agendaItemLoader: {
     display: 'flex',
     padding: `${ui.meetingSidebarGutter} 0`,
 
