@@ -44,14 +44,14 @@ const AgendaList = (props) => {
 
   dragState.clear();
 
-  const makeAgendaItemLoader = () =>
-    <div className={css(styles.agendaItemLoader)} />;
+  const makeAgendaItemLoading = () =>
+    <div className={css(styles.agendaItemLoading)} />;
 
-  const makeAgendaItemsLoading = () => (
+  const makeLoadingState = () => (
     <div className={css(styles.agendaItemsLoadingBlock)}>
-      {makeAgendaItemLoader()}
-      {makeAgendaItemLoader()}
-      {makeAgendaItemLoader()}
+      {makeAgendaItemLoading()}
+      {makeAgendaItemLoading()}
+      {makeAgendaItemLoading()}
     </div>
   );
 
@@ -98,7 +98,7 @@ const AgendaList = (props) => {
           )}
         </div> :
         <div>
-          {isLoading ? makeAgendaItemsLoading() : makeEmptyState()}
+          {isLoading ? makeLoadingState() : makeEmptyState()}
         </div>
       }
     </div>
@@ -168,7 +168,7 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  agendaItemLoader: {
+  agendaItemLoading: {
     display: 'flex',
     padding: `${ui.meetingSidebarGutter} 0`,
 
