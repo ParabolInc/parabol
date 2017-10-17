@@ -9,7 +9,6 @@ export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
 export const INVITATIONS = 'invitations';
 export const ORG_APPROVALS = 'orgApprovals';
-export const ORGANIZATIONS = 'organizations';
 export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
 export const AGENDA_PROJECTS = 'agendaProjects';

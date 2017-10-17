@@ -1,20 +1,30 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import {cashay} from 'cashay';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {Field, reduxForm, SubmissionError} from 'redux-form';
+import shortid from 'shortid';
 import Button from 'universal/components/Button/Button';
-import Panel from 'universal/components/Panel/Panel';
-import Radio from 'universal/components/Radio/Radio';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import InputField from 'universal/components/InputField/InputField';
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
-import {Field, reduxForm} from 'redux-form';
-import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
-import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
-import addOrgSchema from 'universal/validation/addOrgSchema';
+import Panel from 'universal/components/Panel/Panel';
+import Radio from 'universal/components/Radio/Radio';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
+import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import AddOrgMutation from 'universal/mutations/AddOrgMutation';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
+import addOrgSchema from 'universal/validation/addOrgSchema';
+import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import {withRouter} from 'react-router-dom';
+
+const radioStyles = {
+  color: ui.palette.dark
+};
 
 const validate = (values, props) => {
   const {isNewOrg} = props;
@@ -22,34 +32,76 @@ const validate = (values, props) => {
   return schema(values).errors;
 };
 
-const NewTeamForm = (props) => {
-  const {
-    handleSubmit,
-    isNewOrg,
-    organizations,
-    history,
-    styles
-  } = props;
+const makeInvitees = (invitees) => {
+  return invitees ? invitees.map((email) => ({
+    email: email.address,
+    fullName: email.fullName
+  })) : [];
+};
 
-  const handleCreateNew = () => {
-    history.push('/newteam/1');
-  };
-  const resetOrgSelection = () => {
-    history.push('/newteam');
+class NewTeamForm extends Component {
+  state = {};
+  onSubmit = async (submittedData) => {
+    const {atmosphere, dispatch, newOrgRoute, history} = this.props;
+    const newTeamId = shortid.generate();
+    if (newOrgRoute) {
+      const schema = addOrgSchema();
+      const {data: {teamName, inviteesRaw, orgName}} = schema(submittedData);
+      const parsedInvitees = parseEmailAddressList(inviteesRaw);
+      const invitees = makeInvitees(parsedInvitees);
+      const newTeam = {
+        id: newTeamId,
+        name: teamName,
+        orgId: shortid.generate()
+      };
+      const handleError = (err) => {
+        throw new SubmissionError(err._error);
+      };
+      const handleCompleted = () => {
+        dispatch(showSuccess({
+          title: 'Organization successfully created!',
+          message: `Here's your new team dashboard for ${teamName}`
+        }));
+      };
+      AddOrgMutation(atmosphere, newTeam, invitees, orgName, handleError, handleCompleted);
+    } else {
+      const schema = makeAddTeamSchema();
+      const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
+      const parsedInvitees = parseEmailAddressList(inviteesRaw);
+      const invitees = makeInvitees(parsedInvitees);
+      const variables = {
+        newTeam: {
+          id: newTeamId,
+          name: teamName,
+          orgId
+        },
+        invitees
+      };
+      await cashay.mutate('addTeam', {variables});
+      dispatch(showSuccess({
+        title: 'Team successfully created!',
+        message: `Here's your new team dashboard for ${teamName}`
+      }));
+    }
+    history.push(`/team/${newTeamId}`);
   };
 
-  // TODO: yank these, cheating lint
-  console.log(handleCreateNew);
-  console.log(resetOrgSelection);
+  render() {
+    const {
+      handleSubmit,
+      isNewOrg,
+      history,
+      styles,
+      organizations
+    } = this.props;
 
-  const radioStyles = {
-    color: ui.palette.dark
-  };
-  const controlSize = 'medium';
-  const reallyIsNewOrg = false || isNewOrg; // Just faking ;)
-  const showHelpBox = true; // Just an easy way to hide in the future
-  return (
-    <div className={css(styles.layout)}>
+    const handleCreateNew = () => {
+      history.push('/newteam/1');
+    };
+
+
+    const controlSize = 'medium';
+    return (
       <form className={css(styles.form)} onSubmit={handleSubmit}>
         <Panel label="Create a New Team">
           <div className={css(styles.formInner)}>
@@ -73,7 +125,7 @@ const NewTeamForm = (props) => {
                 <Field
                   colorPalette="gray"
                   component={DropdownInput}
-                  disabled={reallyIsNewOrg}
+                  disabled={isNewOrg}
                   fieldSize={controlSize}
                   handleCreateNew={handleCreateNew}
                   name="orgId"
@@ -94,7 +146,7 @@ const NewTeamForm = (props) => {
                 <Field
                   colorPalette="gray"
                   component={InputField}
-                  disabled={!reallyIsNewOrg}
+                  disabled={!isNewOrg}
                   fieldSize={controlSize}
                   name="orgName"
                   placeholder={randomPlaceholderTheme.orgName}
@@ -141,41 +193,15 @@ const NewTeamForm = (props) => {
           </div>
         </Panel>
       </form>
-      {showHelpBox &&
-        <div className={css(styles.helpLayout)}>
-          <div className={css(styles.helpBlock)}>
-            <div className={css(styles.helpHeading)}>
-              {'What’s an Organization?'}
-            </div>
-            <div className={css(styles.helpCopy)}>
-              {`Every Team belongs to an Organization.
-                New Organizations start out on the `}
-              <b>{'Free Personal Plan'}</b>{'.'}
-            </div>
-            <Button
-              buttonSize="small"
-              buttonStyle="flat"
-              colorPalette="cool"
-              icon="external-link-square"
-              iconPlacement="right"
-              label="Learn More"
-              onClick={() => console.log('TODO: Link to Pricing Page')}
-            />
-          </div>
-        </div>
-      }
-    </div>
-  );
-};
+    );
+  }
+}
 
 NewTeamForm.propTypes = {
-  change: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   isNewOrg: PropTypes.bool,
-  organizations: PropTypes.array,
-  history: PropTypes.object.isRequired,
-  setLast4: PropTypes.func.isRequired,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  organizations: PropTypes.array.isRequired
 };
 
 const styleThunk = () => ({
@@ -249,6 +275,7 @@ const styleThunk = () => ({
 });
 
 export default reduxForm({form: 'newTeam', validate})(
-  withStyles(styleThunk)(
+  withRouter(withStyles(styleThunk)(
     NewTeamForm)
+  )
 );

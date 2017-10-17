@@ -6,7 +6,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
 const userDashboard = () => System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
 const teamContainer = () => System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
-const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer');
+const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot');
 
 const DashboardWrapper = (props) => {
   const {notifications} = props;
