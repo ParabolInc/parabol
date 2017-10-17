@@ -55,7 +55,7 @@ export default {
       edges,
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,
-        endCursor: firstEdge && edges[edges.length - 1].cursor,
+        endCursor: firstEdge ? edges[edges.length - 1].cursor : new Date(),
         hasNextPage: projects.length > nodes.length
       }
     };

@@ -35,7 +35,7 @@ const getGridIndex = (index) => {
   const rowIndex = Math.floor(index / COLUMN_COUNT);
   const columnIndex = index % COLUMN_COUNT;
   return {rowIndex, columnIndex};
-}
+};
 
 class TeamArchive extends Component {
   componentWillUpdate(nextProps) {
@@ -100,7 +100,7 @@ class TeamArchive extends Component {
         parent={parent}
         rowIndex={rowIndex}
       >
-        {/* Put padding here because of aphrodite's async annoyance*/}
+        {/* Put padding here because of aphrodite's async annoyance */}
         <div key={`cardBlockFor${project.id}`} style={{...style, width: CARD_WIDTH, padding: '0.5rem'}}>
           <OutcomeOrNullCard
             key={key}
@@ -161,20 +161,19 @@ class TeamArchive extends Component {
   };
 
   render() {
-    // TODO team needs isBillingLeader
     const {relay: {hasMore}, styles, team, teamId, viewer} = this.props;
     const {name: teamName, tier, orgId} = team;
     const {archivedProjects} = viewer;
     const {edges} = archivedProjects;
     // Archive squeeze
-    const showArchiveSqueeze = Boolean(tier === PERSONAL && hasMore());
+    const showArchiveSqueeze = Boolean(tier === PERSONAL && !hasMore());
 
     return (
       <div className={css(styles.root)}>
-        <Helmet title={`${teamName} Archive | Parabol`}/>
+        <Helmet title={`${teamName} Archive | Parabol`} />
         <div className={css(styles.header)}>
-          <TeamArchiveHeader teamId={teamId}/>
-          <div className={css(styles.border)}/>
+          <TeamArchiveHeader teamId={teamId} />
+          <div className={css(styles.border)} />
         </div>
 
         <div className={css(styles.body)}>
@@ -187,25 +186,24 @@ class TeamArchive extends Component {
               >
                 {this._infiniteLoaderChildFunction}
               </InfiniteLoader>
-              {showArchiveSqueeze &&
-              <div className={css(styles.archiveSqueezeBlock)}>
-                <TeamArchiveSqueezeRoot
-                  isBillingLeader={team.isBillingLeader}
-                  projectsAvailableCount={edges.length}
-                  orgId={orgId}
-                  teamId={teamId}
-                />
-              </div>
-              }
             </div> :
             <div className={css(styles.emptyMsg)}>
-              <FontAwesome name="smile-o" style={iconStyle}/>
+              <FontAwesome name="smile-o" style={iconStyle} />
               <span style={ib}>
                 {'Hi there! There are zero archived projects. '}
                 {'Nothing to see here. How about a fun rally video? '}
                 <span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
             </div>
+          }
+          {showArchiveSqueeze &&
+          <div className={css(styles.archiveSqueezeBlock)}>
+            <TeamArchiveSqueezeRoot
+              projectsAvailableCount={edges.length}
+              orgId={orgId}
+              teamId={teamId}
+            />
+          </div>
           }
         </div>
       </div>
@@ -247,6 +245,7 @@ const styleThunk = () => ({
   body: {
     display: 'flex',
     flex: 1,
+    flexDirection: 'column',
     justifyContent: 'flex-start',
     position: 'relative'
   },

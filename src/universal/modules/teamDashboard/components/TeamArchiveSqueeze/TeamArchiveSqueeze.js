@@ -9,6 +9,7 @@ import Panel from 'universal/components/Panel/Panel';
 import {PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
+import withRouter from 'react-router-dom/es/withRouter';
 
 const linkLabel = 'Compare Plans';
 const linkURL = '#account-features'; // TODO: Link to new pricing page (TA)
@@ -19,8 +20,9 @@ const iconStyles = {
 
 // TODO needs a design for non-billing leaders
 const TeamArchiveSqueeze = (props) => {
-  const {isBillingLeader, orgId, projectsAvailableCount, styles, viewer} = props;
-  const unavailableProjects = viewer.archivedProjectsCount - projectsAvailableCount;
+  const {history, orgId, projectsAvailableCount, styles, viewer} = props;
+  const {archivedProjectsCount, team: {organization: {isBillingLeader, mainBillingLeader}}} = viewer;
+  const unavailableProjects = archivedProjectsCount - projectsAvailableCount;
 
   const handleUpgrade = () => {
     history.push(`/me/organizations/${orgId}`);
@@ -34,7 +36,7 @@ const TeamArchiveSqueeze = (props) => {
               {`${unavailableProjects} Cards Unavailable!`}
             </h2>
             <p className={css(styles.archiveSqueezeCopy)}>
-              {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can access archived cards for '}<b>{'14 days'}</b>{'.'}<br />
+              {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can see cards archived up to '}<b>{'14 days ago'}</b>{'.'}<br />
               {'For full access to your team’s archive, upgrade to the '}<b>{`${PRO_LABEL} Plan`}</b>{'.'}<br />
               <a href={linkURL} target="_blank" title={linkLabel}>
                 <b>{linkLabel}</b> <FontAwesome name="external-link-square" style={iconStyles} />
@@ -51,7 +53,8 @@ const TeamArchiveSqueeze = (props) => {
                 size="large"
               /> :
               <div>
-                Tell your billing leader
+                <div>{`Tell your billing leader ${mainBillingLeader.preferredName}`}</div>
+                <div>{`Their email is: ${mainBillingLeader.email}`}</div>
               </div>
             }
           </div>
@@ -62,7 +65,7 @@ const TeamArchiveSqueeze = (props) => {
 };
 
 TeamArchiveSqueeze.propTypes = {
-  isBillingLeader: PropTypes.bool,
+  history: PropTypes.object.isRequired,
   orgId: PropTypes.string.isRequired,
   projectsAvailableCount: PropTypes.number,
   styles: PropTypes.object,
@@ -106,10 +109,19 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withStyles(styleThunk)(TeamArchiveSqueeze),
+  withRouter(withStyles(styleThunk)(TeamArchiveSqueeze)),
   graphql`
     fragment TeamArchiveSqueeze_viewer on User {
       archivedProjectsCount(teamId: $teamId)
+      team(teamId: $teamId) {
+        organization {
+          isBillingLeader
+          mainBillingLeader {
+            preferredName
+            email
+          }
+        }
+      }
     }
   `
 );

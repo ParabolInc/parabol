@@ -18,7 +18,7 @@ const query = graphql`
   }
 `;
 
-const TeamArchiveSqueezeRoot = ({atmosphere, isBillingLeader, orgId, projectsAvailableCount, teamId}) => {
+const TeamArchiveSqueezeRoot = ({atmosphere, orgId, projectsAvailableCount, teamId}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -31,7 +31,6 @@ const TeamArchiveSqueezeRoot = ({atmosphere, isBillingLeader, orgId, projectsAva
             {renderProps &&
             <AnimatedFade key="1">
               <TeamArchiveSqueeze
-                isBillingLeader={isBillingLeader}
                 orgId={orgId}
                 projectsAvailableCount={projectsAvailableCount}
                 teamId={teamId}

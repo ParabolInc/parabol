@@ -1,8 +1,7 @@
-import {GraphQLNonNull} from 'graphql';
+import {GraphQLBoolean, GraphQLNonNull} from 'graphql';
 import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import ProjectInput from 'server/graphql/types/ProjectInput';
-import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -14,7 +13,7 @@ import makeProjectSchema from 'universal/validation/makeProjectSchema';
 const DEBOUNCE_TIME = ms('5m');
 
 export default {
-  type: UpdateProjectPayload,
+  type: GraphQLBoolean,
   description: 'Update a project with a change in content, ownership, or status',
   args: {
     updatedProject: {
@@ -79,7 +78,6 @@ export default {
             r.table('ProjectHistory').insert(lastDoc.merge(mergeDoc, {id: shortid.generate()}))
           );
         });
-
     }
     const {projectChanges} = await r({
       projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0),
@@ -89,6 +87,6 @@ export default {
     const project = projectChanges.new_val;
     const projectUpdated = {project};
     getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, mutatorId: socketId});
-    return projectUpdated;
+    return true;
   }
 };

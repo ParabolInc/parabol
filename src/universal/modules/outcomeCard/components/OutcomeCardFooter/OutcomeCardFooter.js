@@ -58,7 +58,7 @@ class OutcomeCardFooter extends Component {
     const updatedProject = {
       id,
       content: nextContent
-    }
+    };
     UpdateProjectMutation(atmosphere, updatedProject);
   };
 
@@ -138,7 +138,7 @@ class OutcomeCardFooter extends Component {
           </div>
           <div className={buttonBlockStyles}>
             {isArchived ?
-              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply"/> :
+              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" /> :
               <div>
                 {/* buttonSpacer helps truncated names (…) be consistent */}
                 {!service ?
@@ -155,10 +155,10 @@ class OutcomeCardFooter extends Component {
                       clearError: this.clearError
                     }}
                     targetAnchor={targetAnchor}
-                    toggle={<OutcomeCardFooterButton icon="github"/>}
+                    toggle={<OutcomeCardFooterButton icon="github" />}
                     toggleMenuState={toggleMenuState}
                   /> :
-                  <div className={css(styles.buttonSpacer)}/>
+                  <div className={css(styles.buttonSpacer)} />
                 }
                 <AsyncMenuContainer
                   fetchMenu={fetchStatusMenu}
@@ -173,7 +173,7 @@ class OutcomeCardFooter extends Component {
                     removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="ellipsis-v"/>}
+                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
                   toggleMenuState={toggleMenuState}
                 />
               </div>

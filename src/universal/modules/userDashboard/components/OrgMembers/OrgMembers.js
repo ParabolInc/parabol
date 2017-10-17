@@ -53,16 +53,16 @@ const OrgMembers = (props) => {
       if (orgUser.isBillingLeader) {
         if (billingLeaderCount > 1) {
           listItems.push(
-            <MenuItem label="Remove Billing Leader role" onClick={setRole(id)}/>
+            <MenuItem label="Remove Billing Leader role" onClick={setRole(id)} />
           );
         } else {
           listItems.push(
-            <MenuItem label="Have a super day!"/>
+            <MenuItem label="Have a super day!" />
           );
         }
       } else {
         listItems.push(
-          <MenuItem label="Promote to Billing Leader" onClick={setRole(id, BILLING_LEADER)}/>
+          <MenuItem label="Promote to Billing Leader" onClick={setRole(id, BILLING_LEADER)} />
         );
       }
       if (myUserId !== orgUser.id) {
@@ -71,7 +71,7 @@ const OrgMembers = (props) => {
             orgId={orgId}
             preferredName={preferredName}
             userId={id}
-            toggle={<MenuItem label="Remove from Organization"/>}
+            toggle={<MenuItem label="Remove from Organization" />}
           />
         );
       }
@@ -80,7 +80,7 @@ const OrgMembers = (props) => {
           <LeaveOrgModal
             orgId={orgId}
             userId={id}
-            toggle={<MenuItem label="Leave Organization"/>}
+            toggle={<MenuItem label="Leave Organization" />}
           />
         );
       }
@@ -112,7 +112,7 @@ const OrgMembers = (props) => {
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.toggleBlock)}>
-          <Toggle active={!inactive} block label={toggleLabel} onClick={toggleHandler}/>
+          <Toggle active={!inactive} block label={toggleLabel} onClick={toggleHandler} />
         </div>
         <div className={css(styles.menuToggleBlock)}>
           <Menu
