@@ -2,6 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import shortid from 'shortid';
@@ -11,6 +12,7 @@ import InputField from 'universal/components/InputField/InputField';
 import Panel from 'universal/components/Panel/Panel';
 import Radio from 'universal/components/Radio/Radio';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import AddOrgMutation from 'universal/mutations/AddOrgMutation';
@@ -21,15 +23,14 @@ import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
-import {connect} from 'react-redux';
 
 const radioStyles = {
   color: ui.palette.dark
 };
 
 const validate = (values, props) => {
-  const {isNewOrg} = props;
-  const schema = isNewOrg ? addOrgSchema() : makeAddTeamSchema();
+  const {isNewOrganization} = props;
+  const schema = isNewOrganization ? addOrgSchema() : makeAddTeamSchema();
   return schema(values).errors;
 };
 
@@ -50,11 +51,10 @@ const mapStateToProps = (state) => {
 };
 
 class NewTeamForm extends Component {
-  state = {};
   onSubmit = async (submittedData) => {
-    const {atmosphere, dispatch, newOrgRoute, history} = this.props;
+    const {atmosphere, dispatch, isNewOrganization, history} = this.props;
     const newTeamId = shortid.generate();
-    if (newOrgRoute) {
+    if (isNewOrganization) {
       const schema = addOrgSchema();
       const {data: {teamName, inviteesRaw, orgName}} = schema(submittedData);
       const parsedInvitees = parseEmailAddressList(inviteesRaw);
@@ -72,6 +72,7 @@ class NewTeamForm extends Component {
           title: 'Organization successfully created!',
           message: `Here's your new team dashboard for ${teamName}`
         }));
+        history.push(`/team/${newTeamId}`);
       };
       AddOrgMutation(atmosphere, newTeam, invitees, orgName, handleError, handleCompleted);
     } else {
@@ -92,27 +93,22 @@ class NewTeamForm extends Component {
         title: 'Team successfully created!',
         message: `Here's your new team dashboard for ${teamName}`
       }));
+      history.push(`/team/${newTeamId}`);
     }
-    history.push(`/team/${newTeamId}`);
   };
 
   render() {
     const {
       handleSubmit,
       isNewOrganization,
-      history,
       styles,
+      submitting,
       organizations
     } = this.props;
 
-    const handleCreateNew = () => {
-      history.push('/newteam/1');
-    };
-
-
     const controlSize = 'medium';
     return (
-      <form className={css(styles.form)} onSubmit={handleSubmit}>
+      <form className={css(styles.form)} onSubmit={handleSubmit(this.onSubmit)}>
         <Panel label="Create a New Team">
           <div className={css(styles.formInner)}>
             <div className={css(styles.formBlock)}>
@@ -140,7 +136,6 @@ class NewTeamForm extends Component {
                   component={DropdownInput}
                   disabled={isNewOrganization}
                   fieldSize={controlSize}
-                  handleCreateNew={handleCreateNew}
                   name="orgId"
                   organizations={organizations}
                 />
@@ -204,6 +199,7 @@ class NewTeamForm extends Component {
                 isBlock
                 label="Create Team"
                 type="submit"
+                waiting={submitting}
               />
             </div>
           </div>
@@ -217,6 +213,7 @@ NewTeamForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   isNewOrganization: PropTypes.bool,
   styles: PropTypes.object,
+  submitting: PropTypes.bool.isRequired,
   organizations: PropTypes.array.isRequired
 };
 
@@ -290,10 +287,11 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'newTeam', validate})(
+export default withAtmosphere(reduxForm({form: 'newTeam', validate})(
   connect(mapStateToProps)(
     withRouter(withStyles(styleThunk)(
       NewTeamForm)
     )
   )
+)
 );

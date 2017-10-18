@@ -19,7 +19,7 @@ const NewTeam = (props) => {
   const firstOrgId = organizations[0] && organizations[0].id;
   return (
     <div className={css(styles.layout)}>
-      <NewTeamForm initialValues={{orgId: firstOrgId, isNewOrganization: String(isNewOrg)}} organizations={organizations}/>
+      <NewTeamForm initialValues={{orgId: firstOrgId, isNewOrganization: String(isNewOrg)}} organizations={organizations} />
       <div className={css(styles.helpLayout)}>
         <div className={css(styles.helpBlock)}>
           <div className={css(styles.helpHeading)}>

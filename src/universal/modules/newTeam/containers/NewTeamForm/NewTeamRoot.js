@@ -24,7 +24,7 @@ const NewTeamRoot = ({atmosphere, match: {params: {newOrgRoute}}}) => {
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
-            {error && <ErrorComponent height={'14rem'} error={error}/>}
+            {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps && <AnimatedFade key="1">
               <NewTeam
                 isNewOrg={Boolean(newOrgRoute)}
@@ -33,7 +33,7 @@ const NewTeamRoot = ({atmosphere, match: {params: {newOrgRoute}}}) => {
             </AnimatedFade>}
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'}/>
+              <LoadingComponent height={'5rem'} />
             </AnimatedFade>
             }
           </TransitionGroup>
@@ -41,7 +41,7 @@ const NewTeamRoot = ({atmosphere, match: {params: {newOrgRoute}}}) => {
       }}
     />
   );
-}
+};
 
 
 NewTeamRoot.propTypes = {

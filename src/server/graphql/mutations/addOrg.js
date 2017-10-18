@@ -46,14 +46,6 @@ export default {
     ]);
 
     // RESOLUTION
-    // set the token first because it's on the critical path for UX
-    const newAuthToken = tmsSignToken({
-      ...authToken,
-      tms: authToken.tms.concat(teamId),
-      exp: undefined
-    });
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, newAuthToken);
-
     const {newOrg} = await resolvePromiseObj({
       newTeam: createTeamAndLeader(userId, newTeam, true),
       newOrg: createNewOrg(orgId, orgName, userId)
@@ -62,9 +54,14 @@ export default {
     if (invitees && invitees.length) {
       await inviteTeamMembers(invitees, teamId, userId);
     }
+    const newAuthToken = tmsSignToken({
+      ...authToken,
+      exp: undefined
+    }, authToken.tms.concat(teamId));
     sendSegmentEvent('New Org', userId, {orgId, teamId});
     const organizationAdded = {organization: newOrg};
     getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId: socketId});
+    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
     return organizationAdded;
   }
 };
