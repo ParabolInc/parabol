@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
+import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm';
 
 const NewTeam = (props) => {
   const {
@@ -19,16 +19,23 @@ const NewTeam = (props) => {
   const firstOrgId = organizations[0] && organizations[0].id;
   return (
     <div className={css(styles.layout)}>
-      <NewTeamForm initialValues={{orgId: firstOrgId, isNewOrganization: String(isNewOrg)}} organizations={organizations} />
+      <NewTeamForm
+        initialValues={{orgId: firstOrgId, isNewOrganization: String(isNewOrg)}}
+        organizations={organizations}
+      />
       <div className={css(styles.helpLayout)}>
         <div className={css(styles.helpBlock)}>
           <div className={css(styles.helpHeading)}>
             {'What’s an Organization?'}
           </div>
           <div className={css(styles.helpCopy)}>
-            {`Every Team belongs to an Organization.
-                New Organizations start out on the `}
-            <b>{'Free Personal Plan'}</b>{'.'}
+            <div>{`It's the billing entity for a group of teams
+            such as a company, non-profit, consultancy, or personal life.`}</div>
+            <br />
+            <div>
+              {'New Organizations start out on the '}
+              <b>{'Free Personal Plan'}</b>{'.'}
+            </div>
           </div>
           <Button
             buttonSize="small"
@@ -65,7 +72,7 @@ const styleThunk = () => ({
 
   helpBlock: {
     background: appTheme.palette.light50l,
-    boxShadow: ui.shadow[0],
+    boxShadow: ui.shadow[1],
     color: appTheme.palette.dark,
     margin: '1rem 0',
     padding: '.75rem',

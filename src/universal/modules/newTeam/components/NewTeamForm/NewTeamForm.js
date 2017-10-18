@@ -197,7 +197,7 @@ class NewTeamForm extends Component {
                 colorPalette="warm"
                 depth={1}
                 isBlock
-                label="Create Team"
+                label={isNewOrganization ? 'Create Team & Org' : 'Create Team'}
                 type="submit"
                 waiting={submitting}
               />
@@ -262,5 +262,5 @@ export default withAtmosphere(reduxForm({form: 'newTeam', validate})(
       NewTeamForm)
     )
   )
-  )
+)
 );
