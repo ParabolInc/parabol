@@ -37,7 +37,8 @@ const NewTeam = (props) => {
             icon="external-link-square"
             iconPlacement="right"
             label="Learn More"
-            onClick={() => console.log('TODO: Link to Pricing Page')}
+            // TODO: Update with constant from externalLinks.js when we merge (TA)
+            onClick={() => (window.open('https://www.parabol.co/pricing/', '_blank'))}
           />
         </div>
       </div>
@@ -54,44 +55,8 @@ NewTeam.propTypes = {
 const styleThunk = () => ({
   layout: {
     display: 'flex',
+    minWidth: '60rem',
     width: '100%'
-  },
-
-  form: {
-    margin: 0,
-    maxWidth: '40rem',
-    padding: '.5rem 2rem',
-    width: '100%'
-  },
-
-  formInner: {
-    borderTop: `.0625rem solid ${ui.panelBorderColor}`,
-    padding: '2rem'
-  },
-
-  formBlock: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    justifyContent: 'space-between',
-    margin: '0 auto 1rem',
-    width: '100%'
-  },
-
-  formBlockInline: {
-    marginTop: '3rem'
-  },
-
-  fieldBlock: {
-    width: '16rem'
-  },
-
-  textAreaBlock: {
-    margin: '2rem auto'
-  },
-
-  buttonBlock: {
-    margin: '0 auto',
-    width: '16rem'
   },
 
   helpLayout: {

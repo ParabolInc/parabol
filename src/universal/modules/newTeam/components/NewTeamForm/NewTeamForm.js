@@ -16,7 +16,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import AddOrgMutation from 'universal/mutations/AddOrgMutation';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
@@ -107,6 +106,7 @@ class NewTeamForm extends Component {
     } = this.props;
 
     const controlSize = 'medium';
+
     return (
       <form className={css(styles.form)} onSubmit={handleSubmit(this.onSubmit)}>
         <Panel label="Create a New Team">
@@ -218,11 +218,6 @@ NewTeamForm.propTypes = {
 };
 
 const styleThunk = () => ({
-  layout: {
-    display: 'flex',
-    width: '100%'
-  },
-
   form: {
     margin: 0,
     maxWidth: '40rem',
@@ -258,32 +253,6 @@ const styleThunk = () => ({
   buttonBlock: {
     margin: '0 auto',
     width: '16rem'
-  },
-
-  helpLayout: {
-    paddingTop: '6.75rem'
-  },
-
-  helpBlock: {
-    background: appTheme.palette.light50l,
-    boxShadow: ui.shadow[0],
-    color: appTheme.palette.dark,
-    margin: '1rem 0',
-    padding: '.75rem',
-    textAlign: 'center',
-    width: '16rem'
-  },
-
-  helpHeading: {
-    fontSize: appTheme.typography.s4,
-    fontWeight: 700,
-    margin: 0
-  },
-
-  helpCopy: {
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s4,
-    margin: '.5rem 0'
   }
 });
 
@@ -293,5 +262,5 @@ export default withAtmosphere(reduxForm({form: 'newTeam', validate})(
       NewTeamForm)
     )
   )
-)
+  )
 );
