@@ -29,3 +29,13 @@ export async function newUserSession({ browser, behaviors }) {
     quit: driver.quit.bind(driver)
   };
 }
+
+/**
+ * Wait times, in milliseconds, for interactions which take some time to
+ * complete.  For use with WebDriver.prototype.wait.
+ * (https://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_ThenableWebDriver.html)
+ */
+export const waitTimes = {
+  short: 2000,
+  long: 5000
+}

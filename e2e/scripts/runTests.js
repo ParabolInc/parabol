@@ -16,7 +16,7 @@ const globP = promisify(glob);
 
 commander
   .version('1.0.0')
-  .description('Runs end-to-end tests against the Action app')
+  .description('Runs end-to-end tests against the Parabol app')
   .option(
     '-u',
     '--url <url>',

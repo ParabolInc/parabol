@@ -5,7 +5,7 @@ import path from 'path';
 import {promisify} from 'util';
 
 import {DRIVERS_DIR} from './constants';
-import {Driver, getOsName, getOsArch} from './drivers';
+import {DRIVERS, Driver, getOsName, getOsArch} from './drivers';
 
 const execP = promisify(child_process.exec);
 
@@ -44,15 +44,8 @@ async function ensureDriver(driver) {
   }
 }
 
-async function ensureDrivers() {
-  const drivers = [
-    new Driver({
-      browser: 'chrome',
-      url: `https://chromedriver.storage.googleapis.com/2.33/chromedriver_${getOsName()}${getOsArch()}.zip`,
-      driverFilename: 'chromedriver'
-    })
-  ];
-  await Promise.all(drivers.map(ensureDriver));
+function ensureDrivers() {
+  return Promise.all(DRIVERS.map(ensureDriver));
 }
 
 ensureDrivers();

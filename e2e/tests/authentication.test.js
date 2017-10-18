@@ -8,7 +8,7 @@ import expect from 'expect';
 import { By, until } from 'selenium-webdriver';
 import shortid from 'shortid';
 
-import { all, newUserSession } from '../lib';
+import { all, newUserSession, waitTimes } from '../lib';
 
 const BASE_URL = global.E2E_APP_SERVER_URL;
 const BASE_URL_REGEX = BASE_URL.endsWith('/')
@@ -76,9 +76,9 @@ const actions = {
       .click();
     await all(
       driver
-        .wait(until.urlMatches(BASE_URL_REGEX), 2000, 'Logging out did not redirect to the base URL'),
+        .wait(until.urlMatches(BASE_URL_REGEX), waitTimes.short, 'Logging out did not redirect to the base URL'),
       driver
-        .wait(until.titleMatches(/Parabol/), 2000, 'Logging out did not redirect to the Parabol Homepage')
+        .wait(until.titleMatches(/Parabol/), waitTimes.short, 'Logging out did not redirect to the Parabol Homepage')
     );
   }
 };
@@ -88,7 +88,7 @@ const expectations = {
     const warningElement = await driver.findElement(By.css('h2.a0-error'));
     await driver.wait(
       () => warningElement.getText().then((txt) => !!(txt.trim().length)),
-      2000,
+      waitTimes.short,
       'Warning area did not display warning text'
     );
     const warningText = await warningElement.getText();
@@ -98,7 +98,7 @@ const expectations = {
   shouldSeeWelcomeWizard: (driver) => async () => {
     await driver.wait(
       until.titleMatches(/Welcome/),
-      5000,
+      waitTimes.long,
       'Sign up did not redirect to welcome wizard'
     );
     const url = await driver.getCurrentUrl();
