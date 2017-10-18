@@ -58,10 +58,10 @@ export default {
       ...authToken,
       exp: undefined
     }, authToken.tms.concat(teamId));
+    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
     sendSegmentEvent('New Org', userId, {orgId, teamId});
     const organizationAdded = {organization: newOrg};
     getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId: socketId});
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
     return organizationAdded;
   }
 };
