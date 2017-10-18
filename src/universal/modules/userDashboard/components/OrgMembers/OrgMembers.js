@@ -117,7 +117,7 @@ const OrgMembers = (props) => {
     const toggleLabel = inactive ? 'Inactive' : 'Active';
     const makeToggle = () => <Toggle active={!inactive} block disabled={teamIsFree} label={toggleLabel} onClick={toggleHandler} />;
     const toggleTip = (<div>{'You only need to manage activity on the Pro plan.'}</div>);
-    const menuTip = (<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or organization.'}</div>);
+    const menuTip = (<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or Organization.'}</div>);
     const menuButtonProps = {
       buttonStyle: 'flat',
       colorPalette: 'dark',
@@ -147,8 +147,8 @@ const OrgMembers = (props) => {
               tip={menuTip}
               maxHeight={60}
               maxWidth={500}
-              originAnchor={{vertical: 'top', horizontal: 'center'}}
-              targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
+              originAnchor={{vertical: 'center', horizontal: 'right'}}
+              targetAnchor={{vertical: 'center', horizontal: 'left'}}
             >
               <Button {...menuButtonProps} disabled />
             </Tooltip> :
