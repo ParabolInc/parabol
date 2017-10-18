@@ -109,8 +109,8 @@ class NewTeamForm extends Component {
       history.push('/newteam/1');
     };
 
-
     const controlSize = 'medium';
+
     return (
       <form className={css(styles.form)} onSubmit={handleSubmit}>
         <Panel label="Create a New Team">
@@ -221,11 +221,6 @@ NewTeamForm.propTypes = {
 };
 
 const styleThunk = () => ({
-  layout: {
-    display: 'flex',
-    width: '100%'
-  },
-
   form: {
     margin: 0,
     maxWidth: '40rem',
@@ -261,32 +256,6 @@ const styleThunk = () => ({
   buttonBlock: {
     margin: '0 auto',
     width: '16rem'
-  },
-
-  helpLayout: {
-    paddingTop: '6.75rem'
-  },
-
-  helpBlock: {
-    background: appTheme.palette.light50l,
-    boxShadow: ui.shadow[0],
-    color: appTheme.palette.dark,
-    margin: '1rem 0',
-    padding: '.75rem',
-    textAlign: 'center',
-    width: '16rem'
-  },
-
-  helpHeading: {
-    fontSize: appTheme.typography.s4,
-    fontWeight: 700,
-    margin: 0
-  },
-
-  helpCopy: {
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s4,
-    margin: '.5rem 0'
   }
 });
 
