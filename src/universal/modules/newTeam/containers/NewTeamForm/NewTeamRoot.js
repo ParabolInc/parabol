@@ -16,18 +16,12 @@ const query = graphql`
   }
 `;
 
-const NewTeamRoot = ({atmosphere, newOrgRoute}) => {
-  // if (initialOrgCount === 0) {
-  //  history.push('/newteam/1');
-  // } else if (!initialValues.orgId) {
-  //  return null;
-  // }
+const NewTeamRoot = ({atmosphere, match: {params: {newOrgRoute}}}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
       render={({error, props: renderProps}) => {
-        // TODO refactor animation into a wrapper and GitHubRepoListMenu is the child
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {error && <ErrorComponent height={'14rem'} error={error}/>}
@@ -52,8 +46,7 @@ const NewTeamRoot = ({atmosphere, newOrgRoute}) => {
 
 NewTeamRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  newOrgRoute: PropTypes.number
+  match: PropTypes.object.isRequired
 };
 
 export default withAtmosphere(NewTeamRoot);

@@ -2,6 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {withRouter} from 'react-router-dom';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import shortid from 'shortid';
 import Button from 'universal/components/Button/Button';
@@ -20,7 +21,7 @@ import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
-import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
 
 const radioStyles = {
   color: ui.palette.dark
@@ -37,6 +38,15 @@ const makeInvitees = (invitees) => {
     email: email.address,
     fullName: email.fullName
   })) : [];
+};
+
+const mapStateToProps = (state) => {
+  const formState = state.form.newTeam;
+  if (formState) {
+    const {isNewOrganization} = formState.values;
+    return {isNewOrganization: isNewOrganization === 'true'};
+  }
+  return {};
 };
 
 class NewTeamForm extends Component {
@@ -89,7 +99,7 @@ class NewTeamForm extends Component {
   render() {
     const {
       handleSubmit,
-      isNewOrg,
+      isNewOrganization,
       history,
       styles,
       organizations
@@ -113,19 +123,22 @@ class NewTeamForm extends Component {
               />
             </div>
             <div className={css(styles.formBlock)}>
-              <Radio
+              <Field
+                name="isNewOrganization"
+                component={Radio}
+                value="false"
                 customStyles={radioStyles}
                 fieldSize={controlSize}
                 indent
                 inline
                 label="an existing organization:"
-                group="orgRadioGroup"
+                type="radio"
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
                   colorPalette="gray"
                   component={DropdownInput}
-                  disabled={isNewOrg}
+                  disabled={isNewOrganization}
                   fieldSize={controlSize}
                   handleCreateNew={handleCreateNew}
                   name="orgId"
@@ -134,19 +147,22 @@ class NewTeamForm extends Component {
               </div>
             </div>
             <div className={css(styles.formBlock)}>
-              <Radio
+              <Field
+                name="isNewOrganization"
+                component={Radio}
+                value="true"
                 customStyles={radioStyles}
                 fieldSize={controlSize}
                 indent
                 inline
                 label="a new organization:"
-                group="orgRadioGroup"
+                type="radio"
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
                   colorPalette="gray"
                   component={InputField}
-                  disabled={!isNewOrg}
+                  disabled={!isNewOrganization}
                   fieldSize={controlSize}
                   name="orgName"
                   placeholder={randomPlaceholderTheme.orgName}
@@ -199,7 +215,7 @@ class NewTeamForm extends Component {
 
 NewTeamForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
-  isNewOrg: PropTypes.bool,
+  isNewOrganization: PropTypes.bool,
   styles: PropTypes.object,
   organizations: PropTypes.array.isRequired
 };
@@ -275,7 +291,9 @@ const styleThunk = () => ({
 });
 
 export default reduxForm({form: 'newTeam', validate})(
-  withRouter(withStyles(styleThunk)(
-    NewTeamForm)
+  connect(mapStateToProps)(
+    withRouter(withStyles(styleThunk)(
+      NewTeamForm)
+    )
   )
 );
