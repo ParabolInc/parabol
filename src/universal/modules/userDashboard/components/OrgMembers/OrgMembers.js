@@ -5,6 +5,7 @@ import {createPaginationContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
+import Tooltip from 'universal/components/Tooltip/Tooltip';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
@@ -45,10 +46,11 @@ const OrgMembers = (props) => {
     SetOrgUserRoleMutation(environment, orgId, userId, role);
   };
 
+  const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
+
   const userRowActions = (orgUser) => {
     const {id, inactive, preferredName} = orgUser;
     const itemFactory = () => {
-      const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
       const {viewerId} = environment;
       const {id: myUserId} = fromGlobalId(viewerId);
       const listItems = [];
@@ -89,7 +91,9 @@ const OrgMembers = (props) => {
 
       return listItems;
     };
+    const teamIsFree = true;
     const toggleHandler = () => {
+      if (teamIsFree) return;
       if (!inactive) {
         submitMutation();
         const handleError = (error) => {
@@ -111,27 +115,59 @@ const OrgMembers = (props) => {
       }
     };
     const toggleLabel = inactive ? 'Inactive' : 'Active';
+    const makeToggle = () => <Toggle active={!inactive} block disabled={teamIsFree} label={toggleLabel} onClick={toggleHandler} />;
+    const toggleTip = (<div>{'You only need to manage activity on the Pro plan.'}</div>);
+    const menuTip = (<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or organization.'}</div>);
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.toggleBlock)}>
-          <Toggle active={!inactive} block label={toggleLabel} onClick={toggleHandler} />
+          {teamIsFree ?
+            <Tooltip
+              tip={toggleTip}
+              maxHeight={40}
+              maxWidth={500}
+              originAnchor={{vertical: 'top', horizontal: 'center'}}
+              targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
+            >
+              <div>{makeToggle()}</div>
+            </Tooltip> :
+            makeToggle()
+          }
         </div>
         <div className={css(styles.menuToggleBlock)}>
-          <Menu
-            itemFactory={itemFactory}
-            originAnchor={originAnchor}
-            menuWidth="14rem"
-            targetAnchor={targetAnchor}
-            toggle={
+          {(orgUser.isBillingLeader && billingLeaderCount === 1) ?
+            <Tooltip
+              tip={menuTip}
+              maxHeight={60}
+              maxWidth={500}
+              originAnchor={{vertical: 'top', horizontal: 'center'}}
+              targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
+            >
               <Button
                 colorPalette="dark"
+                disabled
                 icon="ellipsis-v"
                 isBlock
                 size="smallest"
                 buttonStyle="flat"
               />
-            }
-          />
+            </Tooltip> :
+            <Menu
+              itemFactory={itemFactory}
+              originAnchor={originAnchor}
+              menuWidth="14rem"
+              targetAnchor={targetAnchor}
+              toggle={
+                <Button
+                  colorPalette="dark"
+                  icon="ellipsis-v"
+                  isBlock
+                  size="smallest"
+                  buttonStyle="flat"
+                />
+              }
+            />
+          }
         </div>
       </div>
     );
