@@ -118,6 +118,13 @@ const OrgMembers = (props) => {
     const makeToggle = () => <Toggle active={!inactive} block disabled={teamIsFree} label={toggleLabel} onClick={toggleHandler} />;
     const toggleTip = (<div>{'You only need to manage activity on the Pro plan.'}</div>);
     const menuTip = (<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or organization.'}</div>);
+    const menuButtonProps = {
+      buttonStyle: 'flat',
+      colorPalette: 'dark',
+      icon: 'ellipsis-v',
+      isBlock: true,
+      size: 'smallest'
+    };
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.toggleBlock)}>
@@ -143,14 +150,7 @@ const OrgMembers = (props) => {
               originAnchor={{vertical: 'top', horizontal: 'center'}}
               targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
             >
-              <Button
-                colorPalette="dark"
-                disabled
-                icon="ellipsis-v"
-                isBlock
-                size="smallest"
-                buttonStyle="flat"
-              />
+              <Button {...menuButtonProps} disabled />
             </Tooltip> :
             <Menu
               itemFactory={itemFactory}
@@ -158,13 +158,7 @@ const OrgMembers = (props) => {
               menuWidth="14rem"
               targetAnchor={targetAnchor}
               toggle={
-                <Button
-                  colorPalette="dark"
-                  icon="ellipsis-v"
-                  isBlock
-                  size="smallest"
-                  buttonStyle="flat"
-                />
+                <Button {...menuButtonProps} />
               }
             />
           }
