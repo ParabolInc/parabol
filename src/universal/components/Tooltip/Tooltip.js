@@ -13,10 +13,11 @@ const Tooltip = (props) =>
   );
 
 Tooltip.propTypes = {
-  tip: PropTypes.element.isRequired,
   children: PropTypes.element.isRequired,
+  delayed: PropTypes.bool,
+  isOpen: PropTypes.bool,
   setOriginCoords: PropTypes.func.isRequired,
-  isOpen: PropTypes.bool
+  tip: PropTypes.element.isRequired
 };
 
 export default withCoords(Tooltip);

@@ -120,6 +120,7 @@ class Editable extends Component {
 }
 
 Editable.propTypes = {
+  disabled: PropTypes.bool,
   handleSubmit: PropTypes.func.isRequired,
   // NOTE: Use 'hideIconOnValue' when you want to hide
   //       the pencil icon when there is a value. (TA)
@@ -141,10 +142,10 @@ Editable.propTypes = {
   styles: PropTypes.object,
   submitOnBlur: PropTypes.bool,
   typeStyles: PropTypes.shape({
-    color: PropTypes.string,
-    fontSize: PropTypes.string,
-    lineHeight: PropTypes.string,
-    placeholderColor: PropTypes.string
+    color: PropTypes.string.isRequired,
+    fontSize: PropTypes.string.isRequired,
+    lineHeight: PropTypes.string.isRequired,
+    placeholderColor: PropTypes.string.isRequired
   }),
   touch: PropTypes.func,
   untouch: PropTypes.func

@@ -4,13 +4,12 @@ import {cashay} from 'cashay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
+import MeetingCheckinPrompt from 'universal/modules/meeting/components/MeetingCheckinPrompt/MeetingCheckinPrompt';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
@@ -27,8 +26,12 @@ const MeetingCheckin = (props) => {
   const {
     checkInGreeting,
     checkInQuestion,
-    facilitatorPhaseItem
+    facilitatorPhaseItem,
+    tier
   } = team;
+
+  // DEBUG
+  console.log('tier is:', tier);
 
   if (localPhaseItem > members.length) {
     return (
@@ -57,29 +60,15 @@ const MeetingCheckin = (props) => {
   const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
 
-  const makeGreeting = (greeting) =>
-    (<span
-      className={css(styles.greeting)}
-      title={`${greeting.content} means “hello” in ${greeting.language}`}
-    >
-      {greeting.content}
-    </span>);
-
-  const meetingPromptHeading = () =>
-    (<span>
-      <span style={{color: appTheme.palette.warm}}>
-        {makeGreeting(checkInGreeting)}, {currentName}
-      </span>
-      <br /><i>{checkInQuestion}</i>?
-    </span>);
-
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="1rem">
-        <MeetingPrompt
+        <MeetingCheckinPrompt
           avatar={currentAvatar}
-          avatarLarge
-          heading={meetingPromptHeading()}
+          checkInQuestion={checkInQuestion}
+          canEdit={false}
+          currentName={currentName}
+          greeting={checkInGreeting}
         />
         <div className={css(styles.base)}>
           {showMoveMeetingControls ?
@@ -130,12 +119,6 @@ const styleThunk = () => ({
     [ui.breakpoint.widest]: {
       padding: '4rem 0'
     }
-  },
-
-  greeting: {
-    borderBottom: '1px dashed currentColor',
-    color: 'inherit',
-    cursor: 'help'
   },
 
   hint: {

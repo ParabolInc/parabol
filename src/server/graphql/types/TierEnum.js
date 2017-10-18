@@ -3,7 +3,7 @@ import {ENTERPRISE, PERSONAL, PRO} from 'universal/utils/constants';
 
 const TierEnum = new GraphQLEnumType({
   name: 'TierEnum',
-  description: 'The phase of the meeting',
+  description: 'The pay tier of the team',
   values: {
     [PERSONAL]: {},
     [PRO]: {},

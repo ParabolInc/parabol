@@ -57,7 +57,8 @@ query{
     facilitatorPhase,
     facilitatorPhaseItem,
     meetingPhase,
-    meetingPhaseItem
+    meetingPhaseItem,
+    tier
   }
   teamMemberCount(teamId: $teamId)
   teamMembers(teamId: $teamId) @live {
