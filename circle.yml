@@ -1,10 +1,9 @@
 version: 2
 executorType: docker
 containerInfo:
-  - image: node:8.5.0
+  - image: node:8.4.0
   - image: rethinkdb:2.3.5
   - image: redis:3.2.8
-  - image: selenium/standalone-chrome:3.6.0
 experimental:
   notify:
     branches:
@@ -68,35 +67,7 @@ stages:
           mkdir test-report ; mv test-report.xml test-report
 
       - type: shell
-        name: DevOps checkout
-        command: |
-          ssh-agent $(
-            ssh-add -D;
-            ssh-add ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da;
-            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
-          )
-
-      - type: shell
-        name: E2E test dependencies
-        command: |
-          apt-get update && apt-get -yq install unzip libnss3 libgconf-2-4
-          npm run test:e2e-deps
-
-      - type: shell
-        name: E2E test build
-        command: |
-          cp $DEVOPS_WORKDIR/environments/e2e ./.env
-          npm run db:migrate
-          npm run build
-
-      - type: shell
-        name: E2E test run
-        command: |
-          export SELENIUM_REMOTE_URL='http://localhost:4444/wd/hub'
-          npm run test:e2e
-
-      - type: shell
-        name: Pre-build environment configuration
+        name: Pre-build DevOps checkout
         command: |
           if [ "${CIRCLE_BRANCH}" == "production" ]; then
             export DEPLOY_ENV="production"
@@ -107,6 +78,11 @@ stages:
           else
             export DEPLOY_ENV="local"
           fi
+          ssh-agent $(
+            ssh-add -D;
+            ssh-add ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da;
+            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+          )
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
       - type: shell
