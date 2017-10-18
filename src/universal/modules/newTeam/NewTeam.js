@@ -29,13 +29,12 @@ const NewTeam = (props) => {
             {'What’s an Organization?'}
           </div>
           <div className={css(styles.helpCopy)}>
-            <div>{`It's the billing entity for a group of teams
-            such as a company, non-profit, consultancy, or personal life.`}</div>
-            <br />
-            <div>
-              {'New Organizations start out on the '}
-              <b>{'Free Personal Plan'}</b>{'.'}
-            </div>
+            {`It’s the billing entity for a group of teams
+            such as a company, non-profit, consultancy, or personal life.`}
+          </div>
+          <div className={css(styles.helpCopy)}>
+            {'New Organizations start out on the '}
+            <b>{'Free Personal Plan'}</b>{'.'}
           </div>
           <Button
             buttonSize="small"
