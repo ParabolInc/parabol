@@ -53,46 +53,44 @@ export const adjustArchive = (store, viewerId, project, teamId) => {
 const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError) => {
   const {viewerId} = environment;
   const [teamId] = updatedProject.id.split('::');
+  // use this as a temporary fix until we get rid of cashay because otherwise relay will roll back the change
+  // which means we'll have 2 items, then 1, then 2, then 1. i prefer 2, then 1.
+  const optimisticUpdater = (store) => {
+    const {id, content} = updatedProject;
+    if (!content) return;
+    // FIXME when we remove cashay, this should be a globalId
+    const globalId = toGlobalId('Project', id);
+    const project = store.get(globalId);
+    if (!project) return;
+    const tags = project.getValue('tags');
+    const {entityMap} = JSON.parse(content);
+    const nextTags = getTagsFromEntityMap(entityMap);
+    const wasArchived = tags.includes('archived');
+    const willArchive = nextTags.includes('archived');
+    const viewer = store.get(viewerId);
+    const conn = getArchiveConnection(viewer, teamId);
+    if (conn) {
+      if (!wasArchived && willArchive) {
+        // add
+        const newEdge = ConnectionHandler.createEdge(
+          store,
+          conn,
+          project,
+          'RelayProjectEdge'
+        );
+        newEdge.setValue(project.getValue('updatedAt'), 'cursor');
+        insertEdgeAfter(conn, newEdge, 'updatedAt');
+      } else if (wasArchived && !willArchive) {
+        // delete
+        ConnectionHandler.deleteNode(conn, globalId);
+      }
+    }
+  };
   return commitMutation(environment, {
     mutation,
     variables: {updatedProject},
-    // updater: (store) => {
-    // TODO after removing cashay, reimplement this via mutation instead of sub
-    // const project = store.getRootField('updateProject').getLinkedRecord('project');
-    // adjustArchive(store, viewerId, project, teamId);
-
-    // },
-    optimisticUpdater: (store) => {
-      const {id, content} = updatedProject;
-      if (!content) return;
-      // FIXME when we remove cashay, this should be a globalId
-      const globalId = toGlobalId('Project', id);
-      const project = store.get(globalId);
-      if (!project) return;
-      const tags = project.getValue('tags');
-      const {entityMap} = JSON.parse(content);
-      const nextTags = getTagsFromEntityMap(entityMap);
-      const wasArchived = tags.includes('archived');
-      const willArchive = nextTags.includes('archived');
-      const viewer = store.get(viewerId);
-      const conn = getArchiveConnection(viewer, teamId);
-      if (conn) {
-        if (!wasArchived && willArchive) {
-          // add
-          const newEdge = ConnectionHandler.createEdge(
-            store,
-            conn,
-            project,
-            'RelayProjectEdge'
-          );
-          newEdge.setValue(project.getValue('updatedAt'), 'cursor');
-          insertEdgeAfter(conn, newEdge, 'updatedAt');
-        } else if (wasArchived && !willArchive) {
-          // delete
-          ConnectionHandler.deleteNode(conn, globalId);
-        }
-      }
-    },
+    updater: optimisticUpdater,
+    optimisticUpdater,
     onCompleted,
     onError
   });

@@ -78,7 +78,7 @@ class TeamArchive extends Component {
   });
 
   invalidateOnAddRemove(oldEdges, edges) {
-    if (edges !== oldEdges && edges.length !== oldEdges.length) {
+    if (edges !== oldEdges && edges.length !== oldEdges.length && edges.length > 0) {
       const minLen = Math.min(oldEdges.length, edges.length);
       // if a new page is added, don't bother resizing, it isn't from a subscription or mutation
       if (oldEdges.length === minLen && oldEdges[minLen - 1].node.id === edges[minLen - 1].node.id) return;

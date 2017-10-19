@@ -86,7 +86,8 @@ export default {
 
     const project = projectChanges.new_val;
     const projectUpdated = {project};
-    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, mutatorId: socketId});
+    // TODO when removing cashay, add in the mutatorId here
+    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated});
     return true;
   }
 };
