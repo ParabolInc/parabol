@@ -166,7 +166,7 @@
     "react-fontawesome": "^1.5.0",
     "react-helmet": "^5.1.3",
     "react-hotkey-hoc": "^0.2.1",
-    "react-notification-system": "^0.2.15",
+    "react-notification-system": "^0.2.16",
     "react-portal-hoc": "^0.4.2",
     "react-redux": "^5.0.6",
     "react-relay": "1.3.0",

@@ -1,4 +1,4 @@
-import Atmosphere from 'client/Atmosphere';
+import Atmosphere from 'universal/Atmosphere';
 import deepFreeze from 'deep-freeze';
 import areEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';

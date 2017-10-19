@@ -52,4 +52,6 @@ const styleThunk = () => ({
   }
 });
 
+export Atmosphere from 'universal/Atmosphere';
+export {StyleSheetServer} from 'aphrodite-local-styles/no-important';
 export default withStyles(styleThunk)(Action);
