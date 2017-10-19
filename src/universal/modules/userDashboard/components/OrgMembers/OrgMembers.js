@@ -154,7 +154,7 @@ const OrgMembers = (props) => {
               targetAnchor={{vertical: 'center', horizontal: 'left'}}
             >
               {/* https://github.com/facebook/react/issues/4251 */}
-              <Button {...menuButtonProps} />
+              <Button {...menuButtonProps} visuallyDisabled />
             </Tooltip> :
             <Menu
               itemFactory={itemFactory}
