@@ -19,14 +19,13 @@ const iconStyles = {
   verticalAlign: 'middle'
 };
 
-// TODO needs a design for non-billing leaders
 const TeamArchiveSqueeze = (props) => {
   const {history, orgId, projectsAvailableCount, styles, viewer} = props;
   const {archivedProjectsCount, team: {organization: {isBillingLeader, mainBillingLeader}}} = viewer;
   const unavailableProjects = archivedProjectsCount - projectsAvailableCount;
   if (unavailableProjects < 1) {
     // https://github.com/reactjs/react-transition-group/issues/208
-    return <br/>;
+    return <br />;
   }
   const handleUpgrade = () => {
     history.push(`/me/organizations/${orgId}`);
@@ -130,7 +129,7 @@ const styleThunk = () => ({
   contactLink: {
     display: 'block',
     fontSize: 0,
-    fontWeight: 700,
+    fontWeight: 700
   },
 
   contactLinkLabel: {

@@ -26,11 +26,16 @@ const CARD_WIDTH = 256;
 const GRID_PADDING = 16;
 const NAV_WIDTH = parseInt(ui.dashSidebarWidth, 10) * 16;
 
-class TeamArchive extends Component {
+const getColumnCount = () => {
+  if (typeof window === 'undefined') return 4;
+  const {innerWidth} = window;
+  return Math.floor((innerWidth - NAV_WIDTH - GRID_PADDING) / CARD_WIDTH);
+};
 
+class TeamArchive extends Component {
   constructor(props) {
     super(props);
-    this.columnCount = this.getColumnCount();
+    this.columnCount = getColumnCount();
     this.archiveWidth = this.columnCount * CARD_WIDTH + 16;
   }
 
@@ -40,21 +45,15 @@ class TeamArchive extends Component {
     this.invalidateOnAddRemove(oldEdges, edges);
   }
 
-  getColumnCount() {
-    if (typeof window === 'undefined') return 4;
-    const {innerWidth} = window;
-    return Math.floor((innerWidth - NAV_WIDTH - GRID_PADDING) / CARD_WIDTH);
-  }
-
   getGridIndex(index) {
     const rowIndex = Math.floor(index / this.columnCount);
     const columnIndex = index % this.columnCount;
     return {rowIndex, columnIndex};
-  };
+  }
 
   getIndex(columnIndex, rowIndex) {
     return this.columnCount * rowIndex + columnIndex;
-  };
+  }
 
   getGridRowCount = () => {
     const {viewer: {archivedProjects: {edges}}} = this.props;
@@ -182,10 +181,10 @@ class TeamArchive extends Component {
 
     return (
       <div className={css(styles.root)}>
-        <Helmet title={`${teamName} Archive | Parabol`}/>
+        <Helmet title={`${teamName} Archive | Parabol`} />
         <div className={css(styles.header)}>
-          <TeamArchiveHeader teamId={teamId}/>
-          <div className={css(styles.border)}/>
+          <TeamArchiveHeader teamId={teamId} />
+          <div className={css(styles.border)} />
         </div>
 
         <div className={css(styles.body)}>
@@ -200,7 +199,7 @@ class TeamArchive extends Component {
               </InfiniteLoader>
             </div> :
             <div className={css(styles.emptyMsg)}>
-              <FontAwesome name="smile-o" style={iconStyle}/>
+              <FontAwesome name="smile-o" style={iconStyle} />
               <span style={ib}>
                 {'Hi there! There are zero archived projects. '}
                 {'Nothing to see here. How about a fun rally video? '}
