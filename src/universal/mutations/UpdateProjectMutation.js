@@ -70,6 +70,7 @@ const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError
     const viewer = store.get(viewerId);
     const conn = getArchiveConnection(viewer, teamId);
     if (conn) {
+      const archivedProjectsCount = viewer.getValue('archivedProjectsCount', {teamId});
       if (!wasArchived && willArchive) {
         // add
         const newEdge = ConnectionHandler.createEdge(
@@ -80,9 +81,11 @@ const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError
         );
         newEdge.setValue(project.getValue('updatedAt'), 'cursor');
         insertEdgeAfter(conn, newEdge, 'updatedAt');
+        viewer.setValue(archivedProjectsCount +1, 'archivedProjectsCount', {teamId});
       } else if (wasArchived && !willArchive) {
         // delete
         ConnectionHandler.deleteNode(conn, globalId);
+        viewer.setValue(archivedProjectsCount -1, 'archivedProjectsCount', {teamId});
       }
     }
   };
