@@ -21,7 +21,7 @@ export default {
       description: 'the updated project including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedProject}, {authToken, socketId}) {
+  async resolve(source, {updatedProject}, {authToken}) {
     const r = getRethink();
 
     // AUTH
