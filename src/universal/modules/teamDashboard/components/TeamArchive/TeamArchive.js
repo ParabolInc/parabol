@@ -22,39 +22,44 @@ const iconStyle = {
   marginRight: '.25rem'
 };
 
-const COLUMN_COUNT = 4;    // min-width: 1280px (which is the lowest scoped browser width currently)
-// const COLUMN_COUNT = 5; // min-width: 1536px (or 1600px nice and round)
-// const COLUMN_COUNT = 6; // min-width: 1792px (or 1800px nice and round)
-
-// the maths   256px (card container cell with inner padding [8px]) * N (number of columns)
-//           +  16px (inner padding of grid left + right [8px + 8px])
-//           + 240px (nav width)
-//           = min-width for browser window
-
-const ARCHIVE_WIDTH = 1040;
 const CARD_WIDTH = 256;
-
-const getIndex = (columnIndex, rowIndex) => {
-  return COLUMN_COUNT * rowIndex + columnIndex;
-};
-
-const getGridIndex = (index) => {
-  const rowIndex = Math.floor(index / COLUMN_COUNT);
-  const columnIndex = index % COLUMN_COUNT;
-  return {rowIndex, columnIndex};
-};
+const GRID_PADDING = 16;
+const NAV_WIDTH = parseInt(ui.dashSidebarWidth, 10) * 16;
 
 class TeamArchive extends Component {
+
+  constructor(props) {
+    super(props);
+    this.columnCount = this.getColumnCount();
+    this.archiveWidth = this.columnCount * CARD_WIDTH + 16;
+  }
+
   componentWillUpdate(nextProps) {
     const {viewer: {archivedProjects: {edges: oldEdges}}} = this.props;
     const {viewer: {archivedProjects: {edges}}} = nextProps;
     this.invalidateOnAddRemove(oldEdges, edges);
   }
 
+  getColumnCount() {
+    if (typeof window === 'undefined') return 4;
+    const {innerWidth} = window;
+    return Math.floor((innerWidth - NAV_WIDTH - GRID_PADDING) / CARD_WIDTH);
+  }
+
+  getGridIndex(index) {
+    const rowIndex = Math.floor(index / this.columnCount);
+    const columnIndex = index % this.columnCount;
+    return {rowIndex, columnIndex};
+  };
+
+  getIndex(columnIndex, rowIndex) {
+    return this.columnCount * rowIndex + columnIndex;
+  };
+
   getGridRowCount = () => {
     const {viewer: {archivedProjects: {edges}}} = this.props;
     const currentCount = edges.length;
-    return Math.ceil(currentCount / COLUMN_COUNT);
+    return Math.ceil(currentCount / this.columnCount);
   };
 
   isRowLoaded = ({index}) => {
@@ -64,7 +69,7 @@ class TeamArchive extends Component {
   loadMore = () => {
     const {relay: {hasMore, isLoading, loadMore}} = this.props;
     if (!hasMore() || isLoading()) return;
-    loadMore(COLUMN_COUNT * 10);
+    loadMore(this.columnCount * 10);
   };
 
   cellCache = new CellMeasurerCache({
@@ -87,7 +92,7 @@ class TeamArchive extends Component {
           break;
         }
       }
-      const {columnIndex, rowIndex} = getGridIndex(ii);
+      const {columnIndex, rowIndex} = this.getGridIndex(ii);
       this.gridRef.recomputeGridSize({columnIndex, rowIndex});
       this.cellCache.clearAll();
     }
@@ -96,7 +101,7 @@ class TeamArchive extends Component {
   rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
     const {viewer: {archivedProjects: {edges}}, userId} = this.props;
-    const index = getIndex(columnIndex, rowIndex);
+    const index = this.getIndex(columnIndex, rowIndex);
     if (!this.isRowLoaded({index})) return undefined;
     const project = edges[index].node;
     return (
@@ -137,7 +142,7 @@ class TeamArchive extends Component {
           <Grid
             autoHeight
             cellRenderer={this.rowRenderer}
-            columnCount={COLUMN_COUNT}
+            columnCount={this.columnCount}
             columnWidth={CARD_WIDTH}
             deferredMeasurementCache={this.cellCache}
             estimatedColumnSize={CARD_WIDTH}
@@ -153,7 +158,7 @@ class TeamArchive extends Component {
             rowCount={this.getGridRowCount()}
             rowHeight={this.cellCache.rowHeight}
             scrollTop={scrollTop}
-            width={ARCHIVE_WIDTH}
+            width={this.archiveWidth}
           />
         )}
       </WindowScroller>
@@ -162,8 +167,8 @@ class TeamArchive extends Component {
 
   _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
     this._onRowsRendered({
-      startIndex: getIndex(columnStartIndex, rowStartIndex),
-      stopIndex: getIndex(columnStopIndex, rowStopIndex)
+      startIndex: this.getIndex(columnStartIndex, rowStartIndex),
+      stopIndex: this.getIndex(columnStopIndex, rowStopIndex)
     });
   };
 
@@ -177,10 +182,10 @@ class TeamArchive extends Component {
 
     return (
       <div className={css(styles.root)}>
-        <Helmet title={`${teamName} Archive | Parabol`} />
+        <Helmet title={`${teamName} Archive | Parabol`}/>
         <div className={css(styles.header)}>
-          <TeamArchiveHeader teamId={teamId} />
-          <div className={css(styles.border)} />
+          <TeamArchiveHeader teamId={teamId}/>
+          <div className={css(styles.border)}/>
         </div>
 
         <div className={css(styles.body)}>
@@ -195,7 +200,7 @@ class TeamArchive extends Component {
               </InfiniteLoader>
             </div> :
             <div className={css(styles.emptyMsg)}>
-              <FontAwesome name="smile-o" style={iconStyle} />
+              <FontAwesome name="smile-o" style={iconStyle}/>
               <span style={ib}>
                 {'Hi there! There are zero archived projects. '}
                 {'Nothing to see here. How about a fun rally video? '}
@@ -259,7 +264,6 @@ const styleThunk = () => ({
 
   cardGrid: {
     padding: '.5rem',
-    maxWidth: ARCHIVE_WIDTH,
     width: '100%'
   },
 
@@ -279,7 +283,6 @@ const styleThunk = () => ({
   },
 
   archiveSqueezeBlock: {
-    maxWidth: ARCHIVE_WIDTH,
     padding: '1rem',
     width: '100%'
   }
