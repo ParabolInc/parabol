@@ -66,6 +66,7 @@ class Button extends Component {
     label: PropTypes.string,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
+    onMouseLeave: PropTypes.func,
     size: PropTypes.oneOf(ui.buttonSizes),
     buttonStyle: PropTypes.oneOf([
       'solid',
@@ -109,9 +110,13 @@ class Button extends Component {
     e.currentTarget.blur();
   };
 
-  onMouseLeave = () => {
+  onMouseLeave = (e) => {
     if (this.state.pressedDown) {
       this.setState({pressedDown: false});
+    }
+    const {onMouseLeave} = this.props;
+    if (onMouseLeave) {
+      onMouseLeave(e);
     }
   }
 

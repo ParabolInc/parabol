@@ -14,7 +14,7 @@ import InactivateUserMutation from 'universal/mutations/InactivateUserMutation';
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {BILLING_LEADER} from 'universal/utils/constants';
+import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import OrgUserRow from '../OrgUserRow/OrgUserRow';
@@ -33,6 +33,7 @@ const targetAnchor = {
 const OrgMembers = (props) => {
   const {
     dispatch,
+    org,
     orgId,
     viewer: {orgMembers},
     relay: {environment},
@@ -42,6 +43,8 @@ const OrgMembers = (props) => {
     styles
   } = props;
 
+  const {tier} = org;
+  const isPersonalTier = tier === PERSONAL;
   const setRole = (userId, role = null) => () => {
     SetOrgUserRoleMutation(environment, orgId, userId, role);
   };
@@ -91,9 +94,9 @@ const OrgMembers = (props) => {
 
       return listItems;
     };
-    const teamIsFree = true;
+
     const toggleHandler = () => {
-      if (teamIsFree) return;
+      if (isPersonalTier) return;
       if (!inactive) {
         submitMutation();
         const handleError = (error) => {
@@ -115,7 +118,7 @@ const OrgMembers = (props) => {
       }
     };
     const toggleLabel = inactive ? 'Inactive' : 'Active';
-    const makeToggle = () => <Toggle active={!inactive} block disabled={teamIsFree} label={toggleLabel} onClick={toggleHandler} />;
+    const makeToggle = () => <Toggle active={!inactive} block disabled={isPersonalTier} label={toggleLabel} onClick={toggleHandler} />;
     const toggleTip = (<div>{'You only need to manage activity on the Pro plan.'}</div>);
     const menuTip = (<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or Organization.'}</div>);
     const menuButtonProps = {
@@ -128,7 +131,7 @@ const OrgMembers = (props) => {
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.toggleBlock)}>
-          {teamIsFree ?
+          {isPersonalTier ?
             <Tooltip
               tip={toggleTip}
               maxHeight={40}
@@ -150,7 +153,8 @@ const OrgMembers = (props) => {
               originAnchor={{vertical: 'center', horizontal: 'right'}}
               targetAnchor={{vertical: 'center', horizontal: 'left'}}
             >
-              <Button {...menuButtonProps} disabled />
+              {/* https://github.com/facebook/react/issues/4251 */}
+              <Button {...menuButtonProps} />
             </Tooltip> :
             <Menu
               itemFactory={itemFactory}
@@ -186,6 +190,7 @@ const OrgMembers = (props) => {
 OrgMembers.propTypes = {
   relay: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
+  org: PropTypes.object,
   orgId: PropTypes.string.isRequired,
   viewer: PropTypes.object.isRequired,
   error: PropTypes.any,

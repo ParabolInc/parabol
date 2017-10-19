@@ -40,10 +40,14 @@ class HoverTooltip extends Component {
           onMouseEnter(e);
         }
       },
-      onMouseLeave: () => {
+      onMouseLeave: (e) => {
         this.setState({
           inToggle: false
         });
+        const {onMouseLeave} = child.props;
+        if (onMouseLeave) {
+          onMouseLeave(e);
+        }
       }
     });
   }
