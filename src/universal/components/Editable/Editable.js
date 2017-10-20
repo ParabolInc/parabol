@@ -120,7 +120,6 @@ class Editable extends Component {
 }
 
 Editable.propTypes = {
-  disabled: PropTypes.bool,
   handleSubmit: PropTypes.func.isRequired,
   // NOTE: Use 'hideIconOnValue' when you want to hide
   //       the pencil icon when there is a value. (TA)

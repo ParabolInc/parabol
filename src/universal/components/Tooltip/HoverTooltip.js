@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 class HoverTooltip extends Component {
   static propTypes = {
     children: PropTypes.any.isRequired,
-    delayed: PropTypes.bool,
     tip: PropTypes.any.isRequired,
     setOriginCoords: PropTypes.func.isRequired
   }

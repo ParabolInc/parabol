@@ -1,17 +1,32 @@
 import React, {Component} from 'react';
 import {reduxForm, Field} from 'redux-form';
 import PropTypes from 'prop-types';
+import FontAwesome from 'react-fontawesome';
+import {css} from 'aphrodite-local-styles/no-important';
 
 import appTheme from 'universal/styles/theme/appTheme';
+import withStyles from 'universal/styles/withStyles';
+import ui from 'universal/styles/ui';
 
 import Editable from 'universal/components/Editable/Editable';
-import Button from 'universal/components/Button/Button';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
 
 
+@withStyles(() => ({
+  fakeEditable: {
+    fontFamily: appTheme.typography.serif,
+    color: appTheme.palette.dark,
+    ':hover, :focus': {
+      cursor: 'pointer',
+      opacity: 0.5,
+      outline: 'none'
+    }
+  }
+}))
 class StaticCheckinQuestion extends Component {
-  propTypes = {
-    checkInQuestion: PropTypes.string.isRequired
+  static propTypes = {
+    checkInQuestion: PropTypes.string.isRequired,
+    styles: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -20,51 +35,54 @@ class StaticCheckinQuestion extends Component {
   }
 
   state = {
+    hovering: false,
     upSelling: false
   };
 
-  componentWillUnmount() {
-    this.clearupSellTimeout();
-  }
-
-  clearupSellTimeout = () => {
-    if (this.upSellTimeout) {
-      clearTimeout(this.upSellTimeout);
-    }
+  hoverOn = () => {
+    this.setState({hovering: true});
   };
 
-  upSell = (event) => {
-    event.preventDefault();
-    this.clearupSellTimeout();
-    this.upSellTimeout = setTimeout(() => {
-      this.setState({upSelling: false});
-    }, 4000);
+  hoverOff = () => {
+    this.setState({hovering: false});
+  };
+
+  showUpsell = () => {
     this.setState({upSelling: true});
   };
 
+  hideUpsell = () => {
+    this.setState({upSelling: false});
+  };
+
   render() {
-    const {checkInQuestion} = this.props;
-    const {upSelling} = this.state;
+    const {checkInQuestion, styles} = this.props;
+    const {hovering, upSelling} = this.state;
     const upgradeCopy = 'Upgrade to a Pro Account to customize the Social Check-in question.';
+    const iconStyle = {
+      fontSize: ui.buttonIconSize.small,
+      verticalAlign: 'middle'
+    };
     return (
       <Tooltip
-        isOpen={upSelling}
+        isOpen={upSelling || hovering}
         tip={<div>{upgradeCopy}</div>}
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
       >
-        <span>
-          {checkInQuestion}
-          <Button
-            aria-label={upgradeCopy}
-            title={upgradeCopy}
-            compact
-            size="small"
-            disabled={upSelling}
-            buttonStyle="flat"
-            icon="pencil"
-            onClick={this.upSell}
-          />
+        <span
+          aria-label={upgradeCopy}
+          title={upgradeCopy}
+          role="button"
+          tabIndex="0"
+          className={css(styles.fakeEditable)}
+          onMouseOver={this.hoverOn}
+          onMouseOut={this.hoverOff}
+          onFocus={this.showUpsell}
+          onBlur={this.hideUpsell}
+        >
+          {checkInQuestion}{' '}
+          <FontAwesome name="pencil" style={iconStyle} />
         </span>
       </Tooltip>
     );
