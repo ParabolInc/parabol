@@ -18,8 +18,7 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 class GitHubRepoRow extends Component {
   constructor(props) {
     super(props);
-    const {environment: {viewerId}, teamId} = this.props;
-    const {id: userId} = fromGlobalId(viewerId);
+    const {environment: {userId}, teamId} = this.props;
     const teamMemberId = `${userId}::${teamId}`;
     this.globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
     this.state = {

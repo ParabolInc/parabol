@@ -26,12 +26,7 @@ class OrgBilling extends Component {
   loadMore = () => {
     const {relay: {hasMore, isLoading, loadMore}} = this.props;
     if (!hasMore() || isLoading()) return;
-    loadMore(
-      5,
-      (e) => {
-        console.error(e);
-      }
-    );
+    loadMore(5);
   }
 
   render() {
