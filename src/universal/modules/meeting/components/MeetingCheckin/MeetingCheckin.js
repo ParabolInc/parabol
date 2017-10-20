@@ -3,6 +3,7 @@ import React from 'react';
 import {cashay} from 'cashay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import {ENTERPRISE, PERSONAL, PRO} from 'universal/utils/constants';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
 import MeetingCheckinPrompt from 'universal/modules/meeting/components/MeetingCheckinPrompt/MeetingCheckinPrompt';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -30,9 +31,6 @@ const MeetingCheckin = (props) => {
     tier
   } = team;
 
-  // DEBUG
-  console.log('tier is:', tier);
-
   if (localPhaseItem > members.length) {
     return (
       <LoadingView>
@@ -59,6 +57,7 @@ const MeetingCheckin = (props) => {
   const nextMember = memberIdx < members.length && members[memberIdx + 1];
   const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
+  const canEdit = [PRO, ENTERPRISE].includes(tier);
 
   return (
     <MeetingMain>
@@ -66,7 +65,7 @@ const MeetingCheckin = (props) => {
         <MeetingCheckinPrompt
           avatar={currentAvatar}
           checkInQuestion={checkInQuestion}
-          canEdit={false}
+          canEdit={canEdit}
           currentName={currentName}
           greeting={checkInGreeting}
         />
