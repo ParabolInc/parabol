@@ -3,7 +3,7 @@ import React from 'react';
 import {cashay} from 'cashay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {ENTERPRISE, PERSONAL, PRO} from 'universal/utils/constants';
+import {ENTERPRISE, PRO} from 'universal/utils/constants';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
 import MeetingCheckinPrompt from 'universal/modules/meeting/components/MeetingCheckinPrompt/MeetingCheckinPrompt';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
