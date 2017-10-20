@@ -58,7 +58,8 @@ DashModal.propTypes = {
     'fixed'
   ]),
   modalLayout: PropTypes.oneOf(ui.modalLayout),
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  width: PropTypes.string
 };
 
 const animateIn = {
@@ -85,7 +86,7 @@ const animateOut = {
   }
 };
 
-const styleThunk = (theme, props) => ({
+const styleThunk = (theme, {closeAfter, width}) => ({
   backdrop: {
     alignItems: 'center',
     background: ui.modalBackdropBackgroundColor,
@@ -103,7 +104,7 @@ const styleThunk = (theme, props) => ({
   },
 
   closing: {
-    animationDuration: `${props.closeAfter}ms`,
+    animationDuration: `${closeAfter}ms`,
     animationName: animateOut
   },
 
@@ -152,7 +153,7 @@ const styleThunk = (theme, props) => ({
     boxShadow: ui.modalBoxShadow,
     overflow: 'hidden',
     padding: '1.25rem',
-    width: '30rem'
+    width: width || '30rem'
   }
 });
 

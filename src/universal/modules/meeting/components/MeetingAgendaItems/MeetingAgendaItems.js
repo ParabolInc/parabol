@@ -13,6 +13,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
 
 const MeetingAgendaItems = (props) => {
   const {
@@ -68,6 +69,7 @@ const MeetingAgendaItems = (props) => {
               agendaId={agendaItem.id}
               myTeamMemberId={self.id}
             />
+            <EditorHelpModalContainer />
           </div>
         </MeetingSection>
         {/* */}
