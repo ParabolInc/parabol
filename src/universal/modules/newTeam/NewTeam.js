@@ -7,6 +7,7 @@ import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTea
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import {PRICING_LINK} from 'universal/utils/externalLinks';
 
 const NewTeam = (props) => {
   const {
@@ -43,8 +44,7 @@ const NewTeam = (props) => {
             icon="external-link-square"
             iconPlacement="right"
             label="Learn More"
-            // TODO: Update with constant from externalLinks.js when we merge (TA)
-            onClick={() => (window.open('https://www.parabol.co/pricing/', '_blank'))}
+            onClick={() => (window.open(PRICING_LINK, '_blank'))}
           />
         </div>
       </div>
