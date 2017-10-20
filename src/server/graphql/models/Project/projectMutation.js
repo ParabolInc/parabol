@@ -1,10 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import updateProject from 'server/graphql/models/Project/updateProject/updateProject';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 
 export default {
-  updateProject,
   deleteProject: {
     type: GraphQLBoolean,
     description: 'Delete (not archive!) a project',

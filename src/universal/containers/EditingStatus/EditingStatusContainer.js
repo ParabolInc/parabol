@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import getRefreshPeriod from 'universal/utils/getRefreshPeriod';
 import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
+import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
 
 const editingStatusContainer = `
 query {
@@ -22,14 +23,16 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {outcomeId} = props;
+  const relaySafeProjectId = getRelaySafeProjectId(outcomeId);
+
   const {presence: editors} = cashay.query(editingStatusContainer, {
     op: 'editingStatusContainer',
     variables: {
-      teamId: outcomeId.split('::')[0]
+      teamId: relaySafeProjectId.split('::')[0]
     },
-    key: outcomeId,
+    key: relaySafeProjectId,
     filter: {
-      presence: (presence) => presence.editing === `Task::${outcomeId}`
+      presence: (presence) => presence.editing === `Task::${relaySafeProjectId}`
     },
     resolveCached: {
       teamMember: (source) => {
