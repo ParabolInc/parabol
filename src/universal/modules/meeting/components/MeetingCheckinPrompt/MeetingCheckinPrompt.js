@@ -6,6 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
+import CheckInQuestion from './CheckInQuestion';
 
 
 const greetingPropType = PropTypes.shape({
@@ -45,8 +46,8 @@ Greeting = withStyles(greetingStyleThunk)(Greeting);
 const MeetingCheckinPrompt = ({avatar, canEdit, currentName, checkInQuestion, greeting}) => {
   const heading = (
     <div>
-      <Greeting currentName={currentName} greeting={greeting} />
-      {checkInQuestion}?
+      <Greeting {...{currentName, greeting}} />
+      <CheckInQuestion {...{checkInQuestion, canEdit}} />
     </div>
   );
   return (
