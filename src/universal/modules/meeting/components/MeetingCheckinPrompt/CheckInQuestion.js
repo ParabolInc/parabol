@@ -11,7 +11,6 @@ import ui from 'universal/styles/ui';
 import Editable from 'universal/components/Editable/Editable';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
 
-
 @withStyles(() => ({
   fakeEditable: {
     fontFamily: appTheme.typography.serif,
@@ -92,15 +91,12 @@ class StaticCheckinQuestion extends Component {
 
 const formName = 'checkInQuestion';
 
-let EditCheckinQuestion = ({checkInQuestion, handleSubmit}) => {
+let EditCheckinQuestion = ({checkInQuestion, handleSubmit, onSubmit}) => {
   const example = 'e.g. How are you today?';
-  const debugHandleSubmit = (event) => {
-    event.preventDefault();
-    console.log('submitted checkin question!');
-  };
   const fieldStyles = {
+    color: appTheme.palette.dark,
     fontSize: '1.25rem',
-    lineHeight: 1.5,
+    lineHeight: '1.5',
     placeholderColor: appTheme.palette.mid70l
   };
   return (
@@ -111,30 +107,43 @@ let EditCheckinQuestion = ({checkInQuestion, handleSubmit}) => {
       placeholder={example}
       submitOnBlur
       typeStyles={fieldStyles}
-      handleSubmit={debugHandleSubmit}
+      handleSubmit={handleSubmit(onSubmit)}
     />
   );
 };
 
 EditCheckinQuestion.propTypes = {
   checkInQuestion: PropTypes.string.isRequired,
-  handleSubmit: PropTypes.func.isRequired
+  handleSubmit: PropTypes.func.isRequired, // provided by reduxForm
+  onSubmit: PropTypes.func.isRequired // provided by the parent component; function of (string) => any
 };
 
-EditCheckinQuestion = reduxForm({form: formName, enableReinitialize: true})(EditCheckinQuestion);
+const validate = ({checkInQuestion}) => {
+  const errors = {checkInQuestion: null};
+  if (!checkInQuestion || !checkInQuestion.trim()) {
+    errors.checkInQuestion = 'Must provide Check-in question.';
+  }
+  return errors;
+};
+
+EditCheckinQuestion = reduxForm({
+  form: formName,
+  enableReinitialize: true,
+  validate
+})(EditCheckinQuestion);
 
 
-const CheckInQuestion = ({canEdit, checkInQuestion}) => {
+const CheckInQuestion = ({canEdit, checkInQuestion, onSubmit}) => {
   const formattedCheckInQuestion = `${checkInQuestion}?`;
   return canEdit
-    ? <EditCheckinQuestion checkInQuestion={formattedCheckInQuestion} />
+    ? <EditCheckinQuestion checkInQuestion={formattedCheckInQuestion} onSubmit={onSubmit} />
     : <StaticCheckinQuestion checkInQuestion={formattedCheckInQuestion} />;
 };
 
 CheckInQuestion.propTypes = {
   checkInQuestion: PropTypes.string.isRequired,
   canEdit: PropTypes.bool.isRequired,
-  handleSubmit: PropTypes.func
+  onSubmit: PropTypes.func
 };
 
 export default CheckInQuestion;

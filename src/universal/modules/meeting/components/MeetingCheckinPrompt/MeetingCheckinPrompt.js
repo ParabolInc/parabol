@@ -43,11 +43,18 @@ Greeting.propTypes = {
 Greeting = withStyles(greetingStyleThunk)(Greeting);
 
 
-const MeetingCheckinPrompt = ({avatar, canEdit, currentName, checkInQuestion, greeting}) => {
+const MeetingCheckinPrompt = ({
+  avatar,
+  canEdit,
+  currentName,
+  checkInQuestion,
+  greeting,
+  onSubmit
+}) => {
   const heading = (
     <div>
       <Greeting {...{currentName, greeting}} />
-      <CheckInQuestion {...{checkInQuestion, canEdit}} />
+      <CheckInQuestion {...{checkInQuestion, canEdit, onSubmit}} />
     </div>
   );
   return (
@@ -65,7 +72,7 @@ MeetingCheckinPrompt.propTypes = {
   currentName: PropTypes.string.isRequired,
   checkInQuestion: PropTypes.string.isRequired,
   greeting: greetingPropType,
-  handleSubmit: PropTypes.func
+  onSubmit: PropTypes.func
 };
 
 export default MeetingCheckinPrompt;

@@ -68,6 +68,14 @@ const MeetingCheckin = (props) => {
           canEdit={canEdit}
           currentName={currentName}
           greeting={checkInGreeting}
+          onSubmit={({checkInQuestion: newCheckInQuestion}) => {
+            // Note that check in questions are stored without the trailing '?'
+            const cleaned = newCheckInQuestion.endsWith('?')
+              ? newCheckInQuestion.substring(0, newCheckInQuestion.length - 1)
+              : newCheckInQuestion;
+            // todo: graphql mutation
+            console.log(cleaned);
+          }}
         />
         <div className={css(styles.base)}>
           {showMoveMeetingControls ?
