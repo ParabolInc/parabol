@@ -140,7 +140,10 @@ const User = new GraphQLObjectType({
     notifications,
     providerMap,
     slackChannels,
+    // organization,
     organization: require('../queries/organization').default,
+    organizations,
+    // ownedOrganizations,
     ownedOrganizations: require('../queries/ownedOrganizations').default,
     team: require('../queries/team').default,
     // hack until we can move to ES6 immutable bindings
