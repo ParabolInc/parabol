@@ -122,7 +122,8 @@ export default class QueryRenderer extends React.Component {
         createOperationSelector,
         getOperation
       } = environment.unstable_internal;
-      const operation = createOperationSelector(getOperation(query), variables);
+      const fullOperation = getOperation(query);
+      const operation = createOperationSelector(fullOperation, variables);
       this._relayContext = {
         environment,
         variables: operation.variables
@@ -130,7 +131,7 @@ export default class QueryRenderer extends React.Component {
 
       if (!this._queryKey) {
         // We're just using the original variables as a unique identifier, if they change that's OK
-        const {name: operationName} = operation;
+        const {name: operationName} = fullOperation;
         this._queryKey = Atmosphere.getKey(operationName, variables);
       }
 

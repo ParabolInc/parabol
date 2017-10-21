@@ -183,7 +183,7 @@ export default class Atmosphere extends Environment {
       return {
         subKey,
         queryKey,
-        component: releaseComponent,
+        component: {dispose: releaseComponent},
         subscription: disposable
       }
     });
