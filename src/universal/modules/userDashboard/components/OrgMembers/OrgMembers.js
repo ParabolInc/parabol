@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {connect} from 'react-redux';
 import {createPaginationContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
@@ -14,10 +15,8 @@ import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {BILLING_LEADER} from 'universal/utils/constants';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import OrgUserRow from '../OrgUserRow/OrgUserRow';
-import {connect} from 'react-redux';
 
 const originAnchor = {
   vertical: 'top',
@@ -49,8 +48,7 @@ const OrgMembers = (props) => {
     const {id, inactive, preferredName} = orgUser;
     const itemFactory = () => {
       const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
-      const {viewerId} = environment;
-      const {id: myUserId} = fromGlobalId(viewerId);
+      const {userId: myUserId} = environment;
       const listItems = [];
       if (orgUser.isBillingLeader) {
         if (billingLeaderCount > 1) {

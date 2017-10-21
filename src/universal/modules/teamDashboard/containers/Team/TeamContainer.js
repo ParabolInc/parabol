@@ -16,6 +16,8 @@ query {
     isPaid
     name
     meetingId
+    orgId
+    tier
   },
   teamMembers(teamId: $teamId) @live {
     id
@@ -50,7 +52,7 @@ const mapStateToProps = (state, props) => {
 
 const agendaProjects = () => System.import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer');
 const teamSettings = () => System.import('universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper');
-const archivedProjects = () => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer');
+const archivedProjects = () => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot');
 
 const TeamContainer = (props) => {
   const {
@@ -78,7 +80,7 @@ const TeamContainer = (props) => {
         {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
         <AsyncRoute exact path={match.path} extraProps={{teamName: team.name}} mod={agendaProjects} />
         <AsyncRoute path={`${match.path}/settings`} mod={teamSettings} extraProps={{teamMemberId}} />
-        <AsyncRoute path={`${match.path}/archive`} extraProps={{teamName: team.name}} mod={archivedProjects} />
+        <AsyncRoute path={`${match.path}/archive`} extraProps={{team}} mod={archivedProjects} />
       </Switch>
     </Team>
   );
