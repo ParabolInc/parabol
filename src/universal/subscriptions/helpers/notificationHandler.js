@@ -33,7 +33,7 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
       newNode,
       'NotificationEdge'
     );
-    newEdge.setValue(newNode.startAt, 'cursor');
+    newEdge.setValue(newNode.getValue('startAt'), 'cursor');
     ConnectionHandler.insertEdgeBefore(conn, newEdge);
   }
 };

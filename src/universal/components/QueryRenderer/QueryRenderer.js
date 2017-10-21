@@ -1,9 +1,9 @@
-import Atmosphere from 'client/Atmosphere';
+import Atmosphere from 'universal/Atmosphere';
 import deepFreeze from 'deep-freeze';
 import areEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {MAX_TIMEOUT} from 'universal/utils/constants';
+import {MAX_INT} from 'universal/utils/constants';
 
 const getStateWithProps = (props = null) => ({
   error: null,
@@ -151,7 +151,7 @@ export default class QueryRenderer extends React.Component {
     });
     // if the client is unlikely to return after X, the subscription has a TTL of X
     // when that time has be reached, then we unsub
-    if (ttl !== undefined && ttl <= MAX_TIMEOUT) {
+    if (ttl !== undefined && ttl <= MAX_INT) {
       const {timeouts} = QueryRenderer;
       timeouts[this._queryKey] = setTimeout(() => {
         this.release();

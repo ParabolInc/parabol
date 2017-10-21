@@ -1,12 +1,12 @@
-import {render} from 'react-dom';
-import React from 'react';
+import {StyleSheet} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
+import cashaySchema from 'cashay!../server/utils/getCashaySchema.js'; // eslint-disable-line
+import Atmosphere from 'universal/Atmosphere';
+import React from 'react';
+import {render} from 'react-dom';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
-import {StyleSheet} from 'aphrodite-local-styles/no-important';
-import cashaySchema from 'cashay!../server/utils/getCashaySchema.js'; // eslint-disable-line
-import Atmosphere from 'client/Atmosphere';
 
 // const {routing} = window.__INITIAL_STATE__;
 const initialState = {};
