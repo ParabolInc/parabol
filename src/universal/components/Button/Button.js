@@ -66,6 +66,7 @@ class Button extends Component {
     label: PropTypes.string,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
+    onMouseLeave: PropTypes.func,
     size: PropTypes.oneOf(ui.buttonSizes),
     buttonStyle: PropTypes.oneOf([
       'solid',
@@ -85,6 +86,8 @@ class Button extends Component {
       'reset',
       'submit'
     ]),
+    // https://github.com/facebook/react/issues/4251
+    visuallyDisabled: PropTypes.bool,
     waiting: PropTypes.bool
   };
 
@@ -109,9 +112,13 @@ class Button extends Component {
     e.currentTarget.blur();
   };
 
-  onMouseLeave = () => {
+  onMouseLeave = (e) => {
     if (this.state.pressedDown) {
       this.setState({pressedDown: false});
+    }
+    const {onMouseLeave} = this.props;
+    if (onMouseLeave) {
+      onMouseLeave(e);
     }
   }
 
@@ -131,11 +138,13 @@ class Button extends Component {
       styles,
       title,
       type,
+      visuallyDisabled,
       waiting
     } = this.props;
 
     const {pressedDown} = this.state;
     const iconOnly = !label;
+    const hasDisabledStyles = Boolean(disabled || visuallyDisabled);
 
     const buttonStyles = css(
       styles.base,
@@ -143,8 +152,8 @@ class Button extends Component {
       compact && styles.compact,
       isBlock && styles.isBlock,
       styles.propColors,
-      disabled && styles.disabled,
-      pressedDown && styles.pressedDown,
+      hasDisabledStyles && styles.disabled,
+      !hasDisabledStyles && pressedDown && styles.pressedDown,
       waiting && styles.wait
     );
 
