@@ -7,5 +7,5 @@ import getWebpackPublicPath from './utils/getWebpackPublicPath';
 
 /* eslint-disable camelcase, no-undef */
 __webpack_public_path__ = getWebpackPublicPath();
-module.exports = require('universal/modules/landing/containers/Landing/LandingContainer');
+module.exports = require('universal/components/Action/Action');
 /* eslint-enable */
