@@ -1,5 +1,5 @@
 import {thresholds} from 'universal/utils/fromNow';
-import {MAX_TIMEOUT} from 'universal/utils/constants';
+import {MAX_INT} from 'universal/utils/constants';
 
 // For 2m20s returns 40s, for 4h15m returns 45m etc.
 export default function getRefreshPeriod(time) {
@@ -11,7 +11,7 @@ export default function getRefreshPeriod(time) {
       const largestUnit = thresholds[threshKeys[i - 1]];
       const minimum = 30 * thresholds.second;
       const minVal = Math.max(largestUnit - msElapsed % largestUnit, minimum);
-      return Math.min(minVal, MAX_TIMEOUT);
+      return Math.min(minVal, MAX_INT);
     }
   }
   throw new Error('Infinite timestamp calculated!');

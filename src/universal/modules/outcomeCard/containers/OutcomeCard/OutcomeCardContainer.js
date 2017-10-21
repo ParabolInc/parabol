@@ -8,6 +8,7 @@ import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
+import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
 
 const teamMembersQuery = `
 query {
@@ -20,7 +21,9 @@ query {
 `;
 
 const mapStateToProps = (state, props) => {
-  const [teamId] = props.outcome.id.split('::');
+  // TODO ugly patch until we remove cashay
+  const relaySafeId = getRelaySafeProjectId(props.outcome.id);
+  const [teamId] = relaySafeId.split('::');
   const {teamMembers} = cashay.query(teamMembersQuery, {
     op: 'outcomeCardContainer',
     key: teamId,

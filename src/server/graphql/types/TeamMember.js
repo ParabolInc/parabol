@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import Project from '../models/Project/projectSchema';
 import {Team} from '../models/Team/teamSchema';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import User from 'server/graphql/types/User';
+import Project from 'server/graphql/types/Project';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
