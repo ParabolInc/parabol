@@ -85,7 +85,7 @@ export default class QueryRenderer extends React.Component {
     if (ttl !== undefined && ttl <= MAX_INT) {
       const {timeouts} = QueryRenderer;
       timeouts[this._queryKey] = setTimeout(() => {
-        this.release();
+        this._release();
         environment.unregisterQuery(this._queryKey);
         delete timeouts[this._queryKey];
       }, ttl);
@@ -96,7 +96,7 @@ export default class QueryRenderer extends React.Component {
     if (this._mounted) {
       this.releaseOnUnmount = true;
     } else {
-      this.release();
+      this._release();
     }
   };
 

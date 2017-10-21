@@ -207,6 +207,7 @@ export default class Atmosphere extends Environment {
       if (!unaffectedQuery) {
         const opId = this.subLookup[subKey];
         this.socket.off(`gqlData.${opId}`);
+        this.socket.emit('gqlUnsub', opId);
       }
     });
 

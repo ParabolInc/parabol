@@ -27,7 +27,7 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import UserOrg from 'server/graphql/types/UserOrg';
 import {getUserId} from 'server/utils/authorization';
-import organizations from 'server/graphql/queries/organizations';
+//import organizations from 'server/graphql/queries/organizations';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -141,7 +141,7 @@ const User = new GraphQLObjectType({
     providerMap,
     slackChannels,
     organization: require('../queries/organization').default,
-    organizations,
+    organizations: require('../queries/organizations').default,
     ownedOrganizations: require('../queries/ownedOrganizations').default,
     team: require('../queries/team').default,
     // hack until we can move to ES6 immutable bindings
