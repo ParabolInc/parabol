@@ -14,7 +14,11 @@ import React from 'react';
 import {MAX_INT} from 'universal/utils/constants';
 
 const isCacheable = (subs, cacheConfig = {}) => subs || cacheConfig.force === false || cacheConfig.ttl;
-
+const getDefaultState = () => ({
+  error: null,
+  props: null,
+  retry: null
+});
 /**
  * @public
  *
@@ -58,6 +62,12 @@ export default class QueryRenderer extends React.Component {
 
     clearTimeout(QueryRenderer.timeouts[this._queryKey]);
     delete QueryRenderer.timeouts[this._queryKey];
+  }
+
+  getChildContext() {
+    return {
+      relay: this._relayContext
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -150,18 +160,17 @@ export default class QueryRenderer extends React.Component {
         this._subscribe(subscriptions, subParams);
       }
       return this._fetch(operation, props.cacheConfig) || getDefaultState();
-    } else {
-      this._relayContext = {
-        environment,
-        variables
-      };
-      this._release();
-      return {
-        error: null,
-        props: {},
-        retry: null
-      };
     }
+    this._relayContext = {
+      environment,
+      variables
+    };
+    this._release();
+    return {
+      error: null,
+      props: {},
+      retry: null
+    };
   }
 
   _fetch(operation, cacheConfig) {
@@ -222,7 +231,7 @@ export default class QueryRenderer extends React.Component {
           this.setState({readyState});
         }
       },
-      error: error => {
+      error: (error) => {
         readyState = {
           error,
           props: null,
@@ -273,12 +282,6 @@ export default class QueryRenderer extends React.Component {
     environment.registerQuery(this._queryKey, subscriptions, subParams, variables, this.releaseComponent);
   }
 
-  getChildContext() {
-    return {
-      relay: this._relayContext
-    };
-  }
-
   render() {
     // Note that the root fragment results in `readyState.props` is already
     // frozen by the store; this call is to freeze the readyState object and
@@ -288,12 +291,4 @@ export default class QueryRenderer extends React.Component {
     }
     return this.props.render(this.state.readyState);
   }
-}
-
-function getDefaultState() {
-  return {
-    error: null,
-    props: null,
-    retry: null
-  };
 }

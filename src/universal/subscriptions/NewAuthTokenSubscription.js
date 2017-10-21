@@ -5,11 +5,6 @@ const subscription = graphql`
 `;
 
 
-const NewAuthTokenSubscription = (environment) => {
-  const {ensureSubscription} = environment;
-  return {
-    subscription
-  };
-};
+const NewAuthTokenSubscription = () => ({subscription});
 
 export default NewAuthTokenSubscription;

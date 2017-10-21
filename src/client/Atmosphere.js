@@ -127,7 +127,7 @@ export default class Atmosphere extends Environment {
         if (errors) {
           const errorObj = makeErrorObj(errors);
           observer.onError(errorObj);
-          //this.handleSubscriptionError(subKey);
+          // this.handleSubscriptionError(subKey);
         } else {
           observer.onNext(gqlResponse);
         }
@@ -136,9 +136,9 @@ export default class Atmosphere extends Environment {
         this.emitSubscribe(text, variables, opId);
 
         // this will call dispose
-        //if (observer.onCompleted) {
+        // if (observer.onCompleted) {
         //  observer.onCompleted();
-        //}
+        // }
       }
     });
     this.emitSubscribe(text, variables, opId);
@@ -186,7 +186,7 @@ export default class Atmosphere extends Environment {
         queryKey,
         component: {dispose: releaseComponent},
         subscription: disposable
-      }
+      };
     });
 
     this.querySubscriptions.push(...newQuerySubs);
@@ -212,7 +212,7 @@ export default class Atmosphere extends Environment {
     });
 
     this.querySubscriptions = this.querySubscriptions.filter((qs) => {
-      return !peerSubKeys.includes(qs.subKey) || !queryKeys.includes(qs.queryKey)
-    })
+      return !peerSubKeys.includes(qs.subKey) || !queryKeys.includes(qs.queryKey);
+    });
   }
 }
