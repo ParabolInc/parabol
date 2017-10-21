@@ -2,8 +2,6 @@
 
 exports[`updateProject throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to team 0\\"}"`;
 
-exports[`updateProject throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;
-
 exports[`updateProject updates the content of the project 1`] = `
 Object {
   "project": Object {

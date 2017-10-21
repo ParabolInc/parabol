@@ -6,7 +6,6 @@ import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation';
 import {MEETING} from 'universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 class GitHubRepoListMenu extends Component {
   static propTypes = {
@@ -36,7 +35,7 @@ class GitHubRepoListMenu extends Component {
 
   filterRepos(githubRepos) {
     const {relay: {environment}} = this.props;
-    const {id: userId} = fromGlobalId(environment.viewerId);
+    const {userId} = environment;
     const filteredRepos = githubRepos.filter((repo) => repo.userIds.includes(userId));
     // technically, someone could leave all integrations but still be integrated.
     this.filteredRepos = filteredRepos.length === 0 ? githubRepos : filteredRepos;
