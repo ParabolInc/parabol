@@ -9,15 +9,15 @@ const subscription = graphql`
 `;
 
 const NotificationsClearedSubscription = (environment) => {
-  const {ensureSubscription, viewerId} = environment;
-  return ensureSubscription({
+  const {viewerId} = environment;
+  return {
     subscription,
     updater: (store) => {
       const viewer = store.get(viewerId);
       const deletedIds = store.getRootField('notificationsCleared').getValue('deletedIds');
       clearNotificationUpdater(viewer, deletedIds);
     }
-  });
+  };
 };
 
 export default NotificationsClearedSubscription;

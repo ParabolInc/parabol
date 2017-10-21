@@ -55,7 +55,10 @@ class NewTeamForm extends Component {
     const newTeamId = shortid.generate();
     if (isNewOrganization) {
       const schema = addOrgSchema();
-      const {data: {teamName, inviteesRaw, orgName}} = schema(submittedData);
+      const {data: {teamName, inviteesRaw, orgName}, errors} = schema(submittedData);
+      if (Object.keys(errors).length) {
+        throw new SubmissionError(errors);
+      }
       const parsedInvitees = parseEmailAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
       const newTeam = {

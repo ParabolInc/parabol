@@ -50,7 +50,7 @@ export default function scConnectionHandler(exchange) {
     });
     socket.on('disconnect', () => {
       if (socket.subs) {
-        Object.keys(socket.subs).forEach((opId) => {
+        socket.subs.forEach((opId) => {
           unsubscribeRelaySub(socket.subs, opId);
         });
       }

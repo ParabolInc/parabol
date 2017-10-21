@@ -18,15 +18,15 @@ const subscription = graphql`
 `;
 
 const OrganizationAddedSubscription = (environment) => {
-  const {ensureSubscription, viewerId} = environment;
-  return ensureSubscription({
+  const {viewerId} = environment;
+  return {
     subscription,
     variables: {},
     updater: (store) => {
       const newNode = store.getRootField('organizationAdded').getLinkedRecord('organization');
       addOrgUpdater(store, viewerId, newNode);
     }
-  });
+  };
 };
 
 export default OrganizationAddedSubscription;
