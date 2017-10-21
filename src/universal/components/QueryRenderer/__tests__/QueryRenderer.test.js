@@ -1,5 +1,5 @@
 import clientSocket from 'client/__mocks__/clientSocket';
-import Atmosphere from 'client/Atmosphere';
+import Atmosphere from 'universal/Atmosphere';
 import {shallow} from 'enzyme';
 import React from 'react';
 import QueryRenderer from '../QueryRenderer';
