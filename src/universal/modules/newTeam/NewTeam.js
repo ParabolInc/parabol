@@ -31,7 +31,10 @@ const NewTeam = (props) => {
           </div>
           <div className={css(styles.helpCopy)}>
             {`It’s the billing entity for a group of teams
-            such as a company, non-profit, consultancy, or personal life.`}
+            such as a company, non-profit, or
+            for your personal use. Once created, you can
+            create teams and invite others, even if they
+            don't share your email domain.`}
           </div>
           <div className={css(styles.helpCopy)}>
             {'New Organizations start out on the '}
