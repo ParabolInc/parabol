@@ -10,20 +10,22 @@ import FontAwesome from 'react-fontawesome';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {cashay} from 'cashay';
+import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
+import Tooltip from 'universal/components/Tooltip/Tooltip';
 
-const defaultColor = appTheme.palette.dark;
 const iconStyle = {
-  color: defaultColor,
+  color: appTheme.palette.dark,
   display: 'block',
   fontSize: ui.iconSize2x,
   height: ui.iconSize2x,
-  left: '1.5rem',
+  left: '1.25rem',
   lineHeight: ui.iconSize2x,
+  pointerEvents: 'none',
   position: 'absolute',
   textAlign: 'right',
-  top: '.375rem',
+  top: '.5rem',
   width: ui.iconSize2x,
-  zIndex: 100
+  zIndex: 200
 };
 const AgendaInputField = (props) => {
   const {
@@ -76,7 +78,8 @@ const AgendaInputField = (props) => {
     !disabled && styles.inputNotDisabled
   );
   if (!disabled) { bindHotkey('+', focusOnInput); }
-  return (
+  const tip = (<div style={{textAlign: 'center'}}>{'Add meeting topics to discuss,'}<br />{'like “upcoming vacation”'}</div>);
+  const input = (
     <form className={rootStyles} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
       <input
         {...props.input}
@@ -86,13 +89,31 @@ const AgendaInputField = (props) => {
         disabled={disabled}
         maxLength="63"
         onKeyDown={maybeBlur}
-        placeholder="Add Agenda Item"
+        placeholder="Next Agenda Item…"
         ref={setRef}
-        title="Add Agenda Item"
         type="text"
       />
       <FontAwesome name="plus-square-o" style={iconStyle} />
     </form>
+  );
+  const showTooltip = Boolean(agenda.length > 0 && !disabled);
+  return (
+    <div>
+      {showTooltip ?
+        <Tooltip
+          delay={1000}
+          hideOnFocus
+          tip={tip}
+          maxHeight={52}
+          maxWidth={224}
+          originAnchor={{vertical: 'top', horizontal: 'center'}}
+          targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
+        >
+          {input}
+        </Tooltip> :
+        input
+      }
+    </div>
   );
 };
 
@@ -107,26 +128,22 @@ AgendaInputField.propTypes = {
   teamId: PropTypes.string
 };
 
-const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);
-const inputFocusActivePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
-const inputFocusActive = {
-  backgroundColor: appTheme.palette.light,
-  ...inputFocusActivePlaceholderStyles
-};
+const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.mid60l);
 
+const inputCustomStyles = {
+  focus: { backgroundColor: appTheme.palette.light70l },
+  active: { backgroundColor: appTheme.palette.light70l }
+};
 
 const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
     color: appTheme.palette.cool,
     fontSize: appTheme.typography.s3,
+    padding: `0 ${ui.meetingSidebarGutter}`,
     position: 'relative',
     width: '100%',
-    zIndex: 100,
-
-    ':hover': {
-      backgroundColor: appTheme.palette.dark20l
-    }
+    zIndex: 100
   },
 
   rootDisabled: {
@@ -136,10 +153,11 @@ const styleThunk = () => ({
   },
 
   input: {
+    ...ui.fieldBaseStyles,
+    ...ui.fieldSizeStyles.medium,
     backgroundColor: 'transparent',
-    border: 0,
-    boxShadow: 'none',
     color: appTheme.palette.dark10d,
+    cursor: 'not-allowed',
     display: 'block',
     fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
@@ -148,22 +166,18 @@ const styleThunk = () => ({
     lineHeight: '1.5rem',
     margin: 0,
     outline: 'none',
-    padding: '.5rem 2.5rem .5rem 3rem',
+    padding: '.5rem .5rem .5rem 3rem',
     position: 'relative',
-    textIndent: '1rem',
+    textIndent: '.1875rem',
     width: '100%',
     zIndex: 200,
-
+    ...makeFieldColorPalette('white', false),
     ...inputPlaceholderStyles
   },
 
   inputNotDisabled: {
-    ':focus': {
-      ...inputFocusActive
-    },
-    ':active': {
-      ...inputFocusActive
-    }
+    cursor: 'text',
+    ...makeFieldColorPalette('white', true, inputCustomStyles)
   }
 });
 

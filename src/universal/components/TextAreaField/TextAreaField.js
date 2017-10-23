@@ -81,7 +81,7 @@ const styleThunk = (theme, {disabled, fieldSize}) => {
     field: {
       ...ui.fieldBaseStyles,
       ...ui.fieldSizeStyles[size],
-      ...makeFieldColorPalette('gray', disabled),
+      ...makeFieldColorPalette('gray', !disabled),
       minHeight: '5.75rem'
     },
     disabled: ui.fieldDisabled,

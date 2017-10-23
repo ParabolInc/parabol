@@ -88,9 +88,7 @@ const styleThunk = () => ({
     marginTop: '1rem'
   },
 
-  error: {
-    ...formError
-  }
+  error: formError
 });
 
 export default portal({escToClose: true, closeAfter: 100})(

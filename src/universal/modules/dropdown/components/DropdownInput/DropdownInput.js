@@ -7,7 +7,6 @@ import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import ui from 'universal/styles/ui';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
-import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import {Menu, MenuItem} from 'universal/modules/menu';
 
 const originAnchor = {
@@ -58,12 +57,12 @@ const DropdownInput = (props) => {
   };
   const fieldInputStyles = css(
     styles.inputBlock,
-    disabled ? styles.inputDisabled : styles.inputHoverFocus
+    disabled ? styles.inputDisabled : styles.inputNotDisabled
   );
   return (
     <FieldBlock>
       {label && <FieldLabel fieldSize={fieldSize} label={label} htmlFor={name} indent />}
-      <div className={fieldInputStyles}>
+      <div className={fieldInputStyles} tabIndex="1">
         <span>{orgName}</span>
         {!disabled &&
           <Menu
@@ -94,7 +93,7 @@ DropdownInput.propTypes = {
   styles: PropTypes.object
 };
 
-const styleThunk = (theme, {disabled, fieldSize}) => {
+const styleThunk = (theme, {fieldSize}) => {
   const size = fieldSize || ui.fieldSizeOptions[1];
   const paddingRight = ui.controlBlockPaddingHorizontal[size];
   return ({
@@ -113,20 +112,13 @@ const styleThunk = (theme, {disabled, fieldSize}) => {
     inputBlock: {
       ...ui.fieldBaseStyles,
       ...ui.fieldSizeStyles[size],
-      ...makeFieldColorPalette('white', disabled),
+      ...makeFieldColorPalette('white', false),
       position: 'relative'
     },
 
-    inputHoverFocus: {
-      ...makeHoverFocus({
-        borderColor: ui.fieldColorPalettes.white.focusBorderColor,
-        boxShadow: ui.fieldFocusBoxShadow
-      })
-    },
+    inputNotDisabled: makeFieldColorPalette('white', true),
 
-    inputDisabled: {
-      ...ui.fieldDisabled
-    },
+    inputDisabled: ui.fieldDisabled,
 
     menuButtonBlock: {
       backgroundColor: '#fff',
