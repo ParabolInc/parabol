@@ -35,7 +35,7 @@ const PaymentRejected = (props) => {
           colorPalette="cool"
           isBlock
           label="Take me there"
-          size={ui.notificationButtonSize}
+          buttonSize={ui.notificationButtonSize}
           type="submit"
           onClick={addBilling}
         />

@@ -25,11 +25,11 @@ class OrgPlanSqueeze extends Component {
     const estimatedCost = activeUserCount * MONTHLY_PRICE;
     const {showCost} = this.state;
     const toggle = (<Button
+      buttonSize="medium"
       colorPalette="cool"
       depth={2}
       isBlock
       label="Upgrade to the Pro Plan"
-      size="small"
     />);
     const openUrl = (url) => () => window.open(url, '_blank');
     return (
@@ -60,12 +60,12 @@ class OrgPlanSqueeze extends Component {
                 {`${activeUserCount} Active Users x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
               </div> :
               <Button
-                colorPalette="cool"
+                buttonSize="small"
                 buttonStyle="flat"
+                colorPalette="cool"
                 icon="question-circle"
                 iconPlacement="right"
                 label="How much will it cost?"
-                size="smallest"
                 onClick={this.getCost}
               />
             }
@@ -73,13 +73,13 @@ class OrgPlanSqueeze extends Component {
         </div>
         <div className={css(styles.panelCell, styles.panelFooter)}>
           <Button
-            colorPalette="mid"
+            buttonSize="small"
             buttonStyle="flat"
+            colorPalette="mid"
             icon="external-link-square"
             iconPlacement="right"
             label="Learn About Plans & Invoicing"
             onClick={openUrl(PRICING_LINK)}
-            size="smallest"
           />
         </div>
       </Panel>

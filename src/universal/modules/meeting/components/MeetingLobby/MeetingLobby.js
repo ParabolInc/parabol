@@ -46,9 +46,10 @@ const MeetingLobby = (props) => {
             buttonStyle="solid"
             colorPalette="cool"
             depth={1}
+            isBlock
             label="Start Meeting"
             onClick={onStartMeetingClick}
-            size="largest"
+            buttonSize="large"
             textTransform="uppercase"
           />
         </div>
@@ -105,7 +106,9 @@ const styleThunk = () => ({
   },
 
   buttonBlock: {
-    paddingTop: '2.25rem'
+    margin: '0 auto',
+    paddingTop: '2.25rem',
+    width: '13rem'
   },
 
   label: {

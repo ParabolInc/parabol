@@ -10,10 +10,14 @@ import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {PRO} from 'universal/utils/constants';
+import withRouter from 'react-router-dom/es/withRouter';
 
 const OrganizationRow = (props) => {
   const {
+    history,
     organization: {
+      id: orgId,
+      isBillingLeader,
       name,
       orgUserCount: {
         activeUserCount,
@@ -22,10 +26,12 @@ const OrganizationRow = (props) => {
       picture,
       tier
     },
-    onRowClick,
     styles
   } = props;
   const orgAvatar = picture || defaultOrgAvatar;
+  const label = isBillingLeader ? 'Settings and Billing' : 'Create New Team';
+  const onRowClickUrl = isBillingLeader ? `/me/organizations/${orgId}` : `/newteam/${orgId}`;
+  const onRowClick = () => history.push(onRowClickUrl);
   return (
     <Row>
       <div className={css(styles.orgAvatar)} onClick={onRowClick}>
@@ -50,9 +56,9 @@ const OrganizationRow = (props) => {
         <Button
           buttonStyle="flat"
           colorPalette="dark"
-          label="Settings and Billing"
+          label={label}
           onClick={onRowClick}
-          size="smallest"
+          buttonSize="small"
         />
       </div>
     </Row>
@@ -60,16 +66,18 @@ const OrganizationRow = (props) => {
 };
 
 OrganizationRow.propTypes = {
-  actions: PropTypes.any,
-  email: PropTypes.string,
-  invitedAt: PropTypes.string,
-  isAdmin: PropTypes.bool,
-  isLead: PropTypes.bool,
-  isPaid: PropTypes.bool,
-  onRowClick: PropTypes.func,
-  organization: PropTypes.object,
-  picture: PropTypes.string,
-  name: PropTypes.string,
+  history: PropTypes.object.isRequired,
+  organization: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    isBillingLeader: PropTypes.bool.isRequired,
+    name: PropTypes.string.isRequired,
+    picture: PropTypes.string,
+    tier: PropTypes.string.isRequired,
+    orgUserCount: PropTypes.shape({
+      activeUserCount: PropTypes.number.isRequired,
+      inactiveUserCount: PropTypes.number.isRequired
+    }).isRequired
+  }).isRequired,
   styles: PropTypes.object
 };
 
@@ -101,27 +109,6 @@ const styleThunk = () => ({
     verticalAlign: 'middle'
   },
 
-  invitedAt: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: appTheme.typography.s4
-  },
-
-  infoLink: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: appTheme.typography.s4,
-
-    ':hover': {
-      color: appTheme.palette.dark
-    },
-    ':focus': {
-      color: appTheme.palette.dark
-    }
-  },
-
   subHeader: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
@@ -136,4 +123,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OrganizationRow);
+export default withRouter(withStyles(styleThunk)(OrganizationRow));

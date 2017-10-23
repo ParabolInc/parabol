@@ -57,11 +57,11 @@ class TeamArchiveSqueeze extends Component {
             <div className={css(styles.archiveSqueezeButtonBlock)}>
               {isBillingLeader ?
                 <Button
+                  buttonSize="medium"
                   colorPalette="cool"
                   depth={1}
                   label={`Upgrade to the ${PRO_LABEL} Plan`}
                   onClick={handleUpgrade}
-                  size="large"
                 /> :
                 <div className={css(styles.contactCopy)}>
                   {'Talk with your '}<b>{'Billing Leader'}</b>{':'}

@@ -120,6 +120,7 @@ const OrgMembers = (props) => {
     const toggleTip = (<div>{'You only need to manage activity on the Pro plan.'}</div>);
     const menuTip = (<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or Organization.'}</div>);
     const menuButtonProps = {
+      buttonSize: 'small',
       buttonStyle: 'flat',
       colorPalette: 'dark',
       icon: 'ellipsis-v',

@@ -6,37 +6,35 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import OrgBilling from 'universal/modules/userDashboard/components/OrgBilling/OrgBilling';
-import {cacheConfig} from 'universal/utils/constants';
+import NewTeam from 'universal/modules/newTeam/NewTeam';
 
 const query = graphql`
-  query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {
+  query NewTeamRootQuery {
     viewer {
-      ...OrgBilling_viewer
+      ...NewTeam_viewer
     }
   }
 `;
 
-const OrgBillingRoot = ({atmosphere, orgId, org}) => {
+const NewTeamRoot = ({atmosphere, match: {params: {defaultOrgId}}}) => {
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
-      variables={{orgId, first: 3}}
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps &&
-              <AnimatedFade key="1">
-                <OrgBilling viewer={renderProps.viewer} org={org} />
-              </AnimatedFade>
-            }
+            {renderProps && <AnimatedFade key="1">
+              <NewTeam
+                defaultOrgId={defaultOrgId}
+                viewer={renderProps.viewer}
+              />
+            </AnimatedFade>}
             {!renderProps && !error &&
-              <AnimatedFade key="2" unmountOnExit exit={false}>
-                <LoadingComponent height={'5rem'} />
-              </AnimatedFade>
+            <AnimatedFade key="2" unmountOnExit exit={false}>
+              <LoadingComponent height={'5rem'} />
+            </AnimatedFade>
             }
           </TransitionGroup>
         );
@@ -45,10 +43,10 @@ const OrgBillingRoot = ({atmosphere, orgId, org}) => {
   );
 };
 
-OrgBillingRoot.propTypes = {
+
+NewTeamRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  org: PropTypes.object,
-  orgId: PropTypes.string.isRequired
+  match: PropTypes.object.isRequired
 };
 
-export default withAtmosphere(OrgBillingRoot);
+export default withAtmosphere(NewTeamRoot);

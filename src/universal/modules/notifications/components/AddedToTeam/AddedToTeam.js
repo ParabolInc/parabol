@@ -41,7 +41,7 @@ const AddedToTeam = (props) => {
           waiting={submitting}
           isBlock
           label="Great!"
-          size={ui.notificationButtonSize}
+          buttonSize={ui.notificationButtonSize}
           type="submit"
           onClick={acknowledge}
         />

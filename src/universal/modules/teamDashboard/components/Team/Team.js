@@ -68,7 +68,7 @@ const Team = (props) => {
               iconPlacement="left"
               label="Meeting Lobby"
               onClick={goToMeetingLobby}
-              size="smallest"
+              buttonSize="small"
             />
           }
         </DashHeaderInfo>
@@ -83,18 +83,18 @@ const Team = (props) => {
               isBlock
               label="Back to Team Dashboard"
               onClick={goToTeamDashboard}
-              size="smallest"
+              buttonSize="small"
             /> :
             <Button
-              key="2"
+              buttonSize="small"
               buttonStyle="flat"
               colorPalette="cool"
               icon="cog"
               iconPlacement="left"
+              key="2"
               isBlock
               label="Team Settings"
               onClick={goToTeamSettings}
-              size="smallest"
             />
           }
           <DashboardAvatars teamMembers={teamMembers} />

@@ -110,22 +110,22 @@ const ProviderRow = (props) => {
       <div className={css(styles.providerActions)}>
         {accessToken ?
           <Button
+            buttonSize="small"
             buttonStyle="solid"
             colorPalette="gray"
             isBlock
             key="teamSettings"
             label="Team Settings"
             onClick={() => history.push(to)}
-            size="smallest"
           /> :
           <Button
+            buttonSize="small"
             buttonStyle="solid"
             colorPalette="cool"
             isBlock
             key="linkAccount"
             label="Link My Account"
             onClick={openOauth}
-            size="smallest"
           />
         }
       </div>

@@ -85,12 +85,12 @@ class GitHubRepoRow extends Component {
           <div className={css(styles.actionButton)}>
             {accessToken && !isCreator &&
             <Button
+              buttonSize="small"
               buttonStyle="flat"
               colorPalette="dark"
               waiting={submitting}
               label={this.viewerInIntegration ? 'Unlink Me' : 'Link Me'}
               onClick={this.toggleIntegrationMembership(id)}
-              size="smallest"
             />
             }
           </div>

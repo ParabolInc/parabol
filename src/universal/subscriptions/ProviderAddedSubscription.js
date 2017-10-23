@@ -59,9 +59,9 @@ const addProviderUpdater = (store, viewer, teamId, payload) => {
 };
 
 const ProviderAddedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId},
     updater: (store) => {
@@ -69,7 +69,7 @@ const ProviderAddedSubscription = (environment, queryVariables) => {
       const viewer = store.get(viewerId);
       addProviderUpdater(store, viewer, teamId, payload);
     }
-  });
+  };
 };
 
 export default ProviderAddedSubscription;

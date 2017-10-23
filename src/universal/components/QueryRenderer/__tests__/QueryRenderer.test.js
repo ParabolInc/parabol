@@ -190,7 +190,7 @@ describe('ReactRelayQueryRenderer', () => {
 
   describe('all', () => {
     it('on mount, calls subscribe, sets unsubscribe, creates a querySub record', () => {
-      const Sub = jest.fn(() => 'Sub123');
+      const Sub = jest.fn(() => ({subscription: sub, variables}));
       const subscriptions = [Sub];
       const wrapper = shallow(
         <QueryRenderer
@@ -207,13 +207,8 @@ describe('ReactRelayQueryRenderer', () => {
       expect(environment.querySubscriptions.length).toBe(1);
     });
 
-    it('on unmount, it changes the handleKickout to an unsubscribe', () => {
-      const Sub = jest.fn(() => {
-        return environment.ensureSubscription({
-          subscription: sub,
-          variables
-        });
-      });
+    it('on unmount, it does not release if subscriptions are provided', () => {
+      const Sub = jest.fn(() => ({subscription: sub, variables}));
       const subscriptions = [Sub];
       const wrapper = shallow(
         <QueryRenderer
@@ -226,54 +221,18 @@ describe('ReactRelayQueryRenderer', () => {
       );
       wrapper.unmount();
       expect(environment.querySubscriptions.length).toBe(1);
-      environment.querySubscriptions[0].handleKickout();
-      expect(environment.querySubscriptions.length).toBe(0);
     });
 
-    it('on kickout, if mounted, it schedules release upon unmount', () => {
-      const Sub = jest.fn(() => {
-        return environment.ensureSubscription({
-          subscription: sub,
-          variables
-        });
-      });
-      const subscriptions = [Sub];
-      const subKey = '{"name":"GitHubRepoRemovedSubscription","variables":{"teamId":1}}';
+    it('on unmount, it does release if subscriptions are not provided', () => {
       const wrapper = shallow(
         <QueryRenderer
           query={query}
           environment={environment}
           render={render}
           variables={variables}
-          subscriptions={subscriptions}
         />
       );
-      environment.socketUnsubscribe(subKey, true);
-      expect(environment.querySubscriptions.length).toBe(1);
       wrapper.unmount();
-      expect(environment.querySubscriptions.length).toBe(0);
-    });
-    it('on kickout, if unmounted, it releases immediately', () => {
-      const Sub = jest.fn(() => {
-        return environment.ensureSubscription({
-          subscription: sub,
-          variables
-        });
-      });
-      const subscriptions = [Sub];
-      const subKey = '{"name":"GitHubRepoRemovedSubscription","variables":{"teamId":1}}';
-      const wrapper = shallow(
-        <QueryRenderer
-          query={query}
-          environment={environment}
-          render={render}
-          variables={variables}
-          subscriptions={subscriptions}
-        />
-      );
-      expect(environment.querySubscriptions.length).toBe(1);
-      wrapper.unmount();
-      environment.socketUnsubscribe(subKey, true);
       expect(environment.querySubscriptions.length).toBe(0);
     });
   });

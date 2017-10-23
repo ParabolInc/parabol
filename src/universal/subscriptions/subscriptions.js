@@ -4,7 +4,6 @@ import {
   ARCHIVED_PROJECTS,
   INVITATIONS,
   ORG_APPROVALS,
-  ORGANIZATIONS,
   PROJECTS,
   TEAM,
   TEAM_MEMBERS
@@ -87,16 +86,6 @@ export default [
         id
         createdAt
         email
-      }
-    }`
-  },
-  {
-    channel: ORGANIZATIONS,
-    string: `
-    subscription($userId: ID!) {
-      organizations(userId: $userId) {
-        id
-        name
       }
     }`
   },

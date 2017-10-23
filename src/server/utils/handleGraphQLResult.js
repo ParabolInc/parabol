@@ -2,6 +2,7 @@ import jwtDecode from 'jwt-decode';
 
 const setSocketAuth = (socket, authTokenStr) => {
   socket.setAuthToken({
+    ...socket.getAuthToken(),
     ...jwtDecode(authTokenStr),
     exp: undefined
   });

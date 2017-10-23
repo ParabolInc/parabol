@@ -9,9 +9,9 @@ const subscription = graphql`
 `;
 
 const SlackChannelRemovedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId},
     updater: (store) => {
@@ -20,7 +20,7 @@ const SlackChannelRemovedSubscription = (environment, queryVariables) => {
       const deletedId = removedChannel.getValue('deletedId');
       removeSlackChannelUpdater(viewer, teamId, deletedId);
     }
-  });
+  };
 };
 
 export default SlackChannelRemovedSubscription;
