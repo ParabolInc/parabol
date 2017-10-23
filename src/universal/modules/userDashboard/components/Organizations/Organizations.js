@@ -17,9 +17,9 @@ const Organizations = (props) => {
     styles,
     viewer
   } = props;
-  const {ownedOrganizations} = viewer;
+  const {organizations} = viewer;
   const gotoNewTeam = () => {
-    history.push('/newteam/1');
+    history.push('/newteam');
   };
   const addNewOrg = () =>
     (<IconControl
@@ -34,13 +34,12 @@ const Organizations = (props) => {
     <UserSettingsWrapper>
       <Helmet title="My Organizations | Parabol" />
       <div className={css(styles.wrapper)}>
-        {ownedOrganizations.length ?
+        {organizations.length ?
           <Panel label="Organizations" controls={addNewOrg()}>
-            {ownedOrganizations.map((organization) =>
+            {organizations.map((organization) =>
               (<OrganizationRow
                 key={`orgRow${organization.id}`}
                 organization={organization}
-                onRowClick={() => history.push(`/me/organizations/${organization.id}`)}
               />)
             )}
           </Panel> :
@@ -67,8 +66,9 @@ export default createFragmentContainer(
   withStyles(styleThunk)(Organizations),
   graphql`
     fragment Organizations_viewer on User {
-      ownedOrganizations {
+      organizations {
         id
+        isBillingLeader
         orgUserCount {
           activeUserCount
           inactiveUserCount

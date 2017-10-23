@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import getRequestedFields from 'server/graphql/getRequestedFields';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
-import Project from './projectSchema';
+import Project from 'server/graphql/types/Project';
 
 export default {
   agendaProjects: {

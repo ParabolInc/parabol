@@ -1,56 +1,117 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import {cashay} from 'cashay';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {withRouter} from 'react-router-dom';
+import {Field, reduxForm, SubmissionError} from 'redux-form';
+import shortid from 'shortid';
 import Button from 'universal/components/Button/Button';
-import Panel from 'universal/components/Panel/Panel';
-import Radio from 'universal/components/Radio/Radio';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import InputField from 'universal/components/InputField/InputField';
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
-import {Field, reduxForm} from 'redux-form';
-import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
-import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
-import addOrgSchema from 'universal/validation/addOrgSchema';
+import Panel from 'universal/components/Panel/Panel';
+import Radio from 'universal/components/Radio/Radio';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import AddOrgMutation from 'universal/mutations/AddOrgMutation';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
+import addOrgSchema from 'universal/validation/addOrgSchema';
+import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+
+const radioStyles = {
+  color: ui.palette.dark
+};
 
 const validate = (values, props) => {
-  const {isNewOrg} = props;
-  const schema = isNewOrg ? addOrgSchema() : makeAddTeamSchema();
+  const {isNewOrganization} = props;
+  const schema = isNewOrganization ? addOrgSchema() : makeAddTeamSchema();
   return schema(values).errors;
 };
 
-const NewTeamForm = (props) => {
-  const {
-    handleSubmit,
-    isNewOrg,
-    organizations,
-    history,
-    styles
-  } = props;
+const makeInvitees = (invitees) => {
+  return invitees ? invitees.map((email) => ({
+    email: email.address,
+    fullName: email.fullName
+  })) : [];
+};
 
-  const handleCreateNew = () => {
-    history.push('/newteam/1');
-  };
-  const resetOrgSelection = () => {
-    history.push('/newteam');
+const mapStateToProps = (state) => {
+  const formState = state.form.newTeam;
+  if (formState) {
+    const {isNewOrganization} = formState.values;
+    return {isNewOrganization: isNewOrganization === 'true'};
+  }
+  return {};
+};
+
+class NewTeamForm extends Component {
+  onSubmit = async (submittedData) => {
+    const {atmosphere, dispatch, isNewOrganization, history} = this.props;
+    const newTeamId = shortid.generate();
+    if (isNewOrganization) {
+      const schema = addOrgSchema();
+      const {data: {teamName, inviteesRaw, orgName}, errors} = schema(submittedData);
+      if (Object.keys(errors).length) {
+        throw new SubmissionError(errors);
+      }
+      const parsedInvitees = parseEmailAddressList(inviteesRaw);
+      const invitees = makeInvitees(parsedInvitees);
+      const newTeam = {
+        id: newTeamId,
+        name: teamName,
+        orgId: shortid.generate()
+      };
+      const handleError = (err) => {
+        throw new SubmissionError(err._error);
+      };
+      const handleCompleted = () => {
+        dispatch(showSuccess({
+          title: 'Organization successfully created!',
+          message: `Here's your new team dashboard for ${teamName}`
+        }));
+        history.push(`/team/${newTeamId}`);
+      };
+      AddOrgMutation(atmosphere, newTeam, invitees, orgName, handleError, handleCompleted);
+    } else {
+      const schema = makeAddTeamSchema();
+      const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
+      const parsedInvitees = parseEmailAddressList(inviteesRaw);
+      const invitees = makeInvitees(parsedInvitees);
+      const variables = {
+        newTeam: {
+          id: newTeamId,
+          name: teamName,
+          orgId
+        },
+        invitees
+      };
+      await cashay.mutate('addTeam', {variables});
+      dispatch(showSuccess({
+        title: 'Team successfully created!',
+        message: `Here's your new team dashboard for ${teamName}`
+      }));
+      history.push(`/team/${newTeamId}`);
+    }
   };
 
-  // TODO: yank these, cheating lint
-  console.log(handleCreateNew);
-  console.log(resetOrgSelection);
+  render() {
+    const {
+      handleSubmit,
+      isNewOrganization,
+      styles,
+      submitting,
+      organizations
+    } = this.props;
 
-  const radioStyles = {
-    color: ui.palette.dark
-  };
-  const controlSize = 'medium';
-  const reallyIsNewOrg = false || isNewOrg; // Just faking ;)
-  const showHelpBox = true; // Just an easy way to hide in the future
-  return (
-    <div className={css(styles.layout)}>
-      <form className={css(styles.form)} onSubmit={handleSubmit}>
+    const controlSize = 'medium';
+
+    return (
+      <form className={css(styles.form)} onSubmit={handleSubmit(this.onSubmit)}>
         <Panel label="Create a New Team">
           <div className={css(styles.formInner)}>
             <div className={css(styles.formBlock)}>
@@ -61,40 +122,45 @@ const NewTeamForm = (props) => {
               />
             </div>
             <div className={css(styles.formBlock)}>
-              <Radio
+              <Field
+                name="isNewOrganization"
+                component={Radio}
+                value="false"
                 customStyles={radioStyles}
                 fieldSize={controlSize}
                 indent
                 inline
                 label="an existing organization:"
-                group="orgRadioGroup"
+                type="radio"
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
                   colorPalette="gray"
                   component={DropdownInput}
-                  disabled={reallyIsNewOrg}
+                  disabled={isNewOrganization}
                   fieldSize={controlSize}
-                  handleCreateNew={handleCreateNew}
                   name="orgId"
                   organizations={organizations}
                 />
               </div>
             </div>
             <div className={css(styles.formBlock)}>
-              <Radio
+              <Field
+                name="isNewOrganization"
+                component={Radio}
+                value="true"
                 customStyles={radioStyles}
                 fieldSize={controlSize}
                 indent
                 inline
                 label="a new organization:"
-                group="orgRadioGroup"
+                type="radio"
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
                   colorPalette="gray"
                   component={InputField}
-                  disabled={!reallyIsNewOrg}
+                  disabled={!isNewOrganization}
                   fieldSize={controlSize}
                   name="orgName"
                   placeholder={randomPlaceholderTheme.orgName}
@@ -134,56 +200,27 @@ const NewTeamForm = (props) => {
                 colorPalette="warm"
                 depth={1}
                 isBlock
-                label="Create Team"
+                label={isNewOrganization ? 'Create Team & Org' : 'Create Team'}
                 type="submit"
+                waiting={submitting}
               />
             </div>
           </div>
         </Panel>
       </form>
-      {showHelpBox &&
-        <div className={css(styles.helpLayout)}>
-          <div className={css(styles.helpBlock)}>
-            <div className={css(styles.helpHeading)}>
-              {'What’s an Organization?'}
-            </div>
-            <div className={css(styles.helpCopy)}>
-              {`Every Team belongs to an Organization.
-                New Organizations start out on the `}
-              <b>{'Free Personal Plan'}</b>{'.'}
-            </div>
-            <Button
-              buttonSize="small"
-              buttonStyle="flat"
-              colorPalette="cool"
-              icon="external-link-square"
-              iconPlacement="right"
-              label="Learn More"
-              onClick={() => console.log('TODO: Link to Pricing Page')}
-            />
-          </div>
-        </div>
-      }
-    </div>
-  );
-};
+    );
+  }
+}
 
 NewTeamForm.propTypes = {
-  change: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  isNewOrg: PropTypes.bool,
-  organizations: PropTypes.array,
-  history: PropTypes.object.isRequired,
-  setLast4: PropTypes.func.isRequired,
-  styles: PropTypes.object
+  isNewOrganization: PropTypes.bool,
+  styles: PropTypes.object,
+  submitting: PropTypes.bool.isRequired,
+  organizations: PropTypes.array.isRequired
 };
 
 const styleThunk = () => ({
-  layout: {
-    display: 'flex',
-    width: '100%'
-  },
-
   form: {
     margin: 0,
     maxWidth: '40rem',
@@ -219,36 +256,14 @@ const styleThunk = () => ({
   buttonBlock: {
     margin: '0 auto',
     width: '16rem'
-  },
-
-  helpLayout: {
-    paddingTop: '6.75rem'
-  },
-
-  helpBlock: {
-    background: appTheme.palette.light50l,
-    boxShadow: ui.shadow[0],
-    color: appTheme.palette.dark,
-    margin: '1rem 0',
-    padding: '.75rem',
-    textAlign: 'center',
-    width: '16rem'
-  },
-
-  helpHeading: {
-    fontSize: appTheme.typography.s4,
-    fontWeight: 700,
-    margin: 0
-  },
-
-  helpCopy: {
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s4,
-    margin: '.5rem 0'
   }
 });
 
-export default reduxForm({form: 'newTeam', validate})(
-  withStyles(styleThunk)(
-    NewTeamForm)
+export default withAtmosphere(reduxForm({form: 'newTeam', validate})(
+  connect(mapStateToProps)(
+    withRouter(withStyles(styleThunk)(
+      NewTeamForm)
+    )
+  )
+)
 );

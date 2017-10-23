@@ -19,16 +19,16 @@ const subscription = graphql`
 `;
 
 const GitHubRepoAddedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId},
     updater: (store) => {
       const newNode = store.getRootField('githubRepoAdded').getLinkedRecord('repo');
       addGitHubRepoUpdater(store, viewerId, teamId, newNode);
     }
-  });
+  };
 };
 
 export default GitHubRepoAddedSubscription;

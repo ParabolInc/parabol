@@ -10,7 +10,7 @@ const EmptyOrgsCallOut = (props) => {
     history
   } = props;
 
-  const gotoNewTeam = () => { history.push('/newteam/1'); };
+  const gotoNewTeam = () => { history.push('/newteam'); };
   const button = (
     <Button
       colorPalette="cool"

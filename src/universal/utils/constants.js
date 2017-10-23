@@ -61,6 +61,10 @@ export const MEETING = 'meeting';
 export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
+/* Accounts */
+export const PERSONAL_LABEL = 'Personal';
+export const PRO_LABEL = 'Pro';
+
 /* NotificationRow Types */
 // Send to folks that got reactivated on a team
 // annoucements to the rest of the team
@@ -151,6 +155,7 @@ export const NEWLINE_REGEX = /\r\n?|\n/g;
 
 /* Integrations */
 export const DEFAULT_TTL = ms('5m');
+export const cacheConfig = {ttl: DEFAULT_TTL};
 export const GITHUB = 'GitHubIntegration';
 export const SLACK = 'SlackIntegration';
 export const CURRENT_PROVIDERS = [GITHUB, SLACK];
@@ -159,7 +164,7 @@ export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:b
 export const GITHUB_ENDPOINT = 'https://api.github.com/graphql';
 
 /* JavaScript specifics */
-export const MAX_TIMEOUT = 2147483647;
+export const MAX_INT = 2147483647;
 
 
 // InvitationResultTypes
@@ -179,6 +184,7 @@ export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
 export const ORGANIZATION_ADDED = 'organizationAdded';
 export const ORGANIZATION_UPDATED = 'organizationUpdated';
+export const PROJECT_UPDATED = 'projectUpdated';
 
 /* Relay Subscription Event Types */
 export const ADD = 'add';

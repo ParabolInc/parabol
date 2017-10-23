@@ -7,6 +7,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import OrgBilling from 'universal/modules/userDashboard/components/OrgBilling/OrgBilling';
+import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
   query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {
@@ -19,6 +20,7 @@ const query = graphql`
 const OrgBillingRoot = ({atmosphere, orgId, org}) => {
   return (
     <QueryRenderer
+      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{orgId, first: 3}}

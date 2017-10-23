@@ -7,10 +7,10 @@ class ErrorBoundary extends Component {
     children: PropTypes.element.isRequired
   };
 
-  constructor(props) {
-    super(props);
-    this.state = { error: null, errorInfo: null };
-  }
+  state = {
+    error: null,
+    errorInfo: null
+  };
 
   componentDidCatch(error, errorInfo) {
     // Catch errors in any components below and re-render with error message
@@ -25,7 +25,7 @@ class ErrorBoundary extends Component {
     if (this.state.errorInfo) {
       // Error path
       return (
-        <ErrorComponent error={{message: this.state.error}} />
+        <ErrorComponent error={{_error: this.state.error.message}} />
       );
     }
     // Normally, just render children

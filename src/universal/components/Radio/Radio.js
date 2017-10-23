@@ -8,9 +8,10 @@ class Radio extends Component {
   static propTypes = {
     customStyles: PropTypes.object,
     fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
-    group: PropTypes.string,
+    name: PropTypes.string,
     indent: PropTypes.bool,
     inline: PropTypes.bool,
+    input: PropTypes.object.isRequired,
     label: PropTypes.any,
     labelPlacement: PropTypes.oneOf([
       'left',
@@ -28,18 +29,19 @@ class Radio extends Component {
 
   render() {
     const {
-      group,
+      name,
       label,
+      input,
       styles
     } = this.props;
 
     return (
       <label className={css(styles.radioBase)}>
-        <input className={css(styles.radioInput)} group={group} type="radio" />
+        <input {...input} className={css(styles.radioInput)} name={name} type="radio" />
         {label &&
-          <div className={css(styles.radioLabel)}>
-            {label}
-          </div>
+        <div className={css(styles.radioLabel)}>
+          {label}
+        </div>
         }
       </label>
     );
