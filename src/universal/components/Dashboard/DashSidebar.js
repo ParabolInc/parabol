@@ -29,7 +29,7 @@ const DashSidebar = (props) => {
           My Teams
         </div>
         <DashNavListContainer />
-        <NavLink className={css(styles.addTeam)} activeClassName={css(styles.addTeamDisabled)} title="Add New Team" to="/newteam">
+        <NavLink className={css(styles.addTeam)} activeClassName={css(styles.addTeamDisabled)} title="Add New Team" to="/newteam/1">
           <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
           </div>

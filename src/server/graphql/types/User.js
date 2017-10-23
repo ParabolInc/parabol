@@ -17,7 +17,6 @@ import invoices from 'server/graphql/queries/invoices';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import notifications from 'server/graphql/queries/notifications';
 // import organization from 'server/graphql/queries/organization';
-// import ownedOrganizations from 'server/graphql/queries/ownedOrganizations';
 import providerMap from 'server/graphql/queries/providerMap';
 import slackChannels from 'server/graphql/queries/slackChannels';
 import AuthIdentityType from 'server/graphql/types/AuthIdentityType';
@@ -114,7 +113,11 @@ const User = new GraphQLObjectType({
     },
     userOrgs: {
       type: new GraphQLList(UserOrg),
-      description: 'the orgs and roles for this user on each'
+      description: 'the orgs and roles for this user on each',
+      resolve: (source, args, {authToken}) => {
+        const userId = getUserId(authToken);
+        return (userId === source.id) ? source.tms : undefined;
+      }
     },
     welcomeSentAt: {
       type: GraphQLISO8601Type,
@@ -142,7 +145,6 @@ const User = new GraphQLObjectType({
     slackChannels,
     organization: require('../queries/organization').default,
     organizations: require('../queries/organizations').default,
-    ownedOrganizations: require('../queries/ownedOrganizations').default,
     team: require('../queries/team').default,
     // hack until we can move to ES6 immutable bindings
     orgMembers: require('../queries/orgMembers').default,

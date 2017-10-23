@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {MAX_INT} from 'universal/utils/constants';
 
-const isCacheable = (subs, cacheConfig = {}) => subs || cacheConfig.force === false || cacheConfig.ttl;
+const isCacheable = (subs, cacheConfig = {}) => Boolean(subs || cacheConfig.force === false || cacheConfig.ttl);
 const getDefaultState = () => ({
   error: null,
   props: null,
@@ -48,12 +48,12 @@ export default class QueryRenderer extends React.Component {
 
   constructor(props, context) {
     super(props, context);
-    const {subscriptions} = props;
+    const {cacheConfig, subscriptions} = props;
     this._pendingFetch = null;
     this._rootSubscription = null;
     this._selectionReference = null;
     this.unsubscribe = null;
-    this.releaseOnUnmount = !subscriptions;
+    this._releaseOnUnmount = !isCacheable(subscriptions, cacheConfig);
     this._mounted = true;
 
     this.state = {
@@ -87,7 +87,7 @@ export default class QueryRenderer extends React.Component {
     const {cacheConfig = {}, environment} = this.props;
     const {ttl} = cacheConfig;
     this._mounted = false;
-    if (this.releaseOnUnmount) {
+    if (this._releaseOnUnmount) {
       this._release();
       return;
     }
@@ -104,7 +104,7 @@ export default class QueryRenderer extends React.Component {
 
   releaseComponent = () => {
     if (this._mounted) {
-      this.releaseOnUnmount = true;
+      this._releaseOnUnmount = true;
     } else {
       this._release();
     }

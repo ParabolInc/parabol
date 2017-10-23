@@ -11,17 +11,19 @@ import {PRICING_LINK} from 'universal/utils/externalLinks';
 
 const NewTeam = (props) => {
   const {
-    isNewOrg,
+    defaultOrgId,
     styles,
     viewer
   } = props;
 
   const {organizations} = viewer;
   const firstOrgId = organizations[0] && organizations[0].id;
+  const orgId = organizations.find((org) => org.id === defaultOrgId) ? defaultOrgId : firstOrgId;
   return (
     <div className={css(styles.layout)}>
       <NewTeamForm
-        initialValues={{orgId: firstOrgId, isNewOrganization: String(isNewOrg)}}
+        defaultOrgId={defaultOrgId}
+        initialValues={{orgId, isNewOrganization: String(!defaultOrgId)}}
         organizations={organizations}
       />
       <div className={css(styles.helpLayout)}>
@@ -56,7 +58,7 @@ const NewTeam = (props) => {
 };
 
 NewTeam.propTypes = {
-  isNewOrg: PropTypes.bool.isRequired,
+  defaultOrgId: PropTypes.string,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
 };

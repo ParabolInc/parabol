@@ -16,7 +16,7 @@ const DashboardWrapper = (props) => {
       <DashSidebar notificationsCount={notificationsCount} />
       <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
       <AsyncRoute isAbstract path="/team/:teamId" mod={teamContainer} extraProps={{notifications}} />
-      <AsyncRoute path="/newteam/:newOrgRoute?" mod={newTeam} extraProps={{notifications}} />
+      <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />
     </DashLayoutContainer>
   );
 };

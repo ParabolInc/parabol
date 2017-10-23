@@ -16,7 +16,7 @@ const query = graphql`
   }
 `;
 
-const NewTeamRoot = ({atmosphere, match: {params: {newOrgRoute}}}) => {
+const NewTeamRoot = ({atmosphere, match: {params: {defaultOrgId}}}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -27,7 +27,7 @@ const NewTeamRoot = ({atmosphere, match: {params: {newOrgRoute}}}) => {
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps && <AnimatedFade key="1">
               <NewTeam
-                isNewOrg={Boolean(newOrgRoute)}
+                defaultOrgId={defaultOrgId}
                 viewer={renderProps.viewer}
               />
             </AnimatedFade>}
