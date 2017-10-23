@@ -62,6 +62,7 @@ class HoverTooltip extends Component {
         if (onMouseLeave) {
           onMouseLeave(e);
         }
+        clearTimeout(this.delayTimer);
       },
       onFocus: (e) => {
         const {hideOnFocus} = this.props;
