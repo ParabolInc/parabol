@@ -13,6 +13,7 @@ const Toggle = (props) => {
   const {
     active,
     block,
+    disabled,
     label,
     onClick,
     styles
@@ -21,7 +22,8 @@ const Toggle = (props) => {
   const toggleStyles = css(
     styles.toggle,
     active && styles.active,
-    block && styles.block
+    block && styles.block,
+    disabled && styles.disabled
   );
 
   return (
@@ -36,6 +38,7 @@ const Toggle = (props) => {
 Toggle.propTypes = {
   active: PropTypes.bool,
   block: PropTypes.bool,
+  disabled: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func,
   styles: PropTypes.object
@@ -77,6 +80,10 @@ const styleThunk = () => ({
       position: 'absolute',
       top: gutter,
       width: innerSize
+    },
+
+    ':hover': {
+      opacity: 0.65
     }
   },
 
@@ -95,6 +102,16 @@ const styleThunk = () => ({
   // NOTE: modifies 'toggle'
   block: {
     display: 'block'
+  },
+
+  // NOTE: modifies 'toggle'
+  disabled: {
+    cursor: 'not-allowed',
+    opacity: 0.5,
+
+    ':hover': {
+      opacity: 0.5
+    }
   },
 
   // NOTE: inner element

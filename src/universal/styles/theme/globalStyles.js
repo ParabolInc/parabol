@@ -1,7 +1,7 @@
-import appTheme from 'universal/styles/theme/appTheme';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
-import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import fontLoader from 'universal/styles/theme/fontLoader';
+import ui from 'universal/styles/ui';
 
 const basePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
 

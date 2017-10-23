@@ -5,6 +5,7 @@ import {requireOrgLeaderOfUser, requireWebsocket} from 'server/utils/authorizati
 import {toEpochSeconds} from 'server/utils/epochTime';
 import {MAX_MONTHLY_PAUSES, PAUSE_USER} from 'server/utils/serverConstants';
 import {errorObj} from 'server/utils/utils';
+import {PERSONAL} from 'universal/utils/constants';
 
 export default {
   type: GraphQLBoolean,
@@ -23,14 +24,15 @@ export default {
     await requireOrgLeaderOfUser(authToken, userId);
     const orgDocs = await r.table('Organization')
       .getAll(userId, {index: 'orgUsers'})
-      .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId');
+      .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId', 'tier');
     const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId);
     if (!firstOrgUser) {
       // no userOrgs means there were no changes, which means inactive was already true
       throw errorObj({_error: 'That user is already inactive. cannot inactivate twice'});
     }
     const hookPromises = orgDocs.map((orgDoc) => {
-      const {periodStart, periodEnd, stripeSubscriptionId} = orgDoc;
+      const {periodStart, periodEnd, stripeSubscriptionId, tier} = orgDoc;
+      if (tier === PERSONAL) return undefined;
       const periodStartInSeconds = toEpochSeconds(periodStart);
       const periodEndInSeconds = toEpochSeconds(periodEnd);
       return r.table('InvoiceItemHook')
