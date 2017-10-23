@@ -25,12 +25,17 @@ export default {
       await requireTeamCanUpdateCheckInQuestion(teamId);
     }
 
+    // VALIDATION
+    const cleaned = checkInQuestion.endsWith('?')
+      ? checkInQuestion.substring(0, checkInQuestion.length - 1)
+      : checkInQuestion;
+
     // RESOLUTION
     await r
       .table('Team')
       .get(teamId)
-      .update({checkInQuestion});
+      .update({checkInQuestion: cleaned});
 
-    return checkInQuestion;
+    return cleaned;
   }
 };

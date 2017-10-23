@@ -3,9 +3,9 @@ import React from 'react';
 import {cashay} from 'cashay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {ENTERPRISE, PRO} from 'universal/utils/constants';
+import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
-import MeetingCheckinPrompt from 'universal/modules/meeting/components/MeetingCheckinPrompt/MeetingCheckinPrompt';
+import MeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/MeetingCheckInPrompt';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
@@ -17,6 +17,7 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 const MeetingCheckin = (props) => {
   const {
     gotoNext,
+    handleSubmitCheckInQuestion,
     localPhaseItem,
     members,
     showMoveMeetingControls,
@@ -57,25 +58,17 @@ const MeetingCheckin = (props) => {
   const nextMember = memberIdx < members.length && members[memberIdx + 1];
   const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
-  const canEdit = [PRO, ENTERPRISE].includes(tier);
 
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="1rem">
-        <MeetingCheckinPrompt
+        <MeetingCheckInPrompt
           avatar={currentAvatar}
           checkInQuestion={checkInQuestion}
-          canEdit={canEdit}
+          canEdit={tierSupportsUpdateCheckInQuestion(tier)}
           currentName={currentName}
           greeting={checkInGreeting}
-          onSubmit={({checkInQuestion: newCheckInQuestion}) => {
-            // Note that check in questions are stored without the trailing '?'
-            const cleaned = newCheckInQuestion.endsWith('?')
-              ? newCheckInQuestion.substring(0, newCheckInQuestion.length - 1)
-              : newCheckInQuestion;
-            // todo: graphql mutation
-            console.log(cleaned);
-          }}
+          onSubmit={handleSubmitCheckInQuestion}
         />
         <div className={css(styles.base)}>
           {showMoveMeetingControls ?
@@ -100,6 +93,7 @@ const MeetingCheckin = (props) => {
 
 MeetingCheckin.propTypes = {
   gotoNext: PropTypes.func.isRequired,
+  handleSubmitCheckInQuestion: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
   onFacilitatorPhase: PropTypes.bool,

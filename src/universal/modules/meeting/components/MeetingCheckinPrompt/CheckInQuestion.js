@@ -128,7 +128,6 @@ const validate = ({checkInQuestion}) => {
 
 EditCheckinQuestion = reduxForm({
   form: formName,
-  enableReinitialize: true,
   validate
 })(EditCheckinQuestion);
 

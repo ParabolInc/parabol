@@ -12,7 +12,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
-import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
+import MeetingCheckIn from 'universal/modules/meeting/components/MeetingCheckIn/MeetingCheckIn';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -323,6 +323,11 @@ export default class MeetingContainer extends Component {
     }
   };
 
+  updateCheckInQuestion = ({checkInQuestion}) => {
+    const {teamId} = this.props;
+    cashay.mutate('updateTeamCheckInQuestion', {variables: {teamId, checkInQuestion}});
+  }
+
   render() {
     const {
       agenda,
@@ -408,10 +413,11 @@ export default class MeetingContainer extends Component {
           </MeetingMainHeader>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
-          <MeetingCheckin
+          <MeetingCheckIn
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             showMoveMeetingControls={showMoveMeetingControls}
+            handleSubmitCheckInQuestion={this.updateCheckInQuestion}
             {...phaseStateProps}
           />
           }

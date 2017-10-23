@@ -93,4 +93,24 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
     );
     expect(updatedQuestion).toEqual(checkInQuestion);
   });
+
+  it('removes trailing `?` from the check-in question', async () => {
+    expect.assertions(1);
+
+    // SETUP
+    const db = new MockDB();
+    const {user: [user], team: [team]} = await db
+      .newTeam({tier: PRO})
+      .newUser({name: 'pro-user'});
+    await db.newTeamMember({teamId: team.id, userId: user.id});
+    const authToken = mockAuthToken(user);
+
+    // TEST
+    const updatedQuestion = await updateTeamCheckInQuestion.resolve(
+      undefined,
+      {teamId: team.id, checkInQuestion: 'New check-in question?'},
+      {authToken}
+    );
+    expect(updatedQuestion).toEqual('New check-in question');
+  });
 });
