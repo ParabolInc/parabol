@@ -88,7 +88,9 @@ const SocketRoute = ({atmosphere, dispatch, history, location}) => {
       subscriptions={subscriptions}
       subParams={{dispatch, history, location}}
       render={({props: renderProps}) => {
-        const notifications = renderProps ? renderProps.viewer.notifications : undefined;
+        const notifications = (renderProps && renderProps.viewer)
+          ? renderProps.viewer.notifications
+          : undefined;
         return (
           <Switch>
             <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} extraProps={{notifications}} />
