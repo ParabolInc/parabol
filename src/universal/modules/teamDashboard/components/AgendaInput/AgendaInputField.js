@@ -89,9 +89,8 @@ const AgendaInputField = (props) => {
         disabled={disabled}
         maxLength="63"
         onKeyDown={maybeBlur}
-        placeholder="Add an Agenda Item…"
+        placeholder="Next Agenda Item…"
         ref={setRef}
-        title="Add an Agenda Item…"
         type="text"
       />
       <FontAwesome name="plus-square-o" style={iconStyle} />
@@ -102,6 +101,8 @@ const AgendaInputField = (props) => {
     <div>
       {showTooltip ?
         <Tooltip
+          delay={1000}
+          hideOnFocus
           tip={tip}
           maxHeight={52}
           maxWidth={224}
