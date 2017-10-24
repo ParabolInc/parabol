@@ -17,7 +17,6 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 const MeetingCheckin = (props) => {
   const {
     gotoNext,
-    handleSubmitCheckInQuestion,
     localPhaseItem,
     members,
     showMoveMeetingControls,
@@ -26,6 +25,7 @@ const MeetingCheckin = (props) => {
   } = props;
 
   const {
+    id: teamId,
     checkInGreeting,
     checkInQuestion,
     facilitatorPhaseItem,
@@ -68,7 +68,7 @@ const MeetingCheckin = (props) => {
           canEdit={tierSupportsUpdateCheckInQuestion(tier)}
           currentName={currentName}
           greeting={checkInGreeting}
-          onSubmit={handleSubmitCheckInQuestion}
+          teamId={teamId}
         />
         <div className={css(styles.base)}>
           {showMoveMeetingControls ?
@@ -93,7 +93,6 @@ const MeetingCheckin = (props) => {
 
 MeetingCheckin.propTypes = {
   gotoNext: PropTypes.func.isRequired,
-  handleSubmitCheckInQuestion: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
   onFacilitatorPhase: PropTypes.bool,

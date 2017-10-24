@@ -323,11 +323,6 @@ export default class MeetingContainer extends Component {
     }
   };
 
-  updateCheckInQuestion = ({checkInQuestion}) => {
-    const {teamId} = this.props;
-    cashay.mutate('updateTeamCheckInQuestion', {variables: {teamId, checkInQuestion}});
-  }
-
   render() {
     const {
       agenda,
@@ -417,7 +412,6 @@ export default class MeetingContainer extends Component {
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             showMoveMeetingControls={showMoveMeetingControls}
-            handleSubmitCheckInQuestion={this.updateCheckInQuestion}
             {...phaseStateProps}
           />
           }
