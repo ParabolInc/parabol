@@ -72,5 +72,4 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
     );
     expect(updatedTeam.checkInQuestion).toEqual(checkInQuestion);
   });
-
 });

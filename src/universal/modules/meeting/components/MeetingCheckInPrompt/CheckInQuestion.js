@@ -144,8 +144,7 @@ class CheckInQuestion extends Component {
     return 'not-handled';
   };
 
-  selectAllQuestion = (event) => {
-    if (event && event.key && event.key !== ' ') { return }
+  selectAllQuestion = () => {
     const {editorState, setEditorState} = this.props;
     const selection = editorState.getSelection();
     const contentState = editorState.getCurrentContent();
@@ -198,7 +197,11 @@ class CheckInQuestion extends Component {
               name="pencil"
               style={{...iconStyle, ...buttonStyle}}
               onClick={this.selectAllQuestion}
-              onKeyUp={this.selectAllQuestion}
+              onKeyUp={(event) => {
+                if (event && event.key && event.key === ' ') {
+                  this.selectAllQuestion();
+                }
+              }}
             /> :
             <FontAwesome name="pencil" style={iconStyle} />
           }
