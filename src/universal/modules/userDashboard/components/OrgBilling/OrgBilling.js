@@ -84,10 +84,10 @@ class OrgBilling extends Component {
             <Panel label="Danger Zone">
               <div className={css(styles.panelRow)}>
                 <div className={css(styles.unsubscribe)}>
-                <span>{'Need to cancel? It’s painless.'}</span>
+                  <span>{'Need to cancel? It’s painless.'}</span>
                   <a href="mailto:love@parabol.co?subject=Instant Unsubscribe from Pro" title="Instant Unsubscribe from Pro">
                     {' Contact us '}
-                    <FontAwesome name="envelope"/>
+                    <FontAwesome name="envelope" />
                   </a>
                 </div>
               </div>
