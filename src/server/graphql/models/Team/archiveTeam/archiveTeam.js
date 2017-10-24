@@ -28,7 +28,7 @@ export default {
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', userId, {teamId});
-    const {teamResults: {notification}, userDocs} = await r.table('Team')
+    const {teamResults: {notificationData}, userDocs} = await r.table('Team')
       .get(teamId)
       .pluck('name', 'orgId')
       .do((team) => ({
@@ -54,23 +54,28 @@ export default {
             teamMemberResult: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).delete()
           },
           {
-            // Team has data or TeamMembers, archive team:
-            notification: r.table('Notification').insert({
-              id: shortid.generate(),
-              orgId: doc('team')('orgId'),
-              startAt: now,
-              type: TEAM_ARCHIVED,
-              userIds: doc('userIds'),
-              teamName: doc('team')('name')
-            }, {returnChanges: true})('changes')(0)('new_val').default(null),
+            notificationData: doc,
             teamResult: r.table('Team').get(teamId).update({isArchived: true})
           }
         )
       }));
 
-    if (notification) {
-      const notificationsAdded = {notifications: [notification]};
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
+    if (notificationData) {
+      const {team: {name: teamName, orgId}, userIds} = notificationData;
+      const notifications = userIds.map((notifiedUserId) => ({
+        id: shortid.generate(),
+        orgId,
+        startAt: now,
+        type: TEAM_ARCHIVED,
+        userIds: [notifiedUserId],
+        teamName
+      }));
+      await r.table('Notification').insert(notifications);
+
+      notifications.forEach((notification) => {
+        const notificationsAdded = {notifications: [notification]};
+        getPubSub().publish(`${NOTIFICATIONS_ADDED}.${notification.userIds[0]}`, {notificationsAdded});
+      });
     }
     userDocs.forEach((user) => {
       const {id, tms} = user;

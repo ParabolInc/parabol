@@ -4,7 +4,6 @@ exports[`makeReactivationNotifications creates a notification for the reactivate
 Object {
   "1": Array [
     Object {
-      "authToken": "FAKEENCODEDJWT",
       "id": 1,
     },
   ],
@@ -15,7 +14,6 @@ exports[`makeReactivationNotifications creates a notification for the team (less
 Object {
   "1": Array [
     Object {
-      "authToken": "FAKEENCODEDJWT",
       "id": 1,
     },
   ],

@@ -1,9 +1,12 @@
 export default {
+  newAuthToken: [
+    'channelId',
+    'newAuthToken'
+  ],
   notificationsAdded: [
     'channelId',
     'message.notificationsAdded.notifications.id',
     'message.notificationsAdded.notifications.orgId',
-    'message.notificationsAdded.notifications.userIds',
-    'message.notificationsAdded.notifications.authToken'
+    'message.notificationsAdded.notifications.userIds'
   ]
 };

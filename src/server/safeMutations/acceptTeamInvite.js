@@ -75,8 +75,6 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
     teamId
   };
 
-  // if coming from acceptTeamInviteNotification, this will send a duplicate message over socket.
-  // this is so the socket middleware can update the authToken
   getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken(authToken, tms)});
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded: {notifications: [addedToTeam]}});
   return addedToTeam;
