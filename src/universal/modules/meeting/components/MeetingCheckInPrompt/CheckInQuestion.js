@@ -1,4 +1,5 @@
 import {css} from 'aphrodite-local-styles/no-important';
+import './CheckInQuestion.css';
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -184,6 +185,7 @@ class CheckInQuestion extends Component {
             onEscape={this.handleEscape}
             onTab={this.handleTab}
             onUpArrow={this.handleUpArrow}
+            placeholder="e.g. How are you?"
             readOnly={!canEdit}
             ref={(c) => {
               this.editorRef = c;
