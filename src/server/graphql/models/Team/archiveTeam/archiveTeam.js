@@ -6,7 +6,7 @@ import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
-import {KICKED_OUT, NOTIFICATIONS_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
 
 export default {
   type: GraphQLBoolean,
@@ -77,11 +77,7 @@ export default {
       // update the tms on auth0 in async
       auth0ManagementClient.users.updateAppMetadata({id}, {tms});
       // update the server socket, if they're logged in
-      const notifications = [{
-        authToken: tmsSignToken({sub: userId}, tms),
-        type: KICKED_OUT
-      }];
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${id}`, {notificationsAdded: {notifications}});
+      getPubSub().publish(`${NEW_AUTH_TOKEN}.${id}`, {newAuthToken: tmsSignToken({sub: userId}, tms)});
     });
 
     return true;

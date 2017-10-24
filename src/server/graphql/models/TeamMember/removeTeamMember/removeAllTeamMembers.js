@@ -4,7 +4,7 @@ import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposFo
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getPubSub from 'server/utils/getPubSub';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {GITHUB, KICKED_OUT, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
+import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 import shortid from 'shortid';
 
 const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
@@ -112,10 +112,10 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
   const notificationsAdded = {
     notifications: notifications.map((notification) => ({
       ...notification,
-      authToken: tmsSignToken({sub: userId}, newTMS),
       isKickout
     }))
   };
+  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, newTMS)});
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
 
   const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB);
