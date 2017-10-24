@@ -26,12 +26,7 @@ class OrgBilling extends Component {
   loadMore = () => {
     const {relay: {hasMore, isLoading, loadMore}} = this.props;
     if (!hasMore() || isLoading()) return;
-    loadMore(
-      5,
-      (e) => {
-        console.error(e);
-      }
-    );
+    loadMore(5);
   }
 
   render() {
@@ -45,9 +40,9 @@ class OrgBilling extends Component {
     const {orgUserCount: {activeUserCount}, creditCard = {}, id: orgId, tier} = org;
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
+      buttonSize="small"
       colorPalette="cool"
       label="Update"
-      size="small"
     />);
     return (
       <div>
@@ -76,11 +71,11 @@ class OrgBilling extends Component {
                 {hasMore() &&
                 <div className={css(styles.loadMore)}>
                   <Button
+                    buttonSize="medium"
                     buttonStyle="flat"
                     colorPalette="cool"
                     label="Load More"
                     onClick={this.loadMore}
-                    size="small"
                   />
                 </div>
                 }
@@ -89,12 +84,12 @@ class OrgBilling extends Component {
             <Panel label="Danger Zone">
               <div className={css(styles.panelRow)}>
                 <Button
+                  buttonSize="small"
                   buttonStyle="flat"
                   colorPalette="mid"
                   icon="envelope"
                   iconPlacement="right"
                   label="Need to cancel? Contact Us"
-                  size="smallest"
                 />
               </div>
             </Panel>
@@ -213,4 +208,3 @@ export default createPaginationContainer(
     `
   }
 );
-

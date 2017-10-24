@@ -11,12 +11,11 @@ const subscription = graphql`
   }
 `;
 
-const OrganizationUpdatedSubscription = (environment) => {
-  const {ensureSubscription} = environment;
-  return ensureSubscription({
+const OrganizationUpdatedSubscription = () => {
+  return {
     subscription,
     variables: {}
-  });
+  };
 };
 
 export default OrganizationUpdatedSubscription;

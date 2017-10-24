@@ -16,6 +16,7 @@ const InputField = (props) => {
     shortcutDisabled,
     colorPalette,
     disabled,
+    fieldSize,
     input,
     isLarger,
     isWider,
@@ -52,7 +53,15 @@ const InputField = (props) => {
 
   return (
     <FieldBlock>
-      {label && <FieldLabel label={label} htmlFor={input.name} />}
+      {label &&
+        <FieldLabel
+          customStyles={{paddingBottom: ui.fieldLabelGutter}}
+          fieldSize={fieldSize}
+          htmlFor={input.name}
+          indent
+          label={label}
+        />
+      }
       <div className={css(styles.inputBlock)}>
         <input
           {...input}
@@ -64,7 +73,7 @@ const InputField = (props) => {
           ref={(c) => { ref = c; }}
         />
       </div>
-      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
+      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
       {shortcutHint && <FieldShortcutHint disabled={shortcutDisabled} hint={shortcutHint} />}
     </FieldBlock>
   );
@@ -85,6 +94,7 @@ InputField.propTypes = {
   buttonIcon: PropTypes.string,
   hasButton: PropTypes.bool,
   disabled: PropTypes.bool,
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
   isLarger: PropTypes.bool,
   readyOnly: PropTypes.bool,
   label: PropTypes.string,
@@ -111,47 +121,51 @@ InputField.propTypes = {
   underline: PropTypes.bool
 };
 
-const styleThunk = () => ({
-  field: {
-    ...ui.fieldBaseStyles
-  },
-
-  cool: makeFieldColorPalette('cool'),
-  gray: makeFieldColorPalette('gray'),
-  warm: makeFieldColorPalette('warm'),
-  white: makeFieldColorPalette('white'),
-
-  disabled: ui.fieldDisabled,
-  readOnly: ui.fieldReadOnly,
-
-  fieldLarger: {
-    fontSize: appTheme.typography.s6,
-    fontWeight: 400,
-    lineHeight: '2.625rem'
-  },
-
-  fieldWider: {
-    minWidth: '30rem'
-  },
-
-  inputBlock: {
-    position: 'relative'
-  },
-
-  underline: {
-    borderRadius: 0,
-    ...underlineStyles,
-
-    ':hover': {
-      underlineStyles
+const styleThunk = (theme, {disabled, fieldSize}) => {
+  const size = fieldSize || ui.fieldSizeOptions[1];
+  return ({
+    field: {
+      ...ui.fieldBaseStyles,
+      ...ui.fieldSizeStyles[size]
     },
-    ':focus': {
-      underlineStyles
+
+    cool: makeFieldColorPalette('cool', !disabled),
+    gray: makeFieldColorPalette('gray', !disabled),
+    warm: makeFieldColorPalette('warm', !disabled),
+    white: makeFieldColorPalette('white', !disabled),
+
+    disabled: ui.fieldDisabled,
+    readOnly: ui.fieldReadOnly,
+
+    fieldLarger: {
+      fontSize: appTheme.typography.s6,
+      fontWeight: 400,
+      lineHeight: '2.625rem'
     },
-    ':active': {
-      underlineStyles
+
+    fieldWider: {
+      minWidth: '30rem'
+    },
+
+    inputBlock: {
+      position: 'relative'
+    },
+
+    underline: {
+      borderRadius: 0,
+      ...underlineStyles,
+
+      ':hover': {
+        underlineStyles
+      },
+      ':focus': {
+        underlineStyles
+      },
+      ':active': {
+        underlineStyles
+      }
     }
-  }
-});
+  });
+};
 
 export default withStyles(styleThunk)(InputField);

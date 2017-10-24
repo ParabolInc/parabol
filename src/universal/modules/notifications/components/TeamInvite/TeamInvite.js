@@ -43,7 +43,7 @@ const TeamInvite = (props) => {
           colorPalette="cool"
           isBlock
           label="Accept!"
-          size={ui.notificationButtonSize}
+          buttonSize={ui.notificationButtonSize}
           type="submit"
           onClick={accept}
           waiting={submitting}

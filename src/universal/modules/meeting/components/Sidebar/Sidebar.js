@@ -65,9 +65,9 @@ const Sidebar = (props) => {
   return (
     <div className={css(styles.sidebar)}>
       <div className={css(styles.sidebarHeader)}>
-        <a className={css(styles.brandLink)}>
+        <div className={css(styles.brandBlock)}>
           <img className={css(styles.brandLogo)} src={actionUIMark} />
-        </a>
+        </div>
         <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>
         <a className={css(styles.shortUrl)} href={relativeLink}>{shortUrl}</a>
       </div>
@@ -160,10 +160,10 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  brandLink: {
+  brandBlock: {
     display: 'block',
     height: 'auto',
-    left: '1.25rem',
+    left: '1rem',
     position: 'absolute',
     width: '1.9375rem'
   },
@@ -174,7 +174,7 @@ const styleThunk = () => ({
     marginRight: '.75rem',
     textAlign: 'right',
     verticalAlign: 'middle',
-    width: '3.25rem'
+    width: '3rem'
   },
 
   label: {
@@ -268,7 +268,7 @@ const styleThunk = () => ({
   },
 
   sidebarHeader: {
-    paddingLeft: '4rem',
+    paddingLeft: '3.75rem',
     position: 'relative'
   },
 

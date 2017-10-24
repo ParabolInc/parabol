@@ -12,6 +12,7 @@ const PlainInputField = (props) => {
     autoFocus,
     colorPalette,
     disabled,
+    fieldSize,
     input,
     meta: {touched, error},
     placeholder,
@@ -23,7 +24,6 @@ const PlainInputField = (props) => {
     // allow hotkeys to be triggered when inside a field input
     styles.field,
     colorPalette ? styles[colorPalette] : styles.white,
-    // !disabled && styles.boxShadow,
     disabled && styles.disabled,
   );
 
@@ -39,7 +39,7 @@ const PlainInputField = (props) => {
           placeholder={placeholder}
         />
       </div>
-      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
+      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
     </FieldBlock>
   );
 };
@@ -47,6 +47,7 @@ const PlainInputField = (props) => {
 PlainInputField.propTypes = {
   autoFocus: PropTypes.bool,
   disabled: PropTypes.bool,
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
   placeholder: PropTypes.string,
   input: PropTypes.shape({
     name: PropTypes.string,
@@ -68,37 +69,26 @@ PlainInputField.propTypes = {
   meta: PropTypes.object.isRequired
 };
 
-// const boxShadow = 'inset 0 0 1px rgba(0, 0, 0, .5)';
+const styleThunk = (theme, {disabled, fieldSize}) => {
+  const size = fieldSize || ui.fieldSizeOptions[1];
+  return ({
+    field: {
+      ...ui.fieldBaseStyles,
+      ...ui.fieldSizeStyles[size]
+    },
 
-const styleThunk = () => ({
-  field: {
-    ...ui.fieldBaseStyles,
-    // border: 0,
-    // boxShadow: 'none',
-    fontSize: '.9375rem',
-    lineHeight: '1.375rem'
-  },
+    cool: makeFieldColorPalette('cool', !disabled),
+    gray: makeFieldColorPalette('gray', !disabled),
+    link: makeFieldColorPalette('link', !disabled),
+    warm: makeFieldColorPalette('warm', !disabled),
+    white: makeFieldColorPalette('white', !disabled),
 
-  cool: makeFieldColorPalette('cool'),
-  gray: makeFieldColorPalette('gray'),
-  link: makeFieldColorPalette('link'),
-  warm: makeFieldColorPalette('warm'),
-  white: makeFieldColorPalette('white'),
+    disabled: ui.fieldDisabled,
 
-  // boxShadow: {
-  //   ':focus': {
-  //     boxShadow
-  //   },
-  //   ':active': {
-  //     boxShadow
-  //   }
-  // },
-
-  disabled: ui.fieldDisabled,
-
-  inputBlock: {
-    position: 'relative'
-  }
-});
+    inputBlock: {
+      position: 'relative'
+    }
+  });
+};
 
 export default withStyles(styleThunk)(PlainInputField);

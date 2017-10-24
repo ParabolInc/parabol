@@ -62,7 +62,7 @@ const Step3InviteeList = (props) => {
               // optimistically fetch the big ol payload
               System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
             }}
-            size="medium"
+            buttonSize="large"
             type="submit"
           />
         </div>
@@ -82,7 +82,7 @@ const Step3InviteeList = (props) => {
       style={{margin: '1rem auto', maxWidth: '45.5rem', padding: '0 2.5rem'}}
       title="I’ll invite them later"
     >
-      Not yet, I just want to kick the tires
+      {'Not yet, I just want to kick the tires'}
     </Link>
   );
 };

@@ -4,7 +4,6 @@ import {
   ARCHIVED_PROJECTS,
   INVITATIONS,
   ORG_APPROVALS,
-  ORGANIZATIONS,
   PROJECTS,
   TEAM,
   TEAM_MEMBERS
@@ -91,16 +90,6 @@ export default [
     }`
   },
   {
-    channel: ORGANIZATIONS,
-    string: `
-    subscription($userId: ID!) {
-      organizations(userId: $userId) {
-        id
-        name
-      }
-    }`
-  },
-  {
     channel: PROJECTS,
     string: `
     subscription($teamMemberId: ID!) {
@@ -138,6 +127,7 @@ export default [
          isPaid,
          name,
          meetingId,
+         orgId,
          activeFacilitator,
          facilitatorPhase,
          facilitatorPhaseItem,

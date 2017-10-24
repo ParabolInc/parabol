@@ -103,5 +103,3 @@ export default class LandingContainer extends Component {
     );
   }
 }
-
-export {StyleSheetServer} from 'aphrodite-local-styles/no-important';

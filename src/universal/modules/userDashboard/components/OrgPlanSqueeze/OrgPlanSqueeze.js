@@ -9,6 +9,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {MONTHLY_PRICE, PERSONAL, PRO} from 'universal/utils/constants';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
+import {PRICING_LINK} from 'universal/utils/externalLinks';
 
 class OrgPlanSqueeze extends Component {
   state = {showCost: false}
@@ -24,12 +25,13 @@ class OrgPlanSqueeze extends Component {
     const estimatedCost = activeUserCount * MONTHLY_PRICE;
     const {showCost} = this.state;
     const toggle = (<Button
+      buttonSize="medium"
       colorPalette="cool"
       depth={2}
       isBlock
       label="Upgrade to the Pro Plan"
-      size="small"
     />);
+    const openUrl = (url) => () => window.open(url, '_blank');
     return (
       <Panel hasHeader={false}>
         <div className={css(styles.panelInner)}>
@@ -58,12 +60,12 @@ class OrgPlanSqueeze extends Component {
                 {`${activeUserCount} Active Users x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
               </div> :
               <Button
-                colorPalette="cool"
+                buttonSize="small"
                 buttonStyle="flat"
+                colorPalette="cool"
                 icon="question-circle"
                 iconPlacement="right"
                 label="How much will it cost?"
-                size="smallest"
                 onClick={this.getCost}
               />
             }
@@ -71,12 +73,13 @@ class OrgPlanSqueeze extends Component {
         </div>
         <div className={css(styles.panelCell, styles.panelFooter)}>
           <Button
-            colorPalette="mid"
+            buttonSize="small"
             buttonStyle="flat"
+            colorPalette="mid"
             icon="external-link-square"
             iconPlacement="right"
             label="Learn About Plans & Invoicing"
-            size="smallest"
+            onClick={openUrl(PRICING_LINK)}
           />
         </div>
       </Panel>

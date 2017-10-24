@@ -26,13 +26,13 @@ const LeaveTeamModal = (props) => {
         All of your projects will be given to {teamLead} <br />
       </Type>
       <Button
+        buttonSize="large"
         buttonStyle="flat"
         colorPalette="warm"
         icon="arrow-circle-right"
         iconPlacement="right"
         label={'Leave the team'}
         onClick={handleClick}
-        size="large"
       />
     </DashModal>
   );

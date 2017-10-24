@@ -7,9 +7,7 @@ import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import ui from 'universal/styles/ui';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
-import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import {Menu, MenuItem} from 'universal/modules/menu';
-import Button from 'universal/components/Button/Button';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -22,10 +20,27 @@ const targetAnchor = {
 };
 
 const DropdownInput = (props) => {
-  const {handleCreateNew, input: {name, onChange, value}, label, organizations = [], styles} = props;
+  const {
+    disabled,
+    fieldSize,
+    input: {name, onChange, value},
+    label,
+    organizations = [],
+    styles
+  } = props;
   const org = organizations.find((anOrg) => anOrg.id === value);
   const orgName = org && org.name || 'Loading...';
-  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" />;
+  const size = fieldSize || ui.fieldSizeOptions[1];
+  const toggleLineHeight = {
+    small: '1.875rem',
+    medium: '2.375rem',
+    large: '3.125rem'
+  };
+  const toggleStyles = {
+    fontSize: ui.iconSize,
+    lineHeight: toggleLineHeight[size]
+  };
+  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" style={toggleStyles} />;
   const itemFactory = () => {
     return organizations.map((anOrg) => {
       return (
@@ -38,37 +53,36 @@ const DropdownInput = (props) => {
           }}
         />
       );
-    })
-      .concat(<MenuItem
-        key={'newOrg'}
-        label={
-          <div className={css(styles.menuButtonBlock)}>
-            <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew} />
-          </div>
-        }
-      />);
+    });
   };
+  const fieldInputStyles = css(
+    styles.inputBlock,
+    disabled ? styles.inputDisabled : styles.inputNotDisabled
+  );
   return (
     <FieldBlock>
-      {label && <FieldLabel label={label} htmlFor={name} />}
-      <div className={css(styles.inputBlock)}>
+      {label && <FieldLabel fieldSize={fieldSize} label={label} htmlFor={name} indent />}
+      <div className={fieldInputStyles} tabIndex="1">
         <span>{orgName}</span>
-        <Menu
-          originAnchor={originAnchor}
-          maxHeight="none"
-          menuWidth="13rem"
-          targetAnchor={targetAnchor}
-          toggle={toggle}
-          itemFactory={itemFactory}
-          label="Select Organization:"
-        />
+        {!disabled &&
+          <Menu
+            originAnchor={originAnchor}
+            maxHeight="none"
+            menuWidth="13rem"
+            targetAnchor={targetAnchor}
+            toggle={toggle}
+            itemFactory={itemFactory}
+            label="Select Organization:"
+          />
+        }
       </div>
     </FieldBlock>
   );
 };
 
 DropdownInput.propTypes = {
-  handleCreateNew: PropTypes.func,
+  disabled: PropTypes.bool,
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
   input: PropTypes.shape({
     name: PropTypes.string,
     onChange: PropTypes.func,
@@ -79,36 +93,40 @@ DropdownInput.propTypes = {
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
-  downButton: {
-    cursor: 'pointer',
-    fontSize: `${ui.iconSize} !important`,
-    height: '100% !important',
-    lineHeight: '2.25rem !important',
-    padding: '0 1rem 0 0',
-    position: 'absolute',
-    right: 0,
-    textAlign: 'right',
-    top: 0,
-    width: '100%'
-  },
+const styleThunk = (theme, {fieldSize}) => {
+  const size = fieldSize || ui.fieldSizeOptions[1];
+  const paddingRight = ui.controlBlockPaddingHorizontal[size];
+  return ({
+    downButton: {
+      cursor: 'pointer',
+      height: '100%',
+      padding: 0,
+      paddingRight,
+      position: 'absolute',
+      right: 0,
+      textAlign: 'right',
+      top: 0,
+      width: '100%'
+    },
 
-  inputBlock: {
-    ...ui.fieldBaseStyles,
-    ...makeFieldColorPalette('gray'),
-    ...makeHoverFocus({
-      borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
-      boxShadow: ui.fieldBoxShadow
-    }),
-    position: 'relative'
-  },
+    inputBlock: {
+      ...ui.fieldBaseStyles,
+      ...ui.fieldSizeStyles[size],
+      ...makeFieldColorPalette('white', false),
+      position: 'relative'
+    },
 
-  menuButtonBlock: {
-    backgroundColor: '#fff',
-    borderTop: `1px solid ${ui.menuBorderColor}`,
-    padding: '.5rem .5rem 0',
-    width: '100%'
-  }
-});
+    inputNotDisabled: makeFieldColorPalette('white', true),
+
+    inputDisabled: ui.fieldDisabled,
+
+    menuButtonBlock: {
+      backgroundColor: '#fff',
+      borderTop: `.0625rem solid ${ui.menuBorderColor}`,
+      padding: '.5rem .5rem 0',
+      width: '100%'
+    }
+  });
+};
 
 export default withStyles(styleThunk)(DropdownInput);

@@ -9,9 +9,9 @@ const subscription = graphql`
 `;
 
 const GitHubRepoRemovedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId},
     updater: (store) => {
@@ -20,7 +20,7 @@ const GitHubRepoRemovedSubscription = (environment, queryVariables) => {
       const deletedId = removedRepo.getValue('deletedId');
       removeGitHubRepoUpdater(viewer, teamId, deletedId);
     }
-  });
+  };
 };
 
 export default GitHubRepoRemovedSubscription;

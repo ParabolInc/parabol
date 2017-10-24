@@ -14,9 +14,9 @@ const subscription = graphql`
 `;
 
 const IntegrationJoinedSubscription = (service) => (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {service, teamId},
     updater: (store) => {
@@ -24,7 +24,7 @@ const IntegrationJoinedSubscription = (service) => (environment, queryVariables)
       const payload = store.getRootField('integrationJoined');
       joinIntegrationUpdater(store, viewer, teamId, payload);
     }
-  });
+  };
 };
 
 export default IntegrationJoinedSubscription;

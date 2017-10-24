@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {segmentEventPage} from 'universal/redux/segmentActions';
 import {requestIdleCallback} from 'universal/utils/requestIdleCallback';
+import ErrorBoundary from 'universal/components/ErrorBoundary';
 
 const updateAnalyticsPage = (dispatch, lastPath, nextPath, title, params) => {
   if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
@@ -90,7 +91,11 @@ class Bundle extends Component {
     const {Mod} = this.state;
     if (!Mod) return null;
     const {history, location, match, extraProps} = this.props;
-    return <Mod {...extraProps} history={history} location={location} match={match} />;
+    return (
+      <ErrorBoundary>
+        <Mod {...extraProps} history={history} location={location} match={match} />
+      </ErrorBoundary>
+    );
   }
 }
 

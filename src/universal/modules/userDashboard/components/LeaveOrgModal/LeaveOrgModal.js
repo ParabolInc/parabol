@@ -29,7 +29,7 @@ const LeaveOrgModal = (props) => {
         iconPlacement="right"
         label={'Leave the organization'}
         onClick={handleClick}
-        size="large"
+        buttonSize="large"
       />
     </DashModal>
   );

@@ -21,10 +21,10 @@ const mutation = graphql`
 export const addOrgUpdater = (store, viewerId, newNode) => {
   // update the organizations page
   const viewer = store.get(viewerId);
-  const ownedOrganizations = viewer.getLinkedRecords('ownedOrganizations');
-  if (ownedOrganizations) {
-    const newNodes = insertNodeBefore(ownedOrganizations, newNode, 'name');
-    viewer.setLinkedRecords(newNodes, 'ownedOrganizations');
+  const organizations = viewer.getLinkedRecords('organizations');
+  if (organizations) {
+    const newNodes = insertNodeBefore(organizations, newNode, 'name');
+    viewer.setLinkedRecords(newNodes, 'organizations');
   }
 };
 

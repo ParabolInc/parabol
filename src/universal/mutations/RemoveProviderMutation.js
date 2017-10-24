@@ -117,7 +117,7 @@ const RemoveProviderMutation = (environment, providerId, service, teamId) => {
     },
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId);
-      const {id: mutatorUserId} = fromGlobalId(viewerId);
+      const {userId: mutatorUserId} = environment;
       // remove the accessToken from the provider
       removeProviderUpdater(viewer, teamId, service, mutatorUserId);
 

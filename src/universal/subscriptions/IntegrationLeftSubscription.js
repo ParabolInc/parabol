@@ -10,9 +10,9 @@ const subscription = graphql`
 `;
 
 const IntegrationLeftSubscription = (service) => (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {service, teamId},
     updater: (store) => {
@@ -20,7 +20,7 @@ const IntegrationLeftSubscription = (service) => (environment, queryVariables) =
       const payload = store.getRootField('integrationLeft');
       leaveIntegrationUpdater(store, viewer, teamId, payload);
     }
-  });
+  };
 };
 
 export default IntegrationLeftSubscription;

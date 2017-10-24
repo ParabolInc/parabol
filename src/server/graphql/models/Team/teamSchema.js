@@ -14,15 +14,8 @@ import MeetingPhaseEnum from 'server/graphql/types/MeetingPhaseEnum';
 import TeamMember from 'server/graphql/types/TeamMember';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
 import TierEnum from 'server/graphql/types/TierEnum';
-
-
-export const Greeting = new GraphQLObjectType({
-  name: 'Greeting',
-  fields: () => ({
-    content: {type: GraphQLString, description: 'The foreign-language greeting'},
-    language: {type: GraphQLString, description: 'The source language for the greeting'}
-  })
-});
+import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
+import Organization from 'server/graphql/types/Organization';
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
@@ -60,7 +53,7 @@ export const Team = new GraphQLObjectType({
     },
     /* Ephemeral meeting state */
     checkInGreeting: {
-      type: Greeting,
+      type: MeetingGreeting,
       description: 'The checkIn greeting (fun language)'
     },
     checkInQuestion: {
@@ -94,6 +87,13 @@ export const Team = new GraphQLObjectType({
     tier: {
       type: TierEnum,
       description: 'The level of access to features on the parabol site'
+    },
+    organization: {
+      type: Organization,
+      resolve: ({orgId}) => {
+        const r = getRethink();
+        return r.table('Organization').get(orgId).run();
+      }
     },
     /* GraphQL sugar */
     agendaItems: {

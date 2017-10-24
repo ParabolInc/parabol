@@ -23,13 +23,13 @@ const RemoveTeamMemberModal = (props) => {
         the team. <br />
       </Type>
       <Button
+        buttonSize="large"
         buttonStyle="flat"
         colorPalette="warm"
         icon="arrow-circle-right"
         iconPlacement="right"
         label={`Remove ${preferredName}`}
         onClick={handleClick}
-        size="large"
       />
     </DashModal>
   );

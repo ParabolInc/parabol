@@ -10,6 +10,33 @@ import zIndexScale from 'universal/styles/helpers/zIndexScale';
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------
 
+// Control sizes (used by buttons and fields)
+const CONTROL_SIZE_SMALL = 'small';
+const CONTROL_SIZE_MEDIUM = 'medium';
+const CONTROL_SIZE_LARGE = 'large';
+
+const CONTROL_SMALL_FONT_SIZE = '.875rem';
+const CONTROL_SMALL_LINE_HEIGHT = '1.25rem';
+const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem';
+const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem';
+const CONTROL_SMALL_PADDING_VERTICAL = '.3125rem';
+const CONTROL_SMALL_BLOCK_PADDING_VERTICAL = '.375rem';
+
+const CONTROL_MEDIUM_FONT_SIZE = '1rem';
+const CONTROL_MEDIUM_LINE_HEIGHT = '1.5rem';
+const CONTROL_MEDIUM_PADDING_HORIZONTAL = '.6875rem';
+const CONTROL_MEDIUM_BLOCK_PADDING_HORIZONTAL = '.75rem';
+const CONTROL_MEDIUM_PADDING_VERTICAL = '.4375rem';
+const CONTROL_MEDIUM_BLOCK_PADDING_VERTICAL = '.5rem';
+
+const CONTROL_LARGE_FONT_SIZE = '1.125rem';
+const CONTROL_LARGE_LINE_HEIGHT = '1.75rem';
+const CONTROL_LARGE_PADDING_HORIZONTAL = '.9375rem';
+const CONTROL_LARGE_BLOCK_PADDING_HORIZONTAL = '1rem';
+const CONTROL_LARGE_PADDING_VERTICAL = '.6875rem';
+const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
+
+// Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
 const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
 
@@ -20,13 +47,10 @@ const borderRadiusMedium = '.25rem';
 // Large border radius for larger components (modals, pages, etc.)
 const borderRadiusLarge = '.5rem';
 
-// Button size constants
-const BUTTON_SIZE_SMALLEST = 'smallest';
-const BUTTON_SIZE_SMALL = 'small';
-const BUTTON_SIZE_MEDIUM = 'medium';
-const BUTTON_SIZE_LARGE = 'large';
-const BUTTON_SIZE_LARGEST = 'largest';
-const BUTTON_PADDING_HORIZONTAL_COMPACT = '.5em';
+// Buttons
+const BUTTON_SIZE_SMALL = CONTROL_SIZE_SMALL;
+const BUTTON_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
+const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE;
 
 // Color palette
 const white = '#fff';
@@ -50,15 +74,14 @@ const PALETTE_VALUES = {
   gray
 };
 
-// Controls
-// TODO: Define common control properties to be
-//       shared across inputs, buttons, etc. (TA)
-
 // Fields
 const FIELD_BOX_SHADOW = 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
 const FIELD_BOX_SHADOW_FOCUS = '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
 const FIELD_PADDING_HORIZONTAL = '.75rem';
 const FIELD_PLACEHOLDER_COLOR = appTheme.palette.mid80l;
+const FIELD_SIZE_SMALL = CONTROL_SIZE_SMALL;
+const FIELD_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
+const FIELD_SIZE_LARGE = CONTROL_SIZE_LARGE;
 
 // Filter
 const filterBlur = 'blur(1.5px)';
@@ -115,7 +138,6 @@ const ui = {
   // Private projects
   // ---------------------------------------------------------------------------
   privateCardBgColor: appTheme.palette.light60l,
-  privateCardBgActive: 'rgba(255, 255, 255, .85)',
 
   // Avatars
   // ---------------------------------------------------------------------------
@@ -156,8 +178,8 @@ const ui = {
   },
   buttonBlockStyles: {
     display: 'block',
-    paddingLeft: BUTTON_PADDING_HORIZONTAL_COMPACT,
-    paddingRight: BUTTON_PADDING_HORIZONTAL_COMPACT,
+    paddingLeft: '.5em',
+    paddingRight: '.5em',
     width: '100%'
   },
   buttonBorderRadius: borderRadiusSmall,
@@ -174,36 +196,28 @@ const ui = {
       animation: 'none'
     }
   },
-  buttonFontSize: {
-    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s3,
-    [BUTTON_SIZE_SMALL]: appTheme.typography.s4,
-    [BUTTON_SIZE_MEDIUM]: appTheme.typography.s5,
-    [BUTTON_SIZE_LARGE]: '1.375rem',
-    [BUTTON_SIZE_LARGEST]: appTheme.typography.s6
-  },
-  buttonIconSize: {
-    [BUTTON_SIZE_SMALLEST]: iconSize,
-    [BUTTON_SIZE_SMALL]: iconSize,
-    [BUTTON_SIZE_MEDIUM]: iconSizeAvatar,
-    [BUTTON_SIZE_LARGE]: iconSizeAvatar,
-    [BUTTON_SIZE_LARGEST]: iconSize2x
-  },
-  buttonLineHeight: '1.5em !important', // 2.5em
-  buttonPadding: {
-    [BUTTON_SIZE_SMALLEST]: '.322em 1em',
-    [BUTTON_SIZE_SMALL]: '.25em 1em',
-    [BUTTON_SIZE_MEDIUM]: '.25em 1em',
-    [BUTTON_SIZE_LARGE]: '.25em 1em',
-    [BUTTON_SIZE_LARGEST]: '.25em 1em'
-  },
-  buttonPaddingHorizontalCompact: BUTTON_PADDING_HORIZONTAL_COMPACT,
-  buttonSizes: [
-    BUTTON_SIZE_SMALLEST,
+  buttonSizeOptions: [
     BUTTON_SIZE_SMALL,
     BUTTON_SIZE_MEDIUM,
-    BUTTON_SIZE_LARGE,
-    BUTTON_SIZE_LARGEST
+    BUTTON_SIZE_LARGE
   ],
+  buttonSizeStyles: {
+    [BUTTON_SIZE_SMALL]: {
+      fontSize: CONTROL_SMALL_FONT_SIZE,
+      lineHeight: CONTROL_SMALL_LINE_HEIGHT,
+      padding: `${CONTROL_SMALL_PADDING_VERTICAL} 1em`
+    },
+    [BUTTON_SIZE_MEDIUM]: {
+      fontSize: CONTROL_MEDIUM_FONT_SIZE,
+      lineHeight: CONTROL_MEDIUM_LINE_HEIGHT,
+      padding: `${CONTROL_MEDIUM_PADDING_VERTICAL} 1em`
+    },
+    [BUTTON_SIZE_LARGE]: {
+      fontSize: CONTROL_LARGE_FONT_SIZE,
+      lineHeight: CONTROL_LARGE_LINE_HEIGHT,
+      padding: `${CONTROL_LARGE_PADDING_VERTICAL} 1em`
+    }
+  },
 
   // Cards
   // ---------------------------------------------------------------------------
@@ -220,6 +234,20 @@ const ui = {
   // CTA Panels
   // ---------------------------------------------------------------------------
   ctaPanelButtonSize: BUTTON_SIZE_LARGE,
+
+  // Controls
+  // ---------------------------------------------------------------------------
+  controlBlockPaddingHorizontal: {
+    [CONTROL_SIZE_SMALL]: CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL,
+    [CONTROL_SIZE_MEDIUM]: CONTROL_MEDIUM_BLOCK_PADDING_HORIZONTAL,
+    [CONTROL_SIZE_LARGE]: CONTROL_LARGE_BLOCK_PADDING_HORIZONTAL
+  },
+
+  controlBlockPaddingVertical: {
+    [CONTROL_SIZE_SMALL]: CONTROL_SMALL_BLOCK_PADDING_VERTICAL,
+    [CONTROL_SIZE_MEDIUM]: CONTROL_MEDIUM_BLOCK_PADDING_VERTICAL,
+    [CONTROL_SIZE_LARGE]: CONTROL_LARGE_BLOCK_PADDING_VERTICAL
+  },
 
   // Dashboards
   // ---------------------------------------------------------------------------
@@ -263,7 +291,7 @@ const ui = {
     boxShadow: FIELD_BOX_SHADOW,
     display: 'block',
     fontFamily: appTheme.typography.sansSerif,
-    fontSize: appTheme.typography.s4,
+    fontSize: appTheme.typography.sBase,
     lineHeight: '1.5em',
     margin: '0',
     outline: 0,
@@ -315,7 +343,30 @@ const ui = {
     }
   },
   fieldDisabled: {
-    cursor: 'not-allowed'
+    cursor: 'not-allowed',
+    opacity: '.5'
+  },
+  fieldSizeOptions: [
+    FIELD_SIZE_SMALL,
+    FIELD_SIZE_MEDIUM,
+    FIELD_SIZE_LARGE
+  ],
+  fieldSizeStyles: {
+    [FIELD_SIZE_SMALL]: {
+      fontSize: CONTROL_SMALL_FONT_SIZE,
+      lineHeight: CONTROL_SMALL_LINE_HEIGHT,
+      padding: `${CONTROL_SMALL_PADDING_VERTICAL} ${CONTROL_SMALL_PADDING_HORIZONTAL}`
+    },
+    [FIELD_SIZE_MEDIUM]: {
+      fontSize: CONTROL_MEDIUM_FONT_SIZE,
+      lineHeight: CONTROL_MEDIUM_LINE_HEIGHT,
+      padding: `${CONTROL_MEDIUM_PADDING_VERTICAL} ${CONTROL_MEDIUM_PADDING_HORIZONTAL}`
+    },
+    [FIELD_SIZE_LARGE]: {
+      fontSize: CONTROL_LARGE_FONT_SIZE,
+      lineHeight: CONTROL_LARGE_LINE_HEIGHT,
+      padding: `${CONTROL_LARGE_PADDING_VERTICAL} ${CONTROL_LARGE_PADDING_HORIZONTAL}`
+    }
   },
   fieldReadOnly: {
     cursor: 'default'
@@ -394,7 +445,7 @@ const ui = {
 
   // Notifications
   // ---------------------------------------------------------------------------
-  notificationButtonSize: BUTTON_SIZE_SMALLEST,
+  notificationButtonSize: BUTTON_SIZE_SMALL,
 
   // Panels
   // ---------------------------------------------------------------------------

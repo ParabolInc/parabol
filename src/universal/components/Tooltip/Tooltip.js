@@ -14,8 +14,9 @@ const Tooltip = (props) =>
 
 Tooltip.propTypes = {
   children: PropTypes.element.isRequired,
-  delayed: PropTypes.bool,
-  isOpen: PropTypes.bool,
+  delay: PropTypes.number,
+  hideOnFocus: PropTypes.bool,
+  tip: PropTypes.element.isRequired,
   setOriginCoords: PropTypes.func.isRequired,
   tip: PropTypes.element.isRequired
 };

@@ -16,7 +16,7 @@ const query = graphql`
   }
 `;
 
-const OrgMembersRoot = ({atmosphere, orgId}) => {
+const OrgMembersRoot = ({atmosphere, orgId, org}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -27,7 +27,7 @@ const OrgMembersRoot = ({atmosphere, orgId}) => {
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {queryProps && <AnimatedFade key="1">
-              <OrgMembers viewer={queryProps.viewer} orgId={orgId} />
+              <OrgMembers viewer={queryProps.viewer} orgId={orgId} org={org} />
             </AnimatedFade>}
             {!queryProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>

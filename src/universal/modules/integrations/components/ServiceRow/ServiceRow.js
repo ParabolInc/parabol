@@ -41,20 +41,20 @@ const ServiceRow = (props) => {
               <Button
                 colorPalette="cool"
                 label="Refresh Token"
-                size="smallest"
+                buttonSize="small"
                 buttonStyle="flat"
                 onClick={openOauth}
               />
               <Button
                 colorPalette="warm"
                 label="Remove Token"
-                size="smallest"
+                buttonSize="small"
                 buttonStyle="flat"
                 onClick={removeOauth}
               />
             </div>
           </div> :
-          <Button colorPalette="cool" label="Add Integration" size="smallest" buttonStyle="solid" onClick={openOauth} />
+          <Button colorPalette="cool" label="Add Integration" buttonSize="small" buttonStyle="solid" onClick={openOauth} />
       }
     </Row>
   );
