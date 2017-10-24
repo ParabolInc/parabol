@@ -36,7 +36,7 @@ export default function scRelaySubscribeHandler(socket) {
         setTimeout(() => {
           socket.subs.forEach((sub) => sub.return());
           socket.subs.length = 0;
-        });
+        }, 300);
       } else {
         // we already sent a new authToken, no need to emit the gql response
         socket.emit(responseChannel, value);

@@ -12,7 +12,7 @@ const LoadingComponent = (props) => {
   return (
     <div className={css(styles.errorComponent)}>
       <div>{defaultMessage}</div>
-      <div>Error: {error._error}</div>
+      {/*<div>Error: {error._error}</div>*/}
     </div>
   );
 };
