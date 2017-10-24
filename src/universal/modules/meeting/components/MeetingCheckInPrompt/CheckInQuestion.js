@@ -40,6 +40,10 @@ class CheckInQuestion extends Component {
     styles: PropTypes.object
   };
 
+  state = {
+    isEditing: false
+  };
+
   blockStyleFn = (contentBlock) => {
     const {styles} = this.props;
     const type = contentBlock.getType();
@@ -146,6 +150,7 @@ class CheckInQuestion extends Component {
   };
 
   selectAllQuestion = () => {
+    this.editorRef.focus();
     const {editorState, setEditorState} = this.props;
     const selection = editorState.getSelection();
     const contentState = editorState.getCurrentContent();
@@ -159,8 +164,13 @@ class CheckInQuestion extends Component {
     setEditorState(nextEditorState);
   };
 
+  setLocalEditingState = (isEditing) => () => {
+    this.setState({isEditing});
+  };
+
   render() {
     const {editorState, canEdit, styles} = this.props;
+    const {isEditing} = this.state;
     const tip = canEdit
       ? 'Tap to customize'
       : 'Upgrade to a Pro Account to customize the Social Check-in question.';
@@ -187,11 +197,13 @@ class CheckInQuestion extends Component {
             onUpArrow={this.handleUpArrow}
             placeholder="e.g. How are you?"
             readOnly={!canEdit}
+            onFocus={this.setLocalEditingState(true)}
+            onBlur={this.setLocalEditingState(false)}
             ref={(c) => {
               this.editorRef = c;
             }}
           />
-          {canEdit ?
+          {canEdit && !isEditing &&
             <FontAwesome
               role="button"
               aria-label={tip}
@@ -204,9 +216,9 @@ class CheckInQuestion extends Component {
                   this.selectAllQuestion();
                 }
               }}
-            /> :
-            <FontAwesome name="pencil" style={iconStyle} />
+            />
           }
+          {!canEdit && <FontAwesome name="pencil" style={iconStyle} />}
         </div>
       </Tooltip>
     );
