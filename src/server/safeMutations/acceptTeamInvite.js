@@ -66,8 +66,10 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
 
   // Send the new team member a welcome & a new token
+  const newAuthToken = tmsSignToken(authToken, tms);
   const addedToTeam = {
     // no ID to rule out permanent notification. they already know, they are the ones who did it!
+    authToken: newAuthToken,
     orgId,
     startAt: now,
     type: ADD_TO_TEAM,
@@ -75,7 +77,7 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
     teamId
   };
 
-  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken(authToken, tms)});
+  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded: {notifications: [addedToTeam]}});
   return addedToTeam;
 };

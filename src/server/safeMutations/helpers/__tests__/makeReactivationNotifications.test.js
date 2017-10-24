@@ -23,7 +23,7 @@ describe('makeReactivationNotifications', () => {
     expect(result).toMatchSnapshot();
   });
   test('creates a notification for the team (less the inviter)', () => {
-    // SETUPjest
+    // SETUP
     const reactivatedUsers = [{
       id: 1,
       tms: ['team123'],
