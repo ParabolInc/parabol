@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import 'universal/components/ProjectEditor/Draft.css';
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 import withKeyboardShortcuts from 'universal/components/ProjectEditor/withKeyboardShortcuts';
 import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
@@ -22,12 +23,6 @@ const iconStyle = {
 
 const buttonStyle = {
   cursor: 'pointer'
-};
-
-const withKey = (key, fn) => (event) => {
-  if (event && event.key && event.key === key) {
-    fn(event);
-  }
 };
 
 class CheckInQuestion extends Component {
@@ -172,6 +167,7 @@ class CheckInQuestion extends Component {
     const tip = canEdit
       ? 'Tap to customize'
       : 'Upgrade to a Pro Account to customize the Social Check-in question.';
+
     return (
       <Tooltip
         tip={<div>{tip}</div>}
@@ -200,16 +196,9 @@ class CheckInQuestion extends Component {
             }}
           />
           {canEdit && !isEditing &&
-            <FontAwesome
-              role="button"
-              aria-label={tip}
-              tabIndex="0"
-              name="pencil"
-              style={{...iconStyle, ...buttonStyle}}
-              onClick={this.selectAllQuestion}
-              onKeyDown={withKey(' ', (event) => { event.preventDefault(); })}
-              onKeyUp={withKey(' ', this.selectAllQuestion)}
-            />
+            <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
+              <FontAwesome name="pencil"style={{...iconStyle, ...buttonStyle}} />
+            </PlainButton>
           }
           {!canEdit && <FontAwesome name="pencil" style={iconStyle} />}
         </div>
