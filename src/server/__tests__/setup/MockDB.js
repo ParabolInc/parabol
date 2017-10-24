@@ -211,7 +211,7 @@ class MockDB {
       this.teamMember(activeFacilitatorIdx);
       Object.assign(this.context.team, {
         checkInGreeting: makeCheckinGreeting(week, teamId),
-        checkInQuestion: makeCheckinQuestion(week, teamId),
+        checkInQuestion: convertToRichText(makeCheckinQuestion(week, teamId)),
         meetingId,
         activeFacilitator: this.context.teamMember,
         facilitatorPhase: CHECKIN,
