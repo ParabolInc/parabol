@@ -19,6 +19,10 @@ const iconStyle = {
   marginLeft: '0.5rem'
 };
 
+const buttonStyle = {
+  cursor: 'pointer'
+};
+
 class CheckInQuestion extends Component {
   static propTypes = {
     canEdit: PropTypes.bool,
@@ -140,7 +144,8 @@ class CheckInQuestion extends Component {
     return 'not-handled';
   };
 
-  selectAllQuestion = () => {
+  selectAllQuestion = (event) => {
+    if (event && event.key && event.key !== ' ') { return }
     const {editorState, setEditorState} = this.props;
     const selection = editorState.getSelection();
     const contentState = editorState.getCurrentContent();
@@ -156,41 +161,49 @@ class CheckInQuestion extends Component {
 
   render() {
     const {editorState, canEdit, styles} = this.props;
-    const upgradeCopy = <div>{'Upgrade to a Pro Account to customize the Social Check-in question.'}</div>;
-    const rootStyles = css(styles.root);
+    const tip = canEdit
+      ? 'Tap to customize'
+      : 'Upgrade to a Pro Account to customize the Social Check-in question.';
     return (
-      <div className={rootStyles}>
-        <Editor
-          blockStyleFn={this.blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={this.handleBeforeInput}
-          handleKeyCommand={this.handleKeyCommand}
-          handlePastedText={this.handlePastedText}
-          handleReturn={this.handleReturn}
-          keyBindingFn={this.keyBindingFn}
-          onChange={this.handleChange}
-          onDownArrow={this.handleDownArrow}
-          onEscape={this.handleEscape}
-          onTab={this.handleTab}
-          onUpArrow={this.handleUpArrow}
-          readOnly={!canEdit}
-          ref={(c) => {
-            this.editorRef = c;
-          }}
-        />
-        <div className={css(styles.editPencil)}>
+      <Tooltip
+        tip={<div>{tip}</div>}
+        originAnchor={{vertical: 'bottom', horizontal: 'center'}}
+        targetAnchor={{vertical: 'top', horizontal: 'center'}}
+        hideOnFocus
+      >
+        <div className={css(styles.root)}>
+          <Editor
+            blockStyleFn={this.blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={this.handleBeforeInput}
+            handleKeyCommand={this.handleKeyCommand}
+            handlePastedText={this.handlePastedText}
+            handleReturn={this.handleReturn}
+            keyBindingFn={this.keyBindingFn}
+            onChange={this.handleChange}
+            onDownArrow={this.handleDownArrow}
+            onEscape={this.handleEscape}
+            onTab={this.handleTab}
+            onUpArrow={this.handleUpArrow}
+            readOnly={!canEdit}
+            ref={(c) => {
+              this.editorRef = c;
+            }}
+          />
           {canEdit ?
-            <FontAwesome name="pencil" style={iconStyle} onClick={this.selectAllQuestion} /> :
-            <Tooltip
-              tip={upgradeCopy}
-              originAnchor={{vertical: 'bottom', horizontal: 'center'}}
-              targetAnchor={{vertical: 'top', horizontal: 'center'}}
-            >
-              <FontAwesome name="pencil" style={iconStyle} />
-            </Tooltip>
+            <FontAwesome
+              role="button"
+              aria-label={tip}
+              tabIndex="0"
+              name="pencil"
+              style={{...iconStyle, ...buttonStyle}}
+              onClick={this.selectAllQuestion}
+              onKeyUp={this.selectAllQuestion}
+            /> :
+            <FontAwesome name="pencil" style={iconStyle} />
           }
         </div>
-      </div>
+      </Tooltip>
     );
   }
 }
@@ -200,7 +213,7 @@ const styleThunk = () => ({
     display: 'flex',
     fontSize: '1.5rem',
     lineHeight: '1.25rem',
-    padding: `0 ${ui.cardPaddingBase}`,
+    padding: `${ui.cardPaddingBase} 0 ${ui.cardPaddingBase} 0`,
     fontWeight: 300
   },
 
