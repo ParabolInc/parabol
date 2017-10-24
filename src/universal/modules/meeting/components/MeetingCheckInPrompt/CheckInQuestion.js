@@ -44,6 +44,10 @@ class CheckInQuestion extends Component {
     isEditing: false
   };
 
+  setLocalEditingState = (isEditing) => () => {
+    this.setState({isEditing});
+  };
+
   blockStyleFn = (contentBlock) => {
     const {styles} = this.props;
     const type = contentBlock.getType();
@@ -162,10 +166,6 @@ class CheckInQuestion extends Component {
     });
     const nextEditorState = EditorState.forceSelection(editorState, fullSelection);
     setEditorState(nextEditorState);
-  };
-
-  setLocalEditingState = (isEditing) => () => {
-    this.setState({isEditing});
   };
 
   render() {
