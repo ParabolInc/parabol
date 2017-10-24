@@ -83,14 +83,13 @@ class OrgBilling extends Component {
             </Panel>
             <Panel label="Danger Zone">
               <div className={css(styles.panelRow)}>
-                <Button
-                  buttonSize="small"
-                  buttonStyle="flat"
-                  colorPalette="mid"
-                  icon="envelope"
-                  iconPlacement="right"
-                  label="Need to cancel? Contact Us"
-                />
+                <div className={css(styles.unsubscribe)}>
+                <span>{'Need to cancel? It’s painless.'}</span>
+                  <a href="mailto:love@parabol.co?subject=Instant Unsubscribe from Pro" title="Instant Unsubscribe from Pro">
+                    {' Contact us '}
+                    <FontAwesome name="envelope"/>
+                  </a>
+                </div>
               </div>
             </Panel>
           </div>
@@ -155,6 +154,10 @@ const styleThunk = () => ({
   panelRow: {
     ...panelCell,
     textAlign: 'center'
+  },
+  unsubscribe: {
+    fontWeight: 700,
+    color: appTheme.palette.mid
   }
 });
 
