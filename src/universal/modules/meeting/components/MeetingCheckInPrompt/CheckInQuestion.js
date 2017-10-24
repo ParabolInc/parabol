@@ -1,5 +1,4 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import './CheckInQuestion.css';
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -182,34 +181,36 @@ class CheckInQuestion extends Component {
         hideOnFocus
       >
         <div className={css(styles.root)}>
-          <Editor
-            blockStyleFn={this.blockStyleFn}
-            editorState={editorState}
-            handleBeforeInput={this.handleBeforeInput}
-            handleKeyCommand={this.handleKeyCommand}
-            handlePastedText={this.handlePastedText}
-            handleReturn={this.handleReturn}
-            keyBindingFn={this.keyBindingFn}
-            onChange={this.handleChange}
-            onDownArrow={this.handleDownArrow}
-            onEscape={this.handleEscape}
-            onTab={this.handleTab}
-            onUpArrow={this.handleUpArrow}
-            placeholder="e.g. How are you?"
-            readOnly={!canEdit}
-            onFocus={this.setLocalEditingState(true)}
-            onBlur={this.setLocalEditingState(false)}
-            ref={(c) => {
-              this.editorRef = c;
-            }}
-          />
-          {canEdit && !isEditing &&
+          <div className={css(styles.editor)}>
+            <Editor
+              blockStyleFn={this.blockStyleFn}
+              editorState={editorState}
+              handleBeforeInput={this.handleBeforeInput}
+              handleKeyCommand={this.handleKeyCommand}
+              handlePastedText={this.handlePastedText}
+              handleReturn={this.handleReturn}
+              keyBindingFn={this.keyBindingFn}
+              onChange={this.handleChange}
+              onDownArrow={this.handleDownArrow}
+              onEscape={this.handleEscape}
+              onTab={this.handleTab}
+              onUpArrow={this.handleUpArrow}
+              placeholder="e.g. How are you?"
+              readOnly={!canEdit}
+              onFocus={this.setLocalEditingState(true)}
+              onBlur={this.setLocalEditingState(false)}
+              ref={(c) => {
+                this.editorRef = c;
+              }}
+            />
+          </div>
+          {canEdit &&
             <FontAwesome
               role="button"
               aria-label={tip}
               tabIndex="0"
               name="pencil"
-              style={{...iconStyle, ...buttonStyle}}
+              style={{...iconStyle, ...buttonStyle, visibility: isEditing ? 'hidden' : 'visible'}}
               onClick={this.selectAllQuestion}
               onKeyUp={(event) => {
                 if (event && event.key && event.key === ' ') {
@@ -218,7 +219,7 @@ class CheckInQuestion extends Component {
               }}
             />
           }
-          {!canEdit && <FontAwesome name="pencil" style={iconStyle} />}
+          {!canEdit && <FontAwesome name="pencil" style={iconStyle}/>}
         </div>
       </Tooltip>
     );
@@ -234,6 +235,9 @@ const styleThunk = () => ({
     fontWeight: 300
   },
 
+  editor: {
+    minWidth: '20rem'
+  },
   editorBlockquote: {
     fontStyle: 'italic',
     borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
