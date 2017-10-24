@@ -14,7 +14,7 @@ import {textTags} from 'universal/utils/constants';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
 
 const iconStyle = {
-  fontSize: ui.buttonIconSize.small,
+  fontSize: '1rem',
   verticalAlign: 'middle',
   marginLeft: '0.5rem'
 };
@@ -93,7 +93,11 @@ class CheckInQuestion extends Component {
     if (handleReturn) {
       return handleReturn(e);
     }
-    return 'not-handled';
+    if (e.shiftKey || !this.editorRef) {
+      return 'not-handled';
+    }
+    this.editorRef.blur();
+    return 'handled';
   };
 
   handleKeyCommand = (command) => {
@@ -170,6 +174,9 @@ class CheckInQuestion extends Component {
           onTab={this.handleTab}
           onUpArrow={this.handleUpArrow}
           readOnly={!canEdit}
+          ref={(c) => {
+            this.editorRef = c;
+          }}
         />
         <div className={css(styles.editPencil)}>
           {canEdit ?
