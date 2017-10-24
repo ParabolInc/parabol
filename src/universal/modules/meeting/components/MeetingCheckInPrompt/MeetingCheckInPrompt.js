@@ -1,49 +1,12 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
-import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
-
-import appTheme from 'universal/styles/theme/appTheme';
-import withStyles from 'universal/styles/withStyles';
-import CheckInQuestion from './CheckInQuestion';
-import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-
-
-const greetingPropType = PropTypes.shape({
-  content: PropTypes.string.isRequired,
-  language: PropTypes.string.isRequired
-});
-
-const greetingStyleThunk = () => ({
-  greeting: {
-    borderBottom: '1px dashed currentColor',
-    color: 'inherit',
-    cursor: 'help'
-  }
-});
-
-let Greeting = ({currentName, greeting, styles}) => (
-  <div style={{color: appTheme.palette.warm}}>
-    <span
-      className={css(styles.greeting)}
-      title={`${greeting.content} means “hello” in ${greeting.language}`}
-    >
-      {greeting.content}
-    </span>
-    {`, ${currentName}`}
-  </div>
-);
-
-Greeting.propTypes = {
-  currentName: PropTypes.string.isRequired,
-  greeting: greetingPropType,
-  styles: PropTypes.object.isRequired
-};
-
-Greeting = withStyles(greetingStyleThunk)(Greeting);
+import MeetingCheckInGreeting from 'universal/modules/meeting/components/MeetingCheckInGreeting';
+import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
+import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation';
+import CheckInQuestion from './CheckInQuestion';
 
 
 class MeetingCheckinPrompt extends Component {
@@ -84,7 +47,7 @@ class MeetingCheckinPrompt extends Component {
     const {editorState} = this.state;
     const heading = (
       <div>
-        <Greeting {...{currentName, greeting}} />
+        <MeetingCheckInGreeting {...{currentName, greeting}} />
         <CheckInQuestion editorState={editorState} canEdit={canEdit} setEditorState={this.setEditorState} />
       </div>
     );
@@ -98,14 +61,16 @@ class MeetingCheckinPrompt extends Component {
   }
 }
 
-
 MeetingCheckinPrompt.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   avatar: PropTypes.string.isRequired,
   canEdit: PropTypes.bool.isRequired,
   currentName: PropTypes.string.isRequired,
   checkInQuestion: PropTypes.string.isRequired,
-  greeting: greetingPropType,
+  greeting: PropTypes.shape({
+    content: PropTypes.string.isRequired,
+    language: PropTypes.string.isRequired
+  }),
   onSubmit: PropTypes.func,
   teamId: PropTypes.string
 };
