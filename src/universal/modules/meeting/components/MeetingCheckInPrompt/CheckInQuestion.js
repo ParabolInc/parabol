@@ -24,6 +24,12 @@ const buttonStyle = {
   cursor: 'pointer'
 };
 
+const withKey = (key, fn) => (event) => {
+  if (event && event.key && event.key === key) {
+    fn(event);
+  }
+};
+
 class CheckInQuestion extends Component {
   static propTypes = {
     canEdit: PropTypes.bool,
@@ -38,14 +44,6 @@ class CheckInQuestion extends Component {
     handleReturn: PropTypes.func,
     keyBindingFn: PropTypes.func,
     styles: PropTypes.object
-  };
-
-  state = {
-    isEditing: false
-  };
-
-  setLocalEditingState = (isEditing) => () => {
-    this.setState({isEditing});
   };
 
   blockStyleFn = (contentBlock) => {
@@ -170,7 +168,7 @@ class CheckInQuestion extends Component {
 
   render() {
     const {editorState, canEdit, styles} = this.props;
-    const {isEditing} = this.state;
+    const isEditing = editorState.getSelection().getHasFocus();
     const tip = canEdit
       ? 'Tap to customize'
       : 'Upgrade to a Pro Account to customize the Social Check-in question.';
@@ -197,8 +195,6 @@ class CheckInQuestion extends Component {
             onUpArrow={this.handleUpArrow}
             placeholder="e.g. How are you?"
             readOnly={!canEdit}
-            onFocus={this.setLocalEditingState(true)}
-            onBlur={this.setLocalEditingState(false)}
             ref={(c) => {
               this.editorRef = c;
             }}
@@ -211,11 +207,8 @@ class CheckInQuestion extends Component {
               name="pencil"
               style={{...iconStyle, ...buttonStyle}}
               onClick={this.selectAllQuestion}
-              onKeyUp={(event) => {
-                if (event && event.key && event.key === ' ') {
-                  this.selectAllQuestion();
-                }
-              }}
+              onKeyDown={withKey(' ', (event) => { event.preventDefault(); })}
+              onKeyUp={withKey(' ', this.selectAllQuestion)}
             />
           }
           {!canEdit && <FontAwesome name="pencil" style={iconStyle} />}
