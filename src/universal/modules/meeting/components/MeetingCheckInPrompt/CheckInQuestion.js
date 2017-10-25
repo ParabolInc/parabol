@@ -177,32 +177,31 @@ class CheckInQuestion extends Component {
         <div className={css(styles.root)}>
           <div className={css(styles.editor)}>
             <Editor
-            blockStyleFn={this.blockStyleFn}
-            editorState={editorState}
-            handleBeforeInput={this.handleBeforeInput}
-            handleKeyCommand={this.handleKeyCommand}
-            handlePastedText={this.handlePastedText}
-            handleReturn={this.handleReturn}
-            keyBindingFn={this.keyBindingFn}
-            onChange={this.handleChange}
-            onDownArrow={this.handleDownArrow}
-            onEscape={this.handleEscape}
-            onTab={this.handleTab}
-            onUpArrow={this.handleUpArrow}
-            placeholder="e.g. How are you?"
-            readOnly={!canEdit}
-
-            ref={(c) => {
-              this.editorRef = c;
-            }}
-          />
+              blockStyleFn={this.blockStyleFn}
+              editorState={editorState}
+              handleBeforeInput={this.handleBeforeInput}
+              handleKeyCommand={this.handleKeyCommand}
+              handlePastedText={this.handlePastedText}
+              handleReturn={this.handleReturn}
+              keyBindingFn={this.keyBindingFn}
+              onChange={this.handleChange}
+              onDownArrow={this.handleDownArrow}
+              onEscape={this.handleEscape}
+              onTab={this.handleTab}
+              onUpArrow={this.handleUpArrow}
+              placeholder="e.g. How are you?"
+              readOnly={!canEdit}
+              ref={(c) => {
+                this.editorRef = c;
+              }}
+            />
           </div>
           {canEdit &&
             <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
               <FontAwesome name="pencil"style={{...iconStyle, ...buttonStyle, visibility: isEditing ? 'hidden' : 'visible'}} />
             </PlainButton>
           }
-          {!canEdit && <FontAwesome name="pencil" style={iconStyle}/>}
+          {!canEdit && <FontAwesome name="pencil" style={iconStyle} />}
         </div>
       </Tooltip>
     );
