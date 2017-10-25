@@ -9,7 +9,6 @@ const subscription = graphql`
         startAt
         type
         ... on NotifyAddedToTeam {
-          authToken
           teamName
           teamId
         }
@@ -29,7 +28,6 @@ const subscription = graphql`
           teamName
         }
         ... on NotifyKickedOut {
-          authToken
           isKickout
           teamName
           teamId

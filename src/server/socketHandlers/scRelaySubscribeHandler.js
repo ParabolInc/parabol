@@ -31,14 +31,15 @@ export default function scRelaySubscribeHandler(socket) {
     socket.subs[opId] = asyncIterator;
     const iterableCb = (value) => {
       const changedAuth = handleGraphQLResult(value, socket);
-      socket.emit(responseChannel, value);
       if (changedAuth) {
-        // TODO maybe exclude this asyncIterator because we'll only use it to get new tokens
         // if auth changed, then we can't trust any of the subscriptions, so dump em all. The client will resub with new auth
         setTimeout(() => {
           socket.subs.forEach((sub) => sub.return());
           socket.subs.length = 0;
-        });
+        }, 300);
+      } else {
+        // we already sent a new authToken, no need to emit the gql response
+        socket.emit(responseChannel, value);
       }
     };
 

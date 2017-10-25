@@ -1,4 +1,3 @@
-import tmsSignToken from 'server/utils/tmsSignToken';
 import {REJOIN_TEAM} from 'universal/utils/constants';
 
 
@@ -10,13 +9,10 @@ const makeReactivationNotifications = (notifications, reactivatedUsers, teamMemb
   const notificationsToSend = {};
   reactivatedUsers.forEach((user, idx) => {
     const notification = notifications[idx];
-    const {preferredName, id: reactivatedUserId, tms} = user;
+    const {preferredName, id: reactivatedUserId} = user;
 
     // make a notification to the person being reactivated
-    notificationsToSend[reactivatedUserId] = [{
-      ...notification,
-      authToken: tmsSignToken({sub: reactivatedUserId}, tms)
-    }];
+    notificationsToSend[reactivatedUserId] = [notification];
 
     // make a notification for the other team members annoucing the reactivation
     const rejoinNotification = {

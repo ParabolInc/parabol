@@ -11,6 +11,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {PRO} from 'universal/utils/constants';
 import withRouter from 'react-router-dom/es/withRouter';
+import plural from 'universal/utils/plural';
 
 const OrganizationRow = (props) => {
   const {
@@ -32,6 +33,7 @@ const OrganizationRow = (props) => {
   const label = isBillingLeader ? 'Settings and Billing' : 'Create New Team';
   const onRowClickUrl = isBillingLeader ? `/me/organizations/${orgId}` : `/newteam/${orgId}`;
   const onRowClick = () => history.push(onRowClickUrl);
+  const totalUsers = activeUserCount + inactiveUserCount;
   return (
     <Row>
       <div className={css(styles.orgAvatar)} onClick={onRowClick}>
@@ -48,7 +50,7 @@ const OrganizationRow = (props) => {
             }
           </div>
           <div className={css(styles.subHeader)}>
-            {activeUserCount + inactiveUserCount}{' Users ('}{activeUserCount}{' Active)'}
+            {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
           </div>
         </div>
       </div>

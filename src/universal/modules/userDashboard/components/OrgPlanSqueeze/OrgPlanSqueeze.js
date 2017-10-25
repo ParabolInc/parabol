@@ -10,6 +10,7 @@ import withStyles from 'universal/styles/withStyles';
 import {MONTHLY_PRICE, PERSONAL, PRO} from 'universal/utils/constants';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import {PRICING_LINK} from 'universal/utils/externalLinks';
+import plural from 'universal/utils/plural';
 
 class OrgPlanSqueeze extends Component {
   state = {showCost: false}
@@ -57,7 +58,7 @@ class OrgPlanSqueeze extends Component {
             </div>
             {showCost ?
               <div className={css(styles.costHint)}>
-                {`${activeUserCount} Active Users x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
+                {`${activeUserCount} Active ${plural(activeUserCount, 'User')} x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
               </div> :
               <Button
                 buttonSize="small"

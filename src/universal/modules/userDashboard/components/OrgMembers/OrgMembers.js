@@ -108,11 +108,10 @@ const OrgMembers = (props) => {
       } else {
         dispatch(
           showInfo({
-            title: 'We got you covered',
-            message: 'We’ll unpause that user the next time they log in so you don’t pay a penny more than necessary'
+            title: 'We’ve got you covered!',
+            message: 'We’ll reactivate that user the next time they log in so you don’t pay a penny too much'
           })
         );
-        // pop toast until we do find a way to display locally?
       }
     };
     const toggleLabel = inactive ? 'Inactive' : 'Active';
