@@ -43,6 +43,7 @@ import stripeUpdateCreditCard from 'server/graphql/mutations/stripeUpdateCreditC
 import stripeUpdateInvoiceItem from 'server/graphql/mutations/stripeUpdateInvoiceItem';
 import addOrg from 'server/graphql/mutations/addOrg';
 import updateOrg from 'server/graphql/mutations/updateOrg';
+import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
 import updateProject from 'server/graphql/mutations/updateProject';
 
 const rootFields = Object.assign({},
@@ -95,6 +96,7 @@ export default new GraphQLObjectType({
     stripeUpdateInvoiceItem,
     updateCreditCard,
     updateOrg,
+    updateCheckInQuestion,
     updateProject,
     upgradeToPro
   })

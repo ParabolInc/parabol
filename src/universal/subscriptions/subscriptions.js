@@ -132,7 +132,7 @@ export default [
          facilitatorPhase,
          facilitatorPhaseItem,
          meetingPhase,
-         meetingPhaseItem
+         meetingPhaseItem,
          tier
        }
     }`

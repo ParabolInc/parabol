@@ -1,4 +1,5 @@
 import {BILLING_LEADER} from 'universal/utils/constants';
+import {tierSupportsUpdateCheckInQuestion, qualifyingTiers} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import getRethink from '../database/rethinkDriver';
 import {errorObj} from './utils';
 
@@ -178,4 +179,22 @@ export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
 export const requireNotificationOwner = (userId, notification) => {
   if (notification && notification.userIds.includes(userId)) return true;
   throw new Error('Notification not found!');
+};
+
+export const requireTeamCanUpdateCheckInQuestion = async (teamId) => {
+  const r = getRethink();
+
+  const {tier} = await r
+    .table('Team')
+    .get(teamId)
+    .pluck('tier');
+
+  if (!tierSupportsUpdateCheckInQuestion(tier)) {
+    throw errorObj({
+      _error:
+        `Unauthorized. Team billing tier must be one of {${qualifyingTiers.join(', ')}} to update the Check-in question. ` +
+        `Actual tier is '${tier}'.`
+    });
+  }
+  return true;
 };

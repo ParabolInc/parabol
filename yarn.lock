@@ -3883,7 +3883,7 @@ graphql-relay@^0.5.2:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.5.3.tgz#56a78ac07c87d89795a34db6b8e9681b827be5b5"
 
-graphql-subscriptions@^0.4.2, graphql-subscriptions@^0.4.4:
+graphql-subscriptions@^0.4.2:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/graphql-subscriptions/-/graphql-subscriptions-0.4.4.tgz#39cff32d08dd3c990113864bab77154403727e9b"
   dependencies:

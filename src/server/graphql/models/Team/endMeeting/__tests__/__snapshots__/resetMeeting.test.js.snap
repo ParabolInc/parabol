@@ -102,7 +102,7 @@ Object {
       "content": "Shalom",
       "language": "Hebrew",
     },
-    "checkInQuestion": "What’s something you’ve learned recently",
+    "checkInQuestion": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What’s something you’ve learned recently?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,

@@ -102,10 +102,10 @@ class HoverTooltip extends Component {
     const {inTip, inToggle} = this.state;
     const isOpen = inTip || inToggle;
     return (
-      <div>
+      <span>
         <TooltipModal {...this.props} isOpen={isOpen} tip={this.tip} />
         {this.children}
-      </div>
+      </span>
     );
   }
 }
