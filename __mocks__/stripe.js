@@ -5,12 +5,15 @@ import customers, {createNewCustomer} from './stripe/customers';
 import invoices from './stripe/invoices';
 import {getQuantity} from './stripe/utils';
 import {usedResources} from 'server/billing/constants';
+import webhooks from './stripe/webhooks';
+import invoiceItems from './stripe/invoiceItems';
 
 const stripe = jest.genMockFromModule('stripe');
 stripe.customers = customers(stripe);
 stripe.subscriptions = subscriptions(stripe);
 stripe.invoices = invoices(stripe);
-stripe.invoiceItems = {};
+stripe.invoiceItems = invoiceItems(stripe);
+stripe.webhooks = webhooks;
 stripe.__db = usedResources.reduce((db, key) => {
   db[key] = {};
   return db;
@@ -55,7 +58,7 @@ stripe.__setMockData = (org) => {
   stripe.__db.subscriptions[org.stripeSubscriptionId] = createNewSubscription(subOptions, overrides);
 };
 
-stripe.__snapshot = (customerId, dynamicSerializer) => {
+stripe.__snapshot = (uniqueKeyId, dynamicSerializer) => {
   // create a minimum viable snapshot including everything that got touched
   const snapshot = {};
   const resourceNames = Object.keys(stripe.__db);
@@ -68,13 +71,14 @@ stripe.__snapshot = (customerId, dynamicSerializer) => {
       }
       snapshot[resourceName] = [];
       const table = stripe.__db[resourceName];
-      const customerIdField = resourceName === 'customers' ? 'id' : 'customer';
+      // TODO we'll eventually need to pass in an object instead of uniqueKeyId to support multivariate lookups
+      const uniqueKeyField = resource.__uniqueKeyField || 'customer';
       const docIds = Object.keys(table);
       for (let j = 0; j < docIds.length; j++) {
         const docId = docIds[j];
         const doc = table[docId];
 
-        if (doc[customerIdField] === customerId) {
+        if (doc[uniqueKeyField] === uniqueKeyId) {
           snapshot[resourceName].push(dynamicSerializer.toStatic(table[docId], resource.__trimFields));
         }
       }

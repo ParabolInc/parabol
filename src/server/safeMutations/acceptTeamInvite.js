@@ -6,7 +6,10 @@ import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifica
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getPubSub from 'server/utils/getPubSub';
 import {ADD_USER} from 'server/utils/serverConstants';
-import {ADD_TO_TEAM, JOIN_TEAM, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
+import {
+  ADD_TO_TEAM, JOIN_TEAM, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED,
+  NOTIFICATIONS_CLEARED
+} from 'universal/utils/constants';
 import {getUserId} from 'server/utils/authorization';
 import tmsSignToken from 'server/utils/tmsSignToken';
 
@@ -63,9 +66,10 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
 
   // Send the new team member a welcome & a new token
+  const newAuthToken = tmsSignToken(authToken, tms);
   const addedToTeam = {
     // no ID to rule out permanent notification. they already know, they are the ones who did it!
-    authToken: tmsSignToken(authToken, tms),
+    authToken: newAuthToken,
     orgId,
     startAt: now,
     type: ADD_TO_TEAM,
@@ -73,8 +77,7 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
     teamId
   };
 
-  // if coming from acceptTeamInviteNotification, this will send a duplicate message over socket.
-  // this is so the socket middleware can update the authToken
+  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded: {notifications: [addedToTeam]}});
   return addedToTeam;
 };

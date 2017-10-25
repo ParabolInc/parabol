@@ -7,10 +7,6 @@ const NotifyKickedOut = new GraphQLObjectType({
   interfaces: () => [Notification],
   fields: () => ({
     ...notificationInterfaceFields,
-    authToken: {
-      type: GraphQLString,
-      description: 'The new auth token for the user.'
-    },
     isKickout: {
       type: GraphQLBoolean,
       description: 'true if kicked out, false if leaving by choice'

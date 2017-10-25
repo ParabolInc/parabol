@@ -45,7 +45,7 @@ const MeetingAgendaFirstCall = (props) => {
                 iconPlacement="right"
                 label={`Let’s begin: ${phaseName}`}
                 onClick={gotoNext}
-                size="largest"
+                buttonSize="large"
               /> :
               <MeetingFacilitationHint>
                 {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to start the ${phaseName}`}

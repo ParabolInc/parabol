@@ -15,7 +15,7 @@ const RejoinFacilitatorButton = (props) => {
         icon="user"
         label="Rejoin Facilitator"
         onClick={onClickHandler}
-        size="small"
+        buttonSize="medium"
       />
     </div>
   );

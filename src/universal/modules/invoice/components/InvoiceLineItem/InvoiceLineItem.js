@@ -13,15 +13,15 @@ import {
 import makeDateString from 'universal/utils/makeDateString';
 
 const detailDescriptionMaker = {
-  [ADDED_USERS]: (detail) => `${detail.email} joined ${makeDateString(detail.startAt, false)}`,
-  [REMOVED_USERS]: (detail) => `${detail.email} left ${makeDateString(detail.startAt, false)}`,
+  [ADDED_USERS]: (detail) => `${detail.email} joined ${makeDateString(detail.startAt)}`,
+  [REMOVED_USERS]: (detail) => `${detail.email} left ${makeDateString(detail.startAt)}`,
   [INACTIVITY_ADJUSTMENTS]: (detail) => {
     if (!detail.endAt) {
       return `${detail.email} has been paused since ${makeDateString(detail.startAt)}`;
     } else if (!detail.startAt) {
       return `${detail.email} was paused until ${makeDateString(detail.startAt)}`;
     }
-    return `${detail.email} was paused from ${makeDateString(detail.startAt, false)} to ${makeDateString(detail.endAt, false)}`;
+    return `${detail.email} was paused from ${makeDateString(detail.startAt)} to ${makeDateString(detail.endAt)}`;
   }
 };
 

@@ -17,7 +17,7 @@ const Panel = (props) => {
   } = props;
 
   return (
-    <div className={css(styles.panel)}>
+    <div className={css(styles.panel, styles.depth)}>
       {hasHeader &&
         <div className={css(styles.header)}>
           <div className={css(styles.label)}>
@@ -43,8 +43,14 @@ const Panel = (props) => {
 };
 
 Panel.propTypes = {
+  bgTheme: PropTypes.oneOf([
+    'light',
+    'white'
+  ]),
   children: PropTypes.any,
   controls: PropTypes.any,
+  // depth: up to ui.shadow[4]
+  depth: PropTypes.oneOf([0, 1, 2, 3]),
   hasHeader: PropTypes.bool,
   hideFirstRowBorder: PropTypes.bool,
   label: PropTypes.any,
@@ -56,9 +62,14 @@ Panel.defaultProps = {
   label: 'Panel'
 };
 
-const styleThunk = () => ({
+const bgThemeValues = {
+  light: appTheme.palette.light40l,
+  white: '#fff'
+};
+
+const styleThunk = (theme, {bgTheme, depth}) => ({
   panel: {
-    backgroundColor: '#fff',
+    backgroundColor: bgTheme ? bgThemeValues[bgTheme] : bgThemeValues.white,
     border: `1px solid ${ui.panelBorderColor}`,
     borderRadius: ui.cardBorderRadius,
     display: 'flex',
@@ -74,6 +85,10 @@ const styleThunk = () => ({
       ...cardBorderTop,
       color: appTheme.palette.mid40l
     }
+  },
+
+  depth: {
+    boxShadow: ui.shadow[depth]
   },
 
   header: {

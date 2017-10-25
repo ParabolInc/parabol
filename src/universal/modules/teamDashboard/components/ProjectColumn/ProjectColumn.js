@@ -1,26 +1,29 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import {overflowTouch} from 'universal/styles/helpers';
-import ui from 'universal/styles/ui';
-import themeLabels from 'universal/styles/theme/labels';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
-import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
-import {USER_DASH, TEAM_DASH, PROJECT} from 'universal/utils/constants';
-import FontAwesome from 'react-fontawesome';
-import {cashay} from 'cashay';
-import shortid from 'shortid';
-import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import {Menu, MenuItem} from 'universal/modules/menu';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import {DropTarget as dropTarget} from 'react-dnd';
+import FontAwesome from 'react-fontawesome';
+import shortid from 'shortid';
+import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
+import Badge from 'universal/components/Badge/Badge';
+import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import handleColumnHover from 'universal/dnd/handleColumnHover';
 import handleDrop from 'universal/dnd/handleDrop';
 import withDragState from 'universal/dnd/withDragState';
-import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
+import {Menu, MenuItem} from 'universal/modules/menu';
+import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
+import {overflowTouch} from 'universal/styles/helpers';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
+import appTheme from 'universal/styles/theme/appTheme';
+import themeLabels from 'universal/styles/theme/labels';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {PROJECT, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import dndNoise from 'universal/utils/dndNoise';
-import Badge from 'universal/components/Badge/Badge';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
+import {connect} from 'react-redux';
+import {withRouter} from 'react-router';
 
 const columnTarget = {
   drop: handleDrop,
@@ -44,7 +47,7 @@ const badgeColor = {
   future: 'mid'
 };
 
-const handleAddProjectFactory = (status, teamMemberId, sortOrder) => () => {
+const handleAddProjectFactory = (atmosphere, dispatch, history, status, teamMemberId, sortOrder) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
@@ -52,13 +55,16 @@ const handleAddProjectFactory = (status, teamMemberId, sortOrder) => () => {
     teamMemberId,
     sortOrder
   };
-  cashay.mutate('createProject', {variables: {newProject}});
+  CreateProjectMutation(atmosphere, newProject);
 };
 
 class ProjectColumn extends Component {
   makeAddProject = () => {
     const {
       area,
+      atmosphere,
+      dispatch,
+      history,
       status,
       projects,
       myTeamMemberId,
@@ -70,17 +76,17 @@ class ProjectColumn extends Component {
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH) {
       const teamMemberId = queryKey.indexOf('::') === -1 ? myTeamMemberId : queryKey;
-      const handleAddProject = handleAddProjectFactory(status, teamMemberId, sortOrder);
+      const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, teamMemberId, sortOrder);
       return <AddProjectButton onClick={handleAddProject} label={label} />;
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const generatedMyTeamMemberId = `${userId}::${teamId}`;
-        const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, sortOrder);
+        const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, generatedMyTeamMemberId, sortOrder);
         return <AddProjectButton onClick={handleAddProject} label={label} />;
       }
       const itemFactory = () => {
-        const menuItems = this.makeTeamMenuItems(sortOrder);
+        const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder);
         return menuItems.map((item) =>
           (<MenuItem
             key={`MenuItem${item.label}`}
@@ -105,7 +111,7 @@ class ProjectColumn extends Component {
     return null;
   };
 
-  makeTeamMenuItems = (sortOrder) => {
+  makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
     const {
       status,
       teams,
@@ -113,16 +119,15 @@ class ProjectColumn extends Component {
     } = this.props;
     return teams.map((team) => ({
       label: team.name,
-      handleClick: () => cashay.mutate('createProject', {
-        variables: {
-          newProject: {
-            id: `${team.id}::${shortid.generate()}`,
-            status,
-            teamMemberId: `${userId}::${team.id}`,
-            sortOrder
-          }
-        }
-      })
+      handleClick: () => {
+        const newProject = {
+          id: `${team.id}::${shortid.generate()}`,
+          status,
+          teamMemberId: `${userId}::${team.id}`,
+          sortOrder
+        };
+        CreateProjectMutation(atmosphere, newProject);
+      }
     }));
   };
 
@@ -191,9 +196,12 @@ class ProjectColumn extends Component {
 
 ProjectColumn.propTypes = {
   area: PropTypes.string,
+  atmosphere: PropTypes.object.isRequired,
   connectDropTarget: PropTypes.func,
+  dispatch: PropTypes.func.isRequired,
   dragState: PropTypes.object,
   firstColumn: PropTypes.bool,
+  history: PropTypes.object.isRequired,
   lastColumn: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
@@ -276,9 +284,14 @@ const dropTargetCb = (connectTarget) => ({
   connectDropTarget: connectTarget.dropTarget()
 });
 
-export default
-withDragState(
-  dropTarget(PROJECT, columnTarget, dropTargetCb)(
-    withStyles(styleThunk)(ProjectColumn)
+export default connect()(
+  withAtmosphere(
+    withRouter(
+      withDragState(
+        dropTarget(PROJECT, columnTarget, dropTargetCb)(
+          withStyles(styleThunk)(ProjectColumn)
+        )
+      )
+    )
   )
 );

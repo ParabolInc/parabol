@@ -12,9 +12,9 @@ const subscription = graphql`
 `;
 
 const GitHubMemberRemovedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId},
     updater: (store) => {
@@ -25,7 +25,7 @@ const GitHubMemberRemovedSubscription = (environment, queryVariables) => {
           leaveIntegrationUpdater(store, viewer, teamId, payload);
         });
     }
-  });
+  };
 };
 
 export default GitHubMemberRemovedSubscription;

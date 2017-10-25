@@ -9,6 +9,7 @@ import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import * as reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reactivateTeamMembersAndMakeNotifications';
 import * as removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import * as sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
+import {REACTIVATED} from 'universal/utils/constants';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -23,17 +24,23 @@ describe('inviteTeamMembers', () => {
     publishNotifications.default = jest.fn(() => []);
 
     const mockDB = new MockDB();
+    const invitee = newInvitee();
     await mockDB.init()
-      .teamMember(4, {isNotRemoved: false});
+      .newUser({name: 'Leader of One', email: invitee.email})
+      .newTeamMember()
+      .teamMember(8, {isNotRemoved: false});
     const firstUser = mockDB.db.user[0];
-    const invitees = [{email: mockDB.db.user[4].email}];
+    const invitees = [{email: invitee.email}];
     const teamId = mockDB.context.team.id;
     // TEST
-    const res = await inviteTeamMembers(invitees, teamId, firstUser.id);
+    const {results} = await inviteTeamMembers(invitees, teamId, firstUser.id);
 
     // VERIFY
+    const res = results[0];
     expect(reactivateTeamMembersAndMakeNotifications.default).toHaveBeenCalledTimes(1);
-    expect(res).toMatchSnapshot();
+    expect(res.preferredName).toEqual('Leader of One');
+    expect(res.email).toEqual(invitee.email);
+    expect(res.result).toEqual(REACTIVATED);
   });
 
   test('invites a new person via notification and email', async () => {

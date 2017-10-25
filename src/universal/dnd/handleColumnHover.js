@@ -10,7 +10,7 @@ import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
  * A card has a do-nothing zone of the drag source height + 1/2 of the card above + 1/2 of the card below
  * if it exceeds that zone, we update
  *
-*/
+ */
 
 const areaOpLookup = {
   [MEETING]: 'meetingUpdatesContainer',

@@ -7,6 +7,7 @@ import {Field} from 'redux-form';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import IconButton from 'universal/components/IconButton/IconButton';
 import InputField from 'universal/components/InputField/InputField';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const FieldArrayRow = (props) => {
@@ -30,10 +31,10 @@ const FieldArrayRow = (props) => {
     <div className={css(styles.fieldGroup)}>
       <div className={css(styles.fieldGroupRow)}>
         <div className={columnLeftStyles}>
-          <FieldLabel label={labelHeader} resetPadding />
+          <FieldLabel label={labelHeader} />
         </div>
         <div className={columnRightStyles}>
-          <FieldLabel label={nestedFieldHeader} />
+          <FieldLabel fieldSize="medium" indent label={nestedFieldHeader} />
         </div>
       </div>
       {fields.map((item, index) =>
@@ -60,6 +61,7 @@ const FieldArrayRow = (props) => {
             <Field
               autoFocus={index === 0}
               component={InputField}
+              fieldSize="medium"
               name={`${item}.${nestedFieldName}`}
               placeholder="What’s their priority this week?"
               type="text"
@@ -97,6 +99,8 @@ const highlightEmail = {
   }
 };
 
+const fieldSizeStyles = ui.fieldSizeStyles.medium;
+
 const styleThunk = () => ({
   fieldGroup: {
     alignItems: 'center',
@@ -130,9 +134,9 @@ const styleThunk = () => ({
   fieldLabel: {
     ...textOverflow,
     color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s4,
-    lineHeight: 1.5,
-    padding: '.125rem 1rem .125rem 0',
+    fontSize: fieldSizeStyles.fontSize,
+    lineHeight: fieldSizeStyles.lineHeight,
+    padding: `${ui.controlBlockPaddingVertical.medium} 1rem ${ui.controlBlockPaddingVertical.medium} 0`,
     width: '100%'
   },
 
@@ -140,7 +144,7 @@ const styleThunk = () => ({
     padding: '0 1rem 0 0',
     position: 'absolute',
     right: '100%',
-    top: '.125rem'
+    top: '.375rem'
   },
 
   highlighted: {

@@ -4,7 +4,7 @@ exports[`reactivateTeamMembersAndMakeNotifications reactivates the team member a
 Object {
   "notification": Array [
     Object {
-      "id": 5,
+      "id": 6,
       "orgId": 4,
       "startAt": 2017-01-01T08:00:00.000Z,
       "teamId": 2,
@@ -43,11 +43,14 @@ Object {
     "tms": Array [
       2,
     ],
-    "trialOrg": null,
     "updatedAt": 2017-01-01T07:00:00.000Z,
     "userOrgs": Array [
       Object {
         "id": 4,
+        "role": null,
+      },
+      Object {
+        "id": 5,
         "role": null,
       },
     ],

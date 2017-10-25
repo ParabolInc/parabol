@@ -52,7 +52,7 @@ const SummaryHeader = (props) => {
     ...textStyle,
     fontSize: '36px'
   };
-  const meetingDate = makeDateString(createdAt);
+  const meetingDate = makeDateString(createdAt, {showDay: true});
   const teamDashLabel = 'Go to Team Dashboard';
   return (
     <div style={{padding: '0 16px'}}>

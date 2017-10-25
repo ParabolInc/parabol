@@ -1,5 +1,4 @@
 import makeReactivationNotifications from 'server/safeMutations/helpers/makeReactivationNotifications';
-import * as tmsSignToken from 'server/utils/tmsSignToken';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import MockDate from 'mockdate';
 
@@ -17,7 +16,6 @@ describe('makeReactivationNotifications', () => {
       tms: ['team123']
     }];
     const inviter = {teamId: 'team456', teamName: 'The 456s', inviterName: 'Four', userId: 4};
-    tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
 
     // TEST
     const result = makeReactivationNotifications(notifications, reactivatedUsers, [], inviter);
@@ -41,7 +39,6 @@ describe('makeReactivationNotifications', () => {
       {id: '5:team456', preferredName: 'Five', userId: 5, isNotRemoved: false}
     ];
     const inviter = {teamId: 'team456', teamName: 'The 456s', inviterName: 'Four', userId: 4};
-    tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
 
     // TEST
     const result = makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);

@@ -1,25 +1,39 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import Row from 'universal/components/Row/Row';
+import {tagBlock} from 'universal/components/Tag/tagBase';
+import TagPro from 'universal/components/Tag/TagPro';
+import appTheme from 'universal/styles/theme/appTheme';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {PRO} from 'universal/utils/constants';
+import withRouter from 'react-router-dom/es/withRouter';
+import plural from 'universal/utils/plural';
 
 const OrganizationRow = (props) => {
   const {
+    history,
     organization: {
+      id: orgId,
+      isBillingLeader,
       name,
-      activeUserCount,
-      inactiveUserCount,
-      picture
+      orgUserCount: {
+        activeUserCount,
+        inactiveUserCount
+      },
+      picture,
+      tier
     },
-    onRowClick,
     styles
   } = props;
   const orgAvatar = picture || defaultOrgAvatar;
+  const label = isBillingLeader ? 'Settings and Billing' : 'Create New Team';
+  const onRowClickUrl = isBillingLeader ? `/me/organizations/${orgId}` : `/newteam/${orgId}`;
+  const onRowClick = () => history.push(onRowClickUrl);
+  const totalUsers = activeUserCount + inactiveUserCount;
   return (
     <Row>
       <div className={css(styles.orgAvatar)} onClick={onRowClick}>
@@ -29,9 +43,14 @@ const OrganizationRow = (props) => {
         <div className={css(styles.nameAndTags)}>
           <div className={css(styles.name)} onClick={onRowClick}>
             {name}
+            {tier === PRO &&
+            <div className={css(styles.tagBlock)}>
+              <TagPro />
+            </div>
+            }
           </div>
           <div className={css(styles.subHeader)}>
-            {activeUserCount + inactiveUserCount} Users ({activeUserCount} Active)
+            {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
           </div>
         </div>
       </div>
@@ -39,9 +58,9 @@ const OrganizationRow = (props) => {
         <Button
           buttonStyle="flat"
           colorPalette="dark"
-          label="Settings and Billing"
+          label={label}
           onClick={onRowClick}
-          size="smallest"
+          buttonSize="small"
         />
       </div>
     </Row>
@@ -49,15 +68,18 @@ const OrganizationRow = (props) => {
 };
 
 OrganizationRow.propTypes = {
-  actions: PropTypes.any,
-  email: PropTypes.string,
-  invitedAt: PropTypes.string,
-  isAdmin: PropTypes.bool,
-  isLead: PropTypes.bool,
-  onRowClick: PropTypes.func,
-  organization: PropTypes.object,
-  picture: PropTypes.string,
-  name: PropTypes.string,
+  history: PropTypes.object.isRequired,
+  organization: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    isBillingLeader: PropTypes.bool.isRequired,
+    name: PropTypes.string.isRequired,
+    picture: PropTypes.string,
+    tier: PropTypes.string.isRequired,
+    orgUserCount: PropTypes.shape({
+      activeUserCount: PropTypes.number.isRequired,
+      inactiveUserCount: PropTypes.number.isRequired
+    }).isRequired
+  }).isRequired,
   styles: PropTypes.object
 };
 
@@ -89,33 +111,18 @@ const styleThunk = () => ({
     verticalAlign: 'middle'
   },
 
-  invitedAt: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: appTheme.typography.s4
-  },
-
-  infoLink: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    lineHeight: appTheme.typography.s4,
-
-    ':hover': {
-      color: appTheme.palette.dark
-    },
-    ':focus': {
-      color: appTheme.palette.dark
-    }
-  },
-
   subHeader: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4
+  },
+
+  tagBlock: {
+    ...tagBlock,
+    marginLeft: '.125rem',
+    marginTop: '-.5rem'
   }
 });
 
-export default withStyles(styleThunk)(OrganizationRow);
+export default withRouter(withStyles(styleThunk)(OrganizationRow));

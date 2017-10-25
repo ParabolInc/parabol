@@ -51,8 +51,8 @@ const makePropColors = (buttonStyle, colorPalette) => {
 
 class Button extends Component {
   static propTypes = {
+    'aria-label': PropTypes.string,
     colorPalette: PropTypes.oneOf(ui.paletteOptions),
-    compact: PropTypes.bool,
     // depth: up to 3 + 1 (for :hover, :focus) = up to ui.shadow[4]
     depth: PropTypes.oneOf([0, 1, 2, 3]),
     disabled: PropTypes.bool,
@@ -65,7 +65,8 @@ class Button extends Component {
     label: PropTypes.string,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
-    size: PropTypes.oneOf(ui.buttonSizes),
+    onMouseLeave: PropTypes.func,
+    buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
     buttonStyle: PropTypes.oneOf([
       'solid',
       'outlined',
@@ -84,6 +85,8 @@ class Button extends Component {
       'reset',
       'submit'
     ]),
+    // https://github.com/facebook/react/issues/4251
+    visuallyDisabled: PropTypes.bool,
     waiting: PropTypes.bool
   };
 
@@ -108,15 +111,19 @@ class Button extends Component {
     e.currentTarget.blur();
   };
 
-  onMouseLeave = () => {
+  onMouseLeave = (e) => {
     if (this.state.pressedDown) {
       this.setState({pressedDown: false});
+    }
+    const {onMouseLeave} = this.props;
+    if (onMouseLeave) {
+      onMouseLeave(e);
     }
   }
 
   render() {
     const {
-      compact,
+      'aria-label': ariaLabel,
       depth,
       disabled,
       icon,
@@ -125,40 +132,40 @@ class Button extends Component {
       label,
       onClick,
       onMouseEnter,
-      size,
       styles,
       title,
       type,
+      visuallyDisabled,
       waiting
     } = this.props;
 
     const {pressedDown} = this.state;
     const iconOnly = !label;
+    const hasDisabledStyles = Boolean(disabled || visuallyDisabled);
 
     const buttonStyles = css(
       styles.base,
       depth && styles.depth,
-      compact && styles.compact,
       isBlock && styles.isBlock,
       styles.propColors,
-      disabled && styles.disabled,
-      pressedDown && styles.pressedDown,
+      hasDisabledStyles && styles.disabled,
+      !hasDisabledStyles && pressedDown && styles.pressedDown,
       waiting && styles.wait
     );
 
     const makeIconLabel = () => {
       const defaultIconPlacement = icon && label ? 'left' : '';
       const thisIconPlacement = iconPlacement || defaultIconPlacement;
+      const iconStyle = {
+        fontSize: ui.iconSize,
+        lineHeight: 'inherit',
+        verticalAlign: 'middle'
+      };
       const iconPlacementStyle = css(
         thisIconPlacement === 'left' && styles.iconLeft,
         thisIconPlacement === 'right' && styles.iconRight,
       );
       const iconMargin = iconOnly ? '' : iconPlacementStyle;
-      const iconStyle = {
-        fontSize: ui.buttonIconSize[size],
-        lineHeight: 'inherit',
-        verticalAlign: 'middle'
-      };
       const makeIcon = () =>
         <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
       return (
@@ -186,6 +193,7 @@ class Button extends Component {
         onMouseLeave={this.onMouseLeave}
         title={title || label}
         type={type || 'button'}
+        aria-label={ariaLabel}
       >
         {icon ?
           makeIconLabel() :
@@ -198,78 +206,75 @@ class Button extends Component {
   }
 }
 
-const styleThunk = (theme, {buttonStyle, colorPalette, depth, size, textTransform}) => ({
-  // Button base
-  base: {
-    ...ui.buttonBaseStyles,
-    borderRadius: ui.buttonBorderRadius,
-    fontSize: ui.buttonFontSize[size] || ui.buttonFontSize.medium,
-    lineHeight: ui.buttonLineHeight,
-    padding: ui.buttonPadding[size] || ui.buttonPadding.medium,
-    textTransform: textTransform || 'none',
-    transition: `box-shadow ${ui.transition[0]}`
-  },
-
-  depth: {
-    boxShadow: ui.shadow[depth],
-    ':hover': {
-      boxShadow: ui.shadow[depth + 1]
+const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabled, textTransform}) => {
+  const size = buttonSize || ui.buttonSizeOptions[1];
+  const buttonSizeStyles = ui.buttonSizeStyles[size];
+  return ({
+    // Button base
+    base: {
+      ...ui.buttonBaseStyles,
+      ...buttonSizeStyles,
+      borderRadius: ui.buttonBorderRadius,
+      textTransform: textTransform || 'none',
+      transition: `box-shadow ${ui.transition[0]}, transform ${ui.transition[0]}`
     },
-    ':focus': {
-      boxShadow: ui.shadow[depth + 1]
+
+    depth: {
+      boxShadow: ui.shadow[depth],
+      ':hover': {
+        boxShadow: !disabled && ui.shadow[depth + 1]
+      },
+      ':focus': {
+        boxShadow: !disabled && ui.shadow[depth + 1]
+      }
+    },
+
+    isBlock: {
+      ...ui.buttonBlockStyles
+    },
+
+    // Variants
+    // NOTE: Doing this saves us from creating 6*3 classes
+    propColors: makePropColors(buttonStyle, colorPalette),
+
+    // Disabled state
+    disabled: {
+      ...ui.buttonDisabledStyles
+    },
+
+    iconLeft: {
+      marginRight: '.375em'
+    },
+
+    iconRight: {
+      marginLeft: '.375em'
+    },
+
+    buttonInner: {
+      display: 'block',
+      fontSize: 0,
+      whiteSpace: 'nowrap'
+    },
+
+    label: {
+      ...textOverflow,
+      display: 'inline-block',
+      fontSize: buttonSizeStyles.fontSize,
+      height: buttonSizeStyles.lineHeight,
+      lineHeight: buttonSizeStyles.lineHeight,
+      maxWidth: '100%',
+      verticalAlign: 'middle'
+    },
+
+    pressedDown: {
+      transform: 'translate(0, .125rem)'
+    },
+
+    wait: {
+      ...ui.buttonDisabledStyles,
+      cursor: 'wait'
     }
-  },
-
-  isBlock: {
-    ...ui.buttonBlockStyles
-  },
-
-  compact: {
-    paddingLeft: ui.buttonPaddingHorizontalCompact,
-    paddingRight: ui.buttonPaddingHorizontalCompact
-  },
-
-  // Variants
-  // NOTE: Doing this saves us from creating 6*3 classes
-  propColors: makePropColors(buttonStyle, colorPalette),
-
-  // Disabled state
-  disabled: {
-    ...ui.buttonDisabledStyles
-  },
-
-  iconLeft: {
-    marginRight: '.375em'
-  },
-
-  iconRight: {
-    marginLeft: '.375em'
-  },
-
-  buttonInner: {
-    display: 'block',
-    fontSize: 0,
-    whiteSpace: 'nowrap'
-  },
-
-  label: {
-    ...textOverflow,
-    display: 'inline-block',
-    fontSize: ui.buttonFontSize[size] || ui.buttonFontSize.medium,
-    height: ui.buttonLineHeight,
-    lineHeight: ui.buttonLineHeight,
-    maxWidth: '100%',
-    verticalAlign: 'middle'
-  },
-
-  pressedDown: {
-    transform: 'translate(0, .125rem)'
-  },
-
-  wait: {
-    ...ui.buttonDisabledStyles,
-    cursor: 'wait'
-  }
-});
+  });
+};
 
 export default withStyles(styleThunk)(Button);

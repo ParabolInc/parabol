@@ -33,7 +33,7 @@ const RequestNewUser = (props) => {
       colorPalette="gray"
       isBlock
       label="Decline"
-      size="smallest"
+      buttonSize="small"
       type="submit"
     />
   );
@@ -57,7 +57,7 @@ const RequestNewUser = (props) => {
             colorPalette="cool"
             isBlock
             label="Accept"
-            size={ui.notificationButtonSize}
+            buttonSize={ui.notificationButtonSize}
             type="submit"
             onClick={acceptInvite}
             waiting={submitting}

@@ -39,7 +39,7 @@ const MeetingUpdates = (props) => {
               key={`update${localPhaseItem}`}
               label={isLastMember ? `Move on to the ${nextPhaseName}` : 'Next team member '}
               onClick={gotoNext}
-              size="small"
+              buttonSize="medium"
             /> :
             <MeetingFacilitationHint>
               {isLastMember ?

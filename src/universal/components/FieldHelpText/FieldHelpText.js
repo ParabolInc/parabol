@@ -6,11 +6,10 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const FieldHelpText = (props) => {
-  const {hasErrorText, helpText, resetPadding, styles} = props;
+  const {hasErrorText, helpText, styles} = props;
   const helpTextStyles = css(
     styles.fieldHelpText,
-    hasErrorText && styles.error,
-    resetPadding && styles.resetPadding
+    hasErrorText && styles.error
   );
   return (
     <div className={helpTextStyles}>
@@ -20,33 +19,31 @@ const FieldHelpText = (props) => {
 };
 
 FieldHelpText.propTypes = {
-  align: PropTypes.oneOf([
-    'center',
-    'left'
-  ]),
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
   hasErrorText: PropTypes.bool,
   helpText: PropTypes.any,
-  resetPadding: PropTypes.bool,
+  indent: PropTypes.bool,
   styles: PropTypes.object
 };
 
-const styleThunk = (customTheme, props) => ({
-  fieldHelpText: {
-    color: appTheme.palette.dark,
-    cursor: 'default',
-    fontSize: appTheme.typography.s3,
-    lineHeight: appTheme.typography.s5,
-    padding: `${ui.fieldLabelGutter} ${ui.fieldPaddingHorizontal} 0`,
-    textAlign: props.align
-  },
 
-  error: {
-    color: appTheme.palette.warm
-  },
+const styleThunk = (theme, {fieldSize, indent}) => {
+  const size = fieldSize || ui.fieldSizeOptions[1];
+  const paddingLeft = (fieldSize && indent) ? ui.controlBlockPaddingHorizontal[size] : 0;
+  return ({
+    fieldHelpText: {
+      color: appTheme.palette.dark,
+      cursor: 'default',
+      fontSize: appTheme.typography.s3,
+      lineHeight: appTheme.typography.s5,
+      padding: `${ui.fieldLabelGutter} 0 0`,
+      paddingLeft
+    },
 
-  resetPadding: {
-    padding: `${ui.fieldLabelGutter} 0 0`
-  }
-});
+    error: {
+      color: appTheme.palette.warm
+    }
+  });
+};
 
 export default withStyles(styleThunk)(FieldHelpText);

@@ -25,6 +25,7 @@ getDotenv();
 
 const PROD = process.env.NODE_ENV === 'production';
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
+
 // used for initial responses
 
 export function run(worker) { // eslint-disable-line import/prefer-default-export
@@ -55,7 +56,14 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   // setup middleware
   // sentry.io request handler capture middleware, must be first:
   app.use(raven.requestHandler(process.env.SENTRY_DSN));
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({
+    verify: (req, res, buf) => {
+      if (req.originalUrl.startsWith('/stripe')) {
+        req.rawBody = buf.toString();
+      }
+    }
+  }));
+
   app.use(cors({origin: true, credentials: true}));
   app.use('/static', express.static('static'));
   app.use(favicon(`${__dirname}/../../static/favicon.ico`));
@@ -86,8 +94,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   app.get('/email/createics', sendICS);
 
   // stripe webhooks
-  const stripeHandler = stripeWebhookHandler(exchange);
-  app.post('/stripe', stripeHandler);
+  app.post('/stripe', stripeWebhookHandler);
 
   app.get('/auth/github', handleIntegration(GITHUB));
   app.get('/auth/slack', handleIntegration(SLACK));

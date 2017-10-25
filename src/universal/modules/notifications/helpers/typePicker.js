@@ -6,9 +6,7 @@ import {
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
-  TEAM_ARCHIVED, TEAM_INVITE,
-  TRIAL_EXPIRED,
-  TRIAL_EXPIRES_SOON
+  TEAM_ARCHIVED, TEAM_INVITE
 } from 'universal/utils/constants';
 
 export default {
@@ -21,7 +19,5 @@ export default {
   [PROMOTE_TO_BILLING_LEADER]: () => System.import('universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader'),
   [REQUEST_NEW_USER]: () => System.import('universal/modules/notifications/components/RequestNewUser/RequestNewUser'),
   [TEAM_ARCHIVED]: () => System.import('universal/modules/notifications/components/TeamArchived/TeamArchived'),
-  [TEAM_INVITE]: () => System.import('universal/modules/notifications/components/TeamInvite/TeamInvite'),
-  [TRIAL_EXPIRED]: () => System.import('universal/modules/notifications/components/TrialExpired/TrialExpired'),
-  [TRIAL_EXPIRES_SOON]: () => System.import('universal/modules/notifications/components/TrialExpiresSoon/TrialExpiresSoon')
+  [TEAM_INVITE]: () => System.import('universal/modules/notifications/components/TeamInvite/TeamInvite')
 };

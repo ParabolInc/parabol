@@ -23,6 +23,7 @@ const projectSource = {
 const AgendaItem = (props) => {
   const {
     agendaItem,
+    agendaLength,
     canNavigate,
     connectDragSource,
     disabled,
@@ -40,7 +41,7 @@ const AgendaItem = (props) => {
   const isCurrent = idx + 1 === agendaPhaseItem;
   const isLocal = idx + 1 === localPhaseItem;
   const isFacilitator = idx + 1 === facilitatorPhaseItem;
-  const canDelete = !isComplete && !isCurrent;
+  const canDelete = !isComplete && !isCurrent && !disabled;
   const inAgendaGroupLocal = inAgendaGroup(localPhase);
   const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
   const rootStyles = css(
@@ -60,7 +61,9 @@ const AgendaItem = (props) => {
   );
   const delStyles = css(
     styles.del,
-    disabled && styles.delDisabled
+    disabled && styles.delDisabled,
+    // we can make the position of the del (x) more centered when there’s a low number of agenda items
+    agendaLength < 10 ? styles.delBumpRight : styles.delBumpLeft
   );
   return connectDragSource(
     <div className={rootStyles} title={content}>
@@ -81,6 +84,7 @@ const AgendaItem = (props) => {
 };
 
 AgendaItem.propTypes = {
+  agendaLength: PropTypes.number,
   agendaPhaseItem: PropTypes.number,
   canNavigate: PropTypes.bool,
   connectDragSource: PropTypes.func.isRequired,
@@ -136,16 +140,26 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     cursor: 'pointer',
     height: '1.5rem',
-    left: '1.125rem',
+    left: ui.meetingSidebarGutter,
     lineHeight,
     opacity: 0,
     position: 'absolute',
+    textAlign: 'center',
     top: '.5rem',
-    transition: 'opacity .1s ease-in'
+    transition: 'opacity .1s ease-in',
+    width: ui.iconSize
   },
 
   delDisabled: {
     opacity: '0 !important'
+  },
+
+  delBumpLeft: {
+    left: ui.meetingSidebarGutter
+  },
+
+  delBumpRight: {
+    left: '.8125rem'
   },
 
   content: {
@@ -210,7 +224,7 @@ const styleThunk = () => ({
     paddingRight: '.75rem',
     paddingTop: '.0625rem',
     textAlign: 'right',
-    width: '4rem'
+    width: '3.75rem'
   },
 
   author: {

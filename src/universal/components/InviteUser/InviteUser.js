@@ -75,7 +75,7 @@ const InviteUser = (props) => {
         <Button
           colorPalette="mid"
           label="Send Invite"
-          size="smallest"
+          buttonSize="small"
           onClick={handleSubmit(updateEditable)}
           waiting={submitting}
         />

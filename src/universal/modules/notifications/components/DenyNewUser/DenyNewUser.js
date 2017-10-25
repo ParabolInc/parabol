@@ -44,7 +44,7 @@ const DenyNewUser = (props) => {
           colorPalette="cool"
           isBlock
           label="Okay"
-          size={ui.notificationButtonSize}
+          buttonSize={ui.notificationButtonSize}
           type="submit"
           onClick={acknowledge}
           waiting={submitting}

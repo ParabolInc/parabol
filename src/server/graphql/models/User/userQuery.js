@@ -1,8 +1,8 @@
 import {GraphQLNonNull, GraphQLID} from 'graphql';
-import {User} from './userSchema';
 import {errorObj} from 'server/utils/utils';
 import getRethink from 'server/database/rethinkDriver';
 import {requireAuth, requireSU} from 'server/utils/authorization';
+import User from 'server/graphql/types/User';
 
 export default {
   getUserByUserId: {

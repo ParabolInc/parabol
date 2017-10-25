@@ -24,7 +24,7 @@ const UnpaidTeamModal = (props) => {
           iconPlacement="right"
           label="Take me there"
           onClick={handleClick}
-          size="large"
+          buttonSize="large"
         />
       }
     </DashModal>

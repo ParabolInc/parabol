@@ -1,8 +1,8 @@
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields';
 import TeamMember from 'server/graphql/types/TeamMember';
-import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
+import {requireSUOrTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 
 export default {
@@ -19,8 +19,6 @@ export default {
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
-      await requireTeamIsPaid(teamId);
-
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);

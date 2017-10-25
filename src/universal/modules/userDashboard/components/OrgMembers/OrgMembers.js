@@ -1,20 +1,23 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import OrgUserRow from '../OrgUserRow/OrgUserRow';
+import {connect} from 'react-redux';
+import {createPaginationContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
-import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal';
-import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
+import Tooltip from 'universal/components/Tooltip/Tooltip';
 import {Menu, MenuItem} from 'universal/modules/menu';
-import {cashay} from 'cashay';
-import {BILLING_LEADER} from 'universal/utils/constants';
 import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
+import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
+import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal';
+import InactivateUserMutation from 'universal/mutations/InactivateUserMutation';
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
+import OrgUserRow from '../OrgUserRow/OrgUserRow';
 
 const originAnchor = {
   vertical: 'top',
@@ -28,23 +31,29 @@ const targetAnchor = {
 
 const OrgMembers = (props) => {
   const {
-    atmosphere,
-    billingLeaderCount,
     dispatch,
-    users,
-    myUserId,
     org,
+    orgId,
+    viewer: {orgMembers},
+    relay: {environment},
+    submitMutation,
+    onError,
+    onCompleted,
     styles
   } = props;
-  const {id: orgId} = org;
 
+  const {tier} = org;
+  const isPersonalTier = tier === PERSONAL;
   const setRole = (userId, role = null) => () => {
-    SetOrgUserRoleMutation(atmosphere, orgId, userId, role);
+    SetOrgUserRoleMutation(environment, orgId, userId, role);
   };
+
+  const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
 
   const userRowActions = (orgUser) => {
     const {id, inactive, preferredName} = orgUser;
     const itemFactory = () => {
+      const {userId: myUserId} = environment;
       const listItems = [];
       if (orgUser.isBillingLeader) {
         if (billingLeaderCount > 1) {
@@ -83,48 +92,78 @@ const OrgMembers = (props) => {
 
       return listItems;
     };
-    const toggleHandler = async () => {
+
+    const toggleHandler = () => {
+      if (isPersonalTier) return;
       if (!inactive) {
-        const variables = {userId: orgUser.id};
-        const {error} = await cashay.mutate('inactivateUser', {variables});
-        if (error) {
+        submitMutation();
+        const handleError = (error) => {
           dispatch(showError({
-            title: 'Oh dear…',
+            title: 'Oh no',
             message: error._error || 'Cannot pause user'
           }));
-        }
+          onError(error);
+        };
+        InactivateUserMutation(environment, orgUser.id, handleError, onCompleted);
       } else {
         dispatch(
           showInfo({
-            title: 'We got you covered',
-            message: 'We’ll unpause that user the next time they log in so you don’t pay a penny more than necessary'
+            title: 'We’ve got you covered!',
+            message: 'We’ll reactivate that user the next time they log in so you don’t pay a penny too much'
           })
         );
-        // pop toast until we do find a way to display locally?
       }
     };
     const toggleLabel = inactive ? 'Inactive' : 'Active';
+    const makeToggle = () => <Toggle active={!inactive} block disabled={isPersonalTier} label={toggleLabel} onClick={toggleHandler} />;
+    const toggleTip = (<div>{'You only need to manage activity on the Pro plan.'}</div>);
+    const menuTip = (<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or Organization.'}</div>);
+    const menuButtonProps = {
+      buttonSize: 'small',
+      buttonStyle: 'flat',
+      colorPalette: 'dark',
+      icon: 'ellipsis-v',
+      isBlock: true,
+      size: 'smallest'
+    };
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.toggleBlock)}>
-          <Toggle active={!inactive} block label={toggleLabel} onClick={toggleHandler} />
+          {isPersonalTier ?
+            <Tooltip
+              tip={toggleTip}
+              maxHeight={40}
+              maxWidth={500}
+              originAnchor={{vertical: 'top', horizontal: 'center'}}
+              targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
+            >
+              <div>{makeToggle()}</div>
+            </Tooltip> :
+            makeToggle()
+          }
         </div>
         <div className={css(styles.menuToggleBlock)}>
-          <Menu
-            itemFactory={itemFactory}
-            originAnchor={originAnchor}
-            menuWidth="14rem"
-            targetAnchor={targetAnchor}
-            toggle={
-              <Button
-                colorPalette="dark"
-                icon="ellipsis-v"
-                isBlock
-                size="smallest"
-                buttonStyle="flat"
-              />
-            }
-          />
+          {(orgUser.isBillingLeader && billingLeaderCount === 1) ?
+            <Tooltip
+              tip={menuTip}
+              maxHeight={60}
+              maxWidth={500}
+              originAnchor={{vertical: 'center', horizontal: 'right'}}
+              targetAnchor={{vertical: 'center', horizontal: 'left'}}
+            >
+              {/* https://github.com/facebook/react/issues/4251 */}
+              <Button {...menuButtonProps} visuallyDisabled />
+            </Tooltip> :
+            <Menu
+              itemFactory={itemFactory}
+              originAnchor={originAnchor}
+              menuWidth="14rem"
+              targetAnchor={targetAnchor}
+              toggle={
+                <Button {...menuButtonProps} />
+              }
+            />
+          }
         </div>
       </div>
     );
@@ -132,7 +171,7 @@ const OrgMembers = (props) => {
   return (
     <Panel label="Organization Members">
       <div className={css(styles.listOfAdmins)}>
-        {users.map((orgUser) => {
+        {orgMembers.edges.map(({node: orgUser}) => {
           return (
             <OrgUserRow
               key={`orgUser${orgUser.email}`}
@@ -147,12 +186,16 @@ const OrgMembers = (props) => {
 };
 
 OrgMembers.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  billingLeaderCount: PropTypes.number,
-  dispatch: PropTypes.func,
-  users: PropTypes.array,
-  myUserId: PropTypes.string,
+  relay: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
   org: PropTypes.object,
+  orgId: PropTypes.string.isRequired,
+  viewer: PropTypes.object.isRequired,
+  error: PropTypes.any,
+  submitting: PropTypes.bool,
+  submitMutation: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired,
   styles: PropTypes.object
 };
 
@@ -174,4 +217,53 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withStyles(styleThunk)(OrgMembers));
+export default createPaginationContainer(
+  connect()(withMutationProps(withStyles(styleThunk)(OrgMembers))),
+  graphql`
+    fragment OrgMembers_viewer on User {
+      orgMembers(first: $first, orgId: $orgId, after: $after) @connection(key: "OrgMembers_orgMembers") {
+        edges {
+          cursor
+          node {
+            id
+            isBillingLeader(orgId: $orgId)
+            email
+            inactive
+            picture
+            preferredName
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  `,
+  {
+    direction: 'forward',
+    getConnectionFromProps(props) {
+      return props.viewer && props.viewer.orgMembers;
+    },
+    getFragmentVariables(prevVars, totalCount) {
+      return {
+        ...prevVars,
+        first: totalCount
+      };
+    },
+    getVariables(props, {count, cursor}, fragmentVariables) {
+      return {
+        ...fragmentVariables,
+        first: count,
+        after: cursor
+      };
+    },
+    query: graphql`
+      query OrgMembersPaginationQuery($first: Int!, $after: String, $orgId: ID!) {
+        viewer {
+          ...OrgMembers_viewer
+        }
+      }
+    `
+  }
+);

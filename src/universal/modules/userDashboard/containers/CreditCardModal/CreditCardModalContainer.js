@@ -1,4 +1,3 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
 import React, {Component} from 'react';
@@ -7,6 +6,9 @@ import portal from 'react-portal-hoc';
 import {connect} from 'react-redux';
 import {SubmissionError} from 'redux-form';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import UpdateCreditCardMutation from 'universal/mutations/UpdateCreditCardMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import UpgradeToProMutation from 'universal/mutations/UpgradeToProMutation';
 
 const stripeFieldLookup = {
   exp_year: {
@@ -54,18 +56,17 @@ const mapStateToProps = (state) => {
 };
 
 class CreditCardModalContainer extends Component {
-  constructor() {
-    super();
-    this.state = {
-      cardTypeIcon: 'credit-card'
-    };
-  }
+  state = {
+    cardTypeIcon: 'credit-card'
+  };
 
   addStripeBilling = async (submittedData) => {
     const {
+      atmosphere,
       closePortal,
       createToken,
       handleToken,
+      isUpdate,
       orgId
     } = this.props;
     const {creditCardNumber: number, expiry, cvc} = submittedData;
@@ -86,13 +87,17 @@ class CreditCardModalContainer extends Component {
       closePortal();
     }
     if (orgId) {
-      const variables = {
-        orgId,
-        stripeToken
+      const onError = (err) => {
+        throw new SubmissionError(err);
       };
-      const {error: cashayError} = await cashay.mutate('addBilling', {variables});
-      if (cashayError) throw new SubmissionError(cashayError);
-      closePortal();
+      const onCompleted = () => {
+        closePortal();
+      };
+      if (isUpdate) {
+        UpdateCreditCardMutation(atmosphere, orgId, stripeToken, onError, onCompleted);
+      } else {
+        UpgradeToProMutation(atmosphere, orgId, stripeToken, onError, onCompleted);
+      }
     }
   };
 
@@ -149,9 +154,11 @@ const stripeCb = () => {
 };
 
 export default portal({escToClose: true, closeAfter: 100})(
-  withAsync({'https://js.stripe.com/v2/': stripeCb})(
-    connect(mapStateToProps)(
-      CreditCardModalContainer
+  withAtmosphere(
+    withAsync({'https://js.stripe.com/v2/': stripeCb})(
+      connect(mapStateToProps)(
+        CreditCardModalContainer
+      )
     )
   )
 );

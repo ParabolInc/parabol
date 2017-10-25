@@ -1,7 +1,6 @@
 import MockDate from 'mockdate';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import newInvitee from 'server/__tests__/utils/newInvitee';
-import {TRIAL_EXPIRES_SOON_DELAY} from 'server/utils/serverConstants';
 import {
   ADD_TO_TEAM,
   BILLING_LEADER,
@@ -10,9 +9,7 @@ import {
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE,
-  TRIAL_EXPIRED,
-  TRIAL_EXPIRES_SOON
+  TEAM_INVITE
 } from 'universal/utils/constants';
 
 MockDate.set(__now);
@@ -76,20 +73,6 @@ export default function notificationTemplate(template) {
       inviteeEmail: template.email || newInvitee().email,
       teamId: this.context.team.id,
       teamName: this.context.team.name
-    };
-  }
-  if (type === TRIAL_EXPIRES_SOON) {
-    return {
-      type,
-      startAt: new Date(now.getTime() + TRIAL_EXPIRES_SOON_DELAY),
-      userIds: billingLeadersOnly(this.db.user, this.context.organization.id)
-    };
-  }
-  if (type === TRIAL_EXPIRED) {
-    return {
-      type,
-      startAt: now,
-      userIds: billingLeadersOnly(this.db.user, this.context.organization.id)
     };
   }
   if (type === PAYMENT_REJECTED) {

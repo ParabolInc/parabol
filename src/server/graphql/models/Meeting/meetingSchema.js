@@ -8,10 +8,10 @@ import {
   GraphQLString,
   GraphQLList
 } from 'graphql';
-import {GraphQLURLType} from '../../types';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {ProjectStatus} from '../Project/projectSchema';
 import TeamMember from 'server/graphql/types/TeamMember';
+import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 
 const MeetingProject = new GraphQLObjectType({
   name: 'MeetingProject',
@@ -26,7 +26,7 @@ const MeetingProject = new GraphQLObjectType({
       description: 'The stringified Draft-js raw description of the action created during the meeting'
     },
     status: {
-      type: ProjectStatus,
+      type: ProjectStatusEnum,
       description: 'The description of the action created during the meeting'
     },
     tags: {

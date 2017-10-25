@@ -46,18 +46,18 @@ const GitHubIntegrations = (props) => {
         {accessToken &&
         <div className={css(styles.providerActions)}>
           <Button
+            buttonSize="small"
             buttonStyle="flat"
             colorPalette="warm"
             label="Remove GitHub"
             onClick={() => RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId)}
-            size="smallest"
           />
           <Button
+            buttonSize="small"
             buttonStyle="flat"
             colorPalette="cool"
             label={`Refresh Token for ${providerUserName}`}
             onClick={openOauth}
-            size="smallest"
           />
         </div>
         }
@@ -75,11 +75,11 @@ const GitHubIntegrations = (props) => {
             </div> :
             <div className={css(styles.addGitHub)}>
               <Button
+                buttonSize="medium"
                 buttonStyle="solid"
                 colorPalette="cool"
                 label="Authorize GitHub to Add a Repo"
                 onClick={openOauth}
-                size="medium"
               />
             </div>
           }

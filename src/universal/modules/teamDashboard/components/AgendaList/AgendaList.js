@@ -44,6 +44,32 @@ const AgendaList = (props) => {
 
   dragState.clear();
 
+  const makeAgendaItemLoading = () =>
+    <div className={css(styles.agendaItemLoading)} />;
+
+  const makeLoadingState = () => (
+    <div className={css(styles.agendaItemsLoadingBlock)}>
+      {makeAgendaItemLoading()}
+      {makeAgendaItemLoading()}
+      {makeAgendaItemLoading()}
+    </div>
+  );
+
+  const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting';
+
+  const makeEmptyState = () => (
+    <div className={css(styles.emptyBlock)}>
+      <div className={css(styles.emptyEmoji)}>
+        🤓
+      </div>
+      <div className={css(styles.emptyMessage)}>
+        {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}<b><i>{'upcoming vacation'}</i></b>{'.”'}
+      </div>
+    </div>
+  );
+
+  const isLoading = false;
+
   return connectDropTarget(
     <div className={css(styles.root)}>
       {agenda.length > 0 ?
@@ -52,6 +78,7 @@ const AgendaList = (props) => {
             (<AgendaItem
               key={`agendaItem${item.id}`}
               agendaItem={item}
+              agendaLength={agenda.length}
               agendaPhaseItem={agendaPhaseItem}
               canNavigate={canNavigateItems}
               disabled={disabled}
@@ -70,14 +97,8 @@ const AgendaList = (props) => {
             />)
           )}
         </div> :
-        <div className={css(styles.empty)}>
-          <div className={css(styles.emptyInner)}>
-            {context === 'meeting' ?
-              'Add a placeholder to be discussed with others during the meeting. ' :
-              'Add a reminder to be discussed with others during the next meeting. '
-            }
-            {'Use a few short words to jog your memory like: “'}<b>{'upcoming vacation'}</b>{'”'}
-          </div>
+        <div>
+          {isLoading ? makeLoadingState() : makeEmptyState()}
         </div>
       }
     </div>
@@ -118,20 +139,57 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  empty: {
-    padding: '.5rem .5rem 0 1.875rem',
+  emptyBlock: {
+    alignItems: 'flex-start',
+    display: 'flex',
+    padding: ui.meetingSidebarGutter,
+    paddingTop: 0
+  },
+
+  emptyEmoji: {
+    fontSize: appTheme.typography.s4,
+    minWidth: '2rem',
+    paddingLeft: '.75rem'
+  },
+
+  emptyMessage: {
+    color: ui.palette.dark,
+    flex: 1,
+    fontSize: appTheme.typography.s2,
+    lineHeight: '1.5',
+    paddingLeft: '.5rem',
+    paddingTop: '.25rem'
+  },
+
+  agendaItemsLoadingBlock: {
+    padding: ui.meetingSidebarGutter,
+    paddingLeft: '1.625rem',
+    paddingTop: 0,
     width: '100%'
   },
 
-  emptyInner: {
-    backgroundColor: 'rgba(0, 0, 0, .05)',
-    borderRadius: ui.borderRadiusSmall,
-    color: appTheme.palette.dark10d,
-    fontSize: appTheme.typography.s3,
-    fontStyle: 'italic',
-    lineHeight: '1.125rem',
-    padding: '.5rem',
-    width: '100%'
+  agendaItemLoading: {
+    display: 'flex',
+    padding: `${ui.meetingSidebarGutter} 0`,
+
+    ':before': {
+      backgroundColor: appTheme.palette.mid20l,
+      borderRadius: ui.borderRadiusSmall,
+      display: 'block',
+      content: '""',
+      flex: 1,
+      height: '1.5rem',
+      marginRight: ui.meetingSidebarGutter
+    },
+
+    ':after': {
+      backgroundColor: appTheme.palette.mid50l,
+      borderRadius: '100%',
+      display: 'block',
+      content: '""',
+      height: '1.5rem',
+      width: '1.5rem'
+    }
   }
 });
 
