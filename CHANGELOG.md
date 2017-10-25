@@ -4,6 +4,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.22.0
+### Added
+- Tooltip component
+- Freemium UI implemented
+- Invoices paginated
+- End-to-end test framework and initial authentication tests
+- Ability to edit the meeting check-in question for Pro teams
+
+### Fixed
+- Meeting link copier properly links to meeting lobby
+- Toast alerts stay around for 10 seconds
+- Stripe webhooks secured with webhook secret
+- When moving to the next agenda item in a meeting, users adding project cards
+  for the current agenda item stay behind until they're done editing
+- Upgrade to React 16
+- New Team/Organization workflow consolidated
+- Authentication tokens get their own subscription channel
+- Refactors
+  - Moving GraphQL client code from Cashay to Relay Modern
+  - Stripe webhook handlers change DB state through GraphQL
+
+
+## v0.21.2 - 23-Oct-2017
+### Fixed
+- #1438 Fixed uncommon TypeError in SocketRoute component
+
 ## v0.21.1 - 09-Oct-2017
 ### Fixed
 - #1373 Regression with null aud field on the JWT
