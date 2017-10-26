@@ -40,14 +40,13 @@ const mapStateToProps = (state, props) => {
 
 const UnpaidTeamModalContainer = (props) => {
   const {closeAfter, isClosing, history, teamName, orgDetails, myUserId, modalLayout} = props;
-  const {creditCard, billingLeaders, name: orgName, id: orgId} = orgDetails;
+  const {billingLeaders, name: orgName, id: orgId} = orgDetails;
   if (billingLeaders.length === 0) return null;
-  const {last4} = creditCard;
 
   const billingLeaderName = billingLeaders[0].preferredName;
   const isALeader = billingLeaders.findIndex((leader) => leader.id === myUserId) !== -1;
   const handleClick = () => history.push(`/me/organizations/${orgId}`);
-  const problem = last4 ? `There in an unpaid invoice for ${teamName}.` : `The trial for ${teamName} has ended.`;
+  const problem = `There in an unpaid invoice for ${teamName}.`;
   const solution = isALeader ? `Head over to ${orgName} Settings to add a payment method` :
     `Try reaching out to ${billingLeaderName}`;
 

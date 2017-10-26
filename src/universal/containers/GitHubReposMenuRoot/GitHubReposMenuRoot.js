@@ -49,7 +49,7 @@ const GitHubReposMenuRoot = (rootProps) => {
     setError,
     clearError,
     closePortal,
-    setCoords,
+    updateModalCoords,
     maxWidth
   } = rootProps;
   const [teamId] = projectId.split('::');
@@ -61,10 +61,11 @@ const GitHubReposMenuRoot = (rootProps) => {
       variables={{teamId, service: GITHUB}}
       subscriptions={subscriptions}
       render={({error, props}) => {
+        // TODO refactor animation into a wrapper and GitHubRepoListMenu is the child
         return (
           <TransitionGroup appear style={{overflow: 'hidden'}}>
             {error && <ErrorComponent height={'14rem'} width={maxWidth} error={error} />}
-            {props && <AnimatedFade key="1" onEnter={setCoords}>
+            {props && <AnimatedFade key="1" onEnter={updateModalCoords}>
               <GitHubRepoListMenu
                 area={area}
                 handleAddProject={handleAddProject}
@@ -74,7 +75,6 @@ const GitHubReposMenuRoot = (rootProps) => {
                 closePortal={closePortal}
                 setError={setError}
                 clearError={clearError}
-                setCoords={setCoords}
               />
             </AnimatedFade>}
             {!props && !error &&
@@ -99,7 +99,7 @@ GitHubReposMenuRoot.propTypes = {
   setError: PropTypes.func.isRequired,
   clearError: PropTypes.func.isRequired,
   closePortal: PropTypes.func.isRequired,
-  setCoords: PropTypes.func.isRequired
+  updateModalCoords: PropTypes.func.isRequired
 };
 
 export default withAtmosphere(GitHubReposMenuRoot);

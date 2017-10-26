@@ -29,7 +29,7 @@ const FileInput = (props) => {
       <div className={css(styles.control)}>
         <Button
           label={buttonLabel}
-          size={size}
+          buttonSize={size}
           colorPalette={colorPalette}
           type="button"
           onClick={() => { el.click(); }}
@@ -65,7 +65,7 @@ FileInput.propTypes = {
   colorPalette: PropTypes.oneOf(ui.paletteOptions),
   input: PropTypes.object.isRequired,
   meta: PropTypes.object.isRequired,
-  size: PropTypes.oneOf(ui.buttonSizes),
+  size: PropTypes.oneOf(ui.buttonSizeOptions),
   styles: PropTypes.object
 };
 

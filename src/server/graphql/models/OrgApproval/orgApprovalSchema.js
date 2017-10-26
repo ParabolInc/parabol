@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import {GraphQLEmailType} from 'server/graphql/types';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import OrgApprovalStatusEnum from 'server/graphql/types/OrgApprovalStatusEnum';
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 
 const OrgApproval = new GraphQLObjectType({
   name: 'OrgApproval',

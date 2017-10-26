@@ -20,9 +20,9 @@ const subscription = graphql`
 `;
 
 const ProviderRemovedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId},
     updater: (store) => {
@@ -43,7 +43,7 @@ const ProviderRemovedSubscription = (environment, queryVariables) => {
 
       removeUserFromIntegrations(viewer, teamId, service, userId);
     }
-  });
+  };
 };
 
 export default ProviderRemovedSubscription;

@@ -11,9 +11,7 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE,
-  TRIAL_EXPIRED,
-  TRIAL_EXPIRES_SOON
+  TEAM_INVITE
 } from 'universal/utils/constants';
 
 const NotificationEnum = new GraphQLEnumType({
@@ -26,8 +24,6 @@ const NotificationEnum = new GraphQLEnumType({
     [INVITEE_APPROVED]: {},
     [JOIN_TEAM]: {},
     [KICKED_OUT]: {},
-    [TRIAL_EXPIRES_SOON]: {},
-    [TRIAL_EXPIRED]: {},
     [PAYMENT_REJECTED]: {},
     [REJOIN_TEAM]: {},
     [REQUEST_NEW_USER]: {},

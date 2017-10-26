@@ -3,22 +3,25 @@ import getRethink from 'server/database/rethinkDriver';
 const addUserToTMSUserOrg = (userId, teamId, orgId, options = {}) => {
   const {returnChanges, role = null} = options;
   const r = getRethink();
+  const now = new Date();
+
   return r.table('User')
     .get(userId)
-    .update((userDoc) => ({
+    .update((user) => ({
       userOrgs: r.branch(
-        userDoc('userOrgs').contains((userOrg) => userOrg('id').eq(orgId)).default(false),
-        userDoc('userOrgs'),
-        userDoc('userOrgs').append({
+        user('userOrgs').contains((userOrg) => userOrg('id').eq(orgId)).default(false),
+        user('userOrgs'),
+        user('userOrgs').append({
           id: orgId,
           role
         })
       ),
       tms: r.branch(
-        userDoc('tms').contains(teamId).default(false),
-        userDoc('tms'),
-        userDoc('tms').default([]).append(teamId)
-      )
+        user('tms').contains(teamId).default(false),
+        user('tms'),
+        user('tms').default([]).append(teamId)
+      ),
+      updatedAt: now
     }), {returnChanges});
 };
 

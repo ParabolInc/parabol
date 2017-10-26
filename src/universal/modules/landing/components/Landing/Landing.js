@@ -33,26 +33,27 @@ const Landing = (props) => {
               {`PARABOL enables cross-functional collaboration and clarity by
                 syncing teams in a single daily dashboard with a weekly ritual.`}
             </h2>
-            <Button
-              buttonStyle="solid"
-              colorPalette="warm"
-              depth={1}
-              label="Get Started"
-              onClick={handleLoginClick}
-              size="largest"
-              textTransform="uppercase"
-            />
-            <div style={{marginTop: '1rem'}}>
+            <div className={css(styles.primaryButtonBlock)}>
               <Button
-                buttonStyle="outlined"
-                colorPalette="white"
+                buttonSize="large"
+                buttonStyle="solid"
+                colorPalette="warm"
                 depth={1}
-                label="Log In"
+                isBlock
+                label="Get Started"
                 onClick={handleLoginClick}
-                size="smallest"
                 textTransform="uppercase"
               />
             </div>
+            <Button
+              buttonSize="small"
+              buttonStyle="outlined"
+              colorPalette="white"
+              depth={1}
+              label="Log In"
+              onClick={handleLoginClick}
+              textTransform="uppercase"
+            />
           </div>
         </div>
       </div>
@@ -295,6 +296,12 @@ const styleThunk = () => ({
       fontWeight: 400,
       margin: '0 auto 1.5rem'
     }
+  },
+
+  primaryButtonBlock: {
+    margin: '0 auto 1.5rem',
+    maxWidth: '13rem',
+    width: '100%'
   },
 
   section: {

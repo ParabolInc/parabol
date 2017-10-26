@@ -27,6 +27,7 @@ import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {startSlackMeeting} from './notifySlack/notifySlack';
+import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
 
 export default {
   moveMeeting: {
@@ -197,7 +198,7 @@ export default {
 
       const updatedTeam = {
         checkInGreeting: makeCheckinGreeting(week, teamId),
-        checkInQuestion: makeCheckinQuestion(week, teamId),
+        checkInQuestion: convertToProjectContent(makeCheckinQuestion(week, teamId)),
         meetingId,
         activeFacilitator: facilitatorId,
         facilitatorPhase: CHECKIN,

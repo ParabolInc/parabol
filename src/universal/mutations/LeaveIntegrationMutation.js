@@ -53,7 +53,7 @@ const LeaveIntegrationMutation = (environment, globalId, teamId, onError, onComp
       leaveIntegrationUpdater(store, viewer, teamId, payload);
     },
     optimisticUpdater: (store) => {
-      const {id: userId} = fromGlobalId(viewerId);
+      const {userId} = environment;
       const leaveIntegration = store.create(`client:leaveIntegration:${tempId++}`, 'LeaveIntegrationPayload')
         .setValue(userId, 'userId')
         .setValue(globalId, 'globalId');

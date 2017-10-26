@@ -7,9 +7,9 @@ import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
-import updateProject from 'server/graphql/models/Project/updateProject/updateProject';
 import {DONE} from 'universal/utils/constants';
 import convertToRichText from 'server/__tests__/setup/convertToRichText';
+import updateProject from 'server/graphql/mutations/updateProject';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -150,11 +150,6 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-  });
-
-  test('throws when no websocket is present', async () => {
-    const authToken = {};
-    await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject: {}}, {authToken}));
   });
 
   test('throw when the caller is not a team member', async () => {

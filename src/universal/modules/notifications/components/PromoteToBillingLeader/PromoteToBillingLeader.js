@@ -44,7 +44,7 @@ const PromoteToBillingLeader = (props) => {
           colorPalette="cool"
           isBlock
           label="Take me there"
-          size={ui.notificationButtonSize}
+          buttonSize={ui.notificationButtonSize}
           type="submit"
           onClick={acknowledge}
           waiting={submitting}

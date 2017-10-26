@@ -6,7 +6,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
 const userDashboard = () => System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
 const teamContainer = () => System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
-const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer');
+const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot');
 
 const DashboardWrapper = (props) => {
   const {notifications} = props;
@@ -16,7 +16,7 @@ const DashboardWrapper = (props) => {
       <DashSidebar notificationsCount={notificationsCount} />
       <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
       <AsyncRoute isAbstract path="/team/:teamId" mod={teamContainer} extraProps={{notifications}} />
-      <AsyncRoute path="/newteam/:newOrgRoute?" mod={newTeam} extraProps={{notifications}} />
+      <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />
     </DashLayoutContainer>
   );
 };

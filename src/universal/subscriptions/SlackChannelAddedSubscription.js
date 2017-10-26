@@ -14,16 +14,16 @@ const subscription = graphql`
 `;
 
 const SlackChannelAddedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId},
     updater: (store) => {
       const newNode = store.getRootField('slackChannelAdded').getLinkedRecord('channel');
       addSlackChannelUpdater(store, viewerId, teamId, newNode);
     }
-  });
+  };
 };
 
 export default SlackChannelAddedSubscription;

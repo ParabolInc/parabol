@@ -1,4 +1,5 @@
 import {BILLING_LEADER} from 'universal/utils/constants';
+import {tierSupportsUpdateCheckInQuestion, qualifyingTiers} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import getRethink from '../database/rethinkDriver';
 import {errorObj} from './utils';
 
@@ -158,15 +159,6 @@ export const requireOrgLeaderOfUser = async (authToken, userId) => {
   return true;
 };
 
-export const requireTeamIsPaid = async (teamId) => {
-  const r = getRethink();
-  const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
-  if (!isPaid) {
-    throw errorObj({_error: `The org leader has not paid for team ${teamId}. Cannot fetch documents`});
-  }
-  return true;
-};
-
 // VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
 // this still isn't secure because the resolve could get called twice & make it past this point before 1 of them writes the insert
 export const ensureUniqueId = async (table, id) => {
@@ -187,4 +179,22 @@ export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
 export const requireNotificationOwner = (userId, notification) => {
   if (notification && notification.userIds.includes(userId)) return true;
   throw new Error('Notification not found!');
+};
+
+export const requireTeamCanUpdateCheckInQuestion = async (teamId) => {
+  const r = getRethink();
+
+  const {tier} = await r
+    .table('Team')
+    .get(teamId)
+    .pluck('tier');
+
+  if (!tierSupportsUpdateCheckInQuestion(tier)) {
+    throw errorObj({
+      _error:
+        `Unauthorized. Team billing tier must be one of {${qualifyingTiers.join(', ')}} to update the Check-in question. ` +
+        `Actual tier is '${tier}'.`
+    });
+  }
+  return true;
 };

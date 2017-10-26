@@ -6,7 +6,7 @@ import {
 import {
   requireSU
 } from 'server/utils/authorization';
-import {GraphQLEmailType} from 'server/graphql/types';
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {

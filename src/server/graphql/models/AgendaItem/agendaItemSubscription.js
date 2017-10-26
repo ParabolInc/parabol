@@ -1,9 +1,9 @@
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields';
-import {AgendaItem} from './agendaItemSchema';
-import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
+import {requireSUOrTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
+import {AgendaItem} from './agendaItemSchema';
 
 export default {
   agenda: {
@@ -19,7 +19,6 @@ export default {
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
-      await requireTeamIsPaid(teamId);
 
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);

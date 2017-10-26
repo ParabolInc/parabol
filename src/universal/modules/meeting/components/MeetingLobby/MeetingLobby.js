@@ -25,7 +25,7 @@ const MeetingLobby = (props) => {
   const {members, team, styles} = props;
   const {id: teamId, name: teamName} = team;
   const onStartMeetingClick = createStartMeetingHandler(members);
-  const shortUrl = makeHref(`/team/${teamId}`);
+  const meetingUrl = makeHref(`/meeting/${teamId}`);
   return (
     <MeetingMain>
       {/* */}
@@ -46,15 +46,16 @@ const MeetingLobby = (props) => {
             buttonStyle="solid"
             colorPalette="cool"
             depth={1}
+            isBlock
             label="Start Meeting"
             onClick={onStartMeetingClick}
-            size="largest"
+            buttonSize="large"
             textTransform="uppercase"
           />
         </div>
         <p className={css(styles.label)}>{'Meeting Link:'}</p>
         <div className={css(styles.urlBlock)}>
-          <CopyShortLink url={shortUrl} />
+          <CopyShortLink url={meetingUrl} />
         </div>
       </div>
       {/* */}
@@ -105,7 +106,9 @@ const styleThunk = () => ({
   },
 
   buttonBlock: {
-    paddingTop: '2.25rem'
+    margin: '0 auto',
+    paddingTop: '2.25rem',
+    width: '13rem'
   },
 
   label: {

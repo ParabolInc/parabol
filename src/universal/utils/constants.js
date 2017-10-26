@@ -61,6 +61,10 @@ export const MEETING = 'meeting';
 export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
+/* Accounts */
+export const PERSONAL_LABEL = 'Personal';
+export const PRO_LABEL = 'Pro';
+
 /* NotificationRow Types */
 // Send to folks that got reactivated on a team
 // annoucements to the rest of the team
@@ -88,15 +92,9 @@ export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 export const TEAM_INVITE = 'TEAM_INVITE';
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
-// Sent to Billing Leaders when their trial will expire in < 2 weeks
-export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
-// Sent to Billing Leaders when their trial has expired
-export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
 
 
 export const notificationTypes = [
-  TRIAL_EXPIRES_SOON,
-  TRIAL_EXPIRED,
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
@@ -105,8 +103,6 @@ export const notificationTypes = [
 ];
 
 export const billingLeaderTypes = [
-  TRIAL_EXPIRES_SOON,
-  TRIAL_EXPIRED,
   PAYMENT_REJECTED,
   REQUEST_NEW_USER
 ];
@@ -159,6 +155,7 @@ export const NEWLINE_REGEX = /\r\n?|\n/g;
 
 /* Integrations */
 export const DEFAULT_TTL = ms('5m');
+export const cacheConfig = {ttl: DEFAULT_TTL};
 export const GITHUB = 'GitHubIntegration';
 export const SLACK = 'SlackIntegration';
 export const CURRENT_PROVIDERS = [GITHUB, SLACK];
@@ -167,7 +164,7 @@ export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:b
 export const GITHUB_ENDPOINT = 'https://api.github.com/graphql';
 
 /* JavaScript specifics */
-export const MAX_TIMEOUT = 2147483647;
+export const MAX_INT = 2147483647;
 
 
 // InvitationResultTypes
@@ -181,6 +178,22 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
+export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
+export const ORGANIZATION_ADDED = 'organizationAdded';
+export const ORGANIZATION_UPDATED = 'organizationUpdated';
+export const PROJECT_UPDATED = 'projectUpdated';
+
+/* Relay Subscription Event Types */
+export const ADD = 'add';
+export const UPDATE = 'update';
+export const DELETE = 'delete';
+export const REPLACE = 'replace';
+
+/* Parabol Payment level */
+export const PERSONAL = 'personal';
+export const PRO = 'pro';
+export const ENTERPRISE = 'enterprise';
+

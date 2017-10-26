@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import Panel from 'universal/components/Panel/Panel';
 import {Field} from 'redux-form';
 import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
@@ -20,8 +21,7 @@ const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
     return (
       <div>
-        Hey, welcome aboard! In order for your team to recognize who you
-        are, do you mind telling us your name?
+        {'Hey, welcome aboard! In order for your team to recognize who you are, do you mind telling us your name?'}
       </div>
     );
   }
@@ -32,6 +32,7 @@ const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles, user: {id: userId, picture}} = props;
   const pictureOrDefault = picture || defaultUserAvatar;
   const toggle = <EditableAvatar picture={pictureOrDefault} size={96} />;
+  const controlSize = 'medium';
   return (
     <UserSettingsWrapper>
       <Helmet title="My Settings | Parabol" />
@@ -44,28 +45,41 @@ const UserSettings = (props) => {
               </PhotoUploadModal>
             </div>
             <div className={css(styles.infoBlock)}>
-              <div className={css(styles.block)}>
-                {renderActivity(activity)}
-              </div>
-              <div className={css(styles.block)}>
-                {/* TODO: Make me Editable.js (TA) */}
-                <Field
-                  autoFocus
-                  colorPalette="gray"
-                  component={InputField}
-                  label="Name"
-                  name="preferredName"
-                  placeholder={randomPreferredName}
-                  type="text"
-                />
-              </div>
-              <Button
-                isBlock
-                label="Update"
-                size="small"
-                colorPalette="cool"
-                type="submit"
+              {activity &&
+                <div className={css(styles.activityBlock)}>
+                  {renderActivity(activity)}
+                </div>
+              }
+              <FieldLabel
+                customStyles={{paddingBottom: ui.fieldLabelGutter}}
+                label="Name"
+                fieldSize={controlSize}
+                indent
+                htmlFor="preferredName"
               />
+              <div className={css(styles.controlBlock)}>
+                <div className={css(styles.fieldBlock)}>
+                  {/* TODO: Make me Editable.js (TA) */}
+                  <Field
+                    autoFocus
+                    colorPalette="gray"
+                    component={InputField}
+                    fieldSize={controlSize}
+                    name="preferredName"
+                    placeholder={randomPreferredName}
+                    type="text"
+                  />
+                </div>
+                <div className={css(styles.buttonBlock)}>
+                  <Button
+                    isBlock
+                    label="Update"
+                    buttonSize={controlSize}
+                    colorPalette="cool"
+                    type="submit"
+                  />
+                </div>
+              </div>
             </div>
           </form>
         </Panel>
@@ -96,23 +110,41 @@ const styleThunk = () => ({
   },
 
   form: {
+    alignItems: 'center',
     borderTop: `1px solid ${ui.rowBorderColor}`,
     display: 'flex',
     padding: ui.panelGutter,
     width: '100%'
   },
 
-  block: {
-    fontSize: '1rem',
+  activityBlock: {
     margin: '0 0 1.5rem'
+  },
+
+  fieldBlock: {
+    flex: 1,
+    minWidth: 0,
+    paddingRight: '1rem'
+  },
+
+  controlBlock: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+    width: '100%'
   },
 
   avatarBlock: {
     // Define
   },
 
+  buttonBlock: {
+    minWidth: '7rem'
+  },
+
   infoBlock: {
-    paddingLeft: ui.panelGutter
+    paddingLeft: ui.panelGutter,
+    flex: 1
   }
 });
 

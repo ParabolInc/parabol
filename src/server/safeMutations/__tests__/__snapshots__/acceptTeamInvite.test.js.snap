@@ -33,7 +33,7 @@ Object {
     "tms": Array [
       1,
     ],
-    "updatedAt": 2017-01-01T07:00:00.000Z,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
     "userOrgs": Array [
       Object {
         "id": 2,
@@ -50,9 +50,9 @@ Object {
   "invitation": Array [],
   "notification": Array [],
   "teamMember": Object {
-    "checkInOrder": 5,
+    "checkInOrder": 6,
     "email": "vision@avengers.org",
-    "id": 4,
+    "id": 5,
     "isCheckedIn": null,
     "isFacilitator": true,
     "isLead": false,
@@ -79,11 +79,14 @@ Object {
       1,
       2,
     ],
-    "trialOrg": null,
-    "updatedAt": 2017-01-01T07:00:00.000Z,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
     "userOrgs": Array [
       Object {
         "id": 3,
+        "role": null,
+      },
+      Object {
+        "id": 4,
         "role": null,
       },
     ],

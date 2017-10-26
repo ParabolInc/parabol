@@ -26,13 +26,13 @@ const PromoteTeamMemberModal = (props) => {
         This cannot be undone!<br />
       </Type>
       <Button
+        buttonSize="large"
         buttonStyle="flat"
         colorPalette="warm"
         icon="arrow-circle-right"
         iconPlacement="right"
         label={`Yes, promote ${preferredName}`}
         onClick={handleClick}
-        size="large"
       />
     </DashModal>
   );

@@ -22,9 +22,8 @@ const subscription = graphql`
 // };
 
 const TeamMembersInvitedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId}
     // updater: (store) => {
@@ -38,7 +37,7 @@ const TeamMembersInvitedSubscription = (environment, queryVariables) => {
     // TODO in the future, when we're 100% relay, we can look up the teamName here instead of fetching it
     // teamMembersInvitedUpdater(results, teamName, dispatch);
     // }
-  });
+  };
 };
 
 export default TeamMembersInvitedSubscription;

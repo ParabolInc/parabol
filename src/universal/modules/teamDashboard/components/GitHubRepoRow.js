@@ -18,8 +18,7 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 class GitHubRepoRow extends Component {
   constructor(props) {
     super(props);
-    const {environment: {viewerId}, teamId} = this.props;
-    const {id: userId} = fromGlobalId(viewerId);
+    const {environment: {userId}, teamId} = this.props;
     const teamMemberId = `${userId}::${teamId}`;
     this.globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
     this.state = {
@@ -86,12 +85,12 @@ class GitHubRepoRow extends Component {
           <div className={css(styles.actionButton)}>
             {accessToken && !isCreator &&
             <Button
+              buttonSize="small"
               buttonStyle="flat"
               colorPalette="dark"
               waiting={submitting}
               label={this.viewerInIntegration ? 'Unlink Me' : 'Link Me'}
               onClick={this.toggleIntegrationMembership(id)}
-              size="smallest"
             />
             }
           </div>

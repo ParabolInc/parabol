@@ -14,6 +14,7 @@ const TextAreaField = (props) => {
     autoFocus,
     disabled,
     input,
+    fieldSize,
     label,
     meta: {touched, error},
     placeholder,
@@ -29,7 +30,15 @@ const TextAreaField = (props) => {
 
   return (
     <FieldBlock>
-      {label && <FieldLabel label={label} htmlFor={input.name} />}
+      {label &&
+        <FieldLabel
+          customStyles={{paddingBottom: ui.fieldLabelGutter}}
+          fieldSize={fieldSize}
+          htmlFor={input.name}
+          indent
+          label={label}
+        />
+      }
       <div className={css(styles.inputBlock)}>
         <textarea
           {...input}
@@ -41,18 +50,16 @@ const TextAreaField = (props) => {
           value={undefined}
         />
       </div>
-      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
+      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
     </FieldBlock>
   );
 };
 
 TextAreaField.propTypes = {
-  hasErrorText: PropTypes.bool,
   autoFocus: PropTypes.bool,
   disabled: PropTypes.bool,
-  readOnly: PropTypes.bool,
-  label: PropTypes.string,
-  placeholder: PropTypes.string,
+  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
+  hasErrorText: PropTypes.bool,
   input: PropTypes.shape({
     name: PropTypes.string,
     onBlur: PropTypes.func,
@@ -61,18 +68,25 @@ TextAreaField.propTypes = {
     type: PropTypes.string,
     value: PropTypes.string
   }),
+  label: PropTypes.string,
   meta: PropTypes.object.isRequired,
+  placeholder: PropTypes.string,
+  readOnly: PropTypes.bool,
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
-  field: {
-    ...ui.fieldBaseStyles,
-    ...makeFieldColorPalette('gray'),
-    minHeight: '5.75rem'
-  },
-  disabled: ui.fieldDisabled,
-  readOnly: ui.fieldReadOnly
-});
+const styleThunk = (theme, {disabled, fieldSize}) => {
+  const size = fieldSize || ui.fieldSizeOptions[1];
+  return ({
+    field: {
+      ...ui.fieldBaseStyles,
+      ...ui.fieldSizeStyles[size],
+      ...makeFieldColorPalette('gray', !disabled),
+      minHeight: '5.75rem'
+    },
+    disabled: ui.fieldDisabled,
+    readOnly: ui.fieldReadOnly
+  });
+};
 
 export default withStyles(styleThunk)(TextAreaField);

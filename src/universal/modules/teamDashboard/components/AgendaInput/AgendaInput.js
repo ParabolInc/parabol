@@ -3,13 +3,13 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {reduxForm, Field} from 'redux-form';
-import Avatar from 'universal/components/Avatar/Avatar';
 import AgendaInputField from './AgendaInputField';
+import ui from 'universal/styles/ui';
 
 const AgendaInput = (props) => {
   const {agenda, disabled, handleSubmit, teamId, myTeamMember, styles} = props;
   return (
-    <div className={css(styles.fieldAndAvatar)}>
+    <div className={css(styles.agendaInputBlock)}>
       <Field
         agenda={agenda}
         name="agendaItem"
@@ -19,9 +19,6 @@ const AgendaInput = (props) => {
         myTeamMemberId={myTeamMember.id}
         teamId={teamId}
       />
-      <div className={css(styles.author)}>
-        <Avatar hasBadge={false} picture={myTeamMember.picture} size="smallest" />
-      </div>
     </div>
   );
 };
@@ -36,14 +33,8 @@ AgendaInput.propTypes = {
 };
 
 const styleThunk = () => ({
-  author: {
-    position: 'absolute',
-    right: '.5rem',
-    top: '.5rem',
-    zIndex: 200
-  },
-
-  fieldAndAvatar: {
+  agendaInputBlock: {
+    paddingBottom: ui.meetingSidebarGutter,
     position: 'relative'
   }
 });

@@ -37,7 +37,7 @@ Action is a Node.js application based upon the
 
 | Concern            | Solution                                                  |
 |--------------------|-----------------------------------------------------------|
-| Server             | [Node 7](https://nodejs.org/)                             |
+| Server             | [Node 8.5](https://nodejs.org/)                           |
 | Server Framework   | [Express](http://expressjs.com/)                          |
 | Database           | [RethinkDB](https://www.rethinkdb.com/)                   |
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)          |
@@ -57,7 +57,7 @@ Transpilation is provided by [babel](https://github.com/babel/babel).
 
 #### Prerequisites
 
-Action requires Node.js >=7.6.0 (we're using 7.6.0 in development).
+Action requires Node.js >=8.5.0 (we're using 8.5.0 in development).
 We recommend using [n](https://github.com/tj/n) to install and manage your
 node versions.
 
@@ -136,7 +136,7 @@ up the environment for Windows, but it is the least likely to give you trouble d
 
 1. Follow the instructions to install [bash for windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)
 2. Open cmd and type `bash`
-3. Install node >= 7.6.0 __inside__ of your bash instance
+3. Install node >= 8.5.0 __inside__ of your bash instance
 4. Install the dependencies for [watchman](https://facebook.github.io/watchman/docs/install.html)
 5. Install watchman from source
 6. Start an instance of rethinkDB

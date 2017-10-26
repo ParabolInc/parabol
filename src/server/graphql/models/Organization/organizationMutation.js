@@ -1,100 +1,16 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
-import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
-import extendTrial from 'server/graphql/models/Organization/extendTrial/extendTrial';
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
-import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
-
-import {
-  getUserId,
-  getUserOrgDoc,
-  requireOrgLeader,
-  requireOrgLeaderOfUser,
-  requireWebsocket
-} from 'server/utils/authorization';
-import {toEpochSeconds} from 'server/utils/epochTime';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
-import {MAX_MONTHLY_PAUSES, PAUSE_USER, REMOVE_USER} from 'server/utils/serverConstants';
-import {errorObj, validateAvatarUpload} from 'server/utils/utils';
+import {REMOVE_USER} from 'server/utils/serverConstants';
+import {validateAvatarUpload} from 'server/utils/utils';
 import shortid from 'shortid';
-import {GraphQLURLType} from '../../types';
 
 export default {
-  updateOrg,
-  addBilling,
-  extendTrial,
-  inactivateUser: {
-    type: GraphQLBoolean,
-    description: 'pauses the subscription for a single user',
-    args: {
-      userId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the user to pause'
-      }
-    },
-    async resolve(source, {userId}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      requireWebsocket(socket);
-      await requireOrgLeaderOfUser(authToken, userId);
-      const orgDocs = await r.table('Organization')
-        .getAll(userId, {index: 'orgUsers'})
-        .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId');
-      const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId);
-      if (!firstOrgUser) {
-        // no userOrgs means there were no changes, which means inactive was already true
-        throw errorObj({_error: 'That user is already inactive. cannot inactivate twice'});
-      }
-      const hookPromises = orgDocs.map((orgDoc) => {
-        const {periodStart, periodEnd, stripeSubscriptionId} = orgDoc;
-        const periodStartInSeconds = toEpochSeconds(periodStart);
-        const periodEndInSeconds = toEpochSeconds(periodEnd);
-        return r.table('InvoiceItemHook')
-          .between(periodStartInSeconds, periodEndInSeconds, {index: 'prorationDate'})
-          .filter({
-            stripeSubscriptionId,
-            type: PAUSE_USER,
-            userId
-          })
-          .count()
-          .run();
-      });
-      const pausesByOrg = await Promise.all(hookPromises);
-      const triggeredPauses = Math.max(...pausesByOrg);
-      if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
-        throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
-      }
-
-      // RESOLUTION
-      await r.table('Organization')
-        .getAll(userId, {index: 'orgUsers'})
-        .update((org) => ({
-          orgUsers: org('orgUsers').map((orgUser) => {
-            return r.branch(
-              orgUser('id').eq(userId),
-              orgUser.merge({
-                inactive: true
-              }),
-              orgUser
-            );
-          })
-        }))
-        .do(() => {
-          return r.table('User')
-            .get(userId)
-            .update({
-              inactive: true
-            });
-        });
-      const orgIds = orgDocs.map((doc) => doc.id);
-      await adjustUserCount(userId, orgIds, PAUSE_USER);
-      return true;
-    }
-  },
   rejectOrgApproval,
   removeOrgUser: {
     type: GraphQLBoolean,
@@ -195,6 +111,5 @@ export default {
       const partialPath = `Organization/${orgId}/picture/${shortid.generate()}.${ext}`;
       return getS3PutUrl(contentType, contentLength, partialPath);
     }
-  },
-  addOrg
+  }
 };

@@ -2,23 +2,24 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
 import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
-import {withRouter} from 'react-router-dom';
+import {matchPath, withRouter} from 'react-router-dom';
 
 const BillingMembersToggle = (props) => {
-  const {activeOrgDetail, history, orgId} = props;
-
+  const {history, location: {pathname}, match, orgId} = props;
+  const areaMatch = matchPath(pathname, {path: `${match.url}/:area?`});
+  const activeOrgDetail = areaMatch.params.area || BILLING_PAGE;
   const items = [
     {
       label: 'Billing',
       icon: 'credit-card',
       isActive: activeOrgDetail === BILLING_PAGE,
-      onClick: () => history.push(`/me/organizations/${orgId}/billing`)
+      onClick: () => history.push(`/me/organizations/${orgId}/${BILLING_PAGE}`)
     },
     {
       label: 'Members',
       icon: 'users',
       isActive: activeOrgDetail === MEMBERS_PAGE,
-      onClick: () => history.push(`/me/organizations/${orgId}/members`)
+      onClick: () => history.push(`/me/organizations/${orgId}/${MEMBERS_PAGE}`)
     }
   ];
 
@@ -28,9 +29,10 @@ const BillingMembersToggle = (props) => {
 };
 
 BillingMembersToggle.propTypes = {
-  activeOrgDetail: PropTypes.string.isRequired,
   orgId: PropTypes.string.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired
 };
 
 export default withRouter(BillingMembersToggle);
