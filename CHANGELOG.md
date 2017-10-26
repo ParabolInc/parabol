@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.22.1
+### Fixed
+- #1445 Regression where team archive was not viewable
+
 ## v0.22.0
 ### Added
 - Tooltip component
