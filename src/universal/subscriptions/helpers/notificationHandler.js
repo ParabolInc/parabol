@@ -83,7 +83,7 @@ const notificationHandler = {
     const requestorId = payload.getValue('requestorId');
     dispatch(showInfo({
       title: `${requestorName} wants to facilitate`,
-      message: 'Click ‘Promote’ to hand over the reigns',
+      message: 'Tap ‘Promote’ to hand over the reins',
       autoDismiss: 0,
       action: {
         label: 'Promote',
