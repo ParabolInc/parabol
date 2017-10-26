@@ -27,16 +27,16 @@ const subscription = graphql`
 `;
 
 const ProjectUpdatedSubscription = (environment, queryVariables) => {
-  const {ensureSubscription, viewerId} = environment;
+  const {viewerId} = environment;
   const {teamId} = queryVariables;
-  return ensureSubscription({
+  return {
     subscription,
     variables: {teamId},
     updater: (store) => {
       const project = store.getRootField('projectUpdated').getLinkedRecord('project');
       adjustArchive(store, viewerId, project, teamId);
     }
-  });
+  };
 };
 
 export default ProjectUpdatedSubscription;
