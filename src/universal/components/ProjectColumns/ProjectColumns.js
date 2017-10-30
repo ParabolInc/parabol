@@ -12,6 +12,7 @@ const ProjectColumns = (props) => {
   const {
     alignColumns,
     area,
+    isMyMeetingSection,
     myTeamMemberId,
     projects,
     queryKey,
@@ -28,6 +29,7 @@ const ProjectColumns = (props) => {
           (<ProjectColumn
             key={`projectCol${status}`}
             area={area}
+            isMyMeetingSection={isMyMeetingSection}
             firstColumn={idx === 0}
             lastColumn={idx === (lanes.length - 1)}
             myTeamMemberId={myTeamMemberId}
@@ -50,6 +52,7 @@ ProjectColumns.propTypes = {
     'right'
   ]),
   area: PropTypes.string,
+  isMyMeetingSection: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string,
