@@ -7,8 +7,8 @@ import OrgUser from 'server/graphql/types/OrgUser';
 import OrgUserCount from 'server/graphql/types/OrgUserCount';
 import TierEnum from 'server/graphql/types/TierEnum';
 import User from 'server/graphql/types/User';
-import {BILLING_LEADER} from 'universal/utils/constants';
 import {getUserId} from 'server/utils/authorization';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 
 const Organization = new GraphQLObjectType({
@@ -96,22 +96,13 @@ const Organization = new GraphQLObjectType({
       type: OrgUserCount,
       description: 'The count of active & inactive users',
       resolve: async (source) => {
-        const {orgUserCount, id} = source;
-        const r = getRethink();
-        if (orgUserCount) return orgUserCount;
-        return r.table('Organization').get(id)
-          .do((org) => {
-            return org('orgUsers')
-              .filter({inactive: true})
-              .count()
-              .default(0)
-              .do((inactiveUserCount) => {
-                return {
-                  activeUserCount: org('orgUsers').count().sub(inactiveUserCount),
-                  inactiveUserCount
-                };
-              });
-          });
+        const {orgUsers} = source;
+        if (!Array.isArray(orgUsers)) throw new Error('No orgUsers supplied!');
+        const inactiveUserCount = orgUsers.filter((orgUser) => orgUser.inactive).length;
+        return {
+          inactiveUserCount,
+          activeUserCount: orgUsers.length - inactiveUserCount
+        }
       }
     },
     /* GraphQL Sugar */
