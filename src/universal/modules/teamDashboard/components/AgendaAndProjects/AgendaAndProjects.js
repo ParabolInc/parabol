@@ -8,10 +8,13 @@ import TeamProjectsHeaderContainer from 'universal/modules/teamDashboard/contain
 import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import {createFragmentContainer} from 'react-relay';
 
 const AgendaAndProjects = (props) => {
-  const {hideAgenda, teamId, teamName, styles} = props;
-  // const pageTitle = `${team.name} Team Dashboard | Parabol`;
+  const {viewer, teamId, teams, styles} = props;
+  const {teamMember: {hideAgenda}} = viewer;
+  const team = teams && teams.find(({id}) => id === teamId);
+  const teamName = team && team.name;
   return (
     <div className={css(styles.root)}>
       <Helmet title={`${teamName} | Parabol`} />
@@ -30,7 +33,7 @@ const AgendaAndProjects = (props) => {
           </div>
         }
         <div className={css(styles.projectsLayout, !hideAgenda && styles.projectsLayoutShared)}>
-          <TeamColumnsContainer teamId={teamId} />
+          <TeamColumnsContainer teamId={teamId} viewer={viewer} />
         </div>
       </div>
     </div>
@@ -38,11 +41,10 @@ const AgendaAndProjects = (props) => {
 };
 
 AgendaAndProjects.propTypes = {
-  hideAgenda: PropTypes.bool,
   styles: PropTypes.object,
   teamId: PropTypes.string,
-  teamName: PropTypes.string,
-  teamMembers: PropTypes.array
+  teams: PropTypes.array,
+  viewer: PropTypes.object
 };
 
 const borderColor = ui.dashBorderColor;
@@ -83,4 +85,14 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(AgendaAndProjects);
+export default createFragmentContainer(
+  withStyles(styleThunk)(AgendaAndProjects),
+  graphql`
+    fragment AgendaAndProjects_viewer on User {
+      teamMember(teamId: $teamId) {
+        hideAgenda
+      }
+      ...TeamColumnsContainer_viewer
+    }
+  `
+);

@@ -27,6 +27,7 @@ import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import UserOrg from 'server/graphql/types/UserOrg';
 import {getUserId} from 'server/utils/authorization';
 import {Team} from 'server/graphql/models/Team/teamSchema';
+import TeamMember from 'server/graphql/types/TeamMember';
 // import organizations from 'server/graphql/queries/organizations';
 
 const User = new GraphQLObjectType({
@@ -117,6 +118,24 @@ const User = new GraphQLObjectType({
       description: 'all the teams the user is on',
       resolve: (source, args, {authToken, dataloader}) => {
         return dataloader.teams.loadMany(authToken.tms);
+      }
+    },
+    teamMember: {
+      type: TeamMember,
+      description: 'The team member associated with this user',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The team the user is on'
+        }
+      },
+      resolve: (source, {teamId}, {authToken, dataloader}) => {
+        const userId = getUserId(authToken);
+        if (!authToken.tms.includes(teamId)) {
+          throw new Error('User is not a part of that team');
+        }
+        const teamMemberId = `${userId}::${teamId}`;
+        return dataloader.teamMembers.load(teamMemberId);
       }
     },
     userOrgs: {

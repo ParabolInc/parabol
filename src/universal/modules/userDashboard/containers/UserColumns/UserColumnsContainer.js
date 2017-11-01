@@ -39,7 +39,7 @@ class UserColumnsContainer extends Component {
   }
 
   render() {
-    const {queryKey, teams, userId, viewer} = this.props;
+    const {queryKey, teams, userId} = this.props;
     const {projects} = this.state;
     return (
       <ProjectColumns
@@ -48,7 +48,6 @@ class UserColumnsContainer extends Component {
         area={USER_DASH}
         teams={teams}
         userId={userId}
-        viewer={viewer}
       />
     );
   }
