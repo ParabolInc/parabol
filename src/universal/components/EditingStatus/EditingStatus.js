@@ -44,7 +44,7 @@ EditingStatus.propTypes = {
   editors: PropTypes.array,
   handleClick: PropTypes.func,
   isEditing: PropTypes.bool,
-  timestamp: PropTypes.instanceOf(Date),
+  timestamp: PropTypes.string.isRequired,
   timestampType: PropTypes.string,
   styles: PropTypes.object
 };

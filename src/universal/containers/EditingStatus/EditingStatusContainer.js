@@ -56,8 +56,8 @@ export default class EditingStatusContainer extends Component {
     isEditing: PropTypes.bool,
     editors: PropTypes.any,
     outcomeId: PropTypes.string,
-    createdAt: PropTypes.instanceOf(Date),
-    updatedAt: PropTypes.instanceOf(Date)
+    createdAt: PropTypes.string.isRequired,
+    updatedAt: PropTypes.string.isRequired
   };
 
   constructor(props) {

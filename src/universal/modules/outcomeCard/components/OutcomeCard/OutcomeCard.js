@@ -105,9 +105,9 @@ OutcomeCard.propTypes = {
     id: PropTypes.string,
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string,
-    createdAt: PropTypes.instanceOf(Date),
-    updatedAt: PropTypes.instanceOf(Date)
+    teamMemberId: PropTypes.string.isRequired,
+    createdAt: PropTypes.string.isRequired,
+    updatedAt: PropTypes.string.isRequired
   }),
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
