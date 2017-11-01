@@ -7,6 +7,7 @@ import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 import {globalIdField} from 'graphql-relay';
 import TeamMember from 'server/graphql/types/TeamMember';
 import getRethink from 'server/database/rethinkDriver';
+import {Team} from 'server/graphql/models/Team/teamSchema';
 
 const RelayProject = new GraphQLObjectType({
   name: 'RelayProject',
@@ -37,7 +38,11 @@ const RelayProject = new GraphQLObjectType({
       type: GraphQLFloat,
       description: 'the shared sort order for projects on the team dash & user dash'
     },
-    status: {type: new GraphQLNonNull(ProjectStatusEnum), description: 'The status of the project'},
+    // TODO make this nonnull again
+    status: {
+      type: ProjectStatusEnum,
+      description: 'The status of the project'
+    },
     tags: {
       type: new GraphQLList(GraphQLString),
       description: 'The tags associated with the project'
@@ -46,16 +51,20 @@ const RelayProject = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The id of the team (indexed). Needed for subscribing to archived projects'
     },
+    team: {
+      type: Team,
+      description: 'The team this project belongs to',
+      resolve: async (source, args, {dataloader}) => {
+        const {teamId} = source;
+        return dataloader.teams.load(teamId);
+      }
+    },
     teamMember: {
       type: TeamMember,
       description: 'The team member that owns this project',
-      resolve: async (source) => {
-        const r = getRethink();
-        const {teamMember, teamMemberId} = source;
-        if (!teamMember && teamMemberId) {
-          return r.table('TeamMember').get(teamMemberId).run();
-        }
-        return undefined;
+      resolve: async (source, args, {dataloader}) => {
+        const {teamMemberId} = source;
+        return dataloader.teamMembers.load(teamMemberId);
       }
     },
     teamMemberId: {

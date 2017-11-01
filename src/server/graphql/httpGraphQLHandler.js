@@ -6,7 +6,7 @@ import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 export default (exchange) => async (req, res) => {
   const {query, variables} = req.body;
   const authToken = req.user || {};
-  const dataloader = new RethinkDataLoader();
+  const dataloader = new RethinkDataLoader(authToken);
   const context = {authToken, exchange, dataloader};
   const result = await graphql(Schema, query, {}, context, variables);
   if (result.errors) {

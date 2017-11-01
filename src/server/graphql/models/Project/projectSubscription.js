@@ -63,37 +63,5 @@ export default {
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);
     }
-  },
-  archivedProjects: {
-    type: new GraphQLList(Project),
-    args: {
-      teamMemberId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique teamMember ID'
-      }
-    },
-    async resolve(source, {teamMemberId}, {authToken, socket, subbedChannelName}, refs) {
-      const r = getRethink();
-
-      // AUTH
-      const [, teamId] = teamMemberId.split('::');
-      requireSUOrTeamMember(authToken, teamId);
-      const requestedFields = getRequestedFields(refs);
-      // const removalFields = ['id', 'isArchived'];
-      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      const oldestProject = new Date(Date.now() - ms('15d'));
-      r.table('Project')
-      // use a compound index so we can easily paginate later
-        .between([teamId, oldestProject], [teamId, r.maxval], {index: 'teamIdCreatedAt'})
-        .filter((project) => project('tags').contains('archived')
-          .and(r.branch(
-            project('tags').contains('private'),
-            project('teamMemberId').eq(teamMemberId),
-            true
-          )))
-        .pluck(requestedFields)
-        .changes({includeInitial: true})
-        .run({cursor: true}, changefeedHandler);
-    }
   }
 };

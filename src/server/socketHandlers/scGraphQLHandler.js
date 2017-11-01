@@ -8,7 +8,7 @@ export default function wsGraphQLHandler(exchange, socket) {
     const authToken = socket.getAuthToken();
     const context = {
       authToken,
-      dataloader: new RethinkDataLoader(),
+      dataloader: new RethinkDataLoader(authToken),
       // TODO remove exchange & socket when we break GraphQL into a microservice
       exchange,
       socket,

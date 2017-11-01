@@ -14,7 +14,7 @@ import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
 import {NavLink} from 'react-router-dom';
 
 const DashSidebar = (props) => {
-  const {notificationsCount, styles} = props;
+  const {notificationsCount, styles, teams} = props;
   return (
     <div className={css(styles.root)}>
       <StandardHubContainer notificationsCount={notificationsCount} />

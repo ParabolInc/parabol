@@ -26,6 +26,7 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import UserOrg from 'server/graphql/types/UserOrg';
 import {getUserId} from 'server/utils/authorization';
+import {Team} from 'server/graphql/models/Team/teamSchema';
 // import organizations from 'server/graphql/queries/organizations';
 
 const User = new GraphQLObjectType({
@@ -111,6 +112,13 @@ const User = new GraphQLObjectType({
         return (userId === source.id) ? source.tms : undefined;
       }
     },
+    teams: {
+      type: new GraphQLList(Team),
+      description: 'all the teams the user is on',
+      resolve: (source, args, {authToken, dataloader}) => {
+        return dataloader.teams.loadMany(authToken.tms);
+      }
+    },
     userOrgs: {
       type: new GraphQLList(UserOrg),
       description: 'the orgs and roles for this user on each',
@@ -145,6 +153,7 @@ const User = new GraphQLObjectType({
     slackChannels,
     organization: require('../queries/organization').default,
     organizations: require('../queries/organizations').default,
+    projects: require('../queries/projects').default,
     team: require('../queries/team').default,
     // hack until we can move to ES6 immutable bindings
     orgMembers: require('../queries/orgMembers').default,

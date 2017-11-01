@@ -19,6 +19,7 @@ const ProjectColumns = (props) => {
     teams,
     userId
   } = props;
+  console.log('projCols', teams)
   const rootStyles = css(styles.root, styles[alignColumns]);
   const lanes = area === MEETING ? meetingColumnArray : columnArray;
   return (

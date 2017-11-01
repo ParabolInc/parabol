@@ -14,9 +14,11 @@ import {
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import makeDateString from 'universal/utils/makeDateString';
+import {createFragmentContainer} from 'react-relay';
 
 const UserDashMain = (props) => {
-  const {styles} = props;
+  const {styles, teams, viewer} = props;
+  console.log('userDashMain', teams)
   return (
     <DashMain>
       <Helmet title="My Dashboard | Parabol" />
@@ -33,8 +35,8 @@ const UserDashMain = (props) => {
       <DashContent padding="0">
         <div className={css(styles.root)}>
           <div className={css(styles.projectsLayout)}>
-            <UserProjectsHeaderContainer />
-            <UserColumnsContainer />
+            <UserProjectsHeaderContainer teams={teams} viewer={viewer}/>
+            <UserColumnsContainer teams={teams} viewer={viewer}/>
           </div>
         </div>
       </DashContent>
@@ -44,8 +46,8 @@ const UserDashMain = (props) => {
 };
 
 UserDashMain.propTypes = {
-  projects: PropTypes.array,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  viewer: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -76,4 +78,11 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserDashMain);
+export default createFragmentContainer(
+  withStyles(styleThunk)(UserDashMain),
+  graphql`
+    fragment UserDashMain_viewer on User {
+      ...UserColumnsContainer_viewer
+    }
+  `
+);

@@ -1,5 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import DataLoader from 'dataloader';
+import {getUserId} from 'server/utils/authorization';
 
 const defaultCacheKeyFn = (key) => key;
 
@@ -26,8 +27,22 @@ const makeStandardLoader = (table) => {
   return new DataLoader(batchFn);
 };
 
+const groupByField = (arr, fieldName) => {
+  const obj = {};
+  for (let ii = 0; ii < arr.length; ii++) {
+    const doc = arr[ii];
+    const fieldVal = doc[fieldName];
+    obj[fieldVal] = obj[fieldVal] || [];
+    obj[fieldVal].push(doc);
+  }
+  return obj;
+};
 
 export default class RethinkDataLoader {
+  constructor(authToken) {
+    this.authToken = authToken;
+  }
+  agendaItems = makeStandardLoader('AgendaItem');
   users = makeStandardLoader('User');
   organizations = makeStandardLoader('Organization');
   orgsByUserId = new DataLoader(async (userIds) => {
@@ -40,6 +55,30 @@ export default class RethinkDataLoader {
     return userIds.map((userId) => {
       return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
     });
+  });
+  projectsByAgendaId = new DataLoader(async (agendaIds) => {
+    const r = getRethink();
+    const projects = await r.table('Projects')
+      .getAll(r.args(agendaIds), {index: 'agendaId'});
+    return agendaIds.map((agendaId) => {
+      return projects.filter((project) => project.agendaId === agendaId);
+    });
+  });
+  projectsByTeamId = new DataLoader(async (teamIds) => {
+    const r = getRethink();
+    const userId = getUserId(this.authToken);
+    const projects = await r.table('Project')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter((project) => project('tags')
+        .contains('private').and(project('userId').ne(userId))
+        .or(project('tags').contains('archived'))
+        .not());
+    // cannot prime by agendaId because this doesn't fetch private or archived things
+    return teamIds.map((teamId) => {
+      return projects.filter((project) => project.teamId === teamId);
+    });
   })
+  teams = makeStandardLoader('Team');
+  teamMembers = makeStandardLoader('TeamMember');
 }
 
