@@ -102,7 +102,7 @@ const Organization = new GraphQLObjectType({
         return {
           inactiveUserCount,
           activeUserCount: orgUsers.length - inactiveUserCount
-        }
+        };
       }
     },
     /* GraphQL Sugar */

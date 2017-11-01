@@ -21,8 +21,8 @@ const makeStandardLoader = (table) => {
     const r = getRethink();
     const docs = await r.table(table)
       .getAll(r.args(keys), {index: 'id'});
-    return normalizeRethinkDbResults(keys, 'id')(docs)
-  }
+    return normalizeRethinkDbResults(keys, 'id')(docs);
+  };
   return new DataLoader(batchFn);
 };
 
@@ -39,9 +39,7 @@ export default class RethinkDataLoader {
     });
     return userIds.map((userId) => {
       return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
-    })
+    });
   })
 }
-
-
 

@@ -5,7 +5,6 @@ export const PRESENT = 'PRESENT';
 export const SOUNDOFF = 'SOUNDOFF';
 
 // CHANNELS
-export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
 export const INVITATIONS = 'invitations';
 export const ORG_APPROVALS = 'orgApprovals';

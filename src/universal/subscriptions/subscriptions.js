@@ -1,7 +1,6 @@
 import {
   AGENDA,
   AGENDA_PROJECTS,
-  ARCHIVED_PROJECTS,
   INVITATIONS,
   ORG_APPROVALS,
   PROJECTS,
@@ -26,26 +25,6 @@ export default [
         content
         createdAt
         createdBy
-        status
-        tags
-        teamMemberId
-        updatedAt
-      }
-    }`
-  },
-  {
-    channel: ARCHIVED_PROJECTS,
-    string: `
-    subscription($teamMemberId: ID!) {
-      archivedProjects(teamMemberId: $teamMemberId) {
-        content
-        createdAt
-        id
-        integration {
-          service
-          nameWithOwner
-          issueNumber
-        }
         status
         tags
         teamMemberId
