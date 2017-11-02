@@ -34,7 +34,7 @@ export default {
     if (!teamId || !jwt) {
       throw new Error('Bad state');
     }
-    const authToken = verify(jwt, Buffer.from(auth0ClientSecret, 'base64'));
+    const authToken = verify(jwt, auth0ClientSecret);
     if (!authToken || !Array.isArray(authToken.tms) || !authToken.tms.includes(teamId)) {
       throw new Error('Bad auth token');
     }

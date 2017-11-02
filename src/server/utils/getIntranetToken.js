@@ -10,7 +10,6 @@ export default function getIntranetToken() {
     rol: 'su'
   };
   const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
-  const b64Secret = new Buffer(INTRANET_JWT_SECRET, 'base64');
-  const signedToken = sign(jwt, b64Secret, {expiresIn: ms('1h')});
+  const signedToken = sign(jwt, INTRANET_JWT_SECRET, {expiresIn: ms('1h')});
   return signedToken;
 }

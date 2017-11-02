@@ -75,7 +75,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   // HTTP GraphQL endpoint
   const graphQLHandler = httpGraphQLHandler(exchange);
   app.post('/graphql', jwt({
-    secret: new Buffer(secretKey, 'base64'),
+    secret: secretKey,
     audience: process.env.AUTH0_CLIENT_ID,
     credentialsRequired: false
   }), graphQLHandler);
@@ -83,7 +83,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   // HTTP Intranet GraphQL endpoint:
   const intranetGraphQLHandler = intranetHttpGraphQLHandler(exchange);
   app.post('/intranet-graphql', jwt({
-    secret: new Buffer(INTRANET_JWT_SECRET, 'base64'),
+    secret: INTRANET_JWT_SECRET,
     credentialsRequired: true
   }), intranetGraphQLHandler);
 

@@ -90,7 +90,7 @@ export default {
       const now = new Date();
 
       // VALIDATION
-      const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0ClientId});
+      const authToken = verify(auth0Token, auth0ClientSecret, {audience: auth0ClientId});
 
       // RESOLUTION
       if (authToken.tms) {
