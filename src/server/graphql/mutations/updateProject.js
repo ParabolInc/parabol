@@ -86,6 +86,11 @@ export default {
 
     const project = projectChanges.new_val;
     const projectUpdated = {project};
+    const affectedUsers = Array.from(new Set([projectChanges.new_val.userId, projectChanges.old_val.userId]));
+    affectedUsers.forEach((userId) => {
+      // TODO when removing cashay, add in the mutatorId here
+      getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated});
+    });
     // TODO when removing cashay, add in the mutatorId here
     getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated});
     return true;

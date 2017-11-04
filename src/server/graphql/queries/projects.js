@@ -2,7 +2,7 @@ import {GraphQLID} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {RelayProjectConnection} from 'server/graphql/types/RelayProject';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {
   type: RelayProjectConnection,
@@ -23,21 +23,19 @@ export default {
   },
   async resolve(source, {agendaId, teamId}, {authToken, dataloader}) {
     // AUTH
+    const userId = getUserId(authToken);
     let projects;
     if (agendaId) {
       const agendaItem = await dataloader.agendaItems.load(agendaId);
       requireSUOrTeamMember(authToken, agendaItem.teamId);
       projects = await dataloader.projectsByAgendaId.load(agendaId);
     } else if (teamId) {
-      requireSUOrTeamMember(authToken, teamId)
+      requireSUOrTeamMember(authToken, teamId);
       projects = await dataloader.projectsByTeamId.load(teamId);
     } else {
-      const projectsByTeamId = await dataloader.projectsByTeamId.loadMany(authToken.tms);
-      projects = [].concat(...projectsByTeamId);
+      projects = await dataloader.projectsByUserId.load(userId);
     }
 
-    console.log('project count', projects.length)
-    console.log('proj', projects.filter((p) => !p.teamMemberId))
     // RESOLUTION
     const nodes = projects.slice();
     const edges = nodes.map((node) => ({

@@ -31,7 +31,7 @@ const ProjectUpdatedSubscription = (environment, queryVariables) => {
   const {teamId} = queryVariables;
   return {
     subscription,
-    variables: {teamId},
+    variables: {teamIds: [teamId]},
     updater: (store) => {
       const project = store.getRootField('projectUpdated').getLinkedRecord('project');
       adjustArchive(store, viewerId, project, teamId);

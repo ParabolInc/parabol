@@ -19,7 +19,7 @@ class UserColumnsContainer extends Component {
   state = {};
 
   componentWillMount() {
-    const {viewer: {projects}} = this.props
+    const {viewer: {projects}} = this.props;
     this.groupProjectsByStatus(projects);
   }
 
@@ -51,7 +51,7 @@ class UserColumnsContainer extends Component {
       />
     );
   }
-};
+}
 
 UserColumnsContainer.propTypes = {
   projects: PropTypes.object,

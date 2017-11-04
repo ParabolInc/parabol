@@ -77,7 +77,15 @@ export default class RethinkDataLoader {
     return teamIds.map((teamId) => {
       return projects.filter((project) => project.teamId === teamId);
     });
-  })
+  });
+  projectsByUserId = new DataLoader(async (userIds) => {
+    const r = getRethink();
+    const userId = getUserId(this.authToken);
+    const projects = await r.table('Project')
+      .getAll(userId, {index: 'userId'})
+      .filter((project) => project('tags').contains('archived').not());
+    return userIds.map(() => projects);
+  });
   teams = makeStandardLoader('Team');
   teamMembers = makeStandardLoader('TeamMember');
 }

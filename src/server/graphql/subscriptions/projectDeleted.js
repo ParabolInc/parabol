@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
-import {PROJECT_UPDATED} from 'universal/utils/constants';
+import {PROJECT_DELETED} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(UpdateProjectPayload),
@@ -19,13 +19,10 @@ export default {
         requireSUOrTeamMember(authToken, teamId);
       });
     }
-
-    // if teamIds is provided, then we'll listen to all users on those teams
-    // else, we just listen to projects the user cares about (assigned, etc.)
     const channelIds = teamIds || [userId];
 
     // RESOLUTION
-    const channelNames = channelIds.map((id) => `${PROJECT_UPDATED}.${id}`);
+    const channelNames = channelIds.map((id) => `${PROJECT_DELETED}.${id}`);
     const filterFn = (value) => {
       const {projectUpdated: {project: {tags, userId: projectUserId}}, mutatorId} = value;
       if (mutatorId === socketId) return false;

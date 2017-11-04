@@ -18,7 +18,7 @@ import {createFragmentContainer} from 'react-relay';
 
 const UserDashMain = (props) => {
   const {styles, teams, viewer} = props;
-  console.log('userDashMain', teams)
+  console.log('userDashMain', teams);
   return (
     <DashMain>
       <Helmet title="My Dashboard | Parabol" />
@@ -35,8 +35,8 @@ const UserDashMain = (props) => {
       <DashContent padding="0">
         <div className={css(styles.root)}>
           <div className={css(styles.projectsLayout)}>
-            <UserProjectsHeaderContainer teams={teams} viewer={viewer}/>
-            <UserColumnsContainer teams={teams} viewer={viewer}/>
+            <UserProjectsHeaderContainer teams={teams} viewer={viewer} />
+            <UserColumnsContainer teams={teams} viewer={viewer} />
           </div>
         </div>
       </DashContent>

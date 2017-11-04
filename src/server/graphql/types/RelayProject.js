@@ -1,13 +1,12 @@
 import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {globalIdField} from 'graphql-relay';
+import connectionDefinitions from 'server/graphql/connectionDefinitions';
+import {Team} from 'server/graphql/models/Team/teamSchema';
 import GitHubProject from 'server/graphql/types/GitHubProject';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
-import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
-import {globalIdField} from 'graphql-relay';
+import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 import TeamMember from 'server/graphql/types/TeamMember';
-import getRethink from 'server/database/rethinkDriver';
-import {Team} from 'server/graphql/models/Team/teamSchema';
 
 const RelayProject = new GraphQLObjectType({
   name: 'RelayProject',

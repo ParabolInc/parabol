@@ -7,6 +7,8 @@ import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
+import {PROJECT_CREATED} from 'universal/utils/constants';
+import getPubSub from 'server/utils/getPubSub';
 
 export default {
   type: CreateProjectPayload,
@@ -59,7 +61,10 @@ export default {
       project: r.table('Project').insert(project),
       history: r.table('ProjectHistory').insert(history)
     });
-    return {project};
+    const projectCreated = {project};
+    getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated});
+    getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated});
+    return projectCreated;
   }
 };
 

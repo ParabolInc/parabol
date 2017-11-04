@@ -22,7 +22,7 @@ const userDashboard = () => System.import('universal/modules/userDashboard/compo
 const teamContainer = () => System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
 const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot');
 
-//const subscriptions = [];
+// const subscriptions = [];
 const DashboardWrapper = ({atmosphere, notifications}) => {
   const notificationsCount = notifications ? notifications.edges.length : 0;
   return (
@@ -31,7 +31,7 @@ const DashboardWrapper = ({atmosphere, notifications}) => {
       environment={atmosphere}
       query={query}
       variables={{}}
-      //subscriptions={subscriptions}
+      // subscriptions={subscriptions}
       render={({props: renderProps}) => {
         const teams = (renderProps && renderProps.viewer)
           ? renderProps.viewer.teams

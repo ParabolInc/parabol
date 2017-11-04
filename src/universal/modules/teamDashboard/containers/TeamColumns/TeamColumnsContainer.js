@@ -23,7 +23,7 @@ class TeamColumnsContainer extends Component {
   state = {};
 
   componentWillMount() {
-    const {viewer: {projects}} = this.props
+    const {viewer: {projects}} = this.props;
     this.groupProjectsByStatus(projects);
   }
 
@@ -43,7 +43,6 @@ class TeamColumnsContainer extends Component {
   }
 
   render() {
-
     const {myTeamMemberId, queryKey, userId} = this.props;
     const {projects} = this.state;
     return (
@@ -56,7 +55,7 @@ class TeamColumnsContainer extends Component {
       />
     );
   }
-};
+}
 
 TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,

@@ -1,10 +1,9 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
-import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import getRequestedFields from 'server/graphql/getRequestedFields';
+import Project from 'server/graphql/types/Project';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
-import Project from 'server/graphql/types/Project';
 
 export default {
   agendaProjects: {

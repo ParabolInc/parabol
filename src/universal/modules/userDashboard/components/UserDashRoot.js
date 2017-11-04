@@ -5,11 +5,12 @@ import {graphql} from 'react-relay';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {DEFAULT_TTL} from 'universal/utils/constants';
+import {cacheConfig, DEFAULT_TTL} from 'universal/utils/constants';
 import UserDashMain from 'universal/modules/userDashboard/components/UserDashMain/UserDashMain';
 import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
+import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
 
 const query = graphql`
   query UserDashRootQuery {
@@ -19,9 +20,9 @@ const query = graphql`
   }
 `;
 
-// const subscriptions = [];
-
-const cacheConfig = {ttl: DEFAULT_TTL};
+const subscriptions = [
+  ProjectUpdatedSubscription
+];
 
 const UserDashRoot = ({atmosphere, teams}) => {
   return (
@@ -36,7 +37,7 @@ const UserDashRoot = ({atmosphere, teams}) => {
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">
-              <UserDashMain viewer={renderProps.viewer} teams={teams}/>
+              <UserDashMain viewer={renderProps.viewer} teams={teams} />
             </AnimatedFade>
             }
             {!renderProps && !error &&
