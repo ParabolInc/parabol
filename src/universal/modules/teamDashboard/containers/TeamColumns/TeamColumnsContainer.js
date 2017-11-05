@@ -68,7 +68,7 @@ export default createFragmentContainer(
   connect(mapStateToProps)(TeamColumnsContainer),
   graphql`
     fragment TeamColumnsContainer_viewer on User {
-      projects(teamId: $teamId) {
+      projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
         edges {
           node {
             id

@@ -12,6 +12,9 @@ import {withRouter} from 'react-router-dom';
 const query = graphql`
   query AgendaAndProjectsRootQuery($teamId: ID!) {
     viewer {
+      teamMember(teamId: $teamId) {
+        hideAgenda
+      }
       ...AgendaAndProjects_viewer
     }
   }
@@ -22,35 +25,40 @@ const query = graphql`
 const AgendaAndProjectsRoot = (props) => {
   const {atmosphere, match: {params: {teamId}}, teams} = props;
   return (
-    <QueryRenderer
-      cacheConfig={cacheConfig}
-      environment={atmosphere}
-      query={query}
-      variables={{teamId}}
-      // subscriptions={subscriptions}
-      render={({error, props: renderProps}) => {
-        return (
-          <TransitionGroup appear style={{display: 'flex', width: '100%', flex: 1}}>
-            {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps &&
-            <AnimatedFade key="1">
-              <AgendaAndProjects
-                teamId={teamId}
-                teams={teams}
-                viewer={renderProps.viewer}
-              />
-            </AnimatedFade>
-            }
-            {!renderProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} />
-            </AnimatedFade>
-            }
-          </TransitionGroup>
-        );
-      }}
-    />
-  );
+      <QueryRenderer
+        cacheConfig={cacheConfig}
+        environment={atmosphere}
+        query={query}
+        variables={{teamId}}
+        // subscriptions={subscriptions}
+        render={({error, props: renderProps, loading}) => {
+
+          if (!renderProps && !loading) {
+            return null
+          }
+
+          return (
+            <TransitionGroup appear style={{display: 'flex', width: '100%', flex: 1}} exit={false}>
+              {error && <ErrorComponent height={'14rem'} error={error}/>}
+              {renderProps &&
+              <AnimatedFade key="1">
+                <AgendaAndProjects
+                  teamId={teamId}
+                  teams={teams}
+                  viewer={renderProps.viewer}
+                />
+              </AnimatedFade>
+              }
+              {!renderProps && !error &&
+              <AnimatedFade key="2" unmountOnExit exit={false}>
+                <LoadingComponent height={'5rem'}/>
+              </AnimatedFade>
+              }
+            </TransitionGroup>
+          );
+        }}
+      />
+    );
 };
 
 export default withRouter(withAtmosphere(AgendaAndProjectsRoot));

@@ -66,7 +66,7 @@ export default createFragmentContainer(
   connect(mapStateToProps)(UserColumnsContainer),
   graphql`
     fragment UserColumnsContainer_viewer on User {
-      projects {
+      projects(first: 1000) @connection(key: "UserColumnsContainer_projects") {
         edges {
           node {
             id

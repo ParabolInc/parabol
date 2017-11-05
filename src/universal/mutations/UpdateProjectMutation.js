@@ -1,25 +1,53 @@
 import {commitMutation} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
-import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
+import getNodeById from 'universal/utils/relay/getNodeById';
 import {insertEdgeAfter} from 'universal/utils/relay/insertEdge';
+import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
 import toGlobalId from 'universal/utils/relay/toGlobalId';
 
-// const mutation = graphql`
-//  mutation UpdateProjectMutation($updatedProject: ProjectInput!) {
-//    updateProject(updatedProject: $updatedProject) {
-//      project {
-//        id
-//        tags
-//      }
-//    }
-//  }
-// `;
 const mutation = graphql`
   mutation UpdateProjectMutation($updatedProject: ProjectInput!) {
-    updateProject(updatedProject: $updatedProject)
+    updateProject(updatedProject: $updatedProject) {
+      project {
+        id
+        content
+        createdAt
+        createdBy
+        integration {
+          service
+          nameWithOwner
+          issueNumber
+        }
+        sortOrder
+        status
+        tags
+        teamMemberId
+        updatedAt
+        team {
+          id
+          name
+        }
+        teamMember {
+          id
+          picture
+          preferredName
+        }
+      }
+    }
   }
 `;
+
+const getUserDashConnection = (viewer) => ConnectionHandler.getConnection(
+  viewer,
+  'UserColumnsContainer_projects'
+);
+
+const getTeamDashConnection = (viewer, teamId) => ConnectionHandler.getConnection(
+  viewer,
+  'TeamColumnsContainer_projects',
+  {teamId}
+);
 
 const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getConnection(
   viewer,
@@ -27,17 +55,20 @@ const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getConnection
   {teamId}
 );
 
-export const adjustArchive = (store, viewerId, project, teamId) => {
+export const handleProjectConnections = (store, viewerId, project, teamId) => {
+  // we currently have 3 connections, user, team, and team archive
   const viewer = store.get(viewerId);
   const projectId = project.getValue('id');
   const tags = project.getValue('tags');
-  const conn = getArchiveConnection(viewer, teamId);
-  if (conn) {
-    const matchingNode = filterNodesInConn(conn, (node) => node.getValue('id') === projectId)[0];
-    const isNowArchived = tags.includes('archived');
-    if (matchingNode && !isNowArchived) {
-      ConnectionHandler.deleteNode(conn, projectId);
-    } else if (!matchingNode && isNowArchived) {
+  const isNowArchived = tags.includes('archived');
+  const ownerUserId = project.getValue('userId');
+  const ownerViewerId = toGlobalId('User', ownerUserId);
+  const ownedByViewer = ownerViewerId === viewerId;
+  const archiveConn = getArchiveConnection(viewer, teamId);
+  const teamConn = getTeamDashConnection(viewer, teamId);
+  const userConn = getUserDashConnection(viewer);
+  const safePutNodeInConn = (conn) => {
+    if (conn && !getNodeById(projectId, conn)) {
       const newEdge = ConnectionHandler.createEdge(
         store,
         conn,
@@ -45,10 +76,26 @@ export const adjustArchive = (store, viewerId, project, teamId) => {
         'RelayProjectEdge'
       );
       newEdge.setValue(project.getValue('updatedAt'), 'cursor');
-      insertEdgeAfter(conn, newEdge, 'updatedAt');
+      insertEdgeAfter(archiveConn, newEdge, 'updatedAt');
     }
+  };
+
+  if (isNowArchived) {
+    safeRemoveNodeFromConn(projectId, teamConn);
+    safeRemoveNodeFromConn(projectId, userConn);
+    safePutNodeInConn(archiveConn);
+  } else {
+    safeRemoveNodeFromConn(projectId, archiveConn);
+    safePutNodeInConn(userConn);
+    safePutNodeInConn(teamConn);
   }
-};
+
+  if (ownedByViewer) {
+    safePutNodeInConn(userConn);
+  } else {
+    safeRemoveNodeFromConn(projectId, userConn);
+  }
+}
 
 const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError) => {
   const {viewerId} = environment;
@@ -56,40 +103,34 @@ const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError
   // use this as a temporary fix until we get rid of cashay because otherwise relay will roll back the change
   // which means we'll have 2 items, then 1, then 2, then 1. i prefer 2, then 1.
   const optimisticUpdater = (store) => {
-    const {id, content} = updatedProject;
+    const {id, content, teamMemberId} = updatedProject;
     if (!content) return;
     // FIXME when we remove cashay, this should be a globalId
     const globalId = toGlobalId('Project', id);
     const project = store.get(globalId);
     if (!project) return;
-    const tags = project.getValue('tags');
+    const now = new Date();
+    Object.keys(updatedProject).forEach((key) => {
+      const val = updatedProject[key];
+      project.setValue(val, key);
+    });
+    if (teamMemberId) {
+      const [newUserId] = teamMemberId.split('::');
+      project.setValue(newUserId, 'userId');
+    }
+    project.setValue('updatedAt', now.toJSON());
     const {entityMap} = JSON.parse(content);
     const nextTags = getTagsFromEntityMap(entityMap);
-    const wasArchived = tags.includes('archived');
-    const willArchive = nextTags.includes('archived');
-    const viewer = store.get(viewerId);
-    const conn = getArchiveConnection(viewer, teamId);
-    if (conn) {
-      if (!wasArchived && willArchive) {
-        // add
-        const newEdge = ConnectionHandler.createEdge(
-          store,
-          conn,
-          project,
-          'RelayProjectEdge'
-        );
-        newEdge.setValue(project.getValue('updatedAt'), 'cursor');
-        insertEdgeAfter(conn, newEdge, 'updatedAt');
-      } else if (wasArchived && !willArchive) {
-        // delete
-        ConnectionHandler.deleteNode(conn, globalId);
-      }
-    }
+    project.setValues(nextTags, 'tags');
+    handleProjectConnections(store, viewerId, project, teamId);
   };
   return commitMutation(environment, {
     mutation,
     variables: {updatedProject},
-    updater: optimisticUpdater,
+    updater: (store) => {
+      const project = store.getRootField('updateProject').getLinkedRecord('project');
+      handleProjectConnections(store, viewerId, project, teamId);
+    },
     optimisticUpdater,
     onCompleted,
     onError

@@ -9,11 +9,12 @@ import shortid from 'shortid';
 import {PROJECT_UPDATED} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
+import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 
 const DEBOUNCE_TIME = ms('5m');
 
 export default {
-  type: GraphQLBoolean,
+  type: UpdateProjectPayload,
   description: 'Update a project with a change in content, ownership, or status',
   args: {
     updatedProject: {

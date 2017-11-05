@@ -17,7 +17,8 @@ const isCacheable = (subs, cacheConfig = {}) => Boolean(subs || cacheConfig.forc
 const getDefaultState = () => ({
   error: null,
   props: null,
-  retry: null
+  retry: null,
+  loading: true
 });
 /**
  * @public
@@ -74,7 +75,10 @@ export default class QueryRenderer extends React.Component {
     const {environment, query, variables} = nextProps;
     if (query !== this.props.query || environment !== this.props.environment || !areEqual(variables, this.props.variables)) {
       this.setState({
-        readyState: this._fetchForProps(nextProps)
+        readyState: {
+          ...this._fetchForProps(nextProps),
+          loading: !this.state.readyState.props
+        }
       });
     }
   }
@@ -140,9 +144,9 @@ export default class QueryRenderer extends React.Component {
       };
 
       if (!this._queryKey) {
+        this._operationName = fullOperation.operationName;
         // We're just using the original variables as a unique identifier, if they change that's OK
-        const {name: operationName} = fullOperation;
-        this._queryKey = Atmosphere.getKey(operationName, variables);
+        this._queryKey = Atmosphere.getKey(this._operationName, variables);
       }
 
       // environment.check is expensive, do everything we can to prevent a call
@@ -153,12 +157,17 @@ export default class QueryRenderer extends React.Component {
           error: null,
           props: snapshot.data,
           retry: null,
-          unsubscribe: this.unsubscribe
+          unsubscribe: this.unsubscribe,
+          loading: false
         };
       }
       if (subscriptions) {
-        this._subscribe(subscriptions, subParams);
+        this._subscribe(subscriptions, {
+          operationName: this._operationName,
+          ...subParams
+        });
       }
+
       return this._fetch(operation, props.cacheConfig) || getDefaultState();
     }
     this._relayContext = {
@@ -169,7 +178,8 @@ export default class QueryRenderer extends React.Component {
     return {
       error: null,
       props: {},
-      retry: null
+      retry: null,
+      loading: false
     };
   }
 
@@ -217,7 +227,8 @@ export default class QueryRenderer extends React.Component {
             if (this._mounted && syncReadyState) {
               this.setState({readyState: syncReadyState});
             }
-          }
+          },
+          loading: false
         };
 
         if (this._selectionReference) {
@@ -241,9 +252,14 @@ export default class QueryRenderer extends React.Component {
             // of calling setState.
             const syncReadyState = this._fetch(operation, cacheConfig);
             if (this._mounted) {
-              this.setState({readyState: syncReadyState || getDefaultState()});
+              const naiveReadyState = syncReadyState || getDefaultState();
+              this.setState({readyState: {
+                ...naiveReadyState,
+                loading: !this.state.readyState.props
+              }});
             }
-          }
+          },
+          loading: false
         };
         if (this._selectionReference) {
           this._selectionReference.dispose();
@@ -271,7 +287,8 @@ export default class QueryRenderer extends React.Component {
       this.setState({
         readyState: {
           ...this.state.readyState,
-          props: snapshot.data
+          props: snapshot.data,
+          loading: false
         }
       });
     }

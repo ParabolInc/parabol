@@ -1,8 +1,8 @@
-import {adjustArchive} from 'universal/mutations/UpdateProjectMutation';
+import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
 
 const subscription = graphql`
-  subscription ProjectUpdatedSubscription($teamId: ID!) {
-    projectUpdated(teamId: $teamId) {
+  subscription ProjectUpdatedSubscription($teamIds: [ID!]) {
+    projectUpdated(teamIds: $teamIds) {
       project {
         id
         content
@@ -26,15 +26,18 @@ const subscription = graphql`
   }
 `;
 
-const ProjectUpdatedSubscription = (environment, queryVariables) => {
+const ProjectUpdatedSubscription = (environment, queryVariables, subParams) => {
   const {viewerId} = environment;
+  const {operationName} = subParams;
   const {teamId} = queryVariables;
+  // kinda hacky, but cleaner than creating a separate file
+  const variables = operationName === 'UserDashRootQuery' ? {} : {teamIds: [teamId]};
   return {
     subscription,
-    variables: {teamIds: [teamId]},
+    variables,
     updater: (store) => {
       const project = store.getRootField('projectUpdated').getLinkedRecord('project');
-      adjustArchive(store, viewerId, project, teamId);
+      handleProjectConnections(store, viewerId, project, teamId);
     }
   };
 };
