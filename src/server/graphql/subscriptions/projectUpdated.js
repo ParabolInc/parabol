@@ -11,7 +11,7 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))
     }
   },
-  subscribe: async (source, {teamIds}, {authToken, socketId}) => {
+  subscribe: async (source, {teamIds}, {authToken, socketId, operationId, sharedDataloader}) => {
     // AUTH
     const userId = getUserId(authToken);
     if (teamIds) {
@@ -23,7 +23,6 @@ export default {
     // if teamIds is provided, then we'll listen to all users on those teams
     // else, we just listen to projects the user cares about (assigned, etc.)
     const channelIds = teamIds || [userId];
-
     // RESOLUTION
     const channelNames = channelIds.map((id) => `${PROJECT_UPDATED}.${id}`);
     const filterFn = (value) => {
@@ -32,6 +31,6 @@ export default {
       const isPrivate = tags.includes('private');
       return !isPrivate || userId === projectUserId;
     };
-    return makeSubscribeIter(channelNames, {filterFn});
+    return makeSubscribeIter(channelNames, {filterFn, operationId, sharedDataloader});
   }
 };

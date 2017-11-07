@@ -5,7 +5,7 @@ import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
 
 export default function makeProjectSchema() {
   return legitify({
-    id: compositeId,
+    id: (value) => value.min(5).max(100),
     agendaId: compositeId,
     content: (value) => value
       .normalize(normalizeRawDraftJS)

@@ -83,6 +83,7 @@ export default createFragmentContainer(
             tags
             teamMemberId
             updatedAt
+            userId
             team {
               id
               name

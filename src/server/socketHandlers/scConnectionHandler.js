@@ -12,6 +12,7 @@ import scRelaySubscribeHandler from 'server/socketHandlers/scRelaySubscribeHandl
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 
 const APP_VERSION = packageJSON.version;
+
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
@@ -21,7 +22,7 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   return true;
 };
 
-export default function scConnectionHandler(exchange) {
+export default function scConnectionHandler(exchange, sharedDataloader) {
   return async function connectionHandler(socket) {
     // socket.on('message', message => {
     //   if (message === '#2') return;
@@ -29,8 +30,8 @@ export default function scConnectionHandler(exchange) {
     // });
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
-    const graphQLHandler = scGraphQLHandler(exchange, socket);
-    const relaySubscribeHandler = scRelaySubscribeHandler(socket);
+    const graphQLHandler = scGraphQLHandler(exchange, socket, sharedDataloader);
+    const relaySubscribeHandler = scRelaySubscribeHandler(socket, sharedDataloader);
     socket.on('message', (message) => {
       // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
       if (isObject(message) && message.event === '#authenticate') {

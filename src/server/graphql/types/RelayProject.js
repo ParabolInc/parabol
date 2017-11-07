@@ -53,16 +53,18 @@ const RelayProject = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team this project belongs to',
-      resolve: async (source, args, {dataloader}) => {
+      resolve: async (source, args, {sharedDataloader, operationId}) => {
         const {teamId} = source;
+        const dataloader = sharedDataloader.get(operationId);
         return dataloader.teams.load(teamId);
       }
     },
     teamMember: {
       type: TeamMember,
       description: 'The team member that owns this project',
-      resolve: async (source, args, {dataloader}) => {
+      resolve: async (source, args, {sharedDataloader, operationId}) => {
         const {teamMemberId} = source;
+        const dataloader = sharedDataloader.get(operationId);
         return dataloader.teamMembers.load(teamMemberId);
       }
     },

@@ -33,7 +33,7 @@ const UserDashRoot = ({atmosphere, teams}) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
-      // subscriptions={subscriptions}
+      subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear style={{display: 'flex', width: '100%'}}>

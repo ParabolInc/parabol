@@ -39,13 +39,21 @@ const groupByField = (arr, fieldName) => {
 };
 
 export default class RethinkDataLoader {
-  constructor(authToken) {
+  constructor(authToken, dataloaderOptions) {
     this.authToken = authToken;
+    this.dataloaderOptions = dataloaderOptions;
+  }
+
+  _makeCustomLoader(batchFn) {
+    return new DataLoader(batchFn, this.dataloaderOptions);
+  }
+  _share() {
+    this.authToken = null;
   }
   agendaItems = makeStandardLoader('AgendaItem');
   users = makeStandardLoader('User');
   organizations = makeStandardLoader('Organization');
-  orgsByUserId = new DataLoader(async (userIds) => {
+  orgsByUserId = this._makeCustomLoader(async (userIds) => {
     const r = getRethink();
     const orgs = await r.table('Organization')
       .getAll(r.args(userIds), {index: 'orgUsers'});
@@ -56,7 +64,7 @@ export default class RethinkDataLoader {
       return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
     });
   });
-  projectsByAgendaId = new DataLoader(async (agendaIds) => {
+  projectsByAgendaId = this._makeCustomerLoader(async (agendaIds) => {
     const r = getRethink();
     const projects = await r.table('Projects')
       .getAll(r.args(agendaIds), {index: 'agendaId'});
@@ -64,7 +72,7 @@ export default class RethinkDataLoader {
       return projects.filter((project) => project.agendaId === agendaId);
     });
   });
-  projectsByTeamId = new DataLoader(async (teamIds) => {
+  projectsByTeamId = this._makeCustomerLoader(async (teamIds) => {
     const r = getRethink();
     const userId = getUserId(this.authToken);
     const projects = await r.table('Project')
@@ -78,7 +86,7 @@ export default class RethinkDataLoader {
       return projects.filter((project) => project.teamId === teamId);
     });
   });
-  projectsByUserId = new DataLoader(async (userIds) => {
+  projectsByUserId = this._makeCustomerLoader(async (userIds) => {
     const r = getRethink();
     const userId = getUserId(this.authToken);
     const projects = await r.table('Project')

@@ -86,6 +86,7 @@ export default createFragmentContainer(
             updatedAt
             sortOrder
             updatedAt
+            userId
             team {
               id
               name

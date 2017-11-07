@@ -24,6 +24,7 @@ const mutation = graphql`
         tags
         teamMemberId
         updatedAt
+        userId
         team {
           id
           name
@@ -105,15 +106,14 @@ const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError
   const optimisticUpdater = (store) => {
     const {id, content, teamMemberId} = updatedProject;
     if (!content) return;
-    // FIXME when we remove cashay, this should be a globalId
-    const globalId = toGlobalId('Project', id);
-    const project = store.get(globalId);
+    const project = store.get(id);
     if (!project) return;
     const now = new Date();
     Object.keys(updatedProject).forEach((key) => {
       const val = updatedProject[key];
       project.setValue(val, key);
     });
+    project.setValue(project.getValue('teamMemberId').split('::')[0], 'userId');
     if (teamMemberId) {
       const [newUserId] = teamMemberId.split('::');
       project.setValue(newUserId, 'userId');
@@ -121,7 +121,7 @@ const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError
     project.setValue('updatedAt', now.toJSON());
     const {entityMap} = JSON.parse(content);
     const nextTags = getTagsFromEntityMap(entityMap);
-    project.setValues(nextTags, 'tags');
+    project.setValue(nextTags, 'tags');
     handleProjectConnections(store, viewerId, project, teamId);
   };
   return commitMutation(environment, {

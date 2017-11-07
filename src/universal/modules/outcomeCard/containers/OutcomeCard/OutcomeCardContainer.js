@@ -9,6 +9,8 @@ import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/Ou
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
 import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 
 const teamMembersQuery = `
 query {
@@ -119,22 +121,18 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state;
-    const {outcome: {id: projectId}, contentState: initialContentState} = this.props;
+    const {atmosphere, outcome: {id: projectId}, contentState: initialContentState} = this.props;
     const contentState = editorState.getCurrentContent();
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
       cashay.mutate('deleteProject', {variables: {projectId}});
     } else if (initialContentState !== contentState) {
       clearTimeout(this.updateTimer);
       this.updateTimer = setTimeout(() => {
-        cashay.mutate('updateProject', {
-          ops: {},
-          variables: {
-            updatedProject: {
-              id: projectId,
-              content: JSON.stringify(convertToRaw(contentState))
-            }
-          }
-        });
+        const updatedProject = {
+          id: projectId,
+          content: JSON.stringify(convertToRaw(contentState))
+        };
+        UpdateProjectMutation(atmosphere, updatedProject)
         this.updateTimer = undefined;
       }, 15);
     }
@@ -216,4 +214,4 @@ OutcomeCardContainer.propTypes = {
   teamMembers: PropTypes.array
 };
 
-export default OutcomeCardContainer;
+export default withAtmosphere(OutcomeCardContainer);

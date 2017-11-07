@@ -10,6 +10,7 @@ import {PROJECT_UPDATED} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
+import {fromGlobalId} from 'graphql-relay';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -22,12 +23,17 @@ export default {
       description: 'the updated project including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedProject}, {authToken}) {
+  async resolve(source, {updatedProject}, {authToken, operationId, sharedDataloader}) {
     const r = getRethink();
 
     // AUTH
     // projectId is of format 'teamId::taskId'
-    const [teamId] = updatedProject.id.split('::');
+    const {id: projectId, type} = fromGlobalId(updatedProject.id);
+    if (type !== 'Project') {
+      throw new Error('Invalid Project ID')
+    }
+
+    const [teamId] = projectId.split('::');
     requireSUOrTeamMember(authToken, teamId);
 
     // VALIDATION
@@ -36,7 +42,7 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const {id: projectId, sortOrder, agendaId, content, ...historicalProject} = validUpdatedProject;
+    const {id, sortOrder, agendaId, content, ...historicalProject} = validUpdatedProject;
 
     const now = new Date();
 
@@ -81,19 +87,22 @@ export default {
         });
     }
     const {projectChanges} = await r({
-      projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0),
+      projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0).default(null),
       history: projectHistory
     });
-
+    if (!projectChanges) {
+      throw new Error('Project does not exist');
+    }
     const project = projectChanges.new_val;
     const projectUpdated = {project};
     const affectedUsers = Array.from(new Set([projectChanges.new_val.userId, projectChanges.old_val.userId]));
+    sharedDataloader.share(operationId);
     affectedUsers.forEach((userId) => {
       // TODO when removing cashay, add in the mutatorId here
-      getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated});
+      getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated, operationId});
     });
     // TODO when removing cashay, add in the mutatorId here
-    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated});
-    return true;
+    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, operationId});
+    return projectUpdated;
   }
 };

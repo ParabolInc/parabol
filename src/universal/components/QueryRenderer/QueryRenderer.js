@@ -144,7 +144,7 @@ export default class QueryRenderer extends React.Component {
       };
 
       if (!this._queryKey) {
-        this._operationName = fullOperation.operationName;
+        this._operationName = fullOperation.name;
         // We're just using the original variables as a unique identifier, if they change that's OK
         this._queryKey = Atmosphere.getKey(this._operationName, variables);
       }

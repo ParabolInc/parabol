@@ -12,10 +12,10 @@ export default {
     }
   },
   description: 'get a single organization and the count of users by status',
-  resolve: async (source, {orgId}, {authToken, dataloader}) => {
+  resolve: async (source, {orgId}, {authToken, sharedDataloader, operationId}) => {
     // AUTH
     const userId = getUserId(authToken);
-
+    const dataloader = sharedDataloader.get(operationId);
     const org = await dataloader.organization.load(orgId);
 
     const {orgUsers} = org;

@@ -21,9 +21,10 @@ export default {
       description: 'The ID of the agenda item'
     }
   },
-  async resolve(source, {agendaId, teamId}, {authToken, dataloader}) {
+  async resolve(source, {agendaId, teamId}, {authToken, sharedDataloader, operationId}) {
     // AUTH
     const userId = getUserId(authToken);
+    const dataloader = sharedDataloader.get(operationId);
     let projects;
     if (agendaId) {
       const agendaItem = await dataloader.agendaItems.load(agendaId);
