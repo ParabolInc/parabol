@@ -25,6 +25,7 @@ const mutation = graphql`
         teamMemberId
         updatedAt
         userId
+        teamId
         team {
           id
           name
@@ -56,9 +57,10 @@ const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getConnection
   {teamId}
 );
 
-export const handleProjectConnections = (store, viewerId, project, teamId) => {
+export const handleProjectConnections = (store, viewerId, project) => {
   // we currently have 3 connections, user, team, and team archive
   const viewer = store.get(viewerId);
+  const teamId = project.getValue('teamId');
   const projectId = project.getValue('id');
   const tags = project.getValue('tags');
   const isNowArchived = tags.includes('archived');
@@ -74,7 +76,7 @@ export const handleProjectConnections = (store, viewerId, project, teamId) => {
         store,
         conn,
         project,
-        'RelayProjectEdge'
+        'ProjectEdge'
       );
       newEdge.setValue(project.getValue('updatedAt'), 'cursor');
       insertEdgeAfter(conn, newEdge, 'updatedAt');
@@ -100,7 +102,6 @@ export const handleProjectConnections = (store, viewerId, project, teamId) => {
 
 const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError) => {
   const {viewerId} = environment;
-  const [teamId] = updatedProject.id.split('::');
   // use this as a temporary fix until we get rid of cashay because otherwise relay will roll back the change
   // which means we'll have 2 items, then 1, then 2, then 1. i prefer 2, then 1.
   return commitMutation(environment, {
@@ -108,7 +109,7 @@ const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError
     variables: {updatedProject},
     updater: (store) => {
       const project = store.getRootField('updateProject').getLinkedRecord('project');
-      handleProjectConnections(store, viewerId, project, teamId);
+      handleProjectConnections(store, viewerId, project);
     },
     optimisticUpdater: (store) => {
       const {id, content, teamMemberId} = updatedProject;
@@ -129,7 +130,7 @@ const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError
       const {entityMap} = JSON.parse(content);
       const nextTags = getTagsFromEntityMap(entityMap);
       project.setValue(nextTags, 'tags');
-      handleProjectConnections(store, viewerId, project, teamId);
+      handleProjectConnections(store, viewerId, project);
     },
     onCompleted,
     onError

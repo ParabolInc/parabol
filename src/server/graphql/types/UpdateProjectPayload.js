@@ -1,11 +1,11 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import RelayProject from 'server/graphql/types/RelayProject';
+import Project from 'server/graphql/types/Project';
 
 const UpdateProjectPayload = new GraphQLObjectType({
   name: 'UpdateProjectPayload',
   fields: () => ({
     project: {
-      type: new GraphQLNonNull(RelayProject)
+      type: new GraphQLNonNull(Project)
     }
   })
 });

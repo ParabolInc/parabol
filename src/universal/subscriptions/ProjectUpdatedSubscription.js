@@ -19,6 +19,7 @@ const subscription = graphql`
         teamMemberId
         updatedAt
         userId
+        teamId
         team {
           id
           name
@@ -44,7 +45,7 @@ const ProjectUpdatedSubscription = (environment, queryVariables, subParams) => {
     variables,
     updater: (store) => {
       const project = store.getRootField('projectUpdated').getLinkedRecord('project');
-      handleProjectConnections(store, viewerId, project, teamId);
+      handleProjectConnections(store, viewerId, project);
     }
   };
 };

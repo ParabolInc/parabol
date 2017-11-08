@@ -1,11 +1,11 @@
 import {GraphQLID} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {RelayProjectConnection} from 'server/graphql/types/RelayProject';
+import {ProjectConnection} from 'server/graphql/types/Project';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {
-  type: RelayProjectConnection,
+  type: ProjectConnection,
   args: {
     ...forwardConnectionArgs,
     after: {

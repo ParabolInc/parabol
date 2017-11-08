@@ -308,6 +308,7 @@ export default createPaginationContainer(
             teamMemberId
             updatedAt
             userId
+            teamId
             teamMember {
               id
               picture
