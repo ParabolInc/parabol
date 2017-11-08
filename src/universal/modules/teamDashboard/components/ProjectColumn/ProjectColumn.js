@@ -68,14 +68,14 @@ class ProjectColumn extends Component {
       status,
       projects,
       myTeamMemberId,
-      queryKey,
+      teamMemberFilterId,
       teams,
       userId
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH) {
-      const teamMemberId = queryKey.indexOf('::') === -1 ? myTeamMemberId : queryKey;
+      const teamMemberId = teamMemberFilterId.indexOf('::') === -1 ? myTeamMemberId : teamMemberFilterId;
       const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, teamMemberId, sortOrder);
       return <AddProjectButton onClick={handleAddProject} label={label} />;
     } else if (area === USER_DASH) {
@@ -205,9 +205,9 @@ ProjectColumn.propTypes = {
   lastColumn: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
-  queryKey: PropTypes.string,
   status: PropTypes.string,
   styles: PropTypes.object,
+  teamMemberFilterId: PropTypes.string,
   teams: PropTypes.array,
   userId: PropTypes.string
 };

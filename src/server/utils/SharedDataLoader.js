@@ -75,6 +75,4 @@ export default class SharedDataLoader {
   useShared(subscriptionOpId, mutationOpId) {
     this.warehouseLookup[subscriptionOpId] = mutationOpId;
   }
-
-
 }

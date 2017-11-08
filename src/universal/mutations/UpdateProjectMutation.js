@@ -77,7 +77,7 @@ export const handleProjectConnections = (store, viewerId, project, teamId) => {
         'RelayProjectEdge'
       );
       newEdge.setValue(project.getValue('updatedAt'), 'cursor');
-      insertEdgeAfter(archiveConn, newEdge, 'updatedAt');
+      insertEdgeAfter(conn, newEdge, 'updatedAt');
     }
   };
 
@@ -96,34 +96,13 @@ export const handleProjectConnections = (store, viewerId, project, teamId) => {
   } else {
     safeRemoveNodeFromConn(projectId, userConn);
   }
-}
+};
 
 const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError) => {
   const {viewerId} = environment;
   const [teamId] = updatedProject.id.split('::');
   // use this as a temporary fix until we get rid of cashay because otherwise relay will roll back the change
   // which means we'll have 2 items, then 1, then 2, then 1. i prefer 2, then 1.
-  const optimisticUpdater = (store) => {
-    const {id, content, teamMemberId} = updatedProject;
-    if (!content) return;
-    const project = store.get(id);
-    if (!project) return;
-    const now = new Date();
-    Object.keys(updatedProject).forEach((key) => {
-      const val = updatedProject[key];
-      project.setValue(val, key);
-    });
-    project.setValue(project.getValue('teamMemberId').split('::')[0], 'userId');
-    if (teamMemberId) {
-      const [newUserId] = teamMemberId.split('::');
-      project.setValue(newUserId, 'userId');
-    }
-    project.setValue('updatedAt', now.toJSON());
-    const {entityMap} = JSON.parse(content);
-    const nextTags = getTagsFromEntityMap(entityMap);
-    project.setValue(nextTags, 'tags');
-    handleProjectConnections(store, viewerId, project, teamId);
-  };
   return commitMutation(environment, {
     mutation,
     variables: {updatedProject},
@@ -131,7 +110,27 @@ const UpdateProjectMutation = (environment, updatedProject, onCompleted, onError
       const project = store.getRootField('updateProject').getLinkedRecord('project');
       handleProjectConnections(store, viewerId, project, teamId);
     },
-    optimisticUpdater,
+    optimisticUpdater: (store) => {
+      const {id, content, teamMemberId} = updatedProject;
+      if (!content) return;
+      const project = store.get(id);
+      if (!project) return;
+      const now = new Date();
+      Object.keys(updatedProject).forEach((key) => {
+        const val = updatedProject[key];
+        project.setValue(val, key);
+      });
+      project.setValue(project.getValue('teamMemberId').split('::')[0], 'userId');
+      if (teamMemberId) {
+        const [newUserId] = teamMemberId.split('::');
+        project.setValue(newUserId, 'userId');
+      }
+      project.setValue('updatedAt', now.toJSON());
+      const {entityMap} = JSON.parse(content);
+      const nextTags = getTagsFromEntityMap(entityMap);
+      project.setValue(nextTags, 'tags');
+      handleProjectConnections(store, viewerId, project, teamId);
+    },
     onCompleted,
     onError
   });

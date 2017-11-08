@@ -8,6 +8,7 @@ import AgendaAndProjects from 'universal/modules/teamDashboard/components/Agenda
 import {cacheConfig} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const query = graphql`
   query AgendaAndProjectsRootQuery($teamId: ID!) {
@@ -25,22 +26,21 @@ const query = graphql`
 const AgendaAndProjectsRoot = (props) => {
   const {atmosphere, match: {params: {teamId}}, teams} = props;
   return (
-      <QueryRenderer
-        cacheConfig={cacheConfig}
-        environment={atmosphere}
-        query={query}
-        variables={{teamId}}
-        // subscriptions={subscriptions}
-        render={({error, props: renderProps, loading}) => {
+    <QueryRenderer
+      cacheConfig={cacheConfig}
+      environment={atmosphere}
+      query={query}
+      variables={{teamId}}
+      // subscriptions={subscriptions}
+      render={({error, props: renderProps, loading}) => {
+        if (!renderProps && !loading) {
+          return null;
+        }
 
-          if (!renderProps && !loading) {
-            return null
-          }
-
-          return (
-            <TransitionGroup appear style={{display: 'flex', width: '100%', flex: 1}} exit={false}>
-              {error && <ErrorComponent height={'14rem'} error={error}/>}
-              {renderProps &&
+        return (
+          <TransitionGroup appear style={{display: 'flex', width: '100%', flex: 1}} exit={false}>
+            {error && <ErrorComponent height={'14rem'} error={error} />}
+            {renderProps &&
               <AnimatedFade key="1">
                 <AgendaAndProjects
                   teamId={teamId}
@@ -48,17 +48,23 @@ const AgendaAndProjectsRoot = (props) => {
                   viewer={renderProps.viewer}
                 />
               </AnimatedFade>
-              }
-              {!renderProps && !error &&
+            }
+            {!renderProps && !error &&
               <AnimatedFade key="2" unmountOnExit exit={false}>
-                <LoadingComponent height={'5rem'}/>
+                <LoadingComponent height={'5rem'} />
               </AnimatedFade>
-              }
-            </TransitionGroup>
-          );
-        }}
-      />
-    );
+            }
+          </TransitionGroup>
+        );
+      }}
+    />
+  );
+};
+
+AgendaAndProjectsRoot.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
+  teams: PropTypes.array
 };
 
 export default withRouter(withAtmosphere(AgendaAndProjectsRoot));

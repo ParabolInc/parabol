@@ -28,7 +28,7 @@ const trySubscribe = async (body, socket, sharedDataloader, operationId) => {
 export default function scRelaySubscribeHandler(socket, sharedDataloader) {
   socket.subs = socket.subs || {};
   return async function relaySubscribeHandler(body) {
-    const operationId = shortid.generate()
+    const operationId = shortid.generate();
     const asyncIterator = await trySubscribe(body, socket, sharedDataloader, operationId);
     if (!asyncIterator) return;
     const {opId} = body;

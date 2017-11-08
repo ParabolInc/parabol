@@ -18,7 +18,6 @@ import {createFragmentContainer} from 'react-relay';
 
 const UserDashMain = (props) => {
   const {styles, teams, viewer} = props;
-  console.log('userDashMain', teams);
   return (
     <DashMain>
       <Helmet title="My Dashboard | Parabol" />
@@ -47,6 +46,7 @@ const UserDashMain = (props) => {
 
 UserDashMain.propTypes = {
   styles: PropTypes.object,
+  teams: PropTypes.array,
   viewer: PropTypes.object
 };
 

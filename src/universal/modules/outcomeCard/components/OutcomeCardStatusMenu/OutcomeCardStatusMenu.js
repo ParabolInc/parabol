@@ -9,25 +9,22 @@ import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import addTagToProject from 'universal/utils/draftjs/addTagToProject';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const statusItems = labels.projectStatus.slugs.slice();
 
 class OutcomeCardStatusMenu extends Component {
   makeAddTagToProject = (tag) => () => {
-    const {outcome: {id: projectId}, editorState} = this.props;
+    const {atmosphere, outcome: {id: projectId}, editorState} = this.props;
     const contentState = editorState.getCurrentContent();
     const newContent = addTagToProject(contentState, tag);
     const rawContentStr = JSON.stringify(convertToRaw(newContent));
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id: projectId,
-          content: rawContentStr
-        }
-      }
+    const updatedProject = {
+      id: projectId,
+      content: rawContentStr
     };
-    cashay.mutate('updateProject', options);
+    UpdateProjectMutation(atmosphere, updatedProject);
   };
 
   deleteOutcome = () => {
@@ -97,21 +94,16 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   handleProjectUpdateFactory = (newStatus) => () => {
-    const {onComplete, outcome} = this.props;
+    const {atmosphere, onComplete, outcome} = this.props;
     const {id: projectId, status} = outcome;
     if (newStatus === status) {
       return;
     }
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id: projectId,
-          status: newStatus
-        }
-      }
+    const updatedProject = {
+      id: projectId,
+      status: newStatus
     };
-    cashay.mutate('updateProject', options);
+    UpdateProjectMutation(atmosphere, updatedProject);
     if (onComplete) {
       onComplete();
     }
@@ -128,6 +120,7 @@ class OutcomeCardStatusMenu extends Component {
 }
 
 OutcomeCardStatusMenu.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
   editorState: PropTypes.object,
   outcome: PropTypes.object,
@@ -147,4 +140,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OutcomeCardStatusMenu);
+export default withAtmosphere(withStyles(styleThunk)(OutcomeCardStatusMenu));

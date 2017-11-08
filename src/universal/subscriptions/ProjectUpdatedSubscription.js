@@ -7,15 +7,22 @@ const subscription = graphql`
         id
         content
         createdAt
+        createdBy
         integration {
           service
           nameWithOwner
           issueNumber
         }
+        sortOrder
         status
         tags
         teamMemberId
         updatedAt
+        userId
+        team {
+          id
+          name
+        }
         teamMember {
           id
           picture

@@ -30,21 +30,21 @@ const makeStandardLoader = (table) => {
 const makeCustomLoader = (batchFn, options) => {
   // Make a default {} because if we forget this, then it'll be a tricky memory leak to find DEV only
   if (!options) {
-    console.warn('Did you forget the options?', batchFn)
+    console.warn('Did you forget the options?', batchFn);
   }
   return new DataLoader(batchFn, options);
 };
 
-const groupByField = (arr, fieldName) => {
-  const obj = {};
-  for (let ii = 0; ii < arr.length; ii++) {
-    const doc = arr[ii];
-    const fieldVal = doc[fieldName];
-    obj[fieldVal] = obj[fieldVal] || [];
-    obj[fieldVal].push(doc);
-  }
-  return obj;
-};
+// const groupByField = (arr, fieldName) => {
+//  const obj = {};
+//  for (let ii = 0; ii < arr.length; ii++) {
+//    const doc = arr[ii];
+//    const fieldVal = doc[fieldName];
+//    obj[fieldVal] = obj[fieldVal] || [];
+//    obj[fieldVal].push(doc);
+//  }
+//  return obj;
+// };
 
 export default class RethinkDataLoader {
   constructor(authToken, dataloaderOptions = {}) {

@@ -7,10 +7,7 @@ import {USER_DASH} from 'universal/utils/constants';
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 
 const mapStateToProps = (state) => {
-  const {teamFilterId} = state.userDashboard;
-  const queryKey = teamFilterId || '';
   return {
-    queryKey,
     userId: state.auth.obj.sub
   };
 };
@@ -39,11 +36,10 @@ class UserColumnsContainer extends Component {
   }
 
   render() {
-    const {queryKey, teams, userId} = this.props;
+    const {teams, userId} = this.props;
     const {projects} = this.state;
     return (
       <ProjectColumns
-        queryKey={queryKey}
         projects={projects}
         area={USER_DASH}
         teams={teams}
@@ -55,7 +51,6 @@ class UserColumnsContainer extends Component {
 
 UserColumnsContainer.propTypes = {
   projects: PropTypes.object,
-  queryKey: PropTypes.string,
   teams: PropTypes.array,
   userId: PropTypes.string,
   viewer: PropTypes.object

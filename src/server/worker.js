@@ -37,7 +37,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   const httpServer = worker.httpServer;
   const {exchange} = scServer;
   httpServer.on('request', app);
-// This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
+  // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
   const sharedDataloader = new SharedDataLoader();
   // HMR
   if (!PROD) {

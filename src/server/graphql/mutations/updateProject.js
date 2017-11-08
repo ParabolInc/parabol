@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLNonNull} from 'graphql';
+import {GraphQLNonNull} from 'graphql';
 import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import ProjectInput from 'server/graphql/types/ProjectInput';
@@ -30,7 +30,7 @@ export default {
     // projectId is of format 'teamId::taskId'
     const {id: projectId, type} = fromGlobalId(updatedProject.id);
     if (type !== 'Project') {
-      throw new Error('Invalid Project ID')
+      throw new Error('Invalid Project ID');
     }
 
     const [teamId] = projectId.split('::');

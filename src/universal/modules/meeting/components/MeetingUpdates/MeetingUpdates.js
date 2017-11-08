@@ -16,7 +16,6 @@ const MeetingUpdates = (props) => {
     gotoNext,
     localPhaseItem,
     members,
-    queryKey,
     projects,
     showMoveMeetingControls,
     styles,
@@ -50,7 +49,7 @@ const MeetingUpdates = (props) => {
           }
         </div>
         <div className={css(styles.body)}>
-          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING} />
+          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING} />
         </div>
       </MeetingSection>
     </MeetingMain>
@@ -64,7 +63,6 @@ MeetingUpdates.propTypes = {
   members: PropTypes.array.isRequired,
   onFacilitatorPhase: PropTypes.bool,
   projects: PropTypes.object.isRequired,
-  queryKey: PropTypes.string.isRequired,
   showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired

@@ -132,7 +132,7 @@ class OutcomeCardContainer extends Component {
           id: projectId,
           content: JSON.stringify(convertToRaw(contentState))
         };
-        UpdateProjectMutation(atmosphere, updatedProject)
+        UpdateProjectMutation(atmosphere, updatedProject);
         this.updateTimer = undefined;
       }, 15);
     }
@@ -200,6 +200,7 @@ class OutcomeCardContainer extends Component {
 
 OutcomeCardContainer.propTypes = {
   area: PropTypes.string,
+  atmosphere: PropTypes.object.isRequired,
   contentState: PropTypes.object.isRequired,
   handleAddProject: PropTypes.func,
   outcome: PropTypes.shape({

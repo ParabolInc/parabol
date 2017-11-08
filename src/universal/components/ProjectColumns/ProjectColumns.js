@@ -14,9 +14,9 @@ const ProjectColumns = (props) => {
     area,
     myTeamMemberId,
     projects,
-    queryKey,
     styles,
     teams,
+    teamMemberFilterId,
     userId
   } = props;
   const rootStyles = css(styles.root, styles[alignColumns]);
@@ -31,8 +31,8 @@ const ProjectColumns = (props) => {
             firstColumn={idx === 0}
             lastColumn={idx === (lanes.length - 1)}
             myTeamMemberId={myTeamMemberId}
+            teamMemberFilterId={teamMemberFilterId}
             projects={projects[status]}
-            queryKey={queryKey}
             status={status}
             teams={teams}
             userId={userId}
@@ -52,8 +52,8 @@ ProjectColumns.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object.isRequired,
-  queryKey: PropTypes.string,
   styles: PropTypes.object,
+  teamMemberFilterId: PropTypes.string,
   teams: PropTypes.array,
   userId: PropTypes.string
 };

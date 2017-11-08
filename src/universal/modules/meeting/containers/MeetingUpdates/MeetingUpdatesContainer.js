@@ -77,8 +77,7 @@ const mapStateToProps = (state, props) => {
   }).data.projects;
   const projects = makeProjectsByStatus(memberProjects);
   return {
-    projects,
-    queryKey: teamMemberId
+    projects
   };
 };
 
@@ -95,7 +94,6 @@ MeetingUpdatesContainer.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   projects: PropTypes.object.isRequired,
-  queryKey: PropTypes.string,
   team: PropTypes.object.isRequired
 };
 

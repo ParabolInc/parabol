@@ -24,7 +24,7 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  ProjectUpdatedSubscription,
+  ProjectUpdatedSubscription
 ];
 
 const UserDashRoot = ({atmosphere, teams}) => {
@@ -37,15 +37,15 @@ const UserDashRoot = ({atmosphere, teams}) => {
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear style={{display: 'flex', width: '100%'}}>
-            {error && <ErrorComponent height={'14rem'} error={error}/>}
+            {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">
-              <UserDashMain viewer={renderProps.viewer} teams={teams}/>
+              <UserDashMain viewer={renderProps.viewer} teams={teams} />
             </AnimatedFade>
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'}/>
+              <LoadingComponent height={'5rem'} />
             </AnimatedFade>
             }
           </TransitionGroup>

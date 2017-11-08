@@ -60,7 +60,7 @@ export default function scConnectionHandler(exchange, sharedDataloader) {
       }
     });
     socket.on('disconnect', () => {
-      unsubscribeRelaySub(socket, sharedDataloader)
+      unsubscribeRelaySub(socket, sharedDataloader);
     });
 
     // the async part should come last so there isn't a race

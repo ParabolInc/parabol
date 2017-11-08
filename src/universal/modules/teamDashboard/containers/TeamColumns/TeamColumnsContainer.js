@@ -9,11 +9,10 @@ import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 const mapStateToProps = (state, props) => {
   const {teamId} = props;
   const {teamMemberFilterId} = state.teamDashboard;
-  const key = teamMemberFilterId || teamId;
   const userId = state.auth.obj.sub;
   return {
     myTeamMemberId: `${userId}::${teamId}`,
-    queryKey: key,
+    teamMemberFilterId,
     userId
   };
 };
@@ -43,13 +42,13 @@ class TeamColumnsContainer extends Component {
   }
 
   render() {
-    const {myTeamMemberId, queryKey, userId} = this.props;
+    const {myTeamMemberId, teamMemberFilterId, userId} = this.props;
     const {projects} = this.state;
     return (
       <ProjectColumns
         myTeamMemberId={myTeamMemberId}
         projects={projects}
-        queryKey={queryKey}
+        teamMemberFilterId={teamMemberFilterId}
         area={TEAM_DASH}
         userId={userId}
       />
@@ -59,9 +58,10 @@ class TeamColumnsContainer extends Component {
 
 TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,
-  queryKey: PropTypes.string.isRequired,
   teamId: PropTypes.string.isRequired,
-  userId: PropTypes.string.isRequired
+  teamMemberFilterId: PropTypes.string,
+  userId: PropTypes.string.isRequired,
+  viewer: PropTypes.object.isRequired
 };
 
 export default createFragmentContainer(
