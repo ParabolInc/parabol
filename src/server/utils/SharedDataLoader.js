@@ -11,7 +11,7 @@ export default class SharedDataLoader {
     this.warehouseLookup = {};
   }
 
-  _dispose(operationId) {
+  _dispose = (operationId) => {
     delete this.warehouse[operationId];
     delete this.warehouseLookup[operationId];
   }

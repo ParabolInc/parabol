@@ -47,14 +47,20 @@ export default function scConnectionHandler(exchange, sharedDataloader) {
     socket.on('unsubscribe', unsubscribeHandler);
     socket.on('gqlSub', relaySubscribeHandler);
     socket.on('gqlUnsub', (opId) => {
-      unsubscribeRelaySub(socket.subs, opId);
+      const keys = Object.keys(socket.subs);
+      for (let ii = 0; ii < keys.length; ii++) {
+        const key = keys[ii];
+        const val = socket.subs[key];
+        if (val.opId === opId) {
+          val.asyncIterator.return();
+          sharedDataloader.dispose(key, {force: true});
+          delete socket.subs[key];
+          return;
+        }
+      }
     });
     socket.on('disconnect', () => {
-      if (socket.subs) {
-        socket.subs.forEach((opId) => {
-          unsubscribeRelaySub(socket.subs, opId);
-        });
-      }
+      unsubscribeRelaySub(socket, sharedDataloader)
     });
 
     // the async part should come last so there isn't a race
