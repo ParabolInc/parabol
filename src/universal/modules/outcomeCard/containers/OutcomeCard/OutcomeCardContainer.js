@@ -5,12 +5,13 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
-import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
-import labels from 'universal/styles/theme/labels';
-import mergeServerContent from 'universal/utils/mergeServerContent';
-import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
+import DeleteProjectMutation from 'universal/mutations/DeleteProjectMutation';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import labels from 'universal/styles/theme/labels';
+import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
+import mergeServerContent from 'universal/utils/mergeServerContent';
 
 const teamMembersQuery = `
 query {
@@ -121,10 +122,12 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state;
-    const {atmosphere, outcome: {id: projectId}, contentState: initialContentState} = this.props;
+    const {atmosphere, outcome: {id: projectId, teamId}, contentState: initialContentState} = this.props;
     const contentState = editorState.getCurrentContent();
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
-      cashay.mutate('deleteProject', {variables: {projectId}});
+      // it's possible the user calls update, then delete, then the update timeout fires, so clear it here
+      clearTimeout(this.updateTimer);
+      DeleteProjectMutation(atmosphere, projectId, teamId);
     } else if (initialContentState !== contentState) {
       clearTimeout(this.updateTimer);
       this.updateTimer = setTimeout(() => {

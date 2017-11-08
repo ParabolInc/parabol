@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
+import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import {PROJECT_DELETED} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(UpdateProjectPayload),
+  type: new GraphQLNonNull(DeleteProjectPayload),
   args: {
     teamIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))
@@ -24,7 +24,7 @@ export default {
     // RESOLUTION
     const channelNames = channelIds.map((id) => `${PROJECT_DELETED}.${id}`);
     const filterFn = (value) => {
-      const {projectUpdated: {project: {tags, userId: projectUserId}}, mutatorId} = value;
+      const {projectDeleted: {project: {tags, userId: projectUserId}}, mutatorId} = value;
       if (mutatorId === socketId) return false;
       const isPrivate = tags.includes('private');
       return !isPrivate || userId === projectUserId;

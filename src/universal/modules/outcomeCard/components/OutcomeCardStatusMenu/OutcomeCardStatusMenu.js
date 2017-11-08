@@ -11,6 +11,7 @@ import withStyles from 'universal/styles/withStyles';
 import addTagToProject from 'universal/utils/draftjs/addTagToProject';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import DeleteProjectMutation from 'universal/mutations/DeleteProjectMutation';
 
 const statusItems = labels.projectStatus.slugs.slice();
 
@@ -28,13 +29,8 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   deleteOutcome = () => {
-    const {onComplete, outcome: {id: projectId}} = this.props;
-    const options = {
-      variables: {
-        projectId
-      }
-    };
-    cashay.mutate('deleteProject', options);
+    const {atmosphere, onComplete, outcome: {id: projectId, teamId}} = this.props;
+    DeleteProjectMutation(atmosphere, projectId, teamId);
     if (onComplete) {
       onComplete();
     }

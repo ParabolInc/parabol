@@ -49,11 +49,15 @@ const CreateProjectMutation = (environment, newProject, onError, onCompleted) =>
     },
     optimisticUpdater: (store) => {
       const now = new Date().toJSON();
-      const [teamId, userId] = newProject.teamMemberId.split('::');
+      const [userId, teamId] = newProject.teamMemberId.split('::');
       const globalTeamMemberId = toGlobalId('TeamMember', newProject.teamMemberId);
-      const globalTeamId = toGlobalId('Team', teamId);
+      //const globalTeamId = toGlobalId('Team', teamId);
       const teamMember = store.get(globalTeamMemberId);
-      const team = store.get(globalTeamId);
+      const team = store.get(teamId);
+      // TODO remove this when we move Teams to relay
+      if (!team) {
+        throw new Error('team not found', teamId)
+      }
       const optimisticProject = {
         ...newProject,
         teamId,

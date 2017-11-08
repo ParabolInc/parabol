@@ -4,7 +4,6 @@ import meeting from 'server/graphql/models/Meeting/meetingMutation';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import presence from 'server/graphql/models/Presence/presenceMutation';
-import project from 'server/graphql/models/Project/projectMutation';
 import team from 'server/graphql/models/Team/teamMutation';
 import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
@@ -45,6 +44,7 @@ import addOrg from 'server/graphql/mutations/addOrg';
 import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
 import updateProject from 'server/graphql/mutations/updateProject';
+import deleteProject from 'server/graphql/mutations/deleteProject';
 
 const rootFields = Object.assign({},
   agenda,
@@ -52,7 +52,6 @@ const rootFields = Object.assign({},
   orgApproval,
   organization,
   presence,
-  project,
   team,
   teamMember,
   user
@@ -73,6 +72,7 @@ export default new GraphQLObjectType({
     clearNotification,
     createGitHubIssue,
     createProject,
+    deleteProject,
     githubAddAssignee,
     githubAddMember,
     githubRemoveMember,

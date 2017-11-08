@@ -40,18 +40,18 @@ const mutation = graphql`
   }
 `;
 
-const getUserDashConnection = (viewer) => ConnectionHandler.getConnection(
+export const getUserDashConnection = (viewer) => ConnectionHandler.getConnection(
   viewer,
   'UserColumnsContainer_projects'
 );
 
-const getTeamDashConnection = (viewer, teamId) => ConnectionHandler.getConnection(
+export const getTeamDashConnection = (viewer, teamId) => ConnectionHandler.getConnection(
   viewer,
   'TeamColumnsContainer_projects',
   {teamId}
 );
 
-const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getConnection(
+export const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getConnection(
   viewer,
   'TeamArchive_archivedProjects',
   {teamId}
