@@ -1,6 +1,8 @@
 import {commitMutation} from 'react-relay';
 import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
+import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
   mutation CreateProjectMutation($newProject: ProjectInput!) {
@@ -48,15 +50,25 @@ const CreateProjectMutation = (environment, newProject, onError, onCompleted) =>
     optimisticUpdater: (store) => {
       const now = new Date().toJSON();
       const [teamId, userId] = newProject.teamMemberId.split('::');
+      const globalTeamMemberId = toGlobalId('TeamMember', newProject.teamMemberId);
+      const globalTeamId = toGlobalId('Team', teamId);
+      const teamMember = store.get(globalTeamMemberId);
+      const team = store.get(globalTeamId);
       const optimisticProject = {
         ...newProject,
         teamId,
         userId,
         createdAt: now,
         updatedAt: now,
-        tags: []
+        tags: [],
+        content: newProject.content || makeEmptyStr(),
       };
       const project = createProxyRecord(store, 'Project', optimisticProject);
+      project
+        .setLinkedRecord(teamMember, 'teamMember')
+        .setLinkedRecord(team, 'team');
+
+
       handleProjectConnections(store, viewerId, project);
     },
     onError,

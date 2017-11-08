@@ -24,7 +24,7 @@ export default {
     // RESOLUTION
     const channelNames = channelIds.map((id) => `${PROJECT_CREATED}.${id}`);
     const filterFn = (value) => {
-      const {projectUpdated: {project: {tags, userId: projectUserId}}, mutatorId} = value;
+      const {projectCreated: {project: {tags, userId: projectUserId}}, mutatorId} = value;
       if (mutatorId === socketId) return false;
       const isPrivate = tags.includes('private');
       return !isPrivate || userId === projectUserId;

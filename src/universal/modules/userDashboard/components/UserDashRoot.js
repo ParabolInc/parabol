@@ -11,6 +11,7 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UserDashMain from 'universal/modules/userDashboard/components/UserDashMain/UserDashMain';
 import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 
 // short ttl for projects to avoid sending duplicates when switching from team to user dash
 const cacheConfig = {ttl: ms('30s')};
@@ -24,7 +25,8 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  ProjectUpdatedSubscription
+  ProjectUpdatedSubscription,
+  ProjectCreatedSubscription,
 ];
 
 const UserDashRoot = ({atmosphere, teams}) => {
