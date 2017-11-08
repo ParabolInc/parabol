@@ -16,7 +16,7 @@ const mutation = graphql`
   }
 `;
 
-const removeFromProjectConnections = (store, viewerId, projectId, teamId) => {
+export const removeFromProjectConnections = (store, viewerId, projectId, teamId) => {
   // we currently have 3 connections, user, team, and team archive
   const viewer = store.get(viewerId);
   const archiveConn = getArchiveConnection(viewer, teamId);

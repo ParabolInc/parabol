@@ -10,7 +10,7 @@ import TeamMember from 'server/graphql/types/TeamMember';
 
 const Project = new GraphQLObjectType({
   name: 'Project',
-  description: `A long-term project shared across the team, assigned to a single user `,
+  description: 'A long-term project shared across the team, assigned to a single user ',
 
   fields: () => ({
     // 'The unique project id, teamId::shortid'

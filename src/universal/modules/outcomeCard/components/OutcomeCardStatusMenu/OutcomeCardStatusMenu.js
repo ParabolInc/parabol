@@ -1,5 +1,4 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import {convertToRaw} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
