@@ -91,7 +91,7 @@ export default {
         }
         if (nextPhaseInfo.items) {
           const {arrayName} = nextPhaseInfo.items;
-          if (arrayName === 'members') {
+          if (arrayName === 'teamMembers') {
             const teamMembersCount = await r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})
               .filter({isNotRemoved: true})
@@ -99,7 +99,7 @@ export default {
             if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
               throw errorObj({_error: 'We don’t have that many team members!'});
             }
-          } else if (arrayName === 'agenda') {
+          } else if (arrayName === 'agendaItems') {
             const agendaItemCount = await r.table('AgendaItem')
               .getAll(teamId, {index: 'teamId'})
               .filter({isActive: true})

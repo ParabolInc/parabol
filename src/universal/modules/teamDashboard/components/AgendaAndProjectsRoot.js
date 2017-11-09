@@ -9,6 +9,9 @@ import {cacheConfig} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
+import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
 
 const query = graphql`
   query AgendaAndProjectsRootQuery($teamId: ID!) {
@@ -21,7 +24,11 @@ const query = graphql`
   }
 `;
 
-// const subscriptions = [];
+const subscriptions = [
+  ProjectUpdatedSubscription,
+  ProjectCreatedSubscription,
+  ProjectDeletedSubscription
+];
 
 const AgendaAndProjectsRoot = (props) => {
   const {atmosphere, match: {params: {teamId}}, teams} = props;
@@ -31,7 +38,7 @@ const AgendaAndProjectsRoot = (props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      // subscriptions={subscriptions}
+      subscriptions={subscriptions}
       render={({error, props: renderProps, loading}) => {
         if (!renderProps && !loading) {
           return null;

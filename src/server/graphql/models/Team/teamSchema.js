@@ -10,12 +10,12 @@ import {
 } from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import MeetingPhaseEnum from 'server/graphql/types/MeetingPhaseEnum';
-import TeamMember from 'server/graphql/types/TeamMember';
-import {AgendaItem} from '../AgendaItem/agendaItemSchema';
-import TierEnum from 'server/graphql/types/TierEnum';
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
+import MeetingPhaseEnum from 'server/graphql/types/MeetingPhaseEnum';
 import Organization from 'server/graphql/types/Organization';
+import TeamMember from 'server/graphql/types/TeamMember';
+import TierEnum from 'server/graphql/types/TierEnum';
+import {AgendaItem} from '../AgendaItem/agendaItemSchema';
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
@@ -99,21 +99,27 @@ export const Team = new GraphQLObjectType({
     agendaItems: {
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
-      resolve({id}) {
-        const r = getRethink();
-        return r.table('AgendaItem')
-          .getAll(id, {index: 'teamId'})
-          .run();
+      async resolve({id: teamId}, args, {sharedDataloader, operationId}) {
+        const dataloader = sharedDataloader.get(operationId);
+        const agendaItems = await dataloader.agendaItemsByTeamId.load(teamId);
+        agendaItems.sort((a, b) => a.sortOrder < b.sortOrder ? 1 : -1);
+        return agendaItems;
       }
     },
     teamMembers: {
       type: new GraphQLList(TeamMember),
+      args: {
+        sortBy: {
+          type: GraphQLString,
+          description: 'the field to sort the teamMembers by'
+        }
+      },
       description: 'All the team members associated who can join this team',
-      resolve({id}) {
-        const r = getRethink();
-        return r.table('TeamMember')
-          .getAll(id, {index: 'teamId'})
-          .run();
+      async resolve({id: teamId}, {sortBy = 'preferredName'}, {sharedDataloader, operationId}) {
+        const dataloader = sharedDataloader.get(operationId);
+        const teamMembers = await dataloader.teamMembersByTeamId.load(teamId);
+        teamMembers.sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
+        return teamMembers;
       }
     },
     isArchived: {

@@ -6,7 +6,7 @@ import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
 import {connect} from 'react-redux';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {createFragmentContainer} from 'react-relay';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
@@ -44,50 +44,13 @@ import MeetingUpdatesContainer from '../MeetingUpdates/MeetingUpdatesContainer';
 
 const meetingContainerQuery = `
 query{
-  team @live {
-    checkInGreeting {
-      content,
-      language
-    },
-    checkInQuestion,
-    id,
-    name,
-    meetingId,
-    activeFacilitator,
-    facilitatorPhase,
-    facilitatorPhaseItem,
-    meetingPhase,
-    meetingPhaseItem,
-    tier
-  }
-  teamMemberCount(teamId: $teamId)
   teamMembers(teamId: $teamId) @live {
     id
-    preferredName
-    picture
-    checkInOrder
-    isCheckedIn
-    isFacilitator,
-    isLead,
     presence(teamId: $teamId) @live {
       id
       userId
-    },
+    }
   }
-  agendaCount(teamId: $teamId)
-  agenda(teamId: $teamId) @live {
-    id
-    content
-    isComplete
-    sortOrder
-    teamMemberId
-  }
-}`;
-
-const perMeetingQueries = `
-query{
-  teamMemberCount(teamId: $teamId)
-  agendaCount(teamId: $teamId)
 }`;
 
 const mutationHandlers = {
@@ -99,34 +62,18 @@ const handleHotkey = (gotoFunc) => () => {
 };
 
 const mapStateToProps = (state, props) => {
-  const {match: {params: {localPhase, localPhaseItem, teamId}}} = props;
-  const {sub: userId} = state.auth.obj;
+  const {teamId} = props;
   const queryResult = cashay.query(meetingContainerQuery, {
     op: 'meetingContainerQuery',
     key: teamId,
     mutationHandlers,
     variables: {teamId},
-    sort: {
-      agenda: (a, b) => a.sortOrder - b.sortOrder,
-      teamMembers: (a, b) => a.checkInOrder - b.checkInOrder
-    },
     resolveChannelKey: {
-      team: () => teamId,
       presence: () => teamId
     }
   });
-  const {agenda, agendaCount, team, teamMemberCount} = queryResult.data;
-  const myTeamMemberId = `${userId}::${teamId}`;
   return {
-    agenda,
-    agendaCount,
-    isFacilitating: myTeamMemberId === team.activeFacilitator,
-    localPhaseItem: localPhaseItem && Number(localPhaseItem),
-    localPhase,
-    members: resolveMeetingMembers(queryResult.data, userId),
-    team,
-    teamId,
-    teamMemberCount
+    teamMemberPresence: queryResult.data.teamMembers
   };
 };
 
@@ -134,21 +81,12 @@ let infiniteloopCounter = 0;
 let infiniteLoopTimer = Date.now();
 let infiniteTrigger = false;
 
-@socketWithPresence
-@connect(mapStateToProps)
-@dragDropContext(HTML5Backend)
-@withHotkey
-@withAtmosphere
-export default class MeetingContainer extends Component {
+class MeetingContainer extends Component {
   static propTypes = {
-    agenda: PropTypes.array.isRequired,
-    agendaCount: PropTypes.number,
     bindHotkey: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
-    isFacilitating: PropTypes.bool,
     localPhase: PropTypes.string,
     localPhaseItem: PropTypes.number,
-    members: PropTypes.array,
     match: PropTypes.shape({
       params: PropTypes.shape({
         localPhase: PropTypes.string,
@@ -156,40 +94,56 @@ export default class MeetingContainer extends Component {
         teamId: PropTypes.string.isRequired
       })
     }),
+    myTeamMemberId: PropTypes.string.isRequired,
     history: PropTypes.object,
-    team: PropTypes.object.isRequired,
+    viewer: PropTypes.shape({
+      team: PropTypes.object.isRequired
+    }).isRequired,
     teamId: PropTypes.string.isRequired,
-    teamMemberCount: PropTypes.number
+    teamMemberPresence: PropTypes.array,
+    userId: PropTypes.string.isRequired
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      members: []
+    };
+  }
+
   componentWillMount() {
-    const {bindHotkey, teamId} = this.props;
+    const {bindHotkey, teamId, viewer: {team: {teamMembers, activeFacilitator}}, teamMemberPresence, userId} = this.props;
+    this.setState({
+      members: resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator)
+    });
     handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext));
     bindHotkey('left', handleHotkey(this.gotoPrev));
     bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
-  }
-
-  componentDidMount() {
-    const {agendaCount, teamId} = this.props;
-    // if we have stale count data (from a previous meeting) freshen it up!
-    if (agendaCount !== null) {
-      cashay.query(perMeetingQueries, {
-        op: 'meetingContainerMountQuery',
-        key: teamId,
-        mutationHandlers,
-        variables: {teamId},
-        forceFetch: true
-      });
-    }
+    this.electionTimer = setTimeout(() => {
+      electFacilitatorIfNone(this.props, this.state.members, [], true);
+    }, 5000);
   }
 
   componentWillReceiveProps(nextProps) {
-    electFacilitatorIfNone(nextProps, this.props.members);
+    const {viewer: {team}, localPhase, localPhaseItem, teamMemberPresence, userId, myTeamMemberId} = nextProps;
+    const {activeFacilitator, id: teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers} = team;
+    const {viewer: {team: oldTeam}, teamMemberPresence: oldPresence} = this.props;
+    const {teamMembers: oldTeamMembers, activeFacilitator: oldFacilitator} = oldTeam;
+    const {members: oldMembers} = this.state;
+
+    if (teamMemberPresence !== oldPresence || teamMembers !== oldTeamMembers || activeFacilitator !== oldFacilitator) {
+      const members = resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator);
+      electFacilitatorIfNone(nextProps, members, oldMembers);
+      this.setState({
+        members
+      });
+    }
     // if promoted to facilitator, ensure the facilitator is where you are
-    const {isFacilitating, team: {id: teamId, facilitatorPhase, facilitatorPhaseItem}, localPhase, localPhaseItem} = nextProps;
     // check activeFacilitator to make sure the meeting has started & we've got all the data
-    if (this.props.team.activeFacilitator && !this.props.isFacilitating && isFacilitating) {
+    const wasFacilitating = myTeamMemberId === oldFacilitator;
+    const isFacilitating = myTeamMemberId === activeFacilitator;
+    if (isFacilitating && !wasFacilitating) {
       const variables = {teamId};
       if (facilitatorPhase !== localPhase) {
         variables.nextPhase = localPhase;
@@ -208,10 +162,11 @@ export default class MeetingContainer extends Component {
     if (safeRoute) {
       return true;
     }
-    const {dispatch, isFacilitating, team: {id: teamId}} = this.props;
     // if we call history.push
     if (safeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
+        const {dispatch, teamId, myTeamMemberId, viewer: {team: {activeFacilitator}}} = this.props;
+        const isFacilitating = myTeamMemberId === activeFacilitator;
         // if we're changing locations 10 times in a second, it's probably infinite
         if (isFacilitating) {
           const variables = {
@@ -241,17 +196,22 @@ export default class MeetingContainer extends Component {
     return false;
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.electionTimer);
+  }
+
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
     // if we try to go backwards on a place that doesn't have items
     if (!maybeNextPhaseItem && !maybeNextPhase) return;
     const {
-      isFacilitating,
       history,
       localPhase,
-      team,
+      myTeamMemberId,
+      viewer: {team},
       teamId
     } = this.props;
-    const {meetingPhase} = team;
+    const {activeFacilitator, meetingPhase} = team;
+    const isFacilitating = myTeamMemberId === activeFacilitator;
     const meetingPhaseInfo = actionMeeting[meetingPhase];
     const safeRoute = generateMeetingRoute(maybeNextPhaseItem, maybeNextPhase || localPhase, this.props);
     if (!safeRoute) return;
@@ -294,17 +254,18 @@ export default class MeetingContainer extends Component {
   };
 
   gotoAgendaItem = (idx) => async () => {
-    const {agenda, team: {id: teamId, facilitatorPhase}, isFacilitating} = this.props;
+    const {teamId, viewer: {team: {activeFacilitator, agendaItems, facilitatorPhase}}, myTeamMemberId} = this.props;
+    const isFacilitating = activeFacilitator === myTeamMemberId;
     const facilitatorPhaseInfo = actionMeeting[facilitatorPhase];
     const agendaPhaseInfo = actionMeeting[AGENDA_ITEMS];
-    const firstIncompleteIdx = agenda.findIndex((a) => a.isComplete === false);
+    const firstIncompleteIdx = agendaItems.findIndex((a) => a.isComplete === false);
     const nextItemIdx = firstIncompleteIdx + (facilitatorPhase === AGENDA_ITEMS ? 1 : 0);
     const shouldResort = facilitatorPhaseInfo.index >= agendaPhaseInfo.index && idx > nextItemIdx && firstIncompleteIdx > -1;
     if (isFacilitating && shouldResort) {
       // resort
-      const desiredItem = agenda[idx];
-      const nextItem = agenda[nextItemIdx];
-      const prevItem = agenda[nextItemIdx - 1];
+      const desiredItem = agendaItems[idx];
+      const nextItem = agendaItems[nextItemIdx];
+      const prevItem = agendaItems[nextItemIdx - 1];
       const options = {
         ops: {
           agendaListAndInputContainer: teamId
@@ -323,44 +284,40 @@ export default class MeetingContainer extends Component {
     }
   };
 
+  rejoinFacilitator = () => {
+    const {history, teamId, viewer: {team: {facilitatorPhase, facilitatorPhaseItem}}} = this.props;
+    const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+    history.push(pushURL);
+  };
+
   render() {
     const {
-      agenda,
-      isFacilitating,
       localPhase,
       localPhaseItem,
-      members,
-      team,
+      myTeamMemberId,
       teamId,
-      history
+      viewer: {team}
     } = this.props;
+    const {members} = this.state;
     const {
+      activeFacilitator,
+      agendaItems,
       facilitatorPhase,
       facilitatorPhaseItem,
       meetingPhase,
       meetingPhaseItem,
       name: teamName
     } = team;
-
-    // if we have a team.name, we have an initial subscription success to the team object
-    if (!teamName ||
-      members.length === 0
-      || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
-      return <LoadingView />;
-    }
+    const isFacilitating = activeFacilitator === myTeamMemberId;
 
     const inSync = isFacilitating || facilitatorPhase === localPhase &&
       // FIXME remove || when changing to relay. right now it's a null & an undefined
       (facilitatorPhaseItem === localPhaseItem || !facilitatorPhaseItem && !localPhaseItem);
     const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
-      agenda.findIndex((a) => a.isComplete === false) + 1 : 0;
-    const rejoinFacilitator = () => {
-      const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-      history.push(pushURL);
-    };
+      agendaItems.findIndex((a) => a.isComplete === false) + 1 : 0;
 
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
-    const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, members, agenda);
+    const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, members, agendaItems);
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
     const showMoveMeetingControls = isFacilitating || isBehindMeeting;
 
@@ -371,7 +328,6 @@ export default class MeetingContainer extends Component {
       onFacilitatorPhase: facilitatorPhase === localPhase,
       team
     };
-
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
         <Sidebar
@@ -432,8 +388,8 @@ export default class MeetingContainer extends Component {
           }
           {localPhase === AGENDA_ITEMS &&
           <MeetingAgendaItems
-            agendaItem={agenda[localPhaseItem - 1]}
-            isLast={localPhaseItem === agenda.length}
+            agendaItem={agendaItems[localPhaseItem - 1]}
+            isLast={localPhaseItem === agendaItems.length}
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
             members={members}
@@ -449,10 +405,67 @@ export default class MeetingContainer extends Component {
           />
           }
           {!inSync &&
-          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
+          <RejoinFacilitatorButton onClickHandler={this.rejoinFacilitator} />
           }
         </MeetingMain>
       </MeetingLayout>
     );
   }
 }
+
+export default createFragmentContainer(
+  socketWithPresence(
+    connect(mapStateToProps)(
+      dragDropContext(HTML5Backend)(
+        withHotkey(
+          withAtmosphere(
+            MeetingContainer
+          )
+        )
+      )
+    )
+  ),
+  graphql`
+    fragment MeetingContainer_viewer on User {
+      team(teamId: $teamId) {
+        agendaItems {
+          id
+          content
+          isComplete
+          sortOrder
+          teamMemberId
+          teamMember {
+            id
+            preferredName
+            picture
+          }
+        }
+        checkInGreeting {
+          content
+          language
+        }
+        checkInQuestion
+        id
+        name
+        meetingId
+        activeFacilitator
+        facilitatorPhase
+        facilitatorPhaseItem
+        meetingPhase
+        meetingPhaseItem
+        tier
+        teamMembers(sortBy: "checkInOrder") {
+          id
+          preferredName
+          picture
+          checkInOrder
+          isCheckedIn
+          isFacilitator
+          isLead
+          userId
+
+        }
+      }
+    }
+  `
+);

@@ -9,7 +9,7 @@ import Project from 'server/graphql/types/Project';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
-  description: 'A member of a team team',
+  description: 'A member of a team',
   fields: () => ({
     id: globalIdField('TeamMember', ({id}) => id),
     // id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
@@ -68,11 +68,9 @@ const TeamMember = new GraphQLObjectType({
     user: {
       type: User,
       description: 'The user for the team member',
-      resolve(source) {
-        const r = getRethink();
-        return r.table('User')
-          .get(source.userId)
-          .run();
+      resolve({userId}, args, {sharedDataloader, operationId}) {
+        const dataloader = sharedDataloader.get(operationId);
+        return dataloader.users.load(userId);
       }
     },
     projects: {

@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
+import {Team} from 'server/graphql/models/Team/teamSchema';
 import archivedProjects from 'server/graphql/queries/archivedProjects';
 import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
 import githubRepos from 'server/graphql/queries/githubRepos';
@@ -24,10 +25,9 @@ import BlockedUserType from 'server/graphql/types/BlockedUserType';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
 import {getUserId} from 'server/utils/authorization';
-import {Team} from 'server/graphql/models/Team/teamSchema';
-import TeamMember from 'server/graphql/types/TeamMember';
 // import organizations from 'server/graphql/queries/organizations';
 
 const User = new GraphQLObjectType({
@@ -105,6 +105,12 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
     },
+    // presence: {
+    //  type: Presence,
+    //  description: 'An object with details about the online presence of a user',
+    // resolve: ({id: userId}, args) => {
+    // }
+    // }
     tms: {
       type: new GraphQLList(GraphQLID),
       description: 'all the teams the user is a part of',

@@ -92,6 +92,30 @@ export default class RethinkDataLoader {
         .filter((project) => project('tags').contains('archived').not());
       return userIds.map(() => projects);
     }, this.dataloaderOptions);
+    this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink();
+      const teamMembers = await r.table('TeamMember')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isNotRemoved: true});
+      teamMembers.forEach((teamMember) => {
+        this.teamMembers.prime(teamMember.id, teamMember);
+      });
+      return teamIds.map((teamId) => {
+        return teamMembers.filter((teamMember) => teamMember.teamId === teamId);
+      });
+    }, this.dataloaderOptions);
+    this.agendaItemsByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink();
+      const agendaItems = await r.table('AgendaItem')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isActive: true});
+      agendaItems.forEach((agendaItem) => {
+        this.agendaItems.prime(agendaItem.id, agendaItem);
+      });
+      return teamIds.map((teamId) => {
+        return agendaItems.filter((agendaItem) => agendaItem.teamId === teamId);
+      });
+    }, this.dataloaderOptions);
   }
 
   _share() {

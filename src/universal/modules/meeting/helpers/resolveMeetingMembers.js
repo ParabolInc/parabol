@@ -1,20 +1,17 @@
-const resolveMeetingMembers = (queryData, myUserId) => {
-  if (queryData !== resolveMeetingMembers.queryData) {
-    resolveMeetingMembers.queryData = queryData;
-    const {teamMembers, team} = queryData;
-    resolveMeetingMembers.cache = [];
-    for (let i = 0; i < teamMembers.length; i++) {
-      const teamMember = teamMembers[i];
-      const [userId] = teamMember.id.split('::');
-      resolveMeetingMembers.cache[i] = {
-        ...teamMember,
-        isConnected: Boolean(teamMember.presence.find((p) => p.userId === userId)),
-        isFacilitating: team.activeFacilitator === teamMember.id,
-        isSelf: teamMember.id.startsWith(myUserId)
-      };
-    }
-  }
-  return resolveMeetingMembers.cache;
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+
+const resolveMeetingMembers = (teamMembers, teamMemberPresence, myUserId, activeFacilitator) => {
+  return teamMembers.map((teamMember) => {
+    const {id: teamMemberId} = fromGlobalId(teamMember.id);
+    const matchingTeamMember = teamMemberPresence.find(({id}) => id === teamMemberId);
+    const presence = matchingTeamMember ? matchingTeamMember.presence : [];
+    return {
+      ...teamMember,
+      isConnected: Boolean(presence.find(({userId}) => userId === teamMember.userId)),
+      isFacilitating: teamMemberId === activeFacilitator,
+      isSelf: teamMember.userId === myUserId
+    };
+  });
 };
 
 export default resolveMeetingMembers;

@@ -1,13 +1,14 @@
 import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLString,
   GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
   GraphQLInputObjectType,
-  GraphQLFloat
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import TeamMember from 'server/graphql/types/TeamMember';
 
 export const AgendaItem = new GraphQLObjectType({
   name: 'AgendaItem',
@@ -36,6 +37,14 @@ export const AgendaItem = new GraphQLObjectType({
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the agenda item was updated'
+    },
+    teamMember: {
+      type: TeamMember,
+      description: 'The team member that created the agenda item',
+      resolve: async ({teamMemberId}, args, {sharedDataloader, operationId}) => {
+        const dataloader = sharedDataloader.get(operationId);
+        return dataloader.teamMembers.load(teamMemberId);
+      }
     }
   })
 });

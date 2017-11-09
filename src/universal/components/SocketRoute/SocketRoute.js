@@ -16,7 +16,7 @@ import withReducer from '../../decorators/withReducer/withReducer';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
-const meetingContainer = () => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer');
+const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot');
 
 const query = graphql`
   query SocketRouteQuery {
@@ -90,7 +90,7 @@ const SocketRoute = ({atmosphere, dispatch, history, location}) => {
             <AsyncRoute isAbstract path="(/me|/newteam|/team)" mod={dashWrapper} extraProps={{notifications}} />
             <AsyncRoute
               path="/meeting/:teamId/:localPhase?/:localPhaseItem?"
-              mod={meetingContainer}
+              mod={meetingRoot}
               extraProps={{notifications}}
             />
           </Switch>
