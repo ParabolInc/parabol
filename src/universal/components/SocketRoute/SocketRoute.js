@@ -57,6 +57,16 @@ const query = graphql`
             ... on NotifyTeamArchived {
               teamName
             }
+            ... on NotifyProjectInvolves {
+              involvement
+              teamName
+              teamId
+              project {
+                id
+                content
+                status
+              }
+            }
           }
         }
       }
