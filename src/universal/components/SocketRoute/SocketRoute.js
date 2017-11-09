@@ -59,8 +59,13 @@ const query = graphql`
             }
             ... on NotifyProjectInvolves {
               involvement
-              teamName
-              teamId
+              team {
+                id
+                name
+              }
+              changeAuthor {
+                preferredName
+              }
               project {
                 id
                 content
