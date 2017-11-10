@@ -2,13 +2,14 @@ import {GraphQLBoolean, GraphQLNonNull} from 'graphql';
 import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import ProjectInput from 'server/graphql/types/ProjectInput';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {PROJECT_UPDATED} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
+import publishChangeNotifications from 'server/graphql/mutations/helpers/publishChangeNotifications';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -84,7 +85,9 @@ export default {
       history: projectHistory
     });
 
-    const project = projectChanges.new_val;
+    const myUserId = getUserId(authToken);
+    const {new_val: project, old_val: oldProject} = projectChanges;
+    publishChangeNotifications(project, oldProject, myUserId);
     const projectUpdated = {project};
     // TODO when removing cashay, add in the mutatorId here
     getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated});

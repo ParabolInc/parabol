@@ -60,25 +60,28 @@ const ProjectInvolves = (props) => {
           I am a card!
         </div>
       </div>
-      <div className={css(styles.button)}>
-        <Button
-          colorPalette="cool"
-          waiting={submitting}
-          isBlock
-          label="See on Board"
-          buttonSize={ui.notificationButtonSize}
-          type="submit"
-          onClick={gotoBoard}
-        />
-        <Button
-          colorPalette="cool"
-          waiting={submitting}
-          isBlock
-          label="OK"
-          buttonSize={ui.notificationButtonSize}
-          type="submit"
-          onClick={acknowledge}
-        />
+      <div className={css(styles.buttonGroup)}>
+        <div className={css(styles.button)}>
+          <Button
+            colorPalette="cool"
+            isBlock
+            label="Go to board"
+            buttonSize={ui.notificationButtonSize}
+            type="submit"
+            onClick={gotoBoard}
+            waiting={submitting}
+          />
+        </div>
+        <div className={css(styles.button)}>
+          <Button
+            colorPalette="gray"
+            isBlock
+            label="OK"
+            buttonSize="small"
+            type="submit"
+            onClick={acknowledge}
+          />
+        </div>
       </div>
     </Row>
   );
@@ -94,17 +97,12 @@ ProjectInvolves.propTypes = {
   submitting: PropTypes.bool,
   notification: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired
+    team: PropTypes.object.isRequired
   })
 };
 
 const styleThunk = () => ({
-  ...defaultStyles,
-
-  button: {
-    marginLeft: ui.rowGutter,
-    minWidth: '3.5rem'
-  }
+  ...defaultStyles
 });
 
 export default withRouter(withStyles(styleThunk)(ProjectInvolves));
