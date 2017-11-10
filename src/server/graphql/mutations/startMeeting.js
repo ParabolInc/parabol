@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -15,20 +15,20 @@ export default {
   type: UpdateMeetingPayload,
   description: 'Start a meeting from the lobby',
   args: {
-    facilitatorId: {
+    teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The facilitator teamMemberId for this meeting'
+      description: 'The team starting the meeting'
     }
   },
-  async resolve(source, {facilitatorId}, {authToken, socketId, sharedDataloader, operationId}) {
+  async resolve(source, {teamId}, {authToken, socketId, sharedDataloader, operationId}) {
     const r = getRethink();
 
     // AUTH
-    // facilitatorId is of format 'userId::teamId'
-    const [, teamId] = facilitatorId.split('::');
+    const userId = getUserId(authToken);
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
+    const facilitatorId = `${userId}::${teamId}`;
     const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
       throw errorObj({_error: 'facilitator is not active on that team'});
@@ -66,6 +66,6 @@ export default {
     const meetingUpdated = {team};
     sharedDataloader.share(operationId);
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
-    return {team};
+    return meetingUpdated;
   }
 };
