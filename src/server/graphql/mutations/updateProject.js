@@ -81,10 +81,11 @@ export default {
         });
     }
     const {projectChanges} = await r({
-      projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0),
+      projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0).default(null),
       history: projectHistory
     });
 
+    if (!projectChanges) return true;
     const myUserId = getUserId(authToken);
     const {new_val: project, old_val: oldProject} = projectChanges;
     publishChangeNotifications(project, oldProject, myUserId);
