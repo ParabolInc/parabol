@@ -5,9 +5,9 @@ export default {
   message: {
     color: appTheme.palette.dark,
     flex: 1,
-    fontSize: appTheme.typography.sBase,
-    lineHeight: 1.5,
-    marginLeft: ui.rowGutter
+    fontSize: appTheme.typography.s3,
+    lineHeight: '1.375rem',
+    marginLeft: ui.rowCompactGutter
   },
   messageVar: {
     color: appTheme.palette.cool,
@@ -19,7 +19,7 @@ export default {
     marginTop: '.25rem'
   },
   button: {
-    marginLeft: ui.rowGutter,
+    marginLeft: ui.rowCompactGutter,
     minWidth: '4.25rem'
   },
   buttonGroup: {

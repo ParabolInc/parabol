@@ -66,7 +66,7 @@ const styleThunk = () => ({
   },
 
   wrapper: {
-    maxWidth: '40rem'
+    maxWidth: '48rem'
   }
 });
 

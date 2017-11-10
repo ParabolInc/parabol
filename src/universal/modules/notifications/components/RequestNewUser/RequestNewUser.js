@@ -27,6 +27,7 @@ const RequestNewUser = (props) => {
     submitMutation();
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted);
   };
+  const isPaid = true;
 
   const rejectToggle = (
     <Button
@@ -39,17 +40,15 @@ const RequestNewUser = (props) => {
   );
 
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="medium" />
+        <IconAvatar icon="user" size="small" />
       </div>
       <div className={css(styles.message)}>
-        <span className={css(styles.messageVar)}>{inviterName} </span>
-        requested to add
-        <span className={css(styles.messageVar)}> {inviteeEmail} </span>
-        to
-        <span className={css(styles.messageVar)}> {teamName}</span>
-        <div className={css(styles.messageSub)}>Your monthly invoice will increase by $5.</div>
+        <b>{inviterName}</b>{' requested to add '}
+        <b>{inviteeEmail}</b>{' to '}
+        <span className={css(styles.messageVar)}>{teamName}</span>{'.'}<br />
+        {isPaid && <span>{'Your monthly invoice will increase by $5.'}</span>}
       </div>
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>

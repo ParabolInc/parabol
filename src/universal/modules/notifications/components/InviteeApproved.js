@@ -27,7 +27,7 @@ const InviteeApproved = (props) => {
     ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
   };
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
         <IconAvatar icon="users" size="medium" />
       </div>
@@ -42,7 +42,7 @@ const InviteeApproved = (props) => {
           colorPalette="cool"
           waiting={submitting}
           isBlock
-          label="OK"
+          label="Okay"
           buttonSize={ui.notificationButtonSize}
           type="submit"
           onClick={acknowledge}
@@ -69,7 +69,7 @@ const styleThunk = () => ({
   ...defaultStyles,
 
   button: {
-    marginLeft: ui.rowGutter,
+    marginLeft: ui.rowCompactGutter,
     minWidth: '3.5rem'
   }
 });
