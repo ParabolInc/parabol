@@ -10,17 +10,14 @@ import {
 } from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
-const getMentions = (content) => {
-  const {entityMap} = JSON.parse(content);
-  return getTypeFromEntityMap('MENTION', entityMap);
-};
-
 const publishChangeNotifications = async (project, oldProject, changeUserId, usersToIgnore) => {
   const r = getRethink();
   const now = new Date();
   const changeAuthorId = `${changeUserId}::${project.teamId}`;
-  const oldMentions = getMentions(oldProject.content);
-  const mentions = getMentions(project.content);
+  const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldProject.content);
+  const {entityMap, blocks} = JSON.parse(project.content);
+  const oldMentions = getTypeFromEntityMap('MENTION', oldEntityMap);
+  const mentions = getTypeFromEntityMap('MENTION', entityMap);
   // intersect the mentions to get the ones to add and remove
   const notificationsToRemove = oldMentions
     .filter((m) => !mentions.includes(m));
@@ -56,6 +53,26 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
       });
     }
     notificationsToRemove.push(oldProject.userId);
+  }
+
+  // if we updated the project content, push a new one with an updated project
+  const oldContentLen = oldBlocks[0] ? oldBlocks[0].text.length : 0;
+  if (oldContentLen < 3) {
+    const contentLen = blocks[0] ? blocks[0].text.length : 0;
+    if (contentLen > oldContentLen) {
+      const maybeInvolvedUserIds = mentions.concat(project.userId);
+      const existingProjectNotifications = await r.table('Notification')
+        .getAll(r.args(maybeInvolvedUserIds), {index: 'userIds'})
+        .filter({
+          projectId: project.id,
+          type: PROJECT_INVOLVES
+        });
+      existingProjectNotifications.forEach((notification) => {
+        const notificationsAdded = {notifications: [notification]};
+        const userId = notification.userIds[0];
+        getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
+      });
+    }
   }
 
   // update changes in the db & push to the pubsub
