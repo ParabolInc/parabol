@@ -15,7 +15,7 @@ const getMentions = (content) => {
   return getTypeFromEntityMap('MENTION', entityMap);
 };
 
-const publishChangeNotifications = async (project, oldProject, changeUserId) => {
+const publishChangeNotifications = async (project, oldProject, changeUserId, usersToIgnore) => {
   const r = getRethink();
   const now = new Date();
   const changeAuthorId = `${changeUserId}::${project.teamId}`;
@@ -25,7 +25,10 @@ const publishChangeNotifications = async (project, oldProject, changeUserId) => 
   const notificationsToRemove = oldMentions
     .filter((m) => !mentions.includes(m))
   const notificationsToAdd = mentions
-    .filter((m) => !oldMentions.includes(m) && m !== project.userId && changeUserId !== project.userId)
+    .filter((m) => !oldMentions.includes(m) &&
+      m !== project.userId &&
+      changeUserId !== project.userId &&
+      !usersToIgnore.includes(project.userId))
     .map((userId) => ({
       id: shortid.generate(),
       startAt: now,
