@@ -23,7 +23,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
   const mentions = getMentions(project.content);
   // intersect the mentions to get the ones to add and remove
   const notificationsToRemove = oldMentions
-    .filter((m) => !mentions.includes(m))
+    .filter((m) => !mentions.includes(m));
   const notificationsToAdd = mentions
     .filter((m) => !oldMentions.includes(m) &&
       m !== project.userId &&

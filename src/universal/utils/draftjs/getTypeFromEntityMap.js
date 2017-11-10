@@ -20,4 +20,3 @@ const getTypeFromEntityMap = (type, entityMap) => {
 
 export default getTypeFromEntityMap;
 
-

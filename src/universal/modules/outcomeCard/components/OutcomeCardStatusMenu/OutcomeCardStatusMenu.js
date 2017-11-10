@@ -129,6 +129,7 @@ class OutcomeCardStatusMenu extends Component {
 }
 
 OutcomeCardStatusMenu.propTypes = {
+  area: PropTypes.string.isRequired,
   closePortal: PropTypes.func.isRequired,
   editorState: PropTypes.object,
   outcome: PropTypes.object,

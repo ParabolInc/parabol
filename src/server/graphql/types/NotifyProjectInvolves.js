@@ -46,10 +46,10 @@ const NotifyProjectInvolves = new GraphQLObjectType({
     //  type: new GraphQLNonNull(GraphQLString),
     //  description: 'The name of the person that invited them onto the team'
     // },
-    //teamName: {
+    // teamName: {
     //  type: new GraphQLNonNull(GraphQLString),
     //  description: 'The name of the team the user is joining'
-    //},
+    // },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId the user is joining'

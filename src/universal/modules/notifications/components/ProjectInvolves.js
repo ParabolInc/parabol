@@ -32,6 +32,7 @@ const ProjectInvolves = (props) => {
   } = props;
   const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
+  // eslint-disable-next-line
   const {content, status} = project;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
@@ -49,7 +50,7 @@ const ProjectInvolves = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="check-square" size="medium"/>
+        <IconAvatar icon="check-square" size="medium" />
       </div>
       <div className={css(styles.message)}>
         <div className={css(styles.messageText)}>
