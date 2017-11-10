@@ -11,6 +11,8 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import {Editor, convertFromRaw, EditorState} from 'draft-js';
+import editorDecorators from 'universal/components/ProjectEditor/decorators';
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -30,6 +32,7 @@ const ProjectInvolves = (props) => {
   } = props;
   const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
+  const {content, status} = project;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
@@ -41,6 +44,8 @@ const ProjectInvolves = (props) => {
     history.push(`/team/${teamId}`);
   };
   const action = involvementWord[involvement];
+  const contentState = convertFromRaw(JSON.parse(content));
+  const editorState = EditorState.createWithContent(contentState, editorDecorators);
   return (
     <Row>
       <div className={css(styles.icon)}>
@@ -57,7 +62,10 @@ const ProjectInvolves = (props) => {
           <span>{'.'}</span>
         </div>
         <div className={css(styles.projectListView)}>
-          I am a card!
+          <Editor
+            readOnly
+            editorState={editorState}
+          />
         </div>
       </div>
       <div className={css(styles.buttonGroup)}>
