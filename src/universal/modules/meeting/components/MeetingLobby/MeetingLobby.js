@@ -13,13 +13,14 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import makeHref from 'universal/utils/makeHref';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import {withRouter} from 'react-router-dom';
 
 const MeetingLobby = (props) => {
-  const {atmosphere, onError, onCompleted, submitMutation, submitting, team, styles} = props;
+  const {atmosphere, history, onError, onCompleted, submitMutation, submitting, team, styles} = props;
   const {id: teamId, name: teamName} = team;
   const onStartMeetingClick = () => {
     submitMutation();
-    StartMeetingMutation(atmosphere, teamId, onError, onCompleted);
+    StartMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
   };
   const meetingUrl = makeHref(`/meeting/${teamId}`);
   return (
@@ -62,15 +63,12 @@ const MeetingLobby = (props) => {
 
 MeetingLobby.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  members: PropTypes.array,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   team: PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string
   }),
-  teamId: PropTypes.string,
-  teamName: PropTypes.string,
-  error: PropTypes.any,
   submitting: PropTypes.bool,
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
@@ -128,4 +126,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingLobby)));
+export default withRouter(withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingLobby))));

@@ -45,6 +45,8 @@ import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
 import updateProject from 'server/graphql/mutations/updateProject';
 import deleteProject from 'server/graphql/mutations/deleteProject';
+import startMeeting from 'server/graphql/mutations/startMeeting';
+import moveMeeting from 'server/graphql/mutations/moveMeeting';
 
 const rootFields = Object.assign({},
   agenda,
@@ -80,6 +82,7 @@ export default new GraphQLObjectType({
     inviteTeamMembers,
     joinIntegration,
     leaveIntegration,
+    moveMeeting,
     promoteFacilitator,
     removeProvider,
     removeSlackChannel,
@@ -89,6 +92,7 @@ export default new GraphQLObjectType({
     resendTeamInvite,
     segmentEventTrack,
     setOrgUserRole,
+    startMeeting,
     stripeCreateInvoice,
     stripeFailPayment,
     stripeSucceedPayment,

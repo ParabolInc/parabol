@@ -1,4 +1,5 @@
 import {commitMutation} from 'react-relay';
+import {CHECKIN} from 'universal/utils/constants';
 
 const mutation = graphql`
   mutation StartMeetingMutation($teamId: ID!) {
@@ -22,10 +23,21 @@ const mutation = graphql`
   }
 `;
 
-const StartMeetingMutation = (environment, teamId, onError, onCompleted) => {
+const StartMeetingMutation = (environment, teamId, history, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {teamId},
+    optimisticUpdater: (store) => {
+      const {userId} = environment;
+      const activeFacilitator = `${userId}::${teamId}`;
+      store.get(teamId)
+        .setValue(activeFacilitator, 'activeFacilitator')
+        .setValue(CHECKIN, 'facilitatorPhase')
+        .setValue(1, 'facilitatorPhaseItem')
+        .setValue(CHECKIN, 'meetingPhase')
+        .setValue(1, 'meetingPhaseItem');
+      history.push(`/meeting/${teamId}/checkin/1`);
+    },
     onCompleted,
     onError
   });
