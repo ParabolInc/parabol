@@ -7,6 +7,7 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
 
 const query = graphql`
   query MeetingRootQuery($teamId: ID!) {
@@ -16,6 +17,10 @@ const query = graphql`
   }
 `;
 
+const subscriptions = [
+  MeetingUpdatedSubscription
+];
+
 const MeetingRoot = ({atmosphere, match}) => {
   const {params: {localPhase, localPhaseItem, teamId}} = match;
   return (
@@ -23,7 +28,7 @@ const MeetingRoot = ({atmosphere, match}) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      // subscriptions={subscriptions}
+      subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         const {userId} = atmosphere;
         const myTeamMemberId = `${userId}::${teamId}`;

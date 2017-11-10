@@ -63,8 +63,8 @@ export default {
     });
     const projectCreated = {project};
     sharedDataloader.share(operationId);
-    getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated});
-    getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated});
+    getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated, operationId});
+    getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated, operationId});
     return projectCreated;
   }
 };

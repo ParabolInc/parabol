@@ -28,6 +28,7 @@ import organizationUpdated from 'server/graphql/subscriptions/organizationUpdate
 import projectUpdated from 'server/graphql/subscriptions/projectUpdated';
 import projectCreated from 'server/graphql/subscriptions/projectCreated';
 import projectDeleted from 'server/graphql/subscriptions/projectDeleted';
+import meetingUpdated from 'server/graphql/subscriptions/meetingUpdated';
 
 const rootFields = Object.assign({},
   agenda,
@@ -50,6 +51,7 @@ export default new GraphQLObjectType({
     githubRepoRemoved,
     integrationJoined,
     integrationLeft,
+    meetingUpdated,
     newAuthToken,
     notificationsAdded,
     notificationsCleared,

@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import getEndMeetingSortOrders from 'server/graphql/models/Team/endMeeting/getEndMeetingSortOrders';
-import {endSlackMeeting} from 'server/graphql/models/Team/notifySlack/notifySlack';
+import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
@@ -81,22 +81,22 @@ export default {
           });
       });
     const updatedProjects = await getEndMeetingSortOrders(completedMeeting);
-    await r.expr(updatedProjects)
-      .forEach((project) => {
-        return r.table('Project').get(project('id')).update({
-          sortOrder: project('sortOrder')
-        });
-      })
-      .do(() => {
-        // send to summary view
-        return r.table('Team').get(teamId)
-          .update({
-            facilitatorPhase: SUMMARY,
-            meetingPhase: SUMMARY,
-            facilitatorPhaseItem: null,
-            meetingPhaseItem: null
+    await r({
+      updatedSortOrders: r(updatedProjects)
+        .forEach((project) => {
+          return r.table('Project').get(project('id')).update({
+            sortOrder: project('sortOrder')
           });
-      });
+        }),
+      // send to summary view
+      team: r.table('Team').get(teamId)
+        .update({
+          facilitatorPhase: SUMMARY,
+          meetingPhase: SUMMARY,
+          facilitatorPhaseItem: null,
+          meetingPhaseItem: null
+        })
+    });
     const {meetingNumber} = completedMeeting;
     const userIds = completedMeeting.invitees
       .filter((invitee) => invitee.present)

@@ -40,8 +40,8 @@ export default {
     }
     const projectDeleted = {project};
     sharedDataloader.share(operationId);
-    getPubSub().publish(`${PROJECT_DELETED}.${teamId}`, {projectDeleted});
-    getPubSub().publish(`${PROJECT_DELETED}.${userId}`, {projectDeleted});
+    getPubSub().publish(`${PROJECT_DELETED}.${teamId}`, {projectDeleted, operationId});
+    getPubSub().publish(`${PROJECT_DELETED}.${userId}`, {projectDeleted, operationId});
     return projectDeleted;
   }
 };

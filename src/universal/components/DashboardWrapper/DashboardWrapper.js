@@ -13,6 +13,7 @@ const query = graphql`
       teams {
         id
         name
+        meetingId
       }
     }
   }

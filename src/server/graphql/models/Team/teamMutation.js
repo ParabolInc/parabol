@@ -1,33 +1,14 @@
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {
-  getUserId,
-  requireSUOrTeamMember,
-  requireWebsocket
-} from 'server/utils/authorization';
-import {errorObj} from 'server/utils/utils';
-import {
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLString,
-  GraphQLInt
-} from 'graphql';
-import shortid from 'shortid';
-import {
-  CHECKIN,
-  LOBBY,
-  AGENDA_ITEMS
-} from 'universal/utils/constants';
-import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
-import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
-import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
-import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
 import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
+import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
+import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
+import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {errorObj} from 'server/utils/utils';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {startSlackMeeting} from './notifySlack/notifySlack';
-import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
+import {AGENDA_ITEMS, CHECKIN, LOBBY} from 'universal/utils/constants';
 
 export default {
   moveMeeting: {
@@ -165,61 +146,6 @@ export default {
       // console.log(facilitatorPhase, meetingPhase)
       // console.log(facilitatorPhaseItem, meetingPhaseItem)
       // console.log('------------');
-      return true;
-    }
-  },
-  startMeeting: {
-    type: GraphQLBoolean,
-    description: 'Start a meeting from the lobby',
-    args: {
-      facilitatorId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The facilitator teamMemberId for this meeting'
-      }
-    },
-    async resolve(source, {facilitatorId}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      // facilitatorId is of format 'userId::teamId'
-      const [, teamId] = facilitatorId.split('::');
-      requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-
-      // RESOLUTION
-      const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
-      if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
-        throw errorObj({_error: 'facilitator is not active on that team'});
-      }
-
-      const now = new Date();
-      const meetingId = shortid.generate();
-      const week = getWeekOfYear(now);
-
-      const updatedTeam = {
-        checkInGreeting: makeCheckinGreeting(week, teamId),
-        checkInQuestion: convertToProjectContent(makeCheckinQuestion(week, teamId)),
-        meetingId,
-        activeFacilitator: facilitatorId,
-        facilitatorPhase: CHECKIN,
-        facilitatorPhaseItem: 1,
-        meetingPhase: CHECKIN,
-        meetingPhaseItem: 1
-      };
-      await r.table('Team').get(teamId).update(updatedTeam)
-        .do(() => {
-          return r.table('Meeting').insert({
-            id: meetingId,
-            createdAt: now,
-            meetingNumber: r.table('Meeting')
-              .getAll(teamId, {index: 'teamId'})
-              .count()
-              .add(1),
-            teamId,
-            teamName: r.table('Team').get(teamId)('name')
-          });
-        });
-      startSlackMeeting(teamId);
       return true;
     }
   },

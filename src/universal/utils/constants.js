@@ -178,15 +178,16 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
+export const MEETING_UPDATED = 'meetingUpdated';
 export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
-export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
 export const ORGANIZATION_ADDED = 'organizationAdded';
 export const ORGANIZATION_UPDATED = 'organizationUpdated';
 export const PROJECT_UPDATED = 'projectUpdated';
 export const PROJECT_CREATED = 'projectCreated';
 export const PROJECT_DELETED = 'projectDeleted';
+export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
 
 /* Relay Subscription Event Types */
 export const ADD = 'add';
