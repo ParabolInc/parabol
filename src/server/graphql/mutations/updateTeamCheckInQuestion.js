@@ -1,7 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember, requireTeamCanUpdateCheckInQuestion} from 'server/utils/authorization';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
+import {requireSUOrTeamMember, requireTeamCanUpdateCheckInQuestion} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {MEETING_UPDATED} from 'universal/utils/constants';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
 
 export default {
@@ -17,8 +19,9 @@ export default {
       description: 'The Team\'s new Check-in question'
     }
   },
-  async resolve(_, {teamId, checkInQuestion}, {authToken}) {
+  async resolve(source, {teamId, checkInQuestion}, {authToken, socketId, sharedDataloader, operationId}) {
     const r = getRethink();
+    sharedDataloader.share(operationId);
 
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
@@ -28,12 +31,12 @@ export default {
     const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion);
 
     // RESOLUTION
-    const team = await r
-      .table('Team')
+    const team = await r.table('Team')
       .get(teamId)
       .update({checkInQuestion: normalizedCheckInQuestion}, {returnChanges: true})('changes')(0)('new_val').default(null);
 
-    // return a full object when we move to relay
-    return {team};
+    const meetingUpdated = {team};
+    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    return meetingUpdated;
   }
 };
