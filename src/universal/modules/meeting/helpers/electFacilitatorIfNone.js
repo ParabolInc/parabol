@@ -3,7 +3,8 @@ import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMu
 
 const electFacilitatorIfNone = (nextProps, members, oldMembers, hasWaited) => {
   // when the meeting starts, we'll be guaranteed an activeFacilitator
-  const {atmosphere, dispatch} = nextProps;
+  const {atmosphere, dispatch, viewer: {team: {activeFacilitator}}} = nextProps;
+  if (!activeFacilitator) return;
   const facilitator = members.find((m) => m.isFacilitating && m.isConnected);
   if (!facilitator) {
     const oldFacilitator = oldMembers.find((m) => m.isFacilitating);

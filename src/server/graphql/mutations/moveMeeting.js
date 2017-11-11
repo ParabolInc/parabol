@@ -139,11 +139,12 @@ export default {
       completeAgendaItem
     });
 
-    const meetingUpdated = {team};
-    if (team) {
-      sharedDataloader.share(operationId);
-      getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    if (!team) {
+      throw new Error('meeting already updated!')
     }
+    const meetingUpdated = {team};
+    sharedDataloader.share(operationId);
+    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
     return meetingUpdated;
   }
 };

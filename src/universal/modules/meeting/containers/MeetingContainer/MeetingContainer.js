@@ -43,6 +43,7 @@ import {
 } from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import MeetingUpdatesContainer from '../MeetingUpdates/MeetingUpdatesContainer';
+import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 
 const meetingContainerQuery = `
 query{
@@ -114,14 +115,14 @@ class MeetingContainer extends Component {
   }
 
   componentWillMount() {
-    const {bindHotkey, teamId, viewer: {team: {teamMembers, activeFacilitator}}, submitting, teamMemberPresence, userId} = this.props;
+    const {atmosphere, bindHotkey, teamId, viewer: {team: {teamMembers, activeFacilitator}}, submitting, teamMemberPresence, userId} = this.props;
     this.setState({
       members: resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator)
     });
     handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
-    bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
+    bindHotkey('i c a n t h a c k i t', () => KillMeetingMutation(atmosphere, teamId));
     this.electionTimer = setTimeout(() => {
       electFacilitatorIfNone(this.props, this.state.members, [], true);
     }, 5000);

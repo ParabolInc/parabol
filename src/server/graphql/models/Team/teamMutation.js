@@ -1,45 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
 import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {LOBBY} from 'universal/utils/constants';
 
 export default {
   endMeeting,
-  killMeeting: {
-    type: GraphQLBoolean,
-    description: 'Finish a meeting abruptly',
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The team that will be having the meeting'
-      }
-    },
-    async resolve(source, {teamId}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-
-      // RESOLUTION
-      // reset the meeting
-      await r.table('Team').get(teamId)
-        .update({
-          facilitatorPhase: LOBBY,
-          meetingPhase: LOBBY,
-          meetingId: null,
-          facilitatorPhaseItem: null,
-          meetingPhaseItem: null,
-          activeFacilitator: null
-        });
-      return true;
-    }
-  },
   addTeam,
   createFirstTeam,
   archiveTeam,
