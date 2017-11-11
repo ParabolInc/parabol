@@ -49,6 +49,7 @@ import startMeeting from 'server/graphql/mutations/startMeeting';
 import moveMeeting from 'server/graphql/mutations/moveMeeting';
 import killMeeting from 'server/graphql/mutations/killMeeting';
 import endMeeting from 'server/graphql/mutations/endMeeting';
+import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn';
 
 const rootFields = Object.assign({},
   agenda,
@@ -86,6 +87,7 @@ export default new GraphQLObjectType({
     joinIntegration,
     killMeeting,
     leaveIntegration,
+    meetingCheckIn,
     moveMeeting,
     promoteFacilitator,
     removeProvider,

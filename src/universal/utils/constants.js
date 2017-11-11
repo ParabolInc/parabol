@@ -188,6 +188,7 @@ export const PROJECT_UPDATED = 'projectUpdated';
 export const PROJECT_CREATED = 'projectCreated';
 export const PROJECT_DELETED = 'projectDeleted';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
+export const TEAM_MEMBER_UPDATED = 'teamMemberUpdated';
 
 /* Relay Subscription Event Types */
 export const ADD = 'add';

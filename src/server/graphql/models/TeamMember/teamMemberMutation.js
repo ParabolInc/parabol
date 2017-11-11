@@ -4,32 +4,6 @@ import {requireSUOrLead, requireSUOrTeamMember, requireWebsocket} from 'server/u
 import {errorObj} from 'server/utils/utils';
 
 export default {
-  checkIn: {
-    type: GraphQLBoolean,
-    description: 'Check a member in as present or absent',
-    args: {
-      teamMemberId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The teamMemberId of the person who is being checked in'
-      },
-      isCheckedIn: {
-        type: GraphQLBoolean,
-        description: 'true if the member is present, false if absent, null if undecided'
-      }
-    },
-    async resolve(source, {teamMemberId, isCheckedIn}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      // teamMemberId is of format 'userId::teamId'
-      const [, teamId] = teamMemberId.split('::');
-      requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-
-      // RESOLUTION
-      await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
-    }
-  },
   promoteToLead: {
     type: GraphQLBoolean,
     description: 'Promote another team member to be the leader',
