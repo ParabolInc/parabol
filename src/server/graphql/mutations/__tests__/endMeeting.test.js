@@ -7,8 +7,8 @@ import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
-import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
-import * as resetMeeting from 'server/graphql/models/Team/endMeeting/resetMeeting';
+import endMeeting from 'server/graphql/mutations/helpers/endMeeting/endMeeting';
+import * as resetMeeting from 'server/graphql/mutations/helpers/endMeeting/resetMeeting';
 
 MockDate.set(__now);
 console.error = jest.fn();

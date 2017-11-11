@@ -23,7 +23,7 @@ export default {
       description: 'the updated project including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedProject}, {authToken, operationId, sharedDataloader}) {
+  async resolve(source, {updatedProject}, {authToken, operationId, sharedDataloader, socketId}) {
     const r = getRethink();
 
     // AUTH
@@ -98,11 +98,9 @@ export default {
     const affectedUsers = Array.from(new Set([projectChanges.new_val.userId, projectChanges.old_val.userId]));
     sharedDataloader.share(operationId);
     affectedUsers.forEach((userId) => {
-      // TODO when removing cashay, add in the mutatorId here
-      getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated, operationId});
+      getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated, operationId, mutatorId: socketId});
     });
-    // TODO when removing cashay, add in the mutatorId here
-    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, operationId});
+    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, operationId, mutatorId: socketId});
     return projectUpdated;
   }
 };

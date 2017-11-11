@@ -44,6 +44,7 @@ import {
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import MeetingUpdatesContainer from '../MeetingUpdates/MeetingUpdatesContainer';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
+import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 
 const meetingContainerQuery = `
 query{
@@ -234,7 +235,7 @@ class MeetingContainer extends Component {
       const {atmosphere, history, onError, onCompleted, submitMutation} = this.props;
       const variables = {teamId};
       if (!nextPhaseInfo.next) {
-        cashay.mutate('endMeeting', {variables: {teamId}});
+        EndMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
       } else {
         if (nextPhase !== localPhase) {
           variables.nextPhase = nextPhase;
