@@ -8,6 +8,7 @@ import AnimatedFade from 'universal/components/AnimatedFade';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
+import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 
 const query = graphql`
   query MeetingRootQuery($teamId: ID!) {
@@ -18,7 +19,8 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  MeetingUpdatedSubscription
+  MeetingUpdatedSubscription,
+  TeamMemberUpdatedSubscription
 ];
 
 const MeetingRoot = ({atmosphere, match}) => {

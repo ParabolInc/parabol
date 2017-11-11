@@ -29,6 +29,7 @@ import projectUpdated from 'server/graphql/subscriptions/projectUpdated';
 import projectCreated from 'server/graphql/subscriptions/projectCreated';
 import projectDeleted from 'server/graphql/subscriptions/projectDeleted';
 import meetingUpdated from 'server/graphql/subscriptions/meetingUpdated';
+import teamMemberUpdated from 'server/graphql/subscriptions/teamMemberUpdated';
 
 const rootFields = Object.assign({},
   agenda,
@@ -65,6 +66,7 @@ export default new GraphQLObjectType({
     providerAdded,
     providerRemoved,
     teamMembersInvited,
+    teamMemberUpdated,
     ...rootFields
   })
 });
