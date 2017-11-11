@@ -1,10 +1,7 @@
-import {
-  AGENDA_ITEMS,
-  SUMMARY
-} from 'universal/utils/constants';
-import makePushURL from './makePushURL';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {cashay} from 'cashay';
+import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
+import {AGENDA_ITEMS, SUMMARY} from 'universal/utils/constants';
+import makePushURL from './makePushURL';
 
 export default function handleRedirects(oldProps, nextProps) {
   const {isFacilitating, localPhaseItem, history, localPhase, viewer} = nextProps;
@@ -42,13 +39,15 @@ export default function handleRedirects(oldProps, nextProps) {
             teamId,
             nextPhaseItem
           };
-          cashay.mutate('moveMeeting', {variables});
+          const {atmosphere, onError, onCompleted, submitMutation} = nextProps;
+          submitMutation();
+          MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
         }
         const pushURL = makePushURL(teamId, facilitatorPhase, nextPhaseItem);
         history.replace(pushURL);
         return false;
       } else if (facilitatorPhase === localPhase || phaseItems.length <= 1) {
-      // if they're in the same phase as the facilitator, or the phase they wanna go to has no items, go to their phase item
+        // if they're in the same phase as the facilitator, or the phase they wanna go to has no items, go to their phase item
         const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
         history.replace(pushURL);
         return false;

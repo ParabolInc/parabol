@@ -58,8 +58,8 @@ export default {
 
     // VALIDATION
     const nextPhaseInfo = actionMeeting[nextPhase];
-    const team = await r.table('Team').get(teamId);
-    const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
+    const currentTeam = await r.table('Team').get(teamId);
+    const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = currentTeam;
     const meetingPhaseInfo = actionMeeting[meetingPhase];
     if (nextPhase) {
       if (!nextPhaseInfo) {
@@ -134,14 +134,16 @@ export default {
       meetingPhaseItem: newMeetingPhaseItem
     };
 
-    const {meeting} = await r({
-      meeting: r.table('Team').get(teamId).update(updatedState),
+    const {team} = await r({
+      team: r.table('Team').get(teamId).update(updatedState, {returnChanges: true})('changes')(0)('new_val').default(null),
       completeAgendaItem
     });
 
-    const meetingUpdated = {meeting};
-    sharedDataloader.share(operationId);
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    const meetingUpdated = {team};
+    if (team) {
+      sharedDataloader.share(operationId);
+      getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    }
     return meetingUpdated;
   }
 };

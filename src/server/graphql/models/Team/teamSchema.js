@@ -11,7 +11,7 @@ import {
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
-import MeetingPhaseEnum from 'server/graphql/types/MeetingPhaseEnum';
+import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
 import Organization from 'server/graphql/types/Organization';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
@@ -69,7 +69,7 @@ export const Team = new GraphQLObjectType({
       description: 'The current facilitator teamMemberId for this meeting'
     },
     facilitatorPhase: {
-      type: MeetingPhaseEnum,
+      type: ActionMeetingPhaseEnum,
       description: 'The phase of the facilitator'
     },
     facilitatorPhaseItem: {
@@ -77,7 +77,7 @@ export const Team = new GraphQLObjectType({
       description: 'The current item number for the current phase for the facilitator, 1-indexed'
     },
     meetingPhase: {
-      type: MeetingPhaseEnum,
+      type: ActionMeetingPhaseEnum,
       description: 'The phase of the meeting, usually matches the facilitator phase, be could be further along'
     },
     meetingPhaseItem: {

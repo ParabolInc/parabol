@@ -30,6 +30,7 @@ import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPha
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -40,6 +41,7 @@ import {
   SORT_STEP,
   UPDATES
 } from 'universal/utils/constants';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 import MeetingUpdatesContainer from '../MeetingUpdates/MeetingUpdatesContainer';
 
 const meetingContainerQuery = `
@@ -57,8 +59,8 @@ const mutationHandlers = {
   updateAgendaItem: handleAgendaSort
 };
 
-const handleHotkey = (gotoFunc) => () => {
-  if (document.activeElement === document.body) gotoFunc();
+const handleHotkey = (gotoFunc, submitting) => () => {
+  if (!submitting && document.activeElement === document.body) gotoFunc();
 };
 
 const mapStateToProps = (state, props) => {
@@ -112,13 +114,13 @@ class MeetingContainer extends Component {
   }
 
   componentWillMount() {
-    const {bindHotkey, teamId, viewer: {team: {teamMembers, activeFacilitator}}, teamMemberPresence, userId} = this.props;
+    const {bindHotkey, teamId, viewer: {team: {teamMembers, activeFacilitator}}, submitting, teamMemberPresence, userId} = this.props;
     this.setState({
       members: resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator)
     });
     handleRedirects({}, this.props);
-    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext));
-    bindHotkey('left', handleHotkey(this.gotoPrev));
+    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
+    bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
     bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
     this.electionTimer = setTimeout(() => {
       electFacilitatorIfNone(this.props, this.state.members, [], true);
@@ -152,7 +154,9 @@ class MeetingContainer extends Component {
         variables.nextPhaseItem = localPhaseItem;
       }
       if (Object.keys(variables).length > 1) {
-        cashay.mutate('moveMeeting', {variables});
+        const {atmosphere, history, onError, onCompleted, submitMutation} = nextProps;
+        submitMutation();
+        MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
       }
     }
   }
@@ -176,7 +180,9 @@ class MeetingContainer extends Component {
             force: true
           };
           if (!infiniteTrigger) {
-            cashay.mutate('moveMeeting', {variables});
+            const {atmosphere, history, onError, onCompleted, submitMutation} = nextProps;
+            submitMutation();
+            MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
             infiniteTrigger = true;
           }
         }
@@ -224,6 +230,7 @@ class MeetingContainer extends Component {
     }
 
     if (isFacilitating) {
+      const {atmosphere, history, onError, onCompleted, submitMutation} = this.props;
       const variables = {teamId};
       if (!nextPhaseInfo.next) {
         cashay.mutate('endMeeting', {variables: {teamId}});
@@ -234,7 +241,8 @@ class MeetingContainer extends Component {
         if (nextPhaseItem) {
           variables.nextPhaseItem = nextPhaseItem;
         }
-        cashay.mutate('moveMeeting', {variables});
+        submitMutation();
+        MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
       }
     }
   };
@@ -362,7 +370,7 @@ class MeetingContainer extends Component {
             />
             }
           </MeetingMainHeader>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
           <MeetingCheckIn
             gotoItem={this.gotoItem}
@@ -405,7 +413,7 @@ class MeetingContainer extends Component {
           />
           }
           {!inSync &&
-          <RejoinFacilitatorButton onClickHandler={this.rejoinFacilitator} />
+          <RejoinFacilitatorButton onClickHandler={this.rejoinFacilitator}/>
           }
         </MeetingMain>
       </MeetingLayout>
@@ -419,7 +427,9 @@ export default createFragmentContainer(
       dragDropContext(HTML5Backend)(
         withHotkey(
           withAtmosphere(
-            MeetingContainer
+            withMutationProps(
+              MeetingContainer
+            )
           )
         )
       )

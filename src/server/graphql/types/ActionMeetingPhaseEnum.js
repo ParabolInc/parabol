@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql';
-import {CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, SUMMARY, UPDATES} from 'universal/utils/constants';
+import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, SUMMARY, UPDATES} from 'universal/utils/constants';
 
 const ActionMeetingPhaseEnum = new GraphQLEnumType({
   name: 'ActionMeetingPhaseEnum',
@@ -9,6 +9,7 @@ const ActionMeetingPhaseEnum = new GraphQLEnumType({
     [CHECKIN]: {},
     [UPDATES]: {},
     [FIRST_CALL]: {},
+    [AGENDA_ITEMS]: {},
     [LAST_CALL]: {},
     [SUMMARY]: {}
   }
