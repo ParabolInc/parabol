@@ -119,7 +119,7 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state;
-    const {outcome: {id: projectId}, contentState: initialContentState} = this.props;
+    const {area, outcome: {id: projectId}, contentState: initialContentState} = this.props;
     const contentState = editorState.getCurrentContent();
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
       cashay.mutate('deleteProject', {variables: {projectId}});
@@ -129,6 +129,7 @@ class OutcomeCardContainer extends Component {
         cashay.mutate('updateProject', {
           ops: {},
           variables: {
+            area,
             updatedProject: {
               id: projectId,
               content: JSON.stringify(convertToRaw(contentState))

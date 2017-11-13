@@ -46,6 +46,21 @@ const subscription = graphql`
         ... on NotifyTeamArchived {
           teamName
         }
+        ... on NotifyProjectInvolves {
+          involvement
+          team {
+            id
+            name
+          }
+          changeAuthor {
+            preferredName
+          }
+          project {
+            id
+            content
+            status
+          }
+        }
       }
     }
   }
