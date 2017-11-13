@@ -75,7 +75,7 @@ const withSuggestions = (ComposedComponent) => {
         setEditorState(autoCompleteEmoji(editorState, unicode));
       } else if (suggestionType === 'mention') {
         // team is derived from the project itself, so userId is the real useful thing here
-        const [userId] = item.id;
+        const [userId] = item.id.split('::');
         setEditorState(completeEntity(editorState, 'MENTION', {userId}, item.preferredName));
       }
       this.removeModal();
