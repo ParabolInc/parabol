@@ -8,6 +8,9 @@ import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
+import labels from 'universal/styles/theme/labels';
+import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import withStyles from 'universal/styles/withStyles';
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
@@ -32,7 +35,6 @@ const ProjectInvolves = (props) => {
   } = props;
   const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
-  // eslint-disable-next-line
   const {content, status} = project;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
@@ -48,21 +50,23 @@ const ProjectInvolves = (props) => {
   const contentState = convertFromRaw(JSON.parse(content));
   const editorState = EditorState.createWithContent(contentState, editorDecorators);
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="check-square" size="medium" />
+        <IconAvatar icon="id-card-o" size="small" />
       </div>
       <div className={css(styles.message)}>
         <div className={css(styles.messageText)}>
-          <span className={css(styles.messageVar)}>{changeAuthorName}</span>
-          <span>{' has'}</span>
-          <span className={css(styles.messageVar)}> {` ${action} you`} </span>
+          <b>{changeAuthorName}</b>
+          <span>{' has '}</span>
+          <b><i>{`${action} you`}</i></b>
           {involvement === MENTIONEE ? ' in' : ''}
-          <span>{' a project for'}</span>
-          <span className={css(styles.messageVar)}> {teamName} </span>
+          <span>{' a project for '}</span>
+          <span className={css(styles.messageVar, styles.notifLink)} onClick={gotoBoard} title={`Go to ${teamName}’s Board`}>
+            {teamName}
+          </span>
           <span>{'.'}</span>
         </div>
-        <div className={css(styles.projectListView)}>
+        <div className={css(styles.projectListView, styles[status])}>
           <Editor
             readOnly
             editorState={editorState}
@@ -111,7 +115,31 @@ ProjectInvolves.propTypes = {
 };
 
 const styleThunk = () => ({
-  ...defaultStyles
+  ...defaultStyles,
+
+  projectListView: {
+    backgroundColor: appTheme.palette.mid10l,
+    borderRadius: ui.borderRadiusMedium,
+    borderLeft: '.25rem solid',
+    margin: '.25rem 0 0',
+    padding: '.25rem .5rem'
+  },
+
+  [ACTIVE]: {
+    borderColor: labels.projectStatus[ACTIVE].color
+  },
+
+  [STUCK]: {
+    borderColor: labels.projectStatus[STUCK].color
+  },
+
+  [DONE]: {
+    borderColor: labels.projectStatus[DONE].color
+  },
+
+  [FUTURE]: {
+    borderColor: labels.projectStatus[FUTURE].color
+  }
 });
 
 export default withRouter(withStyles(styleThunk)(ProjectInvolves));

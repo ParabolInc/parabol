@@ -18,6 +18,9 @@ export default {
     fontSize: appTheme.typography.s2,
     marginTop: '.25rem'
   },
+  notifLink: {
+    cursor: 'pointer'
+  },
   button: {
     marginLeft: ui.rowCompactGutter,
     minWidth: '4.25rem'

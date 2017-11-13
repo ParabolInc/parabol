@@ -42,7 +42,7 @@ const RequestNewUser = (props) => {
   return (
     <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="small" />
+        <IconAvatar icon="user-circle-o" size="small" />
       </div>
       <div className={css(styles.message)}>
         <b>{inviterName}</b>{' requested to add '}
