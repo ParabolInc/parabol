@@ -10,7 +10,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
-const KickedOut = (props) => {
+const InviteeApproved = (props) => {
   const {
     atmosphere,
     styles,
@@ -51,7 +51,7 @@ const KickedOut = (props) => {
   );
 };
 
-KickedOut.propTypes = {
+InviteeApproved.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
@@ -73,4 +73,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(KickedOut);
+export default withStyles(styleThunk)(InviteeApproved);

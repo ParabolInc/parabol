@@ -14,14 +14,13 @@ const statusItems = labels.projectStatus.slugs.slice();
 
 class OutcomeCardStatusMenu extends Component {
   makeAddTagToProject = (tag) => () => {
-    const {area, outcome: {id: projectId}, editorState} = this.props;
+    const {outcome: {id: projectId}, editorState} = this.props;
     const contentState = editorState.getCurrentContent();
     const newContent = addTagToProject(contentState, tag);
     const rawContentStr = JSON.stringify(convertToRaw(newContent));
     const options = {
       ops: {},
       variables: {
-        area,
         updatedProject: {
           id: projectId,
           content: rawContentStr
@@ -129,7 +128,6 @@ class OutcomeCardStatusMenu extends Component {
 }
 
 OutcomeCardStatusMenu.propTypes = {
-  area: PropTypes.string.isRequired,
   closePortal: PropTypes.func.isRequired,
   editorState: PropTypes.object,
   outcome: PropTypes.object,
