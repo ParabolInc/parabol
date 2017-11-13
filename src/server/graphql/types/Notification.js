@@ -17,6 +17,7 @@ import {
   ADD_TO_TEAM,
   DENY_NEW_USER,
   FACILITATOR_REQUEST,
+  FACILITATOR_DISCONNECTED,
   INVITEE_APPROVED,
   JOIN_TEAM,
   KICKED_OUT,
@@ -28,6 +29,7 @@ import {
   TEAM_INVITE
 } from 'universal/utils/constants';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
+import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected';
 
 export const notificationInterfaceFields = {
   id: globalIdField('Notification', ({id}) => id),
@@ -57,6 +59,7 @@ const Notification = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       [ADD_TO_TEAM]: NotifyAddedToTeam,
       [DENY_NEW_USER]: NotifyDenial,
+      [FACILITATOR_DISCONNECTED]: NotifyFacilitatorDisconnected,
       [FACILITATOR_REQUEST]: NotifyFacilitatorRequest,
       [INVITEE_APPROVED]: NotifyInvitation,
       [JOIN_TEAM]: NotifyNewTeamMember,

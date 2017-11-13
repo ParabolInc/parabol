@@ -140,7 +140,7 @@ export default {
     });
 
     if (!team) {
-      throw new Error('meeting already updated!')
+      throw new Error('meeting already updated!');
     }
     const meetingUpdated = {team};
     sharedDataloader.share(operationId);

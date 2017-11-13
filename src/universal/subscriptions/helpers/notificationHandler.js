@@ -1,22 +1,25 @@
 import {matchPath} from 'react-router-dom';
 import {ConnectionHandler} from 'relay-runtime';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
   ADD_TO_TEAM,
-  DENY_NEW_USER,
+  DENY_NEW_USER, FACILITATOR_DISCONNECTED,
   FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
-  KICKED_OUT, PAYMENT_REJECTED, PROMOTE_TO_BILLING_LEADER,
+  KICKED_OUT,
+  PAYMENT_REJECTED,
+  PROMOTE_TO_BILLING_LEADER,
   REJOIN_TEAM,
-  REQUEST_NEW_USER, TEAM_ARCHIVED,
+  REQUEST_NEW_USER,
+  TEAM_ARCHIVED,
   TEAM_INVITE
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
-import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 
 export const addNotificationUpdater = (store, viewerId, newNode) => {
   const viewer = store.get(viewerId);
@@ -77,6 +80,25 @@ const notificationHandler = {
       }
     }));
     addNotificationUpdater(store, viewerId, payload);
+  },
+  [FACILITATOR_DISCONNECTED]: (payload, {environment, dispatch, store}) => {
+    const oldFacilitatorName = payload
+      .getLinkedRecord('oldFacilitator')
+      .getValue('preferredName');
+    const newFacilitator = payload.getLinkedRecord('newFacilitator');
+    const newFacilitatorName = newFacilitator.getValue('preferredName');
+    const newFacilitatorTeamMemberId = newFacilitator.getValue('id');
+    const newFacilitatorUserId = newFacilitator.getValue('userId');
+    const teamId = payload.getValue('teamId');
+    const {id: dbNewFacilitatorTeamMemberId} = fromGlobalId(newFacilitatorTeamMemberId);
+    store.get(teamId)
+      .setValue(dbNewFacilitatorTeamMemberId, 'activeFacilitator');
+    const {userId} = environment;
+    const facilitatorIntro = userId === newFacilitatorUserId ? 'You are' : `${newFacilitatorName} is`;
+    dispatch(showInfo({
+      title: `${oldFacilitatorName} Disconnected!`,
+      message: `${facilitatorIntro} the new facilitator`
+    }));
   },
   [FACILITATOR_REQUEST]: (payload, {environment, dispatch}) => {
     const requestorName = payload.getValue('requestorName');

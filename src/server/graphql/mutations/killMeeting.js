@@ -34,7 +34,7 @@ export default {
       }, {returnChanges: true})('changes')(0)('new_val').default(null);
 
     if (!team) {
-      throw new Error('meeting already updated!')
+      throw new Error('meeting already updated!');
     }
     const meetingUpdated = {team};
     sharedDataloader.share(operationId);

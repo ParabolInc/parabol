@@ -21,6 +21,17 @@ const subscription = graphql`
           requestorName
           requestorId
         }
+        ... on NotifyFacilitatorDisconnected {
+          newFacilitator {
+            id
+            preferredName
+            userId
+          }
+          oldFacilitator {
+            preferredName
+          }
+          teamId
+        }
         ... on NotifyInvitation {
           inviterName
           inviteeEmail

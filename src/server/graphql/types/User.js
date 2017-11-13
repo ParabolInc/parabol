@@ -16,7 +16,7 @@ import integrationProvider from 'server/graphql/queries/integrationProvider';
 import invoiceDetails from 'server/graphql/queries/invoiceDetails';
 import invoices from 'server/graphql/queries/invoices';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
-import notifications from 'server/graphql/queries/notifications';
+// import notifications from 'server/graphql/queries/notifications';
 // import organization from 'server/graphql/queries/organization';
 import providerMap from 'server/graphql/queries/providerMap';
 import slackChannels from 'server/graphql/queries/slackChannels';
@@ -175,7 +175,7 @@ const User = new GraphQLObjectType({
     integrationProvider,
     invoices,
     invoiceDetails,
-    notifications,
+    notifications: require('../queries/notifications').default,
     providerMap,
     slackChannels,
     organization: require('../queries/organization').default,

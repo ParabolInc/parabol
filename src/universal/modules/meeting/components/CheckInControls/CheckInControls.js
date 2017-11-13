@@ -13,7 +13,7 @@ const CheckInControls = (props) => {
     bindHotkey,
     checkInPressFactory,
     nextMember,
-    styles,
+    styles
   } = props;
 
   const handleOnClickPresent = checkInPressFactory(true);

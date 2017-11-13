@@ -22,7 +22,6 @@ import RejoinFacilitatorButton from 'universal/modules/meeting/components/Rejoin
 import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
 import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import electFacilitatorIfNone from 'universal/modules/meeting/helpers/electFacilitatorIfNone';
 import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeetingRoute';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
@@ -30,7 +29,10 @@ import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPha
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
+import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
+import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -43,8 +45,6 @@ import {
 } from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import MeetingUpdatesContainer from '../MeetingUpdates/MeetingUpdatesContainer';
-import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
-import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 
 const meetingContainerQuery = `
 query{
@@ -87,6 +87,7 @@ let infiniteTrigger = false;
 
 class MeetingContainer extends Component {
   static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
     bindHotkey: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
     localPhase: PropTypes.string,
@@ -105,7 +106,12 @@ class MeetingContainer extends Component {
     }).isRequired,
     teamId: PropTypes.string.isRequired,
     teamMemberPresence: PropTypes.array,
-    userId: PropTypes.string.isRequired
+    userId: PropTypes.string.isRequired,
+    error: PropTypes.any,
+    submitting: PropTypes.bool,
+    submitMutation: PropTypes.func.isRequired,
+    onCompleted: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -116,7 +122,15 @@ class MeetingContainer extends Component {
   }
 
   componentWillMount() {
-    const {atmosphere, bindHotkey, teamId, viewer: {team: {teamMembers, activeFacilitator}}, submitting, teamMemberPresence, userId} = this.props;
+    const {
+      atmosphere,
+      bindHotkey,
+      teamId,
+      viewer: {team: {teamMembers, activeFacilitator}},
+      submitting,
+      teamMemberPresence,
+      userId
+    } = this.props;
     this.setState({
       members: resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator)
     });
@@ -124,8 +138,8 @@ class MeetingContainer extends Component {
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
     bindHotkey('i c a n t h a c k i t', () => KillMeetingMutation(atmosphere, teamId));
-    this.electionTimer = setTimeout(() => {
-      electFacilitatorIfNone(this.props, this.state.members, [], true);
+    this.electionTimer = setInterval(() => {
+      this.electFacilitatorIfNone();
     }, 5000);
   }
 
@@ -134,11 +148,8 @@ class MeetingContainer extends Component {
     const {activeFacilitator, id: teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers} = team;
     const {viewer: {team: oldTeam}, teamMemberPresence: oldPresence} = this.props;
     const {teamMembers: oldTeamMembers, activeFacilitator: oldFacilitator} = oldTeam;
-    const {members: oldMembers} = this.state;
-
     if (teamMemberPresence !== oldPresence || teamMembers !== oldTeamMembers || activeFacilitator !== oldFacilitator) {
       const members = resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator);
-      electFacilitatorIfNone(nextProps, members, oldMembers);
       this.setState({
         members
       });
@@ -206,6 +217,25 @@ class MeetingContainer extends Component {
 
   componentWillUnmount() {
     clearTimeout(this.electionTimer);
+  }
+
+  electFacilitatorIfNone() {
+    const {atmosphere, viewer: {team: {activeFacilitator}}} = this.props;
+    if (!activeFacilitator) return;
+
+    const {members} = this.state;
+    const facilitator = members.find((m) => m.isFacilitating);
+    if (!facilitator.isConnected) {
+      const onlineMembers = members.filter((m) => m.isConnected);
+      const callingMember = onlineMembers[0];
+      const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
+      if (callingMember.isSelf) {
+        PromoteFacilitatorMutation(atmosphere, {
+          facilitatorId: nextFacilitator.id,
+          disconnectedFacilitatorId: facilitator.id
+        });
+      }
+    }
   }
 
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {

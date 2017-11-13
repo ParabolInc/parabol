@@ -72,6 +72,8 @@ export const PRO_LABEL = 'Pro';
 export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 // Sent to the orgMember that generated the new user request
 export const DENY_NEW_USER = 'DENY_NEW_USER';
+// Sent to meeting participants when the facilitator disconnects
+export const FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED';
 // Sent to the meeting facilitator by someone who wants to lead
 export const FACILITATOR_REQUEST = 'FACILITATOR_REQUEST';
 // Sent when a billing leader approves an invitee to the org

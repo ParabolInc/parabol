@@ -1,17 +1,27 @@
 import {commitMutation} from 'react-relay';
+import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const mutation = graphql`
-  mutation PromoteFacilitatorMutation($facilitatorId: ID!) {
-    promoteFacilitator(facilitatorId: $facilitatorId)
+  mutation PromoteFacilitatorMutation($facilitatorId: ID!, $disconnectedFacilitatorId: ID) {
+    promoteFacilitator(facilitatorId: $facilitatorId, disconnectedFacilitatorId: $disconnectedFacilitatorId) {
+      team {
+        activeFacilitator
+      }
+    }
   }
 `;
 
-const PromoteFacilitatorMutation = (environment, facilitatorId, onError, onCompleted) => {
+const PromoteFacilitatorMutation = (environment, input, onError, onCompleted) => {
+  const {facilitatorId, disconnectedFacilitatorId} = input;
   return commitMutation(environment, {
     mutation,
-    variables: {facilitatorId},
-    // updater: (store) => {
-    // },
+    variables: {disconnectedFacilitatorId, facilitatorId},
+    optimisticUpdater: (store) => {
+      const {id} = fromGlobalId(facilitatorId);
+      const [, teamId] = id.split('::');
+      store.get(teamId)
+        .setValue(id, 'activeFacilitator');
+    },
     onCompleted,
     onError
   });

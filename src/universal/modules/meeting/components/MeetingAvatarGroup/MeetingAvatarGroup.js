@@ -66,7 +66,7 @@ const MeetingAvatarGroup = (props) => {
               const onError = (err) => {
                 console.error(err);
               };
-              PromoteFacilitatorMutation(atmosphere, avatar.id, onError);
+              PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, onError);
             };
             const requestFacilitator = () => {
               const [, teamId] = avatar.id.split('::');

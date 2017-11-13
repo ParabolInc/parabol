@@ -2,6 +2,7 @@ import {GraphQLEnumType} from 'graphql';
 import {
   ADD_TO_TEAM,
   DENY_NEW_USER,
+  FACILITATOR_DISCONNECTED,
   FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
@@ -20,6 +21,7 @@ const NotificationEnum = new GraphQLEnumType({
   values: {
     [ADD_TO_TEAM]: {},
     [DENY_NEW_USER]: {},
+    [FACILITATOR_DISCONNECTED]: {},
     [FACILITATOR_REQUEST]: {},
     [INVITEE_APPROVED]: {},
     [JOIN_TEAM]: {},

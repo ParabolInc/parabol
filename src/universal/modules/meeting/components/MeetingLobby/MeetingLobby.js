@@ -32,7 +32,7 @@ const MeetingLobby = (props) => {
           {'Is the whole team here?'}
         </div>
         <div className={css(styles.prompt)}>
-          {'The person who presses “Start Meeting” will facilitate the meeting.'}<br/>
+          {'The person who presses “Start Meeting” will facilitate the meeting.'}<br />
           {'Everyone’s display automatically follows the Facilitator.'}
         </div>
         <div className={css(styles.helpText)}>
@@ -53,7 +53,7 @@ const MeetingLobby = (props) => {
         </div>
         <p className={css(styles.label)}>{'Meeting Link:'}</p>
         <div className={css(styles.urlBlock)}>
-          <CopyShortLink url={meetingUrl}/>
+          <CopyShortLink url={meetingUrl} />
         </div>
       </div>
       {/* */}
