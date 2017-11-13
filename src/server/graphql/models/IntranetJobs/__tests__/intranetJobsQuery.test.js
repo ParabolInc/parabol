@@ -26,7 +26,7 @@ describe('intranetJobsQuery', () => {
     });
 
     it('requires the superuser role', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
 
       // SETUP
       const db = new MockDB();
@@ -38,11 +38,12 @@ describe('intranetJobsQuery', () => {
         await sendBatchNotificationEmails.resolve(null, null, {authToken: nonSuperUserAuthToken});
       } catch (error) {
         expect(error.message).toMatch('Unauthorized');
+        expect(sendEmail.mock.calls).toEqual([]);
       }
     });
 
     it('ignores users which have been seen within 24 hours', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
 
       // SETUP
       const db = new MockDB();
@@ -59,10 +60,11 @@ describe('intranetJobsQuery', () => {
       // TEST
       const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {authToken});
       expect(emailedUsers).toEqual([]);
+      expect(sendEmail.mock.calls).toEqual([]);
     });
 
     it('ignores users that have not been seen within 24 hours, but have no new notifications', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
 
       // SETUP
       const db = new MockDB();
@@ -77,10 +79,11 @@ describe('intranetJobsQuery', () => {
       // TEST
       const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {authToken});
       expect(emailedUsers).toEqual([]);
+      expect(sendEmail.mock.calls).toEqual([]);
     });
 
     it('ignores users which have not been seen within 24 hours, but also have no new notifications within the last 24 hours', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
 
       // SETUP
       const db = new MockDB();
@@ -97,6 +100,7 @@ describe('intranetJobsQuery', () => {
       // TEST
       const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {authToken});
       expect(emailedUsers).toEqual([]);
+      expect(sendEmail.mock.calls).toEqual([]);
     });
 
     it('sends emails to users that have not been seen within 24 hours and have new notifications', async () => {
