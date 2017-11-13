@@ -18,8 +18,10 @@ const subscription = graphql`
           inviteeEmail
         }
         ... on NotifyFacilitatorRequest {
-          requestorName
-          requestorId
+          requestor {
+            id
+            preferredName
+          }
         }
         ... on NotifyFacilitatorDisconnected {
           newFacilitator {

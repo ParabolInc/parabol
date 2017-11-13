@@ -262,7 +262,7 @@ class MeetingContainer extends Component {
     }
 
     if (isFacilitating) {
-      const {atmosphere, history, onError, onCompleted, submitMutation} = this.props;
+      const {atmosphere, onError, onCompleted, submitMutation} = this.props;
       const variables = {teamId};
       if (!nextPhaseInfo.next) {
         EndMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
@@ -402,7 +402,7 @@ class MeetingContainer extends Component {
             />
             }
           </MeetingMainHeader>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
           <MeetingCheckIn
             gotoItem={this.gotoItem}
@@ -445,7 +445,7 @@ class MeetingContainer extends Component {
           />
           }
           {!inSync &&
-          <RejoinFacilitatorButton onClickHandler={this.rejoinFacilitator}/>
+          <RejoinFacilitatorButton onClickHandler={this.rejoinFacilitator} />
           }
         </MeetingMain>
       </MeetingLayout>

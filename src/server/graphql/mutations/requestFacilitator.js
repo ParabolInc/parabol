@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {toGlobalId} from 'graphql-relay';
+import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {FACILITATOR_REQUEST, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
@@ -13,38 +13,32 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (source, {teamId}, {authToken, socket}) => {
-    const r = getRethink();
-
+  resolve: async (source, {teamId}, {authToken, operationId, sharedDataloader}) => {
+    const dataloader = sharedDataloader.get(operationId);
+    sharedDataloader.share(operationId);
     // AUTH
     const userId = getUserId(authToken);
     requireSUOrTeamMember(authToken, teamId);
-    requireWebsocket(socket);
 
     // VALIDATION
-    const requestorId = `${userId}::${teamId}`;
-    const team = await r.table('Team').get(teamId)
-      .pluck('activeFacilitator')
-      .merge({
-        requestorName: r.table('TeamMember').get(requestorId)('preferredName')
-      });
-    const {activeFacilitator, requestorName} = team;
-    if (activeFacilitator === requestorId) {
+    const dbRequestorId = `${userId}::${teamId}`;
+    const {activeFacilitator} = await dataloader.teams.load(teamId);
+    if (activeFacilitator === dbRequestorId) {
       // no UI for this
       throw new Error('You are already the facilitator');
     }
 
     // RESOLUTION
+    const requestorId = toGlobalId('TeamMember', dbRequestorId);
     const [currentFacilitatorUserId] = activeFacilitator.split('::');
     const notificationsAdded = {
       notifications: [{
         requestorId,
-        requestorName,
         type: FACILITATOR_REQUEST
       }]
     };
 
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${currentFacilitatorUserId}`, {notificationsAdded});
+    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${currentFacilitatorUserId}`, {notificationsAdded, operationId});
     return true;
   }
 };

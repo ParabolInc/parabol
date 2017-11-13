@@ -34,7 +34,8 @@ const MeetingAvatarGroup = (props) => {
     localPhase,
     localPhaseItem,
     onFacilitatorPhase,
-    styles
+    styles,
+    team: {id: teamId}
   } = props;
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES;
   return (
@@ -69,7 +70,6 @@ const MeetingAvatarGroup = (props) => {
               PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, onError);
             };
             const requestFacilitator = () => {
-              const [, teamId] = avatar.id.split('::');
               RequestFacilitatorMutation(atmosphere, teamId);
             };
             const handleNavigate = canNavigate && navigateTo || undefined;
@@ -127,7 +127,10 @@ MeetingAvatarGroup.propTypes = {
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   onFacilitatorPhase: PropTypes.bool,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  team: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  })
 };
 
 const borderDefault = appTheme.palette.mid20a;

@@ -91,8 +91,10 @@ const notificationHandler = {
     const newFacilitatorUserId = newFacilitator.getValue('userId');
     const teamId = payload.getValue('teamId');
     const {id: dbNewFacilitatorTeamMemberId} = fromGlobalId(newFacilitatorTeamMemberId);
-    store.get(teamId)
-      .setValue(dbNewFacilitatorTeamMemberId, 'activeFacilitator');
+    const team = store.get(teamId);
+    // this can happen if it comes it during a refresh
+    if (!team) return;
+    team.setValue(dbNewFacilitatorTeamMemberId, 'activeFacilitator');
     const {userId} = environment;
     const facilitatorIntro = userId === newFacilitatorUserId ? 'You are' : `${newFacilitatorName} is`;
     dispatch(showInfo({
@@ -101,8 +103,10 @@ const notificationHandler = {
     }));
   },
   [FACILITATOR_REQUEST]: (payload, {environment, dispatch}) => {
-    const requestorName = payload.getValue('requestorName');
-    const requestorId = payload.getValue('requestorId');
+    const requestor = payload.getLinkedRecord('requestor');
+    if (!requestor) return;
+    const requestorName = requestor.getValue('preferredName');
+    const requestorId = requestor.getValue('id');
     dispatch(showInfo({
       title: `${requestorName} wants to facilitate`,
       message: 'Click ‘Promote’ to hand over the reigns',
@@ -113,7 +117,7 @@ const notificationHandler = {
           const onError = (err) => {
             console.error(err);
           };
-          PromoteFacilitatorMutation(environment, requestorId, onError);
+          PromoteFacilitatorMutation(environment, {facilitatorId: requestorId}, onError);
         }
       }
     }));
