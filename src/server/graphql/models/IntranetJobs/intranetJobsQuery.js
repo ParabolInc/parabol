@@ -116,7 +116,9 @@ const sendBatchNotificationEmails = {
     // of all the users who have not logged in within the last 24 hours and their
     // associated notifications.
     const r = getRethink();
-    const yesterday = new Date(Date.now() - (24 * 60 * 60 * 1000));
+    const now = Date.now();
+    const today = new Date(now);
+    const yesterday = new Date(now - (24 * 60 * 60 * 1000));
     const userNotifications = await r
       .table('Notification')
       // Only include notifications which occurred within the last day
@@ -145,14 +147,23 @@ const sendBatchNotificationEmails = {
       .map((group) => ({
         userId: group('group'),
         email: group('reduction')(0)('email'),
-        preferredName: group('reduction')(0)('preferredName'),
-        notifications: group('reduction').map((joinedNotification) => joinedNotification('notification'))
+        name: group('reduction')(0)('preferredName'),
+        numNotifications: group('reduction').count()
       }));
 
     const emails = userNotifications.map(({email}) => email);
+    const recipientVariables = userNotifications
+      .reduce((addressMap, {email, name, numNotifications}) => ({
+        ...addressMap,
+        [email]: {name, numNotifications}
+      }), {});
     if (emails.length) {
-      // TODO: email template/props
-      await sendEmail(emails.join(','));
+      await sendEmail(
+        emails,
+        'notificationSummary',
+        {date: today},
+        recipientVariables
+      );
     }
     return emails;
   }

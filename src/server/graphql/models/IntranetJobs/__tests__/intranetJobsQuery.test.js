@@ -1,6 +1,6 @@
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
-import {__anHourAgo, __overADayAgo} from 'server/__tests__/setup/mockTimes';
+import {__anHourAgo, __now, __overADayAgo} from 'server/__tests__/setup/mockTimes';
 import getRethink from 'server/database/rethinkDriver';
 import sendEmail from 'server/email/sendEmail';
 
@@ -121,7 +121,17 @@ describe('intranetJobsQuery', () => {
       // TEST
       const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {authToken});
       expect(emailedUsers).toEqual([notifiedUser.email]);
-      expect(sendEmail.mock.calls).toEqual([[notifiedUser.email]]);
+      expect(sendEmail.mock.calls).toEqual([[
+        [notifiedUser.email],
+        'notificationSummary',
+        {date: new Date(__now)},
+        {
+          [notifiedUser.email]: {
+            name: notifiedUser.name,
+            numNotifications: 1
+          }
+        }
+      ]]);
     });
   });
 });
