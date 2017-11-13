@@ -4,11 +4,9 @@ import {
   INVITEE_APPROVED,
   KICKED_OUT,
   PAYMENT_REJECTED,
-  PROJECT_INVOLVES,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
-  TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_ARCHIVED, TEAM_INVITE
 } from 'universal/utils/constants';
 
 export default {
@@ -17,7 +15,6 @@ export default {
   [INVITEE_APPROVED]: () => System.import('universal/modules/notifications/components/InviteeApproved'),
   [KICKED_OUT]: () => System.import('universal/modules/notifications/components/KickedOut'),
   [PAYMENT_REJECTED]: () => System.import('universal/modules/notifications/components/PaymentRejected/PaymentRejected'),
-  [PROJECT_INVOLVES]: () => System.import('universal/modules/notifications/components/ProjectInvolves'),
   // eslint-disable-next-line max-len
   [PROMOTE_TO_BILLING_LEADER]: () => System.import('universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader'),
   [REQUEST_NEW_USER]: () => System.import('universal/modules/notifications/components/RequestNewUser/RequestNewUser'),

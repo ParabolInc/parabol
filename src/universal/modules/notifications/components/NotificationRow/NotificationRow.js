@@ -36,7 +36,7 @@ NotificationRow.propTypes = {
   dispatch: PropTypes.func.isRequired,
   notification: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    orgId: PropTypes.string,
+    orgId: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired
     // See the Notification interface for full list
   }),

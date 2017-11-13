@@ -87,12 +87,7 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
     teams: r.table('Team')
       .getAll(r.args(teamIds), {index: 'id'})
       .pluck('id', 'name', 'orgId')
-      .coerceTo('array'),
-    // note this may be too aggressive since 1 notification could have multiple userIds. we need to refactor to a single userId
-    notifications: r.table('Notification')
-      .getAll(userId, {index: 'userIds'})
-      .filter((notification) => teamIds.contains(notification('teamId')))
-      .delete()
+      .coerceTo('array')
   });
   // update the tms on auth0 in async
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newTMS});

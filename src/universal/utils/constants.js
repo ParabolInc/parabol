@@ -92,8 +92,7 @@ export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 export const TEAM_INVITE = 'TEAM_INVITE';
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
-// sent to members when a project is assigned to them or mentions them
-export const PROJECT_INVOLVES = 'PROJECT_INVOLVES';
+
 
 export const notificationTypes = [
   PAYMENT_REJECTED,
@@ -198,6 +197,3 @@ export const PERSONAL = 'personal';
 export const PRO = 'pro';
 export const ENTERPRISE = 'enterprise';
 
-/* Project Involvement Types */
-export const ASSIGNEE = 'ASSIGNEE';
-export const MENTIONEE = 'MENTIONEE';
