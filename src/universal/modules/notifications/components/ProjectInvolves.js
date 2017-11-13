@@ -78,7 +78,7 @@ const ProjectInvolves = (props) => {
           <Button
             colorPalette="cool"
             isBlock
-            label="Go to board"
+            label="Go to Board"
             buttonSize={ui.notificationButtonSize}
             type="submit"
             onClick={gotoBoard}
