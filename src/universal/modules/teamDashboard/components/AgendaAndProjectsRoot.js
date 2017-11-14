@@ -5,13 +5,13 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
-import {cacheConfig} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
+import ms from 'ms';
 
 const query = graphql`
   query AgendaAndProjectsRootQuery($teamId: ID!) {
@@ -29,6 +29,7 @@ const subscriptions = [
   ProjectCreatedSubscription,
   ProjectDeletedSubscription
 ];
+const cacheConfig = {ttl: ms('30s')};
 
 const AgendaAndProjectsRoot = (props) => {
   const {atmosphere, match: {params: {teamId}}, teams} = props;

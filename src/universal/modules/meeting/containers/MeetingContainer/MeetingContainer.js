@@ -469,6 +469,38 @@ export default createFragmentContainer(
   ),
   graphql`
     fragment MeetingContainer_viewer on User {
+      projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
+        edges {
+          node {
+            id
+            content
+            createdAt
+            createdBy
+            integration {
+              service
+              nameWithOwner
+              issueNumber
+            }
+            status
+            tags
+            teamMemberId
+            updatedAt
+            sortOrder
+            updatedAt
+            userId
+            teamId
+            team {
+              id
+              name
+            }
+            teamMember {
+              id
+              picture
+              preferredName
+            }
+          }
+        }
+      }
       team(teamId: $teamId) {
         agendaItems {
           id
@@ -505,7 +537,6 @@ export default createFragmentContainer(
           isFacilitator
           isLead
           userId
-
         }
       }
     }

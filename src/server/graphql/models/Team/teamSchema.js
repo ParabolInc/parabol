@@ -16,6 +16,9 @@ import Organization from 'server/graphql/types/Organization';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
+import {ProjectConnection} from 'server/graphql/types/Project';
+import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
+import {requireSUOrTeamMember} from 'server/utils/authorization';
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
@@ -104,6 +107,16 @@ export const Team = new GraphQLObjectType({
         const agendaItems = await dataloader.agendaItemsByTeamId.load(teamId);
         agendaItems.sort((a, b) => a.sortOrder < b.sortOrder ? 1 : -1);
         return agendaItems;
+      }
+    },
+    projects: {
+      type: ProjectConnection,
+      description: 'All of the projects for this team',
+      async resolve({id: teamId}, args, {authToken, sharedDataloader, operationId}) {
+        const dataloader = sharedDataloader.get(operationId);
+        requireSUOrTeamMember(authToken, teamId);
+        const projects = await dataloader.projectsByTeamId.load(teamId);
+        return connectionFromProjects(projects);
       }
     },
     teamMembers: {

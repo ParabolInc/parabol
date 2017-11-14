@@ -5,6 +5,32 @@ import {cashay} from 'cashay';
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
+import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import ms from 'ms';
+import {TransitionGroup} from 'react-transition-group';
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import AnimatedFade from 'universal/components/AnimatedFade';
+
+const query = graphql`
+  query MeetingUpdatesRootQuery($teamId: ID!) {
+    viewer {
+      teamMember(teamId: $teamId) {
+        hideAgenda
+      }
+      ...MeetingUpdates_viewer
+    }
+  }
+`;
+
+const subscriptions = [
+  ProjectUpdatedSubscription,
+  ProjectCreatedSubscription,
+  ProjectDeletedSubscription
+];
 
 const meetingUpdatesQuery = `
 query {
@@ -36,28 +62,6 @@ query {
 }
 `;
 
-const mutationHandlers = {
-  updateProject(optimisticUpdates, queryResponse, currentResponse) {
-    if (optimisticUpdates) {
-      const {updatedProject} = optimisticUpdates;
-      if (updatedProject && updatedProject.hasOwnProperty('sortOrder')) {
-        const {id, sortOrder, status} = updatedProject;
-        const {projects} = currentResponse;
-        const fromProject = projects.find((project) => project.id === id);
-        if (sortOrder !== undefined) {
-          fromProject.sortOrder = sortOrder;
-        }
-        if (status) {
-          fromProject.status = status;
-        }
-        // no need to sort since the resolveTeamProjects function will do that next
-        return currentResponse;
-      }
-    }
-    return undefined;
-  }
-};
-
 const mapStateToProps = (state, props) => {
   const {members, localPhaseItem} = props;
   const currentTeamMember = members[localPhaseItem - 1];
@@ -80,12 +84,40 @@ const mapStateToProps = (state, props) => {
     projects
   };
 };
-
+const cacheConfig = {ttl: ms('30s')};
 const MeetingUpdatesContainer = (props) => {
-  if (!props.projects) {
-    return <LoadingView />;
-  }
-  return <MeetingUpdates {...props} />;
+  const {atmosphere, gotoItem, gotoNext, showMoveMeetingControls, teamId} = props;
+  return (
+    <QueryRenderer
+      cacheConfig={cacheConfig}
+      environment={atmosphere}
+      query={query}
+      variables={{teamId}}
+      subscriptions={subscriptions}
+      render={({error, props: renderProps}) => {
+        return (
+          <TransitionGroup appear style={{display: 'flex', width: '100%', flex: 1}} exit={false}>
+            {error && <ErrorComponent height={'14rem'} error={error} />}
+            {renderProps &&
+            <AnimatedFade key="1">
+              <MeetingUpdates
+                gotoItem={gotoItem}
+                gotoNext={gotoNext}
+                showMoveMeetingControls={showMoveMeetingControls}
+                {...props}
+              />
+            </AnimatedFade>
+            }
+            {!renderProps && !error &&
+            <AnimatedFade key="2" unmountOnExit exit={false}>
+              <LoadingComponent height={'5rem'} />
+            </AnimatedFade>
+            }
+          </TransitionGroup>
+        );
+      }}
+    />
+  );
 };
 
 MeetingUpdatesContainer.propTypes = {
@@ -97,4 +129,4 @@ MeetingUpdatesContainer.propTypes = {
   team: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps)(MeetingUpdatesContainer);
+export default withAtmosphere(MeetingUpdatesContainer);

@@ -3,6 +3,7 @@ import {forwardConnectionArgs} from 'graphql-relay';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 
 export default {
   type: ProjectConnection,
@@ -38,18 +39,7 @@ export default {
     }
 
     // RESOLUTION
-    const nodes = projects.slice();
-    const edges = nodes.map((node) => ({
-      cursor: node.updatedAt,
-      node
-    }));
-    const firstEdge = edges[0];
-    return {
-      edges,
-      pageInfo: {
-        endCursor: firstEdge ? edges[edges.length - 1].cursor : new Date(),
-        hasNextPage: projects.length > nodes.length
-      }
-    };
+    return connectionFromProjects(projects);
+
   }
 };
