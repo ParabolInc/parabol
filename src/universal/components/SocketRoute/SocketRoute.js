@@ -69,6 +69,10 @@ const query = graphql`
               project {
                 id
                 content
+                teamMember {
+                  picture
+                  preferredName
+                }
                 status
                 tags
               }

@@ -28,20 +28,19 @@ const TeamArchived = (props) => {
   };
 
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="medium" />
+        <IconAvatar icon="archive" size="small" />
       </div>
       <div className={css(styles.message)}>
-        The team:
-        <span className={css(styles.messageVar)}> {teamName} </span>
-        was archived
+        {'The team '}<b>{teamName}</b>{' was archived.'}
       </div>
-      <div className={css(styles.button)}>
+      <div className={css(styles.iconButton)}>
         <Button
-          colorPalette="cool"
+          aria-label="Clear this notification"
+          colorPalette="gray"
+          icon="check"
           isBlock
-          label="Okay"
           onClick={acknowledge}
           buttonSize={ui.notificationButtonSize}
           type="submit"

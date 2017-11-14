@@ -10,6 +10,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
+import withRouter from 'react-router-dom/es/withRouter';
 
 const RequestNewUser = (props) => {
   const {
@@ -19,9 +20,10 @@ const RequestNewUser = (props) => {
     submitting,
     submitMutation,
     onError,
-    onCompleted
+    onCompleted,
+    history
   } = props;
-  const {id, inviterName, inviteeEmail, orgId, teamName} = notification;
+  const {id, inviterName, inviteeEmail, orgId, teamName, teamId} = notification;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acceptInvite = () => {
     submitMutation();
@@ -31,13 +33,16 @@ const RequestNewUser = (props) => {
 
   const rejectToggle = (
     <Button
+      aria-label="Decline"
+      buttonSize="small"
       colorPalette="gray"
       isBlock
       label="Decline"
-      buttonSize="small"
       type="submit"
     />
   );
+
+  const goToTeam = () => history.push(`/team/${teamId}`);
 
   return (
     <Row compact>
@@ -47,12 +52,13 @@ const RequestNewUser = (props) => {
       <div className={css(styles.message)}>
         <b>{inviterName}</b>{' requested to add '}
         <b>{inviteeEmail}</b>{' to '}
-        <span className={css(styles.messageVar)}>{teamName}</span>{'.'}<br />
+        <span className={css(styles.messageVar, styles.notifLink)} onClick={goToTeam}>{teamName}</span>{'.'}<br />
         {isPaid && <span>{'Your monthly invoice will increase by $5.'}</span>}
       </div>
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>
           <Button
+            aria-label="Accept"
             colorPalette="cool"
             isBlock
             label="Accept"
@@ -78,6 +84,7 @@ const RequestNewUser = (props) => {
 RequestNewUser.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
@@ -96,4 +103,4 @@ const styleThunk = () => ({
   ...defaultStyles
 });
 
-export default withStyles(styleThunk)(RequestNewUser);
+export default withRouter(withStyles(styleThunk)(RequestNewUser));

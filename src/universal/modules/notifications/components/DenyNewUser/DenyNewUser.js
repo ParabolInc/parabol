@@ -28,24 +28,24 @@ const DenyNewUser = (props) => {
   };
   const safeReason = reason || 'none given';
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="medium" />
+        <IconAvatar icon="user-circle-o" size="small" />
       </div>
       <div className={css(styles.message)}>
-        <span className={css(styles.messageVar)}>{deniedByName} </span>
-        has denied
-        <span className={css(styles.messageVar)}> {inviteeEmail} </span>
-        from joining the organization. <br />
-        <b>Reason</b>: “{safeReason}”
+        <b>{deniedByName}</b>
+        {' has denied '}
+        <b>{inviteeEmail}</b>
+        {' from joining the organization.'}<br />
+        <b>{'Reason'}</b>{': “'}<i>{safeReason}</i>{'”'}
       </div>
-      <div className={css(styles.button)}>
+      <div className={css(styles.iconButton)}>
         <Button
-          colorPalette="cool"
+          aria-label="Clear this notification"
+          buttonSize="small"
+          colorPalette="gray"
+          icon="check"
           isBlock
-          label="Okay"
-          buttonSize={ui.notificationButtonSize}
-          type="submit"
           onClick={acknowledge}
           waiting={submitting}
         />
@@ -66,7 +66,7 @@ DenyNewUser.propTypes = {
     deniedByName: PropTypes.string.isRequired,
     inviteeEmail: PropTypes.string.isRequired,
     reason: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired
+    // teamName: PropTypes.string.isRequired
   })
 };
 

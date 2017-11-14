@@ -19,11 +19,26 @@ export default {
     marginTop: '.25rem'
   },
   notifLink: {
-    cursor: 'pointer'
+    cursor: 'pointer',
+    ':hover': {
+      color: appTheme.palette.cool50d
+    }
   },
   button: {
     marginLeft: ui.rowCompactGutter,
-    minWidth: '4.25rem'
+    minWidth: '5.125rem'
+  },
+  iconButton: {
+    marginLeft: ui.rowCompactGutter,
+    minWidth: '2rem'
+  },
+  widerButton: {
+    marginLeft: ui.rowCompactGutter,
+    minWidth: '8.25rem'
+  },
+  widestButton: {
+    marginLeft: ui.rowCompactGutter,
+    minWidth: '11rem'
   },
   buttonGroup: {
     display: 'flex'

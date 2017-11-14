@@ -36,7 +36,7 @@ const ProjectInvolves = (props) => {
   const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
   // eslint-disable-next-line
-  const {content, status, tags} = project;
+  const {content, status, tags, teamMember} = project;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
@@ -73,28 +73,36 @@ const ProjectInvolves = (props) => {
             readOnly
             editorState={editorState}
           />
+          {involvement === MENTIONEE &&
+            <div>
+              {teamMember.picture}<br />
+              {teamMember.preferredName}
+            </div>
+          }
         </div>
       </div>
       <div className={css(styles.buttonGroup)}>
-        <div className={css(styles.button)}>
+        <div className={css(styles.widerButton)}>
           <Button
             colorPalette="cool"
             isBlock
             label="Go to Board"
             buttonSize={ui.notificationButtonSize}
+            title="Clear this notification"
             type="submit"
             onClick={gotoBoard}
             waiting={submitting}
           />
         </div>
-        <div className={css(styles.button)}>
+        <div className={css(styles.iconButton)}>
           <Button
-            colorPalette="gray"
-            isBlock
-            label="OK"
+            aria-label="Clear this notification"
             buttonSize="small"
-            type="submit"
+            colorPalette="gray"
+            icon="check"
+            isBlock
             onClick={acknowledge}
+            type="submit"
           />
         </div>
       </div>
@@ -124,7 +132,7 @@ const styleThunk = () => ({
     borderRadius: ui.borderRadiusMedium,
     borderLeft: '.25rem solid',
     margin: '.25rem 0 0',
-    padding: '.25rem .5rem'
+    padding: '.5rem'
   },
 
   [ACTIVE]: {

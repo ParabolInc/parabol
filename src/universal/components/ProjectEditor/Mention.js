@@ -3,8 +3,9 @@ import React from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const style = {
-  color: appTheme.palette.cool,
-  fontWeight: 800
+  backgroundColor: appTheme.palette.cool20l,
+  color: appTheme.palette.cool10d,
+  fontWeight: 700
 };
 
 const Mention = (props) => {
