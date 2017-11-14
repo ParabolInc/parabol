@@ -1,6 +1,8 @@
 import React from 'react';
 import Oy from 'oy-vey';
 
+import makeAppLink from 'server/utils/makeAppLink';
+
 import NotificationSummaryEmail from './NotificationSummaryEmail';
 
 /*
@@ -12,8 +14,7 @@ import NotificationSummaryEmail from './NotificationSummaryEmail';
 const textOnlySummary = (props) => {
   const {date} = props;
   const dateString = makeDateString(date);
-  // TODO - how to generate this url?
-  const notificationPageUrl = 'TODO';
+  const notificationPageUrl = makeAppLink('me/notifications');
   return `Hi there, %recipient.name%!
 
 You have received %recipient.numNotifications% new notification(s) in the last day.

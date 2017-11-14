@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import makeAppLink from 'server/utils/makeAppLink';
 import appTheme from 'universal/styles/theme/appTheme';
 
-import Body from '../Body/Body'
-import Button from '../Button/Button'
-import Callout from '../Callout/Callout'
-import ContactUs from '../ContactUs/ContactUs'
-import Header from '../Header/Header'
-import Layout from '../Layout/Layout'
+import Body from '../Body/Body';
+import Button from '../Button/Button';
+import Callout from '../Callout/Callout';
+import ContactUs from '../ContactUs/ContactUs';
+import Header from '../Header/Header';
+import Layout from '../Layout/Layout';
 
 export default function NotificationSummaryEmail({date}) {
-  // TODO - how to generate this?
-  const notificationPageUrl = 'TODO';
+  const notificationPageUrl = makeAppLink('me/notifications');
   return (
     <Layout>
       <Header color={appTheme.palette.dark} />
