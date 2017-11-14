@@ -57,6 +57,17 @@ export const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getCon
   {teamId}
 );
 
+export const getMeetingUpdatesConnections = (store, teamId) => {
+  const team = store.get(teamId);
+  const teamMembers = team.getLinkedRecords('teamMembers', {sortBy: 'checkInOrder'});
+  const teamMemberIds = teamMembers.map((teamMember) => teamMember.getValue('id'));
+
+  ConnectionHandler.getConnection(
+    viewer,
+    'MeetingUpdates_projects'
+  );
+};
+
 export const handleProjectConnections = (store, viewerId, project) => {
   // we currently have 3 connections, user, team, and team archive
   const viewer = store.get(viewerId);
@@ -70,6 +81,12 @@ export const handleProjectConnections = (store, viewerId, project) => {
   const archiveConn = getArchiveConnection(viewer, teamId);
   const teamConn = getTeamDashConnection(viewer, teamId);
   const userConn = getUserDashConnection(viewer);
+  const teamMemberViewer = store.get("VGVhbU1lbWJlcjpnb29nbGUtb2F1dGgyfDEwNzc5NDE0NTgxMjAwNDM1NjA2Nzo6SEpJVkJqR0E=");
+  const meetingUpdatesConns = getMeetingUpdatesConnections(teamMemberViewer, teamId);
+  //if (!meetingUpdatesConn) {
+  //  storeDebugger.dump(store)
+  //  debugger
+  //}
   const safePutNodeInConn = (conn) => {
     if (conn && !getNodeById(projectId, conn)) {
       const newEdge = ConnectionHandler.createEdge(

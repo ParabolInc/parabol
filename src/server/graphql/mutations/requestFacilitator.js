@@ -15,8 +15,7 @@ export default {
   },
   resolve: async (source, {teamId}, {authToken, getDataLoader}) => {
     const dataLoader = getDataLoader();
-    const operationId = dataLoader.id();
-    dataLoader.share();
+    const operationId = dataLoader.share();
 
     // AUTH
     const userId = getUserId(authToken);

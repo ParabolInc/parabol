@@ -23,8 +23,7 @@ export default {
   async resolve(source, {teamId}, {authToken, socketId, getDataLoader}) {
     const r = getRethink();
     const dataLoader = getDataLoader();
-    const operationId = dataLoader.id();
-    dataLoader.share();
+    const operationId = dataLoader.share();
 
     // AUTH
     requireSUOrTeamMember(authToken, teamId);

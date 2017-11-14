@@ -22,8 +22,8 @@ export default {
   async resolve(source, {newProject}, {authToken, socket, getDataLoader}) {
     const r = getRethink();
     const dataLoader = getDataLoader();
-    const operationId = dataLoader.id();
-    dataLoader.share();
+    const operationId = dataLoader.share();
+
 
     // AUTH
     // format of id is teamId::taskIdPart

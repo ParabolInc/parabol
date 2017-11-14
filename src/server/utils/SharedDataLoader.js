@@ -48,14 +48,10 @@ export default class sharedDataLoader {
     };
 
     /*
-     * The getter for the operationId
-     */
-    dataloader.id = () => operationId;
-
-    /*
-     * Sharing should do 2 things:
+     * Sharing should do 3 things:
      * 1. A dataloader-specific sanitization (ie remove authToken), as defined by options.share
      * 2. Establish a TTL on the shared component, since it won't be cleaned up otherwise
+     * 3. return a serializeable key that a client can use with useShared
      *
      */
     dataloader.share = () => {
@@ -64,6 +60,7 @@ export default class sharedDataLoader {
       store.dataloader[shareName]();
       setTimeout(this._dispose, this._ttl, operationId);
       store.shared = true;
+      return operationId;
     };
 
     /*
@@ -76,7 +73,7 @@ export default class sharedDataLoader {
           throw new Error('Invalid access to unshared dataloader. First call getDataLoader().share() in your mutation.');
         }
       }
-      this.warehouseLookup[mutationOpId] = operationId;
+      this.warehouseLookup[operationId] = mutationOpId;
     };
   };
 
@@ -102,8 +99,8 @@ export default class sharedDataLoader {
      * Otherwise, use the standard as a default
      *
      */
-    return () => {
-      const lookupId = this.warehouseLookup[operationId];
+    return (options = {}) => {
+      const lookupId = options.self ? operationId : this.warehouseLookup[operationId];
       const storeId = lookupId || operationId;
       const store = this._getStore(storeId);
       return store.dataloader;

@@ -22,8 +22,7 @@ export default {
   async resolve(source, {disconnectedFacilitatorId, facilitatorId}, {authToken, getDataLoader, socketId}) {
     const r = getRethink();
     const dataLoader = getDataLoader();
-    const operationId = dataLoader.id();
-    dataLoader.share();
+    const operationId = dataLoader.share();
 
     // AUTH
     const {id: dbId, type} = fromGlobalId(facilitatorId);

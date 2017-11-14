@@ -32,8 +32,7 @@ export default {
   async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, socketId, getDataLoader}) {
     const r = getRethink();
     const dataLoader = getDataLoader();
-    const operationId = dataLoader.id();
-    dataLoader.share();
+    const operationId = dataLoader.share();
     // TODO: transform these console statements into configurable logger statements:
     /*
      console.log('moveMeeting()');

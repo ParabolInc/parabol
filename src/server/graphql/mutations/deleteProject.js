@@ -18,8 +18,7 @@ export default {
   async resolve(source, {projectId}, {authToken, getDataLoader}) {
     const r = getRethink();
     const dataLoader = getDataLoader();
-    const operationId = dataLoader.id();
-    dataLoader.share();
+    const operationId = dataLoader.share();
 
     // AUTH
     const userId = getUserId(authToken);
