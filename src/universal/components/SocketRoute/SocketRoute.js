@@ -70,6 +70,7 @@ const query = graphql`
                 id
                 content
                 status
+                tags
               }
             }
           }

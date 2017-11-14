@@ -33,7 +33,7 @@ const ProjectInvolves = (props) => {
   const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
   // eslint-disable-next-line
-  const {content, status} = project;
+  const {content, status, tags} = project;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
@@ -42,7 +42,8 @@ const ProjectInvolves = (props) => {
   const gotoBoard = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
-    history.push(`/team/${teamId}`);
+    const archiveSuffix = tags.includes('archived') ? '/archive' : '';
+    history.push(`/team/${teamId}${archiveSuffix}`);
   };
   const action = involvementWord[involvement];
   const contentState = convertFromRaw(JSON.parse(content));

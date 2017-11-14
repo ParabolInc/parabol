@@ -59,6 +59,7 @@ const subscription = graphql`
             id
             content
             status
+            tags
           }
         }
       }
