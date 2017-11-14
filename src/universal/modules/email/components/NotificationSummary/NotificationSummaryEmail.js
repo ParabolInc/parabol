@@ -18,7 +18,7 @@ export default function NotificationSummaryEmail() {
       <Header color={appTheme.palette.dark} />
       <Body>
         <p>Hi there, %recipient.name%!</p>
-        <p>You have received %recipient.numNotifications% new notification(s) in the last day.</p>
+        <p>You have received <span style={{fontWeight: 'bold'}}>%recipient.numNotifications% new notification(s)</span> in the last day.</p>
         <Callout>
           <Button url={notificationPageUrl}>See My Notifications</Button>
         </Callout>

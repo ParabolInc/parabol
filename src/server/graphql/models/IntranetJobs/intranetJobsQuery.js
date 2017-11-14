@@ -1,7 +1,7 @@
 import {GraphQLInt, GraphQLList, GraphQLString} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import sendEmail from 'server/email/sendEmail';
+import {sendBatchEmail} from 'server/email/sendEmail';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 import {requireSU} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
@@ -158,7 +158,7 @@ const sendBatchNotificationEmails = {
         [email]: {name, numNotifications}
       }), {});
     if (emails.length) {
-      await sendEmail(
+      await sendBatchEmail(
         emails,
         'notificationSummary',
         {date: today},
