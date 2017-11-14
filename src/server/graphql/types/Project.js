@@ -52,19 +52,17 @@ const Project = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team this project belongs to',
-      resolve: async (source, args, {sharedDataloader, operationId}) => {
+      resolve: async (source, args, {getDataLoader}) => {
         const {teamId} = source;
-        const dataloader = sharedDataloader.get(operationId);
-        return dataloader.teams.load(teamId);
+        return getDataLoader().teams.load(teamId);
       }
     },
     teamMember: {
       type: TeamMember,
       description: 'The team member that owns this project',
-      resolve: async (source, args, {sharedDataloader, operationId}) => {
+      resolve: async (source, args, {getDataLoader}) => {
         const {teamMemberId} = source;
-        const dataloader = sharedDataloader.get(operationId);
-        return dataloader.teamMembers.load(teamMemberId);
+        return getDataLoader().teamMembers.load(teamMemberId);
       }
     },
     teamMemberId: {

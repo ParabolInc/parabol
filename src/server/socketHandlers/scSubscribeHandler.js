@@ -4,11 +4,9 @@ import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from 'universal/utils/parseChannel';
 import {
   AGENDA,
-  AGENDA_PROJECTS,
   INVITATIONS,
   ORG_APPROVALS,
   PRESENCE,
-  PROJECTS,
   TEAM,
   TEAM_MEMBERS,
   USERS_BY_ORG
@@ -21,10 +19,8 @@ import {
  * */
 const dechannelfy = {
   [AGENDA]: (variableString) => ({teamId: variableString}),
-  [AGENDA_PROJECTS]: (agendaId) => ({agendaId}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [ORG_APPROVALS]: (teamId) => ({teamId}),
-  [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
   [USERS_BY_ORG]: (orgId) => ({orgId})

@@ -20,9 +20,11 @@ export default {
       description: 'The team that will be having the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId, sharedDataloader, operationId}) {
+  async resolve(source, {teamId}, {authToken, socketId, getDataLoader}) {
     const r = getRethink();
-    sharedDataloader.share(operationId);
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     requireSUOrTeamMember(authToken, teamId);

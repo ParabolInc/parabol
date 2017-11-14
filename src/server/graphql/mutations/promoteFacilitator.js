@@ -19,10 +19,11 @@ export default {
       description: '(Relay) teamMemberId of the new facilitator for this meeting'
     }
   },
-  async resolve(source, {disconnectedFacilitatorId, facilitatorId}, {authToken, sharedDataloader, operationId, socketId}) {
+  async resolve(source, {disconnectedFacilitatorId, facilitatorId}, {authToken, getDataLoader, socketId}) {
     const r = getRethink();
-    const dataloader = sharedDataloader.get(operationId);
-    sharedDataloader.share(operationId);
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     const {id: dbId, type} = fromGlobalId(facilitatorId);
@@ -36,7 +37,7 @@ export default {
 
 
     // VALIDATION
-    const facilitatorMembership = await dataloader.teamMembers.load(dbId);
+    const facilitatorMembership = await dataLoader.teamMembers.load(dbId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
       throw new Error('facilitator is not active on that team');
     }

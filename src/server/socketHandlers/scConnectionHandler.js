@@ -22,7 +22,7 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   return true;
 };
 
-export default function scConnectionHandler(exchange, sharedDataloader) {
+export default function scConnectionHandler(exchange, sharedDataLoader) {
   return async function connectionHandler(socket) {
     // socket.on('message', message => {
     //   if (message === '#2') return;
@@ -30,8 +30,8 @@ export default function scConnectionHandler(exchange, sharedDataloader) {
     // });
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
-    const graphQLHandler = scGraphQLHandler(exchange, socket, sharedDataloader);
-    const relaySubscribeHandler = scRelaySubscribeHandler(socket, sharedDataloader);
+    const graphQLHandler = scGraphQLHandler(exchange, socket, sharedDataLoader);
+    const relaySubscribeHandler = scRelaySubscribeHandler(socket, sharedDataLoader);
     socket.on('message', (message) => {
       // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
       if (isObject(message) && message.event === '#authenticate') {
@@ -47,20 +47,13 @@ export default function scConnectionHandler(exchange, sharedDataloader) {
     socket.on('unsubscribe', unsubscribeHandler);
     socket.on('gqlSub', relaySubscribeHandler);
     socket.on('gqlUnsub', (opId) => {
-      const keys = Object.keys(socket.subs);
-      for (let ii = 0; ii < keys.length; ii++) {
-        const key = keys[ii];
-        const val = socket.subs[key];
-        if (val.opId === opId) {
-          val.asyncIterator.return();
-          sharedDataloader.dispose(key, {force: true});
-          delete socket.subs[key];
-          return;
-        }
-      }
+      const {asyncIterator, dataLoader} = socket.subs[opId];
+      asyncIterator.return();
+      dataLoader.dispose({force: true});
+      delete socket.subs[opId];
     });
     socket.on('disconnect', () => {
-      unsubscribeRelaySub(socket, sharedDataloader);
+      unsubscribeRelaySub(socket);
     });
 
     // the async part should come last so there isn't a race

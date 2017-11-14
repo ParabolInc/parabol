@@ -1,37 +1,13 @@
 import {
   AGENDA,
-  AGENDA_PROJECTS,
   INVITATIONS,
   ORG_APPROVALS,
-  PROJECTS,
   TEAM,
   TEAM_MEMBERS
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
-  {
-    channel: AGENDA_PROJECTS,
-    string: `
-    subscription($agendaId: ID!) {
-      agendaProjects(agendaId: $agendaId) {
-        id
-        integration {
-          service
-          nameWithOwner
-          issueNumber
-        }
-        agendaId
-        content
-        createdAt
-        createdBy
-        status
-        tags
-        teamMemberId
-        updatedAt
-      }
-    }`
-  },
   {
     channel: AGENDA,
     string: `
@@ -65,29 +41,6 @@ export default [
         id
         createdAt
         email
-      }
-    }`
-  },
-  {
-    channel: PROJECTS,
-    string: `
-    subscription($teamMemberId: ID!) {
-      projects(teamMemberId: $teamMemberId) {
-        agendaId
-        content
-        createdAt
-        createdBy
-        id
-        integration {
-          service
-          nameWithOwner
-          issueNumber
-        }
-        status
-        tags
-        teamMemberId
-        sortOrder
-        updatedAt
       }
     }`
   },

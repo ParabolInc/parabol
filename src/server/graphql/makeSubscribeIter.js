@@ -4,7 +4,7 @@ import getPubSub from 'server/utils/getPubSub';
 const defaultFilterFn = () => true;
 
 const makeSubscribeIter = (channelName, options = {}) => {
-  const {sharedDataloader, filterFn = defaultFilterFn, operationId, resolve} = options;
+  const {getDataLoader, filterFn = defaultFilterFn, resolve} = options;
   const asyncIterator = getPubSub().asyncIterator(channelName);
   const getNextPromise = async () => {
     const nextRes = await asyncIterator.next();
@@ -13,7 +13,7 @@ const makeSubscribeIter = (channelName, options = {}) => {
       return asyncIterator.return();
     }
     if (value.operationId) {
-      sharedDataloader.useShared(operationId, value.operationId);
+      getDataLoader().useShared(value.operationId);
     }
     if (filterFn(value)) {
       if (resolve) {

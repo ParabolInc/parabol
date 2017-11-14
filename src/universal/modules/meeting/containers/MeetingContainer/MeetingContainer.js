@@ -44,7 +44,7 @@ import {
   UPDATES
 } from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import MeetingUpdatesContainer from '../MeetingUpdates/MeetingUpdatesContainer';
+import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
 
 const meetingContainerQuery = `
 query{
@@ -336,8 +336,9 @@ class MeetingContainer extends Component {
       localPhaseItem,
       myTeamMemberId,
       teamId,
-      viewer: {team}
+      viewer
     } = this.props;
+    const {team} = viewer;
     const {members} = this.state;
     const {
       activeFacilitator,
@@ -366,7 +367,7 @@ class MeetingContainer extends Component {
       localPhaseItem,
       members,
       onFacilitatorPhase: facilitatorPhase === localPhase,
-      team
+      team,
     };
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
@@ -412,10 +413,11 @@ class MeetingContainer extends Component {
           />
           }
           {localPhase === UPDATES &&
-          <MeetingUpdatesContainer
+          <MeetingUpdates
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             showMoveMeetingControls={showMoveMeetingControls}
+            viewer={viewer}
             {...phaseStateProps}
           />
           }
@@ -469,38 +471,6 @@ export default createFragmentContainer(
   ),
   graphql`
     fragment MeetingContainer_viewer on User {
-      projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
-        edges {
-          node {
-            id
-            content
-            createdAt
-            createdBy
-            integration {
-              service
-              nameWithOwner
-              issueNumber
-            }
-            status
-            tags
-            teamMemberId
-            updatedAt
-            sortOrder
-            updatedAt
-            userId
-            teamId
-            team {
-              id
-              name
-            }
-            teamMember {
-              id
-              picture
-              preferredName
-            }
-          }
-        }
-      }
       team(teamId: $teamId) {
         agendaItems {
           id
@@ -539,6 +509,7 @@ export default createFragmentContainer(
           userId
         }
       }
+      ...MeetingUpdates_viewer
     }
   `
 );

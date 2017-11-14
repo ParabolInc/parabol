@@ -11,7 +11,7 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))
     }
   },
-  subscribe: async (source, {teamIds}, {authToken, socketId, operationId, sharedDataloader}) => {
+  subscribe: async (source, {teamIds}, {authToken, socketId, getDataLoader}) => {
     // AUTH
     const userId = getUserId(authToken);
     if (teamIds) {
@@ -31,6 +31,6 @@ export default {
       const isPrivate = tags.includes('private');
       return !isPrivate || userId === projectUserId;
     };
-    return makeSubscribeIter(channelNames, {filterFn, operationId, sharedDataloader});
+    return makeSubscribeIter(channelNames, {filterFn, getDataLoader});
   }
 };

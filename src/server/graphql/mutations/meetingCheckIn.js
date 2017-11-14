@@ -19,9 +19,11 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve(source, {teamMemberId, isCheckedIn}, {authToken, operationId, sharedDataloader, socketId}) {
+  async resolve(source, {teamMemberId, isCheckedIn}, {authToken, getDataLoader, socketId}) {
     const r = getRethink();
-    sharedDataloader.share(operationId);
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     const {id: dbId, type} = fromGlobalId(teamMemberId);

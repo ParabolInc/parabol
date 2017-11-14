@@ -15,8 +15,11 @@ export default {
       description: 'The team that will be having the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId, sharedDataloader, operationId}) {
+  async resolve(source, {teamId}, {authToken, socketId, getDataLoader}) {
     const r = getRethink();
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
@@ -37,7 +40,6 @@ export default {
       throw new Error('meeting already updated!');
     }
     const meetingUpdated = {team};
-    sharedDataloader.share(operationId);
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
     return meetingUpdated;
   }

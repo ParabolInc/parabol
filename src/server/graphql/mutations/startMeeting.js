@@ -20,8 +20,11 @@ export default {
       description: 'The team starting the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId, sharedDataloader, operationId}) {
+  async resolve(source, {teamId}, {authToken, socketId, getDataLoader}) {
     const r = getRethink();
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     const userId = getUserId(authToken);
@@ -64,7 +67,6 @@ export default {
     startSlackMeeting(teamId);
 
     const meetingUpdated = {team};
-    sharedDataloader.share(operationId);
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
     return meetingUpdated;
   }

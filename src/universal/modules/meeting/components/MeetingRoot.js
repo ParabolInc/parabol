@@ -9,6 +9,9 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
 import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
+import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
+import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
 
 const query = graphql`
   query MeetingRootQuery($teamId: ID!) {
@@ -20,6 +23,9 @@ const query = graphql`
 
 const subscriptions = [
   MeetingUpdatedSubscription,
+  ProjectUpdatedSubscription,
+  ProjectCreatedSubscription,
+  ProjectDeletedSubscription,
   TeamMemberUpdatedSubscription
 ];
 

@@ -15,8 +15,11 @@ export default {
       description: 'The globalId to delete'
     }
   },
-  async resolve(source, {projectId}, {authToken, operationId, sharedDataloader}) {
+  async resolve(source, {projectId}, {authToken, getDataLoader}) {
     const r = getRethink();
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     const userId = getUserId(authToken);
@@ -39,7 +42,6 @@ export default {
       throw new Error('Project does not exist');
     }
     const projectDeleted = {project};
-    sharedDataloader.share(operationId);
     getPubSub().publish(`${PROJECT_DELETED}.${teamId}`, {projectDeleted, operationId});
     getPubSub().publish(`${PROJECT_DELETED}.${userId}`, {projectDeleted, operationId});
     return projectDeleted;

@@ -38,7 +38,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   const {exchange} = scServer;
   httpServer.on('request', app);
   // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
-  const sharedDataloader = new SharedDataLoader();
+  const sharedDataLoader = new SharedDataLoader({PROD, ttl: 5000});
   // HMR
   if (!PROD) {
     const config = require('../../webpack/webpack.config.dev').default;
@@ -76,7 +76,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   }
 
   // HTTP GraphQL endpoint
-  const graphQLHandler = httpGraphQLHandler(exchange, sharedDataloader);
+  const graphQLHandler = httpGraphQLHandler(exchange, sharedDataLoader);
   app.post('/graphql', jwt({
     secret: new Buffer(secretKey, 'base64'),
     audience: process.env.AUTH0_CLIENT_ID,
@@ -113,6 +113,6 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwPresencePublishOut);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwPresenceSubscribe);
-  const connectionHandler = scConnectionHandler(exchange, sharedDataloader);
+  const connectionHandler = scConnectionHandler(exchange, sharedDataLoader);
   scServer.on('connection', connectionHandler);
 }

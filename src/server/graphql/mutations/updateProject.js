@@ -23,8 +23,11 @@ export default {
       description: 'the updated project including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedProject}, {authToken, operationId, sharedDataloader, socketId}) {
+  async resolve(source, {updatedProject}, {authToken, getDataLoader, socketId}) {
     const r = getRethink();
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     // projectId is of format 'teamId::taskId'
@@ -96,7 +99,6 @@ export default {
     const project = projectChanges.new_val;
     const projectUpdated = {project};
     const affectedUsers = Array.from(new Set([projectChanges.new_val.userId, projectChanges.old_val.userId]));
-    sharedDataloader.share(operationId);
     affectedUsers.forEach((userId) => {
       getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated, operationId, mutatorId: socketId});
     });

@@ -19,10 +19,9 @@ const NotifyFacilitatorRequest = new GraphQLObjectType({
     requestor: {
       type: TeamMember,
       description: 'The team member that wants to be the facilitator',
-      resolve: ({requestorId}, args, {sharedDataloader, operationId}) => {
+      resolve: ({requestorId}, args, {getDataLoader}) => {
         const {id: dbRequestorId} = fromGlobalId(requestorId);
-        const dataloader = sharedDataloader.get(operationId);
-        return dataloader.teamMembers.load(dbRequestorId);
+        return getDataLoader().teamMembers.load(dbRequestorId);
       }
     },
     ...notificationInterfaceFields

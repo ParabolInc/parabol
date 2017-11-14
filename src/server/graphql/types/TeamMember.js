@@ -68,9 +68,8 @@ const TeamMember = new GraphQLObjectType({
     user: {
       type: User,
       description: 'The user for the team member',
-      resolve({userId}, args, {sharedDataloader, operationId}) {
-        const dataloader = sharedDataloader.get(operationId);
-        return dataloader.users.load(userId);
+      resolve({userId}, args, {getDataLoader}) {
+        return getDataLoader().users.load(userId);
       }
     },
     projects: {

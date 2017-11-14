@@ -1,17 +1,16 @@
-import Schema from './rootSchema';
-import IntranetSchema from './intranetSchema';
 import {graphql} from 'graphql';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
-import shortid from 'shortid';
+import IntranetSchema from './intranetSchema';
+import Schema from './rootSchema';
 
-export default (exchange, sharedDataloader) => async (req, res) => {
+export default (exchange, sharedDataLoader) => async (req, res) => {
   const {query, variables} = req.body;
   const authToken = req.user || {};
-  const operationId = shortid.generate();
-  sharedDataloader.add(operationId, new RethinkDataLoader(authToken));
-  const context = {authToken, exchange, sharedDataloader, operationId};
+  const getDataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken));
+  const dataLoader = getDataLoader();
+  const context = {authToken, exchange, getDataLoader};
   const result = await graphql(Schema, query, {}, context, variables);
-  sharedDataloader.dispose(operationId);
+  dataLoader.dispose();
   if (result.errors) {
     console.log('DEBUG GraphQL Error:', result.errors);
   }

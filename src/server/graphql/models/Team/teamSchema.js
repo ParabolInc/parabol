@@ -19,6 +19,7 @@ import {AgendaItem} from '../AgendaItem/agendaItemSchema';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {forwardConnectionArgs} from 'graphql-relay';
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
@@ -102,20 +103,25 @@ export const Team = new GraphQLObjectType({
     agendaItems: {
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve({id: teamId}, args, {sharedDataloader, operationId}) {
-        const dataloader = sharedDataloader.get(operationId);
-        const agendaItems = await dataloader.agendaItemsByTeamId.load(teamId);
+      async resolve({id: teamId}, args, {getDataLoader}) {
+        const agendaItems = await getDataLoader().agendaItemsByTeamId.load(teamId);
         agendaItems.sort((a, b) => a.sortOrder < b.sortOrder ? 1 : -1);
         return agendaItems;
       }
     },
     projects: {
       type: ProjectConnection,
+      args: {
+        ...forwardConnectionArgs,
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        }
+      },
       description: 'All of the projects for this team',
-      async resolve({id: teamId}, args, {authToken, sharedDataloader, operationId}) {
-        const dataloader = sharedDataloader.get(operationId);
+      async resolve({id: teamId}, args, {authToken, getDataLoader}) {
         requireSUOrTeamMember(authToken, teamId);
-        const projects = await dataloader.projectsByTeamId.load(teamId);
+        const projects = await getDataLoader().projectsByTeamId.load(teamId);
         return connectionFromProjects(projects);
       }
     },
@@ -128,9 +134,8 @@ export const Team = new GraphQLObjectType({
         }
       },
       description: 'All the team members associated who can join this team',
-      async resolve({id: teamId}, {sortBy = 'preferredName'}, {sharedDataloader, operationId}) {
-        const dataloader = sharedDataloader.get(operationId);
-        const teamMembers = await dataloader.teamMembersByTeamId.load(teamId);
+      async resolve({id: teamId}, {sortBy = 'preferredName'}, {getDataLoader}) {
+        const teamMembers = await getDataLoader().teamMembersByTeamId.load(teamId);
         teamMembers.sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
         return teamMembers;
       }

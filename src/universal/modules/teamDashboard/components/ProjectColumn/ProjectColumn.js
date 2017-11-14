@@ -69,8 +69,7 @@ class ProjectColumn extends Component {
       projects,
       myTeamMemberId,
       teamMemberFilterId,
-      teams,
-      userId
+      teams
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const sortOrder = getNextSortOrder(projects, dndNoise());
@@ -81,6 +80,7 @@ class ProjectColumn extends Component {
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
+        const {userId} = atmosphere;
         const generatedMyTeamMemberId = `${userId}::${teamId}`;
         const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, generatedMyTeamMemberId, sortOrder);
         return <AddProjectButton onClick={handleAddProject} label={label} />;
@@ -115,8 +115,8 @@ class ProjectColumn extends Component {
     const {
       status,
       teams,
-      userId
     } = this.props;
+    const {userId} = atmosphere;
     return teams.map((team) => ({
       label: team.name,
       handleClick: () => {
@@ -134,6 +134,7 @@ class ProjectColumn extends Component {
   render() {
     const {
       area,
+      atmosphere,
       connectDropTarget,
       dragState,
       firstColumn,
@@ -141,7 +142,6 @@ class ProjectColumn extends Component {
       status,
       projects,
       styles,
-      userId
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const columnStyles = css(
@@ -178,7 +178,7 @@ class ProjectColumn extends Component {
                 area={area}
                 project={project}
                 dragState={dragState}
-                myUserId={userId}
+                myUserId={atmosphere.userId}
                 ref={(c) => {
                   if (c) {
                     dragState.components.push(c);
@@ -209,7 +209,6 @@ ProjectColumn.propTypes = {
   styles: PropTypes.object,
   teamMemberFilterId: PropTypes.string,
   teams: PropTypes.array,
-  userId: PropTypes.string
 };
 
 const styleThunk = () => ({

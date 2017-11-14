@@ -19,9 +19,11 @@ export default {
       description: 'The Team\'s new Check-in question'
     }
   },
-  async resolve(source, {teamId, checkInQuestion}, {authToken, socketId, sharedDataloader, operationId}) {
+  async resolve(source, {teamId, checkInQuestion}, {authToken, getDataLoader, socketId}) {
     const r = getRethink();
-    sharedDataloader.share(operationId);
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     requireSUOrTeamMember(authToken, teamId);

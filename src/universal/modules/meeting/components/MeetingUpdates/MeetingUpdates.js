@@ -10,17 +10,19 @@ import {MEETING} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import {createFragmentContainer} from 'react-relay';
 
 const MeetingUpdates = (props) => {
   const {
     gotoNext,
     localPhaseItem,
     members,
-    projects,
     showMoveMeetingControls,
     styles,
-    team
+    viewer
   } = props;
+  const {team} = viewer;
+  const {projects} = team;
   const self = members.find((m) => m.isSelf);
   const currentTeamMember = members[localPhaseItem - 1];
   const isLastMember = localPhaseItem === members.length;
@@ -62,10 +64,9 @@ MeetingUpdates.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   onFacilitatorPhase: PropTypes.bool,
-  projects: PropTypes.object.isRequired,
   showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
-  team: PropTypes.object.isRequired
+  viewer: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -84,4 +85,44 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingUpdates);
+export default createFragmentContainer(
+  withStyles(styleThunk)(MeetingUpdates),
+  graphql`
+    fragment MeetingUpdates_viewer on User {
+      team(teamId: $teamId) {
+        activeFacilitator
+        projects(first: 1000) @connection(key: "TeamColumnsContainer_projects") {
+          edges {
+            node {
+              id
+              content
+              createdAt
+              createdBy
+              integration {
+                service
+                nameWithOwner
+                issueNumber
+              }
+              status
+              tags
+              teamMemberId
+              updatedAt
+              sortOrder
+              updatedAt
+              userId
+              teamId
+              team {
+                id
+                name
+              }
+              teamMember {
+                id
+                picture
+                preferredName
+              }
+            }
+          }
+        }
+      }
+    }`
+);

@@ -41,9 +41,8 @@ export const AgendaItem = new GraphQLObjectType({
     teamMember: {
       type: TeamMember,
       description: 'The team member that created the agenda item',
-      resolve: async ({teamMemberId}, args, {sharedDataloader, operationId}) => {
-        const dataloader = sharedDataloader.get(operationId);
-        return dataloader.teamMembers.load(teamMemberId);
+      resolve: async ({teamMemberId}, args, {getDataLoader}) => {
+        return getDataLoader().teamMembers.load(teamMemberId);
       }
     }
   })

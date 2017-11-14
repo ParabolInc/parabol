@@ -13,16 +13,18 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (source, {teamId}, {authToken, operationId, sharedDataloader}) => {
-    const dataloader = sharedDataloader.get(operationId);
-    sharedDataloader.share(operationId);
+  resolve: async (source, {teamId}, {authToken, getDataLoader}) => {
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
+
     // AUTH
     const userId = getUserId(authToken);
     requireSUOrTeamMember(authToken, teamId);
 
     // VALIDATION
     const dbRequestorId = `${userId}::${teamId}`;
-    const {activeFacilitator} = await dataloader.teams.load(teamId);
+    const {activeFacilitator} = await dataLoader.teams.load(teamId);
     if (activeFacilitator === dbRequestorId) {
       // no UI for this
       throw new Error('You are already the facilitator');

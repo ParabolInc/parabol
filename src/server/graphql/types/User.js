@@ -122,9 +122,8 @@ const User = new GraphQLObjectType({
     teams: {
       type: new GraphQLList(Team),
       description: 'all the teams the user is on',
-      resolve: (source, args, {authToken, sharedDataloader, operationId}) => {
-        const dataloader = sharedDataloader.get(operationId);
-        return dataloader.teams.loadMany(authToken.tms);
+      resolve: (source, args, {authToken, getDataLoader}) => {
+        return getDataLoader().teams.loadMany(authToken.tms);
       }
     },
     teamMember: {
@@ -136,14 +135,13 @@ const User = new GraphQLObjectType({
           description: 'The team the user is on'
         }
       },
-      resolve: (source, {teamId}, {authToken, sharedDataloader, operationId}) => {
+      resolve: (source, {teamId}, {authToken, getDataLoader}) => {
         const userId = getUserId(authToken);
         if (!authToken.tms.includes(teamId)) {
           throw new Error('User is not a part of that team');
         }
         const teamMemberId = `${userId}::${teamId}`;
-        const dataloader = sharedDataloader.get(operationId);
-        return dataloader.teamMembers.load(teamMemberId);
+        return getDataLoader().teamMembers.load(teamMemberId);
       }
     },
     userOrgs: {

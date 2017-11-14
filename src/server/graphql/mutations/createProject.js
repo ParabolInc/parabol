@@ -19,8 +19,11 @@ export default {
       description: 'The new project including an id, status, and type, and teamMemberId'
     }
   },
-  async resolve(source, {newProject}, {authToken, socket, operationId, sharedDataloader}) {
+  async resolve(source, {newProject}, {authToken, socket, getDataLoader}) {
     const r = getRethink();
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
 
     // AUTH
     // format of id is teamId::taskIdPart
@@ -62,7 +65,7 @@ export default {
       history: r.table('ProjectHistory').insert(history)
     });
     const projectCreated = {project};
-    sharedDataloader.share(operationId);
+
     getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated, operationId});
     getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated, operationId});
     return projectCreated;

@@ -22,24 +22,23 @@ export default {
       description: 'The ID of the agenda item'
     }
   },
-  async resolve(source, {agendaId, teamId}, {authToken, sharedDataloader, operationId}) {
+  async resolve(source, {agendaId, teamId}, {authToken, getDataLoader}) {
     // AUTH
     const userId = getUserId(authToken);
-    const dataloader = sharedDataloader.get(operationId);
+    const dataLoader = getDataLoader();
     let projects;
     if (agendaId) {
-      const agendaItem = await dataloader.agendaItems.load(agendaId);
+      const agendaItem = await dataLoader.agendaItems.load(agendaId);
       requireSUOrTeamMember(authToken, agendaItem.teamId);
-      projects = await dataloader.projectsByAgendaId.load(agendaId);
+      projects = await dataLoader.projectsByAgendaId.load(agendaId);
     } else if (teamId) {
       requireSUOrTeamMember(authToken, teamId);
-      projects = await dataloader.projectsByTeamId.load(teamId);
+      projects = await dataLoader.projectsByTeamId.load(teamId);
     } else {
-      projects = await dataloader.projectsByUserId.load(userId);
+      projects = await dataLoader.projectsByUserId.load(userId);
     }
 
     // RESOLUTION
     return connectionFromProjects(projects);
-
   }
 };

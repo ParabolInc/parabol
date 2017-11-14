@@ -29,8 +29,11 @@ export default {
       description: 'If true, execute the mutation without regard for meeting flow'
     }
   },
-  async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, socketId, sharedDataloader, operationId}) {
+  async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, socketId, getDataLoader}) {
     const r = getRethink();
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.id();
+    dataLoader.share();
     // TODO: transform these console statements into configurable logger statements:
     /*
      console.log('moveMeeting()');
@@ -143,7 +146,6 @@ export default {
       throw new Error('meeting already updated!');
     }
     const meetingUpdated = {team};
-    sharedDataloader.share(operationId);
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
     return meetingUpdated;
   }

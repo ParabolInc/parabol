@@ -1,46 +1,70 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import {columnArray, meetingColumnArray, MEETING} from 'universal/utils/constants';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {columnArray, MEETING, meetingColumnArray} from 'universal/utils/constants';
+import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 
-const ProjectColumns = (props) => {
-  // myTeamMemberId is undefined if this is coming from USER_DASH
-  // TODO we only need userId, we can compute myTeamMemberId
-  const {
-    alignColumns,
-    area,
-    myTeamMemberId,
-    projects,
-    styles,
-    teams,
-    teamMemberFilterId,
-    userId
-  } = props;
-  const rootStyles = css(styles.root, styles[alignColumns]);
-  const lanes = area === MEETING ? meetingColumnArray : columnArray;
-  return (
-    <div className={rootStyles}>
-      <div className={css(styles.columns)}>
-        {lanes.map((status, idx) =>
-          (<ProjectColumn
-            key={`projectCol${status}`}
-            area={area}
-            firstColumn={idx === 0}
-            lastColumn={idx === (lanes.length - 1)}
-            myTeamMemberId={myTeamMemberId}
-            teamMemberFilterId={teamMemberFilterId}
-            projects={projects[status]}
-            status={status}
-            teams={teams}
-            userId={userId}
-          />)
-        )}
+class ProjectColumns extends Component {
+
+
+  componentWillMount() {
+    const {projects} = this.props;
+    this.groupProjectsByStatus(projects);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {projects} = nextProps;
+    const {projects: oldProjects} = this.props;
+    if (projects !== oldProjects) {
+      this.groupProjectsByStatus(projects);
+    }
+  }
+
+  groupProjectsByStatus(projects) {
+    const nodes = projects.edges.map(({node}) => node);
+    this.setState({
+      projects: makeProjectsByStatus(nodes)
+    });
+  }
+
+  render() {
+    // myTeamMemberId is undefined if this is coming from USER_DASH
+    // TODO we only need userId, we can compute myTeamMemberId
+    const {
+      alignColumns,
+      area,
+      myTeamMemberId,
+      styles,
+      teams,
+      teamMemberFilterId
+    } = this.props;
+
+    const {projects} = this.state;
+    const rootStyles = css(styles.root, styles[alignColumns]);
+    const lanes = area === MEETING ? meetingColumnArray : columnArray;
+    return (
+      <div className={rootStyles}>
+        <div className={css(styles.columns)}>
+          {lanes.map((status, idx) =>
+            (<ProjectColumn
+              key={`projectCol${status}`}
+              area={area}
+              firstColumn={idx === 0}
+              lastColumn={idx === (lanes.length - 1)}
+              myTeamMemberId={myTeamMemberId}
+              teamMemberFilterId={teamMemberFilterId}
+              projects={projects[status]}
+              status={status}
+              teams={teams}
+            />)
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 ProjectColumns.propTypes = {
@@ -55,7 +79,6 @@ ProjectColumns.propTypes = {
   styles: PropTypes.object,
   teamMemberFilterId: PropTypes.string,
   teams: PropTypes.array,
-  userId: PropTypes.string
 };
 
 ProjectColumns.defaultProps = {
