@@ -11,7 +11,7 @@ import ContactUs from '../ContactUs/ContactUs';
 import Header from '../Header/Header';
 import Layout from '../Layout/Layout';
 
-export default function NotificationSummaryEmail({date}) {
+export default function NotificationSummaryEmail() {
   const notificationPageUrl = makeAppLink('me/notifications');
   return (
     <Layout>
@@ -27,7 +27,10 @@ export default function NotificationSummaryEmail({date}) {
       <p>- The product team @Parabol 🙉 🙈 🙊</p>
       <ContactUs
         prompt="P.S. Help us make our software better"
-        tagline="Tell us the good, the bad, and the Ugly! Or better yet, pick a time on our calendar for a video chat with our core product team: https://calendly.com/parabol/"
+        tagline={
+          'Tell us the good, the bad, and the Ugly! ' +
+          'Or better yet, pick a time on our calendar for a video chat with our core product team: https://calendly.com/parabol/'
+        }
       />
     </Layout>
   );

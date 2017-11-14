@@ -61,8 +61,9 @@ export default async function sendEmailPromise(to, template, props, recipientVar
   if (recipientsArray.length > MAILGUN_MAX_BATCH_SIZE) {
     const chunkedRecipients = chunkArray(recipientsArray, MAILGUN_MAX_BATCH_SIZE);
     console.warn(
-      `Email for template ${template} exceeded mailgun maximum batch size of ${MAILGUN_MAX_BATCH_SIZE} with ${recipientsArray.length} requested recipients.  ` +
-      `Sending ${chunkedRecipients.length} mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
+      `Email for template ${template} exceeded mailgun maximum batch size of ${MAILGUN_MAX_BATCH_SIZE} ` +
+        `with ${recipientsArray.length} requested recipients.  ` +
+        `Sending ${chunkedRecipients.length} mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
     );
     return Promise.all(chunkedRecipients.map((recipients) => sendEmailPromise(recipients, template, props)));
   }

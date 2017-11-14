@@ -23,7 +23,7 @@ describe('chunkArray', () => {
     expect(chunkArray([1, 2, 3, 4], 2)).toEqual([[1, 2], [3, 4]]);
   });
 
-  it('returns an array where the last chunk is smaller than the chunk size when the chunk size does not cleanly divide into the array length', () => {
+  it("returns an array with the last chunk smaller than the chunk size when the chunk size doesn't divide into the array length", () => {
     expect(chunkArray([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
   });
 });
