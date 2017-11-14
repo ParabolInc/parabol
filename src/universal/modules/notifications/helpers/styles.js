@@ -42,5 +42,20 @@ export default {
   },
   buttonGroup: {
     display: 'flex'
+  },
+  owner: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingTop: '.25rem'
+  },
+  ownerAvatar: {
+    borderRadius: '100%',
+    display: 'block',
+    height: '1.5rem',
+    width: '1.5rem'
+  },
+  ownerName: {
+    fontWeight: 700,
+    paddingLeft: '.375rem'
   }
 };

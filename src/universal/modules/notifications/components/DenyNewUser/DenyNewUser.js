@@ -37,7 +37,7 @@ const DenyNewUser = (props) => {
         {' has denied '}
         <b>{inviteeEmail}</b>
         {' from joining the organization.'}<br />
-        <b>{'Reason'}</b>{': “'}<i>{safeReason}</i>{'”'}
+        <b><i>{'Reason'}</i></b>{': “'}<i>{safeReason}</i>{'”'}
       </div>
       <div className={css(styles.iconButton)}>
         <Button

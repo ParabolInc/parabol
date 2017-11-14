@@ -4,6 +4,7 @@ import {withRouter} from 'react-router-dom';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import Row from 'universal/components/Row/Row';
 import FontAwesome from 'react-fontawesome';
@@ -17,25 +18,21 @@ const PaymentRejected = (props) => {
     history.push(`/me/organizations/${orgId}`);
   };
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <div className={css(styles.avatarPlaceholder)}>
-          <div className={css(styles.avatarPlaceholderInner)}>
-            <FontAwesome name="credit-card" />
-          </div>
-        </div>
+        <IconAvatar icon="credit-card" size="small" />
       </div>
       <div className={css(styles.message)}>
-        Your <span className={css(styles.messageVar)}> {brand} </span> card ending in
-        <span className={css(styles.messageVar)}> {last4} </span> was rejected.
-        Call your card provider or head to the settings page to try a new card.
+        {'Your '}<b>{brand}</b>{' card ending in '}<b>{last4}</b>{' was rejected.'}<br />
+        {'Call your card provider or head to the settings page to try a new card.'}
       </div>
-      <div className={css(styles.buttonGroup)}>
+      <div className={css(styles.widestButton)}>
         <Button
+          aria-label="See Billing"
+          buttonSize={ui.notificationButtonSize}
           colorPalette="cool"
           isBlock
-          label="Take me there"
-          buttonSize={ui.notificationButtonSize}
+          label="See Billing"
           type="submit"
           onClick={addBilling}
         />

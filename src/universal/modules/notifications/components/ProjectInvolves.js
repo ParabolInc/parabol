@@ -72,12 +72,12 @@ const ProjectInvolves = (props) => {
             readOnly
             editorState={editorState}
           />
-          {involvement === MENTIONEE &&
-            <div>
-              {teamMember.picture}<br />
+          <div className={css(styles.owner)}>
+            <img alt="Avatar" className={css(styles.ownerAvatar)} src={teamMember.picture} />
+            <div className={css(styles.ownerName)}>
               {teamMember.preferredName}
             </div>
-          }
+          </div>
         </div>
       </div>
       <div className={css(styles.buttonGroup)}>
