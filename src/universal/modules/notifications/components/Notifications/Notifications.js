@@ -9,6 +9,7 @@ import UserSettingsWrapper from 'universal/modules/userDashboard/components/User
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import Button from 'universal/components/Button/Button';
 
 const Notifications = (props) => {
   const {
@@ -22,11 +23,29 @@ const Notifications = (props) => {
     orgId: 'BkeCjMNHpZ'
   };
   const fakePaymentNotification = <PaymentRejected notification={paymentFake} />;
+  const clearAllButton = () =>
+    (
+      <div style={{alignSelf: 'center', marginRight: '-.25rem', minWidth: '5.75rem'}}>
+        <Button
+          aria-label="Clear all notifications"
+          buttonSize="small"
+          buttonStyle="flat"
+          colorPalette="dark"
+          icon="check"
+          iconPlacement="right"
+          isBlock
+          label="Clear All"
+          onClick={() => console.log('clear all notifications')}
+          title="Clear all notifications"
+        />
+      </div>
+    );
+  const hasClearAbleNotifs = true;
   return (
     <UserSettingsWrapper>
       <Helmet title="My Notifications | Parabol" />
       <div className={css(styles.wrapper)}>
-        <Panel label="Notifications">
+        <Panel label="Notifications" controls={hasClearAbleNotifs && clearAllButton()}>
           {!fakePaymentNotification}
           {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
