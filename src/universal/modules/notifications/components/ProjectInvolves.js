@@ -53,7 +53,7 @@ const ProjectInvolves = (props) => {
   return (
     <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="id-card-o" size="small" />
+        <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size="small" />
       </div>
       <div className={css(styles.message)}>
         <div className={css(styles.messageText)}>
