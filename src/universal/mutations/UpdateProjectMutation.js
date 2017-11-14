@@ -57,16 +57,18 @@ export const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getCon
   {teamId}
 );
 
-export const getMeetingUpdatesConnections = (store, teamId) => {
-  const team = store.get(teamId);
-  const teamMembers = team.getLinkedRecords('teamMembers', {sortBy: 'checkInOrder'});
-  const teamMemberIds = teamMembers.map((teamMember) => teamMember.getValue('id'));
-
-  ConnectionHandler.getConnection(
-    viewer,
-    'MeetingUpdates_projects'
-  );
-};
+//export const getMeetingUpdatesConnections = (store, teamId) => {
+//  const team = store.get(teamId);
+//  if (!team) return [];
+//  const teamMembers = team.getLinkedRecords('teamMembers', {sortBy: 'checkInOrder'});
+//  if (!teamMembers) return [];
+//  return teamMembers.map((teamMember) => {
+//    return ConnectionHandler.getConnection(
+//      teamMember,
+//      'MeetingUpdates_projects'
+//    );
+//  })
+//};
 
 export const handleProjectConnections = (store, viewerId, project) => {
   // we currently have 3 connections, user, team, and team archive
@@ -75,18 +77,9 @@ export const handleProjectConnections = (store, viewerId, project) => {
   const projectId = project.getValue('id');
   const tags = project.getValue('tags');
   const isNowArchived = tags.includes('archived');
-  const ownerUserId = project.getValue('userId');
-  const ownerViewerId = toGlobalId('User', ownerUserId);
-  const ownedByViewer = ownerViewerId === viewerId;
   const archiveConn = getArchiveConnection(viewer, teamId);
   const teamConn = getTeamDashConnection(viewer, teamId);
   const userConn = getUserDashConnection(viewer);
-  const teamMemberViewer = store.get("VGVhbU1lbWJlcjpnb29nbGUtb2F1dGgyfDEwNzc5NDE0NTgxMjAwNDM1NjA2Nzo6SEpJVkJqR0E=");
-  const meetingUpdatesConns = getMeetingUpdatesConnections(teamMemberViewer, teamId);
-  //if (!meetingUpdatesConn) {
-  //  storeDebugger.dump(store)
-  //  debugger
-  //}
   const safePutNodeInConn = (conn) => {
     if (conn && !getNodeById(projectId, conn)) {
       const newEdge = ConnectionHandler.createEdge(
@@ -110,10 +103,15 @@ export const handleProjectConnections = (store, viewerId, project) => {
     safePutNodeInConn(teamConn);
   }
 
-  if (ownedByViewer) {
-    safePutNodeInConn(userConn);
-  } else {
-    safeRemoveNodeFromConn(projectId, userConn);
+  if (userConn) {
+    const ownerUserId = project.getValue('userId');
+    const ownerViewerId = toGlobalId('User', ownerUserId);
+    const ownedByViewer = ownerViewerId === viewerId;
+    if (ownedByViewer) {
+      safePutNodeInConn(userConn);
+    } else {
+      safeRemoveNodeFromConn(projectId, userConn);
+    }
   }
 };
 

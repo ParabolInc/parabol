@@ -1,7 +1,8 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import withHotkey from 'react-hotkey-hoc';
+import {withRouter} from 'react-router';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
@@ -10,20 +11,6 @@ import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
-import {withRouter} from 'react-router';
-
-const handleAddProjectFactory = (atmosphere, dispatch, history, teamMemberId, agendaId) => (content) => () => {
-  const [, teamId] = teamMemberId.split('::');
-  const newProject = {
-    id: `${teamId}::${shortid.generate()}`,
-    content,
-    status: ACTIVE,
-    teamMemberId,
-    sortOrder: 0,
-    agendaId
-  };
-  CreateProjectMutation(atmosphere, newProject);
-};
 
 const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject) => {
   return array.map((outcome) => {
@@ -53,33 +40,50 @@ const makePlaceholders = (length, itemStyle) => {
       className={css(itemStyle)}
       key={`CreateCardPlaceholder${idx}`}
     >
-      <CreateCard />
+      <CreateCard/>
     </div>));
   /* eslint-enable */
 };
 
-const MeetingAgendaCards = (props) => {
-  const {agendaId, atmosphere, bindHotkey, dispatch, history, myTeamMemberId, outcomes, styles} = props;
-  const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, myTeamMemberId, agendaId);
-  const addBlankProject = handleAddProject();
-  bindHotkey('p', addBlankProject);
-  return (
-    <div className={css(styles.root)}>
-      {/* Get Cards */}
-      {outcomes.length !== 0 &&
-      makeCards(outcomes, dispatch, myTeamMemberId, styles.item, handleAddProject)
-      }
-      {/* Input Card */}
-      <div className={css(styles.item)}>
-        <CreateCard
-          handleAddProject={addBlankProject}
-          hasControls
-        />
+class MeetingAgendaCards extends Component {
+  componentWillMount() {
+    const {bindHotkey} = this.props;
+    bindHotkey('p', this.addBlankProject);
+  }
+
+  handleAddProject = (content) => () => {
+    const {atmosphere, teamMemberId, teamId, agendaId} = this.props;
+    const newProject = {
+      id: `${teamId}::${shortid.generate()}`,
+      content,
+      status: ACTIVE,
+      teamMemberId,
+      sortOrder: 0,
+      agendaId
+    };
+    CreateProjectMutation(atmosphere, newProject);
+  }
+
+  render() {
+    const {dispatch, myTeamMemberId, outcomes, styles} = this.props;
+    return (
+      <div className={css(styles.root)}>
+        {/* Get Cards */}
+        {outcomes.length !== 0 &&
+        makeCards(outcomes, dispatch, myTeamMemberId, styles.item, this.handleAddProject)
+        }
+        {/* Input Card */}
+        <div className={css(styles.item)}>
+          <CreateCard
+            handleAddProject={this.handleAddProject()}
+            hasControls
+          />
+        </div>
+        {/* Placeholder Cards */}
+        {makePlaceholders(outcomes.length, styles.item)}
       </div>
-      {/* Placeholder Cards */}
-      {makePlaceholders(outcomes.length, styles.item)}
-    </div>
-  );
+    );
+  }
 };
 
 MeetingAgendaCards.propTypes = {

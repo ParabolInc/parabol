@@ -13,6 +13,29 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {createFragmentContainer} from 'react-relay';
 
 class MeetingUpdates extends Component {
+  state = {};
+
+  componentWillMount() {
+    this.filterProjects(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {viewer: {team: {projects: oldProjects}}, localPhaseItem: oldItem} = this.props;
+    const {viewer: {team: {projects}}, localPhaseItem} = nextProps;
+    if (projects !== oldProjects || localPhaseItem !== oldItem) {
+      this.filterProjects(nextProps);
+    }
+  }
+
+  filterProjects(props) {
+    const {members, localPhaseItem, viewer: {projects}} = props;
+    const currentTeamMember = members[localPhaseItem - 1];
+    const edges = projects.edges.filter(({node}) => node.teamMember.id === currentTeamMember.id);
+    this.setState({
+      projects: {edges}
+    });
+  }
+
   render() {
     const {
       gotoNext,
@@ -23,8 +46,7 @@ class MeetingUpdates extends Component {
       viewer
     } = this.props;
     const {team} = viewer;
-    const {teamMembers} = team;
-    const {projects} = teamMembers[localPhaseItem -1];
+    const {projects} = this.state;
     const self = members.find((m) => m.isSelf);
     const currentTeamMember = members[localPhaseItem - 1];
     const isLastMember = localPhaseItem === members.length;
@@ -93,40 +115,38 @@ export default createFragmentContainer(
   graphql`
     fragment MeetingUpdates_viewer on User {
       team(teamId: $teamId) {
-        teamMembers(sortBy: "checkInOrder") {
-          projects(first: 1000) @connection(key: "MeetingUpdates_projects") {
-            edges {
-              node {
-                id content
-                createdAt
-                createdBy
-                integration {
-                  service
-                  nameWithOwner
-                  issueNumber
-                }
-                status
-                tags
-                teamMemberId
-                updatedAt
-                sortOrder
-                updatedAt
-                userId
-                teamId
-                team {
-                  id
-                  name
-                }
-                teamMember {
-                  id
-                  picture
-                  preferredName
-                }
-              }
+        activeFacilitator
+      }
+      projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
+        edges {
+          node {
+            id content
+            createdAt
+            createdBy
+            integration {
+              service
+              nameWithOwner
+              issueNumber
+            }
+            status
+            tags
+            teamMemberId
+            updatedAt
+            sortOrder
+            updatedAt
+            userId
+            teamId
+            team {
+              id
+              name
+            }
+            teamMember {
+              id
+              picture
+              preferredName
             }
           }
         }
-        activeFacilitator
       }
     }`
 );

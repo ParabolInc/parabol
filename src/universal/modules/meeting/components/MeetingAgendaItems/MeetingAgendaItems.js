@@ -67,6 +67,7 @@ const MeetingAgendaItems = (props) => {
             <MeetingAgendaCardsContainer
               agendaId={agendaItem.id}
               myTeamMemberId={self.id}
+              teamId={team.id}
             />
           </div>
         </MeetingSection>
