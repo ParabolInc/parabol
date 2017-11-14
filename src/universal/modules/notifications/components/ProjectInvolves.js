@@ -35,7 +35,6 @@ const ProjectInvolves = (props) => {
   } = props;
   const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
-  // eslint-disable-next-line
   const {content, status, tags, teamMember} = project;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
