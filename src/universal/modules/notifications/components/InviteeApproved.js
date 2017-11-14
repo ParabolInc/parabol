@@ -16,7 +16,6 @@ const InviteeApproved = (props) => {
     atmosphere,
     styles,
     notification,
-    submitting,
     submitMutation,
     onError,
     onCompleted,

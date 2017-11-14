@@ -35,7 +35,7 @@ const ProjectInvolves = (props) => {
   } = props;
   const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
-  const {content, status, tag, teamMember} = project;
+  const {content, status, tags, teamMember} = project;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();

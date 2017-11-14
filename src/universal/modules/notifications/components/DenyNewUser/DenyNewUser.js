@@ -65,8 +65,7 @@ DenyNewUser.propTypes = {
     id: PropTypes.string.isRequired,
     deniedByName: PropTypes.string.isRequired,
     inviteeEmail: PropTypes.string.isRequired,
-    reason: PropTypes.string.isRequired,
-    // teamName: PropTypes.string.isRequired
+    reason: PropTypes.string.isRequired
   })
 };
 

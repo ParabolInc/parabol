@@ -7,7 +7,6 @@ import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import Row from 'universal/components/Row/Row';
-import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
