@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
@@ -12,50 +12,53 @@ import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitator
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {createFragmentContainer} from 'react-relay';
 
-const MeetingUpdates = (props) => {
-  const {
-    gotoNext,
-    localPhaseItem,
-    members,
-    showMoveMeetingControls,
-    styles,
-    viewer
-  } = props;
-  const {team} = viewer;
-  const {projects} = team;
-  const self = members.find((m) => m.isSelf);
-  const currentTeamMember = members[localPhaseItem - 1];
-  const isLastMember = localPhaseItem === members.length;
-  const nextPhaseName = actionMeeting.agendaitems.name;
-  return (
-    <MeetingMain>
-      <MeetingSection flexToFill>
-        <div className={css(styles.layout)}>
-          {showMoveMeetingControls ?
-            <Button
-              buttonStyle="flat"
-              colorPalette="cool"
-              icon="arrow-circle-right"
-              iconPlacement="right"
-              key={`update${localPhaseItem}`}
-              label={isLastMember ? `Move on to the ${nextPhaseName}` : 'Next team member '}
-              onClick={gotoNext}
-              buttonSize="medium"
-            /> :
-            <MeetingFacilitationHint>
-              {isLastMember ?
-                <span>{'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {`to advance to the ${nextPhaseName}`}</span> :
-                <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {`to give ${actionMeeting.updates.name}`}</span>
-              }
-            </MeetingFacilitationHint>
-          }
-        </div>
-        <div className={css(styles.body)}>
-          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING} />
-        </div>
-      </MeetingSection>
-    </MeetingMain>
-  );
+class MeetingUpdates extends Component {
+  render() {
+    const {
+      gotoNext,
+      localPhaseItem,
+      members,
+      showMoveMeetingControls,
+      styles,
+      viewer
+    } = this.props;
+    const {team} = viewer;
+    const {teamMembers} = team;
+    const {projects} = teamMembers[localPhaseItem -1];
+    const self = members.find((m) => m.isSelf);
+    const currentTeamMember = members[localPhaseItem - 1];
+    const isLastMember = localPhaseItem === members.length;
+    const nextPhaseName = actionMeeting.agendaitems.name;
+    return (
+      <MeetingMain>
+        <MeetingSection flexToFill>
+          <div className={css(styles.layout)}>
+            {showMoveMeetingControls ?
+              <Button
+                buttonStyle="flat"
+                colorPalette="cool"
+                icon="arrow-circle-right"
+                iconPlacement="right"
+                key={`update${localPhaseItem}`}
+                label={isLastMember ? `Move on to the ${nextPhaseName}` : 'Next team member '}
+                onClick={gotoNext}
+                buttonSize="medium"
+              /> :
+              <MeetingFacilitationHint>
+                {isLastMember ?
+                  <span>{'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {`to advance to the ${nextPhaseName}`}</span> :
+                  <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {`to give ${actionMeeting.updates.name}`}</span>
+                }
+              </MeetingFacilitationHint>
+            }
+          </div>
+          <div className={css(styles.body)}>
+            <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
+          </div>
+        </MeetingSection>
+      </MeetingMain>
+    );
+  }
 };
 
 MeetingUpdates.propTypes = {
@@ -90,39 +93,40 @@ export default createFragmentContainer(
   graphql`
     fragment MeetingUpdates_viewer on User {
       team(teamId: $teamId) {
-        activeFacilitator
-        projects(first: 1000) @connection(key: "TeamColumnsContainer_projects") {
-          edges {
-            node {
-              id
-              content
-              createdAt
-              createdBy
-              integration {
-                service
-                nameWithOwner
-                issueNumber
-              }
-              status
-              tags
-              teamMemberId
-              updatedAt
-              sortOrder
-              updatedAt
-              userId
-              teamId
-              team {
-                id
-                name
-              }
-              teamMember {
-                id
-                picture
-                preferredName
+        teamMembers(sortBy: "checkInOrder") {
+          projects(first: 1000) @connection(key: "MeetingUpdates_projects") {
+            edges {
+              node {
+                id content
+                createdAt
+                createdBy
+                integration {
+                  service
+                  nameWithOwner
+                  issueNumber
+                }
+                status
+                tags
+                teamMemberId
+                updatedAt
+                sortOrder
+                updatedAt
+                userId
+                teamId
+                team {
+                  id
+                  name
+                }
+                teamMember {
+                  id
+                  picture
+                  preferredName
+                }
               }
             }
           }
         }
+        activeFacilitator
       }
     }`
 );

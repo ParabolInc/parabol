@@ -8,8 +8,6 @@ import {columnArray, MEETING, meetingColumnArray} from 'universal/utils/constant
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 
 class ProjectColumns extends Component {
-
-
   componentWillMount() {
     const {projects} = this.props;
     this.groupProjectsByStatus(projects);

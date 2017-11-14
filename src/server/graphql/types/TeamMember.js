@@ -1,11 +1,14 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import {Team} from '../models/Team/teamSchema';
+import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import {ProjectConnection} from 'server/graphql/types/Project';
 import User from 'server/graphql/types/User';
-import Project from 'server/graphql/types/Project';
+import {Team} from '../models/Team/teamSchema';
+import {forwardConnectionArgs} from 'graphql-relay';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -73,13 +76,24 @@ const TeamMember = new GraphQLObjectType({
       }
     },
     projects: {
-      type: Project,
+      type: ProjectConnection,
       description: 'Projects owned by the team member',
-      resolve(source) {
-        const r = getRethink();
-        return r.table('Project')
-          .getAll(source.id, {index: 'teamMemberId'})
-          .run();
+      args: {
+        ...forwardConnectionArgs,
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        }
+        //private: {
+        //  type: GraphQLBoolean,
+        //  description: 'true if the result should include private cards'
+        //}
+      },
+      resolve: async ({teamId, userId}, args, {getDataLoader}) => {
+        const allProjects = await getDataLoader().projectsByTeamId.load(teamId);
+        const projectsForUserId = allProjects.filter((project) => project.userId === userId);
+        const publicProjectsForUserId = projectsForUserId.filter((project) => !project.tags.includes('private'));
+        return connectionFromProjects(publicProjectsForUserId);
       }
     }
   })

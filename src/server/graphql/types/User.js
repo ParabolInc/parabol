@@ -9,7 +9,7 @@ import {
 } from 'graphql';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import {Team} from 'server/graphql/models/Team/teamSchema';
-import archivedProjects from 'server/graphql/queries/archivedProjects';
+//import archivedProjects from 'server/graphql/queries/archivedProjects';
 import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
 import githubRepos from 'server/graphql/queries/githubRepos';
 import integrationProvider from 'server/graphql/queries/integrationProvider';
@@ -167,7 +167,7 @@ const User = new GraphQLObjectType({
     //      .run();
     //  }
     // },
-    archivedProjects,
+    archivedProjects: require('../queries/archivedProjects').default,
     archivedProjectsCount,
     githubRepos,
     integrationProvider,

@@ -2,7 +2,7 @@ import shortid from 'shortid';
 
 const MAX_INT = 2147483647;
 const defaultExtensionNames = {
-  share: 'share'
+  share: '_share'
 };
 
 export default class sharedDataLoader {
@@ -12,6 +12,9 @@ export default class sharedDataLoader {
       ...defaultExtensionNames,
       ...extensionNames
     };
+    if (this.extensionNames.share === 'share') {
+      throw new Error('share is a reserved method name');
+    }
     if (isNaN(Number(ttl)) || ttl <= 0 || ttl > MAX_INT) {
       throw new Error(`ttl must be positive and no greater than ${MAX_INT}`);
     }
@@ -31,7 +34,7 @@ export default class sharedDataLoader {
      * A method to dispose of any unshared dataloader
      * If you'd like to dispose of shared dataloaders, set force to `true`
      */
-    dataloader.dispose = (options) => {
+    dataloader.dispose = (options = {}) => {
       const {force} = options;
       if (force) {
         this._dispose(operationId);
@@ -73,7 +76,7 @@ export default class sharedDataLoader {
           throw new Error('Invalid access to unshared dataloader. First call getDataLoader().share() in your mutation.');
         }
       }
-      this.warehouseLookup[operationId] = mutationOpId;
+      this.warehouseLookup[mutationOpId] = operationId;
     };
   };
 
