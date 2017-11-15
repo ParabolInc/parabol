@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import NullableProject from 'universal/components/NullableProject/NullableProject';
 import {PROJECT} from 'universal/utils/constants';
 import {DragSource as dragSource} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
 import ProjectDragLayer from './ProjectDragLayer';
+import {createFragmentContainer} from 'react-relay';
 
 const projectSource = {
   beginDrag(props) {
@@ -18,9 +19,9 @@ const projectSource = {
   }
 };
 
-const importantProps = ['content', 'status', 'teamMemberId', 'sortOrder', 'integration'];
+const importantProps = ['content', 'status', 'teamMember', 'sortOrder', 'integration'];
 
-class ProjectCardContainer extends Component {
+class DraggableProject extends Component {
   componentDidMount() {
     const {connectDragPreview, isPreview} = this.props;
     if (!isPreview) {
@@ -50,9 +51,9 @@ class ProjectCardContainer extends Component {
           />
         }
         <div style={{opacity: isDragging ? 0.5 : 1}}>
-          <OutcomeOrNullCard
+          <NullableProject
             area={area}
-            outcome={project}
+            project={project}
             myUserId={myUserId}
             isDragging={isDragging}
           />
@@ -63,7 +64,7 @@ class ProjectCardContainer extends Component {
 }
 
 
-ProjectCardContainer.propTypes = {
+DraggableProject.propTypes = {
   area: PropTypes.string,
   connectDragSource: PropTypes.func,
   connectDragPreview: PropTypes.func,
@@ -87,4 +88,19 @@ const dragSourceCb = (connectSource, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-export default dragSource(PROJECT, projectSource, dragSourceCb)(ProjectCardContainer);
+export default createFragmentContainer(
+  dragSource(PROJECT, projectSource, dragSourceCb)(DraggableProject),
+  graphql`
+    fragment DraggableProject_project on Project {
+      content
+      integration {
+        service
+      }
+      status
+      sortOrder
+      teamMember {
+        id
+      }
+      ...NullableProject_project
+    }`
+);

@@ -14,6 +14,7 @@ import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import {createFragmentContainer} from 'react-relay';
 
 const OutcomeCard = (props) => {
   const {
@@ -28,7 +29,7 @@ const OutcomeCard = (props) => {
     isEditing,
     handleAddProject,
     hasDragStyles,
-    outcome,
+    project,
     setEditorRef,
     setEditorState,
     trackEditingComponent,
@@ -36,9 +37,9 @@ const OutcomeCard = (props) => {
     teamMembers,
     toggleMenuState
   } = props;
-  const isPrivate = isProjectPrivate(outcome.tags);
-  const isArchived = isProjectArchived(outcome.tags);
-  const {status} = outcome;
+  const isPrivate = isProjectPrivate(project.tags);
+  const isArchived = isProjectArchived(project.tags);
+  const {status} = project;
   const rootStyles = css(
     styles.root,
     styles.cardBlock,
@@ -50,7 +51,7 @@ const OutcomeCard = (props) => {
     cardHasFocus && styles.cardHasFocus,
     hasDragStyles && styles.hasDragStyles
   );
-  const {integration} = outcome;
+  const {integration} = project;
   const {service} = integration || {};
   return (
     <div className={rootStyles}>
@@ -58,9 +59,7 @@ const OutcomeCard = (props) => {
       <div className={css(styles.contentBlock)}>
         <EditingStatusContainer
           isEditing={isEditing}
-          outcomeId={outcome.id}
-          createdAt={outcome.createdAt}
-          updatedAt={outcome.updatedAt}
+          project={project}
         />
         <ProjectEditor
           editorRef={editorRef}
@@ -79,7 +78,7 @@ const OutcomeCard = (props) => {
           handleAddProject={handleAddProject}
           isAgenda={isAgenda}
           isPrivate={isPrivate}
-          outcome={outcome}
+          project={project}
           teamMembers={teamMembers}
           toggleMenuState={toggleMenuState}
         />
@@ -101,14 +100,7 @@ OutcomeCard.propTypes = {
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
-  outcome: PropTypes.shape({
-    id: PropTypes.string,
-    content: PropTypes.string,
-    status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string.isRequired,
-    createdAt: PropTypes.string.isRequired,
-    updatedAt: PropTypes.string.isRequired
-  }),
+  project: PropTypes.object.isRequired,
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
   trackEditingComponent: PropTypes.func,
@@ -187,4 +179,18 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OutcomeCard);
+export default createFragmentContainer(
+  withStyles(styleThunk)(OutcomeCard),
+  graphql`
+    fragment OutcomeCard_project on Project {
+      integration {
+        service
+        ...ProjectIntegrationLink_integration
+      }
+      status
+      tags
+      ...EditingStatusContainer_project
+      ...OutcomeCardFooter_project
+    }`
+);
+

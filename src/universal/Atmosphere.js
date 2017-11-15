@@ -206,6 +206,9 @@ export default class Atmosphere extends Environment {
       const unaffectedQuery = this.querySubscriptions.find((qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey));
       if (!unaffectedQuery) {
         const opId = this.subLookup[subKey];
+        if (!opId) {
+          console.log('no opId for', subKey);
+        }
         this.socket.off(`gqlData.${opId}`);
         this.socket.emit('gqlUnsub', opId);
       }

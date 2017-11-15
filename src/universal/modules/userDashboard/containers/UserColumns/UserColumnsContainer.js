@@ -32,30 +32,8 @@ export default createFragmentContainer(
         edges {
           node {
             id
-            content
-            createdAt
-            createdBy
-            integration {
-              service
-              nameWithOwner
-              issueNumber
-            }
-            sortOrder
             status
-            tags
-            teamMemberId
-            updatedAt
-            userId
-            teamId
-            team {
-              id
-              name
-            }
-            teamMember {
-              id
-              picture
-              preferredName
-            }
+            ...DraggableProject_project
           }
         }
       }

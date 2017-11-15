@@ -4,12 +4,12 @@ import {Set} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import {createFragmentContainer} from 'react-relay';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import DeleteProjectMutation from 'universal/mutations/DeleteProjectMutation';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
-import labels from 'universal/styles/theme/labels';
 import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
 import mergeServerContent from 'universal/utils/mergeServerContent';
 
@@ -25,7 +25,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   // TODO ugly patch until we remove cashay
-  const relaySafeId = getRelaySafeProjectId(props.outcome.id);
+  const relaySafeId = getRelaySafeProjectId(props.project.id);
   const [teamId] = relaySafeId.split('::');
   const {teamMembers} = cashay.query(teamMembersQuery, {
     op: 'outcomeCardContainer',
@@ -122,7 +122,7 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state;
-    const {area, atmosphere, outcome: {id: projectId}, contentState: initialContentState} = this.props;
+    const {area, atmosphere, project: {id: projectId, team: {id: teamId}}, contentState: initialContentState} = this.props;
     const contentState = editorState.getCurrentContent();
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
       // it's possible the user calls update, then delete, then the update timeout fires, so clear it here
@@ -152,7 +152,7 @@ class OutcomeCardContainer extends Component {
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
   announceEditing = (isEditing) => {
-    const {outcome: {id: projectId}} = this.props;
+    const {project: {id: projectId}} = this.props;
     const [teamId] = projectId.split('::');
     cashay.mutate('edit', {
       variables: {
@@ -164,7 +164,7 @@ class OutcomeCardContainer extends Component {
 
   render() {
     const {activeEditingComponents, cardHasFocus, cardHasHover, cardHasMenuOpen, editorRef, editorState} = this.state;
-    const {area, handleAddProject, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
+    const {area, handleAddProject, hasDragStyles, isAgenda, project, teamMembers, isDragging} = this.props;
     return (
       <div
         tabIndex={-1}
@@ -189,7 +189,7 @@ class OutcomeCardContainer extends Component {
           isAgenda={isAgenda}
           isDragging={isDragging}
           isEditing={!activeEditingComponents.isEmpty()}
-          outcome={outcome}
+          project={project}
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
           trackEditingComponent={this.trackEditingComponent}
@@ -206,16 +206,21 @@ OutcomeCardContainer.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   contentState: PropTypes.object.isRequired,
   handleAddProject: PropTypes.func,
-  outcome: PropTypes.shape({
-    id: PropTypes.string,
-    content: PropTypes.string,
-    status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string
-  }),
+  project: PropTypes.object.isRequired,
   hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   teamMembers: PropTypes.array
 };
 
-export default withAtmosphere(OutcomeCardContainer);
+export default createFragmentContainer(
+  withAtmosphere(OutcomeCardContainer),
+  graphql`
+    fragment OutcomeCardContainer_project on Project {
+      id
+      team {
+        id
+      }
+      ...OutcomeCard_project
+    }`
+);

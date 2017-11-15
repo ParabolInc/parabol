@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import NullCard from 'universal/components/NullCard/NullCard';
 import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
+import {createFragmentContainer} from 'react-relay';
 
-export default class OutcomeOrNullCard extends Component {
+class NullableProject extends Component {
   static propTypes = {
     area: PropTypes.string,
     hasDragStyles: PropTypes.bool,
@@ -12,32 +13,32 @@ export default class OutcomeOrNullCard extends Component {
     isAgenda: PropTypes.bool,
     isDragging: PropTypes.bool,
     myUserId: PropTypes.string,
-    outcome: PropTypes.object
+    project: PropTypes.object
   };
 
   state = {
-    contentState: convertFromRaw(JSON.parse(this.props.outcome.content))
+    contentState: convertFromRaw(JSON.parse(this.props.project.content))
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.outcome.content !== this.props.outcome.content) {
+    if (nextProps.project.content !== this.props.project.content) {
       this.setState({
-        contentState: convertFromRaw(JSON.parse(nextProps.outcome.content))
+        contentState: convertFromRaw(JSON.parse(nextProps.project.content))
       });
     }
   }
 
   shouldComponentUpdate(nextProps) {
     return Boolean(!nextProps.isPreview ||
-      nextProps.outcome.status !== this.props.outcome.status ||
-      nextProps.outcome.content !== this.props.outcome.content
+      nextProps.project.status !== this.props.project.status ||
+      nextProps.project.content !== this.props.project.content
     );
   }
 
   render() {
-    const {area, handleAddProject, hasDragStyles, isAgenda, myUserId, outcome, isDragging} = this.props;
+    const {area, handleAddProject, hasDragStyles, isAgenda, myUserId, project, isDragging} = this.props;
     const {contentState} = this.state;
-    const {createdBy, teamMember: {preferredName}} = outcome;
+    const {createdBy, teamMember: {preferredName}} = project;
     const showOutcome = contentState.hasText() || createdBy === myUserId;
     return showOutcome ?
       <OutcomeCardContainer
@@ -47,9 +48,23 @@ export default class OutcomeOrNullCard extends Component {
         hasDragStyles={hasDragStyles}
         isDragging={isDragging}
         isAgenda={isAgenda}
-        outcome={outcome}
+        project={project}
         myUserId={myUserId}
       /> :
       <NullCard preferredName={preferredName} />;
   }
 }
+
+export default createFragmentContainer(
+  NullableProject,
+  graphql`
+    fragment NullableProject_project on Project {
+      content
+      createdBy
+      status
+      teamMember {
+        preferredName
+      }
+      ...OutcomeCardContainer_project
+    }`
+);

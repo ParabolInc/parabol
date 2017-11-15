@@ -95,8 +95,8 @@ class MeetingAgendaItems extends Component {
                 outcomes={agendaProjects}
                 teamId={team.id}
               />
-            <EditorHelpModalContainer />
-          </div>
+              <EditorHelpModalContainer />
+            </div>
           </MeetingSection>
           {/* */}
         </MeetingSection>

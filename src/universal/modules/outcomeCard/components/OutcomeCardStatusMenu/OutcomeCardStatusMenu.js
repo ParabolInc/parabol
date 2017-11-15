@@ -11,12 +11,13 @@ import addTagToProject from 'universal/utils/draftjs/addTagToProject';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import DeleteProjectMutation from 'universal/mutations/DeleteProjectMutation';
+import {createFragmentContainer} from 'react-relay';
 
 const statusItems = labels.projectStatus.slugs.slice();
 
 class OutcomeCardStatusMenu extends Component {
   makeAddTagToProject = (tag) => () => {
-    const {area, atmosphere, outcome: {id: projectId}, editorState} = this.props;
+    const {area, atmosphere, project: {projectId}, editorState} = this.props;
     const contentState = editorState.getCurrentContent();
     const newContent = addTagToProject(contentState, tag);
     const rawContentStr = JSON.stringify(convertToRaw(newContent));
@@ -28,7 +29,7 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   deleteOutcome = () => {
-    const {atmosphere, onComplete, outcome: {id: projectId, teamId}} = this.props;
+    const {atmosphere, onComplete, project: {projectId, teamId}} = this.props;
     DeleteProjectMutation(atmosphere, projectId, teamId);
     if (onComplete) {
       onComplete();
@@ -36,9 +37,9 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   itemFactory = () => {
-    const {closePortal, isAgenda, isPrivate, removeContentTag, styles, outcome: {status: outcomeStatus}} = this.props;
+    const {closePortal, isAgenda, isPrivate, removeContentTag, styles, project: {projectStatus}} = this.props;
     const listItems = statusItems
-      .filter((status) => status !== outcomeStatus)
+      .filter((status) => status !== projectStatus)
       .map((status) => {
         const {color, icon, label} = labels.projectStatus[status];
         return (
@@ -89,9 +90,9 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   handleProjectUpdateFactory = (newStatus) => () => {
-    const {atmosphere, onComplete, outcome} = this.props;
-    const {id: projectId, status} = outcome;
-    if (newStatus === status) {
+    const {atmosphere, onComplete, project} = this.props;
+    const {projectId, projectStatus} = project;
+    if (newStatus === projectStatus) {
       return;
     }
     const updatedProject = {
@@ -119,7 +120,7 @@ OutcomeCardStatusMenu.propTypes = {
   area: PropTypes.string.isRequired,
   closePortal: PropTypes.func.isRequired,
   editorState: PropTypes.object,
-  outcome: PropTypes.object,
+  project: PropTypes.object,
   isAgenda: PropTypes.bool,
   isPrivate: PropTypes.bool,
   onComplete: PropTypes.func,
@@ -136,4 +137,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withStyles(styleThunk)(OutcomeCardStatusMenu));
+export default createFragmentContainer(
+  withAtmosphere(withStyles(styleThunk)(OutcomeCardStatusMenu)),
+  graphql`
+    fragment OutcomeCardStatusMenu_project on Project {
+      projectId: id
+      projectStatus: status
+      teamId
+    }`
+);

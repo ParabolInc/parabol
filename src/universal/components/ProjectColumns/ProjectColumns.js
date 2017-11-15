@@ -61,8 +61,8 @@ class ProjectColumns extends Component {
             />)
           )}
         </div>
-      <EditorHelpModalContainer />
-    </div>
+        <EditorHelpModalContainer />
+      </div>
     );
   }
 }

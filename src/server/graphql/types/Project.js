@@ -7,6 +7,7 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 import TeamMember from 'server/graphql/types/TeamMember';
+import ProjectEditorDetails from 'server/graphql/types/ProjectEditorDetails';
 
 const Project = new GraphQLObjectType({
   name: 'Project',
@@ -27,6 +28,13 @@ const Project = new GraphQLObjectType({
     createdBy: {
       type: GraphQLID,
       description: 'The userId that created the project'
+    },
+    editors: {
+      type: new GraphQLList(ProjectEditorDetails),
+      description: 'a list of users currently editing the project (fed by a subscription, so queries return null)',
+      resolve: ({editors = []}) => {
+        return editors;
+      }
     },
     integration: {
       // TODO replace this with ProjectIntegration when we remove cashay. it doens't handle intefaces well
@@ -52,7 +60,7 @@ const Project = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team this project belongs to',
-      resolve: async (source, args, {getDataLoader}) => {
+      resolve: (source, args, {getDataLoader}) => {
         const {teamId} = source;
         return getDataLoader().teams.load(teamId);
       }
@@ -60,7 +68,7 @@ const Project = new GraphQLObjectType({
     teamMember: {
       type: TeamMember,
       description: 'The team member that owns this project',
-      resolve: async (source, args, {getDataLoader}) => {
+      resolve: (source, args, {getDataLoader}) => {
         const {teamMemberId} = source;
         return getDataLoader().teamMembers.load(teamMemberId);
       }

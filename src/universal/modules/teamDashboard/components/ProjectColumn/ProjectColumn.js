@@ -6,7 +6,7 @@ import FontAwesome from 'react-fontawesome';
 import shortid from 'shortid';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
 import Badge from 'universal/components/Badge/Badge';
-import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
+import DraggableProject from 'universal/containers/ProjectCard/DraggableProject';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import handleColumnHover from 'universal/dnd/handleColumnHover';
 import handleDrop from 'universal/dnd/handleDrop';
@@ -173,7 +173,7 @@ class ProjectColumn extends Component {
         <div className={css(styles.columnBody)}>
           <div className={css(styles.columnInner)}>
             {projects.map((project) =>
-              (<ProjectCardContainer
+              (<DraggableProject
                 key={`teamCard${project.id}`}
                 area={area}
                 project={project}

@@ -1,8 +1,11 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {createFragmentContainer} from 'react-relay';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
 import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 import appTheme from 'universal/styles/theme/theme';
 import ui from 'universal/styles/ui';
@@ -12,8 +15,6 @@ import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesFor
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
@@ -51,7 +52,7 @@ class OutcomeCardFooter extends Component {
   state = {};
 
   removeContentTag = (tagValue) => () => {
-    const {area, atmosphere, outcome: {id, content}} = this.props;
+    const {area, atmosphere, project: {id, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
     const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
     if (!nextContent) return;
@@ -70,15 +71,15 @@ class OutcomeCardFooter extends Component {
       handleAddProject,
       isAgenda,
       isPrivate,
-      outcome,
+      project,
       styles,
       teamMembers,
       toggleMenuState
     } = this.props;
     const showTeam = area === USER_DASH;
-    const {teamMember: owner, integration, team} = outcome;
+    const {projectId, owner, integration, tags, team: {teamName}} = project;
     const {service} = integration || {};
-    const isArchived = isProjectArchived(outcome.tags);
+    const isArchived = isProjectArchived(tags);
     const buttonBlockStyles = css(
       styles.buttonBlock,
       cardIsActive && styles.showButtonBlock
@@ -90,7 +91,7 @@ class OutcomeCardFooter extends Component {
     const {error} = this.state;
     const ownerAvatarOrTeamName = (
       showTeam ?
-        <div className={css(styles.teamNameLabel)}>{team.name}</div> :
+        <div className={css(styles.teamNameLabel)}>{teamName}</div> :
         (<button
           className={css(styles.avatarButton)}
           tabIndex={service && '-1'}
@@ -125,7 +126,7 @@ class OutcomeCardFooter extends Component {
                 originAnchor={assignOriginAnchor}
                 queryVars={{
                   area,
-                  projectId: outcome.id,
+                  projectId,
                   ownerId: owner.id,
                   teamMembers,
                   setError: this.setError,
@@ -151,7 +152,7 @@ class OutcomeCardFooter extends Component {
                     queryVars={{
                       area,
                       handleAddProject,
-                      projectId: outcome.id,
+                      projectId,
                       setError: this.setError,
                       clearError: this.clearError
                     }}
@@ -171,7 +172,7 @@ class OutcomeCardFooter extends Component {
                     editorState,
                     isAgenda,
                     isPrivate,
-                    outcome,
+                    project,
                     removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
@@ -202,7 +203,7 @@ OutcomeCardFooter.propTypes = {
   isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
   isPrivate: PropTypes.bool,
-  outcome: PropTypes.object,
+  project: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
   teamMembers: PropTypes.array,
@@ -314,6 +315,27 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(
-  withStyles(styleThunk)(OutcomeCardFooter)
+export default createFragmentContainer(
+  withAtmosphere(
+    withStyles(styleThunk)(OutcomeCardFooter)
+  ),
+  graphql`
+    fragment OutcomeCardFooter_project on Project {
+      projectId: id
+      content
+      owner: teamMember {
+        id
+        picture
+        preferredName
+      }
+      integration {
+        service
+      }
+      
+      tags
+      team {
+        teamName: name
+      }
+      ...OutcomeCardStatusMenu_project
+    }`
 );

@@ -46,7 +46,7 @@ export const handleEditingFromPayload = (store, editorPayload) => {
   const projectId = editorPayload.getValue('projectId');
   const editorDetails = editorPayload.getLinkedRecord('user');
   handleEditing(store, editing, projectId, editorDetails);
-}
+};
 
 const EditProjectMutation = (environment, projectId, editing, onCompleted, onError) => {
   const {userId} = environment;

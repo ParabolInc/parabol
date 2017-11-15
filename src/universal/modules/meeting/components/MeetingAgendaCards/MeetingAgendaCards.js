@@ -5,7 +5,7 @@ import withHotkey from 'react-hotkey-hoc';
 import {withRouter} from 'react-router';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
-import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import NullableProject from 'universal/components/NullableProject/NullableProject';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
 import ui from 'universal/styles/ui';
@@ -19,7 +19,7 @@ const makeCards = (array, myTeamMemberId, itemStyle, handleAddProject) => {
     const [myUserId] = myTeamMemberId.split('::');
     return (
       <div className={css(itemStyle)} key={key}>
-        <OutcomeOrNullCard
+        <NullableProject
           area={MEETING}
           handleAddProject={handleAddProject}
           isAgenda

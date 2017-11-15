@@ -47,7 +47,12 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
     socket.on('unsubscribe', unsubscribeHandler);
     socket.on('gqlSub', relaySubscribeHandler);
     socket.on('gqlUnsub', (opId) => {
-      const {asyncIterator, dataLoader} = socket.subs[opId];
+      const subscriptionContext = socket.subs[opId];
+      if (!subscriptionContext) {
+        console.log('cant find sub for', opId);
+        return;
+      }
+      const {asyncIterator, dataLoader} = subscriptionContext;
       asyncIterator.return();
       dataLoader.dispose({force: true});
       delete socket.subs[opId];
