@@ -16,6 +16,7 @@ const Header = (props) => {
   const emailHeaderStyle = {
     backgroundColor: props.variant === 'dark' ? appTheme.palette.dark : appTheme.palette.mid10l,
     borderCollapse: 'collapse',
+    color: '#FFFFFF',
     paddingBottom: '20px',
     paddingTop: '20px',
     textAlign: 'center'
@@ -29,7 +30,7 @@ const Header = (props) => {
         <tr>
           <td align="center" style={emailHeaderStyle}>
             <img
-              alt="Parabol"
+              alt="Parabol, Inc. Logo"
               height={56}
               src={`/static/images/email/email-header-branding/${variantLogo}@2x.png`}
               style={imageStyle}
