@@ -17,7 +17,7 @@ export default function wsGraphQLHandler(exchange, socket, sharedDataLoader) {
       getDataLoader
     };
     // response = {errors, data}
-    const result = await graphql(Schema, query, {}, context, variables)
+    const result = await graphql(Schema, query, {}, context, variables);
     dataLoader.dispose();
 
     if (result.errors) {

@@ -114,7 +114,7 @@ class ProjectColumn extends Component {
   makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
     const {
       status,
-      teams,
+      teams
     } = this.props;
     const {userId} = atmosphere;
     return teams.map((team) => ({
@@ -141,7 +141,7 @@ class ProjectColumn extends Component {
       lastColumn,
       status,
       projects,
-      styles,
+      styles
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const columnStyles = css(
@@ -208,7 +208,7 @@ ProjectColumn.propTypes = {
   status: PropTypes.string,
   styles: PropTypes.object,
   teamMemberFilterId: PropTypes.string,
-  teams: PropTypes.array,
+  teams: PropTypes.array
 };
 
 const styleThunk = () => ({

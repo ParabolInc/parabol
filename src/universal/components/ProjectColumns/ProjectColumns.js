@@ -63,7 +63,7 @@ class ProjectColumns extends Component {
       </div>
     );
   }
-};
+}
 
 ProjectColumns.propTypes = {
   alignColumns: PropTypes.oneOf([
@@ -76,7 +76,7 @@ ProjectColumns.propTypes = {
   projects: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamMemberFilterId: PropTypes.string,
-  teams: PropTypes.array,
+  teams: PropTypes.array
 };
 
 ProjectColumns.defaultProps = {

@@ -57,7 +57,7 @@ export const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getCon
   {teamId}
 );
 
-//export const getMeetingUpdatesConnections = (store, teamId) => {
+// export const getMeetingUpdatesConnections = (store, teamId) => {
 //  const team = store.get(teamId);
 //  if (!team) return [];
 //  const teamMembers = team.getLinkedRecords('teamMembers', {sortBy: 'checkInOrder'});
@@ -68,7 +68,7 @@ export const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getCon
 //      'MeetingUpdates_projects'
 //    );
 //  })
-//};
+// };
 
 export const handleProjectConnections = (store, viewerId, project) => {
   // we currently have 3 connections, user, team, and team archive

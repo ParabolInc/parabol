@@ -335,7 +335,6 @@ class MeetingContainer extends Component {
       localPhase,
       localPhaseItem,
       myTeamMemberId,
-      teamId,
       viewer
     } = this.props;
     const {team} = viewer;
@@ -346,7 +345,6 @@ class MeetingContainer extends Component {
       facilitatorPhase,
       facilitatorPhaseItem,
       meetingPhase,
-      meetingPhaseItem,
       name: teamName
     } = team;
     const isFacilitating = activeFacilitator === myTeamMemberId;
@@ -354,8 +352,6 @@ class MeetingContainer extends Component {
     const inSync = isFacilitating || facilitatorPhase === localPhase &&
       // FIXME remove || when changing to relay. right now it's a null & an undefined
       (facilitatorPhaseItem === localPhaseItem || !facilitatorPhaseItem && !localPhaseItem);
-    const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
-      agendaItems.findIndex((a) => a.isComplete === false) + 1 : 0;
 
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
     const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, members, agendaItems);
@@ -367,23 +363,17 @@ class MeetingContainer extends Component {
       localPhaseItem,
       members,
       onFacilitatorPhase: facilitatorPhase === localPhase,
-      team,
+      team
     };
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
         <Sidebar
-          agendaPhaseItem={agendaPhaseItem}
-          facilitatorPhase={facilitatorPhase}
-          facilitatorPhaseItem={facilitatorPhaseItem}
           gotoItem={this.gotoItem}
           gotoAgendaItem={this.gotoAgendaItem}
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           isFacilitating={isFacilitating}
-          meetingPhase={meetingPhase}
-          meetingPhaseItem={meetingPhaseItem}
-          teamName={teamName}
-          teamId={teamId}
+          team={team}
         />
         <MeetingMain hasBoxShadow>
           <MeetingMainHeader>
@@ -409,7 +399,7 @@ class MeetingContainer extends Component {
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             showMoveMeetingControls={showMoveMeetingControls}
-            viewer={viewer}
+            team={team}
             {...phaseStateProps}
           />
           }
@@ -511,6 +501,7 @@ export default createFragmentContainer(
           userId
         }
         ...MeetingCheckIn_team
+        ...Sidebar_team
       }
       ...MeetingUpdates_viewer
     }

@@ -40,7 +40,7 @@ const makePlaceholders = (length, itemStyle) => {
       className={css(itemStyle)}
       key={`CreateCardPlaceholder${idx}`}
     >
-      <CreateCard/>
+      <CreateCard />
     </div>));
   /* eslint-enable */
 };
@@ -84,7 +84,7 @@ class MeetingAgendaCards extends Component {
       </div>
     );
   }
-};
+}
 
 MeetingAgendaCards.propTypes = {
   agendaId: PropTypes.string.isRequired,

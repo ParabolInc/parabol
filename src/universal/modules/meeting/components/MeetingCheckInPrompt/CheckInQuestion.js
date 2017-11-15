@@ -29,7 +29,7 @@ class CheckInQuestion extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     styles: PropTypes.object.isRequired,
-    team: PropTypes.object.isRequired,
+    team: PropTypes.object.isRequired
   }
   state = {
     editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.team.checkInQuestion)), editorDecorators)
@@ -111,7 +111,7 @@ class CheckInQuestion extends Component {
             />
           </PlainButton>
           }
-          {!canEdit && <FontAwesome name="pencil" style={iconStyle}/>}
+          {!canEdit && <FontAwesome name="pencil" style={iconStyle} />}
         </div>
       </Tooltip>
     );

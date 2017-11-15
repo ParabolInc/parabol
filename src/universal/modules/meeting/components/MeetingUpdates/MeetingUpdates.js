@@ -75,13 +75,13 @@ class MeetingUpdates extends Component {
             }
           </div>
           <div className={css(styles.body)}>
-            <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
+            <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING} />
           </div>
         </MeetingSection>
       </MeetingMain>
     );
   }
-};
+}
 
 MeetingUpdates.propTypes = {
   gotoItem: PropTypes.func.isRequired,

@@ -15,8 +15,8 @@ const MeetingCheckinPrompt = (props) => {
   const currentMember = teamMembers[localPhaseItem - 1];
   const heading = (
     <div>
-      <MeetingCheckInGreeting currentName={currentMember.preferredName} team={team}/>
-      <CheckInQuestion team={team}/>
+      <MeetingCheckInGreeting currentName={currentMember.preferredName} team={team} />
+      <CheckInQuestion team={team} />
     </div>
   );
   return (
@@ -26,7 +26,7 @@ const MeetingCheckinPrompt = (props) => {
       heading={heading}
     />
   );
-}
+};
 
 MeetingCheckinPrompt.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,

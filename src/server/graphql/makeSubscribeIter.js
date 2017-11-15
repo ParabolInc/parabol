@@ -15,7 +15,7 @@ const makeSubscribeIter = (channelName, options = {}) => {
     if (value.operationId) {
       getDataLoader({self: true}).useShared(value.operationId);
     } else {
-      console.log('no opId provided for sub', channelName)
+      console.log('no opId provided for sub', channelName);
     }
     if (filterFn(value)) {
       if (resolve) {

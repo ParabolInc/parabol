@@ -21,11 +21,8 @@ const MeetingCheckInGreeting = ({currentName, team: {greeting}, styles}) => (
 
 MeetingCheckInGreeting.propTypes = {
   currentName: PropTypes.string.isRequired,
-  greeting: PropTypes.shape({
-    content: PropTypes.string.isRequired,
-    language: PropTypes.string.isRequired
-  }),
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
+  team: PropTypes.object.isRequired
 };
 
 const greetingStyleThunk = () => ({
