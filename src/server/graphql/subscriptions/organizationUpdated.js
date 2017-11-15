@@ -8,7 +8,7 @@ import {ORGANIZATION_UPDATED} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),
-  subscribe: async (source, args, {authToken, socketId}) => {
+  subscribe: async (source, args, {authToken, getDataLoader, socketId}) => {
     const r = getRethink();
     // AUTH
     const userId = getUserId(authToken);
@@ -20,6 +20,6 @@ export default {
     // RESOLUTION
     const channelNames = orgIds.map((id) => `${ORGANIZATION_UPDATED}.${id}`);
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelNames, {filterFn});
+    return makeSubscribeIter(channelNames, {filterFn, getDataLoader});
   }
 };

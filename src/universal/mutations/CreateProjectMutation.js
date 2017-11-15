@@ -9,6 +9,7 @@ const mutation = graphql`
     createProject(newProject: $newProject) {
       project {
         id
+        agendaId
         content
         createdAt
         createdBy
@@ -63,6 +64,7 @@ const CreateProjectMutation = (environment, newProject, onError, onCompleted) =>
         teamId,
         userId,
         createdAt: now,
+        createdBy: userId,
         updatedAt: now,
         tags: [],
         content: newProject.content || makeEmptyStr()

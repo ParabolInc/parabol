@@ -5,6 +5,7 @@ const subscription = graphql`
     projectUpdated(teamIds: $teamIds) {
       project {
         id
+        agendaId
         content
         createdAt
         createdBy

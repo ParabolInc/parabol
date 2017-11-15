@@ -5,11 +5,11 @@ import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
 
 export default {
   type: GraphQLString,
-  subscribe: (source, args, {authToken}) => {
+  subscribe: (source, args, {authToken, getDataLoader}) => {
     const userId = getUserId(authToken);
 
     // RESOLUTION
     const channelName = `${NEW_AUTH_TOKEN}.${userId}`;
-    return makeSubscribeIter(channelName);
+    return makeSubscribeIter(channelName, {getDataLoader});
   }
 };

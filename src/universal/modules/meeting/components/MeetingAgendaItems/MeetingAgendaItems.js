@@ -34,7 +34,7 @@ class MeetingAgendaItems extends Component {
     const agendaProjects = projects.edges
       .map(({node}) => node)
       .filter((node) => node.agendaId === agendaItem.id)
-      .sort((a, b) => a.createdAt > b.createdAt ? 1 : -1);
+      .sort((a, b) => a.createdAt < b.createdAt ? 1 : -1);
 
     this.setState({
       agendaProjects

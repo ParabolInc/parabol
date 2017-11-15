@@ -10,13 +10,13 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken, socketId}) => {
+  subscribe: (source, {teamId}, {authToken, getDataLoader, socketId}) => {
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `slackChannelAdded.${teamId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn});
+    return makeSubscribeIter(channelName, {filterFn, getDataLoader});
   }
 };

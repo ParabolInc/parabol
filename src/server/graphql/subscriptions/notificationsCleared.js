@@ -5,13 +5,13 @@ import {NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
 
 export default {
   type: NotificationsClearedPayload,
-  subscribe: (source, args, {authToken, socketId}) => {
+  subscribe: (source, args, {authToken, getDataLoader, socketId}) => {
     // AUTH
     const userId = getUserId(authToken);
 
     // RESOLUTION
     const channelName = `${NOTIFICATIONS_CLEARED}.${userId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn});
+    return makeSubscribeIter(channelName, {filterFn, getDataLoader});
   }
 };

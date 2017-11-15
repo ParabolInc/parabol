@@ -13,6 +13,7 @@ const makeSubscribeIter = (channelName, options = {}) => {
       return asyncIterator.return();
     }
     if (value.operationId) {
+      if (!getDataLoader) console.log('NO DL', channelName)
       getDataLoader({self: true}).useShared(value.operationId);
     } else {
       console.log('no opId provided for sub', channelName);
