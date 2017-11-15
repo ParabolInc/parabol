@@ -12,7 +12,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
 
-const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject) => {
+const makeCards = (array, myTeamMemberId, itemStyle, handleAddProject) => {
   return array.map((outcome) => {
     const {id} = outcome;
     const key = `$outcomeCard${id}`;
@@ -48,16 +48,16 @@ const makePlaceholders = (length, itemStyle) => {
 class MeetingAgendaCards extends Component {
   componentWillMount() {
     const {bindHotkey} = this.props;
-    bindHotkey('p', this.addBlankProject);
+    bindHotkey('p', this.handleAddProject());
   }
 
   handleAddProject = (content) => () => {
-    const {atmosphere, teamMemberId, teamId, agendaId} = this.props;
+    const {atmosphere, myTeamMemberId, teamId, agendaId} = this.props;
     const newProject = {
       id: `${teamId}::${shortid.generate()}`,
       content,
       status: ACTIVE,
-      teamMemberId,
+      teamMemberId: myTeamMemberId,
       sortOrder: 0,
       agendaId
     };
@@ -65,12 +65,12 @@ class MeetingAgendaCards extends Component {
   }
 
   render() {
-    const {dispatch, myTeamMemberId, outcomes, styles} = this.props;
+    const {myTeamMemberId, outcomes, styles} = this.props;
     return (
       <div className={css(styles.root)}>
         {/* Get Cards */}
         {outcomes.length !== 0 &&
-        makeCards(outcomes, dispatch, myTeamMemberId, styles.item, this.handleAddProject)
+        makeCards(outcomes, myTeamMemberId, styles.item, this.handleAddProject)
         }
         {/* Input Card */}
         <div className={css(styles.item)}>
@@ -90,11 +90,11 @@ MeetingAgendaCards.propTypes = {
   agendaId: PropTypes.string.isRequired,
   atmosphere: PropTypes.object.isRequired,
   bindHotkey: PropTypes.func,
-  dispatch: PropTypes.func,
   history: PropTypes.object.isRequired,
   myTeamMemberId: PropTypes.string,
   outcomes: PropTypes.array.isRequired,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  teamId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({

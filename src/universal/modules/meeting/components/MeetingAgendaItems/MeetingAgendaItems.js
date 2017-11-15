@@ -1,90 +1,117 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
+import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingAgendaCardsContainer from 'universal/modules/meeting/containers/MeetingAgendaCards/MeetingAgendaCardsContainer';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
-import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
-import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {createFragmentContainer} from 'react-relay';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
-const MeetingAgendaItems = (props) => {
-  const {
-    agendaItem,
-    gotoNext,
-    hideMoveMeetingControls,
-    isLast,
-    localPhaseItem,
-    members,
-    styles,
-    team
-  } = props;
+class MeetingAgendaItems extends Component {
+  state = {};
 
-  if (!agendaItem) {
-    return <LoadingView />;
+  componentWillMount() {
+    this.makeAgendaProjects(this.props);
   }
-  const currentTeamMember = members.find((m) => m.id === agendaItem.teamMember.id);
-  const self = members.find((m) => m.isSelf);
-  const heading = <span>{currentTeamMember.preferredName}: <i style={{color: ui.palette.warm}}>“{agendaItem.content}”</i></span>;
-  return (
-    <MeetingMain>
-      <MeetingSection flexToFill paddingBottom="2rem">
-        <MeetingSection flexToFill>
-          <div className={css(styles.layout)}>
-            <div className={css(styles.prompt)}>
-              <MeetingPrompt
-                avatar={currentTeamMember.picture}
-                heading={heading}
-                subHeading={'What do you need?'}
+
+  componentWillReceiveProps(nextProps) {
+    const {viewer: {projects: oldProjects}, localPhaseItem: oldLocalPhaseItem} = this.props;
+    const {viewer: {projects}, localPhaseItem} = nextProps;
+    if (projects !== oldProjects || localPhaseItem !== oldLocalPhaseItem) {
+      this.makeAgendaProjects(nextProps);
+    }
+  }
+
+  makeAgendaProjects(props) {
+    const {localPhaseItem, viewer: {team: {agendaItems}, projects}} = props;
+    const agendaItem = agendaItems[localPhaseItem - 1];
+    const agendaProjects = projects.edges
+      .map(({node}) => node)
+      .filter((node) => node.agendaId === agendaItem.id)
+      .sort((a, b) => a.createdAt > b.createdAt ? 1 : -1);
+
+    this.setState({
+      agendaProjects
+    });
+  }
+
+  render() {
+    const {
+      facilitatorName,
+      gotoNext,
+      hideMoveMeetingControls,
+      localPhaseItem,
+      myTeamMemberId,
+      styles,
+      viewer: {team}
+    } = this.props;
+    const {agendaProjects} = this.state;
+    const {agendaItems, teamMembers} = team;
+    const agendaItem = agendaItems[localPhaseItem - 1];
+    const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id);
+    const isLast = agendaItems.length === localPhaseItem;
+    const heading = (<span>{currentTeamMember.preferredName}: <i
+      style={{color: ui.palette.warm}}
+    >“{agendaItem.content}”</i></span>);
+    return (
+      <MeetingMain>
+        <MeetingSection flexToFill paddingBottom="2rem">
+          <MeetingSection flexToFill>
+            <div className={css(styles.layout)}>
+              <div className={css(styles.prompt)}>
+                <MeetingPrompt
+                  avatar={currentTeamMember.picture}
+                  heading={heading}
+                  subHeading={'What do you need?'}
+                />
+              </div>
+              <div className={css(styles.nav)}>
+                {hideMoveMeetingControls ?
+                  <MeetingFacilitationHint>
+                    {'Waiting for'} <b>{facilitatorName}</b> {`to wrap up the ${actionMeeting.agendaitems.name}`}
+                  </MeetingFacilitationHint> :
+                  <Button
+                    buttonStyle="flat"
+                    colorPalette="cool"
+                    icon="arrow-circle-right"
+                    iconPlacement="right"
+                    key={`agendaItem${localPhaseItem}`}
+                    label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
+                    onClick={gotoNext}
+                    buttonSize="medium"
+                  />
+                }
+              </div>
+              <MeetingAgendaCards
+                agendaId={agendaItem.id}
+                myTeamMemberId={myTeamMemberId}
+                outcomes={agendaProjects}
+                teamId={team.id}
               />
             </div>
-            <div className={css(styles.nav)}>
-              {hideMoveMeetingControls ?
-                <MeetingFacilitationHint>
-                  {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to wrap up the ${actionMeeting.agendaitems.name}`}
-                </MeetingFacilitationHint> :
-                <Button
-                  buttonStyle="flat"
-                  colorPalette="cool"
-                  icon="arrow-circle-right"
-                  iconPlacement="right"
-                  key={`agendaItem${localPhaseItem}`}
-                  label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
-                  onClick={gotoNext}
-                  buttonSize="medium"
-                />
-              }
-            </div>
-            <MeetingAgendaCardsContainer
-              agendaId={agendaItem.id}
-              myTeamMemberId={self.id}
-              teamId={team.id}
-            />
-          </div>
+          </MeetingSection>
+          {/* */}
         </MeetingSection>
         {/* */}
-      </MeetingSection>
-      {/* */}
-    </MeetingMain>
-  );
-};
+      </MeetingMain>
+    );
+  }
+}
 
 MeetingAgendaItems.propTypes = {
-  agendaItem: PropTypes.object.isRequired,
+  facilitatorName: PropTypes.string.isRequired,
   gotoNext: PropTypes.func.isRequired,
   hideMoveMeetingControls: PropTypes.bool,
-  isLast: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
-  members: PropTypes.array.isRequired,
+  myTeamMemberId: PropTypes.string.isRequired,
   styles: PropTypes.object.isRequired,
-  team: PropTypes.object
+  viewer: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -125,12 +152,31 @@ export default createFragmentContainer(
   graphql`
     fragment MeetingAgendaItems_viewer on User {
       team(teamId: $teamId) {
-        activeFacilitator
+        id
+        agendaItems {
+          id
+          content
+          isComplete
+          sortOrder
+          teamMemberId
+          teamMember {
+            id
+            preferredName
+            picture
+          }
+        }
+        teamMembers(sortBy: "checkInOrder") {
+          id
+          picture
+          preferredName
+        }
       }
       projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
         edges {
           node {
-            id content
+            id 
+            agendaId
+            content
             createdAt
             createdBy
             integration {

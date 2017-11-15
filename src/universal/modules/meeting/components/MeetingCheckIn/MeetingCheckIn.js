@@ -9,7 +9,6 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -18,6 +17,7 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 const MeetingCheckin = (props) => {
   const {
     atmosphere,
+    facilitatorName,
     gotoNext,
     localPhaseItem,
     showMoveMeetingControls,
@@ -59,7 +59,7 @@ const MeetingCheckin = (props) => {
                 {nextMemberName ?
                   <span>{'Waiting for'} <b>{currentMember.preferredName}</b> {'to share with the team'}</span> :
                   <span>{'Waiting for'}
-                    <b>{getFacilitatorName(team, teamMembers)}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
+                    <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
                 }
               </MeetingFacilitationHint>
             </div>
@@ -72,6 +72,7 @@ const MeetingCheckin = (props) => {
 
 MeetingCheckin.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  facilitatorName: PropTypes.string.isRequired,
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   showMoveMeetingControls: PropTypes.bool,

@@ -3,7 +3,6 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
-import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 
 const meetingAgendaLastCallQuery = `
 query {
@@ -32,16 +31,15 @@ const mapStateToProps = (state, props) => {
 const MeetingAgendaLastCallContainer = (props) => {
   const {
     agendaItemCount,
+    facilitatorName,
     gotoNext,
-    hideMoveMeetingControls,
-    members,
-    team
+    hideMoveMeetingControls
   } = props;
   return (
     <MeetingAgendaLastCall
       agendaItemCount={agendaItemCount}
       gotoNext={gotoNext}
-      facilitatorName={getFacilitatorName(team, members)}
+      facilitatorName={facilitatorName}
       hideMoveMeetingControls={hideMoveMeetingControls}
     />
   );
@@ -49,11 +47,9 @@ const MeetingAgendaLastCallContainer = (props) => {
 
 MeetingAgendaLastCallContainer.propTypes = {
   agendaItemCount: PropTypes.number,
+  facilitatorName: PropTypes.string.isRequired,
   gotoNext: PropTypes.func,
-  hideMoveMeetingControls: PropTypes.bool,
-  isFacilitating: PropTypes.bool,
-  members: PropTypes.array,
-  team: PropTypes.object
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 export default connect(mapStateToProps)(MeetingAgendaLastCallContainer);

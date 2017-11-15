@@ -8,7 +8,6 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import {MEETING} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
-import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {createFragmentContainer} from 'react-relay';
 
@@ -20,9 +19,9 @@ class MeetingUpdates extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {viewer: {team: {projects: oldProjects}}, localPhaseItem: oldItem} = this.props;
-    const {viewer: {team: {projects}}, localPhaseItem} = nextProps;
-    if (projects !== oldProjects || localPhaseItem !== oldItem) {
+    const {viewer: {projects: oldProjects}, localPhaseItem: oldLocalPhaseItem} = this.props;
+    const {viewer: {projects}, localPhaseItem} = nextProps;
+    if (projects !== oldProjects || localPhaseItem !== oldLocalPhaseItem) {
       this.filterProjects(nextProps);
     }
   }
@@ -38,14 +37,13 @@ class MeetingUpdates extends Component {
 
   render() {
     const {
+      facilitatorName,
       gotoNext,
       localPhaseItem,
       members,
       showMoveMeetingControls,
-      styles,
-      viewer
+      styles
     } = this.props;
-    const {team} = viewer;
     const {projects} = this.state;
     const self = members.find((m) => m.isSelf);
     const currentTeamMember = members[localPhaseItem - 1];
@@ -68,7 +66,7 @@ class MeetingUpdates extends Component {
               /> :
               <MeetingFacilitationHint>
                 {isLastMember ?
-                  <span>{'Waiting for '}<b>{getFacilitatorName(team, members)}</b> {`to advance to the ${nextPhaseName}`}</span> :
+                  <span>{'Waiting for '}<b>{facilitatorName}</b> {`to advance to the ${nextPhaseName}`}</span> :
                   <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {`to give ${actionMeeting.updates.name}`}</span>
                 }
               </MeetingFacilitationHint>
@@ -84,11 +82,11 @@ class MeetingUpdates extends Component {
 }
 
 MeetingUpdates.propTypes = {
+  facilitatorName: PropTypes.string.isRequired,
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
-  onFacilitatorPhase: PropTypes.bool,
   showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
@@ -114,9 +112,6 @@ export default createFragmentContainer(
   withStyles(styleThunk)(MeetingUpdates),
   graphql`
     fragment MeetingUpdates_viewer on User {
-      team(teamId: $teamId) {
-        activeFacilitator
-      }
       projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
         edges {
           node {

@@ -45,6 +45,7 @@ import {
 } from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 
 const meetingContainerQuery = `
 query{
@@ -357,14 +358,7 @@ class MeetingContainer extends Component {
     const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, members, agendaItems);
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
     const showMoveMeetingControls = isFacilitating || isBehindMeeting;
-
-    const phaseStateProps = { // DRY
-      facilitatorPhaseItem,
-      localPhaseItem,
-      members,
-      onFacilitatorPhase: facilitatorPhase === localPhase,
-      team
-    };
+    const facilitatorName = getFacilitatorName(activeFacilitator, members);
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
         <Sidebar
@@ -383,57 +377,59 @@ class MeetingContainer extends Component {
               gotoNext={this.gotoNext}
               isFacilitating={isFacilitating}
               localPhase={localPhase}
-              {...phaseStateProps}
+              localPhaseItem={localPhaseItem}
+              team={team}
             />
             {localPhase === UPDATES &&
             <MeetingUpdatesPrompt
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
-              members={members}
+              team={team}
             />
             }
           </MeetingMainHeader>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
+          {localPhase === LOBBY && <MeetingLobby team={team} />}
           {localPhase === CHECKIN &&
           <MeetingCheckIn
+            facilitatorName={facilitatorName}
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
+            localPhaseItem={localPhaseItem}
             showMoveMeetingControls={showMoveMeetingControls}
             team={team}
-            {...phaseStateProps}
           />
           }
           {localPhase === UPDATES &&
           <MeetingUpdates
+            facilitatorName={facilitatorName}
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
+            localPhaseItem={localPhaseItem}
+            members={members}
             showMoveMeetingControls={showMoveMeetingControls}
             viewer={viewer}
-            {...phaseStateProps}
           />
           }
           {localPhase === FIRST_CALL &&
           <MeetingAgendaFirstCall
-            {...phaseStateProps}
+            facilitatorName={facilitatorName}
             gotoNext={this.gotoNext}
             hideMoveMeetingControls={hideMoveMeetingControls}
           />
           }
           {localPhase === AGENDA_ITEMS &&
           <MeetingAgendaItems
-            agendaItem={agendaItems[localPhaseItem - 1]}
-            hideMoveMeetingControls={hideMoveMeetingControls}
-            isLast={localPhaseItem === agendaItems.length}
+            facilitatorName={facilitatorName}
             gotoNext={this.gotoNext}
+            hideMoveMeetingControls={hideMoveMeetingControls}
             localPhaseItem={localPhaseItem}
-            members={members}
-            team={team}
+            myTeamMemberId={myTeamMemberId}
             viewer={viewer}
           />
           }
           {localPhase === LAST_CALL &&
           <MeetingAgendaLastCallContainer
-            {...phaseStateProps}
+            facilitatorName={facilitatorName}
             gotoNext={this.gotoNext}
             hideMoveMeetingControls={hideMoveMeetingControls}
           />
@@ -466,15 +462,7 @@ export default createFragmentContainer(
       team(teamId: $teamId) {
         agendaItems {
           id
-          content
           isComplete
-          sortOrder
-          teamMemberId
-          teamMember {
-            id
-            preferredName
-            picture
-          }
         }
         checkInGreeting {
           content
@@ -500,10 +488,14 @@ export default createFragmentContainer(
           isLead
           userId
         }
+        ...MeetingLobby_team
+        ...MeetingAvatarGroup_team
+        ...MeetingUpdatesPrompt_team
         ...MeetingCheckIn_team
         ...Sidebar_team
       }
       ...MeetingUpdates_viewer
+      ...MeetingAgendaItems_viewer
     }
   `
 );

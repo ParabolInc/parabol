@@ -1,6 +1,8 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
+import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
@@ -13,11 +15,10 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import makeHref from 'universal/utils/makeHref';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import {withRouter} from 'react-router-dom';
 
 const MeetingLobby = (props) => {
   const {atmosphere, history, onError, onCompleted, submitMutation, submitting, team, styles} = props;
-  const {id: teamId, name: teamName} = team;
+  const {teamId, teamName} = team;
   const onStartMeetingClick = () => {
     submitMutation();
     StartMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
@@ -126,4 +127,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingLobby))));
+export default createFragmentContainer(
+  withRouter(withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingLobby)))),
+  graphql`
+    fragment MeetingLobby_team on Team {
+      teamId: id
+      teamName: name
+    }
+  `
+);

@@ -12,6 +12,7 @@ import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
+import {createFragmentContainer} from 'react-relay';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -28,15 +29,14 @@ const MeetingAvatarGroup = (props) => {
   const {
     atmosphere,
     avatars,
-    facilitatorPhaseItem,
     gotoItem,
     isFacilitating,
     localPhase,
     localPhaseItem,
-    onFacilitatorPhase,
     styles,
-    team: {id: teamId}
+    team: {id: teamId, facilitatorPhase, facilitatorPhaseItem}
   } = props;
+  const onFacilitatorPhase = facilitatorPhase === localPhase;
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES;
   return (
     <div className={css(styles.meetingAvatarGroupRoot)}>
@@ -121,16 +121,12 @@ const MeetingAvatarGroup = (props) => {
 MeetingAvatarGroup.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   avatars: PropTypes.array,
-  facilitatorPhaseItem: PropTypes.number,
   gotoItem: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
-  onFacilitatorPhase: PropTypes.bool,
   styles: PropTypes.object,
-  team: PropTypes.shape({
-    id: PropTypes.string.isRequired
-  })
+  team: PropTypes.object.isRequired
 };
 
 const borderDefault = appTheme.palette.mid20a;
@@ -216,4 +212,11 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup));
+export default createFragmentContainer(
+  withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup)),
+  graphql`
+    fragment MeetingAvatarGroup_team on Team {
+      facilitatorPhase
+      facilitatorPhaseItem
+    }`
+);
