@@ -46,7 +46,7 @@ export default {
   owner: {
     display: 'flex',
     alignItems: 'center',
-    paddingTop: '.25rem'
+    paddingTop: '.5rem'
   },
   ownerAvatar: {
     borderRadius: '100%',

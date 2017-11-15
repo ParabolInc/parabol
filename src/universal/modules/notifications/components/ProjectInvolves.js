@@ -50,6 +50,11 @@ const ProjectInvolves = (props) => {
   const action = involvementWord[involvement];
   const contentState = convertFromRaw(JSON.parse(content));
   const editorState = EditorState.createWithContent(contentState, editorDecorators);
+  const projectStyles = css(
+    styles.projectListView,
+    styles[status],
+    tags.includes('private') && styles.private
+  );
   return (
     <Row compact>
       <div className={css(styles.icon)}>
@@ -65,9 +70,9 @@ const ProjectInvolves = (props) => {
           <span className={css(styles.messageVar, styles.notifLink)} onClick={gotoBoard} title={`Go to ${teamName}’s Board`}>
             {teamName}
           </span>
-          <span>{'.'}</span>
+          <span>{':'}</span>
         </div>
-        <div className={css(styles.projectListView, styles[status])}>
+        <div className={projectStyles}>
           <Editor
             readOnly
             editorState={editorState}
@@ -148,6 +153,10 @@ const styleThunk = () => ({
 
   [FUTURE]: {
     borderColor: labels.projectStatus[FUTURE].color
+  },
+
+  private: {
+    backgroundColor: ui.privateCardBgColor
   }
 });
 

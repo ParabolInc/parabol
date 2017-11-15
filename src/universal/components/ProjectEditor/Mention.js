@@ -4,7 +4,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 const style = {
   backgroundColor: appTheme.palette.cool20l,
-  color: appTheme.palette.cool10d,
+  color: appTheme.palette.cool,
   fontWeight: 700
 };
 

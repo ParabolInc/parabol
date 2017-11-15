@@ -137,7 +137,7 @@ const ui = {
 
   // Private projects
   // ---------------------------------------------------------------------------
-  privateCardBgColor: appTheme.palette.light60l,
+  privateCardBgColor: appTheme.palette.light50l,
 
   // Avatars
   // ---------------------------------------------------------------------------
