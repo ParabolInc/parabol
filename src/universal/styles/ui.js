@@ -274,6 +274,7 @@ const ui = {
   // Email
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
+  emailBodyColor: '#FFFFFF',
   emailFontFamily: '"Karla", "Helvetica Neue", serif',
   emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
