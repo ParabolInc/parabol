@@ -45,6 +45,12 @@ const makeCustomLoader = (batchFn, options) => {
 //  }
 //  return obj;
 // };
+const primeStandardLoader = (loader, items) => {
+  items.forEach((item) => {
+    loader.prime(item.id, item);
+  })
+};
+
 
 export default class RethinkDataLoader {
   constructor(authToken, dataloaderOptions = {}) {
@@ -55,19 +61,9 @@ export default class RethinkDataLoader {
       const r = getRethink();
       const orgs = await r.table('Organization')
         .getAll(r.args(userIds), {index: 'orgUsers'});
-      orgs.forEach((org) => {
-        this.organizations.prime(org.id, org);
-      });
+      primeStandardLoader(this.organizations, orgs);
       return userIds.map((userId) => {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
-      });
-    }, this.dataloaderOptions);
-    this.projectsByAgendaId = makeCustomLoader(async (agendaIds) => {
-      const r = getRethink();
-      const projects = await r.table('Projects')
-        .getAll(r.args(agendaIds), {index: 'agendaId'});
-      return agendaIds.map((agendaId) => {
-        return projects.filter((project) => project.agendaId === agendaId);
       });
     }, this.dataloaderOptions);
     this.projectsByTeamId = makeCustomLoader(async (teamIds) => {
@@ -79,7 +75,7 @@ export default class RethinkDataLoader {
           .contains('private').and(project('userId').ne(userId))
           .or(project('tags').contains('archived'))
           .not());
-      // cannot prime by agendaId because this doesn't fetch private or archived things
+      primeStandardLoader(this.projects, projects);
       return teamIds.map((teamId) => {
         return projects.filter((project) => project.teamId === teamId);
       });
@@ -90,6 +86,7 @@ export default class RethinkDataLoader {
       const projects = await r.table('Project')
         .getAll(userId, {index: 'userId'})
         .filter((project) => project('tags').contains('archived').not());
+      primeStandardLoader(this.projects, projects);
       return userIds.map(() => projects);
     }, this.dataloaderOptions);
     this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
@@ -97,9 +94,7 @@ export default class RethinkDataLoader {
       const teamMembers = await r.table('TeamMember')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter({isNotRemoved: true});
-      teamMembers.forEach((teamMember) => {
-        this.teamMembers.prime(teamMember.id, teamMember);
-      });
+      primeStandardLoader(this.teamMembers, teamMembers);
       return teamIds.map((teamId) => {
         return teamMembers.filter((teamMember) => teamMember.teamId === teamId);
       });
@@ -109,9 +104,7 @@ export default class RethinkDataLoader {
       const agendaItems = await r.table('AgendaItem')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter({isActive: true});
-      agendaItems.forEach((agendaItem) => {
-        this.agendaItems.prime(agendaItem.id, agendaItem);
-      });
+      primeStandardLoader(this.agendaItems, agendaItems);
       return teamIds.map((teamId) => {
         return agendaItems.filter((agendaItem) => agendaItem.teamId === teamId);
       });
@@ -123,9 +116,10 @@ export default class RethinkDataLoader {
   }
 
   agendaItems = makeStandardLoader('AgendaItem');
-  users = makeStandardLoader('User');
   organizations = makeStandardLoader('Organization');
+  projects = makeStandardLoader('Project');
   teams = makeStandardLoader('Team');
   teamMembers = makeStandardLoader('TeamMember');
+  users = makeStandardLoader('User');
 }
 

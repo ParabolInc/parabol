@@ -16,22 +16,14 @@ export default {
     teamId: {
       type: GraphQLID,
       description: 'The unique team ID'
-    },
-    agendaId: {
-      type: GraphQLID,
-      description: 'The ID of the agenda item'
     }
   },
-  async resolve(source, {agendaId, teamId}, {authToken, getDataLoader}) {
+  async resolve(source, {teamId}, {authToken, getDataLoader}) {
     // AUTH
     const userId = getUserId(authToken);
     const dataLoader = getDataLoader();
     let projects;
-    if (agendaId) {
-      const agendaItem = await dataLoader.agendaItems.load(agendaId);
-      requireSUOrTeamMember(authToken, agendaItem.teamId);
-      projects = await dataLoader.projectsByAgendaId.load(agendaId);
-    } else if (teamId) {
+    if (teamId) {
       requireSUOrTeamMember(authToken, teamId);
       projects = await dataLoader.projectsByTeamId.load(teamId);
     } else {
