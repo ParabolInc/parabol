@@ -12,6 +12,7 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
 
 class MeetingAgendaItems extends Component {
   state = {};
@@ -94,7 +95,8 @@ class MeetingAgendaItems extends Component {
                 outcomes={agendaProjects}
                 teamId={team.id}
               />
-            </div>
+            <EditorHelpModalContainer />
+          </div>
           </MeetingSection>
           {/* */}
         </MeetingSection>

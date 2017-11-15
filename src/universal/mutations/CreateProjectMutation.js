@@ -5,8 +5,8 @@ import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
-  mutation CreateProjectMutation($newProject: ProjectInput!) {
-    createProject(newProject: $newProject) {
+  mutation CreateProjectMutation($newProject: ProjectInput!, $area: AreaEnum) {
+    createProject(newProject: $newProject, area: $area) {
       project {
         id
         agendaId
@@ -39,11 +39,11 @@ const mutation = graphql`
   }
 `;
 
-const CreateProjectMutation = (environment, newProject, onError, onCompleted) => {
+const CreateProjectMutation = (environment, newProject, area, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {newProject},
+    variables: {area, newProject},
     updater: (store) => {
       const project = store.getRootField('createProject').getLinkedRecord('project');
       handleProjectConnections(store, viewerId, project);

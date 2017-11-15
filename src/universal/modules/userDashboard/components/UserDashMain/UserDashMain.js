@@ -40,7 +40,6 @@ const UserDashMain = (props) => {
         </div>
       </DashContent>
     </DashMain>
-
   );
 };
 

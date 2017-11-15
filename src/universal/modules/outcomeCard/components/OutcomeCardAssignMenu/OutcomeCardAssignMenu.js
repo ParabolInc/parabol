@@ -7,6 +7,7 @@ import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 const OutcomeCardAssignMenu = (props) => {
   const {
     atmosphere,
+    area,
     closePortal,
     projectId,
     ownerId,
@@ -21,7 +22,7 @@ const OutcomeCardAssignMenu = (props) => {
       id: projectId,
       teamMemberId: newOwner
     };
-    UpdateProjectMutation(atmosphere, updatedProject);
+    UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
   const itemFactory = () => {
@@ -49,6 +50,7 @@ const OutcomeCardAssignMenu = (props) => {
 };
 
 OutcomeCardAssignMenu.propTypes = {
+  area: PropTypes.string.isRequired,
   atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
   projectId: PropTypes.string.isRequired,

@@ -61,7 +61,7 @@ class MeetingAgendaCards extends Component {
       sortOrder: 0,
       agendaId
     };
-    CreateProjectMutation(atmosphere, newProject);
+    CreateProjectMutation(atmosphere, newProject, MEETING);
   }
 
   render() {

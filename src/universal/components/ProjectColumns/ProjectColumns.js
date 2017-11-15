@@ -6,6 +6,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {columnArray, MEETING, meetingColumnArray} from 'universal/utils/constants';
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
 
 class ProjectColumns extends Component {
   componentWillMount() {
@@ -60,7 +61,8 @@ class ProjectColumns extends Component {
             />)
           )}
         </div>
-      </div>
+      <EditorHelpModalContainer />
+    </div>
     );
   }
 }

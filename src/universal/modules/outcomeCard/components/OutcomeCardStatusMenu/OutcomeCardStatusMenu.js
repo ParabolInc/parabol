@@ -16,7 +16,7 @@ const statusItems = labels.projectStatus.slugs.slice();
 
 class OutcomeCardStatusMenu extends Component {
   makeAddTagToProject = (tag) => () => {
-    const {atmosphere, outcome: {id: projectId}, editorState} = this.props;
+    const {area, atmosphere, outcome: {id: projectId}, editorState} = this.props;
     const contentState = editorState.getCurrentContent();
     const newContent = addTagToProject(contentState, tag);
     const rawContentStr = JSON.stringify(convertToRaw(newContent));
@@ -24,7 +24,7 @@ class OutcomeCardStatusMenu extends Component {
       id: projectId,
       content: rawContentStr
     };
-    UpdateProjectMutation(atmosphere, updatedProject);
+    UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
   deleteOutcome = () => {
@@ -116,6 +116,7 @@ class OutcomeCardStatusMenu extends Component {
 
 OutcomeCardStatusMenu.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  area: PropTypes.string.isRequired,
   closePortal: PropTypes.func.isRequired,
   editorState: PropTypes.object,
   outcome: PropTypes.object,

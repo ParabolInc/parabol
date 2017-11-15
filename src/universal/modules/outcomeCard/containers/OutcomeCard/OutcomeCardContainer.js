@@ -122,7 +122,7 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state;
-    const {atmosphere, outcome: {id: projectId, teamId}, contentState: initialContentState} = this.props;
+    const {area, atmosphere, outcome: {id: projectId}, contentState: initialContentState} = this.props;
     const contentState = editorState.getCurrentContent();
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
       // it's possible the user calls update, then delete, then the update timeout fires, so clear it here
@@ -135,7 +135,7 @@ class OutcomeCardContainer extends Component {
           id: projectId,
           content: JSON.stringify(convertToRaw(contentState))
         };
-        UpdateProjectMutation(atmosphere, updatedProject);
+        UpdateProjectMutation(atmosphere, updatedProject, area);
         this.updateTimer = undefined;
       }, 15);
     }
