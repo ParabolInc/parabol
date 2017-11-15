@@ -11,7 +11,6 @@ import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import {PROJECT_CREATED} from 'universal/utils/constants';
 import getPubSub from 'server/utils/getPubSub';
-import getPubSub from 'server/utils/getPubSub';
 import AreaEnum from 'server/graphql/types/AreaEnum';
 
 export default {
@@ -31,9 +30,8 @@ export default {
     const r = getRethink();
     const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
-
-
     const now = new Date();
+
     // AUTH
     const myUserId = getUserId(authToken);
     // format of id is teamId::taskIdPart
@@ -83,8 +81,8 @@ export default {
 
     getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated, operationId});
     getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated, operationId});
-    return projectCreated;
 
+    // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
     const changeAuthorId = `${myUserId}::${teamId}`;
     const notificationsToAdd = [];
@@ -123,7 +121,7 @@ export default {
         getPubSub().publish(`${NOTIFICATIONS_ADDED}.${notificationUserId}`, {notificationsAdded});
       });
     }
-    return {project};
+    return projectCreated;
   }
 };
 

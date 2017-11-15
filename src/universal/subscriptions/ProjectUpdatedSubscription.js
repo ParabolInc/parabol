@@ -1,4 +1,5 @@
 import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
+import {handleEditingFromPayload} from 'universal/mutations/EditProjectMutation';
 
 const subscription = graphql`
   subscription ProjectUpdatedSubscription($teamIds: [ID!]) {
@@ -31,6 +32,14 @@ const subscription = graphql`
           preferredName
         }
       }
+      editor {
+        projectId
+        editing
+        user {
+          userId: id
+          preferredName
+        }
+      }
     }
   }
 `;
@@ -45,8 +54,12 @@ const ProjectUpdatedSubscription = (environment, queryVariables, subParams) => {
     subscription,
     variables,
     updater: (store) => {
-      const project = store.getRootField('projectUpdated').getLinkedRecord('project');
+      const payload = store.getRootField('projectUpdated');
+      const project = payload.getLinkedRecord('project');
       handleProjectConnections(store, viewerId, project);
+
+      const editor = payload.getLinkedRecord('editor');
+      handleEditingFromPayload(store, editor);
     }
   };
 };

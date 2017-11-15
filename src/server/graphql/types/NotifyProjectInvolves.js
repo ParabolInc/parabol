@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {Team} from 'server/graphql/models/Team/teamSchema';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import ProjectInvolvementType from 'server/graphql/types/ProjectInvolvementType';
-import RelayProject from 'server/graphql/types/RelayProject';
+import Project from 'server/graphql/types/Project';
 import TeamMember from 'server/graphql/types/TeamMember';
 
 const NotifyProjectInvolves = new GraphQLObjectType({
@@ -21,7 +21,7 @@ const NotifyProjectInvolves = new GraphQLObjectType({
       description: 'The projectId that now involves the userId'
     },
     project: {
-      type: RelayProject,
+      type: Project,
       description: 'The project that now involves the userId',
       resolve: ({projectId}) => {
         // FIXME after merging in the dataloader PR
