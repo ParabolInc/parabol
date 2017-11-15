@@ -7,9 +7,10 @@ const generateMeetingRoute = (_nextPhaseItem, _nextPhase, props) => {
   let nextPhaseItem = _nextPhaseItem;
   let nextPhaseInfo = actionMeeting[nextPhase];
 
-  const {isFacilitating, viewer} = props;
+  const {myTeamMemberId, viewer} = props;
   const {team} = viewer;
-  const {meetingPhase} = team;
+  const {activeFacilitator, meetingPhase} = team;
+  const isFacilitating = myTeamMemberId === activeFacilitator;
   const meetingPhaseInfo = actionMeeting[meetingPhase];
   const maxIndex = isFacilitating ? meetingPhaseInfo.index + 1 : meetingPhaseInfo.index;
   if (nextPhaseInfo.index > maxIndex) return undefined;

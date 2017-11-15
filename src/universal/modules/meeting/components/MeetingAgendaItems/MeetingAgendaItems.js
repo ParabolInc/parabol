@@ -13,6 +13,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import {createFragmentContainer} from 'react-relay';
 
 const MeetingAgendaItems = (props) => {
   const {
@@ -29,11 +30,8 @@ const MeetingAgendaItems = (props) => {
   if (!agendaItem) {
     return <LoadingView />;
   }
-  const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
+  const currentTeamMember = members.find((m) => m.id === agendaItem.teamMember.id);
   const self = members.find((m) => m.isSelf);
-  if (!currentTeamMember || !self) {
-    return <LoadingView />;
-  }
   const heading = <span>{currentTeamMember.preferredName}: <i style={{color: ui.palette.warm}}>“{agendaItem.content}”</i></span>;
   return (
     <MeetingMain>
@@ -122,4 +120,43 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingAgendaItems);
+export default createFragmentContainer(
+  withStyles(styleThunk)(MeetingAgendaItems),
+  graphql`
+    fragment MeetingAgendaItems_viewer on User {
+      team(teamId: $teamId) {
+        activeFacilitator
+      }
+      projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
+        edges {
+          node {
+            id content
+            createdAt
+            createdBy
+            integration {
+              service
+              nameWithOwner
+              issueNumber
+            }
+            status
+            tags
+            teamMemberId
+            updatedAt
+            sortOrder
+            updatedAt
+            userId
+            teamId
+            team {
+              id
+              name
+            }
+            teamMember {
+              id
+              picture
+              preferredName
+            }
+          }
+        }
+      }
+    }`
+);

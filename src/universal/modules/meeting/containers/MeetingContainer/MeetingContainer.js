@@ -409,6 +409,7 @@ class MeetingContainer extends Component {
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             showMoveMeetingControls={showMoveMeetingControls}
+            viewer={viewer}
             {...phaseStateProps}
           />
           }
@@ -431,12 +432,13 @@ class MeetingContainer extends Component {
           {localPhase === AGENDA_ITEMS &&
           <MeetingAgendaItems
             agendaItem={agendaItems[localPhaseItem - 1]}
+            hideMoveMeetingControls={hideMoveMeetingControls}
             isLast={localPhaseItem === agendaItems.length}
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
             members={members}
             team={team}
-            hideMoveMeetingControls={hideMoveMeetingControls}
+            viewer={viewer}
           />
           }
           {localPhase === LAST_CALL &&
@@ -508,6 +510,7 @@ export default createFragmentContainer(
           isLead
           userId
         }
+        ...MeetingCheckIn_team
       }
       ...MeetingUpdates_viewer
     }

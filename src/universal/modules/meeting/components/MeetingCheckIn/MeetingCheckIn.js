@@ -1,7 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
 import MeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/MeetingCheckInPrompt';
@@ -14,14 +14,12 @@ import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 
 const MeetingCheckin = (props) => {
   const {
     atmosphere,
     gotoNext,
     localPhaseItem,
-    members,
     showMoveMeetingControls,
     submitMutation,
     submitting,
@@ -31,24 +29,6 @@ const MeetingCheckin = (props) => {
     team
   } = props;
 
-  const {
-    id: teamId,
-    checkInGreeting,
-    checkInQuestion,
-    facilitatorPhaseItem,
-    tier
-  } = team;
-
-  if (localPhaseItem > members.length) {
-    return (
-      <LoadingView>
-        {(localPhaseItem > facilitatorPhaseItem) &&
-          <div>(Are you sure you have there are that many team members?)</div>
-        }
-      </LoadingView>
-    );
-  }
-
   const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
     if (submitting) return;
     submitMutation();
@@ -56,34 +36,30 @@ const MeetingCheckin = (props) => {
     gotoNext();
   };
 
+  const {teamMembers} = team;
   const memberIdx = localPhaseItem - 1;
-  const currentMember = members[memberIdx];
-  const nextMember = memberIdx < members.length && members[memberIdx + 1];
-  const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
-  const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
+  const currentMember = teamMembers[memberIdx];
+  const nextMemberName = teamMembers[localPhaseItem] && teamMembers[localPhaseItem].preferredName;
 
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="1rem">
         <MeetingCheckInPrompt
-          avatar={currentAvatar}
-          checkInQuestion={checkInQuestion}
-          canEdit={tierSupportsUpdateCheckInQuestion(tier)}
-          currentName={currentName}
-          greeting={checkInGreeting}
-          teamId={teamId}
+          localPhaseItem={localPhaseItem}
+          team={team}
         />
         <div className={css(styles.base)}>
           {showMoveMeetingControls ?
             <CheckInControls
               checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
-              nextMember={nextMember}
+              nextMemberName={nextMemberName}
             /> :
             <div className={css(styles.hint)}>
               <MeetingFacilitationHint>
-                {nextMember ?
+                {nextMemberName ?
                   <span>{'Waiting for'} <b>{currentMember.preferredName}</b> {'to share with the team'}</span> :
-                  <span>{'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
+                  <span>{'Waiting for'}
+                    <b>{getFacilitatorName(team, teamMembers)}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
                 }
               </MeetingFacilitationHint>
             </div>
@@ -98,8 +74,6 @@ MeetingCheckin.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
-  members: PropTypes.array,
-  onFacilitatorPhase: PropTypes.bool,
   showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
   team: PropTypes.object,
@@ -134,4 +108,14 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingCheckin)));
+export default createFragmentContainer(
+  withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingCheckin))),
+  graphql`
+    fragment MeetingCheckIn_team on Team {
+      ...MeetingCheckInPrompt_team
+      teamMembers(sortBy: "checkInOrder") {
+        preferredName
+      }
+    }`
+);
+

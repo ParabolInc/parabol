@@ -1,12 +1,13 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 
 
-const MeetingCheckInGreeting = ({currentName, greeting, styles}) => (
+const MeetingCheckInGreeting = ({currentName, team: {greeting}, styles}) => (
   <div style={{color: appTheme.palette.warm}}>
     <span
       className={css(styles.greeting)}
@@ -35,4 +36,13 @@ const greetingStyleThunk = () => ({
   }
 });
 
-export default withStyles(greetingStyleThunk)(MeetingCheckInGreeting);
+export default createFragmentContainer(
+  withStyles(greetingStyleThunk)(MeetingCheckInGreeting),
+  graphql`
+    fragment MeetingCheckInGreeting_team on Team {
+      greeting: checkInGreeting {
+        content
+        language
+      }
+    }`
+);
