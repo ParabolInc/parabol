@@ -1,4 +1,4 @@
-import fromGlobalId from 'graphql-relay';
+import {fromGlobalId} from 'graphql-relay';
 
 const maybeFromGlobalId = (maybeGlobalId = '', expectedType) => {
   const {id, type} = fromGlobalId(maybeGlobalId);

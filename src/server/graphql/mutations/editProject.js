@@ -29,8 +29,11 @@ export default {
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
+    // grab the project to see if it's private, don't share with other if it is
+    const project = await dataLoader.projects.load(dbId);
     const mutatorId = socketId;
     const projectUpdated = {
+      project,
       editor: {
         userId,
         projectId,

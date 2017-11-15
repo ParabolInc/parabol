@@ -32,7 +32,6 @@ TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,
   teamId: PropTypes.string.isRequired,
   teamMemberFilterId: PropTypes.string,
-  userId: PropTypes.string.isRequired,
   viewer: PropTypes.object.isRequired
 };
 
@@ -43,6 +42,7 @@ export default createFragmentContainer(
       projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
         edges {
           node {
+            id
             status
             ...DraggableProject_project
           }

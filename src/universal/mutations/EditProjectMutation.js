@@ -37,14 +37,17 @@ const handleEditing = (store, editing, projectId, editorDetails) => {
         newProjectEditors.push(projectEditor);
       }
     }
-    project.setLinkedRecords(newProjectEditors, 'editors');
   }
+  project.setLinkedRecords(newProjectEditors, 'editors');
 };
 
 export const handleEditingFromPayload = (store, editorPayload) => {
   const editing = editorPayload.getValue('editing');
   const projectId = editorPayload.getValue('projectId');
   const editorDetails = editorPayload.getLinkedRecord('user');
+
+  // manual alias: https://github.com/facebook/relay/issues/2196
+  editorDetails.setValue(editorDetails.getValue('id'), 'userId');
   handleEditing(store, editing, projectId, editorDetails);
 };
 

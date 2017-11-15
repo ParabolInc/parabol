@@ -14,7 +14,7 @@ const indexResults = (results, indexField, cacheKeyFn = defaultCacheKeyFn) => {
 
 const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (results) => {
   const indexedResults = indexResults(results, indexField, cacheKeyFn);
-  //return keys.map((val) => indexedResults.get(cacheKeyFn(val)));
+  // return keys.map((val) => indexedResults.get(cacheKeyFn(val)));
   return keys.map((val) => indexedResults.get(cacheKeyFn(val)) || new Error(`Key not found : ${val}`));
 };
 

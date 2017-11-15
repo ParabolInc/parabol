@@ -12,6 +12,7 @@ import DeleteProjectMutation from 'universal/mutations/DeleteProjectMutation';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
 import mergeServerContent from 'universal/utils/mergeServerContent';
+import EditProjectMutation from 'universal/mutations/EditProjectMutation';
 
 const teamMembersQuery = `
 query {
@@ -25,7 +26,8 @@ query {
 
 const mapStateToProps = (state, props) => {
   // TODO ugly patch until we remove cashay
-  const relaySafeId = getRelaySafeProjectId(props.project.id);
+  const {projectId} = props.project;
+  const relaySafeId = getRelaySafeProjectId(projectId);
   const [teamId] = relaySafeId.split('::');
   const {teamMembers} = cashay.query(teamMembersQuery, {
     op: 'outcomeCardContainer',
@@ -122,7 +124,7 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state;
-    const {area, atmosphere, project: {id: projectId, team: {id: teamId}}, contentState: initialContentState} = this.props;
+    const {area, atmosphere, project: {projectId, team: {teamId}}, contentState: initialContentState} = this.props;
     const contentState = editorState.getCurrentContent();
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
       // it's possible the user calls update, then delete, then the update timeout fires, so clear it here
@@ -152,14 +154,8 @@ class OutcomeCardContainer extends Component {
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
   announceEditing = (isEditing) => {
-    const {project: {id: projectId}} = this.props;
-    const [teamId] = projectId.split('::');
-    cashay.mutate('edit', {
-      variables: {
-        teamId,
-        editing: isEditing ? `Task::${projectId}` : null
-      }
-    });
+    const {atmosphere, project: {projectId}} = this.props;
+    EditProjectMutation(atmosphere, projectId, isEditing);
   };
 
   render() {
@@ -217,9 +213,9 @@ export default createFragmentContainer(
   withAtmosphere(OutcomeCardContainer),
   graphql`
     fragment OutcomeCardContainer_project on Project {
-      id
+      projectId: id
       team {
-        id
+        teamId: id
       }
       ...OutcomeCard_project
     }`

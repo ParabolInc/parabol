@@ -14,7 +14,6 @@ import appTheme from 'universal/styles/theme/theme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {MAX_INT, PERSONAL, TEAM_DASH} from 'universal/utils/constants';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const iconStyle = {
   ...ib,
@@ -117,16 +116,7 @@ class TeamArchive extends Component {
             key={key}
             area={TEAM_DASH}
             myUserId={userId}
-            outcome={{
-              ...project,
-              id: fromGlobalId(project.id).id,
-              createdAt: new Date(project.createdAt),
-              updatedAt: new Date(project.updatedAt),
-              teamMember: {
-                ...project.teamMember,
-                id: fromGlobalId(project.teamMember.id).id
-              }
-            }}
+            project={project}
           />
         </div>
       </CellMeasurer>
@@ -296,24 +286,7 @@ export default createPaginationContainer(
           cursor
           node {
             id
-            content
-            createdAt
-            integration {
-              service
-              nameWithOwner
-              issueNumber
-            }
-            status
-            tags
-            teamMemberId
-            updatedAt
-            userId
-            teamId
-            teamMember {
-              id
-              picture
-              preferredName
-            }
+            ...NullableProject_project
           }
         }
         pageInfo {
