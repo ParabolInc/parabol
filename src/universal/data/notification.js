@@ -40,8 +40,6 @@ type Notification = {
 // but they all offer an action other than to clear the notification.
 const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
   PAYMENT_REJECTED,
-  PROJECT_INVOLVES,
-  PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
   TEAM_INVITE
 ]);
