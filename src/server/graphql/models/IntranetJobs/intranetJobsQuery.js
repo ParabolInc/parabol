@@ -1,4 +1,5 @@
 import {GraphQLInt, GraphQLList, GraphQLString} from 'graphql';
+import ms from 'ms';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
 import {sendBatchEmail} from 'server/email/sendEmail';
@@ -118,7 +119,7 @@ const sendBatchNotificationEmails = {
     const r = getRethink();
     const now = Date.now();
     const today = new Date(now);
-    const yesterday = new Date(now - (24 * 60 * 60 * 1000));
+    const yesterday = new Date(now - ms('1d'));
     const userNotifications = await r
       .table('Notification')
       // Only include notifications which occurred within the last day
