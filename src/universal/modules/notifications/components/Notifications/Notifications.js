@@ -31,13 +31,11 @@ const Notifications = (props) => {
     orgId: 'BkeCjMNHpZ'
   };
 
+  const clearableNotifs = notifications.edges.map(({node: notification}) => notification).filter((n) => !requiresAction(n));
   const clearAllNotifications = () =>
     Promise.all(
-      notifications.edges
-        .map(({node: notification}) => notification)
-        .filter((n) => !requiresAction(n))
+      clearableNotifs
         .map(({id}) => {
-          console.log('clearing: ', id, fromGlobalId(id))
           ClearNotificationMutation(atmosphere, fromGlobalId(id).id, nop, nop)
         })
     );
@@ -59,12 +57,11 @@ const Notifications = (props) => {
         />
       </div>
     );
-  const hasClearAbleNotifs = true;
   return (
     <UserSettingsWrapper>
       <Helmet title="My Notifications | Parabol" />
       <div className={css(styles.wrapper)}>
-        <Panel label="Notifications" controls={hasClearAbleNotifs && clearAllButton()}>
+        <Panel label="Notifications" controls={clearableNotifs.length > 0 && clearAllButton()}>
           {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
               {notifications.edges.map(({node}) =>
