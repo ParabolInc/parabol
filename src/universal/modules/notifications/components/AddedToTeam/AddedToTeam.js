@@ -40,6 +40,7 @@ const AddedToTeam = (props) => {
           colorPalette="cool"
           waiting={submitting}
           isBlock
+          aria-label="Delete this notification"
           label="Great!"
           buttonSize={ui.notificationButtonSize}
           type="submit"
