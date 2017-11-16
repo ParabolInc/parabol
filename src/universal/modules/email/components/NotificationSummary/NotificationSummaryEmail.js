@@ -14,12 +14,12 @@ export default function NotificationSummaryEmail() {
   const linkStyle = {
     color: appTheme.palette.warm
   };
-  const gutter = '48px';
+  const gutter = 48;
   return (
     <Layout>
-      <Header color={appTheme.palette.dark} />
+      <Header imgProvider="hubspot" />
       <Body align="left" verticalGutter={gutter}>
-        <div style={{padding: `0px ${gutter}`}}>
+        <div style={{padding: `0px ${gutter}px`}}>
           <p>{'Hi there, '}%recipient.name%{'!'}</p>
           <p>
             {'You have received '}
