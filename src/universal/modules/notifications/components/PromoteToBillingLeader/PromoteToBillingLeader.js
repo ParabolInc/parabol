@@ -10,6 +10,7 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import {withRouter} from 'react-router-dom';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
+import {clearNotificationLabel} from '../../helpers/constants';
 
 const PromoteToBillingLeader = (props) => {
   const {
@@ -45,6 +46,7 @@ const PromoteToBillingLeader = (props) => {
       </div>
       <div className={css(styles.widerButton)}>
         <Button
+          aria-label="Go to the Organization page"
           colorPalette="cool"
           isBlock
           label="See Organization"
@@ -56,7 +58,7 @@ const PromoteToBillingLeader = (props) => {
       </div>
       <div className={css(styles.iconButton)}>
         <Button
-          aria-label="Clear this notification"
+          aria-label={clearNotificationLabel}
           buttonSize="small"
           colorPalette="gray"
           icon="check"

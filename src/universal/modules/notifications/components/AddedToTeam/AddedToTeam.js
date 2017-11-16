@@ -10,6 +10,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import withRouter from 'react-router-dom/es/withRouter';
+import {clearNotificationLabel} from '../../helpers/constants';
 
 const AddedToTeam = (props) => {
   const {
@@ -50,7 +51,7 @@ const AddedToTeam = (props) => {
       </div>
       <div className={css(styles.iconButton)}>
         <Button
-          aria-label="Clear this notification"
+          aria-label={clearNotificationLabel}
           buttonSize={ui.notificationButtonSize}
           colorPalette="gray"
           icon="check"

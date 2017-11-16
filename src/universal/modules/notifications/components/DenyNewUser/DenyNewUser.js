@@ -9,6 +9,7 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import {clearNotificationLabel} from '../../helpers/constants';
 
 const DenyNewUser = (props) => {
   const {
@@ -41,7 +42,7 @@ const DenyNewUser = (props) => {
       </div>
       <div className={css(styles.iconButton)}>
         <Button
-          aria-label="Clear this notification"
+          aria-label={clearNotificationLabel}
           buttonSize="small"
           colorPalette="gray"
           icon="check"

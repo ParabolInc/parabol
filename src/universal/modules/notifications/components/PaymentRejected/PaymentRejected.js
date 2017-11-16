@@ -27,7 +27,7 @@ const PaymentRejected = (props) => {
       </div>
       <div className={css(styles.widestButton)}>
         <Button
-          aria-label="See Billing"
+          aria-label="Go to the billing page to update billing information"
           buttonSize={ui.notificationButtonSize}
           colorPalette="cool"
           isBlock

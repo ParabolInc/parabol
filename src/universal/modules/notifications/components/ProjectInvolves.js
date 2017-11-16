@@ -16,6 +16,7 @@ import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import {Editor, convertFromRaw, EditorState} from 'draft-js';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
+import {clearNotificationLabel} from '../helpers/constants';
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -90,11 +91,11 @@ const ProjectInvolves = (props) => {
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.widerButton)}>
           <Button
+            aria-label="Go to this board"
             colorPalette="cool"
             isBlock
             label="Go to Board"
             buttonSize={ui.notificationButtonSize}
-            title="Clear this notification"
             type="submit"
             onClick={gotoBoard}
             waiting={submitting}
@@ -102,7 +103,7 @@ const ProjectInvolves = (props) => {
         </div>
         <div className={css(styles.iconButton)}>
           <Button
-            aria-label="Clear this notification"
+            aria-label={clearNotificationLabel}
             buttonSize="small"
             colorPalette="gray"
             icon="check"

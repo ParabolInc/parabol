@@ -33,7 +33,7 @@ const RequestNewUser = (props) => {
 
   const rejectToggle = (
     <Button
-      aria-label="Decline"
+      aria-label="Decline new user"
       buttonSize="small"
       colorPalette="gray"
       isBlock
@@ -58,7 +58,7 @@ const RequestNewUser = (props) => {
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>
           <Button
-            aria-label="Accept"
+            aria-label="Accept new user"
             colorPalette="cool"
             isBlock
             label="Accept"
