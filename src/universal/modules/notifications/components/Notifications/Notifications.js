@@ -4,7 +4,6 @@ import React from 'react';
 import Panel from 'universal/components/Panel/Panel';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
-import PaymentRejected from 'universal/modules/notifications/components/PaymentRejected/PaymentRejected';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -17,12 +16,6 @@ const Notifications = (props) => {
     notifications,
     styles
   } = props;
-  const paymentFake = {
-    brand: 'Visa',
-    last4: '5555',
-    orgId: 'BkeCjMNHpZ'
-  };
-  const fakePaymentNotification = <PaymentRejected notification={paymentFake} />;
   const clearAllButton = () =>
     (
       <div style={{alignSelf: 'center', marginRight: '-.25rem', minWidth: '5.75rem'}}>
@@ -46,7 +39,6 @@ const Notifications = (props) => {
       <Helmet title="My Notifications | Parabol" />
       <div className={css(styles.wrapper)}>
         <Panel label="Notifications" controls={hasClearAbleNotifs && clearAllButton()}>
-          {!fakePaymentNotification}
           {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
               {notifications.edges.map(({node}) =>
