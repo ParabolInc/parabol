@@ -14,7 +14,7 @@ export const isSuperUser = (authToken) => {
 
 export const getIsTeamLead = (teamMemberId) => {
   const r = getRethink();
-  return r.table('TeamMember').get(teamMemberId)('isLead').run();
+  return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run();
 };
 
 export const requireAuth = (authToken) => {
