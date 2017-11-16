@@ -36,8 +36,6 @@ type Notification = {
   userIds: string[]
 };
 
-// Note: this is a conservative estimate; not all of these notifications "require" action,
-// but they all offer an action other than to clear the notification.
 const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
   PAYMENT_REJECTED,
   REQUEST_NEW_USER,
