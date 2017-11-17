@@ -26,7 +26,6 @@ const RequestNewUser = (props) => {
   } = props;
   const {id, inviterName, inviteeEmail, orgId, teamName, teamId, team} = notification;
   const {tier} = team;
-  console.log(`teamName: ${teamName}, tier: ${tier}`);
   const {id: dbNotificationId} = fromGlobalId(id);
   const acceptInvite = () => {
     submitMutation();
