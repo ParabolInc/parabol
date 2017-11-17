@@ -11,7 +11,7 @@ import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 import withRouter from 'react-router-dom/es/withRouter';
-import {PRO} from 'universal/utils/constants';
+import {MONTHLY_PRICE, PRO} from 'universal/utils/constants';
 
 const RequestNewUser = (props) => {
   const {
@@ -55,7 +55,7 @@ const RequestNewUser = (props) => {
         <b>{inviterName}</b>{' requested to add '}
         <b>{inviteeEmail}</b>{' to '}
         <span className={css(styles.messageVar, styles.notifLink)} onClick={goToTeam}>{teamName}</span>{'.'}<br />
-        {tier === PRO && <span>{'Your monthly invoice will increase by $5.'}</span>}
+        {tier === PRO && <span>{`Your monthly invoice will increase by $${MONTHLY_PRICE}.`}</span>}
       </div>
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>
