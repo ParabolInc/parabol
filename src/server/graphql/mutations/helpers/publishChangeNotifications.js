@@ -16,8 +16,10 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
   const changeAuthorId = `${changeUserId}::${project.teamId}`;
   const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldProject.content);
   const {entityMap, blocks} = JSON.parse(project.content);
-  const oldMentions = getTypeFromEntityMap('MENTION', oldEntityMap);
-  const mentions = getTypeFromEntityMap('MENTION', entityMap);
+  const wasPrivate = oldProject.tags.includes('private');
+  const isPrivate = project.tags.includes('private');
+  const oldMentions = wasPrivate ? [] : getTypeFromEntityMap('MENTION', oldEntityMap);
+  const mentions = isPrivate ? [] : getTypeFromEntityMap('MENTION', entityMap);
   // intersect the mentions to get the ones to add and remove
   const notificationsToRemove = oldMentions
     .filter((userId) => !mentions.includes(userId));
