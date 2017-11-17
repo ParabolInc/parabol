@@ -27,6 +27,7 @@ const MeetingUpdates = (props) => {
   const isLastMember = localPhaseItem === members.length;
   const nextPhaseName = actionMeeting.agendaitems.name;
   const myTeamMemberId = self && self.id;
+  const myUserId = myTeamMemberId && myTeamMemberId.split('::')[0];
   const isMyMeetingSection = myTeamMemberId === currentTeamMember.id;
 
   return (
@@ -60,6 +61,7 @@ const MeetingUpdates = (props) => {
             projects={projects}
             queryKey={queryKey}
             area={MEETING}
+            userId={myUserId}
           />
         </div>
       </MeetingSection>
