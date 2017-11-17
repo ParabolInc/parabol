@@ -88,7 +88,7 @@ export default {
     const {projectChanges, usersToIgnore} = await r({
       projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0).default(null),
       history: projectHistory,
-      usersToIgnore: area === MEETING ? r.table('TeamMember')
+      usersToIgnore: area === MEETING ? await r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           isCheckedIn: true

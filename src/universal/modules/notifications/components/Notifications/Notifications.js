@@ -16,28 +16,28 @@ import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
-const nop = () => {};
-
 const Notifications = (props) => {
   const {
     atmosphere,
     dispatch,
     notifications,
+    submitMutation,
+    onCompleted,
+    onError,
+    submitting,
     styles
   } = props;
 
-  const clearableNotifs = notifications.edges.map(({node: notification}) => notification).filter((n) => !requiresAction(n));
-  const clearAllNotifications = () =>
-    Promise.all(
-      clearableNotifs
-        // eslint-disable-next-line array-callback-return
-        .map(({id}) => {
-          ClearNotificationMutation(atmosphere, fromGlobalId(id).id, nop, nop);
-        })
-    );
+  const clearableNotifs = notifications.edges.filter(({node}) => !requiresAction(node));
+  const clearAllNotifications = () => {
+    submitMutation();
+    clearableNotifs.forEach(({node}) => {
+      ClearNotificationMutation(atmosphere, fromGlobalId(node.id).id, onError, onCompleted);
+    });
+  };
 
-  const clearAllButton = () =>
-    (<div style={{alignSelf: 'center', marginRight: '-.25rem', minWidth: '5.75rem'}}>
+  const clearAllButton = () => (
+    <div className={css(styles.clearAll)}>
       <Button
         aria-label="Clear all notifications"
         buttonSize="small"
@@ -50,13 +50,14 @@ const Notifications = (props) => {
         onClick={clearAllNotifications}
         title="Clear all notifications"
       />
-    </div>);
+    </div>
+  );
 
   return (
     <UserSettingsWrapper>
       <Helmet title="My Notifications | Parabol" />
       <div className={css(styles.wrapper)}>
-        <Panel label="Notifications" controls={clearableNotifs.length > 0 && clearAllButton()}>
+        <Panel compact label="Notifications" controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}>
           {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
               {notifications.edges.map(({node}) =>
@@ -87,9 +88,15 @@ Notifications.propTypes = {
   styles: PropTypes.object,
   submitting: PropTypes.bool.isRequired,
   submitMutation: PropTypes.func.isRequired
+
 };
 
 const styleThunk = () => ({
+  clearAll: {
+    alignSelf: 'center',
+    minWidth: '5.75rem'
+  },
+
   notificationList: {
     // Define
   },
