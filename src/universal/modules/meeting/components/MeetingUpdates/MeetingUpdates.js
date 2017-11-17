@@ -49,6 +49,8 @@ class MeetingUpdates extends Component {
     const currentTeamMember = members[localPhaseItem - 1];
     const isLastMember = localPhaseItem === members.length;
     const nextPhaseName = actionMeeting.agendaitems.name;
+    const myTeamMemberId = self && self.id;
+    const isMyMeetingSection = myTeamMemberId === currentTeamMember.id;
     return (
       <MeetingMain>
         <MeetingSection flexToFill>
@@ -73,7 +75,13 @@ class MeetingUpdates extends Component {
             }
           </div>
           <div className={css(styles.body)}>
-            <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING} />
+            <ProjectColumns
+              alignColumns="center"
+              isMyMeetingSection={isMyMeetingSection}
+              myTeamMemberId={myTeamMemberId}
+              projects={projects}
+              area={MEETING}
+            />
           </div>
         </MeetingSection>
       </MeetingMain>
