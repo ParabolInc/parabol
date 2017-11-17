@@ -34,7 +34,7 @@ const MeetingAvatarGroup = (props) => {
     localPhase,
     localPhaseItem,
     styles,
-    team: {id: teamId, facilitatorPhase, facilitatorPhaseItem}
+    team: {teamId, facilitatorPhase, facilitatorPhaseItem}
   } = props;
   const onFacilitatorPhase = facilitatorPhase === localPhase;
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES;
@@ -216,6 +216,7 @@ export default createFragmentContainer(
   withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup)),
   graphql`
     fragment MeetingAvatarGroup_team on Team {
+      teamId: id
       facilitatorPhase
       facilitatorPhaseItem
     }`

@@ -48,7 +48,6 @@ class MeetingAgendaItems extends Component {
       gotoNext,
       hideMoveMeetingControls,
       localPhaseItem,
-      myTeamMemberId,
       styles,
       viewer: {team}
     } = this.props;
@@ -91,7 +90,6 @@ class MeetingAgendaItems extends Component {
               </div>
               <MeetingAgendaCards
                 agendaId={agendaItem.id}
-                myTeamMemberId={myTeamMemberId}
                 projects={agendaProjects}
                 teamId={team.id}
               />
@@ -111,7 +109,6 @@ MeetingAgendaItems.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   hideMoveMeetingControls: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
-  myTeamMemberId: PropTypes.string.isRequired,
   styles: PropTypes.object.isRequired,
   viewer: PropTypes.object
 };

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import withHotkey from 'react-hotkey-hoc';
 import {withRouter} from 'react-router';
-import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import NullableProject from 'universal/components/NullableProject/NullableProject';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -12,11 +11,10 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
 
-const makeCards = (array, myTeamMemberId, itemStyle, handleAddProject) => {
+const makeCards = (array, myUserId, itemStyle, handleAddProject) => {
   return array.map((project) => {
     const {id} = project;
     const key = `$outcomeCard${id}`;
-    const [myUserId] = myTeamMemberId.split('::');
     return (
       <div className={css(itemStyle)} key={key}>
         <NullableProject
@@ -52,12 +50,12 @@ class MeetingAgendaCards extends Component {
   }
 
   handleAddProject = (content) => () => {
-    const {atmosphere, myTeamMemberId, teamId, agendaId} = this.props;
+    const {atmosphere, teamId, agendaId} = this.props;
+    const {userId} = atmosphere;
     const newProject = {
-      id: `${teamId}::${shortid.generate()}`,
       content,
       status: ACTIVE,
-      teamMemberId: myTeamMemberId,
+      teamMemberId: `${userId}::${teamId}`,
       sortOrder: 0,
       agendaId
     };
@@ -65,10 +63,10 @@ class MeetingAgendaCards extends Component {
   }
 
   render() {
-    const {myTeamMemberId, projects, styles} = this.props;
+    const {atmosphere: {userId}, projects, styles} = this.props;
     return (
       <div className={css(styles.root)}>
-        {makeCards(projects, myTeamMemberId, styles.item, this.handleAddProject)}
+        {makeCards(projects, userId, styles.item, this.handleAddProject)}
         {/* Input Card */}
         <div className={css(styles.item)}>
           <CreateCard
@@ -88,7 +86,6 @@ MeetingAgendaCards.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   bindHotkey: PropTypes.func,
   history: PropTypes.object.isRequired,
-  myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired

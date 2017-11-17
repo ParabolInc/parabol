@@ -8,17 +8,18 @@ import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 import TeamMember from 'server/graphql/types/TeamMember';
 import ProjectEditorDetails from 'server/graphql/types/ProjectEditorDetails';
+import {toGlobalId} from 'graphql-relay';
 
 const Project = new GraphQLObjectType({
   name: 'Project',
   description: 'A long-term project shared across the team, assigned to a single user ',
-
   fields: () => ({
     // 'The unique project id, teamId::shortid'
     id: globalIdField('Project', ({id}) => id),
     agendaId: {
       type: GraphQLID,
-      description: 'the agenda item that created this project, if any'
+      description: 'the agenda item that created this project, if any',
+      resolve: ({agendaId}) => toGlobalId('AgendaItem', agendaId)
     },
     content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
     createdAt: {
@@ -27,7 +28,8 @@ const Project = new GraphQLObjectType({
     },
     createdBy: {
       type: GraphQLID,
-      description: 'The userId that created the project'
+      description: 'The userId that created the project',
+      resolve: ({createdBy}) => toGlobalId('User', createdBy)
     },
     editors: {
       type: new GraphQLList(ProjectEditorDetails),
@@ -55,27 +57,27 @@ const Project = new GraphQLObjectType({
     },
     teamId: {
       type: GraphQLID,
-      description: 'The id of the team (indexed). Needed for subscribing to archived projects'
+      description: 'The id of the team (indexed). Needed for subscribing to archived projects',
+      resolve: ({teamId}) => toGlobalId('Team', teamId)
     },
     team: {
       type: Team,
       description: 'The team this project belongs to',
-      resolve: (source, args, {getDataLoader}) => {
-        const {teamId} = source;
+      resolve: ({teamId}, args, {getDataLoader}) => {
         return getDataLoader().teams.load(teamId);
       }
     },
     teamMember: {
       type: TeamMember,
       description: 'The team member that owns this project',
-      resolve: (source, args, {getDataLoader}) => {
-        const {teamMemberId} = source;
+      resolve: ({teamMemberId}, args, {getDataLoader}) => {
         return getDataLoader().teamMembers.load(teamMemberId);
       }
     },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team member assigned to this project, or the creator if content is null'
+      description: 'The id of the team member assigned to this project, or the creator if content is null',
+      resolve: ({teamMemberId}) => toGlobalId('TeamMember', teamMemberId)
     },
     updatedAt: {
       type: GraphQLISO8601Type,
@@ -83,7 +85,8 @@ const Project = new GraphQLObjectType({
     },
     userId: {
       type: GraphQLID,
-      description: '* The userId, index useful for server-side methods getting all projects under a user'
+      description: '* The userId, index useful for server-side methods getting all projects under a user',
+      resolve: ({userId}) => toGlobalId('User', userId)
     }
   })
 });

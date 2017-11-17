@@ -48,9 +48,7 @@ const badgeColor = {
 };
 
 const handleAddProjectFactory = (atmosphere, dispatch, history, status, teamMemberId, sortOrder) => () => {
-  const [, teamId] = teamMemberId.split('::');
   const newProject = {
-    id: `${teamId}::${shortid.generate()}`,
     status,
     teamMemberId,
     sortOrder
@@ -122,7 +120,6 @@ class ProjectColumn extends Component {
       label: team.name,
       handleClick: () => {
         const newProject = {
-          id: `${team.id}::${shortid.generate()}`,
           status,
           teamMemberId: `${userId}::${team.id}`,
           sortOrder

@@ -5,6 +5,7 @@ import getNodeById from 'universal/utils/relay/getNodeById';
 import {insertEdgeAfter} from 'universal/utils/relay/insertEdge';
 import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
 import toGlobalId from 'universal/utils/relay/toGlobalId';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 const mutation = graphql`
   mutation UpdateProjectMutation($updatedProject: ProjectInput!) {
@@ -134,7 +135,7 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
         project.setValue(val, key);
       });
       if (teamMemberId) {
-        const [newUserId] = teamMemberId.split('::');
+        const {userId: newUserId} = fromTeamMemberId(teamMemberId);
         project.setValue(newUserId, 'userId');
       }
       project.setValue('updatedAt', now.toJSON());

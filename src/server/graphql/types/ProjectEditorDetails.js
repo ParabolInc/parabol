@@ -5,7 +5,7 @@ const ProjectEditorDetails = new GraphQLObjectType({
   fields: () => ({
     userId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The userId of the person editing the project'
+      description: '(Relay) The userId of the person editing the project'
     },
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),

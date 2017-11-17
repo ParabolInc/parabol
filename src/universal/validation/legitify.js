@@ -1,3 +1,5 @@
+import {fromGlobalId as fromRelayGlobalId} from 'graphql-relay';
+
 class Legitity {
   constructor(value) {
     this.value = value;
@@ -11,6 +13,16 @@ class Legitity {
     return this;
   }
 
+  fromGlobalId(expectedType) {
+    const globalId = this.value || '';
+    const {id, type} = fromRelayGlobalId(globalId);
+    if (type === expectedType) {
+      this.value = id;
+      return this;
+    }
+    console.warn('received a databaseId', expectedType);
+    return this;
+  }
   float(msg) {
     if (!this.error && this.value !== undefined && !Number.isFinite(this.value)) {
       this.error = msg || 'float';

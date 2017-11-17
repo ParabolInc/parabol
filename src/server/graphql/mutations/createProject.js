@@ -1,17 +1,23 @@
 import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import ProjectInput from 'server/graphql/types/ProjectInput';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ASSIGNEE, MEETING, MENTIONEE, NOTIFICATIONS_ADDED, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {
+  ASSIGNEE,
+  MEETING,
+  MENTIONEE,
+  NOTIFICATIONS_ADDED,
+  PROJECT_CREATED,
+  PROJECT_INVOLVES
+} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import {PROJECT_CREATED} from 'universal/utils/constants';
-import getPubSub from 'server/utils/getPubSub';
-import AreaEnum from 'server/graphql/types/AreaEnum';
 
 export default {
   type: CreateProjectPayload,
@@ -26,7 +32,7 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newProject, area}, {authToken, socket, getDataLoader}) {
+  async resolve(source, {newProject, area}, {authToken, getDataLoader}) {
     const r = getRethink();
     const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
@@ -34,27 +40,23 @@ export default {
 
     // AUTH
     const myUserId = getUserId(authToken);
-    // format of id is teamId::taskIdPart
-    requireWebsocket(socket);
-    const [teamId] = newProject.id.split('::');
-    requireSUOrTeamMember(authToken, teamId);
 
     // VALIDATION
-    // TODO make id, status, teamMemberId required
     const schema = makeProjectSchema();
-    // ensure that content is not empty
     const {errors, data: validNewProject} = schema({content: 1, ...newProject});
     handleSchemaErrors(errors);
+    const {teamMemberId, content} = validNewProject;
+    const [userId, teamId] = teamMemberId.split('::');
+    requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const [userId] = validNewProject.teamMemberId.split('::');
-    const {content} = validNewProject;
     const {entityMap} = JSON.parse(content);
     const project = {
       ...validNewProject,
+      id: `${teamId}::${shortid.generate()}`,
       userId,
       createdAt: now,
-      createdBy: authToken.sub,
+      createdBy: myUserId,
       tags: getTagsFromEntityMap(entityMap),
       teamId,
       updatedAt: now

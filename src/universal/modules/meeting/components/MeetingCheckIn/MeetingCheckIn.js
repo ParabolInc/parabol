@@ -115,6 +115,7 @@ export default createFragmentContainer(
     fragment MeetingCheckIn_team on Team {
       ...MeetingCheckInPrompt_team
       teamMembers(sortBy: "checkInOrder") {
+        id
         preferredName
       }
     }`

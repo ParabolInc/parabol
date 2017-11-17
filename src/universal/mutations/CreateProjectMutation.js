@@ -2,7 +2,7 @@ import {commitMutation} from 'react-relay';
 import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 const mutation = graphql`
   mutation CreateProjectMutation($newProject: ProjectInput!, $area: AreaEnum) {
@@ -43,6 +43,7 @@ const mutation = graphql`
   }
 `;
 
+let tempId = 0;
 const CreateProjectMutation = (environment, newProject, area, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
@@ -53,11 +54,10 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
       handleProjectConnections(store, viewerId, project);
     },
     optimisticUpdater: (store) => {
+      const {teamMemberId} = newProject;
       const now = new Date().toJSON();
-      const [userId, teamId] = newProject.teamMemberId.split('::');
-      const globalTeamMemberId = toGlobalId('TeamMember', newProject.teamMemberId);
-      // const globalTeamId = toGlobalId('Team', teamId);
-      const teamMember = store.get(globalTeamMemberId);
+      const {userId, teamId} = fromTeamMemberId(teamMemberId);
+      const teamMember = store.get(teamMemberId);
       const team = store.get(teamId);
       // TODO remove this when we move Teams to relay
       if (!team) {
@@ -65,6 +65,7 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
       }
       const optimisticProject = {
         ...newProject,
+        id: `${teamId}::$${tempId++}`,
         teamId,
         userId,
         createdAt: now,
