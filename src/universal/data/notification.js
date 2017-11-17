@@ -42,5 +42,6 @@ const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
   TEAM_INVITE
 ]);
 
+// eslint-disable-next-line import/prefer-default-export
 export const requiresAction = (n: Notification): bool =>
   NOTIFICATION_TYPES_REQUIRING_ACTION.has(n.type);

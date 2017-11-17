@@ -25,38 +25,33 @@ const Notifications = (props) => {
     notifications,
     styles
   } = props;
-  const paymentFake = {
-    brand: 'Visa',
-    last4: '5555',
-    orgId: 'BkeCjMNHpZ'
-  };
 
   const clearableNotifs = notifications.edges.map(({node: notification}) => notification).filter((n) => !requiresAction(n));
   const clearAllNotifications = () =>
     Promise.all(
       clearableNotifs
+        // eslint-disable-next-line array-callback-return
         .map(({id}) => {
-          ClearNotificationMutation(atmosphere, fromGlobalId(id).id, nop, nop)
+          ClearNotificationMutation(atmosphere, fromGlobalId(id).id, nop, nop);
         })
     );
 
   const clearAllButton = () =>
-    (
-      <div style={{alignSelf: 'center', marginRight: '-.25rem', minWidth: '5.75rem'}}>
-        <Button
-          aria-label="Clear all notifications"
-          buttonSize="small"
-          buttonStyle="flat"
-          colorPalette="dark"
-          icon="check"
-          iconPlacement="right"
-          isBlock
-          label="Clear All"
-          onClick={clearAllNotifications}
-          title="Clear all notifications"
-        />
-      </div>
-    );
+    (<div style={{alignSelf: 'center', marginRight: '-.25rem', minWidth: '5.75rem'}}>
+      <Button
+        aria-label="Clear all notifications"
+        buttonSize="small"
+        buttonStyle="flat"
+        colorPalette="dark"
+        icon="check"
+        iconPlacement="right"
+        isBlock
+        label="Clear All"
+        onClick={clearAllNotifications}
+        title="Clear all notifications"
+      />
+    </div>);
+
   return (
     <UserSettingsWrapper>
       <Helmet title="My Notifications | Parabol" />
