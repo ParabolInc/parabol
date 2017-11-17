@@ -94,7 +94,6 @@ Notifications.propTypes = {
 const styleThunk = () => ({
   clearAll: {
     alignSelf: 'center',
-    marginRight: '-.25rem',
     minWidth: '5.75rem'
   },
 
