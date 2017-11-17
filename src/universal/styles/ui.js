@@ -275,7 +275,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
-  emailFontFamily: '"Karla", "Helvetica Neue", serif',
+  emailFontFamily: '"Karla", -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, “Fira Sans”, “Droid Sans”, “Helvetica Neue”, Arial, sans-serif',
   emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
     borderCollapse: 'collapse',
