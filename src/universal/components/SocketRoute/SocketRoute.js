@@ -42,6 +42,9 @@ const query = graphql`
               inviteeEmail
               teamId
               teamName
+              team {
+                tier
+              }
             }
             ... on NotifyKickedOut {
               teamName

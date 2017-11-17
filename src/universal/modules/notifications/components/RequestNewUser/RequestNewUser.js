@@ -11,6 +11,7 @@ import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 import withRouter from 'react-router-dom/es/withRouter';
+import {MONTHLY_PRICE, PRO} from 'universal/utils/constants';
 
 const RequestNewUser = (props) => {
   const {
@@ -23,13 +24,13 @@ const RequestNewUser = (props) => {
     onCompleted,
     history
   } = props;
-  const {id, inviterName, inviteeEmail, orgId, teamName, teamId} = notification;
+  const {id, inviterName, inviteeEmail, orgId, teamName, teamId, team} = notification;
+  const {tier} = team;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acceptInvite = () => {
     submitMutation();
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted);
   };
-  const isPaid = true;
 
   const rejectToggle = (
     <Button
@@ -54,7 +55,7 @@ const RequestNewUser = (props) => {
         <b>{inviterName}</b>{' requested to add '}
         <b>{inviteeEmail}</b>{' to '}
         <span className={css(styles.messageVar, styles.notifLink)} onClick={goToTeam}>{teamName}</span>{'.'}<br />
-        {isPaid && <span>{'Your monthly invoice will increase by $5.'}</span>}
+        {tier === PRO && <span>{`Your monthly invoice will increase by $${MONTHLY_PRICE}.`}</span>}
       </div>
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>
@@ -96,6 +97,7 @@ RequestNewUser.propTypes = {
     id: PropTypes.string.isRequired,
     inviterName: PropTypes.string.isRequired,
     inviteeEmail: PropTypes.string.isRequired,
+    team: PropTypes.object.isRequired,
     teamName: PropTypes.string.isRequired,
     teamId: PropTypes.string.isRequired
   })

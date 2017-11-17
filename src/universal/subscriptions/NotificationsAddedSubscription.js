@@ -26,6 +26,9 @@ const subscription = graphql`
           inviteeEmail
           teamId
           teamName
+          team {
+            tier
+          }
         }
         ... on NotifyKickedOut {
           isKickout
@@ -58,6 +61,10 @@ const subscription = graphql`
           project {
             id
             content
+            teamMember {
+              picture
+              preferredName
+            }
             status
             tags
           }
