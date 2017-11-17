@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import MeetingContainer from 'universal/modules/meeting/containers/MeetingContainer/MeetingContainer';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import {TransitionGroup} from 'react-transition-group';
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import AnimatedFade from 'universal/components/AnimatedFade';
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import MeetingContainer from 'universal/modules/meeting/containers/MeetingContainer/MeetingContainer';
 import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
-import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 
 const query = graphql`
   query MeetingRootQuery($teamId: ID!) {
@@ -58,7 +57,7 @@ const MeetingRoot = ({atmosphere, match}) => {
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingView/>
+              <LoadingView />
             </AnimatedFade>
             }
           </TransitionGroup>

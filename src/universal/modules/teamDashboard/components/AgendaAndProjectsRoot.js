@@ -44,7 +44,7 @@ const AgendaAndProjectsRoot = (props) => {
 
         return (
           <TransitionGroup appear component={null} exit={false}>
-            {error && <ErrorComponent height={'14rem'} error={error}/>}
+            {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">
               <AgendaAndProjects
@@ -54,7 +54,7 @@ const AgendaAndProjectsRoot = (props) => {
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingView minHeight="50vh"/>
+              <LoadingView minHeight="50vh" />
             </AnimatedFade>
             }
           </TransitionGroup>

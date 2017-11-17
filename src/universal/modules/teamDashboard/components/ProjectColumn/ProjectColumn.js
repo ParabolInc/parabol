@@ -75,7 +75,7 @@ class ProjectColumn extends Component {
     const label = themeLabels.projectStatus[status].slug;
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH || isMyMeetingSection) {
-      const teamMemberId = teamMemberFilterId && teamMemberFilterId.indexOf('::') !== -1 ? teamMemberFilterId : myTeamMemberId;
+      const teamMemberId = teamMemberFilterId || myTeamMemberId;
       const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, teamMemberId, sortOrder);
       return <AddProjectButton onClick={handleAddProject} label={label} />;
     } else if (area === USER_DASH) {

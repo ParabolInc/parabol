@@ -6,14 +6,13 @@ import {graphql} from 'react-relay';
 import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UserDashMain from 'universal/modules/userDashboard/components/UserDashMain/UserDashMain';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
 
 // short ttl for projects to avoid sending duplicates when switching from team to user dash
 const cacheConfig = {ttl: ms('30s')};
@@ -50,7 +49,7 @@ const UserDashRoot = ({atmosphere, teams}) => {
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingView/>
+              <LoadingView />
             </AnimatedFade>
             }
           </TransitionGroup>

@@ -16,6 +16,7 @@ import ui from 'universal/styles/ui';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
 import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
 import {Menu, MenuItem} from 'universal/modules/menu';
+import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const iconStyle = {
   ...ib,
@@ -55,7 +56,7 @@ const TeamProjectsHeader = (props) => {
           isActive={teamMember.id === teamMemberFilterId}
           key={`teamMemberFilter${teamMember.id}`}
           label={teamMember.preferredName}
-          onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
+          onClick={() => dispatch(filterTeamMember(toGlobalId('TeamMember', teamMember.id), teamMember.preferredName))}
         />)
       ));
   };

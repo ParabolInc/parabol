@@ -258,7 +258,7 @@ export default class QueryRenderer extends React.Component {
                 initialLoad: false
               }});
             }
-          },
+          }
         };
         if (this._selectionReference) {
           this._selectionReference.dispose();
