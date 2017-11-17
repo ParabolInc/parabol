@@ -107,49 +107,49 @@ Object {
     Object {
       "channelId": 16,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 15,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 14,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 13,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 12,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 11,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 10,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 9,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
   ],
@@ -346,7 +346,7 @@ Object {
     Object {
       "channelId": 0,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 2,
       },
     },
   ],
