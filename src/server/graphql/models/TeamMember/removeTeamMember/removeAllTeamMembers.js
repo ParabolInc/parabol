@@ -4,8 +4,8 @@ import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposFo
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getPubSub from 'server/utils/getPubSub';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 import shortid from 'shortid';
+import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
 const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
   const {isKickout} = options;
@@ -58,19 +58,24 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
     teamMember: r.table('TeamMember')
       .getAll(r.args(teamMemberIds), {index: 'id'})
       .update({
-        // inactivate
         isNotRemoved: false,
         updatedAt: now
       }),
-    projects: r.table('Project')
-      .getAll(r.args(teamMemberIds), {index: 'teamMemberId'})
-      .filter((project) => project('tags').contains('archived').not())
-      .update((project) => ({
-        teamMemberId: r.table('TeamMember')
-          .getAll(project('teamId'), {index: 'teamId'})
-          .filter({isLead: true, isNotRemoved: true})
-          .nth(0)('id')
-      }), {nonAtomic: true}),
+    projects: r(teamIds).forEach((teamId) => {
+      return r.table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isLead: true, isNotRemoved: true})
+        .nth(0)
+        .do((teamLead) => {
+          return r.table('Project')
+            .getAll(r(userId).add('::').add(teamId), {index: 'teamMemberId'})
+            .filter((project) => project('tags').contains('archived').not())
+            .update({
+              teamMemberId: teamLead('id'),
+              userId: teamLead('userId')
+            });
+        });
+    }),
     newTMS: r.table('User')
       .getAll(userId)
       .update((user) => {

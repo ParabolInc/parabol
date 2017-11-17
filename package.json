@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "0.22.1",
+  "version": "0.22.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -35,6 +35,7 @@
     "db:migrate-up-all": "node ./src/server/database/migrate.babel.js up --all",
     "db:migrate-down": "node ./src/server/database/migrate.babel.js down",
     "db:migrate-down-all": "node ./src/server/database/migrate.babel.js down --all",
+    "db:migrate-create": "cd ./src/server/database && migrate-rethinkdb create",
     "debug:stripe": "node ./src/server/billing/debug.babel.js",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
