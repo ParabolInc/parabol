@@ -105,7 +105,7 @@ export const Team = new GraphQLObjectType({
       description: 'The agenda items for the upcoming or current meeting',
       async resolve({id: teamId}, args, {getDataLoader}) {
         const agendaItems = await getDataLoader().agendaItemsByTeamId.load(teamId);
-        agendaItems.sort((a, b) => a.sortOrder < b.sortOrder ? 1 : -1);
+        agendaItems.sort((a, b) => a.sortOrder > b.sortOrder ? 1 : -1);
         return agendaItems;
       }
     },

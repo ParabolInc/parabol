@@ -11,18 +11,20 @@ import socketWithPresence from 'universal/decorators/socketWithPresence/socketWi
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
+import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
 import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
 import MeetingCheckIn from 'universal/modules/meeting/components/MeetingCheckIn/MeetingCheckIn';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingMainHeader from 'universal/modules/meeting/components/MeetingMainHeader/MeetingMainHeader';
+import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
 import MeetingUpdatesPrompt from 'universal/modules/meeting/components/MeetingUpdatesPrompt/MeetingUpdatesPrompt';
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
-import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeetingRoute';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase';
@@ -44,8 +46,6 @@ import {
   UPDATES
 } from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
-import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 
 const meetingContainerQuery = `
 query{
@@ -428,10 +428,11 @@ class MeetingContainer extends Component {
           />
           }
           {localPhase === LAST_CALL &&
-          <MeetingAgendaLastCallContainer
+          <MeetingAgendaLastCall
             facilitatorName={facilitatorName}
             gotoNext={this.gotoNext}
             hideMoveMeetingControls={hideMoveMeetingControls}
+            team={team}
           />
           }
           {!inSync &&
@@ -464,6 +465,7 @@ export default createFragmentContainer(
           id
           isComplete
         }
+        ...MeetingAgendaLastCall_team
         checkInGreeting {
           content
           language

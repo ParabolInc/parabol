@@ -24,7 +24,7 @@ const Sidebar = (props) => {
     styles,
     team
   } = props;
-  const {id: teamId, name: teamName, agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase} = team;
+  const {teamId, teamName, agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase} = team;
 
   const relativeLink = `/meeting/${teamId}`;
   const shortUrl = makeHref(relativeLink);
@@ -308,8 +308,8 @@ export default createFragmentContainer(
   withStyles(styleThunk)(Sidebar),
   graphql`
     fragment Sidebar_team on Team {
-      id
-      name
+      teamId: id
+      teamName: name
       facilitatorPhase
       facilitatorPhaseItem
       meetingPhase

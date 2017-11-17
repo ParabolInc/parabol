@@ -31,8 +31,10 @@ export default createFragmentContainer(
       projects(first: 1000) @connection(key: "UserColumnsContainer_projects") {
         edges {
           node {
+            # grab these so we can sort correctly
             id
             status
+            sortOrder
             ...DraggableProject_project
           }
         }

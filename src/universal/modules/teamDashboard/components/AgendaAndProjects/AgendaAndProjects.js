@@ -11,10 +11,8 @@ import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import {createFragmentContainer} from 'react-relay';
 
 const AgendaAndProjects = (props) => {
-  const {viewer, teamId, teams, styles} = props;
-  const {teamMember: {hideAgenda}} = viewer;
-  const team = teams && teams.find(({id}) => id === teamId);
-  const teamName = team && team.name;
+  const {viewer, styles} = props;
+  const {teamMember: {hideAgenda}, team: {teamId, teamName}} = viewer;
   return (
     <div className={css(styles.root)}>
       <Helmet title={`${teamName} | Parabol`} />
@@ -43,7 +41,6 @@ const AgendaAndProjects = (props) => {
 AgendaAndProjects.propTypes = {
   styles: PropTypes.object,
   teamId: PropTypes.string,
-  teams: PropTypes.array,
   viewer: PropTypes.object
 };
 
@@ -89,6 +86,10 @@ export default createFragmentContainer(
   withStyles(styleThunk)(AgendaAndProjects),
   graphql`
     fragment AgendaAndProjects_viewer on User {
+      team(teamId: $teamId) {
+        teamId: id
+        teamName: name
+      }
       teamMember(teamId: $teamId) {
         hideAgenda
       }

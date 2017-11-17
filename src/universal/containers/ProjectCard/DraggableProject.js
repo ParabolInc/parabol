@@ -47,7 +47,7 @@ class DraggableProject extends Component {
         {isDragging &&
           <ProjectDragLayer
             area={area}
-            outcome={project}
+            project={project}
           />
         }
         <div style={{opacity: isDragging ? 0.5 : 1}}>
@@ -92,6 +92,7 @@ export default createFragmentContainer(
   dragSource(PROJECT, projectSource, dragSourceCb)(DraggableProject),
   graphql`
     fragment DraggableProject_project on Project {
+      id
       content
       integration {
         service

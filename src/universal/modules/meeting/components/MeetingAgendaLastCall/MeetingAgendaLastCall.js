@@ -13,16 +13,17 @@ import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPha
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import {createFragmentContainer} from 'react-relay';
 
 const MeetingAgendaLastCall = (props) => {
   const {
-    agendaItemCount,
+    team: {agendaItems},
     hideMoveMeetingControls,
     gotoNext,
     facilitatorName,
     styles
   } = props;
-
+  const agendaItemCount = agendaItems.filter((item) => item.isComplete).length;
   const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL);
 
   return (
@@ -93,7 +94,7 @@ const MeetingAgendaLastCall = (props) => {
 };
 
 MeetingAgendaLastCall.propTypes = {
-  agendaItemCount: PropTypes.number,
+  team: PropTypes.object.isRequired,
   gotoNext: PropTypes.func,
   facilitatorName: PropTypes.string,
   hideMoveMeetingControls: PropTypes.bool,
@@ -119,4 +120,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingAgendaLastCall);
+export default createFragmentContainer(
+  withStyles(styleThunk)(MeetingAgendaLastCall),
+  graphql`
+    fragment MeetingAgendaLastCall_team on Team {
+      agendaItems {
+        isComplete
+      }
+    }`
+);

@@ -2,7 +2,6 @@ import React from 'react';
 import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -12,13 +11,11 @@ import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSu
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
 import ms from 'ms';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 
 const query = graphql`
   query AgendaAndProjectsRootQuery($teamId: ID!) {
     viewer {
-      teamMember(teamId: $teamId) {
-        hideAgenda
-      }
       ...AgendaAndProjects_viewer
     }
   }
@@ -32,7 +29,7 @@ const subscriptions = [
 const cacheConfig = {ttl: ms('30s')};
 
 const AgendaAndProjectsRoot = (props) => {
-  const {atmosphere, match: {params: {teamId}}, teams} = props;
+  const {atmosphere, match: {params: {teamId}}} = props;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -51,15 +48,13 @@ const AgendaAndProjectsRoot = (props) => {
             {renderProps &&
               <AnimatedFade key="1">
                 <AgendaAndProjects
-                  teamId={teamId}
-                  teams={teams}
                   viewer={renderProps.viewer}
                 />
               </AnimatedFade>
             }
             {!renderProps && !error &&
               <AnimatedFade key="2" unmountOnExit exit={false}>
-                <LoadingComponent height={'5rem'} />
+                <LoadingView/>
               </AnimatedFade>
             }
           </TransitionGroup>

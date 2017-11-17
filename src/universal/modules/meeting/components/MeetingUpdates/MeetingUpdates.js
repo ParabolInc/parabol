@@ -123,7 +123,13 @@ export default createFragmentContainer(
       projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
         edges {
           node {
+            # grab these so we can sort correctly
+            id
             status
+            sortOrder
+            teamMember {
+              id
+            }
             ...DraggableProject_project
           }
         }

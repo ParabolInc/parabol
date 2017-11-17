@@ -189,6 +189,8 @@ export default createFragmentContainer(
       }
       status
       tags
+      # grab userId to ensure sorting on connections works
+      userId
       ...EditingStatusContainer_project
       ...OutcomeCardFooter_project
     }`

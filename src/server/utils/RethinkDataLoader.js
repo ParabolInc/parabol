@@ -91,7 +91,7 @@ export default class RethinkDataLoader {
           project('tags').contains('archived').not(),
           // weed out the projects on archived teams
           r(tms).contains(project('teamId'))
-        ))
+        ));
       primeStandardLoader(this.projects, projects);
       return userIds.map(() => projects);
     }, this.dataloaderOptions);

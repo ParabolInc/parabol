@@ -4,7 +4,10 @@ import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 const ProjectInput = new GraphQLInputObjectType({
   name: 'ProjectInput',
   fields: () => ({
-    id: {type: GraphQLID, description: 'The unique team ID'},
+    id: {
+      type: GraphQLID,
+      description: '(Relay) The unique project ID'
+    },
     agendaId: {type: GraphQLID},
     content: {type: GraphQLString},
     name: {type: GraphQLString, description: 'The name of the team'},

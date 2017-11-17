@@ -128,7 +128,6 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
     },
     optimisticUpdater: (store) => {
       const {id, content, teamMemberId} = updatedProject;
-      if (!content) return;
       const project = store.get(id);
       if (!project) return;
       const now = new Date();
@@ -136,15 +135,16 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
         const val = updatedProject[key];
         project.setValue(val, key);
       });
-      project.setValue(project.getValue('teamMemberId').split('::')[0], 'userId');
       if (teamMemberId) {
         const [newUserId] = teamMemberId.split('::');
         project.setValue(newUserId, 'userId');
       }
       project.setValue('updatedAt', now.toJSON());
-      const {entityMap} = JSON.parse(content);
-      const nextTags = getTagsFromEntityMap(entityMap);
-      project.setValue(nextTags, 'tags');
+      if (content) {
+        const {entityMap} = JSON.parse(content);
+        const nextTags = getTagsFromEntityMap(entityMap);
+        project.setValue(nextTags, 'tags');
+      }
       handleProjectConnections(store, viewerId, project);
     },
     onCompleted,

@@ -13,6 +13,7 @@ import UserDashMain from 'universal/modules/userDashboard/components/UserDashMai
 import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 
 // short ttl for projects to avoid sending duplicates when switching from team to user dash
 const cacheConfig = {ttl: ms('30s')};
@@ -49,7 +50,7 @@ const UserDashRoot = ({atmosphere, teams}) => {
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} />
+              <LoadingView/>
             </AnimatedFade>
             }
           </TransitionGroup>
