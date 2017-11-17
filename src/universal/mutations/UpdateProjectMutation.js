@@ -99,18 +99,16 @@ export const handleProjectConnections = (store, viewerId, project) => {
     safePutNodeInConn(archiveConn);
   } else {
     safeRemoveNodeFromConn(projectId, archiveConn);
-    safePutNodeInConn(userConn);
     safePutNodeInConn(teamConn);
-  }
-
-  if (userConn) {
-    const ownerUserId = project.getValue('userId');
-    const ownerViewerId = toGlobalId('User', ownerUserId);
-    const ownedByViewer = ownerViewerId === viewerId;
-    if (ownedByViewer) {
-      safePutNodeInConn(userConn);
-    } else {
-      safeRemoveNodeFromConn(projectId, userConn);
+    if (userConn) {
+      const ownerUserId = project.getValue('userId');
+      const ownerViewerId = toGlobalId('User', ownerUserId);
+      const ownedByViewer = ownerViewerId === viewerId;
+      if (ownedByViewer) {
+        safePutNodeInConn(userConn);
+      } else {
+        safeRemoveNodeFromConn(projectId, userConn);
+      }
     }
   }
 };

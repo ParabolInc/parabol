@@ -90,7 +90,7 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   handleProjectUpdateFactory = (newStatus) => () => {
-    const {atmosphere, onComplete, project} = this.props;
+    const {area, atmosphere, onComplete, project} = this.props;
     const {projectId, projectStatus} = project;
     if (newStatus === projectStatus) {
       return;
@@ -99,7 +99,7 @@ class OutcomeCardStatusMenu extends Component {
       id: projectId,
       status: newStatus
     };
-    UpdateProjectMutation(atmosphere, updatedProject);
+    UpdateProjectMutation(atmosphere, updatedProject, area);
     if (onComplete) {
       onComplete();
     }

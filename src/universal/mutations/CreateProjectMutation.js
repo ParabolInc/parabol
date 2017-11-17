@@ -13,6 +13,10 @@ const mutation = graphql`
         content
         createdAt
         createdBy
+        editors {
+          preferredName
+          userId
+        }
         integration {
           service
           nameWithOwner
@@ -71,6 +75,7 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
       };
       const project = createProxyRecord(store, 'Project', optimisticProject);
       project
+        .setLinkedRecords([], 'editors')
         .setLinkedRecord(teamMember, 'teamMember')
         .setLinkedRecord(team, 'team');
 

@@ -70,7 +70,7 @@ const OutcomeCard = (props) => {
           trackEditingComponent={trackEditingComponent}
           teamMembers={teamMembers}
         />
-        <ProjectIntegrationLink integration={integration} />
+        <ProjectIntegrationLink integration={integration || null} />
         <OutcomeCardFooter
           area={area}
           cardIsActive={cardHasFocus || cardHasHover || cardHasMenuOpen}

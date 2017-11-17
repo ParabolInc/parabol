@@ -19,7 +19,7 @@ const mutation = graphql`
 const handleEditing = (store, editing, projectId, editorDetails) => {
   const project = store.get(projectId);
   if (!project) return;
-  const projectEditors = project.getLinkedRecords('editors');
+  const projectEditors = project.getLinkedRecords('editors') || [];
   const newProjectEditors = [];
   const incomingUserId = editorDetails.getValue('userId');
   if (editing) {
