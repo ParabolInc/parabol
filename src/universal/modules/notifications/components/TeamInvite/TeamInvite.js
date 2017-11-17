@@ -47,6 +47,7 @@ const TeamInvite = (props) => {
           isBlock
           label="Accept"
           onClick={accept}
+          title="Accept team invitation"
           type="submit"
           waiting={submitting}
         />
