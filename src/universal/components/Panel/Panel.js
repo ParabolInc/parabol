@@ -48,6 +48,7 @@ Panel.propTypes = {
     'white'
   ]),
   children: PropTypes.any,
+  compact: PropTypes.bool,
   controls: PropTypes.any,
   // depth: up to ui.shadow[4]
   depth: PropTypes.oneOf([0, 1, 2, 3]),
@@ -67,7 +68,7 @@ const bgThemeValues = {
   white: '#fff'
 };
 
-const styleThunk = (theme, {bgTheme, depth}) => ({
+const styleThunk = (theme, {bgTheme, compact, depth}) => ({
   panel: {
     backgroundColor: bgTheme ? bgThemeValues[bgTheme] : bgThemeValues.white,
     border: `1px solid ${ui.panelBorderColor}`,
@@ -99,7 +100,7 @@ const styleThunk = (theme, {bgTheme, depth}) => ({
   label: {
     color: appTheme.palette.dark,
     fontWeight: 700,
-    padding: `.75rem ${ui.panelGutter}`,
+    padding: `.75rem ${compact ? ui.panelCompactGutter : ui.panelGutter}`,
     textTransform: 'uppercase'
   },
 
@@ -109,7 +110,7 @@ const styleThunk = (theme, {bgTheme, depth}) => ({
     height: '2.75rem',
     justifyContent: 'flex-end',
     lineHeight: '2.75rem',
-    paddingRight: ui.panelGutter
+    paddingRight: compact ? ui.panelCompactGutter : ui.panelGutter
   },
 
   children: {

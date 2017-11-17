@@ -57,7 +57,7 @@ const Notifications = (props) => {
     <UserSettingsWrapper>
       <Helmet title="My Notifications | Parabol" />
       <div className={css(styles.wrapper)}>
-        <Panel label="Notifications" controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}>
+        <Panel compact label="Notifications" controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}>
           {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
               {notifications.edges.map(({node}) =>
@@ -97,6 +97,7 @@ const styleThunk = () => ({
     marginRight: '-.25rem',
     minWidth: '5.75rem'
   },
+
   notificationList: {
     // Define
   },

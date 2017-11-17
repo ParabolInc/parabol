@@ -454,6 +454,7 @@ const ui = {
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
+  panelCompactGutter: '.75rem',
   panelMarginVertical: '1.5rem',
 
   // Project columns
