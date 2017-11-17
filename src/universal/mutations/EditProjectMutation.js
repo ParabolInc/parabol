@@ -42,6 +42,7 @@ const handleEditing = (store, editing, projectId, editorDetails) => {
 };
 
 export const handleEditingFromPayload = (store, editorPayload) => {
+  if (!editorPayload) return;
   const editing = editorPayload.getValue('editing');
   const projectId = editorPayload.getValue('projectId');
   const editorDetails = editorPayload.getLinkedRecord('user');

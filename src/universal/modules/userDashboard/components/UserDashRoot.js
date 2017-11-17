@@ -41,7 +41,7 @@ const UserDashRoot = ({atmosphere, teams}) => {
       subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear style={{display: 'flex', width: '100%'}}>
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">

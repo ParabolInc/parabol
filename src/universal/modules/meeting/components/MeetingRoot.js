@@ -42,7 +42,7 @@ const MeetingRoot = ({atmosphere, match}) => {
         const {userId} = atmosphere;
         const myTeamMemberId = `${userId}::${teamId}`;
         return (
-          <TransitionGroup appear style={{display: 'flex', width: '100%', flex: 1}}>
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">

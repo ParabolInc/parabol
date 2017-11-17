@@ -40,7 +40,7 @@ const OrganizationsRoot = (props) => {
       subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear style={{display: 'flex', flex: 1, overflow: 'hidden'}}>
+          <TransitionGroup appear component={null} >
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">

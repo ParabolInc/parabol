@@ -18,7 +18,7 @@ const getDefaultState = () => ({
   error: null,
   props: null,
   retry: null,
-  loading: true
+  initialLoad: true
 });
 /**
  * @public
@@ -77,7 +77,7 @@ export default class QueryRenderer extends React.Component {
       this.setState({
         readyState: {
           ...this._fetchForProps(nextProps),
-          loading: !this.state.readyState.props
+          initialLoad: false
         }
       });
     }
@@ -158,7 +158,7 @@ export default class QueryRenderer extends React.Component {
           props: snapshot.data,
           retry: null,
           unsubscribe: this.unsubscribe,
-          loading: false
+          initialLoad: false
         };
       }
       if (subscriptions) {
@@ -179,7 +179,7 @@ export default class QueryRenderer extends React.Component {
       error: null,
       props: {},
       retry: null,
-      loading: false
+      initialLoad: false
     };
   }
 
@@ -190,7 +190,7 @@ export default class QueryRenderer extends React.Component {
     // from being freed. This is not strictly required if all new data is
     // fetched in a single step, but is necessary if the network could attempt
     // to incrementally load data (ex: multiple query entries or incrementally
-    // loading records from disk cache).
+    // initialLoad records from disk cache).
     const nextReference = environment.retain(operation.root);
 
     let readyState = getDefaultState();
@@ -228,7 +228,7 @@ export default class QueryRenderer extends React.Component {
               this.setState({readyState: syncReadyState});
             }
           },
-          loading: false
+          initialLoad: false
         };
 
         if (this._selectionReference) {
@@ -255,11 +255,10 @@ export default class QueryRenderer extends React.Component {
               const naiveReadyState = syncReadyState || getDefaultState();
               this.setState({readyState: {
                 ...naiveReadyState,
-                loading: !this.state.readyState.props
+                initialLoad: false
               }});
             }
           },
-          loading: false
         };
         if (this._selectionReference) {
           this._selectionReference.dispose();
@@ -288,7 +287,7 @@ export default class QueryRenderer extends React.Component {
         readyState: {
           ...this.state.readyState,
           props: snapshot.data,
-          loading: false
+          initialLoad: false
         }
       });
     }

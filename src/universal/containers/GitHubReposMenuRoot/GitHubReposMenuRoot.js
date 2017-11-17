@@ -63,7 +63,7 @@ const GitHubReposMenuRoot = (rootProps) => {
       render={({error, props}) => {
         // TODO refactor animation into a wrapper and GitHubRepoListMenu is the child
         return (
-          <TransitionGroup appear style={{overflow: 'hidden'}}>
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} width={maxWidth} error={error} />}
             {props && <AnimatedFade key="1" onEnter={updateModalCoords}>
               <GitHubRepoListMenu

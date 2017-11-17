@@ -24,8 +24,7 @@ const styleThunk = () => ({
   root: {
     backgroundColor: '#fff',
     display: 'flex !important',
-    minHeight: '100vh',
-    width: '100%'
+    minHeight: '100vh'
   }
 });
 

@@ -7338,9 +7338,9 @@ react-transition-group@^1.2.0:
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-react-transition-group@^2.2.0:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.2.1.tgz#e9fb677b79e6455fd391b03823afe84849df4a10"
+"react-transition-group@https://github.com/mattkrick/react-transition-group/tarball/a514cd964a9c67cf5ed122eeeaccc6e3ad4ec53b":
+  version "2.3.0-beta.0"
+  resolved "https://github.com/mattkrick/react-transition-group/tarball/a514cd964a9c67cf5ed122eeeaccc6e3ad4ec53b#0d80300170eeba0ee2c3a056d1076caaa82d192e"
   dependencies:
     chain-function "^1.0.0"
     classnames "^2.2.5"
