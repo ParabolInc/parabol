@@ -82,7 +82,7 @@ export default {
       // update the tms on auth0 in async
       auth0ManagementClient.users.updateAppMetadata({id}, {tms});
       // update the server socket, if they're logged in
-      getPubSub().publish(`${NEW_AUTH_TOKEN}.${id}`, {newAuthToken: tmsSignToken({sub: userId}, tms)});
+      getPubSub().publish(`${NEW_AUTH_TOKEN}.${id}`, {newAuthToken: tmsSignToken({sub: id}, tms)});
     });
 
     return true;
