@@ -96,7 +96,7 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
     // note this may be too aggressive since 1 notification could have multiple userIds. we need to refactor to a single userId
     notifications: r.table('Notification')
       .getAll(userId, {index: 'userIds'})
-      .filter((notification) => teamIds.contains(notification('teamId')))
+      .filter((notification) => r(teamIds).contains(notification('teamId')))
       .delete()
   });
   // update the tms on auth0 in async
