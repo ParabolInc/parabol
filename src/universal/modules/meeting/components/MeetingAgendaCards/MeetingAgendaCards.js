@@ -13,8 +13,8 @@ import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
 
 const makeCards = (array, myTeamMemberId, itemStyle, handleAddProject) => {
-  return array.map((outcome) => {
-    const {id} = outcome;
+  return array.map((project) => {
+    const {id} = project;
     const key = `$outcomeCard${id}`;
     const [myUserId] = myTeamMemberId.split('::');
     return (
@@ -24,7 +24,7 @@ const makeCards = (array, myTeamMemberId, itemStyle, handleAddProject) => {
           handleAddProject={handleAddProject}
           isAgenda
           myUserId={myUserId}
-          outcome={outcome}
+          project={project}
         />
       </div>
     );
@@ -65,13 +65,10 @@ class MeetingAgendaCards extends Component {
   }
 
   render() {
-    const {myTeamMemberId, outcomes, styles} = this.props;
+    const {myTeamMemberId, projects, styles} = this.props;
     return (
       <div className={css(styles.root)}>
-        {/* Get Cards */}
-        {outcomes.length !== 0 &&
-        makeCards(outcomes, myTeamMemberId, styles.item, this.handleAddProject)
-        }
+        {makeCards(projects, myTeamMemberId, styles.item, this.handleAddProject)}
         {/* Input Card */}
         <div className={css(styles.item)}>
           <CreateCard
@@ -80,7 +77,7 @@ class MeetingAgendaCards extends Component {
           />
         </div>
         {/* Placeholder Cards */}
-        {makePlaceholders(outcomes.length, styles.item)}
+        {makePlaceholders(projects.length, styles.item)}
       </div>
     );
   }
@@ -92,7 +89,7 @@ MeetingAgendaCards.propTypes = {
   bindHotkey: PropTypes.func,
   history: PropTypes.object.isRequired,
   myTeamMemberId: PropTypes.string,
-  outcomes: PropTypes.array.isRequired,
+  projects: PropTypes.array.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired
 };

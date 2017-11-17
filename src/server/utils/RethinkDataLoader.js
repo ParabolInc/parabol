@@ -1,5 +1,5 @@
-import getRethink from 'server/database/rethinkDriver';
 import DataLoader from 'dataloader';
+import getRethink from 'server/database/rethinkDriver';
 import {getUserId} from 'server/utils/authorization';
 
 const defaultCacheKeyFn = (key) => key;
@@ -84,9 +84,14 @@ export default class RethinkDataLoader {
     this.projectsByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink();
       const userId = getUserId(this.authToken);
+      const {tms} = this.authToken;
       const projects = await r.table('Project')
         .getAll(userId, {index: 'userId'})
-        .filter((project) => project('tags').contains('archived').not());
+        .filter((project) => r.and(
+          project('tags').contains('archived').not(),
+          // weed out the projects on archived teams
+          r(tms).contains(project('teamId'))
+        ))
       primeStandardLoader(this.projects, projects);
       return userIds.map(() => projects);
     }, this.dataloaderOptions);

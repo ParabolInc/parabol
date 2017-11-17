@@ -11,7 +11,7 @@ import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContai
 class ProjectColumns extends Component {
   componentWillMount() {
     const {projects} = this.props;
-  this.groupProjectsByStatus(projects);
+    this.groupProjectsByStatus(projects);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -29,42 +29,44 @@ class ProjectColumns extends Component {
     });
   }
 
-  render() {// myTeamMemberId is undefined if this is coming from USER_DASH
+  render() {
+  // myTeamMemberId is undefined if this is coming from USER_DASH
   // TODO we only need userId, we can compute myTeamMemberId
-  const {
-    alignColumns,
-    area,
-    isMyMeetingSection,
-    myTeamMemberId,
-    styles,
-    teams,
-    teamMemberFilterId
-  } = this.props;
-const {projects} = this.state;  const rootStyles = css(styles.root, styles[alignColumns]);
-  const lanes = area === MEETING ? meetingColumnArray : columnArray;
-  return (
-    <div className={rootStyles}>
-      <div className={css(styles.columns)}>
-        {lanes.map((status, idx) =>
-          (<ProjectColumn
-            key={`projectCol${status}`}
-            area={area}
-            isMyMeetingSection={isMyMeetingSection}
-            firstColumn={idx === 0}
-            lastColumn={idx === (lanes.length - 1)}
-            myTeamMemberId={myTeamMemberId}
-            teamMemberFilterId={teamMemberFilterId}projects={projects[status]}
-
-            status={status}
-            teams={teams}
-
-          />)
-        )}
+    const {
+      alignColumns,
+      area,
+      isMyMeetingSection,
+      myTeamMemberId,
+      styles,
+      teams,
+      teamMemberFilterId
+    } = this.props;
+    const {projects} = this.state;
+    const rootStyles = css(styles.root, styles[alignColumns]);
+    const lanes = area === MEETING ? meetingColumnArray : columnArray;
+    return (
+      <div className={rootStyles}>
+        <div className={css(styles.columns)}>
+          {lanes.map((status, idx) =>
+            (<ProjectColumn
+              key={`projectCol${status}`}
+              area={area}
+              isMyMeetingSection={isMyMeetingSection}
+              firstColumn={idx === 0}
+              lastColumn={idx === (lanes.length - 1)}
+              myTeamMemberId={myTeamMemberId}
+              teamMemberFilterId={teamMemberFilterId}
+              projects={projects[status]}
+              status={status}
+              teams={teams}
+            />)
+          )}
+        </div>
+        <EditorHelpModalContainer />
       </div>
-      <EditorHelpModalContainer />
-    </div>
-  );
-}}
+    );
+  }
+}
 
 ProjectColumns.propTypes = {
   alignColumns: PropTypes.oneOf([

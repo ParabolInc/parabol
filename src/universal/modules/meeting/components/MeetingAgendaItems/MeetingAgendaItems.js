@@ -92,7 +92,7 @@ class MeetingAgendaItems extends Component {
               <MeetingAgendaCards
                 agendaId={agendaItem.id}
                 myTeamMemberId={myTeamMemberId}
-                outcomes={agendaProjects}
+                projects={agendaProjects}
                 teamId={team.id}
               />
               <EditorHelpModalContainer />
@@ -158,51 +158,18 @@ export default createFragmentContainer(
         agendaItems {
           id
           content
-          isComplete
-          sortOrder
-          teamMemberId
           teamMember {
             id
-            preferredName
-            picture
           }
         }
         teamMembers(sortBy: "checkInOrder") {
           id
-          picture
-          preferredName
         }
       }
       projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
         edges {
           node {
-            id 
-            agendaId
-            content
-            createdAt
-            createdBy
-            integration {
-              service
-              nameWithOwner
-              issueNumber
-            }
-            status
-            tags
-            teamMemberId
-            updatedAt
-            sortOrder
-            updatedAt
-            userId
-            teamId
-            team {
-              id
-              name
-            }
-            teamMember {
-              id
-              picture
-              preferredName
-            }
+            ...NullableProject_project
           }
         }
       }
