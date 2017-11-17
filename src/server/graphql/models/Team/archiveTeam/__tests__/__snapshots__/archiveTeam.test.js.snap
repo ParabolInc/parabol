@@ -318,6 +318,7 @@ Object {
   "user": Object {
     "cachedAt": 2017-01-01T07:00:00.000Z,
     "createdAt": 2017-01-01T07:00:00.000Z,
+    "email": "Leader of One@example.com",
     "emailVerified": false,
     "id": 0,
     "identities": Array [],

@@ -11,8 +11,6 @@ const SummaryHeader = (props) => {
   const {createdAt, meetingNumber, referrer, teamDashUrl, teamName} = props;
   const blockStyle = {
     backgroundColor: '#fff',
-    border: '2px solid #D2D3DC',
-    borderRadius: '8px',
     color: appTheme.palette.dark,
     fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
@@ -35,7 +33,7 @@ const SummaryHeader = (props) => {
   const teamDashLinkStyle = {
     ...textStyle,
     backgroundColor: appTheme.palette.cool,
-    borderRadius: '4px',
+    borderRadius: '2px',
     color: '#ffffff',
     cursor: 'pointer',
     display: 'block',

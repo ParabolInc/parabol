@@ -374,6 +374,7 @@ class MockDB {
       id: `test|${overrides.name.substr(0, 4)}_${orgId}`,
       cachedAt: anHourAgo,
       createdAt: anHourAgo,
+      email: overrides.name ? `${overrides.name}@example.com` : null,
       emailVerified: false,
       lastLogin: anHourAgo,
       lastSeenAt: anHourAgo,

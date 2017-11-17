@@ -39,6 +39,7 @@
     "debug:stripe": "node ./src/server/billing/debug.babel.js",
     "flow": "flow",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
+    "test:dev": "jest --runInBand --watch",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",
