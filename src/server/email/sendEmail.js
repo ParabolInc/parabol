@@ -83,7 +83,7 @@ export function sendBatchEmail(recipients, template, props, recipientVariables) 
         `with ${recipients.length} requested recipients.  ` +
         `Sending ${chunkedRecipients.length} mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
     );
-    return Promise.all(chunkedRecipients.map((chunk) => sendBatchEmail(chunk, template, props)));
+    return Promise.all(chunkedRecipients.map((chunk) => sendBatchEmail(chunk, template, props, recipientVariables)));
   }
   const mailgunApiData = makeMailgunApiData(recipients, template, props);
   if (recipientVariables) {
