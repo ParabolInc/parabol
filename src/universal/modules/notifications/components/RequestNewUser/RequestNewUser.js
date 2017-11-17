@@ -10,6 +10,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
+import withRouter from 'react-router-dom/es/withRouter';
 
 const RequestNewUser = (props) => {
   const {
@@ -19,45 +20,51 @@ const RequestNewUser = (props) => {
     submitting,
     submitMutation,
     onError,
-    onCompleted
+    onCompleted,
+    history
   } = props;
-  const {id, inviterName, inviteeEmail, orgId, teamName} = notification;
+  const {id, inviterName, inviteeEmail, orgId, teamName, teamId} = notification;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acceptInvite = () => {
     submitMutation();
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted);
   };
+  const isPaid = true;
 
   const rejectToggle = (
     <Button
+      aria-label="Decline new user"
+      buttonSize="small"
       colorPalette="gray"
       isBlock
       label="Decline"
-      buttonSize="small"
+      title="Decline new user"
       type="submit"
     />
   );
 
+  const goToTeam = () => history.push(`/team/${teamId}`);
+
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="medium" />
+        <IconAvatar icon="user-circle-o" size="small" />
       </div>
       <div className={css(styles.message)}>
-        <span className={css(styles.messageVar)}>{inviterName} </span>
-        requested to add
-        <span className={css(styles.messageVar)}> {inviteeEmail} </span>
-        to
-        <span className={css(styles.messageVar)}> {teamName}</span>
-        <div className={css(styles.messageSub)}>Your monthly invoice will increase by $5.</div>
+        <b>{inviterName}</b>{' requested to add '}
+        <b>{inviteeEmail}</b>{' to '}
+        <span className={css(styles.messageVar, styles.notifLink)} onClick={goToTeam}>{teamName}</span>{'.'}<br />
+        {isPaid && <span>{'Your monthly invoice will increase by $5.'}</span>}
       </div>
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>
           <Button
+            aria-label="Accept new user"
             colorPalette="cool"
             isBlock
             label="Accept"
             buttonSize={ui.notificationButtonSize}
+            title="Accept new user"
             type="submit"
             onClick={acceptInvite}
             waiting={submitting}
@@ -79,6 +86,7 @@ const RequestNewUser = (props) => {
 RequestNewUser.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
@@ -97,4 +105,4 @@ const styleThunk = () => ({
   ...defaultStyles
 });
 
-export default withStyles(styleThunk)(RequestNewUser);
+export default withRouter(withStyles(styleThunk)(RequestNewUser));

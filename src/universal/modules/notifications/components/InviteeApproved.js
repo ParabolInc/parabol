@@ -9,41 +9,45 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import withRouter from 'react-router-dom/es/withRouter';
+import {clearNotificationLabel} from '../helpers/constants';
 
 const InviteeApproved = (props) => {
   const {
     atmosphere,
     styles,
     notification,
-    submitting,
     submitMutation,
     onError,
-    onCompleted
+    onCompleted,
+    history
   } = props;
-  const {id, inviteeEmail, teamName} = notification;
+  const {id, inviteeEmail, teamName, teamId} = notification;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
   };
+  const goToTeam = () => history.push(`/team/${teamId}`);
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="medium" />
+        <IconAvatar icon="user-circle-o" size="small" />
       </div>
       <div className={css(styles.message)}>
-        <span className={css(styles.messageVar)}>{inviteeEmail} </span>
-        has been approved to join
-        <span className={css(styles.messageVar)}> {teamName}. </span>
-        We just sent them an invitation.
+        <b>{inviteeEmail}</b>
+        {' has been approved to join '}
+        <span className={css(styles.messageVar, styles.notifLink)} onClick={goToTeam}>{teamName}</span>{'.'}
+        <br />
+        {'We have sent them an invitation.'}
       </div>
-      <div className={css(styles.button)}>
+      <div className={css(styles.iconButton)}>
         <Button
-          colorPalette="cool"
-          waiting={submitting}
+          aria-label={clearNotificationLabel}
+          buttonSize="small"
+          colorPalette="gray"
+          icon="check"
           isBlock
-          label="OK"
-          buttonSize={ui.notificationButtonSize}
           type="submit"
           onClick={acknowledge}
         />
@@ -54,6 +58,7 @@ const InviteeApproved = (props) => {
 
 InviteeApproved.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
@@ -69,9 +74,9 @@ const styleThunk = () => ({
   ...defaultStyles,
 
   button: {
-    marginLeft: ui.rowGutter,
+    marginLeft: ui.rowCompactGutter,
     minWidth: '3.5rem'
   }
 });
 
-export default withStyles(styleThunk)(InviteeApproved);
+export default withRouter(withStyles(styleThunk)(InviteeApproved));

@@ -52,7 +52,7 @@ const CreditCardModal = (props) => {
     <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>
       <div className={css(styles.modalBody)}>
         <div className={css(styles.iconAvatarBlock)}>
-          <IconAvatar colorPalette="mid" icon={cardTypeIcon} size="large" />
+          <IconAvatar icon={cardTypeIcon} size="large" />
         </div>
         <Type align="center" colorPalette="mid" lineHeight="1.875rem" marginBottom=".25rem" scale="s6">
           {crudAction} Credit Card

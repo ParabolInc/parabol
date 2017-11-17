@@ -54,10 +54,11 @@ const styleThunk = () => ({
     ...formError
   }
 });
-export default
-withAtmosphere(withMutationProps(
-  withStyles(styleThunk)(
-    NotificationRow
+
+export default withAtmosphere(
+  withMutationProps(
+    withStyles(styleThunk)(
+      NotificationRow
+    )
   )
-)
 );

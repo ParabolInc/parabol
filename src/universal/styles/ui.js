@@ -137,7 +137,7 @@ const ui = {
 
   // Private projects
   // ---------------------------------------------------------------------------
-  privateCardBgColor: appTheme.palette.light60l,
+  privateCardBgColor: appTheme.palette.light50l,
 
   // Avatars
   // ---------------------------------------------------------------------------
@@ -490,6 +490,7 @@ const ui = {
   rowHeadingColor: appTheme.palette.dark,
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
+  rowCompactGutter: '.75rem',
   rowSubheading: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
