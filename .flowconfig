@@ -1,0 +1,13 @@
+[ignore]
+.*node_modules/.*reqwest/.*
+.*node_modules/.*draft-js/.*
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]

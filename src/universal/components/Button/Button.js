@@ -191,7 +191,7 @@ class Button extends Component {
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseLeave={this.onMouseLeave}
-        title={title || label}
+        title={title || label || ariaLabel}
         type={type || 'button'}
         aria-label={ariaLabel}
       >

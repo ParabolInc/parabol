@@ -7,7 +7,6 @@ import ProjectWatermark from 'universal/components/ProjectWatermark';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
 import {cardBorderTop, cardRootStyles} from 'universal/styles/helpers';
-import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -172,7 +171,7 @@ const styleThunk = () => ({
   },
 
   isPrivate: {
-    backgroundColor: appTheme.palette.light50l
+    backgroundColor: ui.privateCardBgColor
   },
 
   isArchived: {

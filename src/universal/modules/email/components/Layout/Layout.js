@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import ui from 'universal/styles/ui';
 
 const Layout = (props) => {
   const containerStyle = {
@@ -7,6 +8,7 @@ const Layout = (props) => {
     msTextSizeAdjust: '100%',
     msoTableLspace: '0pt',
     msoTableRspace: '0pt',
+    backgroundColor: ui.emailBackgroundColor,
     borderCollapse: 'collapse',
     margin: '0px auto',
     textAlign: 'center'
@@ -24,7 +26,7 @@ const Layout = (props) => {
   };
 
   const cellStyle = {
-    padding: 0,
+    padding: '16px 0px',
     textAlign: 'center'
   };
 

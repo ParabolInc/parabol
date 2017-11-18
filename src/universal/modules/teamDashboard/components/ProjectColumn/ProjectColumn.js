@@ -65,6 +65,7 @@ class ProjectColumn extends Component {
       atmosphere,
       dispatch,
       history,
+      isMyMeetingSection,
       status,
       projects,
       myTeamMemberId,
@@ -74,7 +75,7 @@ class ProjectColumn extends Component {
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const sortOrder = getNextSortOrder(projects, dndNoise());
-    if (area === TEAM_DASH) {
+    if (area === TEAM_DASH || isMyMeetingSection) {
       const teamMemberId = queryKey.indexOf('::') === -1 ? myTeamMemberId : queryKey;
       const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, teamMemberId, sortOrder);
       return <AddProjectButton onClick={handleAddProject} label={label} />;
@@ -202,6 +203,7 @@ ProjectColumn.propTypes = {
   dragState: PropTypes.object,
   firstColumn: PropTypes.bool,
   history: PropTypes.object.isRequired,
+  isMyMeetingSection: PropTypes.bool,
   lastColumn: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,

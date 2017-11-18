@@ -7,7 +7,7 @@ import ui from 'universal/styles/ui';
 const Footer = (props) => {
   const tableStyle = {
     ...ui.emailTableBase,
-    backgroundColor: ui.emailBackgroundColor,
+    backgroundColor: ui.emailBodyColor,
     color: props.color
   };
 
@@ -17,7 +17,7 @@ const Footer = (props) => {
   };
 
   const cellStyles = {
-    backgroundColor: ui.emailBackgroundColor,
+    backgroundColor: ui.emailBodyColor,
     color: props.color,
     fontFamily: ui.emailFontFamily,
     textAlign: 'center'

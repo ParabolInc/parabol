@@ -9,10 +9,13 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import withRouter from 'react-router-dom/es/withRouter';
+import {clearNotificationLabel} from '../../helpers/constants';
 
 const AddedToTeam = (props) => {
   const {
     atmosphere,
+    history,
     styles,
     notification,
     submitting,
@@ -20,30 +23,42 @@ const AddedToTeam = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id, teamName} = notification;
+  const {id, team} = notification;
+  const {id: teamId, name: teamName} = team;
   const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
   };
+  const goToTeam = () => {
+    submitMutation();
+    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    history.push(`/team/${teamId}`);
+  };
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="medium" />
+        <IconAvatar icon="users" size="small" />
       </div>
       <div className={css(styles.message)}>
-        Congratulations! You are now a part of the team
-        <span className={css(styles.messageVar)}> {teamName}!</span>
+        {'Congratulations! You are now a part of the team '}
+        <span
+          className={css(styles.messageVar, styles.notifLink)}
+          onClick={goToTeam}
+        >
+          {teamName}
+        </span>{'.'}
       </div>
-      <div className={css(styles.button)}>
+      <div className={css(styles.iconButton)}>
         <Button
-          colorPalette="cool"
-          waiting={submitting}
-          isBlock
-          label="Great!"
+          aria-label={clearNotificationLabel}
           buttonSize={ui.notificationButtonSize}
-          type="submit"
+          colorPalette="gray"
+          icon="check"
+          isBlock
           onClick={acknowledge}
+          type="submit"
+          waiting={submitting}
         />
       </div>
     </Row>
@@ -52,6 +67,7 @@ const AddedToTeam = (props) => {
 
 AddedToTeam.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
@@ -59,17 +75,12 @@ AddedToTeam.propTypes = {
   submitting: PropTypes.bool,
   notification: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired
+    team: PropTypes.object.isRequired
   })
 };
 
 const styleThunk = () => ({
-  ...defaultStyles,
-
-  button: {
-    marginLeft: ui.rowGutter,
-    minWidth: '3.5rem'
-  }
+  ...defaultStyles
 });
 
-export default withStyles(styleThunk)(AddedToTeam);
+export default withRouter(withStyles(styleThunk)(AddedToTeam));

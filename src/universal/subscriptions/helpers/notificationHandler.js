@@ -8,7 +8,7 @@ import {
   FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
-  KICKED_OUT, PAYMENT_REJECTED, PROMOTE_TO_BILLING_LEADER,
+  KICKED_OUT, MENTIONEE, PAYMENT_REJECTED, PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER,
   REJOIN_TEAM,
   REQUEST_NEW_USER, TEAM_ARCHIVED,
   TEAM_INVITE
@@ -163,6 +163,25 @@ const notificationHandler = {
         label: 'Fix it!',
         callback: () => {
           history.push(`/me/organizations/${orgId}`);
+        }
+      }
+    }));
+    addNotificationUpdater(store, viewerId, payload);
+  },
+  [PROJECT_INVOLVES]: (payload, {dispatch, history, environment, store}) => {
+    const {viewerId} = environment;
+    const involvement = payload.getValue('involvement');
+    const changeAuthorName = payload.getLinkedRecord('changeAuthor').getValue('preferredName');
+    const wording = involvement === MENTIONEE ? 'mentioned you in' : 'assigned you to';
+    const message = `${changeAuthorName} ${wording} a project`;
+    dispatch(showInfo({
+      autoDismiss: 10,
+      title: 'Fresh work!',
+      message,
+      action: {
+        label: 'Check it out!',
+        callback: () => {
+          history.push('/me/notifications');
         }
       }
     }));

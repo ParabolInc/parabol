@@ -4,6 +4,7 @@ import Layout from '../../components/Layout/Layout';
 import Button from '../../components/Button/Button';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Body from '../../components/Body/Body';
+import Header from '../../components/Header/Header';
 import Callout from '../../components/Callout/Callout';
 import Footer from '../../components/Footer/Footer';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -53,19 +54,6 @@ const secondaryMessage = {
   lineHeight: '30px'
 };
 
-const imageStyle = {
-  border: 0,
-  display: 'block',
-  margin: '0 auto'
-};
-
-const emailHeaderStyle = {
-  backgroundColor: appTheme.palette.dark,
-  paddingBottom: '20px',
-  paddingTop: '20px',
-  textAlign: 'center'
-};
-
 const TeamInvite = (props) => {
   const {
     inviterAvatar,
@@ -81,20 +69,7 @@ const TeamInvite = (props) => {
   return (
     <Layout>
 
-      <table style={ui.emailTableBase} width="100%">
-        <tbody>
-          <tr>
-            <td align="center" style={emailHeaderStyle}>
-              <img
-                height={56}
-                src="/static/images/email/email-header-branding/email-header-branding@2x.png"
-                style={imageStyle}
-                width={262}
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <Header />
 
       <Body verticalGutter={32}>
         <table style={ui.emailTableBase} align="center">

@@ -7,6 +7,7 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Features from '../../components/Features/Features';
 import GetStarted from '../../components/GetStarted/GetStarted';
 import Body from '../../components/Body/Body';
+import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -24,39 +25,13 @@ const emailLink = {
   textDecoration: 'none'
 };
 
-const imageStyle = {
-  border: 0,
-  display: 'block',
-  margin: '0 auto'
-};
-
-const emailHeaderStyle = {
-  backgroundColor: appTheme.palette.dark,
-  paddingBottom: '20px',
-  paddingTop: '20px',
-  textAlign: 'center'
-};
-
 const WelcomeEmail = (props) => {
   const {email} = props;
 
   return (
     <Layout>
 
-      <table width="100%">
-        <tbody>
-          <tr>
-            <td align="center" style={emailHeaderStyle}>
-              <img
-                height={56}
-                src="/static/images/email/email-header-branding/email-header-branding@2x.png"
-                style={imageStyle}
-                width={262}
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <Header />
 
       <Body lineHeight={1.5}>
         <Callout vSpacing={0}>

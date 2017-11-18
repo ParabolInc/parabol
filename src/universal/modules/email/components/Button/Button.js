@@ -9,19 +9,19 @@ const Button = (props) => {
     color: '#FFFFFF',
     fontWeight: 'bold',
     padding: 0,
-    textAlign: 'center',
-    textTransform: 'uppercase'
+    textAlign: 'center'
   };
 
   const linkStyle = {
     backgroundColor: `${props.backgroundColor}`,
+    borderRadius: '2px',
     color: '#FFFFFF',
     display: 'block',
+    fontFamily: ui.emailFontFamily,
     fontWeight: 'bold',
     paddingBottom: `${props.vPadding}px`,
     paddingTop: `${props.vPadding}px`,
     textDecoration: 'none',
-    textTransform: 'uppercase',
     width: '100%'
   };
 

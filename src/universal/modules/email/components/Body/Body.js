@@ -5,24 +5,32 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const Body = (props) => {
+  const {
+    align,
+    children,
+    fontSize,
+    lineHeight,
+    verticalGutter
+  } = props;
+
   const cellStyle = {
     color: appTheme.palette.dark,
-    backgroundColor: ui.emailBackgroundColor,
+    backgroundColor: ui.emailBodyColor,
     fontFamily: ui.emailFontFamily,
-    fontSize: `${props.fontSize}px`,
-    lineHeight: `${props.lineHeight}`,
+    fontSize: `${fontSize}px`,
+    lineHeight: `${lineHeight}`,
     padding: 0,
-    textAlign: 'center'
+    textAlign: align
   };
 
   return (
-    <table align="center" style={ui.emailTableBase} width="100%">
+    <table align={align} style={ui.emailTableBase} width="100%">
       <tbody>
         <tr>
-          <td align="center" style={cellStyle}>
-            <EmptySpace height={props.verticalGutter} />
-            {props.children}
-            <EmptySpace height={props.verticalGutter} />
+          <td align={align} style={cellStyle}>
+            <EmptySpace height={verticalGutter} />
+            {children}
+            <EmptySpace height={verticalGutter} />
           </td>
         </tr>
       </tbody>
@@ -31,6 +39,10 @@ const Body = (props) => {
 };
 
 Body.propTypes = {
+  align: PropTypes.oneOf([
+    'center',
+    'left'
+  ]),
   children: PropTypes.any,
   fontSize: PropTypes.number,
   lineHeight: PropTypes.number,
@@ -38,6 +50,7 @@ Body.propTypes = {
 };
 
 Body.defaultProps = {
+  align: 'center',
   fontSize: 18,
   lineHeight: 1.25,
   verticalGutter: 48

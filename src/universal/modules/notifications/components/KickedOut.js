@@ -9,8 +9,9 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import {clearNotificationLabel} from '../helpers/constants';
 
-const InviteeApproved = (props) => {
+const KickedOut = (props) => {
   const {
     atmosphere,
     styles,
@@ -38,6 +39,7 @@ const InviteeApproved = (props) => {
       </div>
       <div className={css(styles.button)}>
         <Button
+          aria-label={clearNotificationLabel}
           colorPalette="cool"
           waiting={submitting}
           isBlock
@@ -51,7 +53,7 @@ const InviteeApproved = (props) => {
   );
 };
 
-InviteeApproved.propTypes = {
+KickedOut.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
@@ -73,4 +75,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(InviteeApproved);
+export default withStyles(styleThunk)(KickedOut);
