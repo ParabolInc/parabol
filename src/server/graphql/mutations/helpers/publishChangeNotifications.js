@@ -10,7 +10,7 @@ import {
 } from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
-const publishChangeNotifications = async (project, oldProject, changeUserId, usersToIgnore = []) => {
+const publishChangeNotifications = async (project, oldProject, changeUserId) => {
   const r = getRethink();
   const now = new Date();
   const changeAuthorId = `${changeUserId}::${project.teamId}`;
@@ -24,14 +24,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
   const notificationsToRemove = oldMentions
     .filter((userId) => !mentions.includes(userId));
   const notificationsToAdd = mentions
-    // it didn't already exist
-    .filter((userId) => !oldMentions.includes(userId) &&
-      // it isn't the owner (they get the assign notification)
-      userId !== project.userId &&
-      // it isn't the person changing it
-      changeUserId !== userId &&
-      // it isn't someone in a meeting
-      !usersToIgnore.includes(project.userId))
+    .filter((m) => !oldMentions.includes(m) && m !== project.userId && changeUserId !== project.userId)
     .map((userId) => ({
       id: shortid.generate(),
       startAt: now,
@@ -45,7 +38,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
 
   // add in the assignee changes
   if (oldProject.teamMemberId !== project.teamMemberId) {
-    if (project.userId !== changeUserId && !usersToIgnore.includes(project.userId)) {
+    if (project.userId !== changeUserId) {
       notificationsToAdd.push({
         id: shortid.generate(),
         startAt: now,
