@@ -169,6 +169,14 @@ const notificationHandler = {
     addNotificationUpdater(store, viewerId, payload);
   },
   [PROJECT_INVOLVES]: (payload, {dispatch, history, environment, store}) => {
+    const inMeeting = Boolean(matchPath(location.pathname, {
+      path: '/meeting',
+      exact: false,
+      strict: false
+    }));
+    if (inMeeting) {
+      return;
+    }
     const {viewerId} = environment;
     const involvement = payload.getValue('involvement');
     const changeAuthorName = payload.getLinkedRecord('changeAuthor').getValue('preferredName');
