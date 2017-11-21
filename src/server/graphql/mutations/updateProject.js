@@ -85,20 +85,14 @@ export default {
           );
         });
     }
-    const {projectChanges, usersToIgnore} = await r({
+    const {projectChanges} = await r({
       projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0).default(null),
-      history: projectHistory,
-      usersToIgnore: area === MEETING ? await r.table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({
-          isCheckedIn: true
-        })('userId')
-        .coerceTo('array') : []
+      history: projectHistory
     });
     if (!projectChanges) return true;
     const myUserId = getUserId(authToken);
     const {new_val: project, old_val: oldProject} = projectChanges;
-    publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
+    publishChangeNotifications(project, oldProject, myUserId);
     const projectUpdated = {project};
     // TODO when removing cashay, add in the mutatorId here
     getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated});

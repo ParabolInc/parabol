@@ -10,7 +10,7 @@ import {
 } from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
-const publishChangeNotifications = async (project, oldProject, changeUserId, usersToIgnore) => {
+const publishChangeNotifications = async (project, oldProject, changeUserId, usersToIgnore = []) => {
   const r = getRethink();
   const now = new Date();
   const changeAuthorId = `${changeUserId}::${project.teamId}`;
