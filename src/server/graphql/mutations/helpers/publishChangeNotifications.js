@@ -24,7 +24,14 @@ const publishChangeNotifications = async (project, oldProject, changeUserId) => 
   const notificationsToRemove = oldMentions
     .filter((userId) => !mentions.includes(userId));
   const notificationsToAdd = mentions
-    .filter((m) => !oldMentions.includes(m) && m !== project.userId && changeUserId !== project.userId)
+    .filter((userId) =>
+      // it didn't already exist
+      !oldMentions.includes(userId) &&
+      // it isn't the owner (they get the assign notification)
+      userId !== project.userId &&
+      // it isn't the person changing it
+      changeUserId !== userId
+    )
     .map((userId) => ({
       id: shortid.generate(),
       startAt: now,
