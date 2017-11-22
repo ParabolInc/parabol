@@ -4,7 +4,6 @@ import {
   GraphQLBoolean
 } from 'graphql';
 import {
-  requireWebsocket,
   requireSUOrSelfOrLead
 } from 'server/utils/authorization';
 import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
@@ -18,11 +17,10 @@ export default {
       description: 'The teamMemberId of the person who is being removed'
     }
   },
-  async resolve(source, {teamMemberId}, {authToken, socket}) {
+  async resolve(source, {teamMemberId}, {authToken}) {
     // AUTH
     const [userId, teamId] = teamMemberId.split('::');
     await requireSUOrSelfOrLead(authToken, userId, teamId);
-    requireWebsocket(socket);
     const isKickout = authToken.sub !== userId;
     // RESOLUTION
     await removeAllTeamMembers(teamMemberId, {isKickout});

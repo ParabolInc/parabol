@@ -5,6 +5,7 @@ import {MenuItem} from 'universal/modules/menu';
 
 const OutcomeCardAssignMenu = (props) => {
   const {
+    area,
     closePortal,
     projectId,
     ownerId,
@@ -18,6 +19,7 @@ const OutcomeCardAssignMenu = (props) => {
     const options = {
       ops: {},
       variables: {
+        area,
         updatedProject: {
           id: projectId,
           teamMemberId: newOwner
@@ -52,6 +54,7 @@ const OutcomeCardAssignMenu = (props) => {
 };
 
 OutcomeCardAssignMenu.propTypes = {
+  area: PropTypes.string.isRequired,
   closePortal: PropTypes.func.isRequired,
   projectId: PropTypes.string.isRequired,
   ownerId: PropTypes.string.isRequired,

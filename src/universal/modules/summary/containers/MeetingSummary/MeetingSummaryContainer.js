@@ -8,6 +8,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import makeHref from 'universal/utils/makeHref';
 import {maintainSocket} from 'redux-socket-cluster';
 import {MEETING_NAME, MEETING_SUMMARY_LABEL} from 'universal/utils/constants';
+import ui from 'universal/styles/ui';
 
 const meetingSummaryQuery = `
 query{
@@ -95,7 +96,7 @@ export default class MeetingSummaryContainer extends Component {
     const teamDashUrl = `/team/${teamId}`;
 
     return (
-      <div>
+      <div style={{backgroundColor: ui.emailBackgroundColor, minHeight: '100vh'}}>
         <Helmet title={title} />
         <SummaryEmail
           meeting={meeting}

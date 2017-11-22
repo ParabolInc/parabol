@@ -309,6 +309,7 @@ class MockDB {
       createdBy: userId,
       sortOrder: table.filter((item) => item.teamId === teamId).length,
       status: ACTIVE,
+      tags: [],
       teamId,
       teamMemberId,
       updatedAt: new Date(__anHourAgo - table.length),
@@ -353,6 +354,7 @@ class MockDB {
   newTeamMember(overrides = {}) {
     return this.closeout('teamMember', {
       id: `${this.context.user.id}::${this.context.team.id}`,
+      isLead: false,
       isNotRemoved: true,
       isFacilitator: false,
       teamId: this.context.team.id,
@@ -372,6 +374,7 @@ class MockDB {
       id: `test|${overrides.name.substr(0, 4)}_${orgId}`,
       cachedAt: anHourAgo,
       createdAt: anHourAgo,
+      email: overrides.name ? `${overrides.name}@example.com` : null,
       emailVerified: false,
       lastLogin: anHourAgo,
       lastSeenAt: anHourAgo,

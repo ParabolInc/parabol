@@ -36,7 +36,7 @@ NotificationRow.propTypes = {
   dispatch: PropTypes.func.isRequired,
   notification: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    orgId: PropTypes.string.isRequired,
+    orgId: PropTypes.string,
     type: PropTypes.string.isRequired
     // See the Notification interface for full list
   }),
@@ -54,10 +54,11 @@ const styleThunk = () => ({
     ...formError
   }
 });
-export default
-withAtmosphere(withMutationProps(
-  withStyles(styleThunk)(
-    NotificationRow
+
+export default withAtmosphere(
+  withMutationProps(
+    withStyles(styleThunk)(
+      NotificationRow
+    )
   )
-)
 );

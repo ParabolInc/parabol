@@ -9,6 +9,7 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
+import {clearNotificationLabel} from '../../helpers/constants';
 
 const DenyNewUser = (props) => {
   const {
@@ -28,24 +29,24 @@ const DenyNewUser = (props) => {
   };
   const safeReason = reason || 'none given';
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="medium" />
+        <IconAvatar icon="user-circle-o" size="small" />
       </div>
       <div className={css(styles.message)}>
-        <span className={css(styles.messageVar)}>{deniedByName} </span>
-        has denied
-        <span className={css(styles.messageVar)}> {inviteeEmail} </span>
-        from joining the organization. <br />
-        <b>Reason</b>: “{safeReason}”
+        <b>{deniedByName}</b>
+        {' has denied '}
+        <b>{inviteeEmail}</b>
+        {' from joining the organization.'}<br />
+        <b><i>{'Reason'}</i></b>{': “'}<i>{safeReason}</i>{'”'}
       </div>
-      <div className={css(styles.button)}>
+      <div className={css(styles.iconButton)}>
         <Button
-          colorPalette="cool"
+          aria-label={clearNotificationLabel}
+          buttonSize="small"
+          colorPalette="gray"
+          icon="check"
           isBlock
-          label="Okay"
-          buttonSize={ui.notificationButtonSize}
-          type="submit"
           onClick={acknowledge}
           waiting={submitting}
         />
@@ -65,8 +66,7 @@ DenyNewUser.propTypes = {
     id: PropTypes.string.isRequired,
     deniedByName: PropTypes.string.isRequired,
     inviteeEmail: PropTypes.string.isRequired,
-    reason: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired
+    reason: PropTypes.string.isRequired
   })
 };
 

@@ -20,17 +20,18 @@ const Row = (props) => {
 
 Row.propTypes = {
   children: PropTypes.any,
+  compact: PropTypes.bool,
   style: PropTypes.object,
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
+const styleThunk = (theme, {compact}) => ({
   row: {
     alignItems: 'center',
     borderTop: `.0625rem solid ${ui.rowBorderColor}`,
     display: 'flex',
     justifyContent: 'space-between',
-    padding: ui.rowGutter,
+    padding: compact ? ui.rowCompactGutter : ui.rowGutter,
     width: '100%'
   }
 });

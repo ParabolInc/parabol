@@ -91,7 +91,7 @@ const highlightEmail = {
   '20%': {
     color: appTheme.palette.warm,
     fontSize: appTheme.typography.s4,
-    fontWeight: 800
+    fontWeight: 700
   },
   '100%': {
     color: appTheme.palette.dark,

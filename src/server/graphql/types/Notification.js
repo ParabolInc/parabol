@@ -21,6 +21,7 @@ import {
   JOIN_TEAM,
   KICKED_OUT,
   PAYMENT_REJECTED,
+  PROJECT_INVOLVES,
   PROMOTE_TO_BILLING_LEADER,
   REJOIN_TEAM,
   REQUEST_NEW_USER,
@@ -28,6 +29,7 @@ import {
   TEAM_INVITE
 } from 'universal/utils/constants';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
+import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 
 export const notificationInterfaceFields = {
   id: globalIdField('Notification', ({id}) => id),
@@ -62,6 +64,7 @@ const Notification = new GraphQLInterfaceType({
       [JOIN_TEAM]: NotifyNewTeamMember,
       [KICKED_OUT]: NotifyKickedOut,
       [PAYMENT_REJECTED]: NotifyPayment,
+      [PROJECT_INVOLVES]: NotifyProjectInvolves,
       [REJOIN_TEAM]: NotifyNewTeamMember,
       [REQUEST_NEW_USER]: NotifyInvitation,
       [TEAM_INVITE]: NotifyInvitation,

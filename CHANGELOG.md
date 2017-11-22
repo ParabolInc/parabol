@@ -4,6 +4,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.23.0
+### Added
+- Notifications when someone assigns/mentions you a task
+- Create projects from your own meeting updates phase
+- Send daily re-engagement emails when users have notifications in their Parabol inbox
+### Fixed
+- Security bug #17
+- Homogenized notifications layout 
+
+### Fixed
+- #1455 Database migration removing billing info from personal Organizations
+
+## v0.22.2
+### Fixed
+- #1455 Database migration removing billing info from personal Organizations
+
 ## v0.22.1
 ### Fixed
 - #1445 Regression where team archive was not viewable

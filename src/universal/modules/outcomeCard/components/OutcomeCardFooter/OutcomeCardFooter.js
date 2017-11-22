@@ -51,7 +51,7 @@ class OutcomeCardFooter extends Component {
   state = {};
 
   removeContentTag = (tagValue) => () => {
-    const {atmosphere, outcome: {id, content}} = this.props;
+    const {area, atmosphere, outcome: {id, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
     const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
     if (!nextContent) return;
@@ -59,7 +59,7 @@ class OutcomeCardFooter extends Component {
       id,
       content: nextContent
     };
-    UpdateProjectMutation(atmosphere, updatedProject);
+    UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
   render() {
@@ -124,6 +124,7 @@ class OutcomeCardFooter extends Component {
                 maxHeight={225}
                 originAnchor={assignOriginAnchor}
                 queryVars={{
+                  area,
                   projectId: outcome.id,
                   ownerId: owner.id,
                   teamMembers,
@@ -166,6 +167,7 @@ class OutcomeCardFooter extends Component {
                   maxHeight={225}
                   originAnchor={originAnchor}
                   queryVars={{
+                    area,
                     editorState,
                     isAgenda,
                     isPrivate,

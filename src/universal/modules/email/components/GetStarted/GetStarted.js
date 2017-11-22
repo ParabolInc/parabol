@@ -43,9 +43,8 @@ const GetStarted = () => {
               style={linkStyle}
               target="_blank"
               title="How to Navigate Uncertainty using the Action Rhythm"
-            >How to Navigate Uncertainty</a>{' '}
-            so you<br />
-            can get into the swing of things.
+            >{'How to Navigate Uncertainty'}</a>{' so you'}<br />
+            {'can get into the swing of things.'}
           </td>
         </tr>
       </tbody>

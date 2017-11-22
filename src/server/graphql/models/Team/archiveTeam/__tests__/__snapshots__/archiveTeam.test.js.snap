@@ -107,49 +107,49 @@ Object {
     Object {
       "channelId": 16,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 15,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 14,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 13,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 12,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 11,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 10,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
     Object {
       "channelId": 9,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 18,
       },
     },
   ],
@@ -318,6 +318,7 @@ Object {
   "user": Object {
     "cachedAt": 2017-01-01T07:00:00.000Z,
     "createdAt": 2017-01-01T07:00:00.000Z,
+    "email": "Leader of One@example.com",
     "emailVerified": false,
     "id": 0,
     "identities": Array [],
@@ -346,7 +347,7 @@ Object {
     Object {
       "channelId": 0,
       "message": Object {
-        "newAuthToken": "FAKEENCODEDJWT",
+        "newAuthToken": 2,
       },
     },
   ],

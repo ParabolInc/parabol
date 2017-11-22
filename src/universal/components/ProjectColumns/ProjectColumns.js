@@ -5,6 +5,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import {columnArray, meetingColumnArray, MEETING} from 'universal/utils/constants';
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
 
 const ProjectColumns = (props) => {
   // myTeamMemberId is undefined if this is coming from USER_DASH
@@ -12,6 +13,7 @@ const ProjectColumns = (props) => {
   const {
     alignColumns,
     area,
+    isMyMeetingSection,
     myTeamMemberId,
     projects,
     queryKey,
@@ -28,6 +30,7 @@ const ProjectColumns = (props) => {
           (<ProjectColumn
             key={`projectCol${status}`}
             area={area}
+            isMyMeetingSection={isMyMeetingSection}
             firstColumn={idx === 0}
             lastColumn={idx === (lanes.length - 1)}
             myTeamMemberId={myTeamMemberId}
@@ -39,6 +42,7 @@ const ProjectColumns = (props) => {
           />)
         )}
       </div>
+      <EditorHelpModalContainer />
     </div>
   );
 };
@@ -50,6 +54,7 @@ ProjectColumns.propTypes = {
     'right'
   ]),
   area: PropTypes.string,
+  isMyMeetingSection: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string,
