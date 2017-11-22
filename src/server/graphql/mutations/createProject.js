@@ -5,11 +5,12 @@ import ProjectInput from 'server/graphql/types/ProjectInput';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ASSIGNEE, MENTIONEE, NOTIFICATIONS_ADDED, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {ASSIGNEE, MEETING, MENTIONEE, NOTIFICATIONS_ADDED, PROJECT_INVOLVES} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import getPubSub from 'server/utils/getPubSub';
+import AreaEnum from 'server/graphql/types/AreaEnum';
 
 export default {
   type: CreateProjectPayload,
@@ -18,9 +19,13 @@ export default {
     newProject: {
       type: new GraphQLNonNull(ProjectInput),
       description: 'The new project including an id, status, and type, and teamMemberId'
+    },
+    area: {
+      type: AreaEnum,
+      description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newProject}, {authToken, socket}) {
+  async resolve(source, {newProject, area}, {authToken, socket}) {
     const r = getRethink();
     const now = new Date();
     // AUTH
@@ -58,14 +63,21 @@ export default {
       teamMemberId: project.teamMemberId,
       updatedAt: project.updatedAt
     };
-    await r({
+    const {usersToIgnore} = await r({
       project: r.table('Project').insert(project),
-      history: r.table('ProjectHistory').insert(history)
+      history: r.table('ProjectHistory').insert(history),
+      usersToIgnore: area === MEETING ? r.table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({
+          isCheckedIn: true
+        })('userId')
+        .coerceTo('array') : []
     });
 
+    // Almost always you start out with a blank card assigned to you (except for filtered team dash)
     const changeAuthorId = `${myUserId}::${teamId}`;
     const notificationsToAdd = [];
-    if (changeAuthorId !== project.teamMemberId) {
+    if (changeAuthorId !== project.teamMemberId && !usersToIgnore.includes(project.userId)) {
       notificationsToAdd.push({
         id: shortid.generate(),
         startAt: now,
@@ -79,7 +91,7 @@ export default {
     }
 
     getTypeFromEntityMap('MENTION', entityMap)
-      .filter((mention) => mention !== myUserId && mention !== project.userId)
+      .filter((mention) => mention !== myUserId && mention !== project.userId && !usersToIgnore.includes(mention))
       .forEach((mentioneeUserId) => {
         notificationsToAdd.push({
           id: shortid.generate(),
