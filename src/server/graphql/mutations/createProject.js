@@ -66,7 +66,7 @@ export default {
     const {usersToIgnore} = await r({
       project: r.table('Project').insert(project),
       history: r.table('ProjectHistory').insert(history),
-      usersToIgnore: area === MEETING ? r.table('TeamMember')
+      usersToIgnore: area === MEETING ? await r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           isCheckedIn: true
@@ -115,4 +115,3 @@ export default {
     return {project};
   }
 };
-
