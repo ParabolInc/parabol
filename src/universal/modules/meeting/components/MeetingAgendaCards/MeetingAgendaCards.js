@@ -22,7 +22,7 @@ const handleAddProjectFactory = (atmosphere, dispatch, history, teamMemberId, ag
     sortOrder: 0,
     agendaId
   };
-  CreateProjectMutation(atmosphere, newProject);
+  CreateProjectMutation(atmosphere, newProject, MEETING);
 };
 
 const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject) => {
