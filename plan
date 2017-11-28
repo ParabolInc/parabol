@@ -1,8 +1,10 @@
-- Persistence layer
-  - Rethink: rename "Project" table to "Task"
-  - Rethink: rename "projectId"s to "taskID"s
-  - Rethink: rename any property named "project*" to "task*"
+x Persistence layer
+  x Rethink: rename "Project" table to "Task"
+  x Rethink: rename "projectId"s to "taskID"s
+  x Rethink: rename any property named "project*" to "task*"
 - API layer
+  - All code touching Rethink should make reference to tasks
+  - All constants named after projects renamed after tasks
   - GraphQL: rename all "*project*" queries and mutations to "*task*"
 - Developer layer
   - module/file names: rename all "*project*" to "*task*"
