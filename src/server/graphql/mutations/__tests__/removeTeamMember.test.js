@@ -19,7 +19,7 @@ describe('removeTeamMember', () => {
 
   });
 
-  test('removes the teamMember, reassigns active projects to the lead', async () => {
+  test('removes the teamMember, reassigns active tasks to the lead', async () => {
     // SETUP
     const r = getRethink();
     const mockPubSub = new MockPubSub();
@@ -28,7 +28,7 @@ describe('removeTeamMember', () => {
     const dynamicSerializer = new DynamicSerializer();
     await mockDB
       .init()
-      .newProject();
+      .newTask();
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     const userToBoot = mockDB.db.user[7];
@@ -44,7 +44,7 @@ describe('removeTeamMember', () => {
 
     const db = await fetchAndSerialize({
       teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('checkInOrder'),
-      project: r.table('Project').getAll(teamId, {index: 'teamId'}),
+      task: r.table('Task').getAll(teamId, {index: 'teamId'}),
       user: r.table('User').get(userToBoot.id)
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
@@ -54,7 +54,7 @@ describe('removeTeamMember', () => {
   });
 
   test('throw if the caller is not self or team lead', async () => {
-    // reassigns their projects
+    // reassigns their tasks
 
     // deactivates providers
 
@@ -66,12 +66,12 @@ describe('removeTeamMember', () => {
 
     // remove github repos
 
-    // archive githug projects attached to those repos
+    // archive githug tasks attached to those repos
     // SETUP
     const mockDB = new MockDB();
     await mockDB
       .init()
-      .newProject();
+      .newTask();
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     const authToken = mockAuthToken(mockDB.db.user[1]);

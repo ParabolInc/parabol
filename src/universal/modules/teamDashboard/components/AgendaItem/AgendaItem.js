@@ -12,7 +12,7 @@ import {DragSource as dragSource} from 'react-dnd';
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 
-const projectSource = {
+const taskSource = {
   beginDrag(props) {
     return {
       id: props.agendaItem.id
@@ -275,6 +275,6 @@ const dragSourceCb = (connectSource, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-export default dragSource(AGENDA_ITEM, projectSource, dragSourceCb)(
+export default dragSource(AGENDA_ITEM, taskSource, dragSourceCb)(
   withStyles(styleThunk)(AgendaItem)
 );

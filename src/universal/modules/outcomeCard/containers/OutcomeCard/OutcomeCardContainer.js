@@ -4,11 +4,11 @@ import {Set} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import editorDecorators from 'universal/components/ProjectEditor/decorators';
+import editorDecorators from 'universal/components/TaskEditor/decorators';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import labels from 'universal/styles/theme/labels';
 import mergeServerContent from 'universal/utils/mergeServerContent';
-import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
+import getRelaySafeTaskId from 'universal/utils/getRelaySafeTaskId';
 
 const teamMembersQuery = `
 query {
@@ -22,7 +22,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   // TODO ugly patch until we remove cashay
-  const relaySafeId = getRelaySafeProjectId(props.outcome.id);
+  const relaySafeId = getRelaySafeTaskId(props.outcome.id);
   const [teamId] = relaySafeId.split('::');
   const {teamMembers} = cashay.query(teamMembersQuery, {
     op: 'outcomeCardContainer',
@@ -83,7 +83,7 @@ class OutcomeCardContainer extends Component {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused !== isFocused) {
-      this.trackEditingComponent('project-editor', isFocused);
+      this.trackEditingComponent('task-editor', isFocused);
       if (!isFocused) {
         this.handleCardUpdate();
       }
@@ -119,19 +119,19 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state;
-    const {area, outcome: {id: projectId}, contentState: initialContentState} = this.props;
+    const {area, outcome: {id: taskId}, contentState: initialContentState} = this.props;
     const contentState = editorState.getCurrentContent();
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
-      cashay.mutate('deleteProject', {variables: {projectId}});
+      cashay.mutate('deleteTask', {variables: {taskId}});
     } else if (initialContentState !== contentState) {
       clearTimeout(this.updateTimer);
       this.updateTimer = setTimeout(() => {
-        cashay.mutate('updateProject', {
+        cashay.mutate('updateTask', {
           ops: {},
           variables: {
             area,
-            updatedProject: {
-              id: projectId,
+            updatedTask: {
+              id: taskId,
               content: JSON.stringify(convertToRaw(contentState))
             }
           }
@@ -152,19 +152,19 @@ class OutcomeCardContainer extends Component {
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
   announceEditing = (isEditing) => {
-    const {outcome: {id: projectId}} = this.props;
-    const [teamId] = projectId.split('::');
+    const {outcome: {id: taskId}} = this.props;
+    const [teamId] = taskId.split('::');
     cashay.mutate('edit', {
       variables: {
         teamId,
-        editing: isEditing ? `Task::${projectId}` : null
+        editing: isEditing ? `Task::${taskId}` : null
       }
     });
   };
 
   render() {
     const {activeEditingComponents, cardHasFocus, cardHasHover, cardHasMenuOpen, editorRef, editorState} = this.state;
-    const {area, handleAddProject, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
+    const {area, handleAddTask, hasDragStyles, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <div
         tabIndex={-1}
@@ -184,7 +184,7 @@ class OutcomeCardContainer extends Component {
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
           cardHasMenuOpen={cardHasMenuOpen}
-          handleAddProject={handleAddProject}
+          handleAddTask={handleAddTask}
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
@@ -204,11 +204,11 @@ class OutcomeCardContainer extends Component {
 OutcomeCardContainer.propTypes = {
   area: PropTypes.string,
   contentState: PropTypes.object.isRequired,
-  handleAddProject: PropTypes.func,
+  handleAddTask: PropTypes.func,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
-    status: PropTypes.oneOf(labels.projectStatus.slugs),
+    status: PropTypes.oneOf(labels.taskStatus.slugs),
     teamMemberId: PropTypes.string
   }),
   hasDragStyles: PropTypes.bool,

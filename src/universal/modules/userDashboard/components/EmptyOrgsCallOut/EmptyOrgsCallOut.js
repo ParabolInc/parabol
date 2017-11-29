@@ -22,7 +22,7 @@ const EmptyOrgsCallOut = (props) => {
 
   return (
     <CallOutPanel control={button} heading={'You don’t own any organizations!'} panelLabel={'Organizations'}>
-      <span>{'You can create a new organization'}<br />{'and manage your own teams and projects.'}</span>
+      <span>{'You can create a new organization'}<br />{'and manage your own teams and tasks.'}</span>
     </CallOutPanel>
   );
 };

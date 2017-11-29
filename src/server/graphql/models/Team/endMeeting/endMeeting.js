@@ -45,14 +45,14 @@ export default {
       .map((doc) => doc('id'))
       .coerceTo('array')
       .do((agendaItemIds) => {
-        return r.table('Project')
+        return r.table('Task')
           .getAll(r.args(agendaItemIds), {index: 'agendaId'})
           .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
           .orderBy('createdAt')
           .pluck('id', 'content', 'status', 'tags', 'teamMemberId')
           .coerceTo('array')
           .default([])
-          .do((projects) => {
+          .do((tasks) => {
             return r.table('Meeting').get(meetingId)
               .update({
                 agendaItemsCompleted: agendaItemIds.count().default(0),
@@ -71,20 +71,20 @@ export default {
                     preferredName: teamMember('preferredName'),
                     present: teamMember('isCheckedIn').not().not()
                       .default(false),
-                    projects: projects.filter({teamMemberId: teamMember('id')})
+                    tasks: tasks.filter({teamMemberId: teamMember('id')})
                   })),
-                projects
+                tasks
               }, {
                 nonAtomic: true,
                 returnChanges: true
-              })('changes')(0)('new_val').pluck('invitees', 'meetingNumber', 'projects');
+              })('changes')(0)('new_val').pluck('invitees', 'meetingNumber', 'tasks');
           });
       });
-    const updatedProjects = await getEndMeetingSortOrders(completedMeeting);
-    await r.expr(updatedProjects)
-      .forEach((project) => {
-        return r.table('Project').get(project('id')).update({
-          sortOrder: project('sortOrder')
+    const updatedTasks = await getEndMeetingSortOrders(completedMeeting);
+    await r.expr(updatedTasks)
+      .forEach((task) => {
+        return r.table('Task').get(task('id')).update({
+          sortOrder: task('sortOrder')
         });
       })
       .do(() => {

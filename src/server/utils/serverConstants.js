@@ -5,7 +5,7 @@ export const INVITATION_LIFESPAN = ms('30d');
 export const REFRESH_JWT_AFTER = ms('15d');
 export const AUTO_PAUSE_THRESH = ms('30d');
 export const OLD_MEETING_AGE = ms('1d');
-export const MAX_PERSONAL_PROJECTS = 500;
+export const MAX_PERSONAL_TASKS = 500;
 
 /* stripe variables */
 // $199,999/mo

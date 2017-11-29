@@ -6,7 +6,7 @@ import getProviderRowData from 'server/safeQueries/getProviderRowData';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB, SLACK} from 'universal/utils/constants';
-import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
+import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
 import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
 
 
@@ -82,8 +82,8 @@ export default {
     } else if (service === GITHUB) {
       const repoChanges = await removeGitHubReposForUserId(userId, [teamId]);
       const providerRemoved = await getPayload(service, repoChanges, teamId, userId);
-      const archivedProjectsByRepo = await archiveProjectsForManyRepos(repoChanges);
-      providerRemoved.archivedProjectIds = archivedProjectsByRepo.reduce((arr, repoArr) => {
+      const archivedTasksByRepo = await archiveTasksForManyRepos(repoChanges);
+      providerRemoved.archivedTaskIds = archivedTasksByRepo.reduce((arr, repoArr) => {
         arr.push(...repoArr);
         return arr;
       }, []);

@@ -50,25 +50,25 @@ export default {
       throw new Error(`${assigneeLogin} does not have a GitHub integration with Parabol`);
     }
 
-    const projects = await r.table('Project')
+    const tasks = await r.table('Task')
       .getAll(integrationId, {index: 'integrationId'});
 
-    const maybeUpdateProject = (integration) => {
+    const maybeUpdateTask = (integration) => {
       const {teamId, userIds} = integration;
       const provider = providers.find((prov) => prov.teamId === teamId);
-      const project = projects.find((proj) => proj.teamId === teamId);
+      const task = tasks.find((proj) => proj.teamId === teamId);
 
       if (!provider) {
         throw new Error(`${assigneeLogin} does not have a GitHub integration with Parabol for ${teamId}`);
       }
       const {userId} = provider;
-      if (!project) {
-        // TODO create a new project for this team
+      if (!task) {
+        // TODO create a new task for this team
         return false;
       }
-      const {content, status, tags, updatedAt} = project;
+      const {content, status, tags, updatedAt} = task;
       if (!userIds.includes(userId)) {
-        // This user doesn't want to own the project, so ignore
+        // This user doesn't want to own the task, so ignore
         return false;
       }
       const teamMemberId = `${userId}::${teamId}`;
@@ -87,19 +87,19 @@ export default {
         }
       }
 
-      const projectUpdated = {
+      const taskUpdated = {
         ...updateObj,
-        id: project.id
+        id: task.id
       };
       // TODO set this up
-      getPubSub().publish(`projectUpdated.${teamId}`, {projectUpdated});
-      return r.table('Project')
-        .get(project.id)
+      getPubSub().publish(`taskUpdated.${teamId}`, {taskUpdated});
+      return r.table('Task')
+        .get(task.id)
         .update(updateObj)
         .run();
     };
 
-    await Promise.all(integrations.map(maybeUpdateProject));
+    await Promise.all(integrations.map(maybeUpdateTask));
     return true;
   }
 };

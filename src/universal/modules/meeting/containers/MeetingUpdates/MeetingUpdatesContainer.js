@@ -2,13 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
+import makeTasksByStatus from 'universal/utils/makeTasksByStatus';
 import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 
 const meetingUpdatesQuery = `
 query {
-  projects(teamMemberId: $teamMemberId) @live {
+  tasks(teamMemberId: $teamMemberId) @live {
     id
     content
     createdAt
@@ -37,20 +37,20 @@ query {
 `;
 
 const mutationHandlers = {
-  updateProject(optimisticUpdates, queryResponse, currentResponse) {
+  updateTask(optimisticUpdates, queryResponse, currentResponse) {
     if (optimisticUpdates) {
-      const {updatedProject} = optimisticUpdates;
-      if (updatedProject && updatedProject.hasOwnProperty('sortOrder')) {
-        const {id, sortOrder, status} = updatedProject;
-        const {projects} = currentResponse;
-        const fromProject = projects.find((project) => project.id === id);
+      const {updatedTask} = optimisticUpdates;
+      if (updatedTask && updatedTask.hasOwnProperty('sortOrder')) {
+        const {id, sortOrder, status} = updatedTask;
+        const {tasks} = currentResponse;
+        const fromTask = tasks.find((task) => task.id === id);
         if (sortOrder !== undefined) {
-          fromProject.sortOrder = sortOrder;
+          fromTask.sortOrder = sortOrder;
         }
         if (status) {
-          fromProject.status = status;
+          fromTask.status = status;
         }
-        // no need to sort since the resolveTeamProjects function will do that next
+        // no need to sort since the resolveTeamTasks function will do that next
         return currentResponse;
       }
     }
@@ -62,28 +62,28 @@ const mapStateToProps = (state, props) => {
   const {members, localPhaseItem} = props;
   const currentTeamMember = members[localPhaseItem - 1];
   const teamMemberId = currentTeamMember && currentTeamMember.id;
-  const memberProjects = cashay.query(meetingUpdatesQuery, {
+  const memberTasks = cashay.query(meetingUpdatesQuery, {
     op: 'meetingUpdatesContainer',
     key: teamMemberId,
     mutationHandlers,
     variables: {teamMemberId},
     filter: {
-      projects: (project) => !project.tags.includes('private')
+      tasks: (task) => !task.tags.includes('private')
     },
     resolveCached: {
       teamMember: (source) => source.teamMemberId,
       team: (source) => source.teamMemberId.split('::')[1]
     }
-  }).data.projects;
-  const projects = makeProjectsByStatus(memberProjects);
+  }).data.tasks;
+  const tasks = makeTasksByStatus(memberTasks);
   return {
-    projects,
+    tasks,
     queryKey: teamMemberId
   };
 };
 
 const MeetingUpdatesContainer = (props) => {
-  if (!props.projects) {
+  if (!props.tasks) {
     return <LoadingView />;
   }
   return <MeetingUpdates {...props} />;
@@ -94,7 +94,7 @@ MeetingUpdatesContainer.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
-  projects: PropTypes.object.isRequired,
+  tasks: PropTypes.object.isRequired,
   queryKey: PropTypes.string,
   team: PropTypes.object.isRequired
 };

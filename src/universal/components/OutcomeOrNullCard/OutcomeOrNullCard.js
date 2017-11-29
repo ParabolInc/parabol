@@ -8,7 +8,7 @@ export default class OutcomeOrNullCard extends Component {
   static propTypes = {
     area: PropTypes.string,
     hasDragStyles: PropTypes.bool,
-    handleAddProject: PropTypes.func,
+    handleAddTask: PropTypes.func,
     isAgenda: PropTypes.bool,
     isDragging: PropTypes.bool,
     myUserId: PropTypes.string,
@@ -35,7 +35,7 @@ export default class OutcomeOrNullCard extends Component {
   }
 
   render() {
-    const {area, handleAddProject, hasDragStyles, isAgenda, myUserId, outcome, isDragging} = this.props;
+    const {area, handleAddTask, hasDragStyles, isAgenda, myUserId, outcome, isDragging} = this.props;
     const {contentState} = this.state;
     const {createdBy, teamMember: {preferredName}} = outcome;
     const showOutcome = contentState.hasText() || createdBy === myUserId;
@@ -43,7 +43,7 @@ export default class OutcomeOrNullCard extends Component {
       <OutcomeCardContainer
         area={area}
         contentState={contentState}
-        handleAddProject={handleAddProject}
+        handleAddTask={handleAddTask}
         hasDragStyles={hasDragStyles}
         isDragging={isDragging}
         isAgenda={isAgenda}

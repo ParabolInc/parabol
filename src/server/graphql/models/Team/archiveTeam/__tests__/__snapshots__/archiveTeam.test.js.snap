@@ -310,7 +310,7 @@ Object {
 }
 `;
 
-exports[`ArchiveTeam deletes a team when it has no projects or other team members 1`] = `
+exports[`ArchiveTeam deletes a team when it has no tasks or other team members 1`] = `
 Object {
   "notification": Array [],
   "team": Object {},
@@ -341,7 +341,7 @@ Object {
 }
 `;
 
-exports[`ArchiveTeam deletes a team when it has no projects or other team members 2`] = `
+exports[`ArchiveTeam deletes a team when it has no tasks or other team members 2`] = `
 Object {
   "newAuthToken": Array [
     Object {

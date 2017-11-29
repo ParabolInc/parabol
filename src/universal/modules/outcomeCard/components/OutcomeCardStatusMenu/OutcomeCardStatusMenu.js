@@ -8,37 +8,37 @@ import {textOverflow} from 'universal/styles/helpers';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import addTagToProject from 'universal/utils/draftjs/addTagToProject';
+import addTagToTask from 'universal/utils/draftjs/addTagToTask';
 
-const statusItems = labels.projectStatus.slugs.slice();
+const statusItems = labels.taskStatus.slugs.slice();
 
 class OutcomeCardStatusMenu extends Component {
-  makeAddTagToProject = (tag) => () => {
-    const {area, outcome: {id: projectId}, editorState} = this.props;
+  makeAddTagToTask = (tag) => () => {
+    const {area, outcome: {id: taskId}, editorState} = this.props;
     const contentState = editorState.getCurrentContent();
-    const newContent = addTagToProject(contentState, tag);
+    const newContent = addTagToTask(contentState, tag);
     const rawContentStr = JSON.stringify(convertToRaw(newContent));
     const options = {
       ops: {},
       variables: {
         area,
-        updatedProject: {
-          id: projectId,
+        updatedTask: {
+          id: taskId,
           content: rawContentStr
         }
       }
     };
-    cashay.mutate('updateProject', options);
+    cashay.mutate('updateTask', options);
   };
 
   deleteOutcome = () => {
-    const {onComplete, outcome: {id: projectId}} = this.props;
+    const {onComplete, outcome: {id: taskId}} = this.props;
     const options = {
       variables: {
-        projectId
+        taskId
       }
     };
-    cashay.mutate('deleteProject', options);
+    cashay.mutate('deleteTask', options);
     if (onComplete) {
       onComplete();
     }
@@ -49,14 +49,14 @@ class OutcomeCardStatusMenu extends Component {
     const listItems = statusItems
       .filter((status) => status !== outcomeStatus)
       .map((status) => {
-        const {color, icon, label} = labels.projectStatus[status];
+        const {color, icon, label} = labels.taskStatus[status];
         return (
           <MenuItem
             icon={icon}
             iconColor={color}
             key={status}
             label={<div className={css(styles.label)}>{'Move to '}<b style={{color}}>{label}</b></div>}
-            onClick={this.handleProjectUpdateFactory(status)}
+            onClick={this.handleTaskUpdateFactory(status)}
             closePortal={closePortal}
           />
         );
@@ -75,7 +75,7 @@ class OutcomeCardStatusMenu extends Component {
         icon="lock"
         key="private"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>}
-        onClick={this.makeAddTagToProject('#private')}
+        onClick={this.makeAddTagToTask('#private')}
         closePortal={closePortal}
       />)
     );
@@ -83,7 +83,7 @@ class OutcomeCardStatusMenu extends Component {
       (<MenuItem
         icon="times"
         key="delete"
-        label={<div className={css(styles.label)}>{'Delete this Project'}</div>}
+        label={<div className={css(styles.label)}>{'Delete this Task'}</div>}
         onClick={this.deleteOutcome}
         closePortal={closePortal}
       />) :
@@ -91,28 +91,28 @@ class OutcomeCardStatusMenu extends Component {
         icon="archive"
         key="archive"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>}
-        onClick={this.makeAddTagToProject('#archived')}
+        onClick={this.makeAddTagToTask('#archived')}
         closePortal={closePortal}
       />));
     return listItems;
   };
 
-  handleProjectUpdateFactory = (newStatus) => () => {
+  handleTaskUpdateFactory = (newStatus) => () => {
     const {onComplete, outcome} = this.props;
-    const {id: projectId, status} = outcome;
+    const {id: taskId, status} = outcome;
     if (newStatus === status) {
       return;
     }
     const options = {
       ops: {},
       variables: {
-        updatedProject: {
-          id: projectId,
+        updatedTask: {
+          id: taskId,
           status: newStatus
         }
       }
     };
-    cashay.mutate('updateProject', options);
+    cashay.mutate('updateTask', options);
     if (onComplete) {
       onComplete();
     }

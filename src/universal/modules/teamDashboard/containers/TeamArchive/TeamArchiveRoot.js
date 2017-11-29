@@ -7,7 +7,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamArchive from 'universal/modules/teamDashboard/components/TeamArchive/TeamArchive';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import TaskUpdatedSubscription from 'universal/subscriptions/TaskUpdatedSubscription';
 
 
 const query = graphql`
@@ -19,7 +19,7 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  ProjectUpdatedSubscription
+  TaskUpdatedSubscription
 ];
 
 const TeamArchiveRoot = ({atmosphere, match, team}) => {

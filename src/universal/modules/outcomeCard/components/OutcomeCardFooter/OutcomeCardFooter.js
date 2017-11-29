@@ -9,11 +9,11 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {USER_DASH} from 'universal/utils/constants';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
-import isProjectArchived from 'universal/utils/isProjectArchived';
+import isTaskArchived from 'universal/utils/isTaskArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
@@ -55,11 +55,11 @@ class OutcomeCardFooter extends Component {
     const eqFn = (data) => data.value === tagValue;
     const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
     if (!nextContent) return;
-    const updatedProject = {
+    const updatedTask = {
       id,
       content: nextContent
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateTaskMutation(atmosphere, updatedTask, area);
   };
 
   render() {
@@ -67,7 +67,7 @@ class OutcomeCardFooter extends Component {
       area,
       cardIsActive,
       editorState,
-      handleAddProject,
+      handleAddTask,
       isAgenda,
       isPrivate,
       outcome,
@@ -78,7 +78,7 @@ class OutcomeCardFooter extends Component {
     const showTeam = area === USER_DASH;
     const {teamMember: owner, integration, team} = outcome;
     const {service} = integration || {};
-    const isArchived = isProjectArchived(outcome.tags);
+    const isArchived = isTaskArchived(outcome.tags);
     const buttonBlockStyles = css(
       styles.buttonBlock,
       cardIsActive && styles.showButtonBlock
@@ -125,7 +125,7 @@ class OutcomeCardFooter extends Component {
                 originAnchor={assignOriginAnchor}
                 queryVars={{
                   area,
-                  projectId: outcome.id,
+                  taskId: outcome.id,
                   ownerId: owner.id,
                   teamMembers,
                   setError: this.setError,
@@ -150,8 +150,8 @@ class OutcomeCardFooter extends Component {
                     originAnchor={originAnchor}
                     queryVars={{
                       area,
-                      handleAddProject,
-                      projectId: outcome.id,
+                      handleAddTask,
+                      taskId: outcome.id,
                       setError: this.setError,
                       clearError: this.clearError
                     }}
@@ -198,7 +198,7 @@ OutcomeCardFooter.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   cardIsActive: PropTypes.bool,
   editorState: PropTypes.object,
-  handleAddProject: PropTypes.func,
+  handleAddTask: PropTypes.func,
   isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
   isPrivate: PropTypes.bool,

@@ -6,7 +6,7 @@ import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgen
 
 const meetingAgendaCardsQuery = `
 query {
-  agendaProjects(agendaId: $agendaId) @live {
+  agendaTasks(agendaId: $agendaId) @live {
     id
     integration {
       service
@@ -36,7 +36,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {agendaId} = props;
-  const {agendaProjects} = cashay.query(meetingAgendaCardsQuery, {
+  const {agendaTasks} = cashay.query(meetingAgendaCardsQuery, {
     op: 'meetingAgendaCardsContainer',
     key: agendaId,
     variables: {agendaId},
@@ -45,11 +45,11 @@ const mapStateToProps = (state, props) => {
       team: (source) => source.teamMemberId.split('::')[1]
     },
     sort: {
-      agendaProjects: (a, b) => a.createdAt - b.createdAt
+      agendaTasks: (a, b) => a.createdAt - b.createdAt
     }
   }).data;
   return {
-    outcomes: agendaProjects
+    outcomes: agendaTasks
   };
 };
 

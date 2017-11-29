@@ -18,7 +18,7 @@ const query = graphql`
   }
 `;
 
-const TeamArchiveSqueezeRoot = ({atmosphere, orgId, projectsAvailableCount, teamId}) => {
+const TeamArchiveSqueezeRoot = ({atmosphere, orgId, tasksAvailableCount, teamId}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -32,7 +32,7 @@ const TeamArchiveSqueezeRoot = ({atmosphere, orgId, projectsAvailableCount, team
             <AnimatedFade key="1">
               <TeamArchiveSqueeze
                 orgId={orgId}
-                projectsAvailableCount={projectsAvailableCount}
+                tasksAvailableCount={tasksAvailableCount}
                 teamId={teamId}
                 viewer={renderProps.viewer}
               />
@@ -40,7 +40,7 @@ const TeamArchiveSqueezeRoot = ({atmosphere, orgId, projectsAvailableCount, team
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} width={ui.projectColumnsMaxWidth} />
+              <LoadingComponent height={'5rem'} width={ui.taskColumnsMaxWidth} />
             </AnimatedFade>
             }
           </TransitionGroup>
@@ -54,7 +54,7 @@ TeamArchiveSqueezeRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   isBillingLeader: PropTypes.bool,
   orgId: PropTypes.string.isRequired,
-  projectsAvailableCount: PropTypes.number.isRequired,
+  tasksAvailableCount: PropTypes.number.isRequired,
   teamId: PropTypes.string.isRequired
 };
 

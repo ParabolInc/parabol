@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
-import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
+import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
 import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getPubSub from 'server/utils/getPubSub';
@@ -14,7 +14,7 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
   const teamMemberIds = Array.isArray(maybeTeamMemberIds) ? maybeTeamMemberIds : [maybeTeamMemberIds];
   const [userId] = teamMemberIds[0].split('::');
   const teamIds = teamMemberIds.map((teamMemberId) => teamMemberId.substr(teamMemberId.indexOf('::') + 2));
-  // see if they were a leader, make a new guy leader so later we can reassign projects
+  // see if they were a leader, make a new guy leader so later we can reassign tasks
   await r.table('TeamMember')
     .getAll(r.args(teamMemberIds), {index: 'id'})
     .filter({isLead: true, isNotRemoved: true})
@@ -53,7 +53,7 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
       );
     });
 
-  // assign active projects to the team lead
+  // assign active tasks to the team lead
   const {changedProviders, newTMS, teams} = await r({
     teamMember: r.table('TeamMember')
       .getAll(r.args(teamMemberIds), {index: 'id'})
@@ -61,15 +61,15 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
         isNotRemoved: false,
         updatedAt: now
       }),
-    projects: r(teamIds).forEach((teamId) => {
+    tasks: r(teamIds).forEach((teamId) => {
       return r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isLead: true, isNotRemoved: true})
         .nth(0)
         .do((teamLead) => {
-          return r.table('Project')
+          return r.table('Task')
             .getAll(r(userId).add('::').add(teamId), {index: 'teamMemberId'})
-            .filter((project) => project('tags').contains('archived').not())
+            .filter((task) => task('tags').contains('archived').not())
             .update({
               teamMemberId: teamLead('id'),
               userId: teamLead('userId')
@@ -131,8 +131,8 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
   const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB);
   if (changedGitHubIntegrations) {
     const repoChanges = await removeGitHubReposForUserId(userId, teamIds);
-    // TODO send the archived projects in a mutation payload
-    await archiveProjectsForManyRepos(repoChanges);
+    // TODO send the archived tasks in a mutation payload
+    await archiveTasksForManyRepos(repoChanges);
   }
   return true;
 };

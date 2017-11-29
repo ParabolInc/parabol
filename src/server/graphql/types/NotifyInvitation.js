@@ -30,7 +30,7 @@ const NotifyInvitation = new GraphQLObjectType({
     },
     team: {
       type: Team,
-      description: 'The team the project is on',
+      description: 'The team the task is on',
       resolve: ({teamId}) => {
         // FIXME after merging in the dataloader PR
         const r = getRethink();

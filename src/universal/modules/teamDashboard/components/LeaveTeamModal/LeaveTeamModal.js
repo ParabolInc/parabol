@@ -23,7 +23,7 @@ const LeaveTeamModal = (props) => {
       </Type>
       <Type align="center" bold marginBottom="1.5rem" scale="s4">
         This will remove you from the team. <br />
-        All of your projects will be given to {teamLead} <br />
+        All of your tasks will be given to {teamLead} <br />
       </Type>
       <Button
         buttonSize="large"

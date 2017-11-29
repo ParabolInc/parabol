@@ -6,15 +6,15 @@ import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
+import CreateTaskMutation from 'universal/mutations/CreateTaskMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
 import {withRouter} from 'react-router';
 
-const handleAddProjectFactory = (atmosphere, dispatch, history, teamMemberId, agendaId) => (content) => () => {
+const handleAddTaskFactory = (atmosphere, dispatch, history, teamMemberId, agendaId) => (content) => () => {
   const [, teamId] = teamMemberId.split('::');
-  const newProject = {
+  const newTask = {
     id: `${teamId}::${shortid.generate()}`,
     content,
     status: ACTIVE,
@@ -22,10 +22,10 @@ const handleAddProjectFactory = (atmosphere, dispatch, history, teamMemberId, ag
     sortOrder: 0,
     agendaId
   };
-  CreateProjectMutation(atmosphere, newProject, MEETING);
+  CreateTaskMutation(atmosphere, newTask, MEETING);
 };
 
-const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject) => {
+const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddTask) => {
   return array.map((outcome) => {
     const {id} = outcome;
     const key = `$outcomeCard${id}`;
@@ -34,7 +34,7 @@ const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject)
       <div className={css(itemStyle)} key={key}>
         <OutcomeOrNullCard
           area={MEETING}
-          handleAddProject={handleAddProject}
+          handleAddTask={handleAddTask}
           isAgenda
           myUserId={myUserId}
           outcome={outcome}
@@ -60,19 +60,19 @@ const makePlaceholders = (length, itemStyle) => {
 
 const MeetingAgendaCards = (props) => {
   const {agendaId, atmosphere, bindHotkey, dispatch, history, myTeamMemberId, outcomes, styles} = props;
-  const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, myTeamMemberId, agendaId);
-  const addBlankProject = handleAddProject();
-  bindHotkey('p', addBlankProject);
+  const handleAddTask = handleAddTaskFactory(atmosphere, dispatch, history, myTeamMemberId, agendaId);
+  const addBlankTask = handleAddTask();
+  bindHotkey('p', addBlankTask);
   return (
     <div className={css(styles.root)}>
       {/* Get Cards */}
       {outcomes.length !== 0 &&
-      makeCards(outcomes, dispatch, myTeamMemberId, styles.item, handleAddProject)
+      makeCards(outcomes, dispatch, myTeamMemberId, styles.item, handleAddTask)
       }
       {/* Input Card */}
       <div className={css(styles.item)}>
         <CreateCard
-          handleAddProject={addBlankProject}
+          handleAddTask={addBlankTask}
           hasControls
         />
       </div>

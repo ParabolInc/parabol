@@ -1,15 +1,15 @@
 import {commitMutation} from 'react-relay';
 
 const mutation = graphql`
-  mutation CreateGitHubIssueMutation($nameWithOwner: String!, $projectId: ID!) {
-    createGitHubIssue(nameWithOwner: $nameWithOwner, projectId: $projectId)
+  mutation CreateGitHubIssueMutation($nameWithOwner: String!, $taskId: ID!) {
+    createGitHubIssue(nameWithOwner: $nameWithOwner, taskId: $taskId)
   }
 `;
 
-const CreateGitHubIssueMutation = (environment, nameWithOwner, projectId, onError, onCompleted) => {
+const CreateGitHubIssueMutation = (environment, nameWithOwner, taskId, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
-    variables: {nameWithOwner, projectId},
+    variables: {nameWithOwner, taskId},
     updater: () => {
     },
     // TODO cashay

@@ -1,4 +1,4 @@
-import {APP_MAX_AVATAR_FILE_SIZE, PROJECT_MAX_CHARS} from 'universal/utils/constants';
+import {APP_MAX_AVATAR_FILE_SIZE, TASK_MAX_CHARS} from 'universal/utils/constants';
 import linkify from 'universal/utils/linkify';
 import {compositeIdRegex, emailRegex, idRegex, urlRegex} from 'universal/validation/regex';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
@@ -21,7 +21,7 @@ export const compositeId = (value) => value.matches(compositeIdRegex);
 export const fullName = (value) => value
   .trim()
   .min(1, 'It looks like you wanted to include a name')
-  .max(PROJECT_MAX_CHARS, 'That name looks too long!');
+  .max(TASK_MAX_CHARS, 'That name looks too long!');
 
 const lastIndexOfDelim = (str, delims = [';', ',']) => {
   let highscore = -1;
@@ -86,7 +86,7 @@ export const orgRejectionReason = (value) => value
   .trim()
   .required()
   .min(2, 'Maybe a couple more words?')
-  .max(PROJECT_MAX_CHARS, 'That seems like a good enough reason');
+  .max(TASK_MAX_CHARS, 'That seems like a good enough reason');
 
 export const preferredName = (value) => value
   .trim()
@@ -97,7 +97,7 @@ export const preferredName = (value) => value
 export const task = (value) => value
   .trim()
   .min(2, 'That doesn’t seem like much of a task')
-  .max(PROJECT_MAX_CHARS, 'Try shortening down the task name');
+  .max(TASK_MAX_CHARS, 'Try shortening down the task name');
 
 export const teamName = (value) => value
   .trim()

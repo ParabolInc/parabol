@@ -19,7 +19,7 @@ const RemoveFromOrgModal = (props) => {
       </Type>
       <Type align="center" bold marginBottom="1.5rem" scale="s4">
         This will remove {preferredName} from the organization.
-        Any outstanding projects will be given to the team leads.
+        Any outstanding tasks will be given to the team leads.
         Any time remaining on their subscription will be refunded on the next invoice.
         <br />
       </Type>

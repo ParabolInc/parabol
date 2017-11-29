@@ -22,7 +22,7 @@ query{
     invitees {
       id
       present
-      projects {
+      tasks {
         id
         content
         status

@@ -44,15 +44,15 @@ const GitHubReposMenuRoot = (rootProps) => {
   const {
     area,
     atmosphere,
-    handleAddProject,
-    projectId,
+    handleAddTask,
+    taskId,
     setError,
     clearError,
     closePortal,
     updateModalCoords,
     maxWidth
   } = rootProps;
-  const [teamId] = projectId.split('::');
+  const [teamId] = taskId.split('::');
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -68,10 +68,10 @@ const GitHubReposMenuRoot = (rootProps) => {
             {props && <AnimatedFade key="1" onEnter={updateModalCoords}>
               <GitHubRepoListMenu
                 area={area}
-                handleAddProject={handleAddProject}
+                handleAddTask={handleAddTask}
                 viewer={props.viewer}
                 teamId={teamId}
-                projectId={projectId}
+                taskId={taskId}
                 closePortal={closePortal}
                 setError={setError}
                 clearError={clearError}
@@ -92,9 +92,9 @@ const GitHubReposMenuRoot = (rootProps) => {
 GitHubReposMenuRoot.propTypes = {
   area: PropTypes.string,
   atmosphere: PropTypes.object.isRequired,
-  handleAddProject: PropTypes.func,
+  handleAddTask: PropTypes.func,
   maxWidth: PropTypes.number.isRequired,
-  projectId: PropTypes.string.isRequired,
+  taskId: PropTypes.string.isRequired,
   viewer: PropTypes.object,
   setError: PropTypes.func.isRequired,
   clearError: PropTypes.func.isRequired,

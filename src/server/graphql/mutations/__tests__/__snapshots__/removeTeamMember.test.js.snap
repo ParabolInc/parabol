@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`removeTeamMember removes the teamMember, reassigns active projects to the lead 1`] = `
+exports[`removeTeamMember removes the teamMember, reassigns active tasks to the lead 1`] = `
 Object {
-  "project": Array [
+  "task": Array [
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 24,
       "id": 25,
@@ -146,7 +146,7 @@ Object {
 }
 `;
 
-exports[`removeTeamMember removes the teamMember, reassigns active projects to the lead 2`] = `
+exports[`removeTeamMember removes the teamMember, reassigns active tasks to the lead 2`] = `
 Object {
   "newAuthToken": Array [
     Object {

@@ -44,32 +44,32 @@ export default {
   name: 'CreateGitHubIssue',
   type: GraphQLBoolean,
   args: {
-    projectId: {
+    taskId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the project to convert to a GH issue'
+      description: 'The id of the task to convert to a GH issue'
     },
     nameWithOwner: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The owner/repo string'
     }
   },
-  resolve: async (source, {nameWithOwner, projectId}, {authToken, socket}) => {
+  resolve: async (source, {nameWithOwner, taskId}, {authToken, socket}) => {
     const r = getRethink();
     const now = new Date();
 
     // AUTH
-    const [teamId] = projectId.split('::');
+    const [teamId] = taskId.split('::');
     requireSUOrTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
     // VALIDATION
     const userId = getUserId(authToken);
-    const project = await r.table('Project').get(projectId);
-    if (!project) {
-      throw new Error('That project no longer exists');
+    const task = await r.table('Task').get(taskId);
+    if (!task) {
+      throw new Error('That task no longer exists');
     }
-    if (project.integration && project.integration.service) {
-      throw new Error(`That project is already linked to ${project.integration.service}`);
+    if (task.integration && task.integration.service) {
+      throw new Error(`That task is already linked to ${task.integration.service}`);
     }
     const [repoOwner, repoName] = nameWithOwner.split('/');
     if (!repoOwner || !repoName) {
@@ -86,7 +86,7 @@ export default {
     }
 
     // RESOLUTION
-    const {teamMemberId: assigneeTeamMemberId, content: rawContentStr} = project;
+    const {teamMemberId: assigneeTeamMemberId, content: rawContentStr} = task;
     const [assigneeUserId] = assigneeTeamMemberId.split('::');
     const providers = await r.table('Provider')
       .getAll(teamId, {index: 'teamId'})
@@ -105,7 +105,7 @@ export default {
     const creatorProvider = providers.find((provider) => provider.userId === userId);
 
     if (!rawContentStr) {
-      throw new Error('You must add some text before submitting a project to github');
+      throw new Error('You must add some text before submitting a task to github');
     }
     const rawContent = JSON.parse(rawContentStr);
     const {blocks} = rawContent;
@@ -154,7 +154,7 @@ export default {
       }
     }
 
-    await r.table('Project').get(projectId)
+    await r.table('Task').get(taskId)
       .update({
         integration: {
           integrationId,

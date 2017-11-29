@@ -32,7 +32,7 @@ describe('endMeeting', () => {
     // VERIFY
     const db = await fetchAndSerialize({
       agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('teamMemberId'),
-      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
+      task: r.table('Task').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
       meeting: r.table('Meeting').get(meetingId),
       team: r.table('Team').get(teamId),
       teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName')
@@ -41,13 +41,13 @@ describe('endMeeting', () => {
     expect(mockFn).toBeCalledWith(teamId);
   });
 
-  test('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
+  test('generates a meeting summary and sets sort order with pre-existing actions and tasks', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {teamMember, user} = await mockDB.init()
-      .newProject()
+      .newTask()
       .newMeeting(undefined, {inProgress: true});
     const authToken = mockAuthToken(user[0]);
     const meetingId = mockDB.context.meeting.id;
@@ -60,7 +60,7 @@ describe('endMeeting', () => {
     // VERIFY
     const db = await fetchAndSerialize({
       agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('content'),
-      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
+      task: r.table('Task').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
       meeting: r.table('Meeting').get(meetingId),
       team: r.table('Team').get(teamId),
       teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName')

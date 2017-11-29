@@ -74,7 +74,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
       return undefined;
     }
     // console.log('setting', id,  'in between', prevItem.id, itemToReplace.id);
-    // if 2 users drag a project to slot 3 in a column on their user dash at the same time,
+    // if 2 users drag a task to slot 3 in a column on their user dash at the same time,
     // it's possible they have the same val, so we want it close to .5 to avoid rebalances, but with some noise
     const [minVal, maxVal] = [prevItem.sortOrder, itemToReplace.sortOrder].sort();
     const yahtzee = (Math.random() + Math.random()) / 2;

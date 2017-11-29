@@ -50,9 +50,9 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const agendaProjects = () => System.import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer');
+const agendaTasks = () => System.import('universal/modules/teamDashboard/containers/AgendaAndTasks/AgendaAndTasksContainer');
 const teamSettings = () => System.import('universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper');
-const archivedProjects = () => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot');
+const archivedTasks = () => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot');
 
 const TeamContainer = (props) => {
   const {
@@ -78,9 +78,9 @@ const TeamContainer = (props) => {
     >
       <Switch>
         {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
-        <AsyncRoute exact path={match.path} extraProps={{teamName: team.name}} mod={agendaProjects} />
+        <AsyncRoute exact path={match.path} extraProps={{teamName: team.name}} mod={agendaTasks} />
         <AsyncRoute path={`${match.path}/settings`} mod={teamSettings} extraProps={{teamMemberId}} />
-        <AsyncRoute path={`${match.path}/archive`} extraProps={{team}} mod={archivedProjects} />
+        <AsyncRoute path={`${match.path}/archive`} extraProps={{team}} mod={archivedTasks} />
       </Switch>
     </Team>
   );

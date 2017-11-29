@@ -13,7 +13,7 @@ import invoice from './models/Invoice/invoiceSubscription';
 import organization from './models/Organization/organizationSubscription';
 import orgApproval from './models/OrgApproval/orgApprovalSubscription';
 import presence from './models/Presence/presenceSubscription';
-import project from './models/Project/projectSubscription';
+import task from './models/Task/taskSubscription';
 import team from './models/Team/teamSubscription';
 import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
@@ -25,7 +25,7 @@ import teamMembersInvited from 'server/graphql/subscriptions/teamMembersInvited'
 import newAuthToken from 'server/graphql/subscriptions/newAuthToken';
 import organizationAdded from 'server/graphql/subscriptions/organizationAdded';
 import organizationUpdated from 'server/graphql/subscriptions/organizationUpdated';
-import projectUpdated from 'server/graphql/subscriptions/projectUpdated';
+import taskUpdated from 'server/graphql/subscriptions/taskUpdated';
 
 const rootFields = Object.assign({},
   agenda,
@@ -34,7 +34,7 @@ const rootFields = Object.assign({},
   orgApproval,
   organization,
   presence,
-  project,
+  task,
   team,
   teamMember,
   user
@@ -53,7 +53,7 @@ export default new GraphQLObjectType({
     notificationsCleared,
     organizationAdded,
     organizationUpdated,
-    projectUpdated,
+    taskUpdated,
     slackChannelAdded,
     slackChannelRemoved,
     providerAdded,

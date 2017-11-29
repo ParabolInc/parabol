@@ -1,7 +1,7 @@
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import editorDecorators from 'universal/components/ProjectEditor/decorators';
+import editorDecorators from 'universal/components/TaskEditor/decorators';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingCheckInGreeting from 'universal/modules/meeting/components/MeetingCheckInGreeting';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';

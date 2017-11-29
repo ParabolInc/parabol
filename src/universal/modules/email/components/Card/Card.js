@@ -1,18 +1,18 @@
 import {Editor, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import editorDecorators from 'universal/components/ProjectEditor/decorators';
+import editorDecorators from 'universal/components/TaskEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
-import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import isTaskPrivate from 'universal/utils/isTaskPrivate';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import truncateCard from 'universal/utils/draftjs/truncateCard';
 
 
 const Card = (props) => {
   const {content, status, tags} = props;
-  const isPrivate = isProjectPrivate(tags);
+  const isPrivate = isTaskPrivate(tags);
   const backgroundColor = isPrivate ? ui.privateCardBgColor : '#FFFFFF';
 
   const cellStyle = {
@@ -37,7 +37,7 @@ const Card = (props) => {
   };
 
   const borderTopStyle = {
-    backgroundColor: labels.projectStatus[status].color,
+    backgroundColor: labels.taskStatus[status].color,
     borderRadius: '4px 4px 0 0',
     padding: 0
   };
@@ -72,7 +72,7 @@ const Card = (props) => {
 
 Card.propTypes = {
   content: PropTypes.string,
-  status: PropTypes.oneOf(labels.projectStatus.slugs),
+  status: PropTypes.oneOf(labels.taskStatus.slugs),
   tags: PropTypes.array
 };
 

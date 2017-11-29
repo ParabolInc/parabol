@@ -2,18 +2,18 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
+import makeTasksByStatus from 'universal/utils/makeTasksByStatus';
 import {USER_DASH} from 'universal/utils/constants';
-import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
-import makeAllProjects from 'universal/utils/makeAllProjects';
+import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
+import makeAllTasks from 'universal/utils/makeAllTasks';
 
-// TODO this is a sign that cashay is missing something. how do we request a LIST of just projects?
+// TODO this is a sign that cashay is missing something. how do we request a LIST of just tasks?
 const userColumnsQuery = `
 query {
   teams @cached(type: "[Team]") {
     id
     name
-    projects @live {
+    tasks @live {
       id
       content
       createdAt
@@ -43,21 +43,21 @@ query {
 `;
 
 const mutationHandlers = {
-  updateProject(optimisticUpdates, queryResponse, currentResponse) {
+  updateTask(optimisticUpdates, queryResponse, currentResponse) {
     if (optimisticUpdates) {
-      const {updatedProject} = optimisticUpdates;
-      if (updatedProject && updatedProject.hasOwnProperty('sortOrder')) {
-        const {id, sortOrder, status} = updatedProject;
+      const {updatedTask} = optimisticUpdates;
+      if (updatedTask && updatedTask.hasOwnProperty('sortOrder')) {
+        const {id, sortOrder, status} = updatedTask;
         const {teams} = currentResponse;
         for (let i = 0; i < teams.length; i++) {
           const team = teams[i];
-          const fromProject = team.projects.find((project) => project.id === id);
-          if (fromProject) {
+          const fromTask = team.tasks.find((task) => task.id === id);
+          if (fromTask) {
             if (sortOrder !== undefined) {
-              fromProject.sortOrder = sortOrder;
+              fromTask.sortOrder = sortOrder;
             }
             if (status) {
-              fromProject.status = status;
+              fromTask.status = status;
             }
             return currentResponse;
           }
@@ -69,13 +69,13 @@ const mutationHandlers = {
 };
 
 // memoized
-const resolveUserProjects = (teams) => {
-  if (teams !== resolveUserProjects.teams) {
-    resolveUserProjects.teams = teams;
-    const allProjects = makeAllProjects(teams);
-    resolveUserProjects.cache = makeProjectsByStatus(allProjects);
+const resolveUserTasks = (teams) => {
+  if (teams !== resolveUserTasks.teams) {
+    resolveUserTasks.teams = teams;
+    const allTasks = makeAllTasks(teams);
+    resolveUserTasks.cache = makeTasksByStatus(allTasks);
   }
-  return resolveUserProjects.cache;
+  return resolveUserTasks.cache;
 };
 
 const mapStateToProps = (state) => {
@@ -93,7 +93,7 @@ const mapStateToProps = (state) => {
       teamMember: (source) => source.teamMemberId
     },
     resolveChannelKey: {
-      projects: (source) => `${userId}::${source.id}`
+      tasks: (source) => `${userId}::${source.id}`
     },
     sort: {
       teams: (a, b) => a.name > b.name ? 1 : -1
@@ -103,7 +103,7 @@ const mapStateToProps = (state) => {
     }
   }).data;
   return {
-    projects: resolveUserProjects(teams),
+    tasks: resolveUserTasks(teams),
     queryKey,
     teams,
     userId: state.auth.obj.sub
@@ -111,14 +111,14 @@ const mapStateToProps = (state) => {
 };
 
 const UserColumnsContainer = (props) => {
-  const {queryKey, projects, teams, userId} = props;
+  const {queryKey, tasks, teams, userId} = props;
   return (
-    <ProjectColumns queryKey={queryKey} projects={projects} area={USER_DASH} teams={teams} userId={userId} />
+    <TaskColumns queryKey={queryKey} tasks={tasks} area={USER_DASH} teams={teams} userId={userId} />
   );
 };
 
 UserColumnsContainer.propTypes = {
-  projects: PropTypes.object,
+  tasks: PropTypes.object,
   queryKey: PropTypes.string,
   teams: PropTypes.array,
   userId: PropTypes.string

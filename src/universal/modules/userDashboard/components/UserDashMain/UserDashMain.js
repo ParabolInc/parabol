@@ -4,7 +4,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
-import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
+import UserTasksHeaderContainer from 'universal/modules/userDashboard/containers/UserTasksHeader/UserTasksHeaderContainer';
 import {
   DashContent,
   DashHeader,
@@ -32,8 +32,8 @@ const UserDashMain = (props) => {
       </DashHeader>
       <DashContent padding="0">
         <div className={css(styles.root)}>
-          <div className={css(styles.projectsLayout)}>
-            <UserProjectsHeaderContainer />
+          <div className={css(styles.tasksLayout)}>
+            <UserTasksHeaderContainer />
             <UserColumnsContainer />
           </div>
         </div>
@@ -43,7 +43,7 @@ const UserDashMain = (props) => {
 };
 
 UserDashMain.propTypes = {
-  projects: PropTypes.array,
+  tasks: PropTypes.array,
   styles: PropTypes.object
 };
 
@@ -54,7 +54,7 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  projectsLayout: {
+  tasksLayout: {
     display: 'flex',
     flex: 1,
     flexDirection: 'column'

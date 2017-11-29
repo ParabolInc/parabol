@@ -3,7 +3,7 @@ import {MEETING_NAME} from 'universal/utils/constants';
 
 // the ICS doesn't get the 'Add your conference' line because it doesn't accept line breaks. that's cool though because it isn't editable
 // eslint-disable-next-line max-len
-const description = `Our weekly meeting to update each other on our progress, build and process an agenda to unblock one another and track new projects.
+const description = `Our weekly meeting to update each other on our progress, build and process an agenda to unblock one another and track new tasks.
 Add your conference or dial-in bridge information here.`;
 
 const getStartTime = (createdAt) => {

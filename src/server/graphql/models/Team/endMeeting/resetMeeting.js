@@ -1,18 +1,18 @@
 import getRethink from 'server/database/rethinkDriver';
 import {DONE, LOBBY} from 'universal/utils/constants';
-import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
+import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 
 export default async function resetMeeting(teamId) {
   return new Promise((resolve) => {
     setTimeout(async () => {
       const r = getRethink();
-      const projects = await r.table('Project').getAll(teamId, {index: 'teamId'})
+      const tasks = await r.table('Task').getAll(teamId, {index: 'teamId'})
         .filter({status: DONE})
-        .filter((project) => project('tags').contains('archived').not())
+        .filter((task) => task('tags').contains('archived').not())
         .pluck('id', 'content', 'tags');
 
-      // TODO capture archived projects & push the list to pubsub when we move to evented subs for projects
-      await archiveProjectsForDB(projects);
+      // TODO capture archived tasks & push the list to pubsub when we move to evented subs for tasks
+      await archiveTasksForDB(tasks);
       await r.table('Team').get(teamId)
         .update({
           facilitatorPhase: LOBBY,

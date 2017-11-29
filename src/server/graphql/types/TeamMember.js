@@ -5,7 +5,7 @@ import {Team} from '../models/Team/teamSchema';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import User from 'server/graphql/types/User';
-import Project from 'server/graphql/types/Project';
+import Task from 'server/graphql/types/Task';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -75,12 +75,12 @@ const TeamMember = new GraphQLObjectType({
           .run();
       }
     },
-    projects: {
-      type: Project,
-      description: 'Projects owned by the team member',
+    tasks: {
+      type: Task,
+      description: 'Tasks owned by the team member',
       resolve(source) {
         const r = getRethink();
-        return r.table('Project')
+        return r.table('Task')
           .getAll(source.id, {index: 'teamMemberId'})
           .run();
       }

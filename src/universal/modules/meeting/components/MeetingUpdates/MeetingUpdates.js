@@ -2,7 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Button from 'universal/components/Button/Button';
-import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -17,7 +17,7 @@ const MeetingUpdates = (props) => {
     localPhaseItem,
     members,
     queryKey,
-    projects,
+    tasks,
     showMoveMeetingControls,
     styles,
     team
@@ -54,11 +54,11 @@ const MeetingUpdates = (props) => {
           }
         </div>
         <div className={css(styles.body)}>
-          <ProjectColumns
+          <TaskColumns
             alignColumns="center"
             isMyMeetingSection={isMyMeetingSection}
             myTeamMemberId={myTeamMemberId}
-            projects={projects}
+            tasks={tasks}
             queryKey={queryKey}
             area={MEETING}
             userId={myUserId}
@@ -75,7 +75,7 @@ MeetingUpdates.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   onFacilitatorPhase: PropTypes.bool,
-  projects: PropTypes.object.isRequired,
+  tasks: PropTypes.object.isRequired,
   queryKey: PropTypes.string.isRequired,
   showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,

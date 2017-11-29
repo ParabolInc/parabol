@@ -32,7 +32,7 @@ export default {
       .get(teamId)
       .pluck('name', 'orgId')
       .do((team) => ({
-        projectCount: r.table('Project').getAll(teamId, {index: 'teamId'}).count(),
+        taskCount: r.table('Task').getAll(teamId, {index: 'teamId'}).count(),
         team,
         userIds: r.table('TeamMember')
           .getAll(teamId, {index: 'teamId'})
@@ -47,9 +47,9 @@ export default {
           .default([]),
         teamName: doc('team')('name'),
         teamResults: r.branch(
-          r.and(doc('projectCount').eq(0), doc('userIds').count().eq(1)),
+          r.and(doc('taskCount').eq(0), doc('userIds').count().eq(1)),
           {
-            // Team has no projects nor addn'l TeamMembers, hard delete it:
+            // Team has no tasks nor addn'l TeamMembers, hard delete it:
             teamResult: r.table('Team').get(teamId).delete(),
             teamMemberResult: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).delete()
           },

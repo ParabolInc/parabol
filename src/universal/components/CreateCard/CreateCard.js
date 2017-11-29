@@ -9,7 +9,7 @@ import {cardBorderTop} from 'universal/styles/helpers';
 
 const CreateCard = (props) => {
   const {
-    handleAddProject,
+    handleAddTask,
     hasControls,
     styles
   } = props;
@@ -22,12 +22,12 @@ const CreateCard = (props) => {
   return (
     <div className={cardStyles}>
       {hasControls &&
-        <div className={css(styles.controlsBlock)} onClick={handleAddProject} title="Add a Project (just press “p”)">
+        <div className={css(styles.controlsBlock)} onClick={handleAddTask} title="Add a Task (just press “p”)">
           <div className={css(styles.label)}>
             {'Add a '}<u>{'P'}</u>{'roject'}
           </div>
           <div className={css(styles.hint)}>
-            {'(tag '}<b>{'#private'}</b>{' for personal Projects)'}
+            {'(tag '}<b>{'#private'}</b>{' for personal Tasks)'}
           </div>
         </div>
       }
@@ -36,7 +36,7 @@ const CreateCard = (props) => {
 };
 
 CreateCard.propTypes = {
-  handleAddProject: PropTypes.func,
+  handleAddTask: PropTypes.func,
   hasControls: PropTypes.bool,
   styles: PropTypes.object
 };

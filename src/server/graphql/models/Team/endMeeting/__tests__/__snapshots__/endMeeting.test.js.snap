@@ -52,44 +52,44 @@ Object {
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Black Widow",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 15,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Captain America",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 17,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Hulk",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 18,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Iron Man",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 19,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Nighthawk",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 9,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Thor",
         "present": false,
-        "projects": Array [
+        "tasks": Array [
           Object {
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 20,
             "status": "active",
             "tags": Array [
@@ -104,9 +104,9 @@ Object {
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Vision",
         "present": false,
-        "projects": Array [
+        "tasks": Array [
           Object {
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 21,
             "status": "active",
             "tags": Array [],
@@ -119,16 +119,16 @@ Object {
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "War Machine",
         "present": false,
-        "projects": Array [
+        "tasks": Array [
           Object {
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 22,
             "status": "active",
             "tags": Array [],
             "teamMemberId": 7,
           },
           Object {
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 23,
             "status": "active",
             "tags": Array [
@@ -140,16 +140,18 @@ Object {
       },
     ],
     "meetingNumber": 1,
-    "projects": Array [
+    "successExpression": "Great job",
+    "successStatement": "Iteration is key!",
+    "tasks": Array [
       Object {
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 22,
         "status": "active",
         "tags": Array [],
         "teamMemberId": 7,
       },
       Object {
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 23,
         "status": "active",
         "tags": Array [
@@ -158,14 +160,14 @@ Object {
         "teamMemberId": 7,
       },
       Object {
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 21,
         "status": "active",
         "tags": Array [],
         "teamMemberId": 8,
       },
       Object {
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 20,
         "status": "active",
         "tags": Array [
@@ -174,15 +176,13 @@ Object {
         "teamMemberId": 9,
       },
     ],
-    "successExpression": "Great job",
-    "successStatement": "Iteration is key!",
     "teamId": 6,
     "teamName": "Team America",
   },
-  "project": Array [
+  "task": Array [
     Object {
       "agendaId": 2,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 5,
       "id": 10,
@@ -198,7 +198,7 @@ Object {
     },
     Object {
       "agendaId": 1,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 11,
@@ -212,7 +212,7 @@ Object {
     },
     Object {
       "agendaId": 0,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 3,
       "id": 12,
@@ -228,7 +228,7 @@ Object {
     },
     Object {
       "agendaId": 0,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.996Z,
       "createdBy": 3,
       "id": 13,
@@ -361,7 +361,7 @@ Object {
 }
 `;
 
-exports[`endMeeting generates a meeting summary and sets sort order with pre-existing actions and projects 1`] = `
+exports[`endMeeting generates a meeting summary and sets sort order with pre-existing actions and tasks 1`] = `
 Object {
   "agendaItem": Array [
     Object {
@@ -413,44 +413,44 @@ Object {
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Black Widow",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 16,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Captain America",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 18,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Hulk",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 19,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Iron Man",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 20,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Nighthawk",
         "present": false,
-        "projects": Array [],
+        "tasks": Array [],
       },
       Object {
         "id": 7,
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Thor",
         "present": false,
-        "projects": Array [
+        "tasks": Array [
           Object {
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 21,
             "status": "active",
             "tags": Array [
@@ -465,9 +465,9 @@ Object {
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "Vision",
         "present": false,
-        "projects": Array [
+        "tasks": Array [
           Object {
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 22,
             "status": "active",
             "tags": Array [],
@@ -480,16 +480,16 @@ Object {
         "picture": "https://placeimg.com/100/100/animals",
         "preferredName": "War Machine",
         "present": false,
-        "projects": Array [
+        "tasks": Array [
           Object {
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 23,
             "status": "active",
             "tags": Array [],
             "teamMemberId": 9,
           },
           Object {
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
             "id": 24,
             "status": "active",
             "tags": Array [
@@ -501,16 +501,18 @@ Object {
       },
     ],
     "meetingNumber": 1,
-    "projects": Array [
+    "successExpression": "Great job",
+    "successStatement": "Iteration is key!",
+    "tasks": Array [
       Object {
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 23,
         "status": "active",
         "tags": Array [],
         "teamMemberId": 9,
       },
       Object {
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 24,
         "status": "active",
         "tags": Array [
@@ -519,14 +521,14 @@ Object {
         "teamMemberId": 9,
       },
       Object {
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 22,
         "status": "active",
         "tags": Array [],
         "teamMemberId": 8,
       },
       Object {
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
         "id": 21,
         "status": "active",
         "tags": Array [
@@ -535,14 +537,12 @@ Object {
         "teamMemberId": 7,
       },
     ],
-    "successExpression": "Great job",
-    "successStatement": "Iteration is key!",
     "teamId": 6,
     "teamName": "Team America",
   },
-  "project": Array [
+  "task": Array [
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 3,
       "id": 10,
@@ -556,7 +556,7 @@ Object {
     },
     Object {
       "agendaId": 0,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 3,
       "id": 11,
@@ -572,7 +572,7 @@ Object {
     },
     Object {
       "agendaId": 1,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 4,
       "id": 12,
@@ -586,7 +586,7 @@ Object {
     },
     Object {
       "agendaId": 2,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.996Z,
       "createdBy": 5,
       "id": 13,
@@ -602,7 +602,7 @@ Object {
     },
     Object {
       "agendaId": 2,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.995Z,
       "createdBy": 5,
       "id": 14,

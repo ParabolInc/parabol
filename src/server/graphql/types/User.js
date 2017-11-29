@@ -8,8 +8,8 @@ import {
   GraphQLString
 } from 'graphql';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
-// import archivedProjects from 'server/graphql/queries/archivedProjects';
-import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
+// import archivedTasks from 'server/graphql/queries/archivedTasks';
+import archivedTasksCount from 'server/graphql/queries/archivedTasksCount';
 import githubRepos from 'server/graphql/queries/githubRepos';
 import integrationProvider from 'server/graphql/queries/integrationProvider';
 import invoiceDetails from 'server/graphql/queries/invoiceDetails';
@@ -134,8 +134,8 @@ const User = new GraphQLObjectType({
     //      .run();
     //  }
     // },
-    archivedProjects: require('../queries/archivedProjects').default,
-    archivedProjectsCount,
+    archivedTasks: require('../queries/archivedTasks').default,
+    archivedTasksCount,
     githubRepos,
     integrationProvider,
     invoices,

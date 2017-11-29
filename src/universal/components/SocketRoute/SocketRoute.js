@@ -60,7 +60,7 @@ const query = graphql`
             ... on NotifyTeamArchived {
               teamName
             }
-            ... on NotifyProjectInvolves {
+            ... on NotifyTaskInvolves {
               involvement
               team {
                 id
@@ -69,7 +69,7 @@ const query = graphql`
               changeAuthor {
                 preferredName
               }
-              project {
+              task {
                 id
                 content
                 teamMember {

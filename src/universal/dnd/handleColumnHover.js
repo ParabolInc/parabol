@@ -19,25 +19,25 @@ const areaOpLookup = {
 };
 
 let lastSentAt = 0;
-export default function handleProjectHover(targetProps, monitor) {
+export default function handleTaskHover(targetProps, monitor) {
   const now = new Date();
   if (lastSentAt > (now - DND_THROTTLE)) return;
-  const {area, dragState, projects, queryKey, status: targetStatus} = targetProps;
+  const {area, dragState, tasks, queryKey, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {status: sourceStatus} = sourceProps;
   if (targetStatus !== sourceStatus) {
     // we don't want the minY and minX to apply if we're hovering over another column
     dragState.handleEndDrag();
   }
-  const updatedVariables = checkDragForUpdate(monitor, dragState, projects, true);
+  const updatedVariables = checkDragForUpdate(monitor, dragState, tasks, true);
   if (!updatedVariables) return;
 
   // close it out! we know we're moving
   dragState.clear();
 
-  const {rebalanceDoc, updatedDoc: updatedProject} = updatedVariables;
+  const {rebalanceDoc, updatedDoc: updatedTask} = updatedVariables;
   if (sourceStatus !== targetStatus) {
-    updatedProject.status = targetStatus;
+    updatedTask.status = targetStatus;
     sourceProps.status = targetStatus;
   }
   lastSentAt = now;
@@ -46,17 +46,17 @@ export default function handleProjectHover(targetProps, monitor) {
     ops: {
       [op]: queryKey
     },
-    variables: {updatedProject}
+    variables: {updatedTask}
   };
-  cashay.mutate('updateProject', options);
+  cashay.mutate('updateTask', options);
   if (rebalanceDoc) {
     // bad times. just toss the offending doc to the bottom of the column
     const rebalanceOptions = {
       ops: {
         [op]: queryKey
       },
-      variables: {updatedProject: rebalanceDoc}
+      variables: {updatedTask: rebalanceDoc}
     };
-    cashay.mutate('updateProject', rebalanceOptions);
+    cashay.mutate('updateTask', rebalanceOptions);
   }
 }

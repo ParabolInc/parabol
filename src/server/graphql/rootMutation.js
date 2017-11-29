@@ -4,7 +4,7 @@ import meeting from 'server/graphql/models/Meeting/meetingMutation';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import presence from 'server/graphql/models/Presence/presenceMutation';
-import project from 'server/graphql/models/Project/projectMutation';
+import task from 'server/graphql/models/Task/taskMutation';
 import team from 'server/graphql/models/Team/teamMutation';
 import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
@@ -34,7 +34,7 @@ import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole';
 import updateCreditCard from 'server/graphql/mutations/updateCreditCard';
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
-import createProject from 'server/graphql/mutations/createProject';
+import createTask from 'server/graphql/mutations/createTask';
 import inactivateUser from 'server/graphql/mutations/inactivateUser';
 import stripeCreateInvoice from 'server/graphql/mutations/stripeCreateInvoice';
 import stripeFailPayment from 'server/graphql/mutations/stripeFailPayment';
@@ -44,7 +44,7 @@ import stripeUpdateInvoiceItem from 'server/graphql/mutations/stripeUpdateInvoic
 import addOrg from 'server/graphql/mutations/addOrg';
 import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
-import updateProject from 'server/graphql/mutations/updateProject';
+import updateTask from 'server/graphql/mutations/updateTask';
 
 const rootFields = Object.assign({},
   agenda,
@@ -52,7 +52,7 @@ const rootFields = Object.assign({},
   orgApproval,
   organization,
   presence,
-  project,
+  task,
   team,
   teamMember,
   user
@@ -72,7 +72,7 @@ export default new GraphQLObjectType({
     cancelTeamInvite,
     clearNotification,
     createGitHubIssue,
-    createProject,
+    createTask,
     githubAddAssignee,
     githubAddMember,
     githubRemoveMember,
@@ -97,7 +97,7 @@ export default new GraphQLObjectType({
     updateCreditCard,
     updateOrg,
     updateCheckInQuestion,
-    updateProject,
+    updateTask,
     upgradeToPro
   })
 });

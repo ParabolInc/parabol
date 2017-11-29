@@ -19,10 +19,10 @@ const TeamArchiveHeader = (props) => {
   const {styles, teamId} = props;
   return (
     <div className={css(styles.root)}>
-      <DashSectionHeading icon="archive" label="Archived Projects" margin="0 2rem 0 0" />
-      <Link className={css(styles.link)} to={`/team/${teamId}`} title="Back to Team Projects">
+      <DashSectionHeading icon="archive" label="Archived Tasks" margin="0 2rem 0 0" />
+      <Link className={css(styles.link)} to={`/team/${teamId}`} title="Back to Team Tasks">
         <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
-        <div style={inlineBlockStyle}>Back to Team Projects</div>
+        <div style={inlineBlockStyle}>Back to Team Tasks</div>
       </Link>
     </div>
   );

@@ -10,28 +10,28 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import TeamMember from 'server/graphql/types/TeamMember';
-import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
+import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 
-const MeetingProject = new GraphQLObjectType({
-  name: 'MeetingProject',
-  description: 'The project that was created in a meeting',
+const MeetingTask = new GraphQLObjectType({
+  name: 'MeetingTask',
+  description: 'A task that was created in a meeting',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The unique action id, meetingId::projectId'
+      description: 'The unique action id, meetingId::taskId'
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The stringified Draft-js raw description of the action created during the meeting'
     },
     status: {
-      type: ProjectStatusEnum,
+      type: TaskStatusEnum,
       description: 'The description of the action created during the meeting'
     },
     tags: {
       type: new GraphQLList(GraphQLString),
-      description: 'The tags associated with the project'
+      description: 'The tags associated with the task'
     },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -59,9 +59,9 @@ const MeetingProject = new GraphQLObjectType({
 //   }),
 // });
 //
-// const HistoricalProject = new GraphQLObjectType({
-//   name: 'HistoricalProject',
-//   description: 'The old or new version of a project that changed during a meeting',
+// const HistoricalTask = new GraphQLObjectType({
+//   name: 'HistoricalTask',
+//   description: 'The old or new version of a task that changed during a meeting',
 //   fields: () => ({
 //     content: {
 //       type: GraphQLString,
@@ -69,10 +69,10 @@ const MeetingProject = new GraphQLObjectType({
 //     },
 //     // id: {
 //     //   type: new GraphQLNonNull(GraphQLID),
-//     //   description: 'The project id, matches the ID in the project table'
+//     //   description: 'The task id, matches the ID in the task table'
 //     // },
 //     status: {
-//       type: ProjectStatus,
+//       type: TaskStatus,
 //       description: 'The description of the action created during the meeting'
 //     },
 //     teamMemberId: {
@@ -82,24 +82,24 @@ const MeetingProject = new GraphQLObjectType({
 //   }),
 // });
 //
-// const ProjectDiff = new GraphQLObjectType({
-//   name: 'ProjectDiff',
-//   description: `The previous and post state of a project before and after a meeting.
-//   If oldVal is null, then the project was created during the meeting.
+// const TaskDiff = new GraphQLObjectType({
+//   name: 'TaskDiff',
+//   description: `The previous and post state of a task before and after a meeting.
+//   If oldVal is null, then the task was created during the meeting.
 //   Otherwise, oldVal should contain the oldVal of any field that was changed.
 //   Unchanged fields do not need to be present.`,
 //   fields: () => ({
 //     id: {
 //       type: new GraphQLNonNull(GraphQLID),
-//       description: 'The unique diff id: projectId::meetingId'
+//       description: 'The unique diff id: taskId::meetingId'
 //     },
 //     oldVal: {
-//       type: HistoricalProject,
+//       type: HistoricalTask,
 //       description: 'The previous state of the changed fields'
 //     },
 //     newVal: {
-//       type: HistoricalProject,
-//       description: 'A snapshot of the current state of the project at taken at the conclusion of the meeting'
+//       type: HistoricalTask,
+//       description: 'A snapshot of the current state of the task at taken at the conclusion of the meeting'
 //     }
 //   }),
 // });
@@ -117,9 +117,9 @@ const MeetingInvitee = new GraphQLObjectType({
       description: 'true if the invitee was present in the meeting'
     },
     /* RethinkDB sugar */
-    projects: {
-      type: new GraphQLList(MeetingProject),
-      description: 'A list of immutable projects, as they were created in the meeting'
+    tasks: {
+      type: new GraphQLList(MeetingTask),
+      description: 'A list of immutable tasks, as they were created in the meeting'
     },
     picture: {
       type: GraphQLURLType,
@@ -172,13 +172,13 @@ const Meeting = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The auto-incrementing meeting number for the team'
     },
-    projects: {
-      type: new GraphQLList(MeetingProject),
-      description: 'A list of immutable projects, as they were created in the meeting'
+    tasks: {
+      type: new GraphQLList(MeetingTask),
+      description: 'A list of immutable tasks, as they were created in the meeting'
     },
     sinceTime: {
       type: GraphQLISO8601Type,
-      description: 'The start time used to create the diff (all projectDiffs occurred between this time and the endTime'
+      description: 'The start time used to create the diff (all taskDiffs occurred between this time and the endTime'
     },
     successExpression: {
       type: GraphQLString,

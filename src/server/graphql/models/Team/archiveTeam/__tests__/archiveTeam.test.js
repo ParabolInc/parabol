@@ -46,7 +46,7 @@ describe('ArchiveTeam', () => {
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 
-  test('deletes a team when it has no projects or other team members', async () => {
+  test('deletes a team when it has no tasks or other team members', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();

@@ -2,16 +2,16 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
+import makeTasksByStatus from 'universal/utils/makeTasksByStatus';
 import {TEAM_DASH} from 'universal/utils/constants';
-import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
-import makeAllProjects from 'universal/utils/makeAllProjects';
+import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
+import makeAllTasks from 'universal/utils/makeAllTasks';
 
 const teamColumnsSubQuery = `
 query {
   teamMembers (teamId: $teamId) @live {
     id
-    projects @live {
+    tasks @live {
       id
       content
       createdAt
@@ -42,33 +42,33 @@ query {
 `;
 
 // memoized
-const resolveTeamProjects = (teamMembers) => {
-  if (teamMembers !== resolveTeamProjects.teamMembers) {
-    resolveTeamProjects.teamMembers = teamMembers;
-    const allProjects = makeAllProjects(teamMembers);
-    resolveTeamProjects.cache = makeProjectsByStatus(allProjects);
+const resolveTeamTasks = (teamMembers) => {
+  if (teamMembers !== resolveTeamTasks.teamMembers) {
+    resolveTeamTasks.teamMembers = teamMembers;
+    const allTasks = makeAllTasks(teamMembers);
+    resolveTeamTasks.cache = makeTasksByStatus(allTasks);
   }
-  return resolveTeamProjects.cache;
+  return resolveTeamTasks.cache;
 };
 
 const mutationHandlers = {
-  updateProject(optimisticUpdates, queryResponse, currentResponse) {
+  updateTask(optimisticUpdates, queryResponse, currentResponse) {
     if (optimisticUpdates) {
-      const {updatedProject} = optimisticUpdates;
-      if (updatedProject && updatedProject.hasOwnProperty('sortOrder')) {
-        const {id, sortOrder, status} = updatedProject;
+      const {updatedTask} = optimisticUpdates;
+      if (updatedTask && updatedTask.hasOwnProperty('sortOrder')) {
+        const {id, sortOrder, status} = updatedTask;
         const {teamMembers} = currentResponse;
         for (let i = 0; i < teamMembers.length; i++) {
           const teamMember = teamMembers[i];
-          const fromProject = teamMember.projects.find((project) => project.id === id);
-          if (fromProject) {
+          const fromTask = teamMember.tasks.find((task) => task.id === id);
+          if (fromTask) {
             if (sortOrder !== undefined) {
-              fromProject.sortOrder = sortOrder;
+              fromTask.sortOrder = sortOrder;
             }
             if (status) {
-              fromProject.status = status;
+              fromTask.status = status;
             }
-            // no need to sort since the resolveTeamProjects function will do that next
+            // no need to sort since the resolveTeamTasks function will do that next
             return currentResponse;
           }
         }
@@ -96,10 +96,10 @@ const mapStateToProps = (state, props) => {
     },
     variables: {teamId}
   }).data;
-  const projects = resolveTeamProjects(teamMembers);
+  const tasks = resolveTeamTasks(teamMembers);
   const userId = state.auth.obj.sub;
   return {
-    projects,
+    tasks,
     myTeamMemberId: `${userId}::${teamId}`,
     queryKey: key,
     userId
@@ -108,11 +108,11 @@ const mapStateToProps = (state, props) => {
 
 
 const TeamColumnsContainer = (props) => {
-  const {myTeamMemberId, projects, queryKey, userId} = props;
+  const {myTeamMemberId, tasks, queryKey, userId} = props;
   return (
-    <ProjectColumns
+    <TaskColumns
       myTeamMemberId={myTeamMemberId}
-      projects={projects}
+      tasks={tasks}
       queryKey={queryKey}
       area={TEAM_DASH}
       userId={userId}
@@ -122,7 +122,7 @@ const TeamColumnsContainer = (props) => {
 
 TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,
-  projects: PropTypes.object,
+  tasks: PropTypes.object,
   queryKey: PropTypes.string.isRequired,
   teamId: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired

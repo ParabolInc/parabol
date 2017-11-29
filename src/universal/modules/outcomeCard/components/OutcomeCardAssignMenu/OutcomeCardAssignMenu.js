@@ -7,12 +7,12 @@ const OutcomeCardAssignMenu = (props) => {
   const {
     area,
     closePortal,
-    projectId,
+    taskId,
     ownerId,
     teamMembers
   } = props;
 
-  const handleProjectUpdate = (newOwner) => {
+  const handleTaskUpdate = (newOwner) => {
     if (newOwner === ownerId) {
       return;
     }
@@ -20,13 +20,13 @@ const OutcomeCardAssignMenu = (props) => {
       ops: {},
       variables: {
         area,
-        updatedProject: {
-          id: projectId,
+        updatedTask: {
+          id: taskId,
           teamMemberId: newOwner
         }
       }
     };
-    cashay.mutate('updateProject', options);
+    cashay.mutate('updateTask', options);
   };
 
   const itemFactory = () => {
@@ -39,7 +39,7 @@ const OutcomeCardAssignMenu = (props) => {
             avatar={teamMember.picture}
             isActive={ownerId === teamMember.id}
             label={teamMember.preferredName}
-            onClick={() => handleProjectUpdate(teamMember.id)}
+            onClick={() => handleTaskUpdate(teamMember.id)}
             closePortal={closePortal}
           />
         );
@@ -56,7 +56,7 @@ const OutcomeCardAssignMenu = (props) => {
 OutcomeCardAssignMenu.propTypes = {
   area: PropTypes.string.isRequired,
   closePortal: PropTypes.func.isRequired,
-  projectId: PropTypes.string.isRequired,
+  taskId: PropTypes.string.isRequired,
   ownerId: PropTypes.string.isRequired,
   teamMembers: PropTypes.array.isRequired
 };

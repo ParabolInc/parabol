@@ -1,10 +1,10 @@
 import {
   AGENDA,
-  AGENDA_PROJECTS,
-  ARCHIVED_PROJECTS,
+  AGENDA_TASKS,
+  ARCHIVED_TASKS,
   INVITATIONS,
   ORG_APPROVALS,
-  PROJECTS,
+  TASKS,
   TEAM,
   TEAM_MEMBERS
 } from 'universal/subscriptions/constants';
@@ -12,10 +12,10 @@ import {
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
   {
-    channel: AGENDA_PROJECTS,
+    channel: AGENDA_TASKS,
     string: `
     subscription($agendaId: ID!) {
-      agendaProjects(agendaId: $agendaId) {
+      agendaTasks(agendaId: $agendaId) {
         id
         integration {
           service
@@ -34,10 +34,10 @@ export default [
     }`
   },
   {
-    channel: ARCHIVED_PROJECTS,
+    channel: ARCHIVED_TASKS,
     string: `
     subscription($teamMemberId: ID!) {
-      archivedProjects(teamMemberId: $teamMemberId) {
+      archivedTasks(teamMemberId: $teamMemberId) {
         content
         createdAt
         id
@@ -90,10 +90,10 @@ export default [
     }`
   },
   {
-    channel: PROJECTS,
+    channel: TASKS,
     string: `
     subscription($teamMemberId: ID!) {
-      projects(teamMemberId: $teamMemberId) {
+      tasks(teamMemberId: $teamMemberId) {
         agendaId
         content
         createdAt

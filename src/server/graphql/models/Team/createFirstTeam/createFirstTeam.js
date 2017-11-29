@@ -8,7 +8,7 @@ import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import {TeamInput} from '../teamSchema';
-import addSeedProjects from './addSeedProjects';
+import addSeedTasks from './addSeedTasks';
 import createFirstTeamValidation from './createFirstTeamValidation';
 import createTeamAndLeader from './createTeamAndLeader';
 
@@ -57,7 +57,7 @@ export default {
     await resolvePromiseObj({
       newOrg: createNewOrg(orgId, orgName, userId),
       newTeamUpdatedUser: createTeamAndLeader(userId, validNewTeam, true),
-      seedTeam: addSeedProjects(userId, teamId)
+      seedTeam: addSeedTasks(userId, teamId)
     });
     sendSegmentEvent('Welcome Step2 Completed', userId, {teamId: newTeam.id});
     return tmsSignToken(authToken, tms);

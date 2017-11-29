@@ -1,6 +1,6 @@
 import {EditorState, Modifier} from 'draft-js';
-import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
-import getWordAt from 'universal/components/ProjectEditor/getWordAt';
+import getAnchorLocation from 'universal/components/TaskEditor/getAnchorLocation';
+import getWordAt from 'universal/components/TaskEditor/getWordAt';
 
 const operationTypes = {
   EMOJI: {
