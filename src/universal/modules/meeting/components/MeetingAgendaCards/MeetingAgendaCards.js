@@ -62,7 +62,7 @@ const MeetingAgendaCards = (props) => {
   const {agendaId, atmosphere, bindHotkey, dispatch, history, myTeamMemberId, outcomes, styles} = props;
   const handleAddTask = handleAddTaskFactory(atmosphere, dispatch, history, myTeamMemberId, agendaId);
   const addBlankTask = handleAddTask();
-  bindHotkey('p', addBlankTask);
+  bindHotkey('t', addBlankTask);
   return (
     <div className={css(styles.root)}>
       {/* Get Cards */}
