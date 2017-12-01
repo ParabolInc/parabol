@@ -1,9 +1,6 @@
 // @flow
 
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {reduxForm, Field} from 'redux-form';
-import InputField from 'universal/components/InputField/InputField';
+import React from 'react';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 

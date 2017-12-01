@@ -1,7 +1,4 @@
 // @flow
-import type {FieldProps} from 'redux-form';
-
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {reduxForm, Field} from 'redux-form';
 import InputField from 'universal/components/InputField/InputField';
@@ -39,4 +36,4 @@ class ArchiveTeamForm extends Component<Props> {
   }
 }
 
-export default reduxForm({form: 'archiveTeamConfirmation'})(ArchiveTeamForm)
+export default reduxForm({form: 'archiveTeamConfirmation'})(ArchiveTeamForm);
