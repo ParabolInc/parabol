@@ -57,7 +57,7 @@ class ArchiveTeam extends Component {
               colorPalette="gray"
               component={InputField}
               name="archivedTeamName"
-              placeholder="Type the team name to confirm"
+              placeholder='E.g. "My Team"'
               type="text"
               validate={this.validate}
             />
