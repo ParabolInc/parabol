@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {globalIdField} from 'graphql-relay';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import TeamMember from 'server/graphql/types/TeamMember';
-import {fromGlobalId} from 'graphql-relay';
 
 const NotifyFacilitatorRequest = new GraphQLObjectType({
   name: 'NotifyFacilitatorRequest',
@@ -12,16 +12,12 @@ const NotifyFacilitatorRequest = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the team member requesting to become facilitator'
     },
-    requestorId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: '(Relay) The teamMemberId of the requestor'
-    },
+    requestorId: globalIdField('TeamMember', ({requestorId}) => requestorId),
     requestor: {
       type: TeamMember,
       description: 'The team member that wants to be the facilitator',
       resolve: ({requestorId}, args, {getDataLoader}) => {
-        const {id: dbRequestorId} = fromGlobalId(requestorId);
-        return getDataLoader().teamMembers.load(dbRequestorId);
+        return getDataLoader().teamMembers.load(requestorId);
       }
     },
     ...notificationInterfaceFields

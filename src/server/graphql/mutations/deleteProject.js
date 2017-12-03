@@ -13,7 +13,7 @@ export default {
   args: {
     projectId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The globalId to delete'
+      description: 'The projectId to delete'
     }
   },
   async resolve(source, {projectId}, {authToken, getDataLoader}) {
@@ -23,19 +23,15 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    const {id: dbId, type} = fromGlobalId(projectId);
-    if (type !== 'Project') {
-      throw new Error('Invalid Project ID');
-    }
     // format of id is teamId::shortId
-    const [teamId] = dbId.split('::');
+    const [teamId] = projectId.split('::');
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
     const {project} = await r({
-      project: r.table('Project').get(dbId).delete({returnChanges: true})('changes')(0)('old_val').default(null),
+      project: r.table('Project').get(projectId).delete({returnChanges: true})('changes')(0)('old_val').default(null),
       projectHistory: r.table('ProjectHistory')
-        .between([dbId, r.minval], [dbId, r.maxval], {index: 'projectIdUpdatedAt'})
+        .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
         .delete()
     });
     if (!project) {

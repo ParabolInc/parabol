@@ -1,7 +1,6 @@
 import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
-import {Team} from 'server/graphql/models/Team/teamSchema';
 import GitHubProject from 'server/graphql/types/GitHubProject';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
@@ -9,6 +8,7 @@ import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 import TeamMember from 'server/graphql/types/TeamMember';
 import ProjectEditorDetails from 'server/graphql/types/ProjectEditorDetails';
 import {toGlobalId} from 'graphql-relay';
+import Team from 'universal/modules/teamDashboard/components/Team/Team';
 
 const Project = new GraphQLObjectType({
   name: 'Project',

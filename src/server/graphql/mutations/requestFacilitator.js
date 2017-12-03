@@ -1,5 +1,4 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import {toGlobalId} from 'graphql-relay';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {FACILITATOR_REQUEST, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
@@ -22,15 +21,14 @@ export default {
     requireSUOrTeamMember(authToken, teamId);
 
     // VALIDATION
-    const dbRequestorId = `${userId}::${teamId}`;
+    const requestorId = `${userId}::${teamId}`;
     const {activeFacilitator} = await dataLoader.teams.load(teamId);
-    if (activeFacilitator === dbRequestorId) {
+    if (activeFacilitator === requestorId) {
       // no UI for this
       throw new Error('You are already the facilitator');
     }
 
     // RESOLUTION
-    const requestorId = toGlobalId('TeamMember', dbRequestorId);
     const [currentFacilitatorUserId] = activeFacilitator.split('::');
     const notificationsAdded = {
       notifications: [{

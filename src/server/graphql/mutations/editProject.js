@@ -1,9 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import maybeFromGlobalId from 'server/utils/maybeFromGlobalId';
 import {PROJECT_UPDATED} from 'universal/utils/constants';
-import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 
 export default {
   type: UpdateProjectPayload,
@@ -11,7 +10,7 @@ export default {
   args: {
     projectId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: '(Relay) The project id that is being edited'
+      description: 'The project id that is being edited'
     },
     editing: {
       type: new GraphQLNonNull(GraphQLBoolean),
@@ -24,13 +23,12 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    const dbId = maybeFromGlobalId(projectId, 'Project');
-    const [teamId] = dbId.split('::');
+    const [teamId] = projectId.split('::');
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
     // grab the project to see if it's private, don't share with other if it is
-    const project = await dataLoader.projects.load(dbId);
+    const project = await dataLoader.projects.load(projectId);
     const mutatorId = socketId;
     const projectUpdated = {
       project,

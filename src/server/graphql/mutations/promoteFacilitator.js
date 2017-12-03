@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
-import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
@@ -12,11 +11,11 @@ export default {
   args: {
     disconnectedFacilitatorId: {
       type: GraphQLID,
-      description: '(Relay) teamMemberId of the old facilitator, if they disconnected'
+      description: 'teamMemberId of the old facilitator, if they disconnected'
     },
     facilitatorId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: '(Relay) teamMemberId of the new facilitator for this meeting'
+      description: 'teamMemberId of the new facilitator for this meeting'
     }
   },
   async resolve(source, {disconnectedFacilitatorId, facilitatorId}, {authToken, getDataLoader, socketId}) {
@@ -24,26 +23,19 @@ export default {
     const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
-    // AUTH
-    const {id: dbId, type} = fromGlobalId(facilitatorId);
-
-    if (type !== 'TeamMember') {
-      throw new Error('Invalid Team Member Id');
-    }
-
-    const [, teamId] = dbId.split('::');
+    const [, teamId] = facilitatorId.split('::');
     requireSUOrTeamMember(authToken, teamId);
 
 
     // VALIDATION
-    const facilitatorMembership = await dataLoader.teamMembers.load(dbId);
+    const facilitatorMembership = await dataLoader.teamMembers.load(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
       throw new Error('facilitator is not active on that team');
     }
 
     // RESOLUTION
     const team = await r.table('Team').get(teamId).update({
-      activeFacilitator: dbId
+      activeFacilitator: facilitatorId
     }, {returnChanges: true})('changes')(0)('new_val').default(null);
 
     if (!team) {

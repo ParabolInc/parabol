@@ -3,7 +3,6 @@ import getRethink from 'server/database/rethinkDriver';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
 import getPubSub from 'server/utils/getPubSub';
-import {fromGlobalId} from 'graphql-relay';
 import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
 
 export default {
@@ -24,19 +23,13 @@ export default {
     const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
-    // AUTH
-    const {id: dbId, type} = fromGlobalId(teamMemberId);
-    if (type !== 'TeamMember') {
-      throw new Error('Invalid Team Member Id');
-    }
-
     // teamMemberId is of format 'userId::teamId'
-    const [, teamId] = dbId.split('::');
+    const [, teamId] = teamMemberId.split('::');
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
     const teamMember = await r.table('TeamMember')
-      .get(dbId)
+      .get(teamMemberId)
       .update({isCheckedIn}, {returnChanges: true})('changes')(0)('new_val');
 
     const teamMemberUpdated = {teamMember};
