@@ -73,11 +73,11 @@ class OutcomeCardFooter extends Component {
       isPrivate,
       project,
       styles,
-      teamMembers,
       toggleMenuState
     } = this.props;
     const showTeam = area === USER_DASH;
-    const {projectId, owner, integration, tags, team: {teamName}} = project;
+    const {projectId, owner, integration, tags, team} = project;
+    const {teamName} = team;
     const {service} = integration || {};
     const isArchived = isProjectArchived(tags);
     const buttonBlockStyles = css(
@@ -126,9 +126,7 @@ class OutcomeCardFooter extends Component {
                 originAnchor={assignOriginAnchor}
                 queryVars={{
                   area,
-                  projectId,
-                  ownerId: owner.id,
-                  teamMembers,
+                  project,
                   setError: this.setError,
                   clearError: this.clearError
                 }}
@@ -206,7 +204,6 @@ OutcomeCardFooter.propTypes = {
   project: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
-  teamMembers: PropTypes.array,
   toggleMenuState: PropTypes.func.isRequired
 };
 
@@ -324,7 +321,6 @@ export default createFragmentContainer(
       projectId: id
       content
       owner: teamMember {
-        id
         picture
         preferredName
       }
@@ -336,6 +332,7 @@ export default createFragmentContainer(
       team {
         teamName: name
       }
+      ...OutcomeCardAssignMenu_project
       ...OutcomeCardStatusMenu_project
     }`
 );

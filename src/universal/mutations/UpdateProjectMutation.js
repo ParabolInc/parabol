@@ -3,12 +3,12 @@ import {ConnectionHandler} from 'relay-runtime';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getNodeById from 'universal/utils/relay/getNodeById';
 import {insertEdgeAfter} from 'universal/utils/relay/insertEdge';
+import prepareServerInput from 'universal/utils/relay/prepareServerInput';
 import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const mutation = graphql`
-  mutation UpdateProjectMutation($updatedProject: ProjectInput!) {
+  mutation UpdateProjectMutation($updatedProject: UpdateProjectInput!) {
     updateProject(updatedProject: $updatedProject) {
       project {
         id
@@ -102,9 +102,7 @@ export const handleProjectConnections = (store, viewerId, project) => {
     safeRemoveNodeFromConn(projectId, archiveConn);
     safePutNodeInConn(teamConn);
     if (userConn) {
-      const ownerUserId = project.getValue('userId');
-      const ownerViewerId = toGlobalId('User', ownerUserId);
-      const ownedByViewer = ownerViewerId === viewerId;
+      const ownedByViewer = project.getValue('userId') === viewerId;
       if (ownedByViewer) {
         safePutNodeInConn(userConn);
       } else {
@@ -120,13 +118,16 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
   // which means we'll have 2 items, then 1, then 2, then 1. i prefer 2, then 1.
   return commitMutation(environment, {
     mutation,
-    variables: {area, updatedProject},
+    variables: {
+      area,
+      updatedProject: prepareServerInput(updatedProject, ['id', 'userId'])
+    },
     updater: (store) => {
       const project = store.getRootField('updateProject').getLinkedRecord('project');
       handleProjectConnections(store, viewerId, project);
     },
     optimisticUpdater: (store) => {
-      const {id, content, teamMemberId} = updatedProject;
+      const {id, content, userId} = updatedProject;
       const project = store.get(id);
       if (!project) return;
       const now = new Date();
@@ -134,9 +135,13 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
         const val = updatedProject[key];
         project.setValue(val, key);
       });
-      if (teamMemberId) {
-        const {userId: newUserId} = fromTeamMemberId(teamMemberId);
-        project.setValue(newUserId, 'userId');
+      if (userId) {
+        const teamMemberId = toTeamMemberId(project.getValue('teamId'), userId);
+        project.setValue(teamMemberId, 'teamMemberId');
+        const teamMember = store.get(teamMemberId);
+        if (teamMember) {
+          project.setLinkedRecord(teamMember, 'teamMember');
+        }
       }
       project.setValue('updatedAt', now.toJSON());
       if (content) {

@@ -30,14 +30,23 @@ class TeamColumnsContainer extends Component {
   }
 
   filterByTeamMember(props) {
-    const {teamMemberFilterId, viewer: {projects}} = props;
+    const {teamMemberFilterId, viewer: {projects, team: {teamMembers}}} = props;
     const edges = teamMemberFilterId ?
       projects.edges.filter(({node}) => node.teamMember.id === teamMemberFilterId) :
       projects.edges;
+    const edgesWithTeamMembers = edges.map((edge) => {
+      return {
+        ...edge,
+        node: {
+          ...edge.node,
+          teamMembers
+        }
+      };
+    });
     this.setState({
       projects: {
         ...projects,
-        edges
+        edges: edgesWithTeamMembers
       }
     });
   }
@@ -81,5 +90,6 @@ export default createFragmentContainer(
           }
         }
       }
+      
     }`
 );

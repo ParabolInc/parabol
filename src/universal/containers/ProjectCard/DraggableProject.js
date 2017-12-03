@@ -68,12 +68,9 @@ DraggableProject.propTypes = {
   area: PropTypes.string,
   connectDragSource: PropTypes.func,
   connectDragPreview: PropTypes.func,
-  dispatch: PropTypes.func,
   isDragging: PropTypes.bool,
   isPreview: PropTypes.bool,
   myUserId: PropTypes.string,
-  preferredName: PropTypes.string,
-  username: PropTypes.string,
   project: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,

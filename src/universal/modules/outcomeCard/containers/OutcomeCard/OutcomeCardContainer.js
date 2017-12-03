@@ -1,45 +1,16 @@
-import {cashay} from 'cashay';
 import {convertToRaw, EditorState} from 'draft-js';
 import {Set} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import DeleteProjectMutation from 'universal/mutations/DeleteProjectMutation';
-import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
-import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
-import mergeServerContent from 'universal/utils/mergeServerContent';
 import EditProjectMutation from 'universal/mutations/EditProjectMutation';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import mergeServerContent from 'universal/utils/mergeServerContent';
 
-const teamMembersQuery = `
-query {
-  teamMembers(teamId: $teamId) @live {
-    id
-    picture
-    preferredName
-  }
-}
-`;
-
-const mapStateToProps = (state, props) => {
-  // TODO ugly patch until we remove cashay
-  const {projectId} = props.project;
-  const relaySafeId = getRelaySafeProjectId(projectId);
-  const [teamId] = relaySafeId.split('::');
-  const {teamMembers} = cashay.query(teamMembersQuery, {
-    op: 'outcomeCardContainer',
-    key: teamId,
-    variables: {teamId}
-  }).data;
-  return {
-    teamMembers
-  };
-};
-
-@connect(mapStateToProps)
 class OutcomeCardContainer extends Component {
   constructor(props) {
     super(props);
@@ -160,7 +131,7 @@ class OutcomeCardContainer extends Component {
 
   render() {
     const {activeEditingComponents, cardHasFocus, cardHasHover, cardHasMenuOpen, editorRef, editorState} = this.state;
-    const {area, handleAddProject, hasDragStyles, isAgenda, project, teamMembers, isDragging} = this.props;
+    const {area, handleAddProject, hasDragStyles, isAgenda, project, isDragging} = this.props;
     return (
       <div
         tabIndex={-1}
@@ -189,7 +160,6 @@ class OutcomeCardContainer extends Component {
           setEditorRef={this.setEditorRef}
           setEditorState={this.setEditorState}
           trackEditingComponent={this.trackEditingComponent}
-          teamMembers={teamMembers}
           toggleMenuState={this.toggleMenuState}
         />
       </div>
@@ -205,8 +175,7 @@ OutcomeCardContainer.propTypes = {
   project: PropTypes.object.isRequired,
   hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
-  isDragging: PropTypes.bool,
-  teamMembers: PropTypes.array
+  isDragging: PropTypes.bool
 };
 
 export default createFragmentContainer(

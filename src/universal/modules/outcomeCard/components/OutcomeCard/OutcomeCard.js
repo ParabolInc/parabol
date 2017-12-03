@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
 import ProjectIntegrationLink from 'universal/components/ProjectIntegrationLink';
 import ProjectWatermark from 'universal/components/ProjectWatermark';
@@ -14,7 +15,6 @@ import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
-import {createFragmentContainer} from 'react-relay';
 
 const OutcomeCard = (props) => {
   const {
@@ -34,12 +34,11 @@ const OutcomeCard = (props) => {
     setEditorState,
     trackEditingComponent,
     styles,
-    teamMembers,
     toggleMenuState
   } = props;
   const isPrivate = isProjectPrivate(project.tags);
   const isArchived = isProjectArchived(project.tags);
-  const {status} = project;
+  const {status, team} = project;
   const rootStyles = css(
     styles.root,
     styles.cardBlock,
@@ -68,7 +67,7 @@ const OutcomeCard = (props) => {
           setEditorRef={setEditorRef}
           setEditorState={setEditorState}
           trackEditingComponent={trackEditingComponent}
-          teamMembers={teamMembers}
+          team={team}
         />
         <ProjectIntegrationLink integration={integration || null} />
         <OutcomeCardFooter
@@ -79,7 +78,6 @@ const OutcomeCard = (props) => {
           isAgenda={isAgenda}
           isPrivate={isPrivate}
           project={project}
-          teamMembers={teamMembers}
           toggleMenuState={toggleMenuState}
         />
       </div>
@@ -189,10 +187,18 @@ export default createFragmentContainer(
       }
       status
       tags
+      team {
+        ...ProjectEditor_team
+        # not sure if needed for HOCs
+        teamMembers(sortBy: "preferredName") {
+          id
+          picture
+          preferredName
+        }
+      }
       # grab userId to ensure sorting on connections works
       userId
       ...EditingStatusContainer_project
       ...OutcomeCardFooter_project
     }`
 );
-

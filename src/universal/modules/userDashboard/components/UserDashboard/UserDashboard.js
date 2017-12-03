@@ -12,10 +12,10 @@ const userSettings = () => System.import('universal/modules/userDashboard/contai
 const notificationsMod = () => System.import('universal/modules/notifications/containers/Notifications/NotificationsContainer');
 
 const UserDashboard = (props) => {
-  const {match, notifications, teams} = props;
+  const {match, notifications} = props;
   return (
     <Switch>
-      <AsyncRoute exact path={match.url} mod={userDashRoot} extraProps={{teams}} />
+      <AsyncRoute exact path={match.url} mod={userDashRoot} />
       <AsyncRoute path={`${match.url}/settings`} mod={userSettings} />
       <AsyncRoute exact path={`${match.url}/organizations`} mod={organizations} />
       <AsyncRoute isAbstract path={`${match.url}/organizations/:orgId`} mod={organization} />
@@ -26,8 +26,7 @@ const UserDashboard = (props) => {
 
 UserDashboard.propTypes = {
   match: PropTypes.object.isRequired,
-  notifications: PropTypes.object,
-  teams: PropTypes.array
+  notifications: PropTypes.object
 };
 
 export default withReducer({userDashboard: userDashReducer})(

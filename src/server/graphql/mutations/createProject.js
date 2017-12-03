@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
-import ProjectInput from 'server/graphql/types/ProjectInput';
+import CreateProjectInput from 'server/graphql/types/CreateProjectInput';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -24,7 +24,7 @@ export default {
   description: 'Create a new project, triggering a CreateCard for other viewers',
   args: {
     newProject: {
-      type: new GraphQLNonNull(ProjectInput),
+      type: new GraphQLNonNull(CreateProjectInput),
       description: 'The new project including an id, status, and type, and teamMemberId'
     },
     area: {
@@ -45,8 +45,7 @@ export default {
     const schema = makeProjectSchema();
     const {errors, data: validNewProject} = schema({content: 1, ...newProject});
     handleSchemaErrors(errors);
-    const {teamMemberId, content} = validNewProject;
-    const [userId, teamId] = teamMemberId.split('::');
+    const {teamId, userId, content} = validNewProject;
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
@@ -54,12 +53,17 @@ export default {
     const project = {
       ...validNewProject,
       id: `${teamId}::${shortid.generate()}`,
-      userId,
+      agendaId: validNewProject.agendaId,
+      content: validNewProject.content,
       createdAt: now,
       createdBy: myUserId,
+      sortOrder: validNewProject.sortOrder,
+      status: validNewProject.status,
       tags: getTagsFromEntityMap(entityMap),
       teamId,
-      updatedAt: now
+      teamMemberId: `${userId}::${teamId}`,
+      updatedAt: now,
+      userId
     };
     const history = {
       id: shortid.generate(),

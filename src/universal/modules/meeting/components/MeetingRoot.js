@@ -12,6 +12,9 @@ import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSu
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
 import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
 import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
+import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
+import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
+import NotificationsClearedSubscription from 'universal/subscriptions/NotificationsClearedSubscription';
 
 const query = graphql`
   query MeetingRootQuery($teamId: ID!) {
@@ -26,7 +29,10 @@ const subscriptions = [
   ProjectUpdatedSubscription,
   ProjectCreatedSubscription,
   ProjectDeletedSubscription,
-  TeamMemberUpdatedSubscription
+  TeamMemberUpdatedSubscription,
+  NewAuthTokenSubscription,
+  NotificationsAddedSubscription,
+  NotificationsClearedSubscription
 ];
 
 const MeetingRoot = ({atmosphere, match}) => {

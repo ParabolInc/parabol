@@ -54,7 +54,7 @@ class UserColumnsContainer extends Component {
 UserColumnsContainer.propTypes = {
   projects: PropTypes.object,
   teams: PropTypes.array,
-  teamFilterId: PropTypes.string.isRequired,
+  teamFilterId: PropTypes.string,
   userId: PropTypes.string,
   viewer: PropTypes.object
 };

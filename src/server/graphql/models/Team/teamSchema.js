@@ -19,13 +19,13 @@ import {AgendaItem} from '../AgendaItem/agendaItemSchema';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
-import {forwardConnectionArgs} from 'graphql-relay';
+import {forwardConnectionArgs, globalIdField} from 'graphql-relay';
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
   description: 'A team',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team ID'},
+    id: globalIdField('Team', ({id}) => id),
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team was created'
@@ -133,7 +133,7 @@ export const Team = new GraphQLObjectType({
           description: 'the field to sort the teamMembers by'
         }
       },
-      description: 'All the team members associated who can join this team',
+      description: 'All the team members actively associated with the team',
       async resolve({id: teamId}, {sortBy = 'preferredName'}, {getDataLoader}) {
         const teamMembers = await getDataLoader().teamMembersByTeamId.load(teamId);
         teamMembers.sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);

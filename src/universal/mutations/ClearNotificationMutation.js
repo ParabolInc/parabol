@@ -13,7 +13,7 @@ const mutation = graphql`
 export const clearNotificationUpdater = (viewer, deletedLocalIds) => {
   const conn = ConnectionHandler.getConnection(
     viewer,
-    'SocketRoute_notifications'
+    'DashboardWrapper_notifications'
   );
   if (conn) {
     const deletedGlobalIds = deletedLocalIds.map((id) => toGlobalId('Notification', id));

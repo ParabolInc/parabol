@@ -17,7 +17,8 @@ import makeDateString from 'universal/utils/makeDateString';
 import {createFragmentContainer} from 'react-relay';
 
 const UserDashMain = (props) => {
-  const {styles, teams, viewer} = props;
+  const {styles, viewer} = props;
+  const {teams} = viewer;
   return (
     <DashMain>
       <Helmet title="My Dashboard | Parabol" />
@@ -82,6 +83,11 @@ export default createFragmentContainer(
   graphql`
     fragment UserDashMain_viewer on User {
       ...UserColumnsContainer_viewer
+      teams {
+        id
+        name
+        meetingId
+      }
     }
   `
 );

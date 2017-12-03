@@ -125,7 +125,7 @@ const withSuggestions = (ComposedComponent) => {
     };
 
     resolveMentions = async (query) => {
-      const {teamMembers} = this.props;
+      const {team: {teamMembers}} = this.props;
       if (!query) {
         return teamMembers.slice(0, 6);
       }

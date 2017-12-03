@@ -1,7 +1,10 @@
 import {GraphQLNonNull} from 'graphql';
 import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
-import ProjectInput from 'server/graphql/types/ProjectInput';
+import publishChangeNotifications from 'server/graphql/mutations/helpers/publishChangeNotifications';
+import AreaEnum from 'server/graphql/types/AreaEnum';
+import UpdateProjectInput from 'server/graphql/types/UpdateProjectInput';
+import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -9,10 +12,6 @@ import shortid from 'shortid';
 import {MEETING, PROJECT_UPDATED} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
-import {fromGlobalId} from 'graphql-relay';
-import publishChangeNotifications from 'server/graphql/mutations/helpers/publishChangeNotifications';
-import AreaEnum from 'server/graphql/types/AreaEnum';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -25,60 +24,52 @@ export default {
       description: 'The part of the site where the creation occurred'
     },
     updatedProject: {
-      type: new GraphQLNonNull(ProjectInput),
+      type: new GraphQLNonNull(UpdateProjectInput),
       description: 'the updated project including the id, and at least one other field'
     }
   },
   async resolve(source, {area, updatedProject}, {authToken, getDataLoader, socketId}) {
     const r = getRethink();
+    const now = new Date();
     const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // AUTH
-    // projectId is of format 'teamId::taskId'
-    const {id: projectId, type} = fromGlobalId(updatedProject.id);
-    if (type !== 'Project') {
-      throw new Error('Invalid Project ID');
-    }
-
+    const myUserId = getUserId(authToken);
+    const {id: projectId} = updatedProject;
     const [teamId] = projectId.split('::');
     requireSUOrTeamMember(authToken, teamId);
 
     // VALIDATION
     const schema = makeProjectSchema();
     const {errors, data: validUpdatedProject} = schema(updatedProject);
+    console.log('updatedProj', updatedProject, errors);
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const {id, sortOrder, agendaId, content, ...historicalProject} = validUpdatedProject;
-
-    const now = new Date();
+    const {agendaId, content, status, userId, sortOrder} = validUpdatedProject;
 
     const newProject = {
-      ...historicalProject,
       agendaId,
       content,
+      status,
+      userId,
+      tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
+      teamId,
+      teamMemberId: userId ? `${userId}::${teamId}` : undefined,
       sortOrder
     };
-    const {teamMemberId} = historicalProject;
-    if (teamMemberId) {
-      const [userId] = teamMemberId.split('::');
-      newProject.userId = userId;
-    }
 
-    if (content) {
-      const {entityMap} = JSON.parse(content);
-      newProject.tags = getTagsFromEntityMap(entityMap);
-    }
     let projectHistory;
-    if (Object.keys(updatedProject).length > 2 || sortOrder === undefined) {
+    if (Object.keys(newProject).length > 1 || newProject.sortOrder === undefined) {
       // if this is anything but a sort update, log it to history
       newProject.updatedAt = now;
       const mergeDoc = {
-        ...historicalProject,
         content,
-        updatedAt: now,
         projectId,
+        status,
+        teamMemberId: newProject.teamMemberId,
+        updatedAt: now,
         tags: newProject.tags
       };
       projectHistory = r.table('ProjectHistory')
@@ -105,20 +96,19 @@ export default {
         .coerceTo('array') : []
     });
     if (!projectChanges) {
-      throw new Error('Project does not exist');
+      throw new Error('Project already updated or does not exist');
     }
 
     // send project updated messages
     const {new_val: project, old_val: oldProject} = projectChanges;
     const projectUpdated = {project};
     const affectedUsers = Array.from(new Set([projectChanges.new_val.userId, projectChanges.old_val.userId]));
-    affectedUsers.forEach((userId) => {
-      getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated, operationId, mutatorId: socketId});
+    affectedUsers.forEach((affectedUserId) => {
+      getPubSub().publish(`${PROJECT_UPDATED}.${affectedUserId}`, {projectUpdated, operationId, mutatorId: socketId});
     });
     getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, operationId, mutatorId: socketId});
 
     // send notifications to assignees and mentionees
-    const myUserId = getUserId(authToken);
     publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
 
     return projectUpdated;

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {DropTarget as dropTarget} from 'react-dnd';
 import FontAwesome from 'react-fontawesome';
-import shortid from 'shortid';
+import {connect} from 'react-redux';
+import {withRouter} from 'react-router';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
 import Badge from 'universal/components/Badge/Badge';
 import DraggableProject from 'universal/containers/ProjectCard/DraggableProject';
@@ -22,8 +23,8 @@ import withStyles from 'universal/styles/withStyles';
 import {PROJECT, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import dndNoise from 'universal/utils/dndNoise';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const columnTarget = {
   drop: handleDrop,
@@ -47,10 +48,11 @@ const badgeColor = {
   future: 'mid'
 };
 
-const handleAddProjectFactory = (atmosphere, dispatch, history, status, teamMemberId, sortOrder) => () => {
+const handleAddProjectFactory = (atmosphere, status, teamId, userId, sortOrder) => () => {
   const newProject = {
     status,
-    teamMemberId,
+    teamId,
+    userId,
     sortOrder
   };
   CreateProjectMutation(atmosphere, newProject);
@@ -73,16 +75,15 @@ class ProjectColumn extends Component {
     const label = themeLabels.projectStatus[status].slug;
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH || isMyMeetingSection) {
-      const teamMemberId = teamMemberFilterId || myTeamMemberId;
-      const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, teamMemberId, sortOrder);
-      return <AddProjectButton onClick={handleAddProject} label={label} />;
+      const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId);
+      const handleAddProject = handleAddProjectFactory(atmosphere, status, teamId, userId, sortOrder);
+      return <AddProjectButton onClick={handleAddProject} label={label}/>;
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const {userId} = atmosphere;
-        const generatedMyTeamMemberId = `${userId}::${teamId}`;
-        const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, generatedMyTeamMemberId, sortOrder);
-        return <AddProjectButton onClick={handleAddProject} label={label} />;
+        const handleAddProject = handleAddProjectFactory(atmosphere, status, teamId, userId, sortOrder);
+        return <AddProjectButton onClick={handleAddProject} label={label}/>;
       }
       const itemFactory = () => {
         const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder);
@@ -95,7 +96,7 @@ class ProjectColumn extends Component {
         );
       };
 
-      const toggle = <AddProjectButton label={label} />;
+      const toggle = <AddProjectButton label={label}/>;
       return (
         <Menu
           itemFactory={itemFactory}
@@ -121,7 +122,7 @@ class ProjectColumn extends Component {
       handleClick: () => {
         const newProject = {
           status,
-          teamMemberId: `${userId}::${team.id}`,
+          teamMemberId: toGlobalId('TeamMember', `${userId}::${team.id}`),
           sortOrder
         };
         CreateProjectMutation(atmosphere, newProject);
@@ -155,14 +156,14 @@ class ProjectColumn extends Component {
         <div className={css(styles.columnHeader)}>
           <div className={css(styles.statusLabelBlock)}>
             <span className={css(styles.statusIcon, styles[status])}>
-              <FontAwesome name={themeLabels.projectStatus[status].icon} />
+              <FontAwesome name={themeLabels.projectStatus[status].icon}/>
             </span>
             <span className={css(styles.statusLabel, styles[status])}>
               {label}
             </span>
             {(projects.length > 0) &&
             <span className={css(styles.statusBadge)}>
-              <Badge colorPalette={badgeColor[status]} flat value={projects.length} />
+              <Badge colorPalette={badgeColor[status]} flat value={projects.length}/>
             </span>
             }
           </div>

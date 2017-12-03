@@ -55,9 +55,10 @@ class MeetingAgendaCards extends Component {
     const newProject = {
       content,
       status: ACTIVE,
-      teamMemberId: `${userId}::${teamId}`,
       sortOrder: 0,
-      agendaId
+      agendaId,
+      userId,
+      teamId
     };
     CreateProjectMutation(atmosphere, newProject, MEETING);
   }

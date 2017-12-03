@@ -1,11 +1,12 @@
 import {commitMutation} from 'react-relay';
 import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
-import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import prepareServerInput from 'universal/utils/relay/prepareServerInput';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const mutation = graphql`
-  mutation CreateProjectMutation($newProject: ProjectInput!, $area: AreaEnum) {
+  mutation CreateProjectMutation($newProject: CreateProjectInput!, $area: AreaEnum) {
     createProject(newProject: $newProject, area: $area) {
       project {
         id
@@ -48,21 +49,18 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {area, newProject},
+    variables: {
+      area,
+      newProject: prepareServerInput(newProject, ['agendaId'])
+    },
     updater: (store) => {
       const project = store.getRootField('createProject').getLinkedRecord('project');
       handleProjectConnections(store, viewerId, project);
     },
     optimisticUpdater: (store) => {
-      const {teamMemberId} = newProject;
+      const {teamId, userId} = newProject;
+      const teamMemberId = toTeamMemberId(teamId, userId);
       const now = new Date().toJSON();
-      const {userId, teamId} = fromTeamMemberId(teamMemberId);
-      const teamMember = store.get(teamMemberId);
-      const team = store.get(teamId);
-      // TODO remove this when we move Teams to relay
-      if (!team) {
-        throw new Error('team not found', teamId);
-      }
       const optimisticProject = {
         ...newProject,
         id: `${teamId}::$${tempId++}`,
@@ -72,13 +70,13 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
         createdBy: userId,
         updatedAt: now,
         tags: [],
+        teamMemberId,
         content: newProject.content || makeEmptyStr()
       };
-      const project = createProxyRecord(store, 'Project', optimisticProject);
-      project
+      const project = createProxyRecord(store, 'Project', optimisticProject)
         .setLinkedRecords([], 'editors')
-        .setLinkedRecord(teamMember, 'teamMember')
-        .setLinkedRecord(team, 'team');
+        .setLinkedRecord(store.get(teamMemberId), 'teamMember')
+        .setLinkedRecord(store.get(teamId), 'team');
 
 
       handleProjectConnections(store, viewerId, project);

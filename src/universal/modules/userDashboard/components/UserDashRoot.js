@@ -31,7 +31,7 @@ const subscriptions = [
   ProjectDeletedSubscription
 ];
 
-const UserDashRoot = ({atmosphere, teams}) => {
+const UserDashRoot = ({atmosphere}) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -44,7 +44,7 @@ const UserDashRoot = ({atmosphere, teams}) => {
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">
-              <UserDashMain viewer={renderProps.viewer} teams={teams} />
+              <UserDashMain viewer={renderProps.viewer} />
             </AnimatedFade>
             }
             {!renderProps && !error &&
@@ -60,8 +60,7 @@ const UserDashRoot = ({atmosphere, teams}) => {
 };
 
 UserDashRoot.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  teams: PropTypes.array
+  atmosphere: PropTypes.object.isRequired
 };
 
 export default withAtmosphere(UserDashRoot);

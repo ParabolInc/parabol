@@ -2,6 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {createFragmentContainer} from 'react-relay';
 import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -228,14 +229,24 @@ const styleThunk = () => ({
   }
 });
 
-export default withSuggestions(
-  withLinks(
-    withMarkdown(
-      withKeyboardShortcuts(
-        withStyles(styleThunk)(
-          ProjectEditor
+export default createFragmentContainer(
+  withSuggestions(
+    withLinks(
+      withMarkdown(
+        withKeyboardShortcuts(
+          withStyles(styleThunk)(
+            ProjectEditor
+          )
         )
       )
     )
-  )
+  ),
+  graphql`
+    fragment ProjectEditor_team on Team {
+      teamMembers(sortBy: "preferredName") {
+        id
+        picture
+        preferredName
+      }
+    }`
 );

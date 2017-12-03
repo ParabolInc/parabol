@@ -13,7 +13,6 @@ import invoice from './models/Invoice/invoiceSubscription';
 import organization from './models/Organization/organizationSubscription';
 import orgApproval from './models/OrgApproval/orgApprovalSubscription';
 import presence from './models/Presence/presenceSubscription';
-import project from './models/Project/projectSubscription';
 import team from './models/Team/teamSubscription';
 import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
@@ -38,7 +37,6 @@ const rootFields = Object.assign({},
   orgApproval,
   organization,
   presence,
-  project,
   team,
   teamMember,
   user

@@ -23,7 +23,7 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
   const viewer = store.get(viewerId);
   const conn = ConnectionHandler.getConnection(
     viewer,
-    'SocketRoute_notifications'
+    'DashboardWrapper_notifications'
   );
   const nodeId = newNode.getValue('id');
   const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('id') === nodeId);
