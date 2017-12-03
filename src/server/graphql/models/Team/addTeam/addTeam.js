@@ -5,8 +5,8 @@ import {ensureUniqueId, getUserId, getUserOrgDoc, requireUserInOrg, requireWebso
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
 import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
-import {TeamInput} from '../teamSchema';
 import addTeamValidation from './addTeamValidation';
+import TeamInput from 'server/graphql/types/TeamInput';
 
 export default {
   type: GraphQLBoolean,

@@ -8,8 +8,8 @@ import {
   GraphQLNonNull,
   GraphQLBoolean
 } from 'graphql';
-import {TeamInput} from '../teamSchema';
 import updateTeamNameValidation from './updateTeamNameValidation';
+import TeamInput from 'server/graphql/types/TeamInput';
 
 
 export default {

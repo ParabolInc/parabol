@@ -1,6 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
-import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 import TeamMember from 'server/graphql/types/TeamMember';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
@@ -9,7 +8,6 @@ import {GITHUB} from 'universal/utils/constants';
 const GitHubIntegration = new GraphQLObjectType({
   name: GITHUB,
   description: 'An integration that connects github issues & PRs to Parabol projects',
-  interfaces: () => [nodeInterface],
   fields: () => ({
     // shortid
     id: globalIdField(GITHUB, ({id}) => id),

@@ -8,17 +8,17 @@ export default {
   type: new GraphQLNonNull(NotifyAddedToTeam),
   description: 'Approve an outsider to join the organization',
   args: {
-    dbNotificationId: {
+    notificationId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The notification id of the team invite'
     }
   },
-  async resolve(source, {dbNotificationId}, {authToken}) {
+  async resolve(source, {notificationId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
     const userId = getUserId(authToken);
-    const notification = await r.table('Notification').get(dbNotificationId);
+    const notification = await r.table('Notification').get(notificationId);
     requireNotificationOwner(userId, notification);
 
     // RESOLUTION

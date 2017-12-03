@@ -1,6 +1,5 @@
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
-import {TeamInput} from 'server/graphql/models/Team/teamSchema';
 import addOrgValidation from 'server/graphql/mutations/helpers/addOrgValidation';
 import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
@@ -13,6 +12,7 @@ import {NEW_AUTH_TOKEN, ORGANIZATION_ADDED} from 'universal/utils/constants';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import createTeamAndLeader from '../models/Team/createFirstTeam/createTeamAndLeader';
 import tmsSignToken from 'server/utils/tmsSignToken';
+import TeamInput from 'server/graphql/types/TeamInput';
 
 export default {
   type: AddOrgPayload,

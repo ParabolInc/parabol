@@ -285,9 +285,8 @@ const notificationHandler = {
       action: {
         label: 'Accept!',
         callback: () => {
-          const id = payload.getValue('id');
-          const {id: localId} = fromGlobalId(id);
-          AcceptTeamInviteMutation(environment, localId);
+          const notificationId = payload.getValue('id');
+          AcceptTeamInviteMutation(environment, notificationId);
         }
       }
     }));

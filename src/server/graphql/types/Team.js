@@ -15,7 +15,7 @@ import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum'
 import Organization from 'server/graphql/types/Organization';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
-import {AgendaItem} from '../AgendaItem/agendaItemSchema';
+import {AgendaItem} from '../models/AgendaItem/agendaItemSchema';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
@@ -147,12 +147,4 @@ export const Team = new GraphQLObjectType({
   })
 });
 
-export const TeamInput = new GraphQLInputObjectType({
-  name: 'TeamInput',
-  fields: () => ({
-    id: {type: GraphQLID, description: 'The unique team ID'},
-    name: {type: GraphQLString, description: 'The name of the team'},
-    orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
-    isArchived: {type: GraphQLBoolean}
-  })
-});
+
