@@ -3,7 +3,6 @@ import {ConnectionHandler} from 'relay-runtime';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getNodeById from 'universal/utils/relay/getNodeById';
 import {insertEdgeAfter} from 'universal/utils/relay/insertEdge';
-import prepareServerInput from 'universal/utils/relay/prepareServerInput';
 import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -120,7 +119,7 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
     mutation,
     variables: {
       area,
-      updatedProject: prepareServerInput(updatedProject, ['id', 'userId'])
+      updatedProject
     },
     updater: (store) => {
       const project = store.getRootField('updateProject').getLinkedRecord('project');

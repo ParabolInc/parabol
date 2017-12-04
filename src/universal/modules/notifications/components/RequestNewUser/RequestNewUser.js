@@ -8,7 +8,6 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
 const RequestNewUser = (props) => {
@@ -21,8 +20,7 @@ const RequestNewUser = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id, inviterName, inviteeEmail, orgId, teamName} = notification;
-  const {id: dbNotificationId} = fromGlobalId(id);
+  const {id: notificationId, inviterName, inviteeEmail, orgId, teamName} = notification;
   const acceptInvite = () => {
     submitMutation();
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted);
@@ -65,7 +63,7 @@ const RequestNewUser = (props) => {
         </div>
         <div className={css(styles.button)}>
           <RejectOrgApprovalModal
-            dbNotificationId={dbNotificationId}
+            notificationId={notificationId}
             inviteeEmail={inviteeEmail}
             inviterName={inviterName}
             toggle={rejectToggle}

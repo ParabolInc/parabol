@@ -1,5 +1,4 @@
 import {commitMutation} from 'react-relay';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const mutation = graphql`
   mutation AcceptTeamInviteMutation($notificationId: ID!) {
@@ -19,9 +18,7 @@ const mutation = graphql`
 //  }
 // };
 
-const AcceptTeamInviteMutation = (environment, globalNotificationId, onError, onCompleted) => {
-  const {id: notificationId} = fromGlobalId(globalNotificationId);
-  // const {viewerId} = environment;
+const AcceptTeamInviteMutation = (environment, notificationId, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {notificationId},

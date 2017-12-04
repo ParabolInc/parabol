@@ -2,7 +2,6 @@ import {commitMutation} from 'react-relay';
 import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
-import prepareServerInput from 'universal/utils/relay/prepareServerInput';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const mutation = graphql`
@@ -51,7 +50,7 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
     mutation,
     variables: {
       area,
-      newProject: prepareServerInput(newProject, ['agendaId'])
+      newProject
     },
     updater: (store) => {
       const project = store.getRootField('createProject').getLinkedRecord('project');

@@ -1,31 +1,33 @@
 import {
   GraphQLBoolean,
   GraphQLID,
-  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
+import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
+import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
+import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
-import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
 import Organization from 'server/graphql/types/Organization';
+import {ProjectConnection} from 'server/graphql/types/Project';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
-import {AgendaItem} from '../models/AgendaItem/agendaItemSchema';
-import {ProjectConnection} from 'server/graphql/types/Project';
-import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
-import {forwardConnectionArgs, globalIdField} from 'graphql-relay';
+import {AgendaItem} from '../models/AgendaItem/agendaItemSchema';
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
   description: 'A team',
   fields: () => ({
-    id: globalIdField('Team', ({id}) => id),
+    id: {
+      type: GraphQLID,
+      description: 'A shortid for the team'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team was created'

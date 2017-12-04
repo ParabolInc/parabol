@@ -24,7 +24,6 @@ import {PROJECT, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import dndNoise from 'universal/utils/dndNoise';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const columnTarget = {
   drop: handleDrop,
@@ -122,7 +121,7 @@ class ProjectColumn extends Component {
       handleClick: () => {
         const newProject = {
           status,
-          teamMemberId: toGlobalId('TeamMember', `${userId}::${team.id}`),
+          teamMemberId: `${userId}::${team.id}`,
           sortOrder
         };
         CreateProjectMutation(atmosphere, newProject);

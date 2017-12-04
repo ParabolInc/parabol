@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
-import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
 import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';

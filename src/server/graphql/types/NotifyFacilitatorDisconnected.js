@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import TeamMember from 'server/graphql/types/TeamMember';
-import {fromGlobalId} from 'graphql-relay';
 
 const NotifyFacilitatorDisconnected = new GraphQLObjectType({
   name: 'NotifyFacilitatorDisconnected',
@@ -12,8 +11,7 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
       type: new GraphQLNonNull(TeamMember),
       description: 'The new meeting facilitator',
       resolve: ({newFacilitatorId}, args, {getDataLoader}) => {
-        const {id: dbNewFacilitatorId} = fromGlobalId(newFacilitatorId);
-        return getDataLoader().teamMembers.load(dbNewFacilitatorId);
+        return getDataLoader().teamMembers.load(newFacilitatorId);
       }
     },
     newFacilitatorId: {
@@ -24,8 +22,7 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member that disconnected',
       resolve: ({oldFacilitatorId}, args, {getDataLoader}) => {
-        const {id: dbOldFacilitatorId} = fromGlobalId(oldFacilitatorId);
-        return getDataLoader().teamMembers.load(dbOldFacilitatorId);
+        return getDataLoader().teamMembers.load(oldFacilitatorId);
       }
     },
     oldFacilitatorId: {

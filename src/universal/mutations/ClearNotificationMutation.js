@@ -1,7 +1,5 @@
 import {commitMutation} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const mutation = graphql`
   mutation ClearNotificationMutation($notificationId: ID!) {
@@ -11,21 +9,19 @@ const mutation = graphql`
   }
 `;
 
-export const clearNotificationUpdater = (viewer, deletedLocalIds) => {
+export const clearNotificationUpdater = (viewer, deletedIds) => {
   const conn = ConnectionHandler.getConnection(
     viewer,
     'DashboardWrapper_notifications'
   );
   if (conn) {
-    const deletedGlobalIds = deletedLocalIds.map((id) => toGlobalId('Notification', id));
-    deletedGlobalIds.forEach((globalId) => {
-      ConnectionHandler.deleteNode(conn, globalId);
+    deletedIds.forEach((deletedId) => {
+      ConnectionHandler.deleteNode(conn, deletedId);
     });
   }
 };
 
-const ClearNotificationMutation = (environment, globalNotificationId, onError, onCompleted) => {
-  const {id: notificationId} = fromGlobalId(globalNotificationId);
+const ClearNotificationMutation = (environment, notificationId, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,

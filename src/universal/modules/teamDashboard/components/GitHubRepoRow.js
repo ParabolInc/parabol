@@ -11,16 +11,11 @@ import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutati
 import formError from 'universal/styles/helpers/formError';
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 class GitHubRepoRow extends Component {
   constructor(props) {
     super(props);
-    const {environment: {userId}, teamId} = this.props;
-    const teamMemberId = `${userId}::${teamId}`;
-    this.globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
     this.state = {
       viewerInIntegration: this.getViewerInIntegration(props)
     };
@@ -39,8 +34,9 @@ class GitHubRepoRow extends Component {
   }
 
   getViewerInIntegration(props) {
-    const {repo: {teamMembers}} = props;
-    return Boolean(teamMembers.find((teamMember) => teamMember.id === this.globalTeamMemberId));
+    const {environment: {userId}, teamId, repo: {teamMembers}} = props;
+    const teamMemberId = `${userId}::${teamId}`;
+    return Boolean(teamMembers.find((teamMember) => teamMember.id === teamMemberId));
   }
 
   toggleIntegrationMembership = (githubGlobalId) => () => {
@@ -56,8 +52,7 @@ class GitHubRepoRow extends Component {
   render() {
     const {accessToken, environment, error, submitting, styles, repo} = this.props;
     const {id, adminUserId, nameWithOwner, teamMembers} = repo;
-    const {id: userId} = fromGlobalId(environment.viewerId);
-
+    const {userId} = environment;
     const isCreator = adminUserId === userId;
     return (
       <div className={css(styles.rowAndError)}>

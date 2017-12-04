@@ -1,21 +1,21 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
-import {globalIdField} from 'graphql-relay';
+import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import User from 'server/graphql/types/User';
-import {Team} from '../models/Team/teamSchema';
-import {forwardConnectionArgs} from 'graphql-relay';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
   description: 'A member of a team',
   fields: () => ({
-    id: globalIdField('TeamMember', ({id}) => id),
-    // id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
+    id: {
+      type: GraphQLID,
+      description: 'An ID for the teamMember. userId::teamId'
+    },
     isNotRemoved: {
       type: GraphQLBoolean,
       description: 'true if the user is a part of the team, false if they no longer are'

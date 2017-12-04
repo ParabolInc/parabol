@@ -11,7 +11,6 @@ import {DONE} from 'universal/utils/constants';
 import convertToRichText from 'server/__tests__/setup/convertToRichText';
 import updateProject from 'server/graphql/mutations/updateProject';
 import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
-import {toGlobalId} from 'graphql-relay';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -30,7 +29,7 @@ describe('updateProject', () => {
 
     // TEST
     const updatedProject = {
-      id: toGlobalId('Project', projectId),
+      id: projectId,
       sortOrder: 2
     };
     await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
@@ -58,7 +57,7 @@ describe('updateProject', () => {
     const getDataLoader = makeDataLoader(authToken);
     // TEST
     const updatedProject = {
-      id: toGlobalId('Project', projectId),
+      id: projectId,
       content: convertToRichText('Updated content')
     };
     await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
@@ -88,7 +87,7 @@ describe('updateProject', () => {
 
     // TEST
     const updatedProject = {
-      id: toGlobalId('Project', projectId),
+      id: projectId,
       teamMemberId: teamMember[5].id
     };
     await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
@@ -118,7 +117,7 @@ describe('updateProject', () => {
 
     // TEST
     const updatedProject = {
-      id: toGlobalId('Project', projectId),
+      id: projectId,
       content: convertToRichText('Updated content')
     };
     await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
@@ -147,7 +146,7 @@ describe('updateProject', () => {
 
     // TEST
     const updatedProject = {
-      id: toGlobalId('Project', projectId),
+      id: projectId,
       status: DONE
     };
     await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
@@ -173,7 +172,7 @@ describe('updateProject', () => {
     const getDataLoader = makeDataLoader(authToken);
     // TEST
     const updatedProject = {
-      id: toGlobalId('Project', projectId),
+      id: projectId,
       status: DONE
     };
     await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket}),

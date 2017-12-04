@@ -1,22 +1,21 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router-dom';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ib from 'universal/styles/helpers/ib';
 import {
   DashSectionControl,
   DashSectionControls,
   DashSectionHeader,
   DashSectionHeading
 } from 'universal/components/Dashboard';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
-import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
 import {Menu, MenuItem} from 'universal/modules/menu';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
+import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
+import ib from 'universal/styles/helpers/ib';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const iconStyle = {
   ...ib,
@@ -42,7 +41,7 @@ const targetAnchor = {
 
 const TeamProjectsHeader = (props) => {
   const {dispatch, styles, teamId, teamMemberFilterId, teamMemberFilterName, teamMembers} = props;
-  const toggle = <DashFilterToggle label={teamMemberFilterName} />;
+  const toggle = <DashFilterToggle label={teamMemberFilterName}/>;
 
   const itemFactory = () => {
     return [<MenuItem
@@ -56,17 +55,17 @@ const TeamProjectsHeader = (props) => {
           isActive={teamMember.id === teamMemberFilterId}
           key={`teamMemberFilter${teamMember.id}`}
           label={teamMember.preferredName}
-          onClick={() => dispatch(filterTeamMember(toGlobalId('TeamMember', teamMember.id), teamMember.preferredName))}
+          onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
         />)
       ));
   };
   return (
     <DashSectionHeader>
-      <DashSectionHeading icon="calendar" label="Team Projects" />
+      <DashSectionHeading icon="calendar" label="Team Projects"/>
       <DashSectionControls>
         {/* TODO: needs link to archive */}
         <DashSectionControl>
-          <FontAwesome name="archive" style={iconStyle} />
+          <FontAwesome name="archive" style={iconStyle}/>
           <Link className={css(styles.link)} to={`/team/${teamId}/archive`}>
             See Archived Projects
           </Link>

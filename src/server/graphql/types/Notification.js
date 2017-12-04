@@ -1,23 +1,25 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
-import {globalIdField} from 'graphql-relay';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import NotificationEnum from 'server/graphql/types/NotificationEnum';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyDenial from 'server/graphql/types/NotifyDenial';
+import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
 import NotifyPayment from 'server/graphql/types/NotifyPayment';
+import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
+import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 import {
   ADD_TO_TEAM,
   DENY_NEW_USER,
-  FACILITATOR_REQUEST,
   FACILITATOR_DISCONNECTED,
+  FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
   KICKED_OUT,
@@ -29,12 +31,12 @@ import {
   TEAM_ARCHIVED,
   TEAM_INVITE
 } from 'universal/utils/constants';
-import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
-import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected';
-import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 
 export const notificationInterfaceFields = {
-  id: globalIdField('Notification', ({id}) => id),
+  id: {
+    type: GraphQLID,
+    description: 'A shortid for the notification'
+  },
   orgId: {
     type: GraphQLID,
     description: '*The unique organization ID for this notification. Can be blank for targeted notifications'

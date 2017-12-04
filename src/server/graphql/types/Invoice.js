@@ -1,14 +1,13 @@
 import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import CreditCard from 'server/graphql/types/CreditCard';
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import InvoiceChargeNextMonth from 'server/graphql/types/InvoiceChargeNextMonth';
 import InvoiceLineItem from 'server/graphql/types/InvoiceLineItem';
 import InvoiceStatusEnum from 'server/graphql/types/InvoiceStatusEnum';
-import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
-import {globalIdField} from 'graphql-relay';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.
@@ -20,7 +19,10 @@ const Invoice = new GraphQLObjectType({
   name: 'Invoice',
   description: 'A monthly billing invoice for an organization',
   fields: () => ({
-    id: globalIdField('Invoice', ({id}) => id),
+    id: {
+      type: GraphQLID,
+      description: 'A shortid for the invoice'
+    },
     amountDue: {
       type: GraphQLFloat,
       description: 'The amount the card will be charged (total + startingBalance with a min value of 0)'

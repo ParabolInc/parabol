@@ -1,18 +1,17 @@
 import {css} from 'aphrodite-local-styles/no-important';
+import {convertFromRaw, Editor, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import withRouter from 'react-router-dom/es/withRouter';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
+import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import {Editor, convertFromRaw, EditorState} from 'draft-js';
-import editorDecorators from 'universal/components/ProjectEditor/decorators';
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -30,18 +29,17 @@ const ProjectInvolves = (props) => {
     onCompleted,
     history
   } = props;
-  const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
+  const {id: notificationId, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
   // eslint-disable-next-line
   const {content, status, tags} = project;
-  const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
   };
   const gotoBoard = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
     const archiveSuffix = tags.includes('archived') ? '/archive' : '';
     history.push(`/team/${teamId}${archiveSuffix}`);
   };
@@ -51,7 +49,7 @@ const ProjectInvolves = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="check-square" size="medium" />
+        <IconAvatar icon="check-square" size="medium"/>
       </div>
       <div className={css(styles.message)}>
         <div className={css(styles.messageText)}>

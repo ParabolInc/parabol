@@ -2,7 +2,6 @@ import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 import tryParse from 'universal/utils/tryParse';
 
 const makeErrorObj = (errors) => {
@@ -97,7 +96,7 @@ export default class Atmosphere extends Environment {
     if (authToken) {
       const authObj = jwtDecode(authToken);
       this.userId = authObj.sub;
-      this.viewerId = toGlobalId('User', authObj.sub);
+      this.viewerId = authObj.sub;
     }
   };
 

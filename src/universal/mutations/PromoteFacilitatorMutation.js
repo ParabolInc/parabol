@@ -1,5 +1,4 @@
 import {commitMutation} from 'react-relay';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const mutation = graphql`
   mutation PromoteFacilitatorMutation($facilitatorId: ID!, $disconnectedFacilitatorId: ID) {
@@ -17,10 +16,9 @@ const PromoteFacilitatorMutation = (environment, input, onError, onCompleted) =>
     mutation,
     variables: {disconnectedFacilitatorId, facilitatorId},
     optimisticUpdater: (store) => {
-      const {id} = fromGlobalId(facilitatorId);
-      const [, teamId] = id.split('::');
+      const [, teamId] = facilitatorId.split('::');
       store.get(teamId)
-        .setValue(id, 'activeFacilitator');
+        .setValue(facilitatorId, 'activeFacilitator');
     },
     onCompleted,
     onError

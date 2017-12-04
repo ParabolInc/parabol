@@ -1,25 +1,24 @@
 import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import {globalIdField} from 'graphql-relay';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import GitHubProject from 'server/graphql/types/GitHubProject';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
+import ProjectEditorDetails from 'server/graphql/types/ProjectEditorDetails';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 import TeamMember from 'server/graphql/types/TeamMember';
-import ProjectEditorDetails from 'server/graphql/types/ProjectEditorDetails';
-import {toGlobalId} from 'graphql-relay';
 import Team from 'universal/modules/teamDashboard/components/Team/Team';
 
 const Project = new GraphQLObjectType({
   name: 'Project',
   description: 'A long-term project shared across the team, assigned to a single user ',
   fields: () => ({
-    // 'The unique project id, teamId::shortid'
-    id: globalIdField('Project', ({id}) => id),
+    id: {
+      type: GraphQLID,
+      description: 'A shortid for the project teamId::shortid'
+    },
     agendaId: {
       type: GraphQLID,
-      description: 'the agenda item that created this project, if any',
-      resolve: ({agendaId}) => toGlobalId('AgendaItem', agendaId)
+      description: 'the agenda item that created this project, if any'
     },
     content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
     createdAt: {
@@ -28,8 +27,7 @@ const Project = new GraphQLObjectType({
     },
     createdBy: {
       type: GraphQLID,
-      description: 'The userId that created the project',
-      resolve: ({createdBy}) => toGlobalId('User', createdBy)
+      description: 'The userId that created the project'
     },
     editors: {
       type: new GraphQLList(ProjectEditorDetails),
@@ -57,8 +55,7 @@ const Project = new GraphQLObjectType({
     },
     teamId: {
       type: GraphQLID,
-      description: 'The id of the team (indexed). Needed for subscribing to archived projects',
-      resolve: ({teamId}) => toGlobalId('Team', teamId)
+      description: 'The id of the team (indexed). Needed for subscribing to archived projects'
     },
     team: {
       type: Team,
@@ -76,8 +73,7 @@ const Project = new GraphQLObjectType({
     },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team member assigned to this project, or the creator if content is null',
-      resolve: ({teamMemberId}) => toGlobalId('TeamMember', teamMemberId)
+      description: 'The id of the team member assigned to this project, or the creator if content is null'
     },
     updatedAt: {
       type: GraphQLISO8601Type,
@@ -85,8 +81,7 @@ const Project = new GraphQLObjectType({
     },
     userId: {
       type: GraphQLID,
-      description: '* The userId, index useful for server-side methods getting all projects under a user',
-      resolve: ({userId}) => toGlobalId('User', userId)
+      description: '* The userId, index useful for server-side methods getting all projects under a user'
     }
   })
 });

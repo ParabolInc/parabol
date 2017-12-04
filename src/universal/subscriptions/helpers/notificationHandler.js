@@ -6,18 +6,22 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
   ADD_TO_TEAM,
-  DENY_NEW_USER, FACILITATOR_DISCONNECTED,
+  DENY_NEW_USER,
+  FACILITATOR_DISCONNECTED,
   FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
-  KICKED_OUT, MENTIONEE, PAYMENT_REJECTED, PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER,
+  KICKED_OUT,
+  MENTIONEE,
+  PAYMENT_REJECTED,
+  PROJECT_INVOLVES,
+  PROMOTE_TO_BILLING_LEADER,
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
   TEAM_INVITE
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 export const addNotificationUpdater = (store, viewerId, newNode) => {
   const viewer = store.get(viewerId);
@@ -43,9 +47,8 @@ const notificationHandler = {
   [ADD_TO_TEAM]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
     const teamName = payload.getValue('teamName');
-    const id = payload.getValue('id');
-    // localId isn't always present because if i accept to join i want the authToken but no notification
-    const {id: localId} = fromGlobalId(id);
+    const notificationId = payload.getValue('id');
+    // notificationId isn't always present because if i accept to join i want the authToken but no notification
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Congratulations!',
@@ -53,13 +56,13 @@ const notificationHandler = {
       action: {
         label: 'Great!',
         callback: () => {
-          if (localId) {
-            ClearNotificationMutation(environment, localId);
+          if (notificationId) {
+            ClearNotificationMutation(environment, notificationId);
           }
         }
       }
     }));
-    if (localId) {
+    if (notificationId) {
       addNotificationUpdater(store, viewerId, payload);
     }
   },
@@ -88,11 +91,10 @@ const notificationHandler = {
     const newFacilitatorTeamMemberId = newFacilitator.getValue('id');
     const newFacilitatorUserId = newFacilitator.getValue('userId');
     const teamId = payload.getValue('teamId');
-    const {id: dbNewFacilitatorTeamMemberId} = fromGlobalId(newFacilitatorTeamMemberId);
     const team = store.get(teamId);
     // this can happen if it comes it during a refresh
     if (!team) return;
-    team.setValue(dbNewFacilitatorTeamMemberId, 'activeFacilitator');
+    team.setValue(newFacilitatorTeamMemberId, 'activeFacilitator');
     const {userId} = environment;
     const facilitatorIntro = userId === newFacilitatorUserId ? 'You are' : `${newFacilitatorName} is`;
     dispatch(showInfo({
@@ -130,9 +132,8 @@ const notificationHandler = {
       action: {
         label: 'Great!',
         callback: () => {
-          const id = payload.getValue('id');
-          const {id: localId} = fromGlobalId(id);
-          ClearNotificationMutation(environment, localId);
+          const notificationId = payload.getValue('id');
+          ClearNotificationMutation(environment, notificationId);
         }
       }
     }));
@@ -160,9 +161,8 @@ const notificationHandler = {
         action: {
           label: 'OK',
           callback: () => {
-            const id = payload.getValue('id');
-            const {id: localId} = fromGlobalId(id);
-            ClearNotificationMutation(environment, localId);
+            const notificationId = payload.getValue('id');
+            ClearNotificationMutation(environment, notificationId);
           }
         }
       }));
@@ -241,8 +241,6 @@ const notificationHandler = {
     const {viewerId} = environment;
     const inviterName = payload.getValue('inviterName');
     // TODO highlight the id, but don't store the state in the url cuz ugly
-    // const globalId = payload.getValue('id');
-    // const {id: dbId} = fromGlobalId(globalId);
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Approval Requested!',
@@ -266,9 +264,8 @@ const notificationHandler = {
       action: {
         label: 'OK',
         callback: () => {
-          const id = payload.getValue('id');
-          const {id: localId} = fromGlobalId(id);
-          ClearNotificationMutation(environment, localId);
+          const notificationId = payload.getValue('id');
+          ClearNotificationMutation(environment, notificationId);
         }
       }
     }));
