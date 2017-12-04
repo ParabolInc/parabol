@@ -8,7 +8,7 @@ import {
   GraphQLString
 } from 'graphql';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
-import {Team} from 'server/graphql/models/Team/teamSchema';
+import Team from 'server/graphql/types/Team';
 // import archivedProjects from 'server/graphql/queries/archivedProjects';
 import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
 import githubRepos from 'server/graphql/queries/githubRepos';

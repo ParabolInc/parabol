@@ -20,7 +20,7 @@ import TierEnum from 'server/graphql/types/TierEnum';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import {AgendaItem} from '../models/AgendaItem/agendaItemSchema';
 
-export const Team = new GraphQLObjectType({
+const Team = new GraphQLObjectType({
   name: 'Team',
   description: 'A team',
   fields: () => ({
@@ -149,4 +149,4 @@ export const Team = new GraphQLObjectType({
   })
 });
 
-
+export default Team;

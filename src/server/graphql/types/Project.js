@@ -5,8 +5,8 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 import ProjectEditorDetails from 'server/graphql/types/ProjectEditorDetails';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
+import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
-import Team from 'universal/modules/teamDashboard/components/Team/Team';
 
 const Project = new GraphQLObjectType({
   name: 'Project',

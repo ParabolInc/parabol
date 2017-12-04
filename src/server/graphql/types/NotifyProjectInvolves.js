@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import {Team} from 'server/graphql/models/Team/teamSchema';
+import Team from 'server/graphql/types/Team';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import Project from 'server/graphql/types/Project';
 import ProjectInvolvementType from 'server/graphql/types/ProjectInvolvementType';

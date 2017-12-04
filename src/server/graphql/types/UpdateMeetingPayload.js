@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import {Team} from 'server/graphql/models/Team/teamSchema';
+import Team from 'server/graphql/types/Team';
 
 const UpdateMeetingPayload = new GraphQLObjectType({
   name: 'UpdateMeetingPayload',

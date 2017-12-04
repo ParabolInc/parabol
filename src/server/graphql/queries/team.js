@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
+import Team from 'server/graphql/types/Team';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
-import {Team} from '../models/Team/teamSchema';
 
 export default {
   type: Team,

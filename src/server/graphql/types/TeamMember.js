@@ -6,6 +6,7 @@ import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import {ProjectConnection} from 'server/graphql/types/Project';
+import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
 
 const TeamMember = new GraphQLObjectType({

@@ -1,6 +1,6 @@
 import {GraphQLObjectType, GraphQLList} from 'graphql';
 import Organization from 'server/graphql/types/Organization';
-import {Team} from 'server/graphql/models/Team/teamSchema';
+import Team from 'server/graphql/types/Team';
 
 const UpgradeToProPayload = new GraphQLObjectType({
   name: 'UpgradeToProPayload',
