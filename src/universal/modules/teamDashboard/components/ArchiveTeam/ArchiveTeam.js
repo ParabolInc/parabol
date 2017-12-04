@@ -28,10 +28,11 @@ const ArchiveTeam = ({
           buttonSize="small"
           colorPalette="warm"
           label="Delete Team"
+          aria-label="Click to permanently delete this team."
           onClick={handleClick}
         />
         <Type width="auto" marginTop=".5rem" scale="s2">
-          <b>Note</b>: {'Currently, this can’t be undone.'}
+          <b>Note</b>: {'This can’t be undone.'}
         </Type>
       </div> :
       <ArchiveTeamForm

@@ -13,7 +13,7 @@ type Props = {
 class ArchiveTeamForm extends Component<Props> {
   validate = (value) => (
     value !== this.props.teamName
-      ? 'The team name entered was incorrect'
+      ? 'The team name entered was incorrect.'
       : undefined
   );
 
@@ -24,6 +24,7 @@ class ArchiveTeamForm extends Component<Props> {
         <Field
           autoFocus
           onBlur={handleFormBlur}
+          label="Enter your team name to delete it."
           colorPalette="gray"
           component={InputField}
           name="archivedTeamName"
