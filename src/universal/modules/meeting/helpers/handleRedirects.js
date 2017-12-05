@@ -28,7 +28,7 @@ export default function handleRedirects(oldProps, nextProps) {
     const phaseItems = team[arrayName];
 
     // if it's a bad number (or not a number at all)
-    if (localPhaseItem > phaseItems.length || localPhaseItem <= 0) {
+    if (localPhaseItem > phaseItems.length || localPhaseItem <= 0 || !localPhaseItem) {
       // did an item get removed?
       const oldPhaseItems = oldTeam[arrayName] || [];
       if (oldPhaseItems.length > phaseItems.length) {

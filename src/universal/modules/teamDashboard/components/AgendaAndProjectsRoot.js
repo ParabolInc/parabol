@@ -26,7 +26,7 @@ const subscriptions = [
   ProjectCreatedSubscription,
   ProjectDeletedSubscription
 ];
-const cacheConfig = {ttl: ms('30s')};
+const cacheConfig = {ttl: ms('10s')};
 
 const AgendaAndProjectsRoot = (props) => {
   const {atmosphere, match: {params: {teamId}}} = props;

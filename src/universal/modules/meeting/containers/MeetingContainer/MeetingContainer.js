@@ -135,7 +135,7 @@ class MeetingContainer extends Component {
     this.setState({
       members: resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator)
     });
-    handleRedirects({}, this.props);
+    this.unsafeRoute = !handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
     bindHotkey('i c a n t h a c k i t', () => KillMeetingMutation(atmosphere, teamId));
@@ -176,12 +176,12 @@ class MeetingContainer extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const safeRoute = handleRedirects(this.props, nextProps);
-    if (safeRoute) {
+    this.unsafeRoute = !handleRedirects(this.props, nextProps);
+    if (!this.unsafeRoute) {
       return true;
     }
     // if we call history.push
-    if (safeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
+    if (this.unsafeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
         const {dispatch, teamId, myTeamMemberId, viewer: {team: {activeFacilitator}}} = this.props;
         const isFacilitating = myTeamMemberId === activeFacilitator;
@@ -332,6 +332,8 @@ class MeetingContainer extends Component {
   };
 
   render() {
+    if (this.unsafeRoute) return <div></div>;
+
     const {
       localPhase,
       localPhaseItem,

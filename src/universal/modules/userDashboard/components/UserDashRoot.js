@@ -15,7 +15,7 @@ import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSu
 import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
 
 // short ttl for projects to avoid sending duplicates when switching from team to user dash
-const cacheConfig = {ttl: ms('30s')};
+const cacheConfig = {ttl: ms('10s')};
 
 const query = graphql`
   query UserDashRootQuery {
