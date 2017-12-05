@@ -31,7 +31,7 @@ const PromoteToBillingLeader = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="medium"/>
+        <IconAvatar icon="user" size="medium" />
       </div>
       <div className={css(styles.message)}>
         You are now a Billing Leader for

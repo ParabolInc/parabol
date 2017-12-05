@@ -7,50 +7,51 @@ import presence from 'server/graphql/models/Presence/presenceMutation';
 import team from 'server/graphql/models/Team/teamMutation';
 import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
+import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
+import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
 import addGitHubRepo from 'server/graphql/mutations/addGitHubRepo';
+import addOrg from 'server/graphql/mutations/addOrg';
 import addProvider from 'server/graphql/mutations/addProvider';
 import addSlackChannel from 'server/graphql/mutations/addSlackChannel';
+import approveToOrg from 'server/graphql/mutations/approveToOrg';
+import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
 import clearNotification from 'server/graphql/mutations/clearNotification';
 import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue';
+import createProject from 'server/graphql/mutations/createProject';
+import deleteProject from 'server/graphql/mutations/deleteProject';
+import editProject from 'server/graphql/mutations/editProject';
+import endMeeting from 'server/graphql/mutations/endMeeting';
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee';
 import githubAddMember from 'server/graphql/mutations/githubAddMember';
 import githubRemoveMember from 'server/graphql/mutations/githubRemoveMember';
+import inactivateUser from 'server/graphql/mutations/inactivateUser';
 import inviteTeamMembers from 'server/graphql/mutations/inviteTeamMembers';
 import joinIntegration from 'server/graphql/mutations/joinIntegration';
+import killMeeting from 'server/graphql/mutations/killMeeting';
 import leaveIntegration from 'server/graphql/mutations/leaveIntegration';
+import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn';
+import moveMeeting from 'server/graphql/mutations/moveMeeting';
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
 import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo';
 import removeProvider from 'server/graphql/mutations/removeProvider';
 import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel';
-import requestFacilitator from 'server/graphql/mutations/requestFacilitator';
-import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
-import approveToOrg from 'server/graphql/mutations/approveToOrg';
-import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
-import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
-import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
-import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
+import requestFacilitator from 'server/graphql/mutations/requestFacilitator';
+import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
+import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole';
-import updateCreditCard from 'server/graphql/mutations/updateCreditCard';
-import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
-import createProject from 'server/graphql/mutations/createProject';
-import inactivateUser from 'server/graphql/mutations/inactivateUser';
+import startMeeting from 'server/graphql/mutations/startMeeting';
 import stripeCreateInvoice from 'server/graphql/mutations/stripeCreateInvoice';
 import stripeFailPayment from 'server/graphql/mutations/stripeFailPayment';
 import stripeSucceedPayment from 'server/graphql/mutations/stripeSucceedPayment';
 import stripeUpdateCreditCard from 'server/graphql/mutations/stripeUpdateCreditCard';
 import stripeUpdateInvoiceItem from 'server/graphql/mutations/stripeUpdateInvoiceItem';
-import addOrg from 'server/graphql/mutations/addOrg';
+import toggleAgendaList from 'server/graphql/mutations/toggleAgendaList';
+import updateCreditCard from 'server/graphql/mutations/updateCreditCard';
 import updateOrg from 'server/graphql/mutations/updateOrg';
-import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
 import updateProject from 'server/graphql/mutations/updateProject';
-import deleteProject from 'server/graphql/mutations/deleteProject';
-import startMeeting from 'server/graphql/mutations/startMeeting';
-import moveMeeting from 'server/graphql/mutations/moveMeeting';
-import killMeeting from 'server/graphql/mutations/killMeeting';
-import endMeeting from 'server/graphql/mutations/endMeeting';
-import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn';
-import editProject from 'server/graphql/mutations/editProject';
+import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
+import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 
 const rootFields = Object.assign({},
   agenda,
@@ -106,6 +107,7 @@ export default new GraphQLObjectType({
     stripeSucceedPayment,
     stripeUpdateCreditCard,
     stripeUpdateInvoiceItem,
+    toggleAgendaList,
     updateCreditCard,
     updateOrg,
     updateCheckInQuestion,

@@ -49,7 +49,7 @@ const ProjectInvolves = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="check-square" size="medium"/>
+        <IconAvatar icon="check-square" size="medium" />
       </div>
       <div className={css(styles.message)}>
         <div className={css(styles.messageText)}>

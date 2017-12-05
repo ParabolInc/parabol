@@ -13,30 +13,30 @@ import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
+const getViewerInIntegration = (props) => {
+  const {environment: {userId}, teamId, repo: {teamMembers}} = props;
+  const teamMemberId = `${userId}::${teamId}`;
+  return Boolean(teamMembers.find((teamMember) => teamMember.id === teamMemberId));
+};
+
 class GitHubRepoRow extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      viewerInIntegration: this.getViewerInIntegration(props)
+      viewerInIntegration: getViewerInIntegration(props)
     };
   }
 
   componentWillReceiveProps(nextProps) {
     const {repo} = nextProps;
     if (this.props.repo !== repo) {
-      const viewerInIntegration = this.getViewerInIntegration(nextProps);
+      const viewerInIntegration = getViewerInIntegration(nextProps);
       if (viewerInIntegration !== this.state.viewerInIntegration) {
         this.setState({
           viewerInIntegration
         });
       }
     }
-  }
-
-  getViewerInIntegration(props) {
-    const {environment: {userId}, teamId, repo: {teamMembers}} = props;
-    const teamMemberId = `${userId}::${teamId}`;
-    return Boolean(teamMembers.find((teamMember) => teamMember.id === teamMemberId));
   }
 
   toggleIntegrationMembership = (githubGlobalId) => () => {

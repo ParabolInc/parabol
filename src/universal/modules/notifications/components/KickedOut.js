@@ -27,7 +27,7 @@ const KickedOut = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="medium"/>
+        <IconAvatar icon="users" size="medium" />
       </div>
       <div className={css(styles.message)}>
         <span className={css(styles.messageVar)}>You have been removed from the</span>

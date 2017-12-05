@@ -43,7 +43,6 @@ export default {
     // VALIDATION
     const schema = makeProjectSchema();
     const {errors, data: validUpdatedProject} = schema(updatedProject);
-    console.log('updatedProj', updatedProject, errors);
     handleSchemaErrors(errors);
 
     // RESOLUTION

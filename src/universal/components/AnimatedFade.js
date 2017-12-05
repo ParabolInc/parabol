@@ -36,7 +36,10 @@ class AnimatedFade extends Component {
       exit: css(styles.exit),
       exitActive: css(styles.exitActive)
     };
-    if (!this.state.ready) return null;
+    if (!this.state.ready) {
+      // CSSTransition doesn't play well with null
+      return <div />;
+    }
 
     return (
       <CSSTransition

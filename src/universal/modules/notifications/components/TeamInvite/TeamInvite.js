@@ -28,7 +28,7 @@ const TeamInvite = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="medium"/>
+        <IconAvatar icon="users" size="medium" />
       </div>
       <div className={css(styles.message)}>
         You have been invited by

@@ -27,7 +27,7 @@ const AddedToTeam = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="medium"/>
+        <IconAvatar icon="users" size="medium" />
       </div>
       <div className={css(styles.message)}>
         Congratulations! You are now a part of the team

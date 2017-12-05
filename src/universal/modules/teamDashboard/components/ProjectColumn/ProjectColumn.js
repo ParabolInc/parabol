@@ -76,13 +76,13 @@ class ProjectColumn extends Component {
     if (area === TEAM_DASH || isMyMeetingSection) {
       const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId);
       const handleAddProject = handleAddProjectFactory(atmosphere, status, teamId, userId, sortOrder);
-      return <AddProjectButton onClick={handleAddProject} label={label}/>;
+      return <AddProjectButton onClick={handleAddProject} label={label} />;
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const {userId} = atmosphere;
         const handleAddProject = handleAddProjectFactory(atmosphere, status, teamId, userId, sortOrder);
-        return <AddProjectButton onClick={handleAddProject} label={label}/>;
+        return <AddProjectButton onClick={handleAddProject} label={label} />;
       }
       const itemFactory = () => {
         const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder);
@@ -95,7 +95,7 @@ class ProjectColumn extends Component {
         );
       };
 
-      const toggle = <AddProjectButton label={label}/>;
+      const toggle = <AddProjectButton label={label} />;
       return (
         <Menu
           itemFactory={itemFactory}
@@ -155,14 +155,14 @@ class ProjectColumn extends Component {
         <div className={css(styles.columnHeader)}>
           <div className={css(styles.statusLabelBlock)}>
             <span className={css(styles.statusIcon, styles[status])}>
-              <FontAwesome name={themeLabels.projectStatus[status].icon}/>
+              <FontAwesome name={themeLabels.projectStatus[status].icon} />
             </span>
             <span className={css(styles.statusLabel, styles[status])}>
               {label}
             </span>
             {(projects.length > 0) &&
             <span className={css(styles.statusBadge)}>
-              <Badge colorPalette={badgeColor[status]} flat value={projects.length}/>
+              <Badge colorPalette={badgeColor[status]} flat value={projects.length} />
             </span>
             }
           </div>
