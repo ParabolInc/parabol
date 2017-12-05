@@ -21,7 +21,7 @@ const mutation = graphql`
   }
 `;
 
-export const addAgendaItemUpdater = (store, teamId, newNode) => {
+export const handleAddAgendaItemUpdater = (store, teamId, newNode) => {
   const team = store.get(teamId);
   addNodeToArray(newNode, team, 'agendaItems', 'sortOrder');
 };
@@ -33,7 +33,7 @@ const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted)
     variables: {newAgendaItem},
     updater: (store) => {
       const node = store.getRootField('addAgendaItem').getLinkedRecord('agendaItem');
-      addAgendaItemUpdater(store, teamId, node);
+      handleAddAgendaItemUpdater(store, teamId, node);
     },
     optimisticUpdater: (store) => {
       const optimisticAgendaItem = {
@@ -42,7 +42,7 @@ const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted)
         isComplete: false
       };
       const agendaItemNode = createProxyRecord(store, 'AgendaItem', optimisticAgendaItem);
-      addAgendaItemUpdater(store, teamId, agendaItemNode);
+      handleAddAgendaItemUpdater(store, teamId, agendaItemNode);
     },
     onCompleted,
     onError

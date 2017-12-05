@@ -28,6 +28,7 @@ import projectCreated from 'server/graphql/subscriptions/projectCreated';
 import projectDeleted from 'server/graphql/subscriptions/projectDeleted';
 import meetingUpdated from 'server/graphql/subscriptions/meetingUpdated';
 import teamMemberUpdated from 'server/graphql/subscriptions/teamMemberUpdated';
+import teamMemberAdded from 'server/graphql/subscriptions/teamMemberAdded';
 import agendaItemAdded from 'server/graphql/subscriptions/agendaItemAdded';
 import agendaItemUpdated from 'server/graphql/subscriptions/agendaItemUpdated';
 import agendaItemRemoved from 'server/graphql/subscriptions/agendaItemRemoved';
@@ -68,6 +69,7 @@ export default new GraphQLObjectType({
     providerAdded,
     providerRemoved,
     teamMembersInvited,
+    teamMemberAdded,
     teamMemberUpdated,
     ...rootFields
   })

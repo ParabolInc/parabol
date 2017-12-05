@@ -34,7 +34,8 @@ const approvePendingApprovals = async (orgApprovals, inviter) => {
   return mergeObjectsWithArrValues(...results);
 };
 
-const inviteTeamMembers = async (invitees, teamId, userId) => {
+const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
+  const operationId = dataLoader.share();
   const r = getRethink();
   const {name: teamName, orgId} = await r.table('Team').get(teamId).pluck('name', 'orgId');
 
@@ -82,7 +83,8 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
   const pendingApprovalEmails = inviteesNeedingApproval.map(({email}) => email);
   const approvalsToClear = inviteesToInvite.map(({email}) => email);
   const {reactivations, notificationsToClear, teamInvites, newPendingApprovals} = await resolvePromiseObj({
-    reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers),
+    // leave out the mutatorId so the sender gets the full team member (should refactor when completey on relay)
+    reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers, {operationId}),
     notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
     approvePendingApprovals: approvePendingApprovals(orgApprovals, inviter),
     teamInvites: sendTeamInvitations(inviteesToInvite, inviter),

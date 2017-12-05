@@ -14,6 +14,7 @@ import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSu
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
 import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
 import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
@@ -35,6 +36,7 @@ const subscriptions = [
   ProjectUpdatedSubscription,
   ProjectCreatedSubscription,
   ProjectDeletedSubscription,
+  TeamMemberAddedSubscription,
   TeamMemberUpdatedSubscription,
   NewAuthTokenSubscription,
   NotificationsAddedSubscription,

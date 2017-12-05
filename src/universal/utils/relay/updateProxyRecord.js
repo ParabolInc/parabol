@@ -5,7 +5,6 @@ const updateProxyRecord = (proxyRecord, updatedRecord) => {
     const val = updatedRecord[key];
     proxyRecord.setValue(val, key);
   }
-  return proxyRecord;
 };
 
 export default updateProxyRecord;

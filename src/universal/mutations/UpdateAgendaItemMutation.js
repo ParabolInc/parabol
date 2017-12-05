@@ -1,6 +1,4 @@
 import {commitMutation} from 'react-relay';
-import addNodeToArray from 'universal/utils/relay/addNodeToArray';
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 
 const mutation = graphql`
@@ -22,29 +20,29 @@ const mutation = graphql`
   }
 `;
 
-export const handleUpdateAgendaItem = (store, teamId, node, sortOrderChanged) => {
-  if (!sortOrderChanged) return;
+export const handleUpdateAgendaItem = (store, teamId) => {
   const team = store.get(teamId);
-  const nodeId = node.getValue('id');
-  safeRemoveNodeFromArray(nodeId, team, 'agendaItems');
-  addNodeToArray(node, team, 'agendaItems', 'sortOrder');
+  const agendaItems = team.getLinkedRecords('agendaItems');
+  if (!agendaItems) return;
+  agendaItems.sort((a, b) => {
+    return a.getValue('sortOrder') > b.getValue('sortOrder') ? 1 : -1;
+  });
+  team.setLinkedRecords(agendaItems, 'agendaItems');
 };
 
 const UpdateAgendaItemMutation = (environment, updatedAgendaItem, onError, onCompleted) => {
   const [teamId] = updatedAgendaItem.id.split('::');
-  const sortOrderChanged = updatedAgendaItem.hasOwnProperty('sortOrder');
   return commitMutation(environment, {
     mutation,
     variables: {updatedAgendaItem},
     updater: (store) => {
-      const node = store.getRootField('updateAgendaItem').getLinkedRecord('agendaItem');
-      handleUpdateAgendaItem(store, teamId, node, sortOrderChanged);
+      handleUpdateAgendaItem(store, teamId);
     },
     optimisticUpdater: (store) => {
       const proxyAgendaItem = store.get(updatedAgendaItem.id);
       if (!proxyAgendaItem) return;
-      const agendaItemNode = updateProxyRecord(proxyAgendaItem, updatedAgendaItem);
-      handleUpdateAgendaItem(store, teamId, agendaItemNode, sortOrderChanged);
+      updateProxyRecord(proxyAgendaItem, updatedAgendaItem);
+      handleUpdateAgendaItem(store, teamId);
     },
     onCompleted,
     onError

@@ -18,13 +18,15 @@ export default {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
     }
   },
-  async resolve(source, {invitees, teamId}, {authToken}) {
+  async resolve(source, {invitees, teamId}, {authToken, getDataLoader, socketId}) {
+    const dataLoader = getDataLoader();
+
     // AUTH
     await requireOrgLeaderOrTeamMember(authToken, teamId);
     const userId = getUserId(authToken);
 
     // RESOLUTION
-    return inviteTeamMembers(invitees, teamId, userId);
+    return inviteTeamMembers(invitees, teamId, userId, dataLoader, socketId);
   }
 };
 

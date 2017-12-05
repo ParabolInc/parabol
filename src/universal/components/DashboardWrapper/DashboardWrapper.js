@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {connect} from 'react-redux';
+import {withRouter} from 'react-router-dom';
 import DashSidebar from 'universal/components/Dashboard/DashSidebar';
 import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
@@ -82,13 +84,14 @@ const subscriptions = [
   NotificationsClearedSubscription
 ];
 
-const DashboardWrapper = ({atmosphere}) => {
+const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{}}
+      subParams={{dispatch, history, location}}
       subscriptions={subscriptions}
       render={({props: renderProps}) => {
         const notifications = (renderProps && renderProps.viewer) ?
@@ -110,7 +113,10 @@ const DashboardWrapper = ({atmosphere}) => {
 
 DashboardWrapper.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
   notifications: PropTypes.object
 };
 
-export default withAtmosphere(DashboardWrapper);
+export default connect()(withRouter(withAtmosphere(DashboardWrapper)));

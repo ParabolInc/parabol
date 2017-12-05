@@ -12,11 +12,26 @@ const subscription = graphql`
   }
 `;
 
+export const handleUpdateTeamMember = (store, teamId) => {
+  const team = store.get(teamId);
+  const sorts = ['checkInOrder', 'preferredName'];
+  sorts.forEach((sortBy) => {
+    const teamMembers = team.getLinkedRecords('teamMembers', {sortBy});
+    if (teamMembers) {
+      teamMembers.sort((a, b) => a.getValue(sortBy) > b.getValue(sortBy) ? 1 : -1);
+      team.setLinkedRecords(teamMembers, 'teamMembers', {sortBy});
+    }
+  });
+};
+
 const TeamMemberUpdatedSubscription = (environment, queryVariables) => {
   const {teamId} = queryVariables;
   return {
     subscription,
-    variables: {teamId}
+    variables: {teamId},
+    updater: (store) => {
+      handleUpdateTeamMember(store, teamId);
+    }
   };
 };
 

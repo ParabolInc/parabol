@@ -16,9 +16,11 @@ export default {
       description: 'The invitation token (first 6 bytes are the id, next 8 are the pre-hash)'
     }
   },
-  async resolve(source, {inviteToken}, {authToken}) {
+  async resolve(source, {inviteToken}, {authToken, getDataLoader, socketId}) {
     const r = getRethink();
     const now = new Date();
+    const dataLoader = getDataLoader();
+    const operationId = dataLoader.share();
 
     // VALIDATION
     const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
@@ -52,7 +54,7 @@ export default {
     }
 
     // RESOLUTION
-    return acceptTeamInvite(teamId, authToken, email);
+    return acceptTeamInvite(teamId, authToken, email, {operationId, mutatorId: socketId});
   }
 };
 

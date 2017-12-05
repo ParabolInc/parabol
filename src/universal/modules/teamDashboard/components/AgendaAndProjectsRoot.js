@@ -15,6 +15,8 @@ import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpd
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
 import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
+import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 
 const query = graphql`
   query AgendaAndProjectsRootQuery($teamId: ID!) {
@@ -30,7 +32,9 @@ const subscriptions = [
   ProjectDeletedSubscription,
   AgendaItemAddedSubscription,
   AgendaItemUpdatedSubscription,
-  AgendaItemRemovedSubscription
+  AgendaItemRemovedSubscription,
+  TeamMemberAddedSubscription,
+  TeamMemberUpdatedSubscription
 ];
 const cacheConfig = {ttl: ms('10s')};
 
