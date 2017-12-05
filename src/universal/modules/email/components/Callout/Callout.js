@@ -7,8 +7,6 @@ import ui from 'universal/styles/ui';
 const Callout = (props) => {
   const cellStyle = {
     backgroundColor: '#fff',
-    border: '2px solid #D2D3DC',
-    borderRadius: '8px',
     color: appTheme.palette.dark,
     fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,

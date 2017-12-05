@@ -8,6 +8,7 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import {clearNotificationLabel} from '../../helpers/constants';
 
 const TeamArchived = (props) => {
   const {
@@ -26,20 +27,19 @@ const TeamArchived = (props) => {
   };
 
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="medium" />
+        <IconAvatar icon="archive" size="small" />
       </div>
       <div className={css(styles.message)}>
-        The team:
-        <span className={css(styles.messageVar)}> {teamName} </span>
-        was archived
+        {'The team '}<b>{teamName}</b>{' was archived.'}
       </div>
-      <div className={css(styles.button)}>
+      <div className={css(styles.iconButton)}>
         <Button
-          colorPalette="cool"
+          aria-label={clearNotificationLabel}
+          colorPalette="gray"
+          icon="check"
           isBlock
-          label="Okay"
           onClick={acknowledge}
           buttonSize={ui.notificationButtonSize}
           type="submit"

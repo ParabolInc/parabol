@@ -10,8 +10,12 @@ import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
+import labels from 'universal/styles/theme/labels';
+import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import withStyles from 'universal/styles/withStyles';
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
+import {clearNotificationLabel} from '../helpers/constants';
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -31,8 +35,7 @@ const ProjectInvolves = (props) => {
   } = props;
   const {id: notificationId, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
-  // eslint-disable-next-line
-  const {content, status, tags} = project;
+  const {content, status, tags, teamMember} = project;
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
@@ -46,48 +49,65 @@ const ProjectInvolves = (props) => {
   const action = involvementWord[involvement];
   const contentState = convertFromRaw(JSON.parse(content));
   const editorState = EditorState.createWithContent(contentState, editorDecorators);
+  const projectStyles = css(
+    styles.projectListView,
+    styles[status],
+    tags.includes('private') && styles.private
+  );
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="check-square" size="medium" />
+        <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size="small" />
       </div>
       <div className={css(styles.message)}>
         <div className={css(styles.messageText)}>
-          <span className={css(styles.messageVar)}>{changeAuthorName}</span>
-          <span>{' has'}</span>
-          <span className={css(styles.messageVar)}> {` ${action} you`} </span>
+          <b>{changeAuthorName}</b>
+          <span>{' has '}</span>
+          <b><i>{`${action} you`}</i></b>
           {involvement === MENTIONEE ? ' in' : ''}
-          <span>{' a project for'}</span>
-          <span className={css(styles.messageVar)}> {teamName} </span>
-          <span>{'.'}</span>
+          <span>{' a project for '}</span>
+          <span className={css(styles.messageVar, styles.notifLink)} onClick={gotoBoard} title={`Go to ${teamName}’s Board`}>
+            {teamName}
+          </span>
+          <span>{':'}</span>
         </div>
-        <div className={css(styles.projectListView)}>
+        <div className={projectStyles}>
           <Editor
             readOnly
             editorState={editorState}
           />
+          {teamMember &&
+            <div className={css(styles.owner)}>
+              <img alt="Avatar" className={css(styles.ownerAvatar)} src={teamMember.picture} />
+              <div className={css(styles.ownerName)}>
+                {teamMember.preferredName}
+              </div>
+            </div>
+          }
         </div>
       </div>
       <div className={css(styles.buttonGroup)}>
-        <div className={css(styles.button)}>
+        <div className={css(styles.widerButton)}>
           <Button
+            aria-label="Go to this board"
             colorPalette="cool"
             isBlock
-            label="Go to board"
+            label="Go to Board"
             buttonSize={ui.notificationButtonSize}
             type="submit"
             onClick={gotoBoard}
             waiting={submitting}
           />
         </div>
-        <div className={css(styles.button)}>
+        <div className={css(styles.iconButton)}>
           <Button
-            colorPalette="gray"
-            isBlock
-            label="OK"
+            aria-label={clearNotificationLabel}
             buttonSize="small"
-            type="submit"
+            colorPalette="gray"
+            icon="check"
+            isBlock
             onClick={acknowledge}
+            type="submit"
           />
         </div>
       </div>
@@ -110,7 +130,35 @@ ProjectInvolves.propTypes = {
 };
 
 const styleThunk = () => ({
-  ...defaultStyles
+  ...defaultStyles,
+
+  projectListView: {
+    backgroundColor: appTheme.palette.mid10l,
+    borderRadius: ui.borderRadiusMedium,
+    borderLeft: '.25rem solid',
+    margin: '.25rem 0 0',
+    padding: '.5rem'
+  },
+
+  [ACTIVE]: {
+    borderColor: labels.projectStatus[ACTIVE].color
+  },
+
+  [STUCK]: {
+    borderColor: labels.projectStatus[STUCK].color
+  },
+
+  [DONE]: {
+    borderColor: labels.projectStatus[DONE].color
+  },
+
+  [FUTURE]: {
+    borderColor: labels.projectStatus[FUTURE].color
+  },
+
+  private: {
+    backgroundColor: ui.privateCardBgColor
+  }
 });
 
 export default withRouter(withStyles(styleThunk)(ProjectInvolves));

@@ -26,24 +26,27 @@ const TeamInvite = (props) => {
   };
 
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="medium" />
+        <IconAvatar icon="users" size="small" />
       </div>
       <div className={css(styles.message)}>
-        You have been invited by
-        <span className={css(styles.messageVar)}> {inviterName} </span>
-        to join
-        <span className={css(styles.messageVar)}> {teamName}!</span>
+        {'You have been invited by '}
+        <b>{inviterName}</b>
+        {' to join '}
+        <b>{teamName}</b>
+        {'.'}
       </div>
       <div className={css(styles.button)}>
         <Button
+          aria-label="Accept team invitation"
+          buttonSize={ui.notificationButtonSize}
           colorPalette="cool"
           isBlock
-          label="Accept!"
-          buttonSize={ui.notificationButtonSize}
-          type="submit"
+          label="Accept"
           onClick={accept}
+          title="Accept team invitation"
+          type="submit"
           waiting={submitting}
         />
       </div>
@@ -66,12 +69,7 @@ TeamInvite.propTypes = {
 };
 
 const styleThunk = () => ({
-  ...defaultStyles,
-
-  button: {
-    marginLeft: ui.rowGutter,
-    minWidth: '3.5rem'
-  }
+  ...defaultStyles
 });
 
 export default withStyles(styleThunk)(TeamInvite);

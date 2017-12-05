@@ -7,8 +7,9 @@ import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
-import ui from 'universal/styles/ui';
+import {clearNotificationLabel} from '../../helpers/constants';
 import withStyles from 'universal/styles/withStyles';
+import ui from 'universal/styles/ui';
 
 const PromoteToBillingLeader = (props) => {
   const {
@@ -25,26 +26,43 @@ const PromoteToBillingLeader = (props) => {
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
+  };
+  const goToOrg = () => {
+    submitMutation();
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
     history.push(`/me/organizations/${orgId}`);
   };
 
   return (
-    <Row>
+    <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="medium" />
+        <IconAvatar icon="building" size="small" />
       </div>
       <div className={css(styles.message)}>
-        You are now a Billing Leader for
-        <span className={css(styles.messageVar)}> {orgName}</span>
+        {'You are now a '}<b><i>{'Billing Leader'}</i></b>{' for '}
+        <span className={css(styles.messageVar, styles.notifLink)} onClick={goToOrg}>{orgName}</span>{'.'}
       </div>
-      <div className={css(styles.button)}>
+      <div className={css(styles.widerButton)}>
         <Button
+          aria-label="Go to the Organization page"
           colorPalette="cool"
           isBlock
-          label="Take me there"
+          label="See Organization"
           buttonSize={ui.notificationButtonSize}
           type="submit"
+          onClick={goToOrg}
+          waiting={submitting}
+        />
+      </div>
+      <div className={css(styles.iconButton)}>
+        <Button
+          aria-label={clearNotificationLabel}
+          buttonSize="small"
+          colorPalette="gray"
+          icon="check"
+          isBlock
           onClick={acknowledge}
+          type="submit"
           waiting={submitting}
         />
       </div>

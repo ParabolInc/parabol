@@ -1,21 +1,21 @@
 {
   "env": {
     "production": {
-      "presets": ["es2015", "stage-0", "react"],
+      "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
         ["relay"],
         ["transform-decorators-legacy"]
       ]
     },
     "development": {
-      "presets": ["es2015", "stage-0", "react"],
+      "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
         ["relay"],
         ["transform-decorators-legacy"]
       ]
     },
     "test": {
-      "presets": ["react"],
+      "presets": ["flow", "react"],
       "plugins": [
         ["relay"],
         ["transform-class-properties"],

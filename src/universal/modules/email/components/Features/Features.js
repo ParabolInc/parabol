@@ -36,7 +36,7 @@ const Features = (props) => {
               />
             </td>
             <td style={copyStyle}>
-              Build team momentum by <br />creating achievable weekly goals
+              {'Build team momentum by '}<br />{'creating achievable weekly goals'}
             </td>
           </tr>
           <tr>
@@ -49,7 +49,7 @@ const Features = (props) => {
               />
             </td>
             <td style={copyStyle}>
-              Establish clear ownership <br />and accountability
+              {'Establish clear ownership '}<br />{'and accountability'}
             </td>
           </tr>
           <tr>
@@ -62,7 +62,7 @@ const Features = (props) => {
               />
             </td>
             <td style={copyStyle}>
-              Automatically share progress <br />inside and outside your team
+              {'Automatically share progress '}<br />{'inside and outside your team'}
             </td>
           </tr>
         </tbody>

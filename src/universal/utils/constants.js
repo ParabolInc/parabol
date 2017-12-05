@@ -102,7 +102,8 @@ export const notificationTypes = [
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
   DENY_NEW_USER,
-  TEAM_ARCHIVED
+  TEAM_ARCHIVED,
+  TEAM_INVITE
 ];
 
 export const billingLeaderTypes = [

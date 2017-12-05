@@ -8,6 +8,7 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import {clearNotificationLabel} from '../helpers/constants';
 
 const KickedOut = (props) => {
   const {
@@ -36,6 +37,7 @@ const KickedOut = (props) => {
       </div>
       <div className={css(styles.button)}>
         <Button
+          aria-label={clearNotificationLabel}
           colorPalette="cool"
           waiting={submitting}
           isBlock

@@ -16,20 +16,24 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
   const changeAuthorId = `${changeUserId}::${project.teamId}`;
   const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldProject.content);
   const {entityMap, blocks} = JSON.parse(project.content);
-  const oldMentions = getTypeFromEntityMap('MENTION', oldEntityMap);
-  const mentions = getTypeFromEntityMap('MENTION', entityMap);
+  const wasPrivate = oldProject.tags.includes('private');
+  const isPrivate = project.tags.includes('private');
+  const oldMentions = wasPrivate ? [] : getTypeFromEntityMap('MENTION', oldEntityMap);
+  const mentions = isPrivate ? [] : getTypeFromEntityMap('MENTION', entityMap);
   // intersect the mentions to get the ones to add and remove
   const notificationsToRemove = oldMentions
     .filter((userId) => !mentions.includes(userId));
   const notificationsToAdd = mentions
-    // it didn't already exist
-    .filter((userId) => !oldMentions.includes(userId) &&
+    .filter((userId) =>
+      // it didn't already exist
+      !oldMentions.includes(userId) &&
       // it isn't the owner (they get the assign notification)
       userId !== project.userId &&
       // it isn't the person changing it
       changeUserId !== userId &&
       // it isn't someone in a meeting
-      !usersToIgnore.includes(project.userId))
+      !usersToIgnore.includes(userId)
+    )
     .map((userId) => ({
       id: shortid.generate(),
       startAt: now,
@@ -43,7 +47,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
 
   // add in the assignee changes
   if (oldProject.teamMemberId !== project.teamMemberId) {
-    if (project.userId !== changeUserId) {
+    if (project.userId !== changeUserId && !usersToIgnore.includes(project.userId)) {
       notificationsToAdd.push({
         id: shortid.generate(),
         startAt: now,

@@ -1,0 +1,16 @@
+[ignore]
+.*node_modules/.*reqwest/.*
+.*node_modules/.*draft-js/.*
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+module.name_mapper='^client' -> '<PROJECT_ROOT>/src/client'
+module.name_mapper='^server' -> '<PROJECT_ROOT>/src/server'
+module.name_mapper='^universal' -> '<PROJECT_ROOT>/src/universal'
+
+[strict]

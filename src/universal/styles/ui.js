@@ -137,7 +137,7 @@ const ui = {
 
   // Private projects
   // ---------------------------------------------------------------------------
-  privateCardBgColor: appTheme.palette.light60l,
+  privateCardBgColor: appTheme.palette.light50l,
 
   // Avatars
   // ---------------------------------------------------------------------------
@@ -274,7 +274,8 @@ const ui = {
   // Email
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
-  emailFontFamily: '"Karla", "Helvetica Neue", serif',
+  emailBodyColor: '#FFFFFF',
+  emailFontFamily: '"Karla", -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, “Fira Sans”, “Droid Sans”, “Helvetica Neue”, Arial, sans-serif',
   emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
     borderCollapse: 'collapse',
@@ -453,6 +454,7 @@ const ui = {
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
+  panelCompactGutter: '.75rem',
   panelMarginVertical: '1.5rem',
 
   // Project columns
@@ -490,6 +492,7 @@ const ui = {
   rowHeadingColor: appTheme.palette.dark,
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
+  rowCompactGutter: '.75rem',
   rowSubheading: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
