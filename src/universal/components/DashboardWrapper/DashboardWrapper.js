@@ -36,6 +36,9 @@ const query = graphql`
               inviteeEmail
               teamId
               teamName
+              team {
+                tier
+              }
             }
             ... on NotifyKickedOut {
               teamName
@@ -63,6 +66,10 @@ const query = graphql`
               project {
                 id
                 content
+                teamMember {
+                  picture
+                  preferredName
+                }
                 status
                 tags
               }

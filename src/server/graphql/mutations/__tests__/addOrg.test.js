@@ -1,6 +1,7 @@
 import DynamicSerializer from 'dynamic-serializer';
 import MockDate from 'mockdate';
 import socket from 'server/__mocks__/socket';
+import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
@@ -24,6 +25,7 @@ describe('addOrg', () => {
     const org = organization[0];
     auth0ManagementClient.__initMock(mockDB.db);
     const authToken = mockAuthToken(user[0]);
+    const getDataLoader = makeDataLoader(authToken);
 
     // TEST
     const newTeam = {
@@ -32,7 +34,7 @@ describe('addOrg', () => {
       orgId: shortid.generate()
     };
     const orgName = 'addOrg|1|NewOrgName';
-    await addOrg.resolve(undefined, {newTeam, orgName}, {authToken, socket});
+    await addOrg.resolve(undefined, {newTeam, orgName}, {authToken, getDataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({

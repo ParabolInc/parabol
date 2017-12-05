@@ -60,7 +60,7 @@ export default {
     };
 
     let projectHistory;
-    if (Object.keys(newProject).length > 1 || newProject.sortOrder === undefined) {
+    if (Object.keys(updatedProject).length > 2 || newProject.sortOrder === undefined) {
       // if this is anything but a sort update, log it to history
       newProject.updatedAt = now;
       const mergeDoc = {

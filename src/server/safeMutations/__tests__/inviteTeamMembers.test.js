@@ -1,5 +1,6 @@
 import DynamicSerializer from 'dynamic-serializer';
 import MockDate from 'mockdate';
+import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import newInvitee from 'server/__tests__/utils/newInvitee';
@@ -32,9 +33,10 @@ describe('inviteTeamMembers', () => {
     const firstUser = mockDB.db.user[0];
     const invitees = [{email: invitee.email}];
     const teamId = mockDB.context.team.id;
-    // TEST
-    const {results} = await inviteTeamMembers(invitees, teamId, firstUser.id);
+    const dataLoader = makeDataLoader()();
 
+    // TEST
+    const {results} = await inviteTeamMembers(invitees, teamId, firstUser.id, dataLoader);
     // VERIFY
     const res = results[0];
     expect(reactivateTeamMembersAndMakeNotifications.default).toHaveBeenCalledTimes(1);
@@ -61,8 +63,9 @@ describe('inviteTeamMembers', () => {
     const firstUser = mockDB.db.user[0];
     const invitees = [{email: mockDB.context.user.email}];
     const teamId = mockDB.context.team.id;
+    const dataLoader = makeDataLoader()();
     // TEST
-    const res = await inviteTeamMembers(invitees, teamId, firstUser.id);
+    const res = await inviteTeamMembers(invitees, teamId, firstUser.id, dataLoader);
 
     // VERIFY
     expect(sendTeamInvitations.default).toHaveBeenCalledTimes(1);
@@ -85,9 +88,10 @@ describe('inviteTeamMembers', () => {
     const secondUser = mockDB.db.user[1];
     const invitees = [{email: invitee.email}];
     const teamId = mockDB.context.team.id;
+    const dataLoader = makeDataLoader()();
 
     // TEST
-    const res = await inviteTeamMembers(invitees, teamId, secondUser.id);
+    const res = await inviteTeamMembers(invitees, teamId, secondUser.id, dataLoader);
 
     // VERIFY
     expect(createPendingApprovals.default).toHaveBeenCalledTimes(1);

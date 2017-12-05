@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import getRethink from 'server/database/rethinkDriver';
-import {Team} from 'server/graphql/models/Team/teamSchema';
+import Team from 'server/graphql/types/Team';
 
 const NotifyInvitation = new GraphQLObjectType({
   name: 'NotifyInvitation',
@@ -31,10 +30,8 @@ const NotifyInvitation = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team the project is on',
-      resolve: ({teamId}) => {
-        // FIXME after merging in the dataloader PR
-        const r = getRethink();
-        return r.table('Team').get(teamId).run();
+      resolve: ({teamId}, args, {getDataLoader}) => {
+        return getDataLoader().teams.load(teamId);
       }
     },
     ...notificationInterfaceFields

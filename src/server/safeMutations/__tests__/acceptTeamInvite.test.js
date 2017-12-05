@@ -8,7 +8,10 @@ import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import * as adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import {ADD_USER} from 'server/utils/serverConstants';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
-import {NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED, TEAM_INVITE} from 'universal/utils/constants';
+import {
+  NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED, TEAM_INVITE,
+  TEAM_MEMBER_ADDED
+} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import makeMockPubSub from 'server/__mocks__/makeMockPubSub';
 import * as getPubSub from 'server/utils/getPubSub';
@@ -54,9 +57,10 @@ describe('acceptTeamInvite', () => {
 
     expect(mockPubSub.publish.mock.calls[0][0]).toEqual(`${NOTIFICATIONS_CLEARED}.${inviteeUser.id}`);
     expect(mockPubSub.publish.mock.calls[1][0]).toEqual(`${NOTIFICATIONS_ADDED}.${teamId}`);
-    expect(mockPubSub.publish.mock.calls[2][0]).toEqual(`${NEW_AUTH_TOKEN}.${inviteeUser.id}`);
-    expect(mockPubSub.publish.mock.calls[3][0]).toEqual(`${NOTIFICATIONS_ADDED}.${inviteeUser.id}`);
-    expect(mockPubSub.publish.mock.calls[3][1].notificationsAdded.notifications[0]).toEqual(res);
+    expect(mockPubSub.publish.mock.calls[2][0]).toEqual(`${TEAM_MEMBER_ADDED}.${teamId}`);
+    expect(mockPubSub.publish.mock.calls[3][0]).toEqual(`${NEW_AUTH_TOKEN}.${inviteeUser.id}`);
+    expect(mockPubSub.publish.mock.calls[4][0]).toEqual(`${NOTIFICATIONS_ADDED}.${inviteeUser.id}`);
+    expect(mockPubSub.publish.mock.calls[4][1].notificationsAdded.notifications[0]).toEqual(res);
     expect(adjustUserCount.default).toHaveBeenCalledWith(inviteeUser.id, orgId, ADD_USER);
     expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms});
   });
@@ -92,9 +96,10 @@ describe('acceptTeamInvite', () => {
 
     expect(mockPubSub.publish.mock.calls[0][0]).toEqual(`${NOTIFICATIONS_CLEARED}.${inviteeUser.id}`);
     expect(mockPubSub.publish.mock.calls[1][0]).toEqual(`${NOTIFICATIONS_ADDED}.${teamId}`);
-    expect(mockPubSub.publish.mock.calls[2][0]).toEqual(`${NEW_AUTH_TOKEN}.${inviteeUser.id}`);
-    expect(mockPubSub.publish.mock.calls[3][0]).toEqual(`${NOTIFICATIONS_ADDED}.${inviteeUser.id}`);
-    expect(mockPubSub.publish.mock.calls[3][1].notificationsAdded.notifications[0]).toEqual(res);
+    expect(mockPubSub.publish.mock.calls[2][0]).toEqual(`${TEAM_MEMBER_ADDED}.${teamId}`);
+    expect(mockPubSub.publish.mock.calls[3][0]).toEqual(`${NEW_AUTH_TOKEN}.${inviteeUser.id}`);
+    expect(mockPubSub.publish.mock.calls[4][0]).toEqual(`${NOTIFICATIONS_ADDED}.${inviteeUser.id}`);
+    expect(mockPubSub.publish.mock.calls[4][1].notificationsAdded.notifications[0]).toEqual(res);
     expect(adjustUserCount.default).toHaveBeenCalledTimes(0);
     expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms});
   });
