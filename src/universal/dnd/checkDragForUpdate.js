@@ -97,6 +97,10 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
   // mutative for fast response
   sourceProps.sortOrder = updatedDoc.sortOrder;
 
+  console.log('returning:', {
+    rebalanceDoc,
+    updatedDoc
+  });
   return {
     rebalanceDoc,
     updatedDoc
