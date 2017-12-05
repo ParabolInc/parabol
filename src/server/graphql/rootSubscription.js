@@ -7,7 +7,6 @@ import providerRemoved from 'server/graphql/subscriptions/providerRemoved';
 import githubRepoAdded from 'server/graphql/subscriptions/githubRepoAdded';
 import githubRepoRemoved from 'server/graphql/subscriptions/githubRepoRemoved';
 import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemoved';
-import agenda from './models/AgendaItem/agendaItemSubscription';
 import invitation from './models/Invitation/invitationSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
 import organization from './models/Organization/organizationSubscription';
@@ -29,9 +28,11 @@ import projectCreated from 'server/graphql/subscriptions/projectCreated';
 import projectDeleted from 'server/graphql/subscriptions/projectDeleted';
 import meetingUpdated from 'server/graphql/subscriptions/meetingUpdated';
 import teamMemberUpdated from 'server/graphql/subscriptions/teamMemberUpdated';
+import agendaItemAdded from 'server/graphql/subscriptions/agendaItemAdded';
+import agendaItemUpdated from 'server/graphql/subscriptions/agendaItemUpdated';
+import agendaItemRemoved from 'server/graphql/subscriptions/agendaItemRemoved';
 
 const rootFields = Object.assign({},
-  agenda,
   invitation,
   invoice,
   orgApproval,
@@ -45,6 +46,9 @@ const rootFields = Object.assign({},
 export default new GraphQLObjectType({
   name: 'Subscription',
   fields: () => ({
+    agendaItemAdded,
+    agendaItemRemoved,
+    agendaItemUpdated,
     githubMemberRemoved,
     githubRepoAdded,
     githubRepoRemoved,

@@ -25,7 +25,6 @@ import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeetingRoute';
 import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
-import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
@@ -58,10 +57,6 @@ query{
   }
 }`;
 
-const mutationHandlers = {
-  updateAgendaItem: handleAgendaSort
-};
-
 const handleHotkey = (gotoFunc, submitting) => () => {
   if (!submitting && document.activeElement === document.body) gotoFunc();
 };
@@ -71,7 +66,6 @@ const mapStateToProps = (state, props) => {
   const queryResult = cashay.query(meetingContainerQuery, {
     op: 'meetingContainerQuery',
     key: teamId,
-    mutationHandlers,
     variables: {teamId},
     resolveChannelKey: {
       presence: () => teamId
@@ -332,7 +326,7 @@ class MeetingContainer extends Component {
   };
 
   render() {
-    if (this.unsafeRoute) return <div></div>;
+    if (this.unsafeRoute) return <div />;
 
     const {
       localPhase,
@@ -466,7 +460,6 @@ export default createFragmentContainer(
           id
           isComplete
         }
-        ...MeetingAgendaLastCall_team
         checkInGreeting {
           content
           language
@@ -491,6 +484,7 @@ export default createFragmentContainer(
           isLead
           userId
         }
+        ...MeetingAgendaLastCall_team
         ...MeetingLobby_team
         ...MeetingAvatarGroup_team
         ...MeetingUpdatesPrompt_team

@@ -192,6 +192,9 @@ export const PROJECT_CREATED = 'projectCreated';
 export const PROJECT_DELETED = 'projectDeleted';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
 export const TEAM_MEMBER_UPDATED = 'teamMemberUpdated';
+export const AGENDA_ITEM_ADDED = 'agendaItemAdded';
+export const AGENDA_ITEM_UPDATED = 'agendaItemUpdated';
+export const AGENDA_ITEM_REMOVED = 'agendaItemRemoved';
 
 /* Relay Subscription Event Types */
 export const ADD = 'add';

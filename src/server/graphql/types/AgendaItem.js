@@ -1,16 +1,8 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql';
+import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import TeamMember from 'server/graphql/types/TeamMember';
 
-export const AgendaItem = new GraphQLObjectType({
+const AgendaItem = new GraphQLObjectType({
   name: 'AgendaItem',
   description: 'A request placeholder that will likely turn into 1 or more tasks',
   fields: () => ({
@@ -48,38 +40,4 @@ export const AgendaItem = new GraphQLObjectType({
   })
 });
 
-export const CreateAgendaItemInput = new GraphQLInputObjectType({
-  name: 'CreateAgendaItemInput',
-  fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item ID teamId::shortid'},
-    content: {type: new GraphQLNonNull(GraphQLString), description: 'The content of the agenda item'},
-    teamMemberId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The team member ID of the person creating the agenda item'
-    },
-    sortOrder: {
-      type: GraphQLFloat,
-      description: 'The sort order of the agenda item in the list'
-    }
-  })
-});
-
-export const UpdateAgendaItemInput = new GraphQLInputObjectType({
-  name: 'UpdateAgendaItemInput',
-  fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item ID, composed of a teamId::shortid'},
-    content: {type: GraphQLString, description: 'The content of the agenda item'},
-    isActive: {
-      type: GraphQLBoolean,
-      description: 'true until the agenda item has been marked isComplete and the meeting has ended'
-    },
-    isComplete: {
-      type: GraphQLBoolean,
-      description: 'true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)'
-    },
-    sortOrder: {
-      type: GraphQLFloat,
-      description: 'The sort order of the agenda item in the list'
-    }
-  })
-});
+export default AgendaItem;

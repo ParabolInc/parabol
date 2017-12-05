@@ -11,6 +11,7 @@ import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
+import AgendaItem from 'server/graphql/types/AgendaItem';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
 import Organization from 'server/graphql/types/Organization';
@@ -18,7 +19,6 @@ import {ProjectConnection} from 'server/graphql/types/Project';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
-import {AgendaItem} from '../models/AgendaItem/agendaItemSchema';
 
 const Team = new GraphQLObjectType({
   name: 'Team',

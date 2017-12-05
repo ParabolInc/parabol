@@ -9,6 +9,9 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
+import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAddedSubscription';
+import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
+import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
 import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
@@ -24,7 +27,10 @@ const query = graphql`
 const subscriptions = [
   ProjectUpdatedSubscription,
   ProjectCreatedSubscription,
-  ProjectDeletedSubscription
+  ProjectDeletedSubscription,
+  AgendaItemAddedSubscription,
+  AgendaItemUpdatedSubscription,
+  AgendaItemRemovedSubscription
 ];
 const cacheConfig = {ttl: ms('10s')};
 

@@ -1,18 +1,19 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
+import {createFragmentContainer} from 'react-relay';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
+import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
 import TeamProjectsHeaderContainer from 'universal/modules/teamDashboard/containers/TeamProjectsHeader/TeamProjectsHeaderContainer';
-import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
-import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import {createFragmentContainer} from 'react-relay';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const AgendaAndProjects = (props) => {
   const {viewer, styles} = props;
-  const {teamMember: {hideAgenda}, team: {teamId, teamName}} = viewer;
+  const {teamMember: {hideAgenda}, team} = viewer;
+  const {teamId, teamName} = team;
   return (
     <div className={css(styles.root)}>
       <Helmet title={`${teamName} | Parabol`} />
@@ -26,9 +27,9 @@ const AgendaAndProjects = (props) => {
       </div>
       <div className={css(styles.agendaAndProjects)}>
         {!hideAgenda &&
-          <div className={css(styles.agendaLayout)}>
-            <AgendaListAndInputContainer canNavigate={false} context="dashboard" disabled={false} teamId={teamId} />
-          </div>
+        <div className={css(styles.agendaLayout)}>
+          <AgendaListAndInput canNavigate={false} context="dashboard" disabled={false} team={team} />
+        </div>
         }
         <div className={css(styles.projectsLayout, !hideAgenda && styles.projectsLayoutShared)}>
           <TeamColumnsContainer teamId={teamId} viewer={viewer} />
@@ -89,6 +90,7 @@ export default createFragmentContainer(
       team(teamId: $teamId) {
         teamId: id
         teamName: name
+        ...AgendaListAndInput_team
       }
       teamMember(teamId: $teamId) {
         hideAgenda

@@ -1,5 +1,4 @@
 import {GraphQLObjectType} from 'graphql';
-import agenda from './models/AgendaItem/agendaItemQuery';
 import meeting from './models/Meeting/meetingQuery';
 import organization from './models/Organization/organizationQuery';
 import teamMember from './models/TeamMember/teamMemberQuery';
@@ -15,7 +14,6 @@ export default new GraphQLObjectType({
         id: authToken.sub
       })
     },
-    ...agenda,
     ...meeting,
     ...organization,
     ...teamMember,

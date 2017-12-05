@@ -95,7 +95,6 @@ export default function handleRedirects(oldProps, nextProps) {
 
   // check sort order for agenda items
   if (localPhase === AGENDA_ITEMS && oldAgenda.length === agendaItems.length) {
-    // we made sure agendaCount was loaded above
     const oldAgendaItem = oldAgenda[localPhaseItem - 1];
     const newAgendaItem = agendaItems[localPhaseItem - 1];
     if (!newAgendaItem || newAgendaItem.id !== oldAgendaItem.id) {

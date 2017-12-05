@@ -1,5 +1,4 @@
 import {
-  AGENDA,
   INVITATIONS,
   ORG_APPROVALS,
   TEAM,
@@ -8,19 +7,6 @@ import {
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
-  {
-    channel: AGENDA,
-    string: `
-    subscription($teamId: ID!) {
-      agenda(teamId: $teamId) {
-        id
-        content
-        isComplete
-        sortOrder
-        teamMemberId
-      }
-    }`
-  },
   {
     channel: INVITATIONS,
     string: `

@@ -5,6 +5,7 @@ import getNodeById from 'universal/utils/relay/getNodeById';
 import {insertEdgeAfter} from 'universal/utils/relay/insertEdge';
 import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 
 const mutation = graphql`
   mutation UpdateProjectMutation($updatedProject: UpdateProjectInput!) {
@@ -130,10 +131,11 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
       const project = store.get(id);
       if (!project) return;
       const now = new Date();
-      Object.keys(updatedProject).forEach((key) => {
-        const val = updatedProject[key];
-        project.setValue(val, key);
-      });
+      const optimisticProject = {
+        ...updatedProject,
+        updatedAt: now.toJSON()
+      };
+      updateProxyRecord(project, optimisticProject);
       if (userId) {
         const teamMemberId = toTeamMemberId(project.getValue('teamId'), userId);
         project.setValue(teamMemberId, 'teamMemberId');
@@ -142,7 +144,6 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
           project.setLinkedRecord(teamMember, 'teamMember');
         }
       }
-      project.setValue('updatedAt', now.toJSON());
       if (content) {
         const {entityMap} = JSON.parse(content);
         const nextTags = getTagsFromEntityMap(entityMap);

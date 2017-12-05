@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
-import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
+import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
@@ -123,7 +123,7 @@ const Sidebar = (props) => {
         </ul>
         {localPhase !== SUMMARY &&
         <div className={css(styles.agendaListBlock)}>
-          <AgendaListAndInputContainer
+          <AgendaListAndInput
             agendaPhaseItem={agendaPhaseItem}
             canNavigate={agendaListCanNavigate}
             context={'meeting'}
@@ -133,7 +133,7 @@ const Sidebar = (props) => {
             gotoAgendaItem={gotoAgendaItem}
             localPhase={localPhase}
             localPhaseItem={localPhaseItem}
-            teamId={teamId}
+            team={team}
           />
         </div>
         }
@@ -316,6 +316,7 @@ export default createFragmentContainer(
       agendaItems {
         isComplete
       }
+      ...AgendaListAndInput_team
     }
   `
 );

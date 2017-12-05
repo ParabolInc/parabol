@@ -1,5 +1,4 @@
 import {GraphQLObjectType} from 'graphql';
-import agenda from 'server/graphql/models/AgendaItem/agendaItemMutation';
 import meeting from 'server/graphql/models/Meeting/meetingMutation';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
@@ -9,6 +8,7 @@ import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
 import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
+import addAgendaItem from 'server/graphql/mutations/addAgendaItem';
 import addGitHubRepo from 'server/graphql/mutations/addGitHubRepo';
 import addOrg from 'server/graphql/mutations/addOrg';
 import addProvider from 'server/graphql/mutations/addProvider';
@@ -32,6 +32,7 @@ import leaveIntegration from 'server/graphql/mutations/leaveIntegration';
 import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn';
 import moveMeeting from 'server/graphql/mutations/moveMeeting';
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
+import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem';
 import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo';
 import removeProvider from 'server/graphql/mutations/removeProvider';
 import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel';
@@ -47,6 +48,7 @@ import stripeSucceedPayment from 'server/graphql/mutations/stripeSucceedPayment'
 import stripeUpdateCreditCard from 'server/graphql/mutations/stripeUpdateCreditCard';
 import stripeUpdateInvoiceItem from 'server/graphql/mutations/stripeUpdateInvoiceItem';
 import toggleAgendaList from 'server/graphql/mutations/toggleAgendaList';
+import updateAgendaItem from 'server/graphql/mutations/updateAgendaItem';
 import updateCreditCard from 'server/graphql/mutations/updateCreditCard';
 import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateProject from 'server/graphql/mutations/updateProject';
@@ -54,7 +56,6 @@ import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQue
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 
 const rootFields = Object.assign({},
-  agenda,
   meeting,
   orgApproval,
   organization,
@@ -70,6 +71,7 @@ export default new GraphQLObjectType({
     ...rootFields,
     acceptTeamInviteEmail,
     acceptTeamInviteNotification,
+    addAgendaItem,
     addGitHubRepo,
     addOrg,
     addProvider,
@@ -93,6 +95,7 @@ export default new GraphQLObjectType({
     meetingCheckIn,
     moveMeeting,
     promoteFacilitator,
+    removeAgendaItem,
     removeProvider,
     removeSlackChannel,
     removeGitHubRepo,
@@ -108,6 +111,7 @@ export default new GraphQLObjectType({
     stripeUpdateCreditCard,
     stripeUpdateInvoiceItem,
     toggleAgendaList,
+    updateAgendaItem,
     updateCreditCard,
     updateOrg,
     updateCheckInQuestion,

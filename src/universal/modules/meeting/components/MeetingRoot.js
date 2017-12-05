@@ -7,6 +7,9 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingContainer from 'universal/modules/meeting/containers/MeetingContainer/MeetingContainer';
+import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAddedSubscription';
+import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
+import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
 import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
 import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
 import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
@@ -25,6 +28,9 @@ const query = graphql`
 `;
 
 const subscriptions = [
+  AgendaItemAddedSubscription,
+  AgendaItemUpdatedSubscription,
+  AgendaItemRemovedSubscription,
   MeetingUpdatedSubscription,
   ProjectUpdatedSubscription,
   ProjectCreatedSubscription,

@@ -1,19 +1,19 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import plural from 'universal/utils/plural';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import appTheme from 'universal/styles/theme/appTheme';
+import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
-import {createFragmentContainer} from 'react-relay';
+import plural from 'universal/utils/plural';
 
 const MeetingAgendaLastCall = (props) => {
   const {
@@ -125,7 +125,11 @@ export default createFragmentContainer(
   graphql`
     fragment MeetingAgendaLastCall_team on Team {
       agendaItems {
-        isComplete
+        ...MeetingAgendaLastCall_agendaItem
       }
-    }`
+    }
+    fragment MeetingAgendaLastCall_agendaItem on AgendaItem {
+      isComplete
+    }
+  `
 );
