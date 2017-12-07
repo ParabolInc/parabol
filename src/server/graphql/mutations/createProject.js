@@ -32,7 +32,7 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newProject, area}, {authToken, getDataLoader}) {
+  async resolve(source, {newProject, area}, {authToken, getDataLoader, socketId}) {
     const r = getRethink();
     const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
@@ -85,8 +85,8 @@ export default {
     });
     const projectCreated = {project};
 
-    getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated, operationId});
-    getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated, operationId});
+    getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated, operationId, mutatorId: socketId});
+    getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated, operationId, mutatorId: socketId});
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)

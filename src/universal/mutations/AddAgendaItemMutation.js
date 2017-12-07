@@ -1,3 +1,4 @@
+import clientTempId from 'universal/utils/relay/clientTempId';
 import {commitMutation} from 'react-relay';
 import addNodeToArray from 'universal/utils/relay/addNodeToArray';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
@@ -38,6 +39,7 @@ const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted)
     optimisticUpdater: (store) => {
       const optimisticAgendaItem = {
         ...newAgendaItem,
+        id: clientTempId(teamId),
         isActive: true,
         isComplete: false
       };

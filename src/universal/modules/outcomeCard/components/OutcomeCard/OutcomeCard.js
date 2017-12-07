@@ -14,6 +14,7 @@ import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import isTempId from 'universal/utils/relay/isTempId';
 
 const OutcomeCard = (props) => {
   const {
@@ -49,7 +50,7 @@ const OutcomeCard = (props) => {
     cardHasFocus && styles.cardHasFocus,
     hasDragStyles && styles.hasDragStyles
   );
-  const {integration} = project;
+  const {integration, projectId} = project;
   const {service} = integration || {};
   return (
     <div className={rootStyles}>
@@ -62,7 +63,7 @@ const OutcomeCard = (props) => {
         <ProjectEditor
           editorRef={editorRef}
           editorState={editorState}
-          readOnly={Boolean(isArchived || isDragging || service)}
+          readOnly={Boolean(isTempId(projectId) || isArchived || isDragging || service)}
           setEditorRef={setEditorRef}
           setEditorState={setEditorState}
           trackEditingComponent={trackEditingComponent}
@@ -180,6 +181,7 @@ export default createFragmentContainer(
   withStyles(styleThunk)(OutcomeCard),
   graphql`
     fragment OutcomeCard_project on Project {
+      projectId: id
       integration {
         service
         ...ProjectIntegrationLink_integration

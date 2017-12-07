@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay';
-import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import getOptimisticProjectEditor from 'universal/utils/relay/getOptimisticProjectEditor';
+import isTempId from 'universal/utils/relay/isTempId';
 
 const mutation = graphql`
   mutation EditProjectMutation($projectId: ID!, $editing: Boolean!) {
@@ -53,6 +54,7 @@ export const handleEditingFromPayload = (store, editorPayload) => {
 };
 
 const EditProjectMutation = (environment, projectId, editing, onCompleted, onError) => {
+  if (isTempId(projectId)) return undefined;
   const {userId} = environment;
   // use this as a temporary fix until we get rid of cashay because otherwise relay will roll back the change
   // which means we'll have 2 items, then 1, then 2, then 1. i prefer 2, then 1.
@@ -64,15 +66,8 @@ const EditProjectMutation = (environment, projectId, editing, onCompleted, onErr
       handleEditingFromPayload(store, payload);
     },
     optimisticUpdater: (store) => {
-      // TODO fix when we move users to relay
-      const user = store.get(userId);
-      const preferredName = user ? user.getValue('preferredName') : 'you';
-      const optimisticDetails = {
-        userId,
-        preferredName
-      };
-      const editorDetails = createProxyRecord(store, 'ProjectEditorDetails', optimisticDetails);
-      handleEditing(store, editing, projectId, editorDetails);
+      const projectEditorDetails = getOptimisticProjectEditor(store, userId);
+      handleEditing(store, editing, projectId, projectEditorDetails);
     },
     onCompleted,
     onError

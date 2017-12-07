@@ -1,7 +1,9 @@
+import clientTempId from 'universal/utils/relay/clientTempId';
 import {commitMutation} from 'react-relay';
 import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import getOptimisticProjectEditor from 'universal/utils/relay/getOptimisticProjectEditor';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const mutation = graphql`
@@ -43,7 +45,6 @@ const mutation = graphql`
   }
 `;
 
-let tempId = 0;
 const CreateProjectMutation = (environment, newProject, area, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
@@ -53,7 +54,10 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
       newProject
     },
     updater: (store) => {
-      const project = store.getRootField('createProject').getLinkedRecord('project');
+      const projectEditor = getOptimisticProjectEditor(store, newProject.userId);
+      const project = store.getRootField('createProject')
+        .getLinkedRecord('project')
+        .setLinkedRecords([projectEditor], 'editors');
       handleProjectConnections(store, viewerId, project);
     },
     optimisticUpdater: (store) => {
@@ -62,7 +66,7 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
       const now = new Date().toJSON();
       const optimisticProject = {
         ...newProject,
-        id: `${teamId}::$${tempId++}`,
+        id: clientTempId(teamId),
         teamId,
         userId,
         createdAt: now,
@@ -72,8 +76,10 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
         teamMemberId,
         content: newProject.content || makeEmptyStr()
       };
+
+      const projectEditor = getOptimisticProjectEditor(store, userId);
       const project = createProxyRecord(store, 'Project', optimisticProject)
-        .setLinkedRecords([], 'editors')
+        .setLinkedRecords([projectEditor], 'editors')
         .setLinkedRecord(store.get(teamMemberId), 'teamMember')
         .setLinkedRecord(store.get(teamId), 'team');
 

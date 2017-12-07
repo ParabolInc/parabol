@@ -14,11 +14,11 @@ import mergeServerContent from 'universal/utils/mergeServerContent';
 class OutcomeCardContainer extends Component {
   constructor(props) {
     super(props);
-    const {contentState} = props;
+    const {atmosphere: {userId}, contentState, project: {editors}} = props;
     this.state = {
       activeEditingComponents: Set(),
       cardHasHover: false,
-      cardHasFocus: false,
+      cardHasFocus: Boolean(editors.find((editor) => editor.userId === userId), editors, userId),
       editorState: EditorState.createWithContent(contentState, editorDecorators),
       cardHasMenuOpen: false
     };
@@ -182,6 +182,9 @@ export default createFragmentContainer(
   withAtmosphere(OutcomeCardContainer),
   graphql`
     fragment OutcomeCardContainer_project on Project {
+      editors {
+        userId
+      }
       projectId: id
       team {
         teamId: id

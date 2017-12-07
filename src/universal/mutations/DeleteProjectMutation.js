@@ -4,6 +4,7 @@ import {
   getTeamDashConnection,
   getUserDashConnection
 } from 'universal/mutations/UpdateProjectMutation';
+import isTempId from 'universal/utils/relay/isTempId';
 import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
 
 const mutation = graphql`
@@ -28,6 +29,7 @@ export const removeFromProjectConnections = (store, viewerId, projectId, teamId)
 };
 
 const DeleteProjectMutation = (environment, projectId, teamId, onError, onCompleted) => {
+  if (isTempId(projectId)) return undefined;
   const {viewerId} = environment;
   const updater = (store) => {
     removeFromProjectConnections(store, viewerId, projectId, teamId);

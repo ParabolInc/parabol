@@ -84,7 +84,7 @@ export default class Atmosphere extends Environment {
           reject(errorObj);
         } else {
           // reject({_error: 'A really big one'})
-          // setTimeout(() => resolve(response), 2000);
+          // setTimeout(() => resolve(response), 400);
           resolve(response);
         }
       });

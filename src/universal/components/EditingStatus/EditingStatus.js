@@ -46,7 +46,6 @@ const EditingStatus = (props) => {
 
 EditingStatus.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  editors: PropTypes.array,
   handleClick: PropTypes.func,
   project: PropTypes.object.isRequired,
   timestamp: PropTypes.string.isRequired,

@@ -1,5 +1,3 @@
-let tempId = 0;
-
 // const isRelayScalarValue = (val) => {
 //  return (typeof val !== 'object');
 // };
@@ -12,8 +10,10 @@ let tempId = 0;
 //  return 'setLinkedRecord';
 // };
 
+import clientTempId from 'universal/utils/relay/clientTempId';
+
 const createProxyRecord = (store, type, record) => {
-  const id = `client:${type}:${tempId++}`;
+  const id = clientTempId();
   const newRecord = store.create(id, type);
   // default to this
   newRecord.setValue(id, 'id');

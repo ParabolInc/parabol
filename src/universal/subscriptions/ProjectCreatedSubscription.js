@@ -9,6 +9,10 @@ const subscription = graphql`
         content
         createdAt
         createdBy
+        editors {
+          preferredName
+          userId
+        }
         integration {
           service
           nameWithOwner
