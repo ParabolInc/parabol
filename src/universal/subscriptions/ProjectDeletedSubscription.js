@@ -15,10 +15,10 @@ const ProjectDeletedSubscription = (environment, queryVariables, subParams) => {
   const {viewerId} = environment;
   const {operationName} = subParams;
   // kinda hacky, but cleaner than creating a separate file
-  const variables = operationName === 'UserDashRootQuery' ? {} : {teamIds: [queryVariables.teamId]};
+  const teamIds = operationName === 'UserDashRootQuery' ? null : [queryVariables.teamId];
   return {
     subscription,
-    variables,
+    variables: {teamIds},
     updater: (store) => {
       const project = store.getRootField('projectDeleted').getLinkedRecord('project');
       const projectId = project.getValue('id');

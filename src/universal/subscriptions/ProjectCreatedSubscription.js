@@ -40,10 +40,10 @@ const ProjectCreatedSubscription = (environment, queryVariables, subParams) => {
   const {operationName} = subParams;
   const {teamId} = queryVariables;
   // kinda hacky, but cleaner than creating a separate file
-  const variables = operationName === 'UserDashRootQuery' ? {} : {teamIds: [teamId]};
+  const teamIds = operationName === 'UserDashRootQuery' ? null : [teamId];
   return {
     subscription,
-    variables,
+    variables: {teamIds},
     updater: (store) => {
       const project = store.getRootField('projectCreated').getLinkedRecord('project');
       handleProjectConnections(store, viewerId, project);
