@@ -9,7 +9,7 @@ import withStyles from 'universal/styles/withStyles';
 
 const socketRoute = () => System.import('universal/components/SocketRoute/SocketRoute');
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
-const meetingSummary = () => System.import('universal/modules/summary/containers/MeetingSummary/MeetingSummaryContainer');
+const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
 const welcome = () => System.import('universal/modules/welcome/containers/Welcome/Welcome');
 const graphql = () => System.import('universal/modules/admin/containers/Graphql/GraphqlContainer');
 const impersonate = () => System.import('universal/modules/admin/containers/Impersonate/ImpersonateContainer');

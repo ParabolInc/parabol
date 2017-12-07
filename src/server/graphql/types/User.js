@@ -7,7 +7,9 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
+import getRethink from 'server/database/rethinkDriver';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
+import Meeting from 'server/graphql/types/Meeting';
 import Team from 'server/graphql/types/Team';
 // import archivedProjects from 'server/graphql/queries/archivedProjects';
 import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
@@ -27,7 +29,7 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
-import {getUserId} from 'server/utils/authorization';
+import {getUserId, requireAuth, requireSUOrTeamMember} from 'server/utils/authorization';
 // import organizations from 'server/graphql/queries/organizations';
 
 const User = new GraphQLObjectType({
@@ -173,6 +175,26 @@ const User = new GraphQLObjectType({
     integrationProvider,
     invoices,
     invoiceDetails,
+    meeting: {
+      type: Meeting,
+      description: 'A previous meeting that the user was in (present or absent)',
+      args: {
+        meetingId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The meeting ID'
+        }
+      },
+      async resolve(source, {meetingId}, {authToken}) {
+        const r = getRethink();
+        requireAuth(authToken);
+        const meeting = await r.table('Meeting').get(meetingId);
+        if (!meeting) {
+          throw new Error('Meeting ID not found');
+        }
+        requireSUOrTeamMember(authToken, meeting.teamId);
+        return meeting;
+      }
+    },
     notifications: require('../queries/notifications').default,
     providerMap,
     slackChannels,

@@ -88,7 +88,7 @@ const SummaryHeader = (props) => {
 
 SummaryHeader.propTypes = {
   children: PropTypes.any,
-  createdAt: PropTypes.instanceOf(Date).isRequired,
+  createdAt: PropTypes.string.isRequired,
   fontSize: PropTypes.number,
   fontWeight: PropTypes.oneOf([
     400,

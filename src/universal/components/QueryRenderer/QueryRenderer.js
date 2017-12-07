@@ -175,7 +175,6 @@ export default class QueryRenderer extends React.Component {
           error: null,
           props: snapshot.data,
           retry: null,
-          unsubscribe: this.unsubscribe,
           initialLoad: false
         };
       }

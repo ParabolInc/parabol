@@ -1,10 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
 import sendEmailPromise from 'server/email/sendEmail';
 
-export default async function sendEmailSummary(meeting, teamMemberId) {
-  const {facilitator, id: meetingId, invitees, summarySentAt} = meeting;
+export default async function sendEmailSummary(meeting) {
+  const {id: meetingId, invitees, summarySentAt} = meeting;
   const r = getRethink();
-  if (facilitator === teamMemberId && !summarySentAt) {
+  if (!summarySentAt) {
     // send the summary email
     const teamMemberIds = invitees.map(({id}) => id);
     const emails = await r.table('TeamMember')

@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import getEndMeetingSortOrders from 'server/graphql/mutations/helpers/endMeeting/getEndMeetingSortOrders';
+import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEmailSummary';
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
@@ -80,7 +81,7 @@ export default {
               }, {
                 nonAtomic: true,
                 returnChanges: true
-              })('changes')(0)('new_val').pluck('invitees', 'meetingNumber', 'projects');
+              })('changes')(0)('new_val');
           });
       });
     const updatedProjects = await getEndMeetingSortOrders(completedMeeting);
@@ -150,6 +151,7 @@ export default {
     };
     const meetingUpdated = {team: summaryMeeting};
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    sendEmailSummary(completedMeeting);
     return meetingUpdated;
 
     // TODO maybe update team members via pubsub?

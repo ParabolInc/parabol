@@ -1,4 +1,4 @@
-import {SUMMARY} from 'universal/utils/constants';
+import {LOBBY, SUMMARY} from 'universal/utils/constants';
 
 const subscription = graphql`
   subscription MeetingUpdatedSubscription($teamId: ID!) {
@@ -35,8 +35,10 @@ const MeetingUpdatedSubscription = (environment, queryVariables, {history}) => {
       const facilitatorPhase = team.getValue('facilitatorPhase');
       const meetingId = team.getValue('meetingId');
       if (facilitatorPhase === SUMMARY) {
-        team.setValue(null, 'meetingId');
         history.replace(`/summary/${meetingId}`);
+        team.setValue(null, 'meetingId')
+          .setValue(LOBBY, 'facilitatorPhase')
+          .setValue(LOBBY, 'meetingPhasePhase');
       }
     }
   };

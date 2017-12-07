@@ -1,5 +1,4 @@
 import {GraphQLObjectType} from 'graphql';
-import meeting from 'server/graphql/models/Meeting/meetingMutation';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import presence from 'server/graphql/models/Presence/presenceMutation';
@@ -56,7 +55,6 @@ import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQue
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 
 const rootFields = Object.assign({},
-  meeting,
   orgApproval,
   organization,
   presence,
