@@ -39,6 +39,7 @@ const OutcomeCard = (props) => {
   const isPrivate = isProjectPrivate(project.tags);
   const isArchived = isProjectArchived(project.tags);
   const {status, team} = project;
+  const {teamId} = team;
   const rootStyles = css(
     styles.root,
     styles.cardBlock,
@@ -67,6 +68,7 @@ const OutcomeCard = (props) => {
           setEditorRef={setEditorRef}
           setEditorState={setEditorState}
           trackEditingComponent={trackEditingComponent}
+          teamId={teamId}
           team={team}
         />
         <ProjectIntegrationLink integration={integration || null} />
@@ -189,13 +191,7 @@ export default createFragmentContainer(
       status
       tags
       team {
-        ...ProjectEditor_team
-        # not sure if needed for HOCs
-        teamMembers(sortBy: "preferredName") {
-          id
-          picture
-          preferredName
-        }
+        teamId: id
       }
       # grab userId to ensure sorting on connections works
       userId
