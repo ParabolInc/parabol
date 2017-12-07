@@ -108,14 +108,14 @@ export default {
     const goingForwardAPhase = nextPhase && nextPhaseInfo.index > meetingPhaseInfo.index;
     const onSamePhaseWithItems = (!nextPhase || nextPhase === meetingPhase) && meetingPhaseInfo.items;
 
-    let completeAgendaItem;
+    let setAgendaItemToComplete;
     if (facilitatorPhase === AGENDA_ITEMS) {
-      completeAgendaItem = r.table('AgendaItem')
+      setAgendaItemToComplete = r.table('AgendaItem')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .orderBy('sortOrder')
         .nth(facilitatorPhaseItem - 1)
-        .update({isComplete: true});
+        .update({isComplete: true}, {returnChanges: true})('changes')(0)('new_val').default(null);
     }
     /*
      console.log('moveMeeting');
@@ -136,15 +136,18 @@ export default {
       meetingPhaseItem: newMeetingPhaseItem
     };
 
-    const {team} = await r({
+    const {completedAgendaItem, team} = await r({
       team: r.table('Team').get(teamId).update(updatedState, {returnChanges: true})('changes')(0)('new_val').default(null),
-      completeAgendaItem
+      completedAgendaItem: setAgendaItemToComplete
     });
 
     if (!team) {
       throw new Error('meeting already updated!');
     }
-    const meetingUpdated = {team};
+    const meetingUpdated = {
+      completedAgendaItem,
+      team
+    };
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
     return meetingUpdated;
   }

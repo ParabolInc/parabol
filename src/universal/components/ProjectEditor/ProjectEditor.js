@@ -238,4 +238,4 @@ export default withSuggestions(
       )
     )
   )
-)
+);

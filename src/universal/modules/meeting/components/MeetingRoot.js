@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {connect} from 'react-redux';
+import {withRouter} from 'react-router-dom';
 import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
@@ -43,14 +45,17 @@ const subscriptions = [
   NotificationsClearedSubscription
 ];
 
-const MeetingRoot = ({atmosphere, match}) => {
+const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
   const {params: {localPhase, localPhaseItem, teamId}} = match;
   return (
     <QueryRenderer
+      // flush the meeting immediately so we can start a new one
+      cacheConfig={{ttl: 1}}
       environment={atmosphere}
       query={query}
       variables={{teamId}}
       subscriptions={subscriptions}
+      subParams={{dispatch, history, location}}
       render={({error, props: renderProps}) => {
         const {userId} = atmosphere;
         const myTeamMemberId = `${userId}::${teamId}`;
@@ -83,7 +88,10 @@ const MeetingRoot = ({atmosphere, match}) => {
 
 MeetingRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired
 };
 
-export default withAtmosphere(MeetingRoot);
+export default connect()(withRouter(withAtmosphere(MeetingRoot)));

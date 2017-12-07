@@ -114,10 +114,7 @@ const notificationHandler = {
       action: {
         label: 'Promote',
         callback: () => {
-          const onError = (err) => {
-            console.error(err);
-          };
-          PromoteFacilitatorMutation(environment, {facilitatorId: requestorId}, onError);
+          PromoteFacilitatorMutation(environment, {facilitatorId: requestorId});
         }
       }
     }));

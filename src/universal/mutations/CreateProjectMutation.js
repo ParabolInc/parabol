@@ -1,7 +1,7 @@
-import clientTempId from 'universal/utils/relay/clientTempId';
 import {commitMutation} from 'react-relay';
 import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
+import clientTempId from 'universal/utils/relay/clientTempId';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 import getOptimisticProjectEditor from 'universal/utils/relay/getOptimisticProjectEditor';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -77,12 +77,11 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
         content: newProject.content || makeEmptyStr()
       };
 
-      const projectEditor = getOptimisticProjectEditor(store, userId);
+      const editors = newProject.content ? [] : [getOptimisticProjectEditor(store, userId)];
       const project = createProxyRecord(store, 'Project', optimisticProject)
-        .setLinkedRecords([projectEditor], 'editors')
         .setLinkedRecord(store.get(teamMemberId), 'teamMember')
-        .setLinkedRecord(store.get(teamId), 'team');
-
+        .setLinkedRecord(store.get(teamId), 'team')
+        .setLinkedRecords(editors, 'editors');
 
       handleProjectConnections(store, viewerId, project);
     },

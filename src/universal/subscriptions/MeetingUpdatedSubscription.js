@@ -1,3 +1,5 @@
+import {SUMMARY} from 'universal/utils/constants';
+
 const subscription = graphql`
   subscription MeetingUpdatedSubscription($teamId: ID!) {
     meetingUpdated(teamId: $teamId) {
@@ -16,15 +18,27 @@ const subscription = graphql`
         meetingPhase
         meetingPhaseItem
       }
+      completedAgendaItem {
+        isComplete
+      }
     }
   }
 `;
 
-const MeetingUpdatedSubscription = (environment, queryVariables) => {
+const MeetingUpdatedSubscription = (environment, queryVariables, {history}) => {
   const {teamId} = queryVariables;
   return {
     subscription,
-    variables: {teamId}
+    variables: {teamId},
+    updater: (store) => {
+      const team = store.getRootField('meetingUpdated').getLinkedRecord('team');
+      const facilitatorPhase = team.getValue('facilitatorPhase');
+      const meetingId = team.getValue('meetingId');
+      if (facilitatorPhase === SUMMARY) {
+        team.setValue(null, 'meetingId');
+        history.replace(`/summary/${meetingId}`);
+      }
+    }
   };
 };
 

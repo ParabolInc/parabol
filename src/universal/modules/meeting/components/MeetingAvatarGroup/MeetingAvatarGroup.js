@@ -64,10 +64,7 @@ const MeetingAvatarGroup = (props) => {
               gotoItem(count);
             };
             const promoteToFacilitator = () => {
-              const onError = (err) => {
-                console.error(err);
-              };
-              PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, onError);
+              PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id});
             };
             const requestFacilitator = () => {
               RequestFacilitatorMutation(atmosphere, teamId);

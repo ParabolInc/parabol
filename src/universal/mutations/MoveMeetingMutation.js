@@ -10,6 +10,9 @@ const mutation = graphql`
         meetingPhase
         meetingPhaseItem
       }
+      completedAgendaItem {
+        isComplete
+      }
     }
   }
 `;

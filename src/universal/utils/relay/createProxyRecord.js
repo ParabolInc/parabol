@@ -13,7 +13,7 @@
 import clientTempId from 'universal/utils/relay/clientTempId';
 
 const createProxyRecord = (store, type, record) => {
-  const id = clientTempId();
+  const id = record.id || clientTempId();
   const newRecord = store.create(id, type);
   // default to this
   newRecord.setValue(id, 'id');

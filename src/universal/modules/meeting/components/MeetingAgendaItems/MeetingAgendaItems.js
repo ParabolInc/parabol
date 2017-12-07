@@ -166,6 +166,9 @@ export default createFragmentContainer(
       projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
         edges {
           node {
+            id
+            agendaId
+            createdAt
             ...NullableProject_project
           }
         }

@@ -38,6 +38,16 @@ const withSuggestions = (ComposedComponent) => {
 
     state = {};
 
+    setSuggestions = (suggestions) => {
+      if (suggestions.length === 0) {
+        this.removeModal();
+      } else {
+        this.setState({
+          suggestions
+        });
+      }
+    };
+
     handleUpArrow = (e) => {
       const {handleUpArrow} = this.props;
       if (handleUpArrow) {
@@ -60,16 +70,6 @@ const withSuggestions = (ComposedComponent) => {
       this.setState({
         active: Math.min(active + 1, suggestions.length - 1)
       });
-    };
-
-    setSuggestions = (suggestions) => {
-      if (suggestions.length === 0) {
-        this.removeModal();
-      } else {
-        this.setState({
-          suggestions
-        });
-      }
     };
 
     handleSelect = (idx) => (e) => {
@@ -216,7 +216,7 @@ const withSuggestions = (ComposedComponent) => {
             targetAnchor={targetAnchor}
             isOpen
           />
-        )
+        );
       }
       return (
         <AsyncMenuContainer

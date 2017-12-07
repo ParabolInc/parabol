@@ -1,4 +1,4 @@
-import {addAgendaItemUpdater} from 'universal/mutations/AddAgendaItemMutation';
+import {handleAddAgendaItemUpdater} from 'universal/mutations/AddAgendaItemMutation';
 
 const subscription = graphql`
   subscription AgendaItemAddedSubscription($teamId: ID!) {
@@ -26,7 +26,7 @@ const AgendaItemAddedSubscription = (environment, queryVariables) => {
     variables: {teamId},
     updater: (store) => {
       const newNode = store.getRootField('agendaItemAdded').getLinkedRecord('agendaItem');
-      addAgendaItemUpdater(store, teamId, newNode);
+      handleAddAgendaItemUpdater(store, teamId, newNode);
     }
   };
 };

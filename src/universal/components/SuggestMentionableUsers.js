@@ -53,7 +53,7 @@ class SuggestMentionableUsers extends Component {
       />
     );
   }
-};
+}
 
 SuggestMentionableUsers.propTypes = {
   activeIdx: PropTypes.number.isRequired,

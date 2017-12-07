@@ -130,7 +130,7 @@ export default {
         const projectUpdated = {project};
         // since this is from the meeting, we don't need to remove it from the user dash
         // because we are guaranteed they have a sub going for the team dash
-        getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, projectUpdated);
+        getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated});
       });
     }
     const {meetingNumber} = completedMeeting;
@@ -141,10 +141,12 @@ export default {
     endSlackMeeting(meetingId, teamId);
 
     const summaryMeeting = {
+      id: teamId,
       facilitatorPhase: SUMMARY,
       meetingPhase: SUMMARY,
       facilitatorPhaseItem: null,
-      meetingPhaseItem: null
+      meetingPhaseItem: null,
+      meetingId
     };
     const meetingUpdated = {team: summaryMeeting};
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});

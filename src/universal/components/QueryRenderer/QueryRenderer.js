@@ -20,7 +20,7 @@ const release = (...disposables) => () => {
     if (disposable) {
       disposable.dispose();
     }
-  })
+  });
 };
 
 const isCacheable = (subs, cacheConfig = {}) => Boolean(subs || cacheConfig.force === false || cacheConfig.ttl);
@@ -89,10 +89,7 @@ export default class QueryRenderer extends React.Component {
       // if variables changed, we want to hang on to the results of the old one just as if was an unmounted component
       this._requestRelease();
       this.setState({
-        readyState: {
-          ...this._fetchForProps(nextProps),
-          initialLoad: false
-        }
+        readyState: this._fetchForProps(nextProps)
       });
     }
   }

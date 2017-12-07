@@ -52,12 +52,12 @@ class OutcomeCardFooter extends Component {
   state = {};
 
   removeContentTag = (tagValue) => () => {
-    const {area, atmosphere, project: {id, content}} = this.props;
+    const {area, atmosphere, project: {projectId, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
     const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
     if (!nextContent) return;
     const updatedProject = {
-      id,
+      id: projectId,
       content: nextContent
     };
     UpdateProjectMutation(atmosphere, updatedProject, area);

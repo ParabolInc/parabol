@@ -252,26 +252,25 @@ class MeetingContainer extends Component {
     const {nextPhase, nextPhaseItem} = safeRoute;
     const nextPhaseInfo = actionMeeting[nextPhase];
 
-    if (nextPhaseInfo.index <= meetingPhaseInfo.index) {
-      const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
-      history.push(pushURL);
-    }
-
     if (isFacilitating) {
-      const {atmosphere, onError, onCompleted, submitMutation} = this.props;
-      const variables = {teamId};
+      const {atmosphere, localPhaseItem, onError, onCompleted, submitMutation} = this.props;
       if (!nextPhaseInfo.next) {
         EndMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
-      } else {
+      } else if (nextPhase !== localPhase || nextPhaseItem !== localPhaseItem) {
+        const variables = {teamId};
         if (nextPhase !== localPhase) {
           variables.nextPhase = nextPhase;
         }
         if (nextPhaseItem) {
           variables.nextPhaseItem = nextPhaseItem;
         }
+        if (Object.keys(variables).length === 1) return;
         submitMutation();
         MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
       }
+    } else if (nextPhaseInfo.index <= meetingPhaseInfo.index) {
+      const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
+      history.push(pushURL);
     }
   };
 

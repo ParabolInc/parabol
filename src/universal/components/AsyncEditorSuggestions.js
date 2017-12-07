@@ -37,7 +37,7 @@ AsyncEditorSuggestions.propTypes = {
   handleSelect: PropTypes.func.isRequired,
   styles: PropTypes.object,
   suggestions: PropTypes.array,
-  SuggestionItem: PropTypes.any.isRequired,
+  SuggestionItem: PropTypes.any.isRequired
 };
 
 const styleThunk = () => ({

@@ -125,11 +125,7 @@ export default createFragmentContainer(
   graphql`
     fragment MeetingAgendaLastCall_team on Team {
       agendaItems {
-        ...MeetingAgendaLastCall_agendaItem
+        isComplete
       }
-    }
-    fragment MeetingAgendaLastCall_agendaItem on AgendaItem {
-      isComplete
-    }
-  `
+    }`
 );

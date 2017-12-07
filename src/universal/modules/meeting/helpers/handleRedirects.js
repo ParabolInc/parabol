@@ -1,6 +1,6 @@
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
-import {AGENDA_ITEMS, SUMMARY} from 'universal/utils/constants';
+import {AGENDA_ITEMS} from 'universal/utils/constants';
 import makePushURL from './makePushURL';
 
 export default function handleRedirects(oldProps, nextProps) {
@@ -11,7 +11,7 @@ export default function handleRedirects(oldProps, nextProps) {
   const oldAgenda = oldTeam.agendaItems || [];
   /* DEBUG: uncomment below */
   // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
-  const {agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
+  const {agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId} = team;
 
   // DEBUGGING
   // if no/bad phase given, goto the facilitator
@@ -107,9 +107,5 @@ export default function handleRedirects(oldProps, nextProps) {
     }
   }
 
-  if (facilitatorPhase === SUMMARY) {
-    history.replace(`/summary/${meetingId}`);
-    return false;
-  }
   return true;
 }

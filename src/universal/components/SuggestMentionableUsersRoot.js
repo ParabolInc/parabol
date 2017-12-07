@@ -38,7 +38,7 @@ const SuggestMentionableUsersRoot = (props) => {
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear component={null}>
-            {error && <ErrorComponent height={'14rem'} error={error}/>}
+            {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps && <AnimatedFade key="1">
               <SuggestMentionableUsers
                 activeIdx={activeIdx}
@@ -51,7 +51,7 @@ const SuggestMentionableUsersRoot = (props) => {
             </AnimatedFade>}
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'}/>
+              <LoadingComponent height={'5rem'} />
             </AnimatedFade>
             }
           </TransitionGroup>
