@@ -11,7 +11,8 @@ const OutcomeCardAssignMenu = (props) => {
     atmosphere,
     area,
     closePortal,
-    project: {projectId, teamMember: {ownerId}, team: {teamMembers}}
+    project: {projectId, teamMember: {ownerId}},
+    viewer: {team: {teamMembers}}
   } = props;
 
   const handleProjectUpdate = (newOwner) => {
@@ -54,23 +55,24 @@ OutcomeCardAssignMenu.propTypes = {
   area: PropTypes.string.isRequired,
   atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
-  project: PropTypes.object.isRequired
+  project: PropTypes.object.isRequired,
+  viewer: PropTypes.object.isRequired
 };
 
 export default createFragmentContainer(
   withAtmosphere(OutcomeCardAssignMenu),
   graphql`
-    fragment OutcomeCardAssignMenu_project on Project {
-      projectId: id
-      team {
+    fragment OutcomeCardAssignMenu_viewer on User {
+      team(teamId: $teamId) {
         teamMembers(sortBy: "preferredName") {
           id
           picture
           preferredName
-          teamId
-          userId
         }
       }
+    }
+    fragment OutcomeCardAssignMenu_project on Project {
+      projectId: id
       teamMember {
         ownerId: id
       }

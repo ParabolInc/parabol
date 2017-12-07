@@ -18,7 +18,7 @@ import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFoote
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
-const fetchAssignMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu');
+const fetchAssignMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot');
 
 const originAnchor = {
   vertical: 'bottom',
@@ -77,7 +77,7 @@ class OutcomeCardFooter extends Component {
     } = this.props;
     const showTeam = area === USER_DASH;
     const {projectId, owner, integration, tags, team} = project;
-    const {teamName} = team;
+    const {teamId, teamName} = team;
     const {service} = integration || {};
     const isArchived = isProjectArchived(tags);
     const buttonBlockStyles = css(
@@ -127,8 +127,7 @@ class OutcomeCardFooter extends Component {
                 queryVars={{
                   area,
                   project,
-                  setError: this.setError,
-                  clearError: this.clearError
+                  teamId
                 }}
                 targetAnchor={assignTargetAnchor}
                 toggle={ownerAvatarOrTeamName}
@@ -330,6 +329,7 @@ export default createFragmentContainer(
       
       tags
       team {
+        teamId: id
         teamName: name
       }
       ...OutcomeCardAssignMenu_project
