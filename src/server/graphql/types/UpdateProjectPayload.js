@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLObjectType} from 'graphql';
 import Project from 'server/graphql/types/Project';
 import ProjectEditorPayload from 'server/graphql/types/ProjectEditorPayload';
 
@@ -6,7 +6,7 @@ const UpdateProjectPayload = new GraphQLObjectType({
   name: 'UpdateProjectPayload',
   fields: () => ({
     project: {
-      type: new GraphQLNonNull(Project)
+      type: Project
     },
     editor: {
       type: ProjectEditorPayload,

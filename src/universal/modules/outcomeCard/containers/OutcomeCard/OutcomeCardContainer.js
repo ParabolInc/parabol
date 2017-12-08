@@ -101,7 +101,7 @@ class OutcomeCardContainer extends Component {
       // it's possible the user calls update, then delete, then the update timeout fires, so clear it here
       clearTimeout(this.updateTimer);
       DeleteProjectMutation(atmosphere, projectId, teamId);
-    } else if (initialContentState !== contentState) {
+    } else if (initialContentState.getPlainText() !== contentState.getPlainText()) {
       clearTimeout(this.updateTimer);
       this.updateTimer = setTimeout(() => {
         const updatedProject = {

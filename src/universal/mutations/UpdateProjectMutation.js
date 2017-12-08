@@ -72,6 +72,7 @@ export const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getCon
 // };
 
 export const handleProjectConnections = (store, viewerId, project) => {
+  if (!project) return;
   // we currently have 3 connections, user, team, and team archive
   const viewer = store.get(viewerId);
   const teamId = project.getValue('teamId');

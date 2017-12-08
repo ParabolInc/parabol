@@ -31,6 +31,10 @@ export default {
       const isPrivate = tags.includes('private');
       return !isPrivate || userId === projectUserId;
     };
-    return makeSubscribeIter(channelNames, {filterFn, getDataLoader});
+    // we piggyback editing on this same subscription, but there's no need to resend the whole project, just send the editor
+    const resolve = (value) => {
+      return value.projectUpdated.editor ? {projectUpdated: {editor: value.projectUpdated.editor}} : value;
+    };
+    return makeSubscribeIter(channelNames, {filterFn, getDataLoader, resolve});
   }
 };
