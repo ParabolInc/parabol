@@ -17,7 +17,7 @@ const NotifyProjectInvolves = new GraphQLObjectType({
     },
     projectId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: '(DB) The projectId that now involves the userId'
+      description: 'The projectId that now involves the userId'
     },
     project: {
       type: Project,
@@ -28,7 +28,7 @@ const NotifyProjectInvolves = new GraphQLObjectType({
     },
     changeAuthorId: {
       type: GraphQLID,
-      description: '(DB) The teamMemberId of the person that made the change'
+      description: 'The teamMemberId of the person that made the change'
     },
     changeAuthor: {
       type: TeamMember,
@@ -39,7 +39,7 @@ const NotifyProjectInvolves = new GraphQLObjectType({
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: '(DB) The teamId the user is joining'
+      description: 'The teamId the user is joining'
     },
     team: {
       type: Team,

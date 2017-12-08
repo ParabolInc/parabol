@@ -16,7 +16,7 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
     },
     newFacilitatorId: {
       type: GraphQLID,
-      description: '(Relay) The team member ID that is the new facilitator'
+      description: 'The team member ID that is the new facilitator'
     },
     oldFacilitator: {
       type: new GraphQLNonNull(TeamMember),
@@ -27,7 +27,7 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
     },
     oldFacilitatorId: {
       type: GraphQLID,
-      description: '(Relay) The team member ID that disconnected'
+      description: 'The team member ID that disconnected'
     },
     teamId: {
       type: GraphQLID,
