@@ -2,11 +2,12 @@ const resolveMeetingMembers = (teamMembers, teamMemberPresence, myUserId, active
   return teamMembers.map((teamMember) => {
     const matchingTeamMember = teamMemberPresence.find(({id}) => id === teamMember.id);
     const presence = matchingTeamMember ? matchingTeamMember.presence : [];
+    const isSelf = teamMember.userId === myUserId;
     return {
       ...teamMember,
-      isConnected: Boolean(presence.find(({userId}) => userId === teamMember.userId)),
+      isConnected: isSelf || Boolean(presence.find(({userId}) => userId === teamMember.userId)),
       isFacilitating: teamMember.id === activeFacilitator,
-      isSelf: teamMember.userId === myUserId
+      isSelf
     };
   });
 };

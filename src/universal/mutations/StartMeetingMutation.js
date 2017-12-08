@@ -33,7 +33,7 @@ const StartMeetingMutation = (environment, teamId, history, onError, onCompleted
       const {userId} = environment;
       const activeFacilitator = `${userId}::${teamId}`;
       const optimisticCheckInGreeting = {
-        content: makeEmptyStr(),
+        content: 'Hello',
         langnage: ''
       };
 
