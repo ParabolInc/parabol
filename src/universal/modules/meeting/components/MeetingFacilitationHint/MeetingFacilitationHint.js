@@ -14,7 +14,7 @@ const MeetingFacilitationHint = (props) => {
   return (
     <div className={css(styles.facilitationHint)}>
       <Type align="center" scale="s4" colorPalette="mid">
-        {children}<Ellipsis />
+        {'('}{children}<Ellipsis />{')'}
       </Type>
     </div>
   );

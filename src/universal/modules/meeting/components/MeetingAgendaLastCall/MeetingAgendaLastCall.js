@@ -6,7 +6,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 import plural from 'universal/utils/plural';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
@@ -25,6 +24,8 @@ const MeetingAgendaLastCall = (props) => {
 
   const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL);
 
+  const hintName = hideMoveMeetingControls ? facilitatorName : 'you';
+
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -32,7 +33,7 @@ const MeetingAgendaLastCall = (props) => {
           <MeetingPhaseHeading>
             {agendaItemCount === 0 ?
               <span>{`No ${labelAgendaItems}?`}</span> :
-              <span>{`That wraps up the ${actionMeeting.agendaitems.name}!`}</span>
+              <span>{'Last Call:'}</span>
             }
           </MeetingPhaseHeading>
           {agendaItemCount === 0 ?
@@ -59,32 +60,35 @@ const MeetingAgendaLastCall = (props) => {
               scale="s5"
               colorPalette="black"
             >
-              {'We worked on '}
+              {'We’ve worked on '}
               <span className={css(styles.highlight)}>
                 {`${agendaItemCount} ${plural(agendaItemCount, AGENDA_ITEM_LABEL)}`}
               </span>
-              {'—need anything else?'}
+              {' so far—need anything else?'}
             </Type>
           }
 
           <AgendaShortcutHint />
 
           <div className={css(styles.controlBlock)}>
-            {!hideMoveMeetingControls ?
+            {!hideMoveMeetingControls &&
               <Button
+                aria-label="End Meeting"
+                buttonSize="large"
                 buttonStyle="solid"
                 colorPalette="cool"
                 depth={1}
                 isBlock
                 label="End Meeting"
                 onClick={gotoNext}
-                buttonSize="large"
                 textTransform="uppercase"
-              /> :
-              <MeetingFacilitationHint>
-                {'Waiting for'} <b>{facilitatorName}</b> {'to end the meeting'}
-              </MeetingFacilitationHint>
+              />
             }
+          </div>
+          <div className={css(styles.hintBlock)}>
+            <MeetingFacilitationHint>
+              {'Waiting for'} <b>{hintName}</b> {'to move on'}
+            </MeetingFacilitationHint>
           </div>
         </MeetingSection>
       </MeetingSection>
@@ -107,7 +111,7 @@ const styleThunk = () => ({
 
   controlBlock: {
     margin: '0 auto',
-    paddingTop: '2.25rem',
+    padding: '2.25rem 0 1rem',
     width: '12rem'
   },
 
@@ -116,6 +120,11 @@ const styleThunk = () => ({
     borderRadius: '.25rem',
     marginTop: '2.5rem',
     padding: '.25rem 1rem'
+  },
+
+  hintBlock: {
+    textAlign: 'center',
+    width: '100%'
   }
 });
 
