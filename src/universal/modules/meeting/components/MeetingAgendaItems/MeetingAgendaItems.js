@@ -161,6 +161,8 @@ export default createFragmentContainer(
         }
         teamMembers(sortBy: "checkInOrder") {
           id
+          picture
+          preferredName
         }
       }
       projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
