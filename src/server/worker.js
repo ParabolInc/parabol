@@ -20,7 +20,7 @@ import sendICS from './sendICS';
 import './polyfills';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks';
-import SharedDataLoader from 'server/utils/SharedDataLoader';
+import SharedDataLoader from 'shared-dataloader';
 
 // Import .env and expand variables:
 getDotenv();
@@ -38,7 +38,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   const {exchange} = scServer;
   httpServer.on('request', app);
   // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
-  const sharedDataLoader = new SharedDataLoader({PROD, ttl: 5000});
+  const sharedDataLoader = new SharedDataLoader({PROD, onShare: '_share', ttl: 5000});
   // HMR
   if (!PROD) {
     const config = require('../../webpack/webpack.config.dev').default;
