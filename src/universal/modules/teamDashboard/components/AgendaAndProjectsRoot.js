@@ -2,11 +2,10 @@ import ms from 'ms';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
-import {TransitionGroup} from 'react-transition-group';
-import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
 import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAddedSubscription';
@@ -47,29 +46,14 @@ const AgendaAndProjectsRoot = (props) => {
       query={query}
       variables={{teamId}}
       subscriptions={subscriptions}
-      render={({error, props: renderProps, initialLoad}) => {
-        if (!renderProps && !initialLoad) {
-          return null;
-        }
-
-        return (
-          <TransitionGroup appear component={null} exit={false}>
-            {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps &&
-            <AnimatedFade key="1">
-              <AgendaAndProjects
-                viewer={renderProps.viewer}
-              />
-            </AnimatedFade>
-            }
-            {!renderProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingView minHeight="50vh" />
-            </AnimatedFade>
-            }
-          </TransitionGroup>
-        );
-      }}
+      render={(readyState) => (
+        <RelayTransitionGroup
+          readyState={readyState}
+          error={<ErrorComponent height={'14rem'} />}
+          loading={<LoadingView minHeight="50vh" />}
+          ready={<AgendaAndProjects />}
+        />
+      )}
     />
   );
 };
