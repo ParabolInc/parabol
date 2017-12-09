@@ -33,7 +33,7 @@ describe('inviteTeamMembers', () => {
     const firstUser = mockDB.db.user[0];
     const invitees = [{email: invitee.email}];
     const teamId = mockDB.context.team.id;
-    const dataLoader = makeDataLoader()();
+    const dataLoader = makeDataLoader();
 
     // TEST
     const {results} = await inviteTeamMembers(invitees, teamId, firstUser.id, dataLoader);
@@ -63,7 +63,7 @@ describe('inviteTeamMembers', () => {
     const firstUser = mockDB.db.user[0];
     const invitees = [{email: mockDB.context.user.email}];
     const teamId = mockDB.context.team.id;
-    const dataLoader = makeDataLoader()();
+    const dataLoader = makeDataLoader();
     // TEST
     const res = await inviteTeamMembers(invitees, teamId, firstUser.id, dataLoader);
 
@@ -88,7 +88,7 @@ describe('inviteTeamMembers', () => {
     const secondUser = mockDB.db.user[1];
     const invitees = [{email: invitee.email}];
     const teamId = mockDB.context.team.id;
-    const dataLoader = makeDataLoader()();
+    const dataLoader = makeDataLoader();
 
     // TEST
     const res = await inviteTeamMembers(invitees, teamId, secondUser.id, dataLoader);

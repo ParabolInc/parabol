@@ -70,7 +70,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(dataLoader().__isShared()).toEqual(true);
+    expect(dataLoader.isShared()).toEqual(true);
   });
 
   test('updates the teamMember of the project slowly and trigger a new history item', async () => {
@@ -100,7 +100,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(dataLoader().__isShared()).toEqual(true);
+    expect(dataLoader.isShared()).toEqual(true);
   });
 
   test('updates the content of the project quickly and do not trigger a new history item', async () => {
@@ -130,7 +130,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(dataLoader().__isShared()).toEqual(true);
+    expect(dataLoader.isShared()).toEqual(true);
   });
 
   test('updates the status of the project', async () => {
@@ -159,7 +159,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(dataLoader().__isShared()).toEqual(true);
+    expect(dataLoader.isShared()).toEqual(true);
   });
 
   test('throw when the caller is not a team member', async () => {
