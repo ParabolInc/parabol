@@ -60,15 +60,15 @@ const Project = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team this project belongs to',
-      resolve: ({teamId}, args, {getDataLoader}) => {
-        return getDataLoader().teams.load(teamId);
+      resolve: ({teamId}, args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId);
       }
     },
     teamMember: {
       type: TeamMember,
       description: 'The team member that owns this project',
-      resolve: ({teamMemberId}, args, {getDataLoader}) => {
-        return getDataLoader().teamMembers.load(teamMemberId);
+      resolve: ({teamMemberId}, args, {dataLoader}) => {
+        return dataLoader.get('teamMembers').load(teamMemberId);
       }
     },
     teamMemberId: {

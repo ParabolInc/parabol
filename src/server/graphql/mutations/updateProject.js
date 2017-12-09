@@ -28,10 +28,9 @@ export default {
       description: 'the updated project including the id, and at least one other field'
     }
   },
-  async resolve(source, {area, updatedProject}, {authToken, getDataLoader, socketId}) {
+  async resolve(source, {area, updatedProject}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
     const now = new Date();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // AUTH

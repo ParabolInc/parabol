@@ -20,9 +20,8 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(Invitee))
     }
   },
-  async resolve(source, args, {authToken, getDataLoader, socket, socketId}) {
+  async resolve(source, args, {authToken, dataLoader, socket, socketId}) {
     // AUTH
-    const dataLoader = getDataLoader();
     const {orgId} = args.newTeam;
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);

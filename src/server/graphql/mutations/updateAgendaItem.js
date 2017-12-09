@@ -17,10 +17,9 @@ export default {
       description: 'The updated item including an id, content, status, sortOrder'
     }
   },
-  async resolve(source, {updatedAgendaItem}, {authToken, getDataLoader, socketId}) {
+  async resolve(source, {updatedAgendaItem}, {authToken, dataLoader, socketId}) {
     const now = new Date();
     const r = getRethink();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // AUTH

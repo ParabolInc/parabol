@@ -11,8 +11,8 @@ export default {
       description: 'The team ID for the desired team'
     }
   },
-  async resolve(source, {teamId}, {authToken, getDataLoader}) {
+  async resolve(source, {teamId}, {authToken, dataLoader}) {
     requireSUOrTeamMember(authToken, teamId);
-    return getDataLoader().teams.load(teamId);
+    return dataLoader.get('teams').load(teamId);
   }
 };

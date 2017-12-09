@@ -10,8 +10,8 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
     newFacilitator: {
       type: new GraphQLNonNull(TeamMember),
       description: 'The new meeting facilitator',
-      resolve: ({newFacilitatorId}, args, {getDataLoader}) => {
-        return getDataLoader().teamMembers.load(newFacilitatorId);
+      resolve: ({newFacilitatorId}, args, {dataLoader}) => {
+        return dataLoader.get('teamMembers').load(newFacilitatorId);
       }
     },
     newFacilitatorId: {
@@ -21,8 +21,8 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
     oldFacilitator: {
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member that disconnected',
-      resolve: ({oldFacilitatorId}, args, {getDataLoader}) => {
-        return getDataLoader().teamMembers.load(oldFacilitatorId);
+      resolve: ({oldFacilitatorId}, args, {dataLoader}) => {
+        return dataLoader.get('teamMembers').load(oldFacilitatorId);
       }
     },
     oldFacilitatorId: {

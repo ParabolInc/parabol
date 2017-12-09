@@ -105,8 +105,8 @@ const Team = new GraphQLObjectType({
     agendaItems: {
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve({id: teamId}, args, {getDataLoader}) {
-        const agendaItems = await getDataLoader().agendaItemsByTeamId.load(teamId);
+      async resolve({id: teamId}, args, {dataLoader}) {
+        const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId);
         agendaItems.sort((a, b) => a.sortOrder > b.sortOrder ? 1 : -1);
         return agendaItems;
       }
@@ -121,9 +121,9 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All of the projects for this team',
-      async resolve({id: teamId}, args, {authToken, getDataLoader}) {
+      async resolve({id: teamId}, args, {authToken, dataLoader}) {
         requireSUOrTeamMember(authToken, teamId);
-        const projects = await getDataLoader().projectsByTeamId.load(teamId);
+        const projects = await dataLoader.get('projectsByTeamId').load(teamId);
         return connectionFromProjects(projects);
       }
     },
@@ -136,8 +136,8 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve({id: teamId}, {sortBy = 'preferredName'}, {getDataLoader}) {
-        const teamMembers = await getDataLoader().teamMembersByTeamId.load(teamId);
+      async resolve({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
+        const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
         teamMembers.sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
         return teamMembers;
       }

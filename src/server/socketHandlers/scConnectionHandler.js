@@ -49,12 +49,12 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
     socket.on('gqlUnsub', (opId) => {
       const subscriptionContext = socket.subs[opId];
       if (!subscriptionContext) {
-        console.log('cant find sub for', opId);
+        // the we must be trying to subscribe to something that caught an error
+        // (happens for unauthed resubs like ex-teams)
         return;
       }
-      const {asyncIterator, dataLoader} = subscriptionContext;
+      const {asyncIterator} = subscriptionContext;
       asyncIterator.return();
-      dataLoader.dispose({force: true});
       delete socket.subs[opId];
     });
     socket.on('disconnect', () => {

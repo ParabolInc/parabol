@@ -6,7 +6,7 @@ import {NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(NotificationsAddedPayload),
-  subscribe: (source, args, {authToken, getDataLoader, socketId}) => {
+  subscribe: (source, args, {authToken, dataLoader, socketId}) => {
     const userId = getUserId(authToken);
 
     // RESOLUTION
@@ -15,6 +15,6 @@ export default {
     // note for this one we pass in an array of channel names. a userId & all the teamIds
     const channelNames = teamIds.concat(userId).map((id) => `${NOTIFICATIONS_ADDED}.${id}`);
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelNames, {filterFn, getDataLoader});
+    return makeSubscribeIter(channelNames, {filterFn, dataLoader});
   }
 };

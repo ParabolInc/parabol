@@ -17,14 +17,14 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
       .newUser({name: 'non-team-member'})
       .newTeam({tier: PRO});
     const authToken = mockAuthToken(user);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
 
     // TEST
     try {
       await updateTeamCheckInQuestion.resolve(
         undefined,
         {teamId: team.id, checkInQuestion: 'New check-in question'},
-        {authToken, getDataLoader}
+        {authToken, dataLoader}
       );
     } catch (error) {
       expect(error.message).toMatch('You do not have access to team');
@@ -41,13 +41,13 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
       .newUser({name: 'personal-user'});
     await db.newTeamMember({teamId: team.id, userId: user.id});
     const authToken = mockAuthToken(user);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
     // TEST
     try {
       await updateTeamCheckInQuestion.resolve(
         undefined,
         {teamId: team.id, checkInQuestion: 'New check-in question'},
-        {authToken, getDataLoader}
+        {authToken, dataLoader}
       );
     } catch (error) {
       expect(error.message).toMatch('Unauthorized');
@@ -64,16 +64,16 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
       .newUser({name: 'enterprise-user'});
     await db.newTeamMember({teamId: team.id, userId: user.id});
     const authToken = mockAuthToken(user);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
     const checkInQuestion = convertToRichText('New check-in question');
 
     // TEST
     const {team: updatedTeam} = await updateTeamCheckInQuestion.resolve(
       undefined,
       {teamId: team.id, checkInQuestion},
-      {authToken, getDataLoader}
+      {authToken, dataLoader}
     );
     expect(updatedTeam.checkInQuestion).toEqual(checkInQuestion);
-    expect(getDataLoader().__isShared()).toEqual(true);
+    expect(dataLoader.isShared()).toEqual(true);
   });
 });

@@ -5,9 +5,10 @@ import handleGraphQLResult from 'server/utils/handleGraphQLResult';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 
-const trySubscribe = async (authToken, body, socket, getDataLoader) => {
+const trySubscribe = async (authToken, body, socket, sharedDataLoader) => {
+  const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}));
   const {opId, query, variables} = body;
-  const context = {authToken, getDataLoader, socketId: socket.id};
+  const context = {authToken, dataLoader, socketId: socket.id};
   const document = parse(query);
   const responseChannel = `gqlData.${opId}`;
   try {
@@ -26,17 +27,13 @@ export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
   socket.subs = socket.subs || {};
   return async function relaySubscribeHandler(body) {
     const authToken = socket.getAuthToken();
-    const getDataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}));
-    const dataLoader = getDataLoader();
-    const asyncIterator = await trySubscribe(authToken, body, socket, getDataLoader);
+    const asyncIterator = await trySubscribe(authToken, body, socket, sharedDataLoader);
     if (!asyncIterator) return;
     const {opId} = body;
     const responseChannel = `gqlData.${opId}`;
 
     socket.subs[opId] = {
-      asyncIterator,
-      // we don't want it to use the mutation version of dataloader, so grab it here
-      dataLoader
+      asyncIterator
     };
     const iterableCb = (value) => {
       const changedAuth = handleGraphQLResult(value, socket);

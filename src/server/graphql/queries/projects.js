@@ -18,16 +18,15 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve(source, {teamId}, {authToken, getDataLoader}) {
+  async resolve(source, {teamId}, {authToken, dataLoader}) {
     // AUTH
     const userId = getUserId(authToken);
-    const dataLoader = getDataLoader();
     let projects;
     if (teamId) {
       requireSUOrTeamMember(authToken, teamId);
-      projects = await dataLoader.projectsByTeamId.load(teamId);
+      projects = await dataLoader.get('projectsByTeamId').load(teamId);
     } else {
-      projects = await dataLoader.projectsByUserId.load(userId);
+      projects = await dataLoader.get('projectsByUserId').load(userId);
     }
 
     // RESOLUTION

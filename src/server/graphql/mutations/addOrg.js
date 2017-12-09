@@ -30,11 +30,10 @@ export default {
       description: 'The name of the new team'
     }
   },
-  async resolve(source, args, {authToken, getDataLoader, socketId}) {
+  async resolve(source, args, {authToken, dataLoader, socketId}) {
     // AUTH
     const {orgId} = args.newTeam;
     const userId = getUserId(authToken);
-    const dataLoader = getDataLoader();
 
     // VALIDATION
     const {data: {invitees, newTeam, orgName}, errors} = addOrgValidation()(args);

@@ -10,7 +10,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken, getDataLoader, socketId}) => {
+  subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
 
@@ -21,6 +21,6 @@ export default {
     };
     // no need for a special resolve because we don't send secret info like accessToken
     // we send the userId of the person who removed the provider & the client decides how to update the map
-    return makeSubscribeIter(channelName, {filterFn, getDataLoader});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader});
   }
 };

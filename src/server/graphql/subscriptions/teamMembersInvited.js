@@ -11,13 +11,13 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken, getDataLoader, socketId}) => {
+  subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `${TEAM_MEMBERS_INVITED}.${teamId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, getDataLoader});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader});
   }
 };

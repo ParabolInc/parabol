@@ -25,14 +25,14 @@ describe('updateProject', () => {
       .newProject();
     const projectId = project[0].id;
     const authToken = mockAuthToken(user[7]);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
 
     // TEST
     const updatedProject = {
       id: projectId,
       sortOrder: 2
     };
-    await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
+    await updateProject.resolve(undefined, {updatedProject}, {authToken, dataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -42,7 +42,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(getDataLoader().__isShared()).toEqual(true);
+    expect(dataLoader.isShared()).toEqual(true);
   });
 
   test('updates the content of the project', async () => {
@@ -54,13 +54,13 @@ describe('updateProject', () => {
       .newProject();
     const projectId = project[0].id;
     const authToken = mockAuthToken(user[7]);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
     // TEST
     const updatedProject = {
       id: projectId,
       content: convertToRichText('Updated content')
     };
-    await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
+    await updateProject.resolve(undefined, {updatedProject}, {authToken, dataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -70,7 +70,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(getDataLoader().__isShared()).toEqual(true);
+    expect(dataLoader().__isShared()).toEqual(true);
   });
 
   test('updates the teamMember of the project slowly and trigger a new history item', async () => {
@@ -83,14 +83,14 @@ describe('updateProject', () => {
       .newProjectHistory();
     const projectId = project[0].id;
     const authToken = mockAuthToken(user[7]);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
 
     // TEST
     const updatedProject = {
       id: projectId,
       teamMemberId: teamMember[5].id
     };
-    await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
+    await updateProject.resolve(undefined, {updatedProject}, {authToken, dataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -100,7 +100,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(getDataLoader().__isShared()).toEqual(true);
+    expect(dataLoader().__isShared()).toEqual(true);
   });
 
   test('updates the content of the project quickly and do not trigger a new history item', async () => {
@@ -113,14 +113,14 @@ describe('updateProject', () => {
       .newProjectHistory();
     const projectId = project[0].id;
     const authToken = mockAuthToken(user[7]);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
 
     // TEST
     const updatedProject = {
       id: projectId,
       content: convertToRichText('Updated content')
     };
-    await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
+    await updateProject.resolve(undefined, {updatedProject}, {authToken, dataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -130,7 +130,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(getDataLoader().__isShared()).toEqual(true);
+    expect(dataLoader().__isShared()).toEqual(true);
   });
 
   test('updates the status of the project', async () => {
@@ -142,14 +142,14 @@ describe('updateProject', () => {
       .newProject();
     const projectId = project[0].id;
     const authToken = mockAuthToken(user[7]);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
 
     // TEST
     const updatedProject = {
       id: projectId,
       status: DONE
     };
-    await updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket});
+    await updateProject.resolve(undefined, {updatedProject}, {authToken, dataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -159,7 +159,7 @@ describe('updateProject', () => {
         .orderBy({index: 'projectIdUpdatedAt'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(getDataLoader().__isShared()).toEqual(true);
+    expect(dataLoader().__isShared()).toEqual(true);
   });
 
   test('throw when the caller is not a team member', async () => {
@@ -169,13 +169,13 @@ describe('updateProject', () => {
       .newProject();
     const authToken = mockAuthToken(user[1], {tms: ['foo']});
     const projectId = project[0].id;
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
     // TEST
     const updatedProject = {
       id: projectId,
       status: DONE
     };
-    await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject}, {authToken, getDataLoader, socket}),
+    await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject}, {authToken, dataLoader, socket}),
       [mockDB.context.team.id]);
   });
 });

@@ -15,8 +15,8 @@ const ProjectEditorPayload = new GraphQLObjectType({
     user: {
       type: User,
       description: 'The user editing the project',
-      resolve: ({userId}, args, {getDataLoader}) => {
-        return getDataLoader().users.load(userId);
+      resolve: ({userId}, args, {dataLoader}) => {
+        return dataLoader.get('users').load(userId);
       }
     },
     userId: {

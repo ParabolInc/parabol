@@ -25,7 +25,7 @@ describe('addOrg', () => {
     const org = organization[0];
     auth0ManagementClient.__initMock(mockDB.db);
     const authToken = mockAuthToken(user[0]);
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
 
     // TEST
     const newTeam = {
@@ -34,7 +34,7 @@ describe('addOrg', () => {
       orgId: shortid.generate()
     };
     const orgName = 'addOrg|1|NewOrgName';
-    await addOrg.resolve(undefined, {newTeam, orgName}, {authToken, getDataLoader, socket});
+    await addOrg.resolve(undefined, {newTeam, orgName}, {authToken, dataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({

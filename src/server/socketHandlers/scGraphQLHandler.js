@@ -6,15 +6,14 @@ export default function wsGraphQLHandler(exchange, socket, sharedDataLoader) {
   return async function graphQLHandler(body, cb) {
     const {query, variables} = body;
     const authToken = socket.getAuthToken();
-    const getDataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken));
-    const dataLoader = getDataLoader();
+    const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken));
     const context = {
       authToken,
       // TODO remove exchange & socket when we break GraphQL into a microservice
       exchange,
       socket,
       socketId: socket.id,
-      getDataLoader
+      dataLoader
     };
     // response = {errors, data}
     const result = await graphql(Schema, query, {}, context, variables);

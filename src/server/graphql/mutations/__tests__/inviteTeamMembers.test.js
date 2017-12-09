@@ -14,10 +14,10 @@ describe('inviteTeamMembers', () => {
     const authToken = mockAuthToken({id: 1, tms: ['fakeTeam'], lastSeenAt: new Date()});
     const invitees = [];
     const teamId = 'realTeam';
-    const getDataLoader = makeDataLoader(authToken);
+    const dataLoader = makeDataLoader(authToken);
     // VERIFY
     await expectAsyncToThrow(
-      inviteTeamMembers.resolve(undefined, {invitees, teamId}, {authToken, getDataLoader}),
+      inviteTeamMembers.resolve(undefined, {invitees, teamId}, {authToken, dataLoader}),
       [teamId]
     );
   });

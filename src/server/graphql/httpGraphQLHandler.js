@@ -6,9 +6,8 @@ import Schema from './rootSchema';
 export default (exchange, sharedDataLoader) => async (req, res) => {
   const {query, variables} = req.body;
   const authToken = req.user || {};
-  const getDataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken));
-  const dataLoader = getDataLoader();
-  const context = {authToken, exchange, getDataLoader};
+  const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken));
+  const context = {authToken, exchange, dataLoader};
   const result = await graphql(Schema, query, {}, context, variables);
   dataLoader.dispose();
   if (result.errors) {

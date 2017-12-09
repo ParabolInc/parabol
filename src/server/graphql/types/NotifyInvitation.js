@@ -30,8 +30,8 @@ const NotifyInvitation = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team the project is on',
-      resolve: ({teamId}, args, {getDataLoader}) => {
-        return getDataLoader().teams.load(teamId);
+      resolve: ({teamId}, args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId);
       }
     },
     ...notificationInterfaceFields

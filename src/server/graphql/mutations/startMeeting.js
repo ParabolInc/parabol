@@ -20,9 +20,8 @@ export default {
       description: 'The team starting the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId, getDataLoader}) {
+  async resolve(source, {teamId}, {authToken, socketId, dataLoader}) {
     const r = getRethink();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // AUTH

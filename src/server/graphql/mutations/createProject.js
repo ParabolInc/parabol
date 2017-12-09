@@ -32,9 +32,8 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newProject, area}, {authToken, getDataLoader, socketId}) {
+  async resolve(source, {newProject, area}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
     const now = new Date();
 

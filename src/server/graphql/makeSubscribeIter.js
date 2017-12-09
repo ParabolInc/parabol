@@ -4,7 +4,7 @@ import getPubSub from 'server/utils/getPubSub';
 const defaultFilterFn = () => true;
 
 const makeSubscribeIter = (channelName, options = {}) => {
-  const {getDataLoader, filterFn = defaultFilterFn, resolve} = options;
+  const {dataLoader, filterFn = defaultFilterFn, resolve} = options;
   const asyncIterator = getPubSub().asyncIterator(channelName);
   const getNextPromise = async () => {
     const nextRes = await asyncIterator.next();
@@ -14,10 +14,10 @@ const makeSubscribeIter = (channelName, options = {}) => {
     }
     if (filterFn(value)) {
       if (value.operationId) {
-        if (!getDataLoader) console.log('NO DL', channelName);
-        getDataLoader({self: true}).useShared(value.operationId);
+        if (!dataLoader) console.log('NO DL', channelName);
+        dataLoader.useShared(value.operationId);
       } else {
-        console.log('no opId provided for sub', channelName);
+        console.log('TODO maybe you can feed this sub an opId?', channelName);
       }
       if (resolve) {
         return {
@@ -36,6 +36,7 @@ const makeSubscribeIter = (channelName, options = {}) => {
       return getNextPromise();
     },
     return() {
+      dataLoader.dispose({force: true});
       return asyncIterator.return();
     },
     throw(error) {

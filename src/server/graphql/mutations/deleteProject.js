@@ -15,9 +15,8 @@ export default {
       description: 'The projectId to delete'
     }
   },
-  async resolve(source, {projectId}, {authToken, getDataLoader}) {
+  async resolve(source, {projectId}, {authToken, dataLoader}) {
     const r = getRethink();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // AUTH

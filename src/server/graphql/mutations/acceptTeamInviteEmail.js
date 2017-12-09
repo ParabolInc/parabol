@@ -16,10 +16,9 @@ export default {
       description: 'The invitation token (first 6 bytes are the id, next 8 are the pre-hash)'
     }
   },
-  async resolve(source, {inviteToken}, {authToken, getDataLoader, socketId}) {
+  async resolve(source, {inviteToken}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
     const now = new Date();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // VALIDATION

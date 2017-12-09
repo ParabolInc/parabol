@@ -3,9 +3,8 @@ const unsubscribeRelaySub = (socket) => {
     const opIds = Object.keys(socket.subs);
     for (let ii = 0; ii < opIds.length; ii++) {
       const opId = opIds[ii];
-      const {asyncIterator, dataLoader} = socket.subs[opId];
+      const {asyncIterator} = socket.subs[opId];
       asyncIterator.return();
-      dataLoader.dispose({force: true});
     }
     socket.subs = {};
   }

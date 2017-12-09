@@ -18,9 +18,8 @@ export default {
       description: 'teamMemberId of the new facilitator for this meeting'
     }
   },
-  async resolve(source, {disconnectedFacilitatorId, facilitatorId}, {authToken, getDataLoader, socketId}) {
+  async resolve(source, {disconnectedFacilitatorId, facilitatorId}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     const [, teamId] = facilitatorId.split('::');
@@ -28,7 +27,7 @@ export default {
 
 
     // VALIDATION
-    const facilitatorMembership = await dataLoader.teamMembers.load(facilitatorId);
+    const facilitatorMembership = await dataLoader.get('teamMembers').load(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
       throw new Error('facilitator is not active on that team');
     }

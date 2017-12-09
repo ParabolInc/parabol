@@ -14,13 +14,13 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {service, teamId}, {authToken, getDataLoader, socketId}) => {
+  subscribe: (source, {service, teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `integrationLeft.${teamId}.${service}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, getDataLoader});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader});
   }
 };

@@ -11,7 +11,7 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))
     }
   },
-  subscribe: async (source, {teamIds}, {authToken, socketId, getDataLoader}) => {
+  subscribe: async (source, {teamIds}, {authToken, socketId, dataLoader}) => {
     // AUTH
     const userId = getUserId(authToken);
     if (teamIds) {
@@ -35,6 +35,6 @@ export default {
     const resolve = (value) => {
       return value.projectUpdated.editor ? {projectUpdated: {editor: value.projectUpdated.editor}} : value;
     };
-    return makeSubscribeIter(channelNames, {filterFn, getDataLoader, resolve});
+    return makeSubscribeIter(channelNames, {filterFn, dataLoader, resolve});
   }
 };

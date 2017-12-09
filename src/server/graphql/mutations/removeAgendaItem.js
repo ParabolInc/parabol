@@ -14,9 +14,8 @@ export default {
       description: 'The agenda item unique id'
     }
   },
-  async resolve(source, {id}, {authToken, getDataLoader, socketId}) {
+  async resolve(source, {id}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // AUTH

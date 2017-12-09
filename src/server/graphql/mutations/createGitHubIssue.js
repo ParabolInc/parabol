@@ -55,10 +55,9 @@ export default {
       description: 'The owner/repo string'
     }
   },
-  resolve: async (source, {nameWithOwner, projectId}, {authToken, getDataLoader, socketId}) => {
+  resolve: async (source, {nameWithOwner, projectId}, {authToken, dataLoader, socketId}) => {
     const r = getRethink();
     const now = new Date();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // AUTH

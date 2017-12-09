@@ -10,12 +10,12 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken, getDataLoader}) => {
+  subscribe: (source, {teamId}, {authToken, dataLoader}) => {
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `githubMemberRemoved.${teamId}`;
-    return makeSubscribeIter(channelName, {getDataLoader});
+    return makeSubscribeIter(channelName, {dataLoader});
   }
 };

@@ -22,8 +22,8 @@ const NotifyProjectInvolves = new GraphQLObjectType({
     project: {
       type: Project,
       description: 'The project that now involves the userId',
-      resolve: ({projectId}, args, {getDataLoader}) => {
-        return getDataLoader().projects.load(projectId);
+      resolve: ({projectId}, args, {dataLoader}) => {
+        return dataLoader.get('projects').load(projectId);
       }
     },
     changeAuthorId: {
@@ -33,8 +33,8 @@ const NotifyProjectInvolves = new GraphQLObjectType({
     changeAuthor: {
       type: TeamMember,
       description: 'The TeamMember of the person that made the change',
-      resolve: ({changeAuthorId}, args, {getDataLoader}) => {
-        return getDataLoader().teamMembers.load(changeAuthorId);
+      resolve: ({changeAuthorId}, args, {dataLoader}) => {
+        return dataLoader.get('teamMembers').load(changeAuthorId);
       }
     },
     teamId: {
@@ -44,8 +44,8 @@ const NotifyProjectInvolves = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team the project is on',
-      resolve: ({teamId}, args, {getDataLoader}) => {
-        return getDataLoader().teams.load(teamId);
+      resolve: ({teamId}, args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId);
       }
     }
   })

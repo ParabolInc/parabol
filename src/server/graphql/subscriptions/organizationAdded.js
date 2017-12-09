@@ -7,13 +7,13 @@ import {ORGANIZATION_ADDED} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),
-  subscribe: (source, args, {authToken, getDataLoader, socketId}) => {
+  subscribe: (source, args, {authToken, dataLoader, socketId}) => {
     // AUTH
     const userId = getUserId(authToken);
 
     // RESOLUTION
     const channelName = `${ORGANIZATION_ADDED}.${userId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, getDataLoader});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader});
   }
 };

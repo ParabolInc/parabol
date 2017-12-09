@@ -13,9 +13,8 @@ export default {
       description: 'The notification id of the team invite'
     }
   },
-  async resolve(source, {notificationId}, {authToken, getDataLoader, socketId}) {
+  async resolve(source, {notificationId}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
 
     // AUTH

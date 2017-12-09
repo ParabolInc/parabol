@@ -29,9 +29,8 @@ export default {
       description: 'If true, execute the mutation without regard for meeting flow'
     }
   },
-  async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, socketId, getDataLoader}) {
+  async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, socketId, dataLoader}) {
     const r = getRethink();
-    const dataLoader = getDataLoader();
     const operationId = dataLoader.share();
     // TODO: transform these console statements into configurable logger statements:
     /*

@@ -18,8 +18,7 @@ export default {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
     }
   },
-  async resolve(source, {invitees, teamId}, {authToken, getDataLoader, socketId}) {
-    const dataLoader = getDataLoader();
+  async resolve(source, {invitees, teamId}, {authToken, dataLoader, socketId}) {
 
     // AUTH
     await requireOrgLeaderOrTeamMember(authToken, teamId);

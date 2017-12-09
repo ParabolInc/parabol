@@ -17,8 +17,7 @@ export default {
       description: 'true if the editing is starting, false if it is stopping'
     }
   },
-  async resolve(source, {projectId, editing}, {authToken, socketId, getDataLoader}) {
-    const dataLoader = getDataLoader();
+  async resolve(source, {projectId, editing}, {authToken, socketId, dataLoader}) {
     const operationId = dataLoader.share();
 
     // AUTH
@@ -28,7 +27,7 @@ export default {
 
     // RESOLUTION
     // grab the project to see if it's private, don't share with other if it is
-    const project = await dataLoader.projects.load(projectId);
+    const project = await dataLoader.get('projects').load(projectId);
     const mutatorId = socketId;
     const projectUpdated = {
       project,

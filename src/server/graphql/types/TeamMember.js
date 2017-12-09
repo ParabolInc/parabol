@@ -72,8 +72,8 @@ const TeamMember = new GraphQLObjectType({
     user: {
       type: User,
       description: 'The user for the team member',
-      resolve({userId}, args, {getDataLoader}) {
-        return getDataLoader().users.load(userId);
+      resolve({userId}, args, {dataLoader}) {
+        return dataLoader.get('users').load(userId);
       }
     },
     projects: {
@@ -90,8 +90,8 @@ const TeamMember = new GraphQLObjectType({
         //  description: 'true if the result should include private cards'
         // }
       },
-      resolve: async ({teamId, userId}, args, {getDataLoader}) => {
-        const allProjects = await getDataLoader().projectsByTeamId.load(teamId);
+      resolve: async ({teamId, userId}, args, {dataLoader}) => {
+        const allProjects = await dataLoader.get('projectsByTeamId').load(teamId);
         const projectsForUserId = allProjects.filter((project) => project.userId === userId);
         const publicProjectsForUserId = projectsForUserId.filter((project) => !project.tags.includes('private'));
         return connectionFromProjects(publicProjectsForUserId);
