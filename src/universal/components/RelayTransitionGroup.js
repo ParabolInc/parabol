@@ -31,9 +31,10 @@ class RelayTransitionGroup extends Component {
       key = 2;
       child = loading;
     }
+    const isLoading = key === 2;
     return (
-      <TransitionGroup appear component={null} exit={false}>
-        <AnimatedFade key={key}>
+      <TransitionGroup appear component={null}>
+        <AnimatedFade key={key} exit={!isLoading} unmountOnExit={isLoading}>
           {child}
         </AnimatedFade>
       </TransitionGroup>
