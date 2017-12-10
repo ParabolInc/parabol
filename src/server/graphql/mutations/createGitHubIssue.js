@@ -3,7 +3,7 @@ import {stateToMarkdown} from 'draft-js-export-markdown';
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB, PROJECT_UPDATED} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
@@ -62,7 +62,7 @@ export default {
 
     // AUTH
     const [teamId] = projectId.split('::');
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // VALIDATION
     const userId = getUserId(authToken);

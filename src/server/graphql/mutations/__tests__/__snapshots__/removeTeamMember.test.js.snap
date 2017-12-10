@@ -182,4 +182,4 @@ Object {
 }
 `;
 
-exports[`removeTeamMember throw if the caller is not self or team lead 1`] = `"{\\"_error\\":\\"Unauthorized. Only the team member or the leader can remove someone\\"}"`;
+exports[`removeTeamMember throw if the caller is not self or team lead 1`] = `"{\\"_error\\":\\"Unauthorized. Only the team leader promote someone to lead\\"}"`;

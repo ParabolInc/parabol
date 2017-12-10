@@ -4,7 +4,7 @@ import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {ProjectConnection} from 'server/graphql/types/Project';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import {PERSONAL} from 'universal/utils/constants';
 
 export default {
@@ -25,7 +25,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const teamMemberId = `${userId}::${teamId}`;

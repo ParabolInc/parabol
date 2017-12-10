@@ -34,7 +34,6 @@ const UserAvatarInput = (props) => {
     const options = {
       variables: {
         updatedUser: {
-          id: userId,
           picture: pictureUrl
         }
       }

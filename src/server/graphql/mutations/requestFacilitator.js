@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {FACILITATOR_REQUEST, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
@@ -17,7 +17,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // VALIDATION
     const requestorId = `${userId}::${teamId}`;

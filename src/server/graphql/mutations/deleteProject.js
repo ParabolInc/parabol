@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {NOTIFICATIONS_CLEARED, PROJECT_DELETED, PROJECT_INVOLVES} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
@@ -23,7 +23,7 @@ export default {
     const userId = getUserId(authToken);
     // format of id is teamId::shortId
     const [teamId] = projectId.split('::');
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const {project} = await r({

@@ -1,4 +1,4 @@
-import {requireSUOrTeamMember, requireWebsocketExchange, requireWebsocket} from 'server/utils/authorization';
+import {requireTeamMember, requireWebsocketExchange, requireWebsocket} from 'server/utils/authorization';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
@@ -22,7 +22,7 @@ export default {
     },
     async resolve(source, {teamId, editing}, {authToken, exchange, socket}) {
       // AUTH
-      requireSUOrTeamMember(authToken, teamId);
+      requireTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
 
@@ -52,7 +52,7 @@ export default {
     },
     async resolve(source, {teamId, targetId, editing}, {authToken, exchange, socket}) {
       // AUTH
-      requireSUOrTeamMember(authToken, teamId);
+      requireTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
 
@@ -80,7 +80,7 @@ export default {
     },
     async resolve(source, {teamId}, {authToken, exchange, socket}) {
       // AUTH
-      requireSUOrTeamMember(authToken, teamId);
+      requireTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
 

@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 
 export default {
   type: new GraphQLNonNull(RemoveProviderPayload),
@@ -12,7 +12,7 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `providerRemoved.${teamId}`;

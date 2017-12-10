@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import {PROJECT_DELETED} from 'universal/utils/constants';
 
 export default {
@@ -16,7 +16,7 @@ export default {
     const userId = getUserId(authToken);
     if (teamIds) {
       teamIds.forEach((teamId) => {
-        requireSUOrTeamMember(authToken, teamId);
+        requireTeamMember(authToken, teamId);
       });
     }
     const channelIds = teamIds || [userId];

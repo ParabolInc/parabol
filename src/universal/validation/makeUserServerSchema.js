@@ -1,10 +1,9 @@
 import {urlRegex} from 'universal/validation/regex';
-import {avatar, requiredId} from 'universal/validation/templates';
+import {avatar} from 'universal/validation/templates';
 import legitify from './legitify';
 
 export default function makeUserServerSchema() {
   return legitify({
-    id: requiredId,
     pictureFile: avatar,
     picture: (value) => value
       .trim()

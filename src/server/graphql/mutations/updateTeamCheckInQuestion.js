@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
-import {requireSUOrTeamMember, requireTeamCanUpdateCheckInQuestion} from 'server/utils/authorization';
+import {requireTeamMember, requireTeamCanUpdateCheckInQuestion} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {MEETING_UPDATED} from 'universal/utils/constants';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
@@ -24,7 +24,7 @@ export default {
     const operationId = dataLoader.share();
 
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     await requireTeamCanUpdateCheckInQuestion(teamId);
 
     // VALIDATION

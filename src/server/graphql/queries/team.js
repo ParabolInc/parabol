@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import Team from 'server/graphql/types/Team';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 
 export default {
   type: Team,
@@ -12,7 +12,7 @@ export default {
     }
   },
   async resolve(source, {teamId}, {authToken, dataLoader}) {
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     return dataLoader.get('teams').load(teamId);
   }
 };

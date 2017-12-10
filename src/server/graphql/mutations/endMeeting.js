@@ -5,7 +5,7 @@ import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEm
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
@@ -26,7 +26,7 @@ export default {
     const operationId = dataLoader.share();
 
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     const meeting = await r.table('Meeting')
     // get the most recent meeting
       .getAll(teamId, {index: 'teamId'})

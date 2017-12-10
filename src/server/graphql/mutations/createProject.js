@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import CreateProjectInput from 'server/graphql/types/CreateProjectInput';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -45,7 +45,7 @@ export default {
     const {errors, data: validNewProject} = schema({content: 1, ...newProject});
     handleSchemaErrors(errors);
     const {teamId, userId, content} = validNewProject;
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const {entityMap} = JSON.parse(content);

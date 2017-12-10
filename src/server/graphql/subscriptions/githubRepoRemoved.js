@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
 
 export default {
@@ -12,7 +12,7 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `githubRepoRemoved.${teamId}`;

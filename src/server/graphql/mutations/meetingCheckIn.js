@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
 import getPubSub from 'server/utils/getPubSub';
 import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
@@ -24,7 +24,7 @@ export default {
 
     // teamMemberId is of format 'userId::teamId'
     const [, teamId] = teamMemberId.split('::');
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const teamMember = await r.table('TeamMember')
