@@ -30,7 +30,6 @@ export default class Atmosphere extends Environment {
     this._network = Network.create(this.fetchHTTP);
 
     // now atmosphere
-    this.opIdIndex = 1;
     this.authToken = undefined;
     this.socket = undefined;
     this.networks = {
@@ -38,6 +37,7 @@ export default class Atmosphere extends Environment {
       socket: Network.create(this.fetchWS, this.socketSubscribe)
     };
 
+    this.opIdIndex = 1;
     this.subLookup = {};
     this.querySubscriptions = [];
   }
@@ -101,6 +101,9 @@ export default class Atmosphere extends Environment {
   };
 
   setSocket = (socket) => {
+    this.opIdIndex = 1;
+    this.subLookup = {};
+    this.querySubscriptions = [];
     this.socket = socket;
     this.setNet('socket');
   };
