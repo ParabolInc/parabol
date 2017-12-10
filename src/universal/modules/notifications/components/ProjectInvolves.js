@@ -2,6 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {convertFromRaw, Editor, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import withRouter from 'react-router-dom/es/withRouter';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
@@ -33,8 +34,8 @@ const ProjectInvolves = (props) => {
     onCompleted,
     history
   } = props;
-  const {id: notificationId, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
-  const {id: teamId, name: teamName} = team;
+  const {notificationId, team, project, involvement, changeAuthor: {changeAuthorName}} = notification;
+  const {teamId, teamName} = team;
   const {content, status, tags, teamMember} = project;
   const acknowledge = () => {
     submitMutation();
@@ -123,10 +124,7 @@ ProjectInvolves.propTypes = {
   styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
-  notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    team: PropTypes.object.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -161,4 +159,30 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(ProjectInvolves));
+export default createFragmentContainer(
+  withRouter(withStyles(styleThunk)(ProjectInvolves)),
+  graphql`
+    fragment ProjectInvolves_notification on Notification {
+      notificationId: id
+      ... on NotifyProjectInvolves {
+        changeAuthor {
+          changeAuthName: preferredName
+        }
+        involvement
+        team {
+          teamId: id
+          teamName: name
+        }
+        project {
+          content
+          status
+          tags
+          teamMember {
+            picture
+            preferredName
+          }
+        }
+      }
+    }
+  `
+);

@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
@@ -20,7 +21,8 @@ const KickedOut = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id: notificationId, teamName} = notification;
+  const {notificationId, team} = notification;
+  const {teamName} = team;
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
@@ -58,10 +60,7 @@ KickedOut.propTypes = {
   styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
-  notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -73,4 +72,16 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(KickedOut);
+export default createFragmentContainer(
+  withStyles(styleThunk)(KickedOut),
+  graphql`
+    fragment KickedOut_notification on Notification {
+      notificationId: id
+      ... on NotifyKickedOut {
+        team {
+          teamName: name
+        }
+      }
+    }
+  `
+);

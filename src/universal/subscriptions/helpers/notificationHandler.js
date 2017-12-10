@@ -46,7 +46,8 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
 const notificationHandler = {
   [ADD_TO_TEAM]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
-    const teamName = payload.getValue('teamName');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
     const notificationId = payload.getValue('id');
     // notificationId isn't always present because if i accept to join i want the authToken but no notification
     dispatch(showInfo({
@@ -138,7 +139,8 @@ const notificationHandler = {
   },
   [JOIN_TEAM]: (payload, {dispatch}) => {
     const preferredName = payload.getValue('preferredName');
-    const teamName = payload.getValue('teamName');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Ahoy, a new crewmate!',
@@ -147,8 +149,9 @@ const notificationHandler = {
   },
   [KICKED_OUT]: (payload, {dispatch, history, location, environment, store}) => {
     const {viewerId} = environment;
-    const teamName = payload.getValue('teamName');
-    const teamId = payload.getValue('teamId');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
+    const teamId = team.getValue('id');
     const isKickout = payload.getValue('isKickout');
     if (isKickout) {
       dispatch(showWarning({
@@ -235,7 +238,8 @@ const notificationHandler = {
   },
   [REJOIN_TEAM]: (payload, {dispatch}) => {
     const preferredName = payload.getValue('preferredName');
-    const teamName = payload.getValue('teamName');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'They’re back!',
@@ -279,7 +283,8 @@ const notificationHandler = {
   [TEAM_INVITE]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
     const inviterName = payload.getValue('inviterName');
-    const teamName = payload.getValue('teamName');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'You’re invited!',

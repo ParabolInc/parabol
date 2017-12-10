@@ -22,58 +22,7 @@ const query = graphql`
             orgId
             startAt
             type
-            ... on NotifyAddedToTeam {
-              teamName
-              teamId
-            }
-            ... on NotifyDenial {
-              reason
-              deniedByName
-              inviteeEmail
-            }
-            ... on NotifyInvitation {
-              inviterName
-              inviteeEmail
-              teamId
-              teamName
-              team {
-                tier
-              }
-            }
-            ... on NotifyKickedOut {
-              teamName
-              teamId
-            }
-            ... on NotifyPayment {
-              last4
-              brand
-            }
-            ... on NotifyPromotion {
-              groupName
-            }
-            ... on NotifyTeamArchived {
-              teamName
-            }
-            ... on NotifyProjectInvolves {
-              involvement
-              team {
-                id
-                name
-              }
-              changeAuthor {
-                preferredName
-              }
-              project {
-                id
-                content
-                teamMember {
-                  picture
-                  preferredName
-                }
-                status
-                tags
-              }
-            }
+            ...NotificationRow_notification
           }
         }
       }
