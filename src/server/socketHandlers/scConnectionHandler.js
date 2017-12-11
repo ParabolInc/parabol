@@ -1,15 +1,15 @@
-import scSubscribeHandler from './scSubscribeHandler';
-import scUnsubscribeHandler from './scUnsubscribeHandler';
-import scGraphQLHandler from './scGraphQLHandler';
-import {REFRESH_JWT_AFTER, UNPAUSE_USER} from 'server/utils/serverConstants';
-import getRetink from 'server/database/rethinkDriver';
-import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import {fromEpochSeconds} from 'server/utils/epochTime';
-import packageJSON from '../../../package.json';
+import getRetink from 'server/database/rethinkDriver';
 import scRelaySubscribeHandler from 'server/socketHandlers/scRelaySubscribeHandler';
+import {fromEpochSeconds} from 'server/utils/epochTime';
+import {REFRESH_JWT_AFTER, UNPAUSE_USER} from 'server/utils/serverConstants';
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
+import isObject from 'universal/utils/isObject';
+import packageJSON from '../../../package.json';
+import scGraphQLHandler from './scGraphQLHandler';
+import scSubscribeHandler from './scSubscribeHandler';
+import scUnsubscribeHandler from './scUnsubscribeHandler';
 
 const APP_VERSION = packageJSON.version;
 
@@ -24,6 +24,7 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
 
 export default function scConnectionHandler(exchange, sharedDataLoader) {
   return async function connectionHandler(socket) {
+    const r = getRetink();
     // socket.on('message', message => {
     //   if (message === '#2') return;
     //   console.log('SOCKET SAYS:', message);
@@ -57,12 +58,16 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
       asyncIterator.return();
       delete socket.subs[opId];
     });
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
+      const authToken = socket.getAuthToken();
+      const {sub: userId} = authToken;
+      await r.table('User').get(userId).update((user) => ({
+        connectedSockets: user('connectedSockets').difference([socket.id])
+      }));
       unsubscribeRelaySub(socket);
     });
 
     // the async part should come last so there isn't a race
-    const r = getRetink();
     const authToken = socket.getAuthToken();
     const {exp, tms, sub: userId} = authToken;
     const now = new Date();
@@ -70,11 +75,12 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
     const {inactive, tms: tmsDB, userOrgs} = await r.table('User').get(userId)
-      .update({
+      .update((user) => ({
         inactive: false,
         updatedAt: now,
-        lastSeenAt: now
-      }, {returnChanges: true})('changes')(0)('old_val').default({});
+        lastSeenAt: now,
+        connectedSockets: user('connectedSockets').append(socket.id)
+      }), {returnChanges: true})('changes')(0)('old_val').default({});
 
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
