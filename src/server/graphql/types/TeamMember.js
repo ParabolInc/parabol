@@ -8,6 +8,7 @@ import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
+import {getUserId} from 'server/utils/authorization';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -48,6 +49,14 @@ const TeamMember = new GraphQLObjectType({
     isCheckedIn: {
       type: GraphQLBoolean,
       description: 'true if present, false if absent, null before check-in'
+    },
+    isSelf: {
+      type: GraphQLBoolean,
+      description: 'true if this team member belongs to the user that queried it',
+      resolve: (source, args, {authToken}) => {
+        const {userId} = getUserId(authToken);
+        return source.userId === userId;
+      }
     },
     /* Foreign keys */
     teamId: {

@@ -1,15 +1,15 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
+import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
-import {MEETING} from 'universal/utils/constants';
-import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {createFragmentContainer} from 'react-relay';
+import withStyles from 'universal/styles/withStyles';
+import {MEETING} from 'universal/utils/constants';
 
 class MeetingUpdates extends Component {
   state = {};
@@ -27,8 +27,8 @@ class MeetingUpdates extends Component {
   }
 
   filterProjects(props) {
-    const {members, localPhaseItem, viewer: {projects}} = props;
-    const currentTeamMember = members[localPhaseItem - 1];
+    const {teamMembers, localPhaseItem, viewer: {projects}} = props;
+    const currentTeamMember = teamMembers[localPhaseItem - 1];
     const edges = projects.edges.filter(({node}) => node.teamMember.id === currentTeamMember.id);
     this.setState({
       projects: {edges}
@@ -40,14 +40,14 @@ class MeetingUpdates extends Component {
       facilitatorName,
       gotoNext,
       localPhaseItem,
-      members,
       showMoveMeetingControls,
-      styles
+      styles,
+      viewer: {team: {teamMembers}}
     } = this.props;
     const {projects} = this.state;
-    const self = members.find((m) => m.isSelf);
-    const currentTeamMember = members[localPhaseItem - 1];
-    const isLastMember = localPhaseItem === members.length;
+    const self = teamMembers.find((m) => m.isSelf);
+    const currentTeamMember = teamMembers[localPhaseItem - 1];
+    const isLastMember = localPhaseItem === teamMembers.length;
     const nextPhaseName = actionMeeting.agendaitems.name;
     const myTeamMemberId = self && self.id;
     const isMyMeetingSection = myTeamMemberId === currentTeamMember.id;
@@ -94,7 +94,6 @@ MeetingUpdates.propTypes = {
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
-  members: PropTypes.array.isRequired,
   showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
@@ -132,6 +131,12 @@ export default createFragmentContainer(
             }
             ...DraggableProject_project
           }
+        }
+      }
+      team(teamId: $teamId) {
+        teamMembers(sortBy: "checkInOrder") {
+          id
+          preferredName
         }
       }
     }`

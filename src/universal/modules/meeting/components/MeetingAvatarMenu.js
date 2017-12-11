@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {MenuItem} from 'universal/modules/menu';
 import {textOverflow} from 'universal/styles/helpers';
@@ -75,4 +76,13 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingAvatarMenu);
+export default createFragmentContainer(
+  withStyles(styleThunk)(MeetingAvatarMenu),
+  graphql`
+    fragment MeetingAvatarMenu_avatar on TeamMember {
+      isCheckedIn
+      isConnected
+      preferredName
+    }
+  `
+);
