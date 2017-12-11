@@ -49,8 +49,10 @@ export default {
       const teamMembers = await dataLoader.get('teamMembers').loadMany(teamMemberIds);
       teamMembers.forEach((teamMember) => {
         const teamMemberUpdated = {
-          ...teamMember,
-          isConnected: true
+          teamMember: {
+            ...teamMember,
+            isConnected: true
+          }
         };
         const {teamId} = teamMember;
         getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated, operationId, mutatorId: socketId});
