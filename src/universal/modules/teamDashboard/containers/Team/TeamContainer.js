@@ -28,9 +28,10 @@ const TeamContainer = (props) => {
     location: {pathname},
     match,
     hasMeetingAlert,
-    team,
-    teamMemberId
+    teamMemberId,
+    viewer
   } = props;
+  const team = viewer && viewer.team;
   const isSettings = Boolean(matchPath(pathname, {
     path: '/team/:teamId/settings'
   }));
@@ -56,7 +57,7 @@ TeamContainer.propTypes = {
     pathname: PropTypes.string.isRequired
   }),
   match: PropTypes.object.isRequired,
-  team: PropTypes.object.isRequired,
+  viewer: PropTypes.object,
   teamMemberId: PropTypes.string.isRequired
 };
 

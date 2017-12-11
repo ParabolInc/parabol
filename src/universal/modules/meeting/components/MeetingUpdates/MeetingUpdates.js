@@ -119,6 +119,12 @@ export default createFragmentContainer(
   withStyles(styleThunk)(MeetingUpdates),
   graphql`
     fragment MeetingUpdates_viewer on User {
+      team(teamId: $teamId) {
+        teamMembers(sortBy: "checkInOrder") {
+          id
+          preferredName
+        }
+      }
       projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
         edges {
           node {
@@ -131,12 +137,6 @@ export default createFragmentContainer(
             }
             ...DraggableProject_project
           }
-        }
-      }
-      team(teamId: $teamId) {
-        teamMembers(sortBy: "checkInOrder") {
-          id
-          preferredName
         }
       }
     }`

@@ -50,6 +50,9 @@ const TeamMember = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if the user is connected',
       resolve: async (source, args, {dataLoader}) => {
+        if (source.hasOwnProperty('isConnected')) {
+          return source.isConnected;
+        }
         const {userId} = source;
         const {connectedSockets} = await dataLoader.get('users').load(userId);
         return Array.isArray(connectedSockets) && connectedSockets.length > 0;

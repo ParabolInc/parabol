@@ -52,6 +52,7 @@ import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateProject from 'server/graphql/mutations/updateProject';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
+import disconnectSocket from 'server/graphql/mutations/disconnectSocket';
 
 const rootFields = Object.assign({},
   orgApproval,
@@ -78,6 +79,7 @@ export default new GraphQLObjectType({
     createGitHubIssue,
     createProject,
     deleteProject,
+    disconnectSocket,
     editProject,
     endMeeting,
     githubAddAssignee,

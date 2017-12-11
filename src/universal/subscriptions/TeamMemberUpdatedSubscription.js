@@ -7,6 +7,7 @@ const subscription = graphql`
         preferredName
         checkInOrder
         isCheckedIn
+        isConnected
       }
     }
   }

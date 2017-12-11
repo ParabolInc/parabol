@@ -1,21 +1,16 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
-import {
-  DashContent,
-  DashHeader,
-  DashHeaderInfo,
-  DashMain
-} from 'universal/components/Dashboard';
 import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
+import {DashContent, DashHeader, DashHeaderInfo, DashMain} from 'universal/components/Dashboard';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
 import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
@@ -33,10 +28,11 @@ const Team = (props) => {
   if (!team) return <LoadingView />;
 
   const {teamId, teamName, isPaid, meetingId} = team;
-  const hasActiveMeeting = Boolean(team && meetingId);
+  const hasActiveMeeting = Boolean(meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
   initialValues.teamName = teamName;
-  const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
+  const DashHeaderInfoTitle = isSettings ?
+    <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
   const modalLayout = hasMeetingAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
   const goToMeetingLobby = () =>
     history.push(`/meeting/${teamId}/`);
@@ -63,16 +59,16 @@ const Team = (props) => {
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {!isSettings &&
-            <Button
-              buttonStyle="solid"
-              colorPalette="warm"
-              depth={1}
-              icon="users"
-              iconPlacement="left"
-              label="Meeting Lobby"
-              onClick={goToMeetingLobby}
-              buttonSize="small"
-            />
+          <Button
+            buttonStyle="solid"
+            colorPalette="warm"
+            depth={1}
+            icon="users"
+            iconPlacement="left"
+            label="Meeting Lobby"
+            onClick={goToMeetingLobby}
+            buttonSize="small"
+          />
           }
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
@@ -116,7 +112,7 @@ Team.propTypes = {
   isSettings: PropTypes.bool.isRequired,
   history: PropTypes.object,
   styles: PropTypes.object,
-  team: PropTypes.object.isRequired
+  team: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -129,14 +125,12 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withRouter(withStyles(styleThunk)(Team)),
   graphql`
-    fragment Team_team on User {
-      team(teamId: $teamId) {
-        teamId: id
-        teamName: name
-        isPaid
-        meetingId
-        ...DashboardAvatars_team
-      }
+    fragment Team_team on Team {
+      teamId: id
+      teamName: name
+      isPaid
+      meetingId
+      ...DashboardAvatars_team
     }
   `
 );

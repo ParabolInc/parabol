@@ -7,7 +7,7 @@ import TeamContainer from 'universal/modules/teamDashboard/containers/Team/TeamC
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
-  query TeamRootQuery {
+  query TeamRootQuery($teamId: ID!) {
     viewer {
       ...TeamContainer_viewer
     }

@@ -24,6 +24,7 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
 export default function scConnectionHandler(exchange, sharedDataLoader) {
   return async function connectionHandler(socket) {
     const r = getRetink();
+    const now = new Date();
     // socket.on('message', message => {
     //   if (message === '#2') return;
     //   console.log('SOCKET SAYS:', message);
@@ -56,18 +57,17 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
       delete socket.subs[opId];
     });
     socket.on('disconnect', async () => {
-      const authToken = socket.getAuthToken();
-      const {sub: userId} = authToken;
-      await r.table('User').get(userId).update((user) => ({
-        connectedSockets: user('connectedSockets').difference([socket.id])
-      }));
+      graphQLHandler({query: `
+        mutation DisconnectSocket {
+          disconnectSocket
+        }
+      `});
       unsubscribeRelaySub(socket);
     });
 
     // the async part should come last so there isn't a race
     const authToken = socket.getAuthToken();
     const {exp, tms, sub: userId} = authToken;
-    const now = new Date();
     const tokenExpiration = fromEpochSeconds(exp);
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
