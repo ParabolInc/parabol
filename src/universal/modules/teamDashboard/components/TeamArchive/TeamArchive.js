@@ -171,10 +171,10 @@ class TeamArchive extends Component {
 
     return (
       <div className={css(styles.root)}>
-        <Helmet title={`${teamName} Archive | Parabol`}/>
+        <Helmet title={`${teamName} Archive | Parabol`} />
         <div className={css(styles.header)}>
-          <TeamArchiveHeader teamId={teamId}/>
-          <div className={css(styles.border)}/>
+          <TeamArchiveHeader teamId={teamId} />
+          <div className={css(styles.border)} />
         </div>
 
         <div className={css(styles.body)}>
@@ -189,7 +189,7 @@ class TeamArchive extends Component {
               </InfiniteLoader>
             </div> :
             <div className={css(styles.emptyMsg)}>
-              <FontAwesome name="smile-o" style={iconStyle}/>
+              <FontAwesome name="smile-o" style={iconStyle} />
               <span style={ib}>
                 {'Hi there! There are zero archived projects. '}
                 {'Nothing to see here. How about a fun rally video? '}

@@ -6,11 +6,9 @@ import {withRouter} from 'react-router-dom';
 import {reduxSocket} from 'redux-socket-cluster';
 import socketCluster from 'socketcluster-client';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AuthEngine from 'universal/redux/AuthEngine';
 import {TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
-import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import parseChannel from 'universal/utils/parseChannel';
 
 const mapStateToProps = (state) => {
@@ -90,7 +88,6 @@ export default (ComposedComponent) => {
     componentDidMount() {
       subscribeToPresence({tms: []}, this.props);
       this.watchForKickout();
-      this.listenForVersion();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -112,31 +109,6 @@ export default (ComposedComponent) => {
     watchForKickout() {
       const socket = socketCluster.connect();
       socket.on('kickOut', this.kickoutHandler);
-    }
-
-    versionHandler = (versionOnServer) => {
-      const {dispatch, history} = this.props;
-      const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-      if (versionOnServer !== versionInStorage) {
-        dispatch(showWarning({
-          title: 'New stuff!',
-          message: 'A new version of action is available',
-          autoDismiss: 0,
-          action: {
-            label: 'Log out and upgrade',
-            callback: () => {
-              history.replace('/signout');
-            }
-          }
-        }));
-        window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
-          APP_UPGRADE_PENDING_RELOAD);
-      }
-    };
-
-    listenForVersion() {
-      const socket = socketCluster.connect();
-      socket.on('version', this.versionHandler);
     }
 
     render() {
