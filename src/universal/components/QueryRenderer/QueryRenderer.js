@@ -117,9 +117,10 @@ export default class QueryRenderer extends React.Component {
   }
 
   _requestRelease() {
-    const {cacheConfig = {}} = this.props;
+    const {environment, cacheConfig = {}} = this.props;
     const {ttl} = cacheConfig;
     if (this._releaseOnUnmount) {
+      environment.unregisterQuery(this._queryKey);
       this._release();
     } else {
       this._scheduleRelease(ttl, this._queryKey);

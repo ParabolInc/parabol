@@ -9,8 +9,6 @@ import {
 } from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
-import Meeting from 'server/graphql/types/Meeting';
-import Team from 'server/graphql/types/Team';
 // import archivedProjects from 'server/graphql/queries/archivedProjects';
 import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
 import githubRepos from 'server/graphql/queries/githubRepos';
@@ -27,6 +25,8 @@ import BlockedUserType from 'server/graphql/types/BlockedUserType';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import Meeting from 'server/graphql/types/Meeting';
+import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
 import {getUserId, requireAuth, requireTeamMember} from 'server/utils/authorization';
@@ -203,7 +203,6 @@ const User = new GraphQLObjectType({
     projects: require('../queries/projects').default,
     team: require('../queries/team').default,
     // hack until we can move to ES6 immutable bindings
-    orgMembers: require('../queries/orgMembers').default,
     jwt: {
       type: GraphQLID,
       description: 'a refreshed JWT'

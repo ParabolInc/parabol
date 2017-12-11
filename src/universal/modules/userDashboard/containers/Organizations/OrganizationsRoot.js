@@ -1,15 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import Organizations from 'universal/modules/userDashboard/components/Organizations/Organizations';
-import {DEFAULT_TTL} from 'universal/utils/constants';
 import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import Organizations from 'universal/modules/userDashboard/components/Organizations/Organizations';
 import OrganizationAddedSubscription from 'universal/subscriptions/OrganizationAddedSubscription';
-import OrganizationUpdatedSubscription from 'universal/subscriptions/OrganizationUpdatedSubscription';
+import {DEFAULT_TTL} from 'universal/utils/constants';
 
 const query = graphql`
   query OrganizationsRootQuery {
@@ -19,13 +18,11 @@ const query = graphql`
   }
 `;
 
-const subscriptions = [
-  OrganizationAddedSubscription,
-  OrganizationUpdatedSubscription
-  // PAUSE/UNAPUSE user,
-];
-
 const cacheConfig = {ttl: DEFAULT_TTL};
+
+const subscriptions = [
+  OrganizationAddedSubscription
+];
 
 const OrganizationsRoot = (props) => {
   const {
@@ -40,7 +37,7 @@ const OrganizationsRoot = (props) => {
       subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear component={null} >
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">

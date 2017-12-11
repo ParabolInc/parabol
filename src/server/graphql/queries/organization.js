@@ -15,7 +15,7 @@ export default {
   resolve: async (source, {orgId}, {authToken, dataLoader}) => {
     // AUTH
     const userId = getUserId(authToken);
-    const org = await dataLoader.get('organization').load(orgId);
+    const org = await dataLoader.get('organizations').load(orgId);
 
     const {orgUsers} = org;
     const myOrgUser = orgUsers.find((user) => user.id === userId);

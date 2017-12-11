@@ -166,7 +166,10 @@ export default class Atmosphere extends Environment {
 
     // these queries are no longer supported, so drop them
     associatedQueries.forEach(({component}) => {
-      component.dispose();
+      const {dispose} = component;
+      if (dispose) {
+        dispose();
+      }
     });
 
     const queryKeys = associatedQueries.map(({queryKey}) => queryKey);

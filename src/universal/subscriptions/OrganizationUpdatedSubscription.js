@@ -1,20 +1,25 @@
 const subscription = graphql`
-  subscription OrganizationUpdatedSubscription {
-    organizationUpdated {
+  subscription OrganizationUpdatedSubscription($orgId: ID!) {
+    organizationUpdated(orgId: $orgId) {
       organization {
         id
         name
         picture
         tier
       }
+      updatedOrgUser {
+        id
+        isBillingLeader(orgId: $orgId)
+      }
     }
   }
 `;
 
-const OrganizationUpdatedSubscription = () => {
+const OrganizationUpdatedSubscription = (environment, queryVariables, subParams) => {
+  const {orgId} = subParams;
   return {
     subscription,
-    variables: {}
+    variables: {orgId}
   };
 };
 
