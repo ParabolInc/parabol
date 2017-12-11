@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
+import Invitee from 'server/graphql/types/Invitee';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
-import {Invitee} from '../models/Invitation/invitationSchema';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 
 export default {

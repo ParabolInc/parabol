@@ -5,7 +5,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav';
 import ui from 'universal/styles/ui';
 
-const overview = () => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer');
+const teamSettings = () => System.import('universal/modules/teamDashboard/components/TeamSettingsRoot');
 const providers = () => System.import('universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot');
 const slackIntegrations = () => System.import('universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot');
 const githubIntegrations = () => System.import('universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot');
@@ -18,7 +18,7 @@ const TeamSettingsWrapper = (props) => {
     <div style={{padding: `0 ${ui.settingsGutter}`}}>
       <TeamSettingsToggleNav activeKey={areaMatch.params.area || ''} teamId={teamId} />
       <Switch>
-        <AsyncRoute exact path={match.url} mod={overview} extraProps={{teamId}} />
+        <AsyncRoute exact path={match.url} mod={teamSettings} extraProps={{teamId}} />
         {/* <AsyncRoute exact path={`${match.url}/insights`} mod={overview} extraProps={{teamId}}/> */}
         {/* <AsyncRoute exact path={`${match.url}/roles`} mod={overview} extraProps={{teamId}}/> */}
         <AsyncRoute path={`${match.url}/integrations/slack`} mod={slackIntegrations} extraProps={{teamMemberId}} />

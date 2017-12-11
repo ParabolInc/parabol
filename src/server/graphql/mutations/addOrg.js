@@ -1,8 +1,8 @@
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
-import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import addOrgValidation from 'server/graphql/mutations/helpers/addOrgValidation';
 import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
+import Invitee from 'server/graphql/types/Invitee';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {ensureUniqueId, getUserId} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';

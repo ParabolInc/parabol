@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import {DashModal} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
@@ -7,7 +8,8 @@ import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
 
 const PromoteTeamMemberModal = (props) => {
-  const {closeAfter, closePortal, isClosing, preferredName, teamMemberId} = props;
+  const {closeAfter, closePortal, isClosing, teamMember} = props;
+  const {preferredName, teamMemberId} = teamMember;
   const handleClick = () => {
     const variables = {teamMemberId};
     cashay.mutate('promoteToLead', {variables});
@@ -43,8 +45,15 @@ PromoteTeamMemberModal.propTypes = {
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
-  preferredName: PropTypes.string.isRequired,
-  teamMemberId: PropTypes.string.isRequired
+  teamMember: PropTypes.object.isRequired
 };
 
-export default portal({escToClose: true, closeAfter: 100})(PromoteTeamMemberModal);
+export default createFragmentContainer(
+  portal({escToClose: true, closeAfter: 100})(PromoteTeamMemberModal),
+  graphql`
+    fragment PromoteTeamMemberModal_teamMember on TeamMember {
+      teamMemberId: id
+      preferredName
+    }
+  `
+);

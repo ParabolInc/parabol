@@ -13,12 +13,15 @@ import connectionFromProjects from 'server/graphql/queries/helpers/connectionFro
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
 import AgendaItem from 'server/graphql/types/AgendaItem';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import Invitation from 'server/graphql/types/Invitation';
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
 import Organization from 'server/graphql/types/Organization';
+import OrgApproval from 'server/graphql/types/OrgApproval';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
 import {requireTeamMember} from 'server/utils/authorization';
+import {PENDING} from 'server/utils/serverConstants';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -82,6 +85,19 @@ const Team = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The current item number for the current phase for the facilitator, 1-indexed'
     },
+    invitations: {
+      type: new GraphQLList(Invitation),
+      description: 'The outstanding invitations to join the team',
+      resolve: ({id: teamId}) => {
+        const r = getRethink();
+        const now = new Date();
+        return r.table('Invitation')
+          .getAll(teamId, {index: 'teamId'})
+          .filter(r.row('tokenExpiration').ge(now))
+          .orderBy('createdAt')
+          .run();
+      }
+    },
     meetingPhase: {
       type: ActionMeetingPhaseEnum,
       description: 'The phase of the meeting, usually matches the facilitator phase, be could be further along'
@@ -93,6 +109,18 @@ const Team = new GraphQLObjectType({
     tier: {
       type: TierEnum,
       description: 'The level of access to features on the parabol site'
+    },
+    orgApprovals: {
+      type: new GraphQLList(OrgApproval),
+      description: 'The outstanding invitations to join the team',
+      resolve: ({id: teamId}) => {
+        const r = getRethink();
+        return r.table('OrgApproval')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({status: PENDING, isActive: true})
+          .orderBy('email')
+          .run();
+      }
     },
     organization: {
       type: Organization,

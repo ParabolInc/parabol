@@ -7,9 +7,7 @@ import providerRemoved from 'server/graphql/subscriptions/providerRemoved';
 import githubRepoAdded from 'server/graphql/subscriptions/githubRepoAdded';
 import githubRepoRemoved from 'server/graphql/subscriptions/githubRepoRemoved';
 import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemoved';
-import invitation from './models/Invitation/invitationSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
-import orgApproval from './models/OrgApproval/orgApprovalSubscription';
 import team from './models/Team/teamSubscription';
 import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
@@ -32,9 +30,7 @@ import agendaItemUpdated from 'server/graphql/subscriptions/agendaItemUpdated';
 import agendaItemRemoved from 'server/graphql/subscriptions/agendaItemRemoved';
 
 const rootFields = Object.assign({},
-  invitation,
   invoice,
-  orgApproval,
   team,
   teamMember,
   user

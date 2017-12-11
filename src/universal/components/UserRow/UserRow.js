@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -7,18 +8,15 @@ import Avatar from 'universal/components/Avatar/Avatar';
 import Row from 'universal/components/Row/Row';
 import Tag from 'universal/components/Tag/Tag';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
+import fromNow from 'universal/utils/fromNow';
 
 const UserRow = (props) => {
   const {
     actions,
-    email,
-    invitedAt,
-    isAdmin,
-    isLead,
-    picture,
-    preferredName,
+    possibleTeamMember,
     styles
   } = props;
+  const {__typename: type, email, isLead, picture, preferredName, createdAt, updatedAt} = possibleTeamMember;
   return (
     <Row>
       <div className={css(styles.userAvatar)}>
@@ -28,16 +26,13 @@ const UserRow = (props) => {
         }
       </div>
       <div className={css(styles.userInfo)}>
-        {preferredName ?
+        {type === 'TeamMember' ?
           <div className={css(styles.nameAndTags)}>
             <div className={css(styles.preferredName)}>
               {preferredName}
             </div>
             {isLead &&
               <Tag colorPalette="light" label="Lead" />
-            }
-            {isAdmin &&
-              <Tag colorPalette="gray" label="Admin" />
             }
           </div> :
           <div className={css(styles.nameAndTags)}>
@@ -46,9 +41,9 @@ const UserRow = (props) => {
             </div>
           </div>
         }
-        {invitedAt ?
+        {type !== 'TeamMember' ?
           <div className={css(styles.invitedAt)}>
-            {invitedAt}
+            {`invited ${fromNow(createdAt || updatedAt)}`}
           </div> :
           <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
             {email}
@@ -66,12 +61,7 @@ const UserRow = (props) => {
 
 UserRow.propTypes = {
   actions: PropTypes.any,
-  email: PropTypes.string,
-  invitedAt: PropTypes.string,
-  isAdmin: PropTypes.bool,
-  isLead: PropTypes.bool,
-  picture: PropTypes.string,
-  preferredName: PropTypes.string,
+  possibleTeamMember: PropTypes.object.isRequired,
   styles: PropTypes.object
 };
 
@@ -128,4 +118,23 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserRow);
+export default createFragmentContainer(
+  withStyles(styleThunk)(UserRow),
+  graphql`
+    fragment UserRow_possibleTeamMember on PossibleTeamMember {
+      __typename
+      email
+      ... on Invitation {
+        updatedAt
+      }
+      ... on OrgApproval {
+        createdAt
+      }
+      ... on TeamMember {
+        isLead
+        picture
+        preferredName
+      }
+    }  
+  `
+);

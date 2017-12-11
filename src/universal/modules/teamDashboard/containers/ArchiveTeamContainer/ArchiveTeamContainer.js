@@ -1,14 +1,14 @@
 import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam';
 
-@withRouter
-export default class ArchiveTeamContainer extends Component {
+
+class ArchiveTeamContainer extends Component {
   static propTypes = {
-    teamId: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired,
+    team: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired
   }
 
@@ -25,18 +25,15 @@ export default class ArchiveTeamContainer extends Component {
     this.setState({showConfirmationField: false});
   }
 
-  archiveTeam = () => {
-    return new Promise((resolve) => {
-      const {teamId, history} = this.props;
-      const variables = {teamId};
-      cashay.mutate('archiveTeam', {variables});
-      history.push('/me');
-      resolve();
-    });
+  archiveTeam = async () => {
+    const {team: {teamId}, history} = this.props;
+    const variables = {teamId};
+    cashay.mutate('archiveTeam', {variables});
+    history.push('/me');
   }
 
   render() {
-    const {teamName} = this.props;
+    const {team: {teamName}} = this.props;
     const {showConfirmationField} = this.state;
     return (
       <ArchiveTeam
@@ -49,3 +46,13 @@ export default class ArchiveTeamContainer extends Component {
     );
   }
 }
+
+export default createFragmentContainer(
+  withRouter(ArchiveTeamContainer),
+  graphql`
+    fragment ArchiveTeamContainer_team on Team {
+      teamId: id
+      teamName: name
+    }
+  `
+);
