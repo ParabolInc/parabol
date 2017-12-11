@@ -117,7 +117,7 @@ class OutcomeCardFooter extends Component {
       <div className={css(styles.footerAndMessage)}>
         <div className={css(styles.footer)}>
           <div className={css(styles.avatarBlock)}>
-            {service || showTeam ?
+            {service || showTeam || isArchived ?
               ownerAvatarOrTeamName :
               <AsyncMenuContainer
                 fetchMenu={fetchAssignMenu}
