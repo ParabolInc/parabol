@@ -52,6 +52,10 @@ const User = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp when the cached user expires'
     },
+    connectedSockets: {
+      type: new GraphQLList(GraphQLID),
+      description: 'The socketIds that the user is currently connected with'
+    },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the user was created'
@@ -68,6 +72,14 @@ const User = new GraphQLObjectType({
       type: new GraphQLList(AuthIdentityType),
       description: `An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked`
+    },
+    isConnected: {
+      type: GraphQLBoolean,
+      description: 'true if the user is currently online',
+      resolve: (source) => {
+        const {connectedSockets} = source;
+        return Array.isArray(connectedSockets) && connectedSockets.length > 0;
+      }
     },
     loginsCount: {
       type: GraphQLInt,
