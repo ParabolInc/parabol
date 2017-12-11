@@ -8,8 +8,7 @@ import socketCluster from 'socketcluster-client';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AuthEngine from 'universal/redux/AuthEngine';
-import {PRESENCE, TEAM_MEMBERS} from 'universal/subscriptions/constants';
-import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
+import {TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import parseChannel from 'universal/utils/parseChannel';
@@ -29,19 +28,11 @@ const subscribeToPresence = (oldProps, props) => {
     // TODO redirect?
   }
   if (oldProps.tms.length < tms.length) {
-    const socket = socketCluster.connect();
     for (let i = 0; i < tms.length; i++) {
       const teamId = tms[i];
       if (tmsSubs.includes(teamId)) continue;
       tmsSubs.push(teamId);
-      cashay.subscribe(PRESENCE, teamId, presenceSubscriber);
       cashay.subscribe(TEAM_MEMBERS, teamId);
-      socket.on('subscribe', (channelName) => {
-        if (channelName === `${PRESENCE}/${teamId}`) {
-          const options = {variables: {teamId}};
-          cashay.mutate('soundOff', options);
-        }
-      });
     }
   } else if (oldProps.tms.length > tms.length) {
     tmsSubs.length = 0;

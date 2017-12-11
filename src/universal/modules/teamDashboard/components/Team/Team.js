@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
@@ -26,11 +28,12 @@ const Team = (props) => {
     isSettings,
     history,
     styles,
-    team,
-    teamMembers
+    team
   } = props;
-  const {id: teamId, name: teamName, isPaid} = team;
-  const hasActiveMeeting = Boolean(team && team.meetingId);
+  if (!team) return <LoadingView />;
+
+  const {teamId, teamName, isPaid, meetingId} = team;
+  const hasActiveMeeting = Boolean(team && meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
@@ -97,7 +100,7 @@ const Team = (props) => {
               onClick={goToTeamSettings}
             />
           }
-          <DashboardAvatars teamMembers={teamMembers} />
+          <DashboardAvatars team={team} />
         </div>
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">
@@ -113,8 +116,7 @@ Team.propTypes = {
   isSettings: PropTypes.bool.isRequired,
   history: PropTypes.object,
   styles: PropTypes.object,
-  team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired
+  team: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -124,4 +126,17 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(Team));
+export default createFragmentContainer(
+  withRouter(withStyles(styleThunk)(Team)),
+  graphql`
+    fragment Team_team on User {
+      team(teamId: $teamId) {
+        teamId: id
+        teamName: name
+        isPaid
+        meetingId
+        ...DashboardAvatars_team
+      }
+    }
+  `
+);

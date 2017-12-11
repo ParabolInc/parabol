@@ -1,12 +1,13 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import {createFragmentContainer} from 'react-relay';
 import Avatar from 'universal/components/Avatar/Avatar';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import withStyles from 'universal/styles/withStyles';
 
 const DashboardAvatars = (props) => {
-  const {teamMembers, styles} = props;
+  const {team: {teamMembers}, styles} = props;
   return (
     <div className={css(styles.root)}>
       {
@@ -18,7 +19,8 @@ const DashboardAvatars = (props) => {
                 {...avatar}
                 picture={picture}
                 hasBadge
-                isConnected={avatar.presence.length > 0}
+                isCheckedIn={avatar.isCheckedIn}
+                isConnected={avatar.isConnected}
                 size="smaller"
               />
             </div>
@@ -31,7 +33,7 @@ const DashboardAvatars = (props) => {
 
 DashboardAvatars.propTypes = {
   styles: PropTypes.object,
-  teamMembers: PropTypes.array
+  team: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -46,4 +48,16 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(DashboardAvatars);
+export default createFragmentContainer(
+  withStyles(styleThunk)(DashboardAvatars),
+  graphql`
+    fragment DashboardAvatars_team on Team {
+      teamMembers(sortBy: "preferredName") {
+        id
+        isCheckedIn
+        isConnected
+        picture
+      }
+    }`
+);
+

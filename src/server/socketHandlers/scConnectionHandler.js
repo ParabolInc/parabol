@@ -9,7 +9,6 @@ import isObject from 'universal/utils/isObject';
 import packageJSON from '../../../package.json';
 import scGraphQLHandler from './scGraphQLHandler';
 import scSubscribeHandler from './scSubscribeHandler';
-import scUnsubscribeHandler from './scUnsubscribeHandler';
 
 const APP_VERSION = packageJSON.version;
 
@@ -30,7 +29,6 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
     //   console.log('SOCKET SAYS:', message);
     // });
     const subscribeHandler = scSubscribeHandler(exchange, socket);
-    const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
     const graphQLHandler = scGraphQLHandler(exchange, socket, sharedDataLoader);
     const relaySubscribeHandler = scRelaySubscribeHandler(socket, sharedDataLoader);
     socket.on('message', (message) => {
@@ -45,7 +43,6 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
     });
     socket.on('graphql', graphQLHandler);
     socket.on('subscribe', subscribeHandler);
-    socket.on('unsubscribe', unsubscribeHandler);
     socket.on('gqlSub', relaySubscribeHandler);
     socket.on('gqlUnsub', (opId) => {
       const subscriptionContext = socket.subs[opId];

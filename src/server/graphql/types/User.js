@@ -119,12 +119,6 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
     },
-    // presence: {
-    //  type: Presence,
-    //  description: 'An object with details about the online presence of a user',
-    // resolve: ({id: userId}, args) => {
-    // }
-    // }
     tms: {
       type: new GraphQLList(GraphQLID),
       description: 'all the teams the user is a part of',

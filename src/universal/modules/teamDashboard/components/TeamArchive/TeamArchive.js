@@ -4,6 +4,7 @@ import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createPaginationContainer} from 'react-relay';
 import {CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader, WindowScroller} from 'react-virtualized';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 import NullableProject from 'universal/components/NullableProject/NullableProject';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
@@ -215,11 +216,7 @@ class TeamArchive extends Component {
 TeamArchive.propTypes = {
   relay: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  team: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    orgId: PropTypes.string.isRequired,
-    tier: PropTypes.string.isRequired
-  }),
+  team: PropTypes.object,
   teamId: PropTypes.string,
   userId: PropTypes.string.isRequired,
   viewer: PropTypes.object.isRequired
@@ -294,6 +291,11 @@ export default createPaginationContainer(
           endCursor
         }
       }
+    }
+    fragment TeamArchive_team on Team {
+      teamName: name
+      orgId
+      tier
     }
   `,
   {

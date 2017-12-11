@@ -46,6 +46,15 @@ const TeamMember = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The place in line for checkIn, regenerated every meeting'
     },
+    isConnected: {
+      type: GraphQLBoolean,
+      description: 'true if the user is connected',
+      resolve: async (source, args, {dataLoader}) => {
+        const {userId} = source;
+        const {connectedSockets} = await dataLoader.get('users').load(userId);
+        return Array.isArray(connectedSockets) && connectedSockets.length > 0;
+      }
+    },
     isCheckedIn: {
       type: GraphQLBoolean,
       description: 'true if present, false if absent, null before check-in'
