@@ -9,12 +9,15 @@ import Type from 'universal/components/Type/Type';
 const MeetingFacilitationHint = (props) => {
   const {
     children,
+    showEllipsis,
+    showParens,
     styles
   } = props;
+  const ellipsis = showEllipsis && <Ellipsis />;
   return (
     <div className={css(styles.facilitationHint)}>
       <Type align="center" scale="s4" colorPalette="mid">
-        {'('}{children}<Ellipsis />{')'}
+        {showParens && '('}{children}{ellipsis}{showParens && ')'}
       </Type>
     </div>
   );
@@ -22,7 +25,14 @@ const MeetingFacilitationHint = (props) => {
 
 MeetingFacilitationHint.propTypes = {
   children: PropTypes.any,
+  showEllipsis: PropTypes.bool,
+  showParens: PropTypes.bool,
   styles: PropTypes.object
+};
+
+MeetingFacilitationHint.defaultProps = {
+  showEllipsis: true,
+  showParens: true
 };
 
 const styleThunk = () => ({

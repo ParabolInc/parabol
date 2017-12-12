@@ -42,13 +42,19 @@ class MeetingCheckinPrompt extends Component {
       avatar,
       canEdit,
       currentName,
-      greeting
+      greeting,
+      isFacilitating
     } = this.props;
     const {editorState} = this.state;
     const heading = (
       <div>
         <MeetingCheckInGreeting {...{currentName, greeting}} />
-        <CheckInQuestion editorState={editorState} canEdit={canEdit} setEditorState={this.setEditorState} />
+        <CheckInQuestion
+          editorState={editorState}
+          canEdit={canEdit}
+          isFacilitating={isFacilitating}
+          setEditorState={this.setEditorState}
+        />
       </div>
     );
     return (
@@ -71,6 +77,7 @@ MeetingCheckinPrompt.propTypes = {
     content: PropTypes.string.isRequired,
     language: PropTypes.string.isRequired
   }),
+  isFacilitating: PropTypes.bool,
   onSubmit: PropTypes.func,
   teamId: PropTypes.string
 };

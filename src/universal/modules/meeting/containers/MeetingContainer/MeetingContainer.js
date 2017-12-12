@@ -411,6 +411,7 @@ export default class MeetingContainer extends Component {
           <MeetingCheckIn
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
+            isFacilitating={isFacilitating}
             showMoveMeetingControls={showMoveMeetingControls}
             {...phaseStateProps}
           />

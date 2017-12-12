@@ -17,9 +17,10 @@ PlainButton.propTypes = {
 
 const styleThunk = () => ({
   root: {
+    appearance: 'none',
     background: 'inherit',
-    border: 'none',
-    'border-radius': 0,
+    border: 0,
+    borderRadius: 0,
     margin: 0,
     padding: 0
   }

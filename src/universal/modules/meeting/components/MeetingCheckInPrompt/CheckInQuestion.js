@@ -14,20 +14,11 @@ import withStyles from 'universal/styles/withStyles';
 import {textTags} from 'universal/utils/constants';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
 
-const iconStyle = {
-  fontSize: '1rem',
-  verticalAlign: 'middle',
-  marginLeft: '0.5rem'
-};
-
-const buttonStyle = {
-  cursor: 'pointer'
-};
-
 class CheckInQuestion extends Component {
   static propTypes = {
     canEdit: PropTypes.bool,
     editorState: PropTypes.object,
+    isFacilitating: PropTypes.bool,
     setEditorState: PropTypes.func,
     handleBeforeInput: PropTypes.func,
     handleChange: PropTypes.func,
@@ -161,19 +152,52 @@ class CheckInQuestion extends Component {
   };
 
   render() {
-    const {editorState, canEdit, styles} = this.props;
+    const {isFacilitating, editorState, canEdit, styles} = this.props;
     const isEditing = editorState.getSelection().getHasFocus();
+
+    const iconStyle = {
+      color: ui.palette.dark,
+      display: 'block',
+      height: '1.5rem',
+      fontSize: '1rem',
+      verticalAlign: 'middle',
+      marginLeft: '0.5rem',
+      paddingTop: '.1875rem',
+      textAlign: 'center',
+      width: '1.25rem'
+    };
+
+    const buttonStyle = {
+      color: ui.palette.dark,
+      display: 'block'
+    };
+
+    const buttonIconStyle = {
+      ...iconStyle,
+      cursor: 'pointer',
+      visibility: isEditing ? 'hidden' : 'visible'
+    };
+
     const tip = canEdit
-      ? 'Tap to customize'
+      ? 'Tap to customize the Social Check-in question.'
       : 'Upgrade to a Pro Account to customize the Social Check-in question.';
 
+    const tooltipProps = {
+      tip: <div>{tip}</div>,
+      originAnchor: {vertical: 'bottom', horizontal: 'center'},
+      targetAnchor: {vertical: 'top', horizontal: 'center'},
+      hideOnFocus: true
+    };
+
+    const tooltipHiddenProps = {
+      ...tooltipProps,
+      isOpen: false
+    };
+
+    const whichTooltipProps = (isEditing || !isFacilitating) ? tooltipHiddenProps : tooltipProps;
+
     return (
-      <Tooltip
-        tip={<div>{tip}</div>}
-        originAnchor={{vertical: 'bottom', horizontal: 'center'}}
-        targetAnchor={{vertical: 'top', horizontal: 'center'}}
-        hideOnFocus
-      >
+      <Tooltip {...whichTooltipProps}>
         <div className={css(styles.root)}>
           <div className={css(styles.editor)}>
             <Editor
@@ -196,12 +220,16 @@ class CheckInQuestion extends Component {
               }}
             />
           </div>
-          {canEdit &&
-            <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
-              <FontAwesome name="pencil"style={{...iconStyle, ...buttonStyle, visibility: isEditing ? 'hidden' : 'visible'}} />
-            </PlainButton>
+          {isFacilitating &&
+            <div>
+              {canEdit ?
+                <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
+                  <FontAwesome name="cog" style={buttonIconStyle} />
+                </PlainButton> :
+                <FontAwesome name="cog" style={iconStyle} />
+              }
+            </div>
           }
-          {!canEdit && <FontAwesome name="pencil" style={iconStyle} />}
         </div>
       </Tooltip>
     );
@@ -210,6 +238,7 @@ class CheckInQuestion extends Component {
 
 const styleThunk = () => ({
   root: {
+    alignContent: 'center',
     display: 'flex',
     fontSize: '1.5rem',
     lineHeight: '1.25rem',
@@ -220,6 +249,7 @@ const styleThunk = () => ({
   editor: {
     minWidth: '20rem'
   },
+
   editorBlockquote: {
     fontStyle: 'italic',
     borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,

@@ -14,7 +14,7 @@ const MeetingCheckInGreeting = ({currentName, greeting, styles}) => (
     >
       {greeting.content}
     </span>
-    {`, ${currentName}`}
+    {`, ${currentName}:`}
   </div>
 );
 

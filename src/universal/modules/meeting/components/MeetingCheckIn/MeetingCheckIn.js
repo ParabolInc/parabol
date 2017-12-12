@@ -17,6 +17,7 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 const MeetingCheckin = (props) => {
   const {
     gotoNext,
+    isFacilitating,
     localPhaseItem,
     members,
     showMoveMeetingControls,
@@ -53,11 +54,23 @@ const MeetingCheckin = (props) => {
     gotoNext();
   };
 
+  const self = members.find((m) => m.isSelf);
+  const currentTeamMember = members[localPhaseItem - 1] || {};
+  const myTeamMemberId = self && self.id;
+  const isMyMeetingSection = myTeamMemberId === currentTeamMember.id;
   const memberIdx = localPhaseItem - 1;
   const currentMember = members[memberIdx];
   const nextMember = memberIdx < members.length && members[memberIdx + 1];
   const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
+
+  console.log('currentTeamMember.isFacilitator');
+  console.log(currentTeamMember.isFacilitator);
+  console.log(`isFacilitating: ${isFacilitating}`);
+
+  console.log('self');
+  console.log(self);
+  console.log('meeting check-in');
 
   return (
     <MeetingMain>
@@ -68,6 +81,7 @@ const MeetingCheckin = (props) => {
           canEdit={tierSupportsUpdateCheckInQuestion(tier)}
           currentName={currentName}
           greeting={checkInGreeting}
+          isFacilitating={isFacilitating}
           teamId={teamId}
         />
         <div className={css(styles.base)}>
@@ -77,9 +91,14 @@ const MeetingCheckin = (props) => {
               nextMember={nextMember}
             /> :
             <div className={css(styles.hint)}>
-              <MeetingFacilitationHint>
+              <MeetingFacilitationHint showEllipsis={!nextMember || !isMyMeetingSection}>
                 {nextMember ?
-                  <span>{'Waiting for'} <b>{currentMember.preferredName}</b> {'to share with the team'}</span> :
+                  <span>
+                    {isMyMeetingSection ?
+                      <span>{'Share with your teammates!'}</span> :
+                      <span>{'Waiting for'} <b>{currentMember.preferredName}</b> {'to share with the team'}</span>
+                    }
+                  </span> :
                   <span>{'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
                 }
               </MeetingFacilitationHint>
@@ -93,6 +112,7 @@ const MeetingCheckin = (props) => {
 
 MeetingCheckin.propTypes = {
   gotoNext: PropTypes.func.isRequired,
+  isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
   onFacilitatorPhase: PropTypes.bool,
