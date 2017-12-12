@@ -2,7 +2,6 @@ import {GraphQLObjectType} from 'graphql';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import team from 'server/graphql/models/Team/teamMutation';
-import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
 import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
@@ -32,6 +31,7 @@ import leaveIntegration from 'server/graphql/mutations/leaveIntegration';
 import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn';
 import moveMeeting from 'server/graphql/mutations/moveMeeting';
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
+import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead';
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem';
 import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo';
 import removeProvider from 'server/graphql/mutations/removeProvider';
@@ -59,7 +59,6 @@ const rootFields = Object.assign({},
   orgApproval,
   organization,
   team,
-  teamMember,
   user
 );
 
@@ -95,6 +94,7 @@ export default new GraphQLObjectType({
     meetingCheckIn,
     moveMeeting,
     promoteFacilitator,
+    promoteToTeamLead,
     removeAgendaItem,
     removeProvider,
     removeSlackChannel,

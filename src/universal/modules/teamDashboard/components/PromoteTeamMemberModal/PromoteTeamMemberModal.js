@@ -1,18 +1,30 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {DashModal} from 'universal/components/Dashboard';
-import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
-import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
+import {createFragmentContainer} from 'react-relay';
+import Button from 'universal/components/Button/Button';
+import {DashModal} from 'universal/components/Dashboard';
+import Type from 'universal/components/Type/Type';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const PromoteTeamMemberModal = (props) => {
-  const {closeAfter, closePortal, isClosing, teamMember} = props;
+  const {
+    atmosphere,
+    closeAfter,
+    closePortal,
+    isClosing,
+    submitMutation,
+    submitting,
+    onError,
+    onCompleted,
+    teamMember
+  } = props;
   const {preferredName, teamMemberId} = teamMember;
   const handleClick = () => {
-    const variables = {teamMemberId};
-    cashay.mutate('promoteToLead', {variables});
+    submitMutation();
+    PromoteToTeamLeadMutation(atmosphere, teamMemberId, onError, onCompleted);
     closePortal();
   };
   return (
@@ -35,21 +47,28 @@ const PromoteTeamMemberModal = (props) => {
         iconPlacement="right"
         label={`Yes, promote ${preferredName}`}
         onClick={handleClick}
+        waiting={submitting}
       />
     </DashModal>
   );
 };
 
 PromoteTeamMemberModal.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
-  teamMember: PropTypes.object.isRequired
+  teamMember: PropTypes.object.isRequired,
+  error: PropTypes.any,
+  submitting: PropTypes.bool,
+  submitMutation: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired
 };
 
 export default createFragmentContainer(
-  portal({escToClose: true, closeAfter: 100})(PromoteTeamMemberModal),
+  portal({escToClose: true, closeAfter: 100})(withMutationProps(withAtmosphere(PromoteTeamMemberModal))),
   graphql`
     fragment PromoteTeamMemberModal_teamMember on TeamMember {
       teamMemberId: id

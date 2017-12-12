@@ -134,7 +134,7 @@ const TeamSettings = (props) => {
         {!viewerIsLead && myTeamMemberId === teamMemberId &&
         <LeaveTeamModal
           toggle={<div className={css(styles.actionLink)}>Leave Team</div>}
-          teamMembers={teamMembers}
+          team={team}
           teamMember={teamMember}
         />
 
