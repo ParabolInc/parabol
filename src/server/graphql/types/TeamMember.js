@@ -85,10 +85,6 @@ const TeamMember = new GraphQLObjectType({
           type: GraphQLISO8601Type,
           description: 'the datetime cursor'
         }
-        // private: {
-        //  type: GraphQLBoolean,
-        //  description: 'true if the result should include private cards'
-        // }
       },
       resolve: async ({teamId, userId}, args, {dataLoader}) => {
         const allProjects = await dataLoader.get('projectsByTeamId').load(teamId);

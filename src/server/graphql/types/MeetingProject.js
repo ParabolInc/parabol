@@ -30,6 +30,7 @@ const MeetingProject = new GraphQLObjectType({
 
 export default MeetingProject;
 
+// TODO use this when we move to more complex reporting
 // const HistoricalAction = new GraphQLObjectType({
 //   name: 'HistoricalAction',
 //   description: 'The action that was created in a meeting',
