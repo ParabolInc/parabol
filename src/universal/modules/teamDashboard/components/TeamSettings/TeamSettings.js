@@ -1,5 +1,4 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
@@ -16,6 +15,7 @@ import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/P
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import CancelApprovalMutation from 'universal/mutations/CancelApprovalMutation';
 import CancelTeamInviteMutation from 'universal/mutations/CancelTeamInviteMutation';
 import ResendTeamInviteMutation from 'universal/mutations/ResendTeamInviteMutation';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -48,11 +48,12 @@ const TeamSettings = (props) => {
     dispatch,
     styles,
     submitMutation,
+    submitting,
     onCompleted,
     onError,
     viewer: {team}
   } = props;
-  const {invitations, orgApprovals, teamName, teamMembers} = team;
+  const {invitations, orgApprovals, teamName, teamMembers, teamId} = team;
   const myTeamMember = teamMembers.find((m) => m.isSelf);
   const {isLead: viewerIsLead, teamMemberId: myTeamMemberId} = myTeamMember;
   const invitationRowActions = (invitationId) => {
@@ -83,13 +84,10 @@ const TeamSettings = (props) => {
     );
   };
   const orgApprovalRowActions = (orgApprovalId) => {
-    const options = {
-      variables: {
-        id: orgApprovalId
-      }
-    };
     const cancel = () => {
-      cashay.mutate('cancelApproval', options);
+      if (submitting) return;
+      submitMutation();
+      CancelApprovalMutation(atmosphere, orgApprovalId, teamId, onError, onCompleted);
     };
     const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
     return (
@@ -267,6 +265,7 @@ export default createFragmentContainer(
         ...InviteUser_team
         ...LeaveTeamModal_team
         ...ArchiveTeamContainer_team
+        teamId: id
         teamName: name
         teamMembers(sortBy: "preferredName") {
           ...PromoteTeamMemberModal_teamMember

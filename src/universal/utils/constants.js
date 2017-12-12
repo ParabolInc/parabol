@@ -190,6 +190,7 @@ export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const ORGANIZATION_ADDED = 'organizationAdded';
 export const ORGANIZATION_UPDATED = 'organizationUpdated';
+export const ORG_APPROVAL_REMOVED = 'orgApprovalRemoved';
 export const PROJECT_UPDATED = 'projectUpdated';
 export const PROJECT_CREATED = 'projectCreated';
 export const PROJECT_DELETED = 'projectDeleted';

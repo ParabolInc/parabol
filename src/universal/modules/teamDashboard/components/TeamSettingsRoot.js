@@ -6,6 +6,7 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';
+import OrgApprovalRemovedSubscription from 'universal/subscriptions/OrgApprovalRemovedSubscription';
 import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
 import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 import {cacheConfig} from 'universal/utils/constants';
@@ -19,6 +20,7 @@ const query = graphql`
 `;
 
 const subscriptions = [
+  OrgApprovalRemovedSubscription,
   TeamMemberAddedSubscription,
   TeamMemberUpdatedSubscription
 ];

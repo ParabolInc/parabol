@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
 import organization from 'server/graphql/models/Organization/organizationMutation';
-import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import team from 'server/graphql/models/Team/teamMutation';
 import user from 'server/graphql/models/User/userMutation';
 import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
@@ -54,9 +53,9 @@ import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateProject from 'server/graphql/mutations/updateProject';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
+import cancelApproval from 'server/graphql/mutations/cancelApproval';
 
 const rootFields = Object.assign({},
-  orgApproval,
   organization,
   team,
   user
@@ -74,6 +73,7 @@ export default new GraphQLObjectType({
     addProvider,
     addSlackChannel,
     approveToOrg,
+    cancelApproval,
     cancelTeamInvite,
     clearNotification,
     connectSocket,
