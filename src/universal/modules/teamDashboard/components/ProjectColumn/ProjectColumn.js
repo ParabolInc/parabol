@@ -11,6 +11,8 @@ import DraggableProject from 'universal/containers/ProjectCard/DraggableProject'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import handleColumnHover from 'universal/dnd/handleColumnHover';
 import handleDrop from 'universal/dnd/handleDrop';
+import ScrollingComponent from 'universal/dnd/ScrollingComponent';
+import verticalStrengthScroll from 'universal/dnd/verticalStrengthScroll';
 import withDragState from 'universal/dnd/withDragState';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
@@ -169,7 +171,10 @@ class ProjectColumn extends Component {
           {this.makeAddProject()}
         </div>
         <div className={css(styles.columnBody)}>
-          <div className={css(styles.columnInner)}>
+          <ScrollingComponent
+            className={css(styles.columnInner)}
+            verticalStrength={verticalStrengthScroll}
+          >
             {projects.map((project) =>
               (<DraggableProject
                 key={`teamCard${project.id}`}
@@ -184,7 +189,7 @@ class ProjectColumn extends Component {
                 }}
               />))
             }
-          </div>
+          </ScrollingComponent>
         </div>
       </div>
     );
