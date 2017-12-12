@@ -88,7 +88,7 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
     notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
     approvePendingApprovals: approvePendingApprovals(orgApprovals, inviter),
     teamInvites: sendTeamInvitations(inviteesToInvite, inviter),
-    newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter)
+    newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter, {operationId})
   });
 
   const notificationsToAdd = mergeObjectsWithArrValues(reactivations, teamInvites, newPendingApprovals);

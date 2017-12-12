@@ -29,6 +29,7 @@ import agendaItemAdded from 'server/graphql/subscriptions/agendaItemAdded';
 import agendaItemUpdated from 'server/graphql/subscriptions/agendaItemUpdated';
 import agendaItemRemoved from 'server/graphql/subscriptions/agendaItemRemoved';
 import orgApprovalRemoved from 'server/graphql/subscriptions/orgApprovalRemoved';
+import orgApprovalAdded from 'server/graphql/subscriptions/orgApprovalAdded';
 
 const rootFields = Object.assign({},
   invoice,
@@ -52,6 +53,7 @@ export default new GraphQLObjectType({
     newAuthToken,
     notificationsAdded,
     notificationsCleared,
+    orgApprovalAdded,
     orgApprovalRemoved,
     organizationAdded,
     organizationUpdated,
