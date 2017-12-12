@@ -19,6 +19,7 @@ const makeSuggestions = (triggerWord, teamMembers) => {
   })
     .sort((a, b) => a.score < b.score ? 1 : -1)
     .slice(0, 6)
+    // If you type "Foo" and the options are "Foo" and "Giraffe", remove "Giraffe"
     .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
 };
 

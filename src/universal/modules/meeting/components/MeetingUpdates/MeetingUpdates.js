@@ -12,7 +12,7 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {createFragmentContainer} from 'react-relay';
 
 class MeetingUpdates extends Component {
-  state = {};
+  state = {projects: {}};
 
   componentWillMount() {
     this.filterProjects(this.props);
