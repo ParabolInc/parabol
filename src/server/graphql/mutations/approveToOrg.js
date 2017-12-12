@@ -22,8 +22,8 @@ export default {
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
     requireOrgLeader(userOrgDoc);
 
-    const subParams = {mutatorId: socket.id, operationId};
-    return approveToOrg(email, orgId, userId, subParams);
+    const subOptions = {mutatorId: socket.id, operationId};
+    return approveToOrg(email, orgId, userId, subOptions);
   }
 };
 

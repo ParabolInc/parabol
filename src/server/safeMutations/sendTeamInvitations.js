@@ -22,7 +22,7 @@ const maybeAutoApproveToOrg = (invitees, inviter) => {
   return r.table('OrgApproval').insert(approvals);
 };
 
-const sendTeamInvitations = async (invitees, inviter, inviteId) => {
+const sendTeamInvitations = async (invitees, inviter, inviteId, subOptions) => {
   if (invitees.length === 0) return [];
   const r = getRethink();
   const now = new Date();
@@ -51,7 +51,7 @@ const sendTeamInvitations = async (invitees, inviter, inviteId) => {
         return r.expr(invitations).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
       })
       .do((newNotifications) => r.table('Notification').insert(newNotifications)),
-    emailTeamInvitations(invitees, inviter, inviteId),
+    emailTeamInvitations(invitees, inviter, inviteId, subOptions),
     maybeAutoApproveToOrg(invitees, inviter)
   ]);
 

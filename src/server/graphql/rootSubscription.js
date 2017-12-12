@@ -30,6 +30,9 @@ import agendaItemUpdated from 'server/graphql/subscriptions/agendaItemUpdated';
 import agendaItemRemoved from 'server/graphql/subscriptions/agendaItemRemoved';
 import orgApprovalRemoved from 'server/graphql/subscriptions/orgApprovalRemoved';
 import orgApprovalAdded from 'server/graphql/subscriptions/orgApprovalAdded';
+import invitationAdded from 'server/graphql/subscriptions/invitationAdded';
+import invitationRemoved from 'server/graphql/subscriptions/invitationRemoved';
+import invitationUpdated from 'server/graphql/subscriptions/invitationUpdated';
 
 const rootFields = Object.assign({},
   invoice,
@@ -49,6 +52,9 @@ export default new GraphQLObjectType({
     githubRepoRemoved,
     integrationJoined,
     integrationLeft,
+    invitationAdded,
+    invitationRemoved,
+    invitationUpdated,
     meetingUpdated,
     newAuthToken,
     notificationsAdded,

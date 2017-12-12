@@ -70,7 +70,7 @@ const TeamSettings = (props) => {
     };
     const cancel = () => {
       submitMutation();
-      CancelTeamInviteMutation(atmosphere, invitationId, onError, onCompleted);
+      CancelTeamInviteMutation(atmosphere, invitationId, teamId, onError, onCompleted);
     };
     return (
       <div className={css(styles.actionLinkBlock)}>

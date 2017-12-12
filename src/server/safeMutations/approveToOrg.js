@@ -12,8 +12,8 @@ import {
 } from 'universal/utils/constants';
 import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
 
-const approveToOrg = async (email, orgId, userId, subParams) => {
-  const {mutatorId, operationId} = subParams;
+const approveToOrg = async (email, orgId, userId, subOptions) => {
+  const {mutatorId, operationId} = subOptions;
   const r = getRethink();
   const now = new Date();
   // get all notifications for this email to join this org
@@ -99,7 +99,7 @@ const approveToOrg = async (email, orgId, userId, subParams) => {
   const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
 
   const teamInvitesToAdd = await Promise.all(inviters.map((inviter) => {
-    return sendTeamInvitations(invitees, inviter);
+    return sendTeamInvitations(invitees, inviter, undefined, subOptions);
   }));
 
   orgApprovals.forEach((orgApproval) => {

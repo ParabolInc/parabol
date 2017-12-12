@@ -184,6 +184,9 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
+export const INVITATION_ADDED = 'invitationAdded';
+export const INVITATION_REMOVED = 'invitationRemoved';
+export const INVITATION_UPDATED = 'invitationUpdated';
 export const MEETING_UPDATED = 'meetingUpdated';
 export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';

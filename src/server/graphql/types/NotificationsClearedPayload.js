@@ -5,7 +5,7 @@ const NotificationsClearedPayload = new GraphQLObjectType({
   fields: () => ({
     deletedIds: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
-      description: 'database Ids (not global Ids) of items deleted'
+      description: 'IDs of notifications deleted'
     }
   })
 });

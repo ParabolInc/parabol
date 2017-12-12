@@ -1,27 +1,40 @@
 import {commitMutation} from 'react-relay';
 import {clearNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
+import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
 
 const mutation = graphql`
   mutation CancelTeamInviteMutation($inviteId: ID!) {
     cancelTeamInvite(inviteId: $inviteId) {
-      deletedIds
+      invitation {
+        id
+      }
+      deletedNotificationId
     }
   }
 `;
 
-const CancelTeamInviteMutation = (environment, inviteId, onError, onCompleted) => {
+export const handleRemoveInvitation = (store, teamId, invitationId) => {
+  const team = store.get(teamId);
+  safeRemoveNodeFromArray(invitationId, team, 'invitations');
+};
+
+const CancelTeamInviteMutation = (environment, inviteId, teamId, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {inviteId},
     updater: (store) => {
       const viewer = store.get(viewerId);
-      const deletedIds = store.getRootField('cancelTeamInvite').getValue('deletedIds');
-      clearNotificationUpdater(viewer, deletedIds);
+      const payload = store.getRootField('cancelTeamInvite');
+      const deletedNotificationId = payload.getValue('deletedNotificationId');
+      if (deletedNotificationId) {
+        clearNotificationUpdater(viewer, [deletedNotificationId]);
+      }
+      handleRemoveInvitation(store, teamId, inviteId);
     },
-    // optimisticUpdater: (store) => {
-    // TODO add the new updatedAt or tokenExpiration to the list
-    // },
+    optimisticUpdater: (store) => {
+      handleRemoveInvitation(store, teamId, inviteId);
+    },
     onCompleted,
     onError
   });

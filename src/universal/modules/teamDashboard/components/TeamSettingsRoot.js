@@ -6,6 +6,9 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';
+import InvitationAddedSubscription from 'universal/subscriptions/InvitationAddedSubscription';
+import InvitationRemovedSubscription from 'universal/subscriptions/InvitationRemovedSubscription';
+import InvitationUpdatedSubscription from 'universal/subscriptions/InvitationUpdatedSubscription';
 import OrgApprovalAddedSubscription from 'universal/subscriptions/OrgApprovalAddedSubscription';
 import OrgApprovalRemovedSubscription from 'universal/subscriptions/OrgApprovalRemovedSubscription';
 import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
@@ -21,6 +24,9 @@ const query = graphql`
 `;
 
 const subscriptions = [
+  InvitationAddedSubscription,
+  InvitationRemovedSubscription,
+  InvitationUpdatedSubscription,
   OrgApprovalRemovedSubscription,
   OrgApprovalAddedSubscription,
   TeamMemberAddedSubscription,
