@@ -64,14 +64,6 @@ const MeetingCheckin = (props) => {
   const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
 
-  console.log('currentTeamMember.isFacilitator');
-  console.log(currentTeamMember.isFacilitator);
-  console.log(`isFacilitating: ${isFacilitating}`);
-
-  console.log('self');
-  console.log(self);
-  console.log('meeting check-in');
-
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="1rem">
