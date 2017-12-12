@@ -12,6 +12,7 @@ import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
+import {createFragmentContainer} from 'react-relay';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -28,14 +29,14 @@ const MeetingAvatarGroup = (props) => {
   const {
     atmosphere,
     avatars,
-    facilitatorPhaseItem,
     gotoItem,
     isFacilitating,
     localPhase,
     localPhaseItem,
-    onFacilitatorPhase,
-    styles
+    styles,
+    team: {teamId, facilitatorPhase, facilitatorPhaseItem}
   } = props;
+  const onFacilitatorPhase = facilitatorPhase === localPhase;
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES;
   return (
     <div className={css(styles.meetingAvatarGroupRoot)}>
@@ -63,13 +64,9 @@ const MeetingAvatarGroup = (props) => {
               gotoItem(count);
             };
             const promoteToFacilitator = () => {
-              const onError = (err) => {
-                console.error(err);
-              };
-              PromoteFacilitatorMutation(atmosphere, avatar.id, onError);
+              PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id});
             };
             const requestFacilitator = () => {
-              const [, teamId] = avatar.id.split('::');
               RequestFacilitatorMutation(atmosphere, teamId);
             };
             const handleNavigate = canNavigate && navigateTo || undefined;
@@ -121,13 +118,12 @@ const MeetingAvatarGroup = (props) => {
 MeetingAvatarGroup.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   avatars: PropTypes.array,
-  facilitatorPhaseItem: PropTypes.number,
   gotoItem: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
-  onFacilitatorPhase: PropTypes.bool,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  team: PropTypes.object.isRequired
 };
 
 const borderDefault = appTheme.palette.mid20a;
@@ -213,4 +209,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup));
+export default createFragmentContainer(
+  withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup)),
+  graphql`
+    fragment MeetingAvatarGroup_team on Team {
+      teamId: id
+      facilitatorPhase
+      facilitatorPhaseItem
+    }`
+);

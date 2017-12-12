@@ -1,9 +1,11 @@
 import {css} from 'aphrodite-local-styles/no-important';
+import {convertFromRaw, Editor, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import withRouter from 'react-router-dom/es/withRouter';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
+import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
@@ -13,9 +15,6 @@ import labels from 'universal/styles/theme/labels';
 import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import withStyles from 'universal/styles/withStyles';
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import {Editor, convertFromRaw, EditorState} from 'draft-js';
-import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import {clearNotificationLabel} from '../helpers/constants';
 
 const involvementWord = {
@@ -34,17 +33,16 @@ const ProjectInvolves = (props) => {
     onCompleted,
     history
   } = props;
-  const {id, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
+  const {id: notificationId, team, project, involvement, changeAuthor: {preferredName: changeAuthorName}} = notification;
   const {id: teamId, name: teamName} = team;
   const {content, status, tags, teamMember} = project;
-  const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
   };
   const gotoBoard = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
     const archiveSuffix = tags.includes('archived') ? '/archive' : '';
     history.push(`/team/${teamId}${archiveSuffix}`);
   };

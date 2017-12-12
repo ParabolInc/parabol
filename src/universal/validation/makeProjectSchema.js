@@ -1,11 +1,10 @@
 import {columnArray, PROJECT_MAX_CHARS} from 'universal/utils/constants';
-import {compositeId} from 'universal/validation/templates';
-import legitify from './legitify';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
+import {compositeId, id} from 'universal/validation/templates';
+import legitify from './legitify';
 
 export default function makeProjectSchema() {
   return legitify({
-    id: compositeId,
     agendaId: compositeId,
     content: (value) => value
       .normalize(normalizeRawDraftJS)
@@ -13,7 +12,8 @@ export default function makeProjectSchema() {
     status: (value) => value
     // status may be empty eg unarchive card
       .test((str) => str && !columnArray.includes(str) && 'That isn’t a status!'),
-    teamMemberId: compositeId,
+    teamId: id,
+    userId: id,
     sortOrder: (value) => value.float()
   });
 }

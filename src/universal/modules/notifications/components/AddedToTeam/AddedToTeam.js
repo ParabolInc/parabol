@@ -8,8 +8,7 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import withRouter from 'react-router-dom/es/withRouter';
+import {withRouter} from 'react-router-dom';
 import {clearNotificationLabel} from '../../helpers/constants';
 
 const AddedToTeam = (props) => {
@@ -23,16 +22,15 @@ const AddedToTeam = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id, team} = notification;
+  const {id: notificationId, team} = notification;
   const {id: teamId, name: teamName} = team;
-  const {id: dbNotificationId} = fromGlobalId(id);
   const acknowledge = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
   };
   const goToTeam = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
     history.push(`/team/${teamId}`);
   };
   return (

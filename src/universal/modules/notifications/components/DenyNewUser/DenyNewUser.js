@@ -8,7 +8,6 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import {clearNotificationLabel} from '../../helpers/constants';
 
 const DenyNewUser = (props) => {
@@ -21,11 +20,10 @@ const DenyNewUser = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id, reason, deniedByName, inviteeEmail} = notification;
+  const {id: notificationId, reason, deniedByName, inviteeEmail} = notification;
   const acknowledge = () => {
-    const {id: dbNotificationId} = fromGlobalId(id);
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
   };
   const safeReason = reason || 'none given';
   return (

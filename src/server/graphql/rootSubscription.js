@@ -7,13 +7,11 @@ import providerRemoved from 'server/graphql/subscriptions/providerRemoved';
 import githubRepoAdded from 'server/graphql/subscriptions/githubRepoAdded';
 import githubRepoRemoved from 'server/graphql/subscriptions/githubRepoRemoved';
 import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemoved';
-import agenda from './models/AgendaItem/agendaItemSubscription';
 import invitation from './models/Invitation/invitationSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
 import organization from './models/Organization/organizationSubscription';
 import orgApproval from './models/OrgApproval/orgApprovalSubscription';
 import presence from './models/Presence/presenceSubscription';
-import project from './models/Project/projectSubscription';
 import team from './models/Team/teamSubscription';
 import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
@@ -26,15 +24,21 @@ import newAuthToken from 'server/graphql/subscriptions/newAuthToken';
 import organizationAdded from 'server/graphql/subscriptions/organizationAdded';
 import organizationUpdated from 'server/graphql/subscriptions/organizationUpdated';
 import projectUpdated from 'server/graphql/subscriptions/projectUpdated';
+import projectCreated from 'server/graphql/subscriptions/projectCreated';
+import projectDeleted from 'server/graphql/subscriptions/projectDeleted';
+import meetingUpdated from 'server/graphql/subscriptions/meetingUpdated';
+import teamMemberUpdated from 'server/graphql/subscriptions/teamMemberUpdated';
+import teamMemberAdded from 'server/graphql/subscriptions/teamMemberAdded';
+import agendaItemAdded from 'server/graphql/subscriptions/agendaItemAdded';
+import agendaItemUpdated from 'server/graphql/subscriptions/agendaItemUpdated';
+import agendaItemRemoved from 'server/graphql/subscriptions/agendaItemRemoved';
 
 const rootFields = Object.assign({},
-  agenda,
   invitation,
   invoice,
   orgApproval,
   organization,
   presence,
-  project,
   team,
   teamMember,
   user
@@ -43,22 +47,30 @@ const rootFields = Object.assign({},
 export default new GraphQLObjectType({
   name: 'Subscription',
   fields: () => ({
+    agendaItemAdded,
+    agendaItemRemoved,
+    agendaItemUpdated,
     githubMemberRemoved,
     githubRepoAdded,
     githubRepoRemoved,
     integrationJoined,
     integrationLeft,
+    meetingUpdated,
     newAuthToken,
     notificationsAdded,
     notificationsCleared,
     organizationAdded,
     organizationUpdated,
+    projectCreated,
+    projectDeleted,
     projectUpdated,
     slackChannelAdded,
     slackChannelRemoved,
     providerAdded,
     providerRemoved,
     teamMembersInvited,
+    teamMemberAdded,
+    teamMemberUpdated,
     ...rootFields
   })
 });

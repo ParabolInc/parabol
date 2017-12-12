@@ -8,7 +8,6 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 import withRouter from 'react-router-dom/es/withRouter';
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants';
@@ -24,9 +23,8 @@ const RequestNewUser = (props) => {
     onCompleted,
     history
   } = props;
-  const {id, inviterName, inviteeEmail, orgId, teamName, teamId, team} = notification;
+  const {id: notificationId, inviterName, inviteeEmail, orgId, teamName, teamId, team} = notification;
   const {tier} = team;
-  const {id: dbNotificationId} = fromGlobalId(id);
   const acceptInvite = () => {
     submitMutation();
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted);
@@ -73,7 +71,7 @@ const RequestNewUser = (props) => {
         </div>
         <div className={css(styles.button)}>
           <RejectOrgApprovalModal
-            dbNotificationId={dbNotificationId}
+            notificationId={notificationId}
             inviteeEmail={inviteeEmail}
             inviterName={inviterName}
             toggle={rejectToggle}

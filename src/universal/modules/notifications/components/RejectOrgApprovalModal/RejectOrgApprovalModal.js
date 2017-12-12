@@ -25,7 +25,7 @@ const RejectOrgApprovalModal = (props) => {
     error,
     handleSubmit,
     isClosing,
-    dbNotificationId,
+    notificationId,
     inviteeEmail,
     inviterName,
     submitting,
@@ -34,7 +34,7 @@ const RejectOrgApprovalModal = (props) => {
   const onSubmit = async (submissionData) => {
     const schema = rejectOrgApprovalValidation();
     const {data: {reason}} = schema(submissionData);
-    const variables = {reason, dbNotificationId};
+    const variables = {reason, notificationId};
     const {error: anError} = await cashay.mutate('rejectOrgApproval', {variables});
     if (anError) throw new SubmissionError(anError);
     closePortal();
@@ -79,7 +79,7 @@ RejectOrgApprovalModal.propTypes = {
   isClosing: PropTypes.bool,
   inviteeEmail: PropTypes.string,
   inviterName: PropTypes.string,
-  dbNotificationId: PropTypes.string.isRequired,
+  notificationId: PropTypes.string.isRequired,
   submitting: PropTypes.bool,
   styles: PropTypes.object
 };

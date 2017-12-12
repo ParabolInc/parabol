@@ -1,125 +1,128 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import {overflowTouch} from 'universal/styles/helpers';
-import {cashay} from 'cashay';
-import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
-import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
-import handleAgendaHover from 'universal/dnd/handleAgendaHover';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import {DropTarget as dropTarget} from 'react-dnd';
-import withDragState from 'universal/dnd/withDragState';
+import {createFragmentContainer} from 'react-relay';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import handleAgendaHover from 'universal/dnd/handleAgendaHover';
 import handleDrop from 'universal/dnd/handleDrop';
+import withDragState from 'universal/dnd/withDragState';
+import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
+import RemoveAgendaItemMutation from 'universal/mutations/RemoveAgendaItemMutation';
+import {overflowTouch} from 'universal/styles/helpers';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
 
 const columnTarget = {
   drop: handleDrop,
   hover: handleAgendaHover
 };
 
-const removeItemFactory = (itemId) => () => {
-  const options = {variables: {id: itemId}};
-  cashay.mutate('removeAgendaItem', options);
-};
+class AgendaList extends Component {
+  removeItemFactory = (agendaId) => () => {
+    const {atmosphere} = this.props;
+    RemoveAgendaItemMutation(atmosphere, agendaId);
+  };
 
-const AgendaList = (props) => {
-  const {
-    agenda,
-    agendaPhaseItem,
-    canNavigate,
-    connectDropTarget,
-    context,
-    disabled,
-    dragState,
-    facilitatorPhase,
-    facilitatorPhaseItem,
-    gotoAgendaItem,
-    localPhase,
-    localPhaseItem,
-    styles
-  } = props;
+  makeLoadingState() {
+    const {styles} = this.props;
+    const loadingItem = <div className={css(styles.agendaItemLoading)} />;
+    return (
+      <div className={css(styles.agendaItemsLoadingBlock)}>
+        {loadingItem}
+        {loadingItem}
+        {loadingItem}
+      </div>
+    );
+  }
 
-  const canNavigateItems = canNavigate && !disabled;
-
-  dragState.clear();
-
-  const makeAgendaItemLoading = () =>
-    <div className={css(styles.agendaItemLoading)} />;
-
-  const makeLoadingState = () => (
-    <div className={css(styles.agendaItemsLoadingBlock)}>
-      {makeAgendaItemLoading()}
-      {makeAgendaItemLoading()}
-      {makeAgendaItemLoading()}
-    </div>
-  );
-
-  const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting';
-
-  const makeEmptyState = () => (
-    <div className={css(styles.emptyBlock)}>
+  makeEmptyState() {
+    const {context, styles} = this.props;
+    const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting';
+    return (<div className={css(styles.emptyBlock)}>
       <div className={css(styles.emptyEmoji)}>
-        🤓
+          🤓
       </div>
       <div className={css(styles.emptyMessage)}>
         {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}<b><i>{'upcoming vacation'}</i></b>{'.”'}
       </div>
     </div>
-  );
+    );
+  }
 
-  const isLoading = false;
-
-  return connectDropTarget(
-    <div className={css(styles.root)}>
-      {agenda.length > 0 ?
-        <div className={css(styles.inner)}>
-          {agenda.map((item, idx) =>
-            (<AgendaItem
-              key={`agendaItem${item.id}`}
-              agendaItem={item}
-              agendaLength={agenda.length}
-              agendaPhaseItem={agendaPhaseItem}
-              canNavigate={canNavigateItems}
-              disabled={disabled}
-              facilitatorPhase={facilitatorPhase}
-              facilitatorPhaseItem={facilitatorPhaseItem}
-              gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
-              handleRemove={removeItemFactory(item.id)}
-              idx={idx}
-              localPhase={localPhase}
-              localPhaseItem={localPhaseItem}
-              ref={(c) => {
-                if (c) {
-                  dragState.components.push(c);
-                }
-              }}
-            />)
-          )}
-        </div> :
-        <div>
-          {isLoading ? makeLoadingState() : makeEmptyState()}
-        </div>
-      }
-    </div>
-  );
-};
+  render() {
+    const {
+      agendaPhaseItem,
+      canNavigate,
+      connectDropTarget,
+      disabled,
+      dragState,
+      facilitatorPhase,
+      facilitatorPhaseItem,
+      gotoAgendaItem,
+      localPhase,
+      localPhaseItem,
+      styles,
+      team
+    } = this.props;
+    const {agendaItems} = team;
+    const canNavigateItems = canNavigate && !disabled;
+    dragState.clear();
+    // TODO handle isLoading
+    const isLoading = false;
+    return connectDropTarget(
+      <div className={css(styles.root)}>
+        {agendaItems.length > 0 ?
+          <div className={css(styles.inner)}>
+            {agendaItems.map((item, idx) =>
+              (<AgendaItem
+                key={`agendaItem${item.id}`}
+                agendaItem={item}
+                agendaLength={agendaItems.length}
+                agendaPhaseItem={agendaPhaseItem}
+                canNavigate={canNavigateItems}
+                disabled={disabled}
+                facilitatorPhase={facilitatorPhase}
+                facilitatorPhaseItem={facilitatorPhaseItem}
+                gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
+                handleRemove={this.removeItemFactory(item.id)}
+                idx={idx}
+                localPhase={localPhase}
+                localPhaseItem={localPhaseItem}
+                ref={(c) => {
+                  if (c) {
+                    dragState.components.push(c);
+                  }
+                }}
+              />)
+            )}
+          </div> :
+          <div>
+            {isLoading ? this.makeLoadingState() : this.makeEmptyState()}
+          </div>
+        }
+      </div>
+    );
+  }
+}
 
 AgendaList.propTypes = {
-  agenda: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string,
-    content: PropTypes.string
-  })),
+  atmosphere: PropTypes.object.isRequired,
   agendaPhaseItem: PropTypes.number,
+  canNavigate: PropTypes.bool,
   connectDropTarget: PropTypes.func.isRequired,
+  context: PropTypes.string,
   disabled: PropTypes.bool,
+  dragState: PropTypes.object.isRequired,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
   gotoAgendaItem: PropTypes.func,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   styles: PropTypes.object,
-  teamId: PropTypes.string.isRequired
+  team: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -196,8 +199,21 @@ const styleThunk = () => ({
 const dropTargetCb = (connectTarget) => ({
   connectDropTarget: connectTarget.dropTarget()
 });
-export default withDragState(
-  dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(
-    withStyles(styleThunk)(AgendaList)
-  )
+
+export default createFragmentContainer(
+  withAtmosphere(withDragState(
+    dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(
+      withStyles(styleThunk)(AgendaList)
+    )
+  )),
+  graphql`
+    fragment AgendaList_team on Team {
+      agendaItems {
+        id
+        # need these 2 for the DnD
+        isComplete
+        sortOrder
+        ...AgendaItem_agendaItem
+      }
+    }`
 );

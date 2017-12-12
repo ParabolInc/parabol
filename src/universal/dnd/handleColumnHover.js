@@ -1,6 +1,6 @@
-import {cashay} from 'cashay';
-import {DND_THROTTLE, MEETING, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import {DND_THROTTLE} from 'universal/utils/constants';
 
 /**
  * Assuming the whole column is a single drop target, we need to figure out where the drag source should go.
@@ -12,17 +12,11 @@ import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
  *
  */
 
-const areaOpLookup = {
-  [MEETING]: 'meetingUpdatesContainer',
-  [USER_DASH]: 'userColumnsContainer',
-  [TEAM_DASH]: 'teamColumnsContainer'
-};
-
 let lastSentAt = 0;
 export default function handleProjectHover(targetProps, monitor) {
   const now = new Date();
   if (lastSentAt > (now - DND_THROTTLE)) return;
-  const {area, dragState, projects, queryKey, status: targetStatus} = targetProps;
+  const {atmosphere, dragState, projects, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {status: sourceStatus} = sourceProps;
   if (targetStatus !== sourceStatus) {
@@ -41,22 +35,9 @@ export default function handleProjectHover(targetProps, monitor) {
     sourceProps.status = targetStatus;
   }
   lastSentAt = now;
-  const op = areaOpLookup[area];
-  const options = {
-    ops: {
-      [op]: queryKey
-    },
-    variables: {updatedProject}
-  };
-  cashay.mutate('updateProject', options);
+  UpdateProjectMutation(atmosphere, updatedProject);
   if (rebalanceDoc) {
     // bad times. just toss the offending doc to the bottom of the column
-    const rebalanceOptions = {
-      ops: {
-        [op]: queryKey
-      },
-      variables: {updatedProject: rebalanceDoc}
-    };
-    cashay.mutate('updateProject', rebalanceOptions);
+    UpdateProjectMutation(atmosphere, rebalanceDoc);
   }
 }

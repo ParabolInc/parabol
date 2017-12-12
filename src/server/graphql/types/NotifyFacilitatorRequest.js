@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
+import TeamMember from 'server/graphql/types/TeamMember';
 
 const NotifyFacilitatorRequest = new GraphQLObjectType({
   name: 'NotifyFacilitatorRequest',
@@ -11,8 +12,15 @@ const NotifyFacilitatorRequest = new GraphQLObjectType({
       description: 'The name of the team member requesting to become facilitator'
     },
     requestorId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The teamMemberId of the requestor'
+      type: GraphQLID,
+      description: 'A teamMemberId for the requestor'
+    },
+    requestor: {
+      type: TeamMember,
+      description: 'The team member that wants to be the facilitator',
+      resolve: ({requestorId}, args, {dataLoader}) => {
+        return dataLoader.get('teamMembers').load(requestorId);
+      }
     },
     ...notificationInterfaceFields
   })

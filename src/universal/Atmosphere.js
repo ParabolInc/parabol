@@ -2,7 +2,6 @@ import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 import tryParse from 'universal/utils/tryParse';
 
 const makeErrorObj = (errors) => {
@@ -31,7 +30,6 @@ export default class Atmosphere extends Environment {
     this._network = Network.create(this.fetchHTTP);
 
     // now atmosphere
-    this.opIdIndex = 0;
     this.authToken = undefined;
     this.socket = undefined;
     this.networks = {
@@ -39,6 +37,7 @@ export default class Atmosphere extends Environment {
       socket: Network.create(this.fetchWS, this.socketSubscribe)
     };
 
+    this.opIdIndex = 1;
     this.subLookup = {};
     this.querySubscriptions = [];
   }
@@ -85,7 +84,7 @@ export default class Atmosphere extends Environment {
           reject(errorObj);
         } else {
           // reject({_error: 'A really big one'})
-          // setTimeout(() => resolve(response), 2000);
+          // setTimeout(() => resolve(response), 400);
           resolve(response);
         }
       });
@@ -97,11 +96,14 @@ export default class Atmosphere extends Environment {
     if (authToken) {
       const authObj = jwtDecode(authToken);
       this.userId = authObj.sub;
-      this.viewerId = toGlobalId('User', authObj.sub);
+      this.viewerId = authObj.sub;
     }
   };
 
   setSocket = (socket) => {
+    this.opIdIndex = 1;
+    this.subLookup = {};
+    this.querySubscriptions = [];
     this.socket = socket;
     this.setNet('socket');
   };

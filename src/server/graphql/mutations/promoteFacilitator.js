@@ -1,35 +1,61 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {FACILITATOR_DISCONNECTED, MEETING_UPDATED, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
 export default {
-  type: GraphQLBoolean,
+  type: UpdateMeetingPayload,
   description: 'Change a facilitator while the meeting is in progress',
   args: {
+    disconnectedFacilitatorId: {
+      type: GraphQLID,
+      description: 'teamMemberId of the old facilitator, if they disconnected'
+    },
     facilitatorId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The facilitator teamMemberId for this meeting'
+      description: 'teamMemberId of the new facilitator for this meeting'
     }
   },
-  async resolve(source, {facilitatorId}, {authToken}) {
+  async resolve(source, {disconnectedFacilitatorId, facilitatorId}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
+    const operationId = dataLoader.share();
 
-    // AUTH
-    // facilitatorId is of format 'userId::teamId'
     const [, teamId] = facilitatorId.split('::');
     requireSUOrTeamMember(authToken, teamId);
 
 
     // VALIDATION
-    const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
+    const facilitatorMembership = await dataLoader.get('teamMembers').load(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
       throw new Error('facilitator is not active on that team');
     }
 
     // RESOLUTION
-    await r.table('Team').get(teamId).update({
+    const team = await r.table('Team').get(teamId).update({
       activeFacilitator: facilitatorId
-    });
-    return true;
+    }, {returnChanges: true})('changes')(0)('new_val').default(null);
+
+    if (!team) {
+      throw new Error('That person is already is the facilitator');
+    }
+
+    const meetingUpdated = {team};
+    if (disconnectedFacilitatorId) {
+      const notification = {
+        oldFacilitatorId: disconnectedFacilitatorId,
+        newFacilitatorId: facilitatorId,
+        teamId,
+        type: FACILITATOR_DISCONNECTED
+      };
+      const notificationsAdded = {notifications: [notification]};
+      // don't include the mutatorId here because that will allow the sender to get a toast
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded, operationId});
+    } else {
+      getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    }
+
+    return meetingUpdated;
   }
 };

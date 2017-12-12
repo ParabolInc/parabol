@@ -1,21 +1,21 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router-dom';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ib from 'universal/styles/helpers/ib';
 import {
   DashSectionControl,
   DashSectionControls,
   DashSectionHeader,
   DashSectionHeading
 } from 'universal/components/Dashboard';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
-import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
 import {Menu, MenuItem} from 'universal/modules/menu';
+import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
+import ib from 'universal/styles/helpers/ib';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const iconStyle = {
   ...ib,

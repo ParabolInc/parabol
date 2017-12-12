@@ -6,18 +6,29 @@
  *
  */
 
-import Atmosphere from 'universal/Atmosphere';
 import deepFreeze from 'deep-freeze';
 import areEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
+import Atmosphere from 'universal/Atmosphere';
 import {MAX_INT} from 'universal/utils/constants';
+
+
+// outside closure to support case when variables change. for pendingFetch, rootSubscription, selectionReference
+const release = (...disposables) => () => {
+  disposables.forEach((disposable) => {
+    if (disposable) {
+      disposable.dispose();
+    }
+  });
+};
 
 const isCacheable = (subs, cacheConfig = {}) => Boolean(subs || cacheConfig.force === false || cacheConfig.ttl);
 const getDefaultState = () => ({
   error: null,
   props: null,
-  retry: null
+  retry: null,
+  initialLoad: true
 });
 /**
  * @public
@@ -46,6 +57,11 @@ export default class QueryRenderer extends React.Component {
 
   static timeouts = {};
 
+  static renewTTL(queryKey) {
+    clearTimeout(QueryRenderer.timeouts[queryKey]);
+    delete QueryRenderer.timeouts[queryKey];
+  }
+
   constructor(props, context) {
     super(props, context);
     const {cacheConfig, subscriptions} = props;
@@ -59,9 +75,6 @@ export default class QueryRenderer extends React.Component {
     this.state = {
       readyState: this._fetchForProps(props)
     };
-
-    clearTimeout(QueryRenderer.timeouts[this._queryKey]);
-    delete QueryRenderer.timeouts[this._queryKey];
   }
 
   getChildContext() {
@@ -73,6 +86,8 @@ export default class QueryRenderer extends React.Component {
   componentWillReceiveProps(nextProps) {
     const {environment, query, variables} = nextProps;
     if (query !== this.props.query || environment !== this.props.environment || !areEqual(variables, this.props.variables)) {
+      // if variables changed, we want to hang on to the results of the old one just as if was an unmounted component
+      this._requestRelease();
       this.setState({
         readyState: this._fetchForProps(nextProps)
       });
@@ -84,21 +99,30 @@ export default class QueryRenderer extends React.Component {
   }
 
   componentWillUnmount() {
-    const {cacheConfig = {}, environment} = this.props;
-    const {ttl} = cacheConfig;
     this._mounted = false;
-    if (this._releaseOnUnmount) {
-      this._release();
-      return;
-    }
+    this._requestRelease();
+  }
 
+  _scheduleRelease(ttl, queryKey) {
+    const {environment} = this.props;
     if (ttl !== undefined && ttl <= MAX_INT) {
       const {timeouts} = QueryRenderer;
-      timeouts[this._queryKey] = setTimeout(() => {
-        this._release();
-        environment.unregisterQuery(this._queryKey);
-        delete timeouts[this._queryKey];
+      const releaseThunk = release(this._pendingFetch, this._rootSubscription, this._selectionReference);
+      timeouts[queryKey] = setTimeout(() => {
+        releaseThunk();
+        environment.unregisterQuery(queryKey);
+        delete timeouts[queryKey];
       }, ttl);
+    }
+  }
+
+  _requestRelease() {
+    const {cacheConfig = {}} = this.props;
+    const {ttl} = cacheConfig;
+    if (this._releaseOnUnmount) {
+      this._release();
+    } else {
+      this._scheduleRelease(ttl, this._queryKey);
     }
   }
 
@@ -139,11 +163,9 @@ export default class QueryRenderer extends React.Component {
         variables: operation.variables
       };
 
-      if (!this._queryKey) {
-        // We're just using the original variables as a unique identifier, if they change that's OK
-        const {name: operationName} = fullOperation;
-        this._queryKey = Atmosphere.getKey(operationName, variables);
-      }
+      this._operationName = fullOperation.name;
+      this._queryKey = Atmosphere.getKey(this._operationName, operation.variables);
+      QueryRenderer.renewTTL(this._queryKey);
 
       // environment.check is expensive, do everything we can to prevent a call
       if (isCacheable(subscriptions, cacheConfig) && environment.check(operation.root)) {
@@ -153,12 +175,16 @@ export default class QueryRenderer extends React.Component {
           error: null,
           props: snapshot.data,
           retry: null,
-          unsubscribe: this.unsubscribe
+          initialLoad: false
         };
       }
       if (subscriptions) {
-        this._subscribe(subscriptions, subParams);
+        this._subscribe(subscriptions, {
+          operationName: this._operationName,
+          ...subParams
+        });
       }
+
       return this._fetch(operation, props.cacheConfig) || getDefaultState();
     }
     this._relayContext = {
@@ -169,7 +195,8 @@ export default class QueryRenderer extends React.Component {
     return {
       error: null,
       props: {},
-      retry: null
+      retry: null,
+      initialLoad: false
     };
   }
 
@@ -180,7 +207,7 @@ export default class QueryRenderer extends React.Component {
     // from being freed. This is not strictly required if all new data is
     // fetched in a single step, but is necessary if the network could attempt
     // to incrementally load data (ex: multiple query entries or incrementally
-    // loading records from disk cache).
+    // initialLoad records from disk cache).
     const nextReference = environment.retain(operation.root);
 
     let readyState = getDefaultState();
@@ -217,7 +244,8 @@ export default class QueryRenderer extends React.Component {
             if (this._mounted && syncReadyState) {
               this.setState({readyState: syncReadyState});
             }
-          }
+          },
+          initialLoad: false
         };
 
         if (this._selectionReference) {
@@ -241,7 +269,13 @@ export default class QueryRenderer extends React.Component {
             // of calling setState.
             const syncReadyState = this._fetch(operation, cacheConfig);
             if (this._mounted) {
-              this.setState({readyState: syncReadyState || getDefaultState()});
+              const naiveReadyState = syncReadyState || getDefaultState();
+              this.setState({
+                readyState: {
+                  ...naiveReadyState,
+                  initialLoad: false
+                }
+              });
             }
           }
         };
@@ -271,7 +305,8 @@ export default class QueryRenderer extends React.Component {
       this.setState({
         readyState: {
           ...this.state.readyState,
-          props: snapshot.data
+          props: snapshot.data,
+          initialLoad: false
         }
       });
     }

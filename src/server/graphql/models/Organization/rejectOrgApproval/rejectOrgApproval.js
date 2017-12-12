@@ -12,7 +12,7 @@ export default {
   type: GraphQLBoolean,
   description: 'Create a new team and add the first team member',
   args: {
-    dbNotificationId: {
+    notificationId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The notification to which the Billing Leader is responding'
     },
@@ -25,14 +25,14 @@ export default {
     const now = new Date();
 
     // AUTH
-    const {dbNotificationId} = args;
+    const {notificationId} = args;
     const userId = getUserId(authToken);
     requireWebsocket(socket);
-    const rejectionNotification = await r.table('Notification').get(dbNotificationId)
+    const rejectionNotification = await r.table('Notification').get(notificationId)
       .pluck('orgId', 'inviterUserId', 'inviteeEmail')
       .default(null);
     if (!rejectionNotification) {
-      throw errorObj({reason: `Notification ${dbNotificationId} no longer exists!`});
+      throw errorObj({reason: `Notification ${notificationId} no longer exists!`});
     }
     const {orgId, inviterUserId, inviteeEmail} = rejectionNotification;
     const userOrgDoc = await getUserOrgDoc(userId, orgId);

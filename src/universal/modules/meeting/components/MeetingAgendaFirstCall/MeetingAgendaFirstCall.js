@@ -10,15 +10,13 @@ import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShort
 import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import {css} from 'aphrodite-local-styles/no-important';
-import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const MeetingAgendaFirstCall = (props) => {
   const {
+    facilitatorName,
     gotoNext,
-    team,
-    members,
     hideMoveMeetingControls,
     styles
   } = props;
@@ -48,7 +46,7 @@ const MeetingAgendaFirstCall = (props) => {
                 buttonSize="large"
               /> :
               <MeetingFacilitationHint>
-                {'Waiting for'} <b>{getFacilitatorName(team, members)}</b> {`to start the ${phaseName}`}
+                {'Waiting for'} <b>{facilitatorName}</b> {`to start the ${phaseName}`}
               </MeetingFacilitationHint>
             }
           </div>
@@ -59,11 +57,10 @@ const MeetingAgendaFirstCall = (props) => {
 };
 
 MeetingAgendaFirstCall.propTypes = {
+  facilitatorName: PropTypes.string.isRequired,
   gotoNext: PropTypes.func,
   hideMoveMeetingControls: PropTypes.bool,
-  members: PropTypes.array,
-  styles: PropTypes.object,
-  team: PropTypes.object
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

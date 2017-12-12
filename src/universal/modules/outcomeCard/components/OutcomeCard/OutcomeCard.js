@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
 import ProjectIntegrationLink from 'universal/components/ProjectIntegrationLink';
 import ProjectWatermark from 'universal/components/ProjectWatermark';
@@ -13,6 +14,7 @@ import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import isTempId from 'universal/utils/relay/isTempId';
 
 const OutcomeCard = (props) => {
   const {
@@ -27,17 +29,17 @@ const OutcomeCard = (props) => {
     isEditing,
     handleAddProject,
     hasDragStyles,
-    outcome,
+    project,
     setEditorRef,
     setEditorState,
     trackEditingComponent,
     styles,
-    teamMembers,
     toggleMenuState
   } = props;
-  const isPrivate = isProjectPrivate(outcome.tags);
-  const isArchived = isProjectArchived(outcome.tags);
-  const {status} = outcome;
+  const isPrivate = isProjectPrivate(project.tags);
+  const isArchived = isProjectArchived(project.tags);
+  const {status, team} = project;
+  const {teamId} = team;
   const rootStyles = css(
     styles.root,
     styles.cardBlock,
@@ -49,7 +51,7 @@ const OutcomeCard = (props) => {
     cardHasFocus && styles.cardHasFocus,
     hasDragStyles && styles.hasDragStyles
   );
-  const {integration} = outcome;
+  const {integration, projectId} = project;
   const {service} = integration || {};
   return (
     <div className={rootStyles}>
@@ -57,20 +59,19 @@ const OutcomeCard = (props) => {
       <div className={css(styles.contentBlock)}>
         <EditingStatusContainer
           isEditing={isEditing}
-          outcomeId={outcome.id}
-          createdAt={outcome.createdAt}
-          updatedAt={outcome.updatedAt}
+          project={project}
         />
         <ProjectEditor
           editorRef={editorRef}
           editorState={editorState}
-          readOnly={Boolean(isArchived || isDragging || service)}
+          readOnly={Boolean(isTempId(projectId) || isArchived || isDragging || service)}
           setEditorRef={setEditorRef}
           setEditorState={setEditorState}
           trackEditingComponent={trackEditingComponent}
-          teamMembers={teamMembers}
+          teamId={teamId}
+          team={team}
         />
-        <ProjectIntegrationLink integration={integration} />
+        <ProjectIntegrationLink integration={integration || null} />
         <OutcomeCardFooter
           area={area}
           cardIsActive={cardHasFocus || cardHasHover || cardHasMenuOpen}
@@ -78,8 +79,7 @@ const OutcomeCard = (props) => {
           handleAddProject={handleAddProject}
           isAgenda={isAgenda}
           isPrivate={isPrivate}
-          outcome={outcome}
-          teamMembers={teamMembers}
+          project={project}
           toggleMenuState={toggleMenuState}
         />
       </div>
@@ -100,14 +100,7 @@ OutcomeCard.propTypes = {
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
-  outcome: PropTypes.shape({
-    id: PropTypes.string,
-    content: PropTypes.string,
-    status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string,
-    createdAt: PropTypes.instanceOf(Date),
-    updatedAt: PropTypes.instanceOf(Date)
-  }),
+  project: PropTypes.object.isRequired,
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
   trackEditingComponent: PropTypes.func,
@@ -186,4 +179,23 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OutcomeCard);
+export default createFragmentContainer(
+  withStyles(styleThunk)(OutcomeCard),
+  graphql`
+    fragment OutcomeCard_project on Project {
+      projectId: id
+      integration {
+        service
+        ...ProjectIntegrationLink_integration
+      }
+      status
+      tags
+      team {
+        teamId: id
+      }
+      # grab userId to ensure sorting on connections works
+      userId
+      ...EditingStatusContainer_project
+      ...OutcomeCardFooter_project
+    }`
+);

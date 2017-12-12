@@ -7,7 +7,10 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
+import getRethink from 'server/database/rethinkDriver';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
+import Meeting from 'server/graphql/types/Meeting';
+import Team from 'server/graphql/types/Team';
 // import archivedProjects from 'server/graphql/queries/archivedProjects';
 import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
 import githubRepos from 'server/graphql/queries/githubRepos';
@@ -24,8 +27,9 @@ import BlockedUserType from 'server/graphql/types/BlockedUserType';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
-import {getUserId} from 'server/utils/authorization';
+import {getUserId, requireAuth, requireSUOrTeamMember} from 'server/utils/authorization';
 // import organizations from 'server/graphql/queries/organizations';
 
 const User = new GraphQLObjectType({
@@ -103,12 +107,43 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
     },
+    // presence: {
+    //  type: Presence,
+    //  description: 'An object with details about the online presence of a user',
+    // resolve: ({id: userId}, args) => {
+    // }
+    // }
     tms: {
       type: new GraphQLList(GraphQLID),
       description: 'all the teams the user is a part of',
       resolve: (source, args, {authToken}) => {
         const userId = getUserId(authToken);
         return (userId === source.id) ? source.tms : undefined;
+      }
+    },
+    teams: {
+      type: new GraphQLList(Team),
+      description: 'all the teams the user is on',
+      resolve: (source, args, {authToken, dataLoader}) => {
+        return dataLoader.get('teams').loadMany(authToken.tms);
+      }
+    },
+    teamMember: {
+      type: TeamMember,
+      description: 'The team member associated with this user',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The team the user is on'
+        }
+      },
+      resolve: (source, {teamId}, {authToken, dataLoader}) => {
+        const userId = getUserId(authToken);
+        if (!authToken.tms.includes(teamId)) {
+          throw new Error('User is not a part of that team');
+        }
+        const teamMemberId = `${userId}::${teamId}`;
+        return dataLoader.get('teamMembers').load(teamMemberId);
       }
     },
     userOrgs: {
@@ -140,11 +175,32 @@ const User = new GraphQLObjectType({
     integrationProvider,
     invoices,
     invoiceDetails,
+    meeting: {
+      type: Meeting,
+      description: 'A previous meeting that the user was in (present or absent)',
+      args: {
+        meetingId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The meeting ID'
+        }
+      },
+      async resolve(source, {meetingId}, {authToken}) {
+        const r = getRethink();
+        requireAuth(authToken);
+        const meeting = await r.table('Meeting').get(meetingId);
+        if (!meeting) {
+          throw new Error('Meeting ID not found');
+        }
+        requireSUOrTeamMember(authToken, meeting.teamId);
+        return meeting;
+      }
+    },
     notifications: require('../queries/notifications').default,
     providerMap,
     slackChannels,
     organization: require('../queries/organization').default,
     organizations: require('../queries/organizations').default,
+    projects: require('../queries/projects').default,
     team: require('../queries/team').default,
     // hack until we can move to ES6 immutable bindings
     orgMembers: require('../queries/orgMembers').default,

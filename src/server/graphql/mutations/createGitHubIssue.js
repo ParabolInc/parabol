@@ -1,9 +1,11 @@
 import {convertFromRaw} from 'draft-js';
 import {stateToMarkdown} from 'draft-js-export-markdown';
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {GITHUB} from 'universal/utils/constants';
+import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
+import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {GITHUB, PROJECT_UPDATED} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 // const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
@@ -42,7 +44,7 @@ const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner) => {
 
 export default {
   name: 'CreateGitHubIssue',
-  type: GraphQLBoolean,
+  type: UpdateProjectPayload,
   args: {
     projectId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -53,14 +55,14 @@ export default {
       description: 'The owner/repo string'
     }
   },
-  resolve: async (source, {nameWithOwner, projectId}, {authToken, socket}) => {
+  resolve: async (source, {nameWithOwner, projectId}, {authToken, dataLoader, socketId}) => {
     const r = getRethink();
     const now = new Date();
+    const operationId = dataLoader.share();
 
     // AUTH
     const [teamId] = projectId.split('::');
     requireSUOrTeamMember(authToken, teamId);
-    requireWebsocket(socket);
 
     // VALIDATION
     const userId = getUserId(authToken);
@@ -154,7 +156,7 @@ export default {
       }
     }
 
-    await r.table('Project').get(projectId)
+    const integratedProject = await r.table('Project').get(projectId)
       .update({
         integration: {
           integrationId,
@@ -163,8 +165,11 @@ export default {
           nameWithOwner
         },
         updatedAt: now
-      });
+      }, {returnChanges: true})('changes')(0)('new_val').default(null);
 
-    return true;
+    const projectUpdated = {project: integratedProject};
+    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, operationId, mutatorId: socketId});
+    getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated, operationId, mutatorId: socketId});
+    return projectUpdated;
   }
 };

@@ -1,18 +1,22 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
-import {globalIdField} from 'graphql-relay';
+import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import {Team} from '../models/Team/teamSchema';
+import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import {ProjectConnection} from 'server/graphql/types/Project';
+import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
-import Project from 'server/graphql/types/Project';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
-  description: 'A member of a team team',
+  description: 'A member of a team',
   fields: () => ({
-    id: globalIdField('TeamMember', ({id}) => id),
-    // id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
+    id: {
+      type: GraphQLID,
+      description: 'An ID for the teamMember. userId::teamId'
+    },
     isNotRemoved: {
       type: GraphQLBoolean,
       description: 'true if the user is a part of the team, false if they no longer are'
@@ -68,21 +72,25 @@ const TeamMember = new GraphQLObjectType({
     user: {
       type: User,
       description: 'The user for the team member',
-      resolve(source) {
-        const r = getRethink();
-        return r.table('User')
-          .get(source.userId)
-          .run();
+      resolve({userId}, args, {dataLoader}) {
+        return dataLoader.get('users').load(userId);
       }
     },
     projects: {
-      type: Project,
+      type: ProjectConnection,
       description: 'Projects owned by the team member',
-      resolve(source) {
-        const r = getRethink();
-        return r.table('Project')
-          .getAll(source.id, {index: 'teamMemberId'})
-          .run();
+      args: {
+        ...forwardConnectionArgs,
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        }
+      },
+      resolve: async ({teamId, userId}, args, {dataLoader}) => {
+        const allProjects = await dataLoader.get('projectsByTeamId').load(teamId);
+        const projectsForUserId = allProjects.filter((project) => project.userId === userId);
+        const publicProjectsForUserId = projectsForUserId.filter((project) => !project.tags.includes('private'));
+        return connectionFromProjects(publicProjectsForUserId);
       }
     }
   })

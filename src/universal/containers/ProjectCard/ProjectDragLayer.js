@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import NullableProject from 'universal/components/NullableProject/NullableProject';
 import {DragLayer as dragLayer} from 'react-dnd';
 import ui from 'universal/styles/ui';
 
@@ -73,7 +73,7 @@ export default class ProjectDragLayer extends Component {
     return (
       <div style={getItemStyles(this.props)}>
         <div style={ui.cardDragStyle}>
-          <OutcomeOrNullCard {...this.props} hasDragStyles isPreview />
+          <NullableProject {...this.props} hasDragStyles isPreview />
         </div>
       </div>
     );

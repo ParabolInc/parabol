@@ -6,7 +6,8 @@ const archiveProjectsByGitHubRepo = async (teamId, nameWithOwner) => {
   const projectsToArchive = await r.table('Project')
     .getAll(teamId, {index: 'teamId'})
     .filter((doc) => doc('integration')('nameWithOwner').eq(nameWithOwner));
-  return archiveProjectsForDB(projectsToArchive);
+  const archivedProjects = archiveProjectsForDB(projectsToArchive);
+  return archivedProjects.map(({id}) => id);
 };
 
 export default archiveProjectsByGitHubRepo;

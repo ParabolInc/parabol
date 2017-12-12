@@ -12,6 +12,7 @@ import scRelaySubscribeHandler from 'server/socketHandlers/scRelaySubscribeHandl
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 
 const APP_VERSION = packageJSON.version;
+
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
@@ -21,7 +22,7 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   return true;
 };
 
-export default function scConnectionHandler(exchange) {
+export default function scConnectionHandler(exchange, sharedDataLoader) {
   return async function connectionHandler(socket) {
     // socket.on('message', message => {
     //   if (message === '#2') return;
@@ -29,8 +30,8 @@ export default function scConnectionHandler(exchange) {
     // });
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
-    const graphQLHandler = scGraphQLHandler(exchange, socket);
-    const relaySubscribeHandler = scRelaySubscribeHandler(socket);
+    const graphQLHandler = scGraphQLHandler(exchange, socket, sharedDataLoader);
+    const relaySubscribeHandler = scRelaySubscribeHandler(socket, sharedDataLoader);
     socket.on('message', (message) => {
       // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
       if (isObject(message) && message.event === '#authenticate') {
@@ -46,14 +47,18 @@ export default function scConnectionHandler(exchange) {
     socket.on('unsubscribe', unsubscribeHandler);
     socket.on('gqlSub', relaySubscribeHandler);
     socket.on('gqlUnsub', (opId) => {
-      unsubscribeRelaySub(socket.subs, opId);
+      const subscriptionContext = socket.subs[opId];
+      if (!subscriptionContext) {
+        // the we must be trying to subscribe to something that caught an error
+        // (happens for unauthed resubs like ex-teams)
+        return;
+      }
+      const {asyncIterator} = subscriptionContext;
+      asyncIterator.return();
+      delete socket.subs[opId];
     });
     socket.on('disconnect', () => {
-      if (socket.subs) {
-        socket.subs.forEach((opId) => {
-          unsubscribeRelaySub(socket.subs, opId);
-        });
-      }
+      unsubscribeRelaySub(socket);
     });
 
     // the async part should come last so there isn't a race

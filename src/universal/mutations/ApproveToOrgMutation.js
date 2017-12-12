@@ -25,7 +25,7 @@ const ApproveToOrgMutation = (environment, email, orgId, onError, onCompleted) =
       const viewer = store.get(viewerId);
       const conn = ConnectionHandler.getConnection(
         viewer,
-        'SocketRoute_notifications'
+        'DashboardWrapper_notifications'
       );
       const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('inviteeEmail') === email && node.getValue('orgId') === orgId);
       const deletedIds = matchingNodes.map((node) => node.getValue('id'));

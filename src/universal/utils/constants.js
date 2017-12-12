@@ -72,6 +72,8 @@ export const PRO_LABEL = 'Pro';
 export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 // Sent to the orgMember that generated the new user request
 export const DENY_NEW_USER = 'DENY_NEW_USER';
+// Sent to meeting participants when the facilitator disconnects
+export const FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED';
 // Sent to the meeting facilitator by someone who wants to lead
 export const FACILITATOR_REQUEST = 'FACILITATOR_REQUEST';
 // Sent when a billing leader approves an invitee to the org
@@ -180,13 +182,22 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
+export const MEETING_UPDATED = 'meetingUpdated';
 export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
-export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
 export const ORGANIZATION_ADDED = 'organizationAdded';
 export const ORGANIZATION_UPDATED = 'organizationUpdated';
 export const PROJECT_UPDATED = 'projectUpdated';
+export const PROJECT_CREATED = 'projectCreated';
+export const PROJECT_DELETED = 'projectDeleted';
+export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
+export const TEAM_MEMBER_ADDED = 'teamMemberAdded';
+export const TEAM_MEMBER_REMOVED = 'teamMemberRemoved';
+export const TEAM_MEMBER_UPDATED = 'teamMemberUpdated';
+export const AGENDA_ITEM_ADDED = 'agendaItemAdded';
+export const AGENDA_ITEM_UPDATED = 'agendaItemUpdated';
+export const AGENDA_ITEM_REMOVED = 'agendaItemRemoved';
 
 /* Relay Subscription Event Types */
 export const ADD = 'add';

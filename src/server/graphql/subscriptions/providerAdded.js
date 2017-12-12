@@ -12,7 +12,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken}) => {
+  subscribe: (source, {teamId}, {authToken, dataLoader}) => {
     // AUTH
     requireSUOrTeamMember(authToken, teamId);
     const subscriberUserId = getUserId(authToken);
@@ -38,6 +38,6 @@ export default {
         }
       };
     };
-    return makeSubscribeIter(channelName, {resolve});
+    return makeSubscribeIter(channelName, {resolve, dataLoader});
   }
 };
