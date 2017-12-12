@@ -23,18 +23,18 @@ const safeApproveToOrg = async (...args) => {
   return res;
 };
 
-const approvePendingApprovals = async (orgApprovals, inviter) => {
+const approvePendingApprovals = async (orgApprovals, inviter, subParams) => {
   //
   const {orgId, teamId, userId} = inviter;
   if (!inviter.isBillingLeader) return undefined;
   const otherPendingApprovals = orgApprovals.filter((approval) => approval.status === PENDING && approval.teamId !== teamId);
   const results = await Promise.all(otherPendingApprovals.map((approval) => {
-    return safeApproveToOrg(approval.email, orgId, userId);
+    return safeApproveToOrg(approval.email, orgId, userId, subParams);
   }));
   return mergeObjectsWithArrValues(...results);
 };
 
-const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
+const inviteTeamMembers = async (invitees, teamId, userId, dataLoader, mutatorId) => {
   const operationId = dataLoader.share();
   const r = getRethink();
   const {name: teamName, orgId} = await r.table('Team').get(teamId).pluck('name', 'orgId');
@@ -86,7 +86,7 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
     // leave out the mutatorId so the sender gets the full team member (should refactor when completey on relay)
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers, {operationId}),
     notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
-    approvePendingApprovals: approvePendingApprovals(orgApprovals, inviter),
+    approvePendingApprovals: approvePendingApprovals(orgApprovals, inviter, {mutatorId, operationId}),
     teamInvites: sendTeamInvitations(inviteesToInvite, inviter),
     newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter, {operationId})
   });

@@ -1,13 +1,19 @@
+import getRethink from 'server/database/rethinkDriver';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import getPubSub from 'server/utils/getPubSub';
 import publishNotifications from 'server/utils/publishNotifications';
 import {APPROVED, PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
-import {INVITEE_APPROVED, NOTIFICATIONS_CLEARED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {
+  INVITEE_APPROVED,
+  NOTIFICATIONS_CLEARED,
+  ORG_APPROVAL_REMOVED,
+  REQUEST_NEW_USER
+} from 'universal/utils/constants';
 import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
-import getRethink from 'server/database/rethinkDriver';
 
-const approveToOrg = async (email, orgId, userId, mutatorId) => {
+const approveToOrg = async (email, orgId, userId, subParams) => {
+  const {mutatorId, operationId} = subParams;
   const r = getRethink();
   const now = new Date();
   // get all notifications for this email to join this org
@@ -77,16 +83,16 @@ const approveToOrg = async (email, orgId, userId, mutatorId) => {
   });
   // tell the inviters that their friend was approved
   // send the invitee a series of team invites
-  const {inviteeUser} = await r({
+  const {inviteeUser, orgApprovals} = await r({
     insertInviteeApproved: r.table('Notification').insert(inviteeApprovedNotifications),
-    approveToOrg: r.table('OrgApproval')
+    orgApprovals: r.table('OrgApproval')
       .getAll(email, {index: 'email'})
       .filter({orgId, status: PENDING, isActive: true})
       .update({
         status: APPROVED,
         approvedBy: userId,
         updatedAt: now
-      }),
+      }, {returnChanges: true})('changes')('new_val').default([]),
     inviteeUser: r.table('User').getAll(email, {index: 'email'}).nth(0).default(null)
   });
 
@@ -95,6 +101,12 @@ const approveToOrg = async (email, orgId, userId, mutatorId) => {
   const teamInvitesToAdd = await Promise.all(inviters.map((inviter) => {
     return sendTeamInvitations(invitees, inviter);
   }));
+
+  orgApprovals.forEach((orgApproval) => {
+    const {teamId} = orgApproval;
+    const orgApprovalRemoved = {orgApproval};
+    getPubSub().publish(`${ORG_APPROVAL_REMOVED}.${teamId}`, {orgApprovalRemoved, operationId});
+  });
 
   // TEAM_INVITEs + INVITEE_APPROVEDs
   const notificationsToAdd = mergeObjectsWithArrValues(...teamInvitesToAdd, inviteeApprovedNotificationsByUserId);
