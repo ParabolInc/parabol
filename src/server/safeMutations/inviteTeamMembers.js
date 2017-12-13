@@ -82,17 +82,17 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader, mutatorId
   const inviteesNeedingApproval = detailedInvitations.filter(({action}) => action === ASK_APPROVAL);
   const pendingApprovalEmails = inviteesNeedingApproval.map(({email}) => email);
   const approvalsToClear = inviteesToInvite.map(({email}) => email);
-  const {reactivations, notificationsToClear, teamInvites, newPendingApprovals} = await resolvePromiseObj({
+  const {reactivations, teamInvites, newPendingApprovals} = await resolvePromiseObj({
     // leave out the mutatorId so the sender gets the full team member (should refactor when completey on relay)
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter, teamMembers, subOptions),
-    notificationsToClear: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
+    removedApprovalsAndNotifications: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}, subOptions),
     approvePendingApprovals: approvePendingApprovals(orgApprovals, inviter, subOptions),
     teamInvites: sendTeamInvitations(inviteesToInvite, inviter, undefined, subOptions),
     newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter, subOptions)
   });
 
   const notificationsToAdd = mergeObjectsWithArrValues(reactivations, teamInvites, newPendingApprovals);
-  publishNotifications({notificationsToAdd, notificationsToClear});
+  publishNotifications({notificationsToAdd});
   const results = getResults(detailedInvitations);
   return {results};
 };

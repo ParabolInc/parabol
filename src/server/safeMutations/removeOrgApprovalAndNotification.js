@@ -1,15 +1,33 @@
 import getRethink from 'server/database/rethinkDriver';
-import {REQUEST_NEW_USER} from 'universal/utils/constants';
+import getPubSub from 'server/utils/getPubSub';
 import {APPROVED, DENIED, PENDING} from 'server/utils/serverConstants';
+import {NOTIFICATIONS_CLEARED, ORG_APPROVAL_REMOVED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
-const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
+const publishRemovedApprovals = (removedApprovals, {operationId}) => {
+  removedApprovals.forEach((orgApproval) => {
+    const {teamId} = orgApproval;
+    const orgApprovalRemoved = {orgApproval};
+    getPubSub().publish(`${ORG_APPROVAL_REMOVED}.${teamId}`, {orgApprovalRemoved, operationId});
+  });
+};
+
+const publishRemovedNotifications = (removedNotifications, {operationId}) => {
+  removedNotifications.forEach((removedNotification) => {
+    const notificationsCleared = {deletedIds: [removedNotification.id]};
+    removedNotification.userIds.forEach((userId) => {
+      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, operationId});
+    });
+  });
+};
+
+const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type, subOptions) => {
   const now = new Date();
   const {approvedBy, deniedBy} = type;
   const status = approvedBy ? APPROVED : DENIED;
   const emails = Array.isArray(maybeEmails) ? maybeEmails : [maybeEmails];
   const r = getRethink();
-  const {removedNotifications} = await r({
-    removedApproval: r.table('OrgApproval')
+  const removedApprovalsAndNotification = await r({
+    removedApprovals: r.table('OrgApproval')
       .getAll(r.args(emails), {index: 'email'})
       .filter({orgId, status: PENDING})
       .update({
@@ -17,7 +35,8 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
         approvedBy,
         deniedBy,
         updatedAt: now
-      }),
+      }, {returnChanges: true})('changes')('new_val')
+      .default([]),
     removedNotifications: r.table('Notification')
       .getAll(orgId, {index: 'orgId'})
       .filter({
@@ -27,18 +46,13 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
         return r.expr(emails).contains(notification('inviteeEmail'));
       })
       // get the inviterName
-      .delete({returnChanges: true})('changes')
-      .map((change) => change('old_val'))
+      .delete({returnChanges: true})('changes')('old_val')
       .default([])
   });
-  const notificationsToClear = {};
-  removedNotifications.forEach((removedNotification) => {
-    removedNotification.userIds.forEach((userId) => {
-      notificationsToClear[userId] = notificationsToClear[userId] || [];
-      notificationsToClear[userId].push(removedNotification.id);
-    });
-  });
-  return notificationsToClear;
+  const {removedNotifications, removedApprovals} = removedApprovalsAndNotification;
+  publishRemovedApprovals(removedApprovals, subOptions);
+  publishRemovedNotifications(removedNotifications, subOptions);
+  return removedApprovalsAndNotification;
 };
 
 export default removeOrgApprovalAndNotification;
