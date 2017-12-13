@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveAgendaItemPayload from 'server/graphql/types/RemoveAgendaItemPayload';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {AGENDA_ITEM_REMOVED} from 'universal/utils/constants';
 
@@ -21,7 +21,7 @@ export default {
     // AUTH
     // id is of format 'teamId::shortid'
     const [teamId] = id.split('::');
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const agendaItem = await r.table('AgendaItem').get(id)

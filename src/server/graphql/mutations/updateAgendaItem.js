@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateAgendaItemInput from 'server/graphql/types/UpdateAgendaItemInput';
 import UpdateAgendaItemPayload from 'server/graphql/types/UpdateAgendaItemPayload';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import {AGENDA_ITEM_UPDATED} from 'universal/utils/constants';
@@ -24,7 +24,7 @@ export default {
 
     // AUTH
     const [teamId] = updatedAgendaItem.id.split('::');
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // VALIDATION
     const schema = makeUpdateAgendaItemSchema();

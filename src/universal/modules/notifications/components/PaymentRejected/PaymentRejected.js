@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -43,11 +44,7 @@ const PaymentRejected = (props) => {
 PaymentRejected.propTypes = {
   history: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  notification: PropTypes.shape({
-    brand: PropTypes.string.isRequired,
-    last4: PropTypes.string.isRequired,
-    orgId: PropTypes.string.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const avatarPlaceholderSize = '2.75rem';
@@ -89,6 +86,18 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(PaymentRejected)
+export default createFragmentContainer(
+  withRouter(
+    withStyles(styleThunk)(PaymentRejected)
+  ),
+  graphql`
+    fragment PaymentRejected_notification on Notification {
+      notificationId: id
+      ... on NotifyPayment {
+        last4
+        brand
+        orgId
+      }
+    }
+  `
 );

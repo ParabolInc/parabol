@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import AddAgendaItemPayload from 'server/graphql/types/AddAgendaItemPayload';
 import {AGENDA_ITEM_ADDED} from 'universal/utils/constants';
 
@@ -13,7 +13,7 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `${AGENDA_ITEM_ADDED}.${teamId}`;

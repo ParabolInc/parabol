@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {PROJECT_UPDATED} from 'universal/utils/constants';
 
@@ -23,7 +23,7 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const [teamId] = projectId.split('::');
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     // grab the project to see if it's private, don't share with other if it is

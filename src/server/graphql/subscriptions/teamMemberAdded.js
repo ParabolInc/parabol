@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import AddTeamMemberPayload from 'server/graphql/types/AddTeamMemberPayload';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import {TEAM_MEMBER_ADDED} from 'universal/utils/constants';
 
 export default {
@@ -13,7 +13,7 @@ export default {
   },
   subscribe: async (source, {teamId}, {authToken, socketId, dataLoader}) => {
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `${TEAM_MEMBER_ADDED}.${teamId}`;

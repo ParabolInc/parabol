@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
@@ -20,7 +21,7 @@ const TeamArchived = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id: notificationId, teamName} = notification;
+  const {notificationId, teamName} = notification;
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
@@ -57,10 +58,7 @@ TeamArchived.propTypes = {
   styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
-  notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -72,4 +70,14 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(TeamArchived);
+export default createFragmentContainer(
+  withStyles(styleThunk)(TeamArchived),
+  graphql`
+    fragment TeamArchived_notification on Notification {
+      notificationId: id
+      ... on NotifyTeamArchived {
+        teamName
+      }
+    }
+  `
+);

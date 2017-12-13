@@ -5,7 +5,7 @@ import publishChangeNotifications from 'server/graphql/mutations/helpers/publish
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import UpdateProjectInput from 'server/graphql/types/UpdateProjectInput';
 import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -37,7 +37,7 @@ export default {
     const myUserId = getUserId(authToken);
     const {id: projectId} = updatedProject;
     const [teamId] = projectId.split('::');
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // VALIDATION
     const schema = makeProjectSchema();

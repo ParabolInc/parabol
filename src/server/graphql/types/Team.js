@@ -18,7 +18,7 @@ import Organization from 'server/graphql/types/Organization';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -122,7 +122,7 @@ const Team = new GraphQLObjectType({
       },
       description: 'All of the projects for this team',
       async resolve({id: teamId}, args, {authToken, dataLoader}) {
-        requireSUOrTeamMember(authToken, teamId);
+        requireTeamMember(authToken, teamId);
         const projects = await dataLoader.get('projectsByTeamId').load(teamId);
         return connectionFromProjects(projects);
       }

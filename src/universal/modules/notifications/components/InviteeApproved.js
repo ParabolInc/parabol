@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
@@ -21,7 +22,8 @@ const InviteeApproved = (props) => {
     onCompleted,
     history
   } = props;
-  const {id: notificationId, inviteeEmail, teamId, teamName} = notification;
+  const {notificationId, inviteeEmail, team} = notification;
+  const {teamId, teamName} = team;
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
@@ -62,10 +64,7 @@ InviteeApproved.propTypes = {
   styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
-  notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -77,4 +76,19 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(InviteeApproved));
+
+export default createFragmentContainer(
+  withRouter(withStyles(styleThunk)(InviteeApproved)),
+  graphql`
+    fragment InviteeApproved_notification on Notification {
+      notificationId: id
+      ... on NotifyInvitation {
+        inviteeEmail
+        team {
+          teamId: id
+          teamName: name
+        }
+      }
+    }
+  `
+);

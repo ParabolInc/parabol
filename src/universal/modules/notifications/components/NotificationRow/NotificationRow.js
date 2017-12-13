@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import AsyncComponent from 'universal/components/AsyncComponent';
 import typePicker from 'universal/modules/notifications/helpers/typePicker';
 import formError from 'universal/styles/helpers/formError';
@@ -34,12 +35,7 @@ const NotificationRow = (props) => {
 NotificationRow.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
-  notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    orgId: PropTypes.string,
-    type: PropTypes.string.isRequired
-    // See the Notification interface for full list
-  }),
+  notification: PropTypes.object.isRequired,
   // mutationProps
   error: PropTypes.any,
   submitting: PropTypes.bool,
@@ -55,10 +51,27 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(
-  withMutationProps(
-    withStyles(styleThunk)(
-      NotificationRow
+export default createFragmentContainer(
+  withAtmosphere(
+    withMutationProps(
+      withStyles(styleThunk)(
+        NotificationRow
+      )
     )
-  )
+  ),
+  graphql`
+    fragment NotificationRow_notification on Notification {
+      type
+      ...AddedToTeam_notification
+      ...DenyNewUser_notification
+      ...InviteeApproved_notification
+      ...KickedOut_notification
+      ...PaymentRejected_notification
+      ...ProjectInvolves_notification
+      ...PromoteToBillingLeader_notification
+      ...RequestNewUser_notification
+      ...TeamArchived_notification
+      ...TeamInvite_notification
+    }
+  `
 );

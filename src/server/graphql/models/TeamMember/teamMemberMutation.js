@@ -1,7 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {requireSUOrLead, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamLead, requireWebsocket} from 'server/utils/authorization';
 import {errorObj} from 'server/utils/utils';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   promoteToLead: {
@@ -18,13 +19,14 @@ export default {
 
       // AUTH
       requireWebsocket(socket);
+      const myUserId = getUserId(authToken);
       const [, teamId] = teamMemberId.split('::');
-      const myTeamMemberId = `${authToken.sub}::${teamId}`;
-      await requireSUOrLead(authToken, myTeamMemberId);
+      const myTeamMemberId = toTeamMemberId(teamId, myUserId);
+      await requireTeamLead(myTeamMemberId);
 
       // VALIDATION
       const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
-      if (!promoteeOnTeam) {
+      if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
         throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
       }
 

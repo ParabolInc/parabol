@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import {TEAM_MEMBERS_INVITED} from 'universal/utils/constants';
 
@@ -13,7 +13,7 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `${TEAM_MEMBERS_INVITED}.${teamId}`;

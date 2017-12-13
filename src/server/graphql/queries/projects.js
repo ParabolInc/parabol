@@ -2,7 +2,7 @@ import {GraphQLID} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {ProjectConnection} from 'server/graphql/types/Project';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
 
 export default {
@@ -23,7 +23,7 @@ export default {
     const userId = getUserId(authToken);
     let projects;
     if (teamId) {
-      requireSUOrTeamMember(authToken, teamId);
+      requireTeamMember(authToken, teamId);
       projects = await dataLoader.get('projectsByTeamId').load(teamId);
     } else {
       projects = await dataLoader.get('projectsByUserId').load(userId);

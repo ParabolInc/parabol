@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
+import Team from 'server/graphql/types/Team';
 
 const NotifyKickedOut = new GraphQLObjectType({
   name: 'NotifyKickedOut',
@@ -18,6 +19,13 @@ const NotifyKickedOut = new GraphQLObjectType({
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId the user was kicked out of'
+    },
+    team: {
+      type: Team,
+      description: 'The team the project is on',
+      resolve: ({teamId}, args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId);
+      }
     }
   })
 });

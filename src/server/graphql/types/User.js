@@ -29,7 +29,7 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
-import {getUserId, requireAuth, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireAuth, requireTeamMember} from 'server/utils/authorization';
 // import organizations from 'server/graphql/queries/organizations';
 
 const User = new GraphQLObjectType({
@@ -191,7 +191,7 @@ const User = new GraphQLObjectType({
         if (!meeting) {
           throw new Error('Meeting ID not found');
         }
-        requireSUOrTeamMember(authToken, meeting.teamId);
+        requireTeamMember(authToken, meeting.teamId);
         return meeting;
       }
     },

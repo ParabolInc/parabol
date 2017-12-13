@@ -1,12 +1,13 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, requireSUOrLead, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamLead, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
 import {NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   type: GraphQLBoolean,
@@ -22,8 +23,8 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    const teamMemberId = `${userId}::${teamId}`;
-    requireSUOrLead(authToken, teamMemberId);
+    const teamMemberId = toTeamMemberId(teamId, userId);
+    await requireTeamLead(teamMemberId);
     requireWebsocket(socket);
 
     // RESOLUTION

@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
-  requireSUOrTeamMember,
+  requireTeamMember,
   requireWebsocket
 } from 'server/utils/authorization';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -25,7 +25,7 @@ export default {
     const now = new Date();
 
     // AUTH
-    requireSUOrTeamMember(authToken, updatedTeam.id);
+    requireTeamMember(authToken, updatedTeam.id);
     requireWebsocket(socket);
 
     // VALIDATION

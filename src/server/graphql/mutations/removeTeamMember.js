@@ -1,12 +1,8 @@
-import {
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLBoolean
-} from 'graphql';
-import {
-  requireSUOrSelfOrLead
-} from 'server/utils/authorization';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
+import {getUserId, requireTeamLead} from 'server/utils/authorization';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   type: GraphQLBoolean,
@@ -19,11 +15,15 @@ export default {
   },
   async resolve(source, {teamMemberId}, {authToken}) {
     // AUTH
-    const [userId, teamId] = teamMemberId.split('::');
-    await requireSUOrSelfOrLead(authToken, userId, teamId);
-    const isKickout = authToken.sub !== userId;
+    const myUserId = getUserId(authToken);
+    const {userId, teamId} = fromTeamMemberId(teamMemberId);
+    const isSelf = myUserId === userId;
+    if (!isSelf) {
+      const myTeamMemberId = toTeamMemberId(teamId, myUserId);
+      await requireTeamLead(myTeamMemberId);
+    }
     // RESOLUTION
-    await removeAllTeamMembers(teamMemberId, {isKickout});
+    await removeAllTeamMembers(teamMemberId, {isKickout: !isSelf});
     return true;
   }
 };
