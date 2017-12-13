@@ -67,6 +67,7 @@ const sendTeamInvitations = async (invitees, inviter, inviteId, subOptions) => {
   ]);
 
   publishTeamInvites(invitations, subOptions);
+  return undefined;
 };
 
 export default sendTeamInvitations;

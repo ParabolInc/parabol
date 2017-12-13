@@ -9,7 +9,7 @@ const fieldsToSerialize = {
     'notifications.orgId',
     'notifications.teamId',
     'notifications.userIds',
-    'orgApprovals.deniedBy',
+    'orgApprovals.deniedBy'
   ]
 };
 

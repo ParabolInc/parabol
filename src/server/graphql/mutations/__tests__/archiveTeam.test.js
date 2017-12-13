@@ -4,13 +4,13 @@ import getRethink from 'server/database/rethinkDriver';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import MockDB from 'server/__tests__/setup/MockDB';
-import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import exchange from 'server/__mocks__/exchange';
 import socket from 'server/__mocks__/socket';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import MockPubSub from 'server/__mocks__/MockPubSub';
 import * as tmsSignToken from 'server/utils/tmsSignToken';
+import archiveTeam from 'server/graphql/mutations/archiveTeam';
 
 MockDate.set(__now);
 console.error = jest.fn();

@@ -12,7 +12,7 @@ const publishInviteesApproved = (notifications, {operationId}) => {
   notifications.forEach((notification) => {
     const userId = notification.userIds[0];
     const notificationsAdded = {notifications: [notification]};
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId})
+    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId});
   });
 };
 
@@ -45,7 +45,7 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
     .delete({returnChanges: true})('changes')('old_val')
     .default([]);
   if (notifications.length === 0) {
-    throw new Error('Notification not found!');
+    throw new Error('Notification not found!', email, orgId, userId);
   }
   // RESOLUTION
   // send 1 team invite per notification
@@ -78,7 +78,7 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
       teamId: team.id,
       userId: inviterUser.id
     };
-  })
+  });
   const inviteeApprovedNotifications = inviters.map((inviter) => {
     const {inviterName, userId: inviterUserId, teamId, teamName} = inviter;
     return {
@@ -92,7 +92,7 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
       teamId,
       teamName
     };
-  })
+  });
 
   // tell the inviters that their friend was approved
   // send the invitee a series of team invites

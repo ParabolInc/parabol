@@ -34,13 +34,19 @@ const fieldsToSerialize = {
     'message.orgApprovalRemoved.orgApproval.id',
     'message.orgApprovalRemoved.orgApproval.orgId',
     'message.orgApprovalRemoved.orgApproval.teamId'
+  ],
+  teamMemberAdded: [
+    'channelId',
+    'message.teamMemberAdded.teamMember.id',
+    'message.teamMemberAdded.teamMember.teamId',
+    'message.teamMemberAdded.teamMember.userId'
   ]
 };
 
 const fieldsToSort = {
   notificationsAdded: [
     'message.notificationsAdded.notifications.0.teamName',
-    'message.notificationsAdded.notifications.0.type',
+    'message.notificationsAdded.notifications.0.type'
   ],
   orgApprovalRemoved: [
     'message.orgApprovalRemoved.orgApproval.createdAt'
@@ -66,7 +72,7 @@ export default class MockPubSub {
       const doc = this.db[channel];
       const channelFields = fieldsToSerialize[channel];
       if (!channelFields) {
-        throw new Error(`BAD MOCK: No fieldsToSerialize for DB table ${channel}`);
+        throw new Error(`BAD MOCK: No fieldsToSerialize for pubsub channel ${channel}`);
       }
       snapshot[channel] = dynamicSerializer.toStatic(doc, channelFields, {constant: unsortables.has(channel)});
       // we don't care about the order, so make it repeatable
@@ -82,7 +88,6 @@ export default class MockPubSub {
         }
         return 0;
       });
-
     }
     return snapshot;
   }

@@ -114,18 +114,19 @@ class MockDB {
 
   newInvitation(overrides = {}) {
     const invitee = newInvitee();
+    const table = this.db.invitation;
     return this.closeout('invitation', {
       id: shortid.generate(),
       // acceptedAt: null,
-      createdAt: new Date(__anHourAgo + this.db.invitations.length),
+      createdAt: new Date(__anHourAgo + table.length),
       email: invitee.email,
       // fullName: overrides.email || invitee.email,
       hashedToken: shortid.generate(),
       invitedBy: this.context.teamMember.id,
       inviteCount: 1,
       teamId: this.context.team.id,
-      tokenExpiration: new Date(__anHourAgo + INVITATION_LIFESPAN),
-      updatedAt: new Date(__anHourAgo),
+      tokenExpiration: new Date(__anHourAgo + table.length + INVITATION_LIFESPAN),
+      updatedAt: new Date(__anHourAgo + table.length),
       ...overrides
     });
   }

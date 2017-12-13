@@ -22,7 +22,7 @@ describe('approveToOrg', () => {
   test('for a 1-team approval, sends teamInvite, clears requestNewUser, sends inviteeApproved', async () => {
     // SETUP
     hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'));
-    sendEmailPromise.default = () => jest.fn();
+    sendEmailPromise.default = jest.fn(() => true);
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockPubSub = new MockPubSub();
@@ -57,7 +57,7 @@ describe('approveToOrg', () => {
   test('for a 2-team approval with the same inviter, sends teamInvite, clears requestNewUser, sends inviteeApproved', async () => {
     // SETUP
     hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'));
-    sendEmailPromise.default = () => jest.fn();
+    sendEmailPromise.default = jest.fn(() => true);
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockPubSub = new MockPubSub();
@@ -97,7 +97,7 @@ describe('approveToOrg', () => {
   test('for a 2-team approval with different inviters, sends teamInvite, clears requestNewUser, sends inviteeApproved', async () => {
     // SETUP
     hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'));
-    sendEmailPromise.default = () => jest.fn();
+    sendEmailPromise.default = jest.fn(() => true);
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockPubSub = new MockPubSub();

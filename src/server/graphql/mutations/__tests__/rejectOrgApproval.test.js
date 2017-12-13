@@ -46,5 +46,4 @@ describe('rejectOrgApproval', () => {
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
     expect(serializeGraphQLType(res, 'RejectOrgApprovalPayload', dynamicSerializer)).toMatchSnapshot();
   });
-
 });
