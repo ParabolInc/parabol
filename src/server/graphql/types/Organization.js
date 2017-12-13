@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import CreditCard from 'server/graphql/types/CreditCard';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import OrgUser from 'server/graphql/types/OrgUser';
 import OrgUserCount from 'server/graphql/types/OrgUserCount';
 import TierEnum from 'server/graphql/types/TierEnum';
-import User from 'server/graphql/types/User';
+import User, {UserConnection} from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import {BILLING_LEADER} from 'universal/utils/constants';
 
@@ -78,18 +78,32 @@ const Organization = new GraphQLObjectType({
       description: 'The datetime the organization was last updated'
     },
     orgUsers: {
-      type: new GraphQLList(OrgUser),
-      description: 'The users that belong to this org',
-      resolve(source, args, {authToken}) {
-        const {orgUsers} = source;
-        if (orgUsers && Array.isArray(orgUsers)) {
-          const userId = getUserId(authToken);
-          const myOrgUser = orgUsers.find((user) => user.id === userId);
-          if (myOrgUser && myOrgUser.role === BILLING_LEADER) {
-            return orgUsers;
+      args: {
+        ...forwardConnectionArgs
+      },
+      type: UserConnection,
+      async resolve({orgUsers}, {first}, {dataLoader}) {
+        if (!Array.isArray(orgUsers)) return null;
+
+        // RESOLUTION
+        const limitedOrgUsers = orgUsers.slice(0, first);
+
+        const userIds = limitedOrgUsers.map(({id}) => id);
+        const nodes = await dataLoader.get('users').loadMany(userIds);
+        nodes.sort((a, b) => a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1);
+        const edges = nodes.map((node) => ({
+          cursor: node.preferredName.toLowerCase(),
+          node
+        }));
+
+        const firstEdge = edges[0];
+        return {
+          edges,
+          pageInfo: {
+            endCursor: firstEdge && edges[edges.length - 1].cursor,
+            hasNextPage: false
           }
-        }
-        return null;
+        };
       }
     },
     orgUserCount: {

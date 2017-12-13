@@ -6,6 +6,7 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization';
+import OrganizationUpdatedSubscription from 'universal/subscriptions/OrganizationUpdatedSubscription';
 import {DEFAULT_TTL} from 'universal/utils/constants';
 
 const query = graphql`
@@ -16,7 +17,9 @@ const query = graphql`
   }
 `;
 
-// const subscriptions = [];
+const subscriptions = [
+  OrganizationUpdatedSubscription
+];
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
@@ -32,7 +35,8 @@ const OrganizationRoot = (rootProps) => {
       environment={atmosphere}
       query={query}
       variables={{orgId}}
-      // subscriptions={subscriptions}
+      subscriptions={subscriptions}
+      subParams={{orgId}}
       render={({error, props: queryProps}) => {
         if (error) {
           return <ErrorComponent height={'14rem'} error={error} />;
