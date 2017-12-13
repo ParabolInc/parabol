@@ -129,6 +129,12 @@ const handleProjectHover = (props, monitor, component) => {
   // constantly during a drag operation; if the last dragged project and drop
   // target projects are the same with the same before/after relationship, then
   // we don't need to re-insert them.
+  if (!monitor.isOver({shallow: true})) {
+    lastDraggedProjectId = null;
+    lastDropTargetProjectId = null;
+    lastBefore = null;
+    return;
+  }
   if (
     lastDraggedProjectId === draggedProjectId &&
     dropTargetProjectId === lastDropTargetProjectId &&
@@ -140,7 +146,7 @@ const handleProjectHover = (props, monitor, component) => {
   lastDropTargetProjectId = dropTargetProjectId;
   lastBefore = before;
 
-  insert(draggedProjectId, before);
+  insert(draggedProject, before);
 };
 
 const projectDropCollect = (connect) => ({
