@@ -51,7 +51,7 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
       asyncIterator.return();
       delete socket.subs[opId];
     });
-    socket.on('disconnect', async () => {
+    socket.on('disconnect', () => {
       graphQLHandler({
         query: `
         mutation DisconnectSocket {
