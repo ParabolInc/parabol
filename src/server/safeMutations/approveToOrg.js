@@ -1,19 +1,37 @@
 import getRethink from 'server/database/rethinkDriver';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import getPubSub from 'server/utils/getPubSub';
-import publishNotifications from 'server/utils/publishNotifications';
 import {APPROVED, PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {
-  INVITEE_APPROVED,
-  NOTIFICATIONS_CLEARED,
-  ORG_APPROVAL_REMOVED,
+  INVITEE_APPROVED, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED, ORG_APPROVAL_REMOVED,
   REQUEST_NEW_USER
 } from 'universal/utils/constants';
-import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
+
+const publishInviteesApproved = (notifications, {operationId}) => {
+  notifications.forEach((notification) => {
+    const userId = notification.userIds[0];
+    const notificationsAdded = {notifications: [notification]};
+    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId})
+  });
+};
+
+const publishClearedRequests = (userIds, deletedIds, subOptions) => {
+  const notificationsCleared = {deletedIds};
+  userIds.forEach((userId) => {
+    getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, ...subOptions});
+  });
+};
+
+const publishOrgApprovals = (orgApprovals, {operationId}) => {
+  orgApprovals.forEach((orgApproval) => {
+    const {teamId} = orgApproval;
+    const orgApprovalRemoved = {orgApproval};
+    getPubSub().publish(`${ORG_APPROVAL_REMOVED}.${teamId}`, {orgApprovalRemoved, operationId});
+  });
+};
 
 const approveToOrg = async (email, orgId, userId, subOptions) => {
-  const {mutatorId, operationId} = subOptions;
   const r = getRethink();
   const now = new Date();
   // get all notifications for this email to join this org
@@ -60,7 +78,7 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
       teamId: team.id,
       userId: inviterUser.id
     };
-  });
+  })
   const inviteeApprovedNotifications = inviters.map((inviter) => {
     const {inviterName, userId: inviterUserId, teamId, teamName} = inviter;
     return {
@@ -74,13 +92,8 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
       teamId,
       teamName
     };
-  });
-  const inviteeApprovedNotificationsByUserId = {};
-  inviteeApprovedNotifications.forEach((notification) => {
-    const inviterUserId = notification.userIds[0];
-    inviteeApprovedNotificationsByUserId[inviterUserId] = inviteeApprovedNotificationsByUserId[inviterUserId] || [];
-    inviteeApprovedNotificationsByUserId[inviterUserId].push(notification);
-  });
+  })
+
   // tell the inviters that their friend was approved
   // send the invitee a series of team invites
   const {inviteeUser, orgApprovals} = await r({
@@ -92,32 +105,21 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
         status: APPROVED,
         approvedBy: userId,
         updatedAt: now
-      }, {returnChanges: true})('changes')('new_val').default([]),
+      }, {returnChanges: true})('changes')('new_val')
+      .default([]),
     inviteeUser: r.table('User').getAll(email, {index: 'email'}).nth(0).default(null)
   });
+  publishInviteesApproved(inviteeApprovedNotifications, subOptions);
 
   const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
 
-  const teamInvitesToAdd = await Promise.all(inviters.map((inviter) => {
+  await Promise.all(inviters.map((inviter) => {
     return sendTeamInvitations(invitees, inviter, undefined, subOptions);
   }));
 
-  orgApprovals.forEach((orgApproval) => {
-    const {teamId} = orgApproval;
-    const orgApprovalRemoved = {orgApproval};
-    getPubSub().publish(`${ORG_APPROVAL_REMOVED}.${teamId}`, {orgApprovalRemoved, operationId});
-  });
-
-  // TEAM_INVITEs + INVITEE_APPROVEDs
-  const notificationsToAdd = mergeObjectsWithArrValues(...teamInvitesToAdd, inviteeApprovedNotificationsByUserId);
-  publishNotifications({notificationsToAdd});
-
-  // keep this separate so we can include the mutatorId
-  const notificationsCleared = {deletedIds};
-  notifications[0].userIds.forEach((notifiedUserId) => {
-    getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared, mutatorId});
-  });
-  return notificationsCleared;
+  publishOrgApprovals(orgApprovals, subOptions);
+  publishClearedRequests(notifications[0].userIds, deletedIds, subOptions);
+  return {deletedIds};
 };
 
 export default approveToOrg;

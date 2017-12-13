@@ -15,7 +15,7 @@ Object {
       "updatedAt": 2017-01-01T08:00:00.000Z,
     },
     Object {
-      "createdAt": 2017-01-01T08:00:00.000Z,
+      "createdAt": 2017-01-01T07:00:00.000Z,
       "email": 3,
       "hashedToken": "HA$H",
       "id": 1,

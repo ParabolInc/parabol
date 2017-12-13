@@ -1,16 +1,18 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam';
+import ArchiveTeamMutation from 'universal/mutations/ArchiveTeamMutation';
 
 
 class ArchiveTeamContainer extends Component {
   static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -26,10 +28,11 @@ class ArchiveTeamContainer extends Component {
   }
 
   archiveTeam = async () => {
-    const {team: {teamId}, history} = this.props;
-    const variables = {teamId};
-    cashay.mutate('archiveTeam', {variables});
-    history.push('/me');
+    const {atmosphere, team: {teamId}, history} = this.props;
+    const onCompleted = () => {
+      history.push('/me');
+    };
+    ArchiveTeamMutation(atmosphere, teamId, undefined, onCompleted);
   }
 
   render() {
@@ -48,7 +51,7 @@ class ArchiveTeamContainer extends Component {
 }
 
 export default createFragmentContainer(
-  withRouter(ArchiveTeamContainer),
+  withAtmosphere(withRouter(ArchiveTeamContainer)),
   graphql`
     fragment ArchiveTeamContainer_team on Team {
       teamId: id

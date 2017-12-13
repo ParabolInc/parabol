@@ -3,8 +3,6 @@ import getRethink from 'server/database/rethinkDriver';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import publishNotifications from 'server/utils/publishNotifications';
-
 
 export default {
   name: 'ResendTeamInvite',
@@ -37,8 +35,7 @@ export default {
       teamId
     };
     const invitees = [{email, fullName}];
-    const notificationsToAdd = sendTeamInvitations(invitees, inviter, inviteId, subOptions);
-    publishNotifications({notificationsToAdd});
+    sendTeamInvitations(invitees, inviter, inviteId, subOptions);
     return true;
   }
 };

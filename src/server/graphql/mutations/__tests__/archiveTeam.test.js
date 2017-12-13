@@ -10,7 +10,6 @@ import exchange from 'server/__mocks__/exchange';
 import socket from 'server/__mocks__/socket';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import MockPubSub from 'server/__mocks__/MockPubSub';
-import * as getPubSub from 'server/utils/getPubSub';
 import * as tmsSignToken from 'server/utils/tmsSignToken';
 
 MockDate.set(__now);
@@ -30,7 +29,6 @@ describe('ArchiveTeam', () => {
     const authToken = mockAuthToken(teamLead);
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
-    getPubSub.default = () => mockPubSub;
     tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
     // TEST
     await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, exchange, socket});
@@ -62,7 +60,6 @@ describe('ArchiveTeam', () => {
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     exchange.publish.mockReset();
-    getPubSub.default = () => mockPubSub;
     tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
     // TEST
     await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, exchange, socket});

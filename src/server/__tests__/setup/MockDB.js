@@ -117,7 +117,7 @@ class MockDB {
     return this.closeout('invitation', {
       id: shortid.generate(),
       // acceptedAt: null,
-      createdAt: new Date(__anHourAgo),
+      createdAt: new Date(__anHourAgo + this.db.invitations.length),
       email: invitee.email,
       // fullName: overrides.email || invitee.email,
       hashedToken: shortid.generate(),
