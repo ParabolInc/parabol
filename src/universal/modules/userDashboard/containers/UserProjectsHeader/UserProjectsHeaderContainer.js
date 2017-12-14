@@ -2,29 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import UserProjectsHeader from 'universal/modules/userDashboard/components/UserProjectsHeader/UserProjectsHeader';
-import {cashay} from 'cashay';
-
-const userColumnsQuery = `
-query {
-  teams @cached(type: "[Team]") {
-    id
-    name
-  }
-}
-`;
 
 const mapStateToProps = (state) => {
-  const {teams} = cashay.query(userColumnsQuery, {
-    op: 'userProjectsHeaderContainer',
-    resolveCached: {
-      teams: () => () => true
-    },
-    sort: {
-      teams: (a, b) => a.name > b.name ? 1 : -1
-    }
-  }).data;
   return {
-    teams,
     teamFilterId: state.userDashboard.teamFilterId,
     teamFilterName: state.userDashboard.teamFilterName
   };
@@ -32,8 +12,9 @@ const mapStateToProps = (state) => {
 
 const UserProjectsHeaderContainer = (props) => {
   const {dispatch, teams, teamFilterId, teamFilterName} = props;
+  const teamsArray = teams || [];
   return (
-    <UserProjectsHeader dispatch={dispatch} teams={teams} teamFilterId={teamFilterId} teamFilterName={teamFilterName} />
+    <UserProjectsHeader dispatch={dispatch} teams={teamsArray} teamFilterId={teamFilterId} teamFilterName={teamFilterName} />
   );
 };
 

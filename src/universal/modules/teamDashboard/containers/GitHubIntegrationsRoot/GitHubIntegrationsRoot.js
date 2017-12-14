@@ -15,6 +15,7 @@ import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubs
 import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription';
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription';
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 const githubRepoQuery = graphql`
   query GitHubIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
@@ -43,7 +44,7 @@ const subscriptions = [
 const cacheConfig = {ttl: DEFAULT_TTL};
 
 const GitHubIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
-  const [, teamId] = teamMemberId.split('::');
+  const {teamId} = fromTeamMemberId(teamMemberId);
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

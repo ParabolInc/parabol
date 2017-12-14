@@ -1,20 +1,17 @@
-import {
-  AGENDA_ITEMS,
-  SUMMARY
-} from 'universal/utils/constants';
-import makePushURL from './makePushURL';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {cashay} from 'cashay';
+import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
+import {AGENDA_ITEMS} from 'universal/utils/constants';
+import makePushURL from './makePushURL';
 
 export default function handleRedirects(oldProps, nextProps) {
-  const {agenda, isFacilitating, localPhaseItem, history, localPhase, team} = nextProps;
-  const {agenda: oldAgenda = {}, team: oldTeam = {}} = oldProps;
+  const {isFacilitating, localPhaseItem, history, localPhase, viewer} = nextProps;
+  const {team} = viewer;
+  const {viewer: oldViewer = {}} = oldProps;
+  const {team: oldTeam = {}} = oldViewer;
+  const oldAgenda = oldTeam.agendaItems || [];
   /* DEBUG: uncomment below */
   // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
-  const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
-
-  // bail out fast while we're waiting for the team sub
-  if (!teamId) return undefined;
+  const {agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId} = team;
 
   // DEBUGGING
   // if no/bad phase given, goto the facilitator
@@ -27,19 +24,13 @@ export default function handleRedirects(oldProps, nextProps) {
 
   // if the phase should be followed by a number
   if (localPhaseInfo.items) {
-    const {countName, arrayName} = localPhaseInfo.items;
-    const initialPhaseItemCount = nextProps[countName];
-    const phaseItems = nextProps[arrayName];
-
-    // bail out fast if the query or sub items haven't returned
-    if (initialPhaseItemCount === null || initialPhaseItemCount > phaseItems.length) {
-      return undefined;
-    }
+    const {arrayName} = localPhaseInfo.items;
+    const phaseItems = team[arrayName];
 
     // if it's a bad number (or not a number at all)
-    if (localPhaseItem > phaseItems.length || localPhaseItem <= 0) {
+    if (localPhaseItem > phaseItems.length || localPhaseItem <= 0 || !localPhaseItem) {
       // did an item get removed?
-      const oldPhaseItems = oldProps[arrayName];
+      const oldPhaseItems = oldTeam[arrayName] || [];
       if (oldPhaseItems.length > phaseItems.length) {
         // // an agenda item or team member got deleted, is it the current one?
         const nextPhaseItem = phaseItems.length;
@@ -48,13 +39,15 @@ export default function handleRedirects(oldProps, nextProps) {
             teamId,
             nextPhaseItem
           };
-          cashay.mutate('moveMeeting', {variables});
+          const {atmosphere, onError, onCompleted, submitMutation} = nextProps;
+          submitMutation();
+          MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
         }
         const pushURL = makePushURL(teamId, facilitatorPhase, nextPhaseItem);
         history.replace(pushURL);
         return false;
       } else if (facilitatorPhase === localPhase || phaseItems.length <= 1) {
-      // if they're in the same phase as the facilitator, or the phase they wanna go to has no items, go to their phase item
+        // if they're in the same phase as the facilitator, or the phase they wanna go to has no items, go to their phase item
         const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
         history.replace(pushURL);
         return false;
@@ -101,12 +94,11 @@ export default function handleRedirects(oldProps, nextProps) {
   }
 
   // check sort order for agenda items
-  if (localPhase === AGENDA_ITEMS && oldAgenda.length === agenda.length) {
-    // we made sure agendaCount was loaded above
+  if (localPhase === AGENDA_ITEMS && oldAgenda.length === agendaItems.length) {
     const oldAgendaItem = oldAgenda[localPhaseItem - 1];
-    const newAgendaItem = agenda[localPhaseItem - 1];
+    const newAgendaItem = agendaItems[localPhaseItem - 1];
     if (!newAgendaItem || newAgendaItem.id !== oldAgendaItem.id) {
-      const updatedAgendaItemIdx = agenda.findIndex((a) => a.id === oldAgendaItem.id);
+      const updatedAgendaItemIdx = agendaItems.findIndex((a) => a.id === oldAgendaItem.id);
       if (updatedAgendaItemIdx !== -1) {
         const pushURL = makePushURL(teamId, AGENDA_ITEMS, updatedAgendaItemIdx + 1);
         history.replace(pushURL);
@@ -115,9 +107,5 @@ export default function handleRedirects(oldProps, nextProps) {
     }
   }
 
-  if (facilitatorPhase === SUMMARY) {
-    history.replace(`/summary/${meetingId}`);
-    return false;
-  }
   return true;
 }

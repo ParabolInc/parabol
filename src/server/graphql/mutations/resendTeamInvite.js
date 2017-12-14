@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
 import publishNotifications from 'server/utils/publishNotifications';
 
 
@@ -25,7 +25,7 @@ export default {
     if (!invitation) throw new Error('Invitation not found!');
 
     const {email, fullName, orgId, teamId} = invitation;
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
 

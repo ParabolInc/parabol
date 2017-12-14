@@ -1,28 +1,37 @@
 import {matchPath} from 'react-router-dom';
 import {ConnectionHandler} from 'relay-runtime';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
   ADD_TO_TEAM,
+  APP_UPGRADE_PENDING_KEY,
+  APP_UPGRADE_PENDING_RELOAD,
+  APP_VERSION_KEY,
   DENY_NEW_USER,
+  FACILITATOR_DISCONNECTED,
   FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
-  KICKED_OUT, MENTIONEE, PAYMENT_REJECTED, PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER,
+  KICKED_OUT,
+  MENTIONEE,
+  PAYMENT_REJECTED,
+  PROJECT_INVOLVES,
+  PROMOTE_TO_BILLING_LEADER,
   REJOIN_TEAM,
-  REQUEST_NEW_USER, TEAM_ARCHIVED,
-  TEAM_INVITE
+  REQUEST_NEW_USER,
+  TEAM_ARCHIVED,
+  TEAM_INVITE,
+  VERSION_INFO
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
-import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 
 export const addNotificationUpdater = (store, viewerId, newNode) => {
   const viewer = store.get(viewerId);
   const conn = ConnectionHandler.getConnection(
     viewer,
-    'SocketRoute_notifications'
+    'DashboardWrapper_notifications'
   );
   const nodeId = newNode.getValue('id');
   const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('id') === nodeId);
@@ -41,10 +50,10 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
 const notificationHandler = {
   [ADD_TO_TEAM]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
-    const teamName = payload.getValue('teamName');
-    const id = payload.getValue('id');
-    // localId isn't always present because if i accept to join i want the authToken but no notification
-    const {id: localId} = fromGlobalId(id);
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
+    const notificationId = payload.getValue('id');
+    // notificationId isn't always present because if i accept to join i want the authToken but no notification
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Congratulations!',
@@ -52,13 +61,13 @@ const notificationHandler = {
       action: {
         label: 'Great!',
         callback: () => {
-          if (localId) {
-            ClearNotificationMutation(environment, localId);
+          if (notificationId) {
+            ClearNotificationMutation(environment, notificationId);
           }
         }
       }
     }));
-    if (localId) {
+    if (notificationId) {
       addNotificationUpdater(store, viewerId, payload);
     }
   },
@@ -78,9 +87,31 @@ const notificationHandler = {
     }));
     addNotificationUpdater(store, viewerId, payload);
   },
+  [FACILITATOR_DISCONNECTED]: (payload, {environment, dispatch, store}) => {
+    const oldFacilitatorName = payload
+      .getLinkedRecord('oldFacilitator')
+      .getValue('preferredName');
+    const newFacilitator = payload.getLinkedRecord('newFacilitator');
+    const newFacilitatorName = newFacilitator.getValue('preferredName');
+    const newFacilitatorTeamMemberId = newFacilitator.getValue('id');
+    const newFacilitatorUserId = newFacilitator.getValue('userId');
+    const teamId = payload.getValue('teamId');
+    const team = store.get(teamId);
+    // this can happen if it comes it during a refresh
+    if (!team) return;
+    team.setValue(newFacilitatorTeamMemberId, 'activeFacilitator');
+    const {userId} = environment;
+    const facilitatorIntro = userId === newFacilitatorUserId ? 'You are' : `${newFacilitatorName} is`;
+    dispatch(showInfo({
+      title: `${oldFacilitatorName} Disconnected!`,
+      message: `${facilitatorIntro} the new facilitator`
+    }));
+  },
   [FACILITATOR_REQUEST]: (payload, {environment, dispatch}) => {
-    const requestorName = payload.getValue('requestorName');
-    const requestorId = payload.getValue('requestorId');
+    const requestor = payload.getLinkedRecord('requestor');
+    if (!requestor) return;
+    const requestorName = requestor.getValue('preferredName');
+    const requestorId = requestor.getValue('id');
     dispatch(showInfo({
       title: `${requestorName} wants to facilitate`,
       message: 'Tap ‘Promote’ to hand over the reins',
@@ -88,10 +119,7 @@ const notificationHandler = {
       action: {
         label: 'Promote',
         callback: () => {
-          const onError = (err) => {
-            console.error(err);
-          };
-          PromoteFacilitatorMutation(environment, requestorId, onError);
+          PromoteFacilitatorMutation(environment, {facilitatorId: requestorId});
         }
       }
     }));
@@ -106,9 +134,8 @@ const notificationHandler = {
       action: {
         label: 'Great!',
         callback: () => {
-          const id = payload.getValue('id');
-          const {id: localId} = fromGlobalId(id);
-          ClearNotificationMutation(environment, localId);
+          const notificationId = payload.getValue('id');
+          ClearNotificationMutation(environment, notificationId);
         }
       }
     }));
@@ -116,7 +143,8 @@ const notificationHandler = {
   },
   [JOIN_TEAM]: (payload, {dispatch}) => {
     const preferredName = payload.getValue('preferredName');
-    const teamName = payload.getValue('teamName');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Ahoy, a new crewmate!',
@@ -125,8 +153,9 @@ const notificationHandler = {
   },
   [KICKED_OUT]: (payload, {dispatch, history, location, environment, store}) => {
     const {viewerId} = environment;
-    const teamName = payload.getValue('teamName');
-    const teamId = payload.getValue('teamId');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
+    const teamId = team.getValue('id');
     const isKickout = payload.getValue('isKickout');
     if (isKickout) {
       dispatch(showWarning({
@@ -136,9 +165,8 @@ const notificationHandler = {
         action: {
           label: 'OK',
           callback: () => {
-            const id = payload.getValue('id');
-            const {id: localId} = fromGlobalId(id);
-            ClearNotificationMutation(environment, localId);
+            const notificationId = payload.getValue('id');
+            ClearNotificationMutation(environment, notificationId);
           }
         }
       }));
@@ -214,7 +242,8 @@ const notificationHandler = {
   },
   [REJOIN_TEAM]: (payload, {dispatch}) => {
     const preferredName = payload.getValue('preferredName');
-    const teamName = payload.getValue('teamName');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'They’re back!',
@@ -225,8 +254,6 @@ const notificationHandler = {
     const {viewerId} = environment;
     const inviterName = payload.getValue('inviterName');
     // TODO highlight the id, but don't store the state in the url cuz ugly
-    // const globalId = payload.getValue('id');
-    // const {id: dbId} = fromGlobalId(globalId);
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Approval Requested!',
@@ -250,9 +277,8 @@ const notificationHandler = {
       action: {
         label: 'OK',
         callback: () => {
-          const id = payload.getValue('id');
-          const {id: localId} = fromGlobalId(id);
-          ClearNotificationMutation(environment, localId);
+          const notificationId = payload.getValue('id');
+          ClearNotificationMutation(environment, notificationId);
         }
       }
     }));
@@ -261,7 +287,8 @@ const notificationHandler = {
   [TEAM_INVITE]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
     const inviterName = payload.getValue('inviterName');
-    const teamName = payload.getValue('teamName');
+    const team = payload.getLinkedRecord('team');
+    const teamName = team.getValue('name');
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'You’re invited!',
@@ -269,13 +296,31 @@ const notificationHandler = {
       action: {
         label: 'Accept!',
         callback: () => {
-          const id = payload.getValue('id');
-          const {id: localId} = fromGlobalId(id);
-          AcceptTeamInviteMutation(environment, localId);
+          const notificationId = payload.getValue('id');
+          AcceptTeamInviteMutation(environment, notificationId);
         }
       }
     }));
     addNotificationUpdater(store, viewerId, payload);
+  },
+  [VERSION_INFO]: (payload, {dispatch, history}) => {
+    const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
+    const versionOnServer = payload.getValue('version');
+    if (versionOnServer !== versionInStorage) {
+      dispatch(showWarning({
+        title: 'New stuff!',
+        message: 'A new version of Parabol is available',
+        autoDismiss: 0,
+        action: {
+          label: 'Log out and upgrade',
+          callback: () => {
+            history.replace('/signout');
+          }
+        }
+      }));
+      window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
+        APP_UPGRADE_PENDING_RELOAD);
+    }
   }
 };
 

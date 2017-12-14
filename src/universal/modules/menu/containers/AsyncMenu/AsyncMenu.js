@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import AsyncMenu from 'universal/modules/menu/components/AsyncMenu/AsyncMenu';
 import withCoords from 'universal/decorators/withCoords';
+import AsyncMenu from 'universal/modules/menu/components/AsyncMenu/AsyncMenu';
 
 class AsyncMenuContainer extends Component {
   static propTypes = {

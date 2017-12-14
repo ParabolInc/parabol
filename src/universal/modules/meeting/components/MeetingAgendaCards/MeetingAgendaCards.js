@@ -1,43 +1,28 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import withHotkey from 'react-hotkey-hoc';
-import shortid from 'shortid';
+import {withRouter} from 'react-router';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
-import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import NullableProject from 'universal/components/NullableProject/NullableProject';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
-import {withRouter} from 'react-router';
 
-const handleAddProjectFactory = (atmosphere, dispatch, history, teamMemberId, agendaId) => (content) => () => {
-  const [, teamId] = teamMemberId.split('::');
-  const newProject = {
-    id: `${teamId}::${shortid.generate()}`,
-    content,
-    status: ACTIVE,
-    teamMemberId,
-    sortOrder: 0,
-    agendaId
-  };
-  CreateProjectMutation(atmosphere, newProject, MEETING);
-};
-
-const makeCards = (array, dispatch, myTeamMemberId, itemStyle, handleAddProject) => {
-  return array.map((outcome) => {
-    const {id} = outcome;
+const makeCards = (array, myUserId, itemStyle, handleAddProject) => {
+  return array.map((project) => {
+    const {id} = project;
     const key = `$outcomeCard${id}`;
-    const [myUserId] = myTeamMemberId.split('::');
     return (
       <div className={css(itemStyle)} key={key}>
-        <OutcomeOrNullCard
+        <NullableProject
           area={MEETING}
           handleAddProject={handleAddProject}
           isAgenda
           myUserId={myUserId}
-          outcome={outcome}
+          project={project}
         />
       </div>
     );
@@ -58,39 +43,53 @@ const makePlaceholders = (length, itemStyle) => {
   /* eslint-enable */
 };
 
-const MeetingAgendaCards = (props) => {
-  const {agendaId, atmosphere, bindHotkey, dispatch, history, myTeamMemberId, outcomes, styles} = props;
-  const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, myTeamMemberId, agendaId);
-  const addBlankProject = handleAddProject();
-  bindHotkey('p', addBlankProject);
-  return (
-    <div className={css(styles.root)}>
-      {/* Get Cards */}
-      {outcomes.length !== 0 &&
-      makeCards(outcomes, dispatch, myTeamMemberId, styles.item, handleAddProject)
-      }
-      {/* Input Card */}
-      <div className={css(styles.item)}>
-        <CreateCard
-          handleAddProject={addBlankProject}
-          hasControls
-        />
+class MeetingAgendaCards extends Component {
+  componentWillMount() {
+    const {bindHotkey} = this.props;
+    bindHotkey('p', this.handleAddProject());
+  }
+
+  handleAddProject = (content) => () => {
+    const {atmosphere, teamId, agendaId} = this.props;
+    const {userId} = atmosphere;
+    const newProject = {
+      content,
+      status: ACTIVE,
+      sortOrder: 0,
+      agendaId,
+      userId,
+      teamId
+    };
+    CreateProjectMutation(atmosphere, newProject, MEETING);
+  }
+
+  render() {
+    const {atmosphere: {userId}, projects, styles} = this.props;
+    return (
+      <div className={css(styles.root)}>
+        {makeCards(projects, userId, styles.item, this.handleAddProject)}
+        {/* Input Card */}
+        <div className={css(styles.item)}>
+          <CreateCard
+            handleAddProject={this.handleAddProject()}
+            hasControls
+          />
+        </div>
+        {/* Placeholder Cards */}
+        {makePlaceholders(projects.length, styles.item)}
       </div>
-      {/* Placeholder Cards */}
-      {makePlaceholders(outcomes.length, styles.item)}
-    </div>
-  );
-};
+    );
+  }
+}
 
 MeetingAgendaCards.propTypes = {
   agendaId: PropTypes.string.isRequired,
   atmosphere: PropTypes.object.isRequired,
   bindHotkey: PropTypes.func,
-  dispatch: PropTypes.func,
   history: PropTypes.object.isRequired,
-  myTeamMemberId: PropTypes.string,
-  outcomes: PropTypes.array.isRequired,
-  styles: PropTypes.object
+  projects: PropTypes.array.isRequired,
+  styles: PropTypes.object,
+  teamId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({

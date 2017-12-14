@@ -3,12 +3,12 @@ import {forwardConnectionArgs} from 'graphql-relay';
 import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {RelayProjectConnection} from 'server/graphql/types/RelayProject';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {ProjectConnection} from 'server/graphql/types/Project';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import {PERSONAL} from 'universal/utils/constants';
 
 export default {
-  type: RelayProjectConnection,
+  type: ProjectConnection,
   args: {
     ...forwardConnectionArgs,
     after: {
@@ -25,7 +25,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const teamMemberId = `${userId}::${teamId}`;

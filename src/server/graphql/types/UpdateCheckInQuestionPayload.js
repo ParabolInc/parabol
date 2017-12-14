@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
-import {Team} from 'server/graphql/models/Team/teamSchema';
+import Team from 'server/graphql/types/Team';
 
 const UpdateCheckInQuestionPayload = new GraphQLObjectType({
   name: 'UpdateCheckInQuestionPayload',

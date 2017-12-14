@@ -6,7 +6,7 @@ import {
 } from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields';
 import OrgApproval from './orgApprovalSchema';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 import {PENDING} from 'server/utils/serverConstants';
 
@@ -23,7 +23,7 @@ export default {
       const r = getRethink();
 
       // AUTH
-      requireSUOrTeamMember(authToken, teamId);
+      requireTeamMember(authToken, teamId);
 
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);

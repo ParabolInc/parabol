@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import NotificationsClearedPayload from 'server/graphql/types/NotificationsClearedPayload';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {requireTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {NOTIFICATIONS_CLEARED, TEAM_INVITE} from 'universal/utils/constants';
 
@@ -26,7 +26,7 @@ export default {
     if (!teamId) {
       throw new Error('Invitation not found!');
     }
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
 

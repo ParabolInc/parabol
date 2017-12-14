@@ -12,6 +12,7 @@ import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
+import {createFragmentContainer} from 'react-relay';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -27,21 +28,20 @@ const fetchMeetingAvatarMenu = () => System.import('universal/modules/meeting/co
 const MeetingAvatarGroup = (props) => {
   const {
     atmosphere,
-    avatars,
-    facilitatorPhaseItem,
     gotoItem,
     isFacilitating,
     localPhase,
     localPhaseItem,
-    onFacilitatorPhase,
-    styles
+    styles,
+    team: {activeFacilitator, teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers}
   } = props;
+  const onFacilitatorPhase = facilitatorPhase === localPhase;
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES;
   return (
     <div className={css(styles.meetingAvatarGroupRoot)}>
       <div className={css(styles.meetingAvatarGroupInner)}>
         {
-          avatars.map((avatar, idx) => {
+          teamMembers.map((avatar, idx) => {
             const {isConnected, isSelf} = avatar;
             const picture = avatar.picture || defaultUserAvatar;
             const count = idx + 1;
@@ -63,25 +63,23 @@ const MeetingAvatarGroup = (props) => {
               gotoItem(count);
             };
             const promoteToFacilitator = () => {
-              const onError = (err) => {
-                console.error(err);
-              };
-              PromoteFacilitatorMutation(atmosphere, avatar.id, onError);
+              PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id});
             };
             const requestFacilitator = () => {
-              const [, teamId] = avatar.id.split('::');
               RequestFacilitatorMutation(atmosphere, teamId);
             };
+            const avatarIsFacilitating = activeFacilitator === avatar.id;
             const handleNavigate = canNavigate && navigateTo || undefined;
             const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator || undefined;
-            const handleRequest = avatar.isFacilitating && !isSelf && requestFacilitator || undefined;
+            const handleRequest = avatarIsFacilitating && !isSelf && requestFacilitator || undefined;
             const toggle = () => (
               <Avatar
-                {...avatar}
                 hasBadge
-                isActive={avatar.isFacilitating}
+                isActive={avatarIsFacilitating}
                 isClickable
                 picture={picture}
+                isConnected={avatar.isConnected}
+                isCheckedIn={avatar.isCheckedIn}
                 size="fill"
               />
             );
@@ -104,7 +102,7 @@ const MeetingAvatarGroup = (props) => {
                     toggle={toggle()}
                   />
                 </div>
-                {avatar.isFacilitating &&
+                {avatarIsFacilitating &&
                 <div className={tagBlockStyles}>
                   <Tag colorPalette="gray" label="Facilitator" />
                 </div>
@@ -120,14 +118,12 @@ const MeetingAvatarGroup = (props) => {
 
 MeetingAvatarGroup.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  avatars: PropTypes.array,
-  facilitatorPhaseItem: PropTypes.number,
   gotoItem: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
-  onFacilitatorPhase: PropTypes.bool,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  team: PropTypes.object.isRequired
 };
 
 const borderDefault = appTheme.palette.mid20a;
@@ -213,4 +209,21 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup));
+export default createFragmentContainer(
+  withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup)),
+  graphql`
+    fragment MeetingAvatarGroup_team on Team {
+      teamId: id
+      activeFacilitator
+      facilitatorPhase
+      facilitatorPhaseItem
+      teamMembers(sortBy: "checkInOrder") {
+        id
+        isCheckedIn
+        isConnected
+        isSelf
+        picture
+        ...MeetingAvatarMenu_avatar
+      }
+    }`
+);

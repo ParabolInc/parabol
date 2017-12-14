@@ -8,12 +8,12 @@ import getPubSub from 'server/utils/getPubSub';
 import {ADD_USER} from 'server/utils/serverConstants';
 import {
   ADD_TO_TEAM, JOIN_TEAM, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED,
-  NOTIFICATIONS_CLEARED
+  NOTIFICATIONS_CLEARED, TEAM_MEMBER_ADDED
 } from 'universal/utils/constants';
 import {getUserId} from 'server/utils/authorization';
 import tmsSignToken from 'server/utils/tmsSignToken';
 
-const acceptTeamInvite = async (teamId, authToken, email) => {
+const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
   const r = getRethink();
   const now = new Date();
   const userId = getUserId(authToken);
@@ -25,10 +25,10 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
   const userTeams = user.tms || [];
   const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
   const tms = [...userTeams, teamId];
-  const {expireInviteNotificationIds} = await r({
+  const {expireInviteNotificationIds, teamMember} = await r({
     // add the team to the user doc
     userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
-    newTeamMember: insertNewTeamMember(userId, teamId),
+    teamMember: insertNewTeamMember(userId, teamId),
     // find all possible emails linked to this person and mark them as accepted
     expireEmailInvitations: r.table('Invitation')
       .getAll(email, {index: 'email'})
@@ -63,7 +63,9 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
       preferredName: user.preferredName || user.email
     }]
   };
+  const teamMemberAdded = {teamMember};
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
+  getPubSub().publish(`${TEAM_MEMBER_ADDED}.${teamId}`, {teamMemberAdded, ...subOptions});
 
   // Send the new team member a welcome & a new token
   const newAuthToken = tmsSignToken(authToken, tms);

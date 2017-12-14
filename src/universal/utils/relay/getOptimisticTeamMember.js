@@ -1,16 +1,14 @@
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
+import clientTempId from 'universal/utils/relay/clientTempId';
 
-let tempId = 0;
 const getOptimisticTeamMember = (store, viewerId, teamId) => {
-  const globalTeamMemberId = toGlobalId('TeamMember', `${fromGlobalId(viewerId).id}::${teamId}`);
-  const currentTeamMember = store.get(globalTeamMemberId);
+  const teamMemberId = `${viewerId}::${teamId}`;
+  const currentTeamMember = store.get(teamMemberId);
   if (currentTeamMember) return currentTeamMember;
-  const teamMemberId = `client:TeamMember:${tempId++}`;
-  return store.create(teamMemberId, 'TeamMember')
+  const tempTeamMemberId = clientTempId();
+  return store.create(tempTeamMemberId, 'TeamMember')
     .setValue(null, 'picture')
     .setValue('Me', 'preferredName')
-    .setValue(teamMemberId, 'id');
+    .setValue(tempTeamMemberId, 'id');
 };
 
 export default getOptimisticTeamMember;

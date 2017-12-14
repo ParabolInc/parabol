@@ -5,7 +5,7 @@ import Atmosphere from 'universal/Atmosphere';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import {requiresAction} from 'universal/data/notification';
+import {requiresAction} from 'universal/types/notification';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
@@ -13,7 +13,6 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const Notifications = (props) => {
@@ -32,7 +31,7 @@ const Notifications = (props) => {
   const clearAllNotifications = () => {
     submitMutation();
     clearableNotifs.forEach(({node}) => {
-      ClearNotificationMutation(atmosphere, fromGlobalId(node.id).id, onError, onCompleted);
+      ClearNotificationMutation(atmosphere, node.id, onError, onCompleted);
     });
   };
 
@@ -81,7 +80,6 @@ const Notifications = (props) => {
 Notifications.propTypes = {
   atmosphere: PropTypes.instanceOf(Atmosphere),
   dispatch: PropTypes.func.isRequired,
-  error: PropTypes.instanceOf(Error),
   notifications: PropTypes.object,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,

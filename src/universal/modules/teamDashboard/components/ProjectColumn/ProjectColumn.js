@@ -1,34 +1,34 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {DropTarget as dropTarget} from 'react-dnd';
+import withScrolling from 'react-dnd-scrollzone';
 import FontAwesome from 'react-fontawesome';
-import shortid from 'shortid';
+import {connect} from 'react-redux';
+import {withRouter} from 'react-router';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
 import Badge from 'universal/components/Badge/Badge';
-import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
+import DraggableProject from 'universal/containers/ProjectCard/DraggableProject';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import handleColumnHover from 'universal/dnd/handleColumnHover';
-import handleDrop from 'universal/dnd/handleDrop';
-import withDragState from 'universal/dnd/withDragState';
+import sortOrderBetween from 'universal/dnd/sortOrderBetween';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import {overflowTouch} from 'universal/styles/helpers';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import themeLabels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {PROJECT, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
+import {TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import dndNoise from 'universal/utils/dndNoise';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
-const columnTarget = {
-  drop: handleDrop,
-  hover: handleColumnHover
-};
+import ProjectColumnTrailingSpace from './ProjectColumnTrailingSpace';
+
+// The `ScrollZone` component manages an overflowed block-level element,
+// scrolling its contents when another element is dragged close to its edges.
+const ScrollZone = withScrolling('div');
 
 const originAnchor = {
   vertical: 'bottom',
@@ -47,18 +47,33 @@ const badgeColor = {
   future: 'mid'
 };
 
-const handleAddProjectFactory = (atmosphere, dispatch, history, status, teamMemberId, sortOrder) => () => {
-  const [, teamId] = teamMemberId.split('::');
+const handleAddProjectFactory = (atmosphere, status, teamId, userId, sortOrder) => () => {
   const newProject = {
-    id: `${teamId}::${shortid.generate()}`,
     status,
-    teamMemberId,
+    teamId,
+    userId,
     sortOrder
   };
   CreateProjectMutation(atmosphere, newProject);
 };
 
 class ProjectColumn extends Component {
+  static propTypes = {
+    area: PropTypes.string,
+    atmosphere: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    firstColumn: PropTypes.bool,
+    history: PropTypes.object.isRequired,
+    isMyMeetingSection: PropTypes.bool,
+    lastColumn: PropTypes.bool,
+    myTeamMemberId: PropTypes.string,
+    projects: PropTypes.array.isRequired,
+    status: PropTypes.string,
+    styles: PropTypes.object,
+    teamMemberFilterId: PropTypes.string,
+    teams: PropTypes.array
+  };
+
   makeAddProject = () => {
     const {
       area,
@@ -69,21 +84,20 @@ class ProjectColumn extends Component {
       status,
       projects,
       myTeamMemberId,
-      queryKey,
-      teams,
-      userId
+      teamMemberFilterId,
+      teams
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH || isMyMeetingSection) {
-      const teamMemberId = queryKey.indexOf('::') === -1 ? myTeamMemberId : queryKey;
-      const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, teamMemberId, sortOrder);
+      const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId);
+      const handleAddProject = handleAddProjectFactory(atmosphere, status, teamId, userId, sortOrder);
       return <AddProjectButton onClick={handleAddProject} label={label} />;
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
-        const generatedMyTeamMemberId = `${userId}::${teamId}`;
-        const handleAddProject = handleAddProjectFactory(atmosphere, dispatch, history, status, generatedMyTeamMemberId, sortOrder);
+        const {userId} = atmosphere;
+        const handleAddProject = handleAddProjectFactory(atmosphere, status, teamId, userId, sortOrder);
         return <AddProjectButton onClick={handleAddProject} label={label} />;
       }
       const itemFactory = () => {
@@ -112,17 +126,38 @@ class ProjectColumn extends Component {
     return null;
   };
 
+  /**
+   * `draggedProject` - project being dragged-and-dropped
+   * `targetProject` - the project being "dropped on"
+   * `before` - whether the dragged project is being inserted before (true) or
+   * after (false) the target project.
+   */
+  insertProject = (draggedProject, targetProject, before) => {
+    const {area, atmosphere, projects, status} = this.props;
+    const targetIndex = projects.findIndex((p) => p.id === targetProject.id);
+    // `boundingProject` is the project which sandwiches the dragged project on
+    // the opposite side of the target project.  When the target project is in
+    // the front or back of the list, this will be `undefined`.
+    const boundingProject = projects[targetIndex + (before ? -1 : 1)];
+    const sortOrder = sortOrderBetween(targetProject, boundingProject, draggedProject, before);
+    const noActionNeeded = sortOrder === draggedProject.sortOrder && draggedProject.status === status;
+    if (noActionNeeded) {
+      return;
+    }
+    const updatedProject = {id: draggedProject.id, sortOrder, status};
+    UpdateProjectMutation(atmosphere, updatedProject, area);
+  };
+
   makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
     const {
       status,
-      teams,
-      userId
+      teams
     } = this.props;
+    const {userId} = atmosphere;
     return teams.map((team) => ({
       label: team.name,
       handleClick: () => {
         const newProject = {
-          id: `${team.id}::${shortid.generate()}`,
           status,
           teamMemberId: `${userId}::${team.id}`,
           sortOrder
@@ -135,14 +170,12 @@ class ProjectColumn extends Component {
   render() {
     const {
       area,
-      connectDropTarget,
-      dragState,
+      atmosphere,
       firstColumn,
       lastColumn,
       status,
       projects,
-      styles,
-      userId
+      styles
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const columnStyles = css(
@@ -151,9 +184,7 @@ class ProjectColumn extends Component {
       lastColumn && styles.columnLast
     );
 
-    // reset every rerender so we make sure we got the freshest info
-    dragState.clear();
-    return connectDropTarget(
+    return (
       <div className={columnStyles}>
         <div className={css(styles.columnHeader)}>
           <div className={css(styles.statusLabelBlock)}>
@@ -172,47 +203,27 @@ class ProjectColumn extends Component {
           {this.makeAddProject()}
         </div>
         <div className={css(styles.columnBody)}>
-          <div className={css(styles.columnInner)}>
-            {projects.map((project) =>
-              (<ProjectCardContainer
+          <ScrollZone className={css(styles.columnInner)}>
+            {projects.map((project) => (
+              <DraggableProject
                 key={`teamCard${project.id}`}
                 area={area}
                 project={project}
-                dragState={dragState}
-                myUserId={userId}
-                ref={(c) => {
-                  if (c) {
-                    dragState.components.push(c);
-                  }
-                }}
-              />))
-            }
-          </div>
+                myUserId={atmosphere.userId}
+                insert={(draggedProject, before) => this.insertProject(draggedProject, project, before)}
+              />
+            ))}
+            <ProjectColumnTrailingSpace
+              area={area}
+              lastProject={projects[projects.length - 1]}
+              status={status}
+            />
+          </ScrollZone>
         </div>
       </div>
     );
   }
 }
-
-
-ProjectColumn.propTypes = {
-  area: PropTypes.string,
-  atmosphere: PropTypes.object.isRequired,
-  connectDropTarget: PropTypes.func,
-  dispatch: PropTypes.func.isRequired,
-  dragState: PropTypes.object,
-  firstColumn: PropTypes.bool,
-  history: PropTypes.object.isRequired,
-  isMyMeetingSection: PropTypes.bool,
-  lastColumn: PropTypes.bool,
-  myTeamMemberId: PropTypes.string,
-  projects: PropTypes.array.isRequired,
-  queryKey: PropTypes.string,
-  status: PropTypes.string,
-  styles: PropTypes.object,
-  teams: PropTypes.array,
-  userId: PropTypes.string
-};
 
 const styleThunk = () => ({
   column: {
@@ -248,6 +259,8 @@ const styleThunk = () => ({
 
   columnInner: {
     ...overflowTouch,
+    display: 'flex',
+    flexDirection: 'column',
     height: '100%',
     padding: '0 1rem',
     position: 'absolute',
@@ -282,18 +295,10 @@ const styleThunk = () => ({
   ...projectStatusStyles('color')
 });
 
-const dropTargetCb = (connectTarget) => ({
-  connectDropTarget: connectTarget.dropTarget()
-});
-
 export default connect()(
   withAtmosphere(
     withRouter(
-      withDragState(
-        dropTarget(PROJECT, columnTarget, dropTargetCb)(
-          withStyles(styleThunk)(ProjectColumn)
-        )
-      )
+      withStyles(styleThunk)(ProjectColumn)
     )
   )
 );
