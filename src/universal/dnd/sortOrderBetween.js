@@ -1,6 +1,6 @@
 // @flow
 
-import {PROJECT, SORT_STEP} from 'universal/utils/constants';
+import {SORT_STEP} from 'universal/utils/constants';
 import dndNoise from 'universal/utils/dndNoise';
 
 type Sortable = {
@@ -29,4 +29,4 @@ export default function sortOrderBetween(
   return boundng.id === dragged.id
     ? boundng.sortOrder
     : (boundng.sortOrder + target.sortOrder) / 2 + dndNoise();
-};
+}

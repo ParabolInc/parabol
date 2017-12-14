@@ -9,8 +9,6 @@ import {DropTarget} from 'react-dnd';
 import sortOrderBetween from 'universal/dnd/sortOrderBetween';
 import {MEETING, PROJECT, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 
-const isUndefined = (x) => typeof x === 'undefined';
-
 const areaOpLookup = {
   [MEETING]: 'meetingUpdatesContainer',
   [USER_DASH]: 'userColumnsContainer',
