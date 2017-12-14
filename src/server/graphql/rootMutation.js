@@ -1,7 +1,6 @@
 import {GraphQLObjectType} from 'graphql';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
-import presence from 'server/graphql/models/Presence/presenceMutation';
 import team from 'server/graphql/models/Team/teamMutation';
 import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
@@ -15,9 +14,11 @@ import addSlackChannel from 'server/graphql/mutations/addSlackChannel';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
 import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
 import clearNotification from 'server/graphql/mutations/clearNotification';
+import connectSocket from 'server/graphql/mutations/connectSocket';
 import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue';
 import createProject from 'server/graphql/mutations/createProject';
 import deleteProject from 'server/graphql/mutations/deleteProject';
+import disconnectSocket from 'server/graphql/mutations/disconnectSocket';
 import editProject from 'server/graphql/mutations/editProject';
 import endMeeting from 'server/graphql/mutations/endMeeting';
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee';
@@ -57,7 +58,6 @@ import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 const rootFields = Object.assign({},
   orgApproval,
   organization,
-  presence,
   team,
   teamMember,
   user
@@ -77,9 +77,11 @@ export default new GraphQLObjectType({
     approveToOrg,
     cancelTeamInvite,
     clearNotification,
+    connectSocket,
     createGitHubIssue,
     createProject,
     deleteProject,
+    disconnectSocket,
     editProject,
     endMeeting,
     githubAddAssignee,

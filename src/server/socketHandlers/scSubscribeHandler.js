@@ -5,7 +5,6 @@ import parseChannel from 'universal/utils/parseChannel';
 import {
   INVITATIONS,
   ORG_APPROVALS,
-  PRESENCE,
   TEAM,
   TEAM_MEMBERS,
   USERS_BY_ORG
@@ -24,7 +23,6 @@ const dechannelfy = {
   [USERS_BY_ORG]: (orgId) => ({orgId})
 };
 
-const temporalSubs = [PRESENCE];
 export default function scSubscribeHandler(exchange, socket) {
   return async function subscribeHandler(subbedChannelName = '') {
     const {channel, variableString} = parseChannel(subbedChannelName);
@@ -47,7 +45,7 @@ export default function scSubscribeHandler(exchange, socket) {
       if (result.errors) {
         console.log('DEBUG GraphQL Subscribe Error:', channel, result.errors);
       }
-    } else if (!temporalSubs.includes(channel)) {
+    } else {
       console.log(`GraphQL subscription for ${channel} not found`);
       // not a graphql subscription
     }

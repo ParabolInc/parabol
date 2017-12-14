@@ -6,6 +6,9 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
   ADD_TO_TEAM,
+  APP_UPGRADE_PENDING_KEY,
+  APP_UPGRADE_PENDING_RELOAD,
+  APP_VERSION_KEY,
   DENY_NEW_USER,
   FACILITATOR_DISCONNECTED,
   FACILITATOR_REQUEST,
@@ -19,7 +22,8 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_INVITE,
+  VERSION_INFO
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
@@ -298,6 +302,25 @@ const notificationHandler = {
       }
     }));
     addNotificationUpdater(store, viewerId, payload);
+  },
+  [VERSION_INFO]: (payload, {dispatch, history}) => {
+    const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
+    const versionOnServer = payload.getValue('version');
+    if (versionOnServer !== versionInStorage) {
+      dispatch(showWarning({
+        title: 'New stuff!',
+        message: 'A new version of Parabol is available',
+        autoDismiss: 0,
+        action: {
+          label: 'Log out and upgrade',
+          callback: () => {
+            history.replace('/signout');
+          }
+        }
+      }));
+      window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
+        APP_UPGRADE_PENDING_RELOAD);
+    }
   }
 };
 

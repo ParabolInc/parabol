@@ -10,7 +10,6 @@ import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemove
 import invitation from './models/Invitation/invitationSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
 import orgApproval from './models/OrgApproval/orgApprovalSubscription';
-import presence from './models/Presence/presenceSubscription';
 import team from './models/Team/teamSubscription';
 import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
@@ -36,7 +35,6 @@ const rootFields = Object.assign({},
   invitation,
   invoice,
   orgApproval,
-  presence,
   team,
   teamMember,
   user

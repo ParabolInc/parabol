@@ -7,6 +7,7 @@ import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
 import NotifyPayment from 'server/graphql/types/NotifyPayment';
 import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
+import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import mutation from './rootMutation';
 import query from './rootQuery';
 import subscription from './rootSubscription';
@@ -28,6 +29,7 @@ export default new GraphQLSchema({
     NotifyPayment,
     NotifyProjectInvolves,
     NotifyPromotion,
-    NotifyTeamArchived
+    NotifyTeamArchived,
+    NotifyVersionInfo
   ]
 });

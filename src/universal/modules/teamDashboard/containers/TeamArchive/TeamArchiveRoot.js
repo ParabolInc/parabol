@@ -35,7 +35,7 @@ const TeamArchiveRoot = ({atmosphere, match, team}) => {
         return (
           <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps &&
+            {renderProps && team &&
             <AnimatedFade key="1">
               <TeamArchive
                 teamId={teamId}

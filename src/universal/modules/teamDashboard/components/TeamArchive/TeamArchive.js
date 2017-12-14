@@ -215,11 +215,7 @@ class TeamArchive extends Component {
 TeamArchive.propTypes = {
   relay: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  team: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    orgId: PropTypes.string.isRequired,
-    tier: PropTypes.string.isRequired
-  }),
+  team: PropTypes.object,
   teamId: PropTypes.string,
   userId: PropTypes.string.isRequired,
   viewer: PropTypes.object.isRequired
@@ -294,6 +290,11 @@ export default createPaginationContainer(
           endCursor
         }
       }
+    }
+    fragment TeamArchive_team on Team {
+      teamName: name
+      orgId
+      tier
     }
   `,
   {

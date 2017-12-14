@@ -96,6 +96,8 @@ export const TEAM_INVITE = 'TEAM_INVITE';
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
 // sent to members when a project is assigned to them or mentions them
 export const PROJECT_INVOLVES = 'PROJECT_INVOLVES';
+// sent on socket connection
+export const VERSION_INFO = 'VERSION_INFO';
 
 export const notificationTypes = [
   PAYMENT_REJECTED,

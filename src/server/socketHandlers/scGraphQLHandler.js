@@ -22,6 +22,8 @@ export default function wsGraphQLHandler(exchange, socket, sharedDataLoader) {
     if (result.errors) {
       console.log('DEBUG GraphQL Error:', result.errors);
     }
-    cb(null, result);
+    if (cb) {
+      cb(null, result);
+    }
   };
 }

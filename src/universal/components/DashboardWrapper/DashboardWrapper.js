@@ -31,7 +31,7 @@ const query = graphql`
 `;
 
 const userDashboard = () => System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
-const teamContainer = () => System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
+const teamRoot = () => System.import('universal/modules/teamDashboard/components/TeamRoot');
 const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot');
 
 const subscriptions = [
@@ -57,7 +57,7 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
           <DashLayoutContainer notifications={notifications}>
             <DashSidebar notificationsCount={notificationsCount} />
             <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
-            <AsyncRoute isAbstract path="/team/:teamId" mod={teamContainer} extraProps={{notifications}} />
+            <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} extraProps={{notifications}} />
             <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />
           </DashLayoutContainer>
         );

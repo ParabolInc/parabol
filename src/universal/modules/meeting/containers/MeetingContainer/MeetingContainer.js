@@ -5,7 +5,6 @@ import React, {Component} from 'react';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
-import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -28,7 +27,6 @@ import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitator
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
-import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
 import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
@@ -47,34 +45,8 @@ import {
 } from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
-const meetingContainerQuery = `
-query{
-  teamMembers(teamId: $teamId) @live {
-    id
-    presence(teamId: $teamId) @live {
-      id
-      userId
-    }
-  }
-}`;
-
 const handleHotkey = (gotoFunc, submitting) => () => {
   if (!submitting && document.activeElement === document.body) gotoFunc();
-};
-
-const mapStateToProps = (state, props) => {
-  const {teamId} = props;
-  const queryResult = cashay.query(meetingContainerQuery, {
-    op: 'meetingContainerQuery',
-    key: teamId,
-    variables: {teamId},
-    resolveChannelKey: {
-      presence: () => teamId
-    }
-  });
-  return {
-    teamMemberPresence: queryResult.data.teamMembers
-  };
 };
 
 let infiniteloopCounter = 0;
@@ -101,7 +73,6 @@ class MeetingContainer extends Component {
       team: PropTypes.object.isRequired
     }).isRequired,
     teamId: PropTypes.string.isRequired,
-    teamMemberPresence: PropTypes.array,
     userId: PropTypes.string.isRequired,
     error: PropTypes.any,
     submitting: PropTypes.bool,
@@ -110,27 +81,14 @@ class MeetingContainer extends Component {
     onError: PropTypes.func.isRequired
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      members: []
-    };
-  }
-
   componentWillMount() {
     const {
       atmosphere,
       bindHotkey,
       history,
       teamId,
-      viewer: {team: {teamMembers, activeFacilitator}},
-      submitting,
-      teamMemberPresence,
-      userId
+      submitting
     } = this.props;
-    this.setState({
-      members: resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator)
-    });
     this.unsafeRoute = !handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
@@ -141,16 +99,10 @@ class MeetingContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {viewer: {team}, localPhase, localPhaseItem, teamMemberPresence, userId, myTeamMemberId} = nextProps;
-    const {activeFacilitator, id: teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers} = team;
-    const {viewer: {team: oldTeam}, teamMemberPresence: oldPresence} = this.props;
-    const {teamMembers: oldTeamMembers, activeFacilitator: oldFacilitator} = oldTeam;
-    if (teamMemberPresence !== oldPresence || teamMembers !== oldTeamMembers || activeFacilitator !== oldFacilitator) {
-      const members = resolveMeetingMembers(teamMembers, teamMemberPresence, userId, activeFacilitator);
-      this.setState({
-        members
-      });
-    }
+    const {viewer: {team}, localPhase, localPhaseItem, myTeamMemberId} = nextProps;
+    const {activeFacilitator, id: teamId, facilitatorPhase, facilitatorPhaseItem} = team;
+    const {viewer: {team: oldTeam}} = this.props;
+    const {activeFacilitator: oldFacilitator} = oldTeam;
     // if promoted to facilitator, ensure the facilitator is where you are
     // check activeFacilitator to make sure the meeting has started & we've got all the data
     const wasFacilitating = myTeamMemberId === oldFacilitator;
@@ -217,15 +169,14 @@ class MeetingContainer extends Component {
   }
 
   electFacilitatorIfNone() {
-    const {atmosphere, viewer: {team: {activeFacilitator}}} = this.props;
+    const {atmosphere, viewer: {team: {activeFacilitator, teamMembers}}} = this.props;
     if (!activeFacilitator) return;
 
-    const {members} = this.state;
-    const facilitator = members.find((m) => m.isFacilitating);
+    const facilitator = teamMembers.find((m) => m.id === activeFacilitator);
     if (!facilitator.isConnected) {
-      const onlineMembers = members.filter((m) => m.isConnected);
+      const onlineMembers = teamMembers.filter((m) => m.isConnected);
       const callingMember = onlineMembers[0];
-      const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
+      const nextFacilitator = onlineMembers.find((m) => m.isFacilitator) || callingMember;
       if (callingMember.isSelf) {
         PromoteFacilitatorMutation(atmosphere, {
           facilitatorId: nextFacilitator.id,
@@ -331,14 +282,14 @@ class MeetingContainer extends Component {
       viewer
     } = this.props;
     const {team} = viewer;
-    const {members} = this.state;
     const {
       activeFacilitator,
       agendaItems,
       facilitatorPhase,
       facilitatorPhaseItem,
       meetingPhase,
-      name: teamName
+      teamName,
+      teamMembers
     } = team;
     const isFacilitating = activeFacilitator === myTeamMemberId;
 
@@ -347,10 +298,10 @@ class MeetingContainer extends Component {
       (facilitatorPhaseItem === localPhaseItem || !facilitatorPhaseItem && !localPhaseItem);
 
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
-    const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, members, agendaItems);
+    const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, teamMembers, agendaItems);
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
     const showMoveMeetingControls = isFacilitating || isBehindMeeting;
-    const facilitatorName = getFacilitatorName(activeFacilitator, members);
+    const facilitatorName = getFacilitatorName(activeFacilitator, teamMembers);
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
         <Sidebar
@@ -364,7 +315,6 @@ class MeetingContainer extends Component {
         <MeetingMain hasBoxShadow>
           <MeetingMainHeader>
             <MeetingAvatarGroup
-              avatars={members}
               gotoItem={this.gotoItem}
               gotoNext={this.gotoNext}
               isFacilitating={isFacilitating}
@@ -397,7 +347,6 @@ class MeetingContainer extends Component {
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
-            members={members}
             showMoveMeetingControls={showMoveMeetingControls}
             viewer={viewer}
           />
@@ -437,13 +386,11 @@ class MeetingContainer extends Component {
 
 export default createFragmentContainer(
   socketWithPresence(
-    connect(mapStateToProps)(
-      dragDropContext(HTML5Backend)(
-        withHotkey(
-          withAtmosphere(
-            withMutationProps(
-              MeetingContainer
-            )
+    dragDropContext(HTML5Backend)(
+      withHotkey(
+        withAtmosphere(
+          withMutationProps(
+            MeetingContainer
           )
         )
       )
@@ -462,7 +409,7 @@ export default createFragmentContainer(
         }
         checkInQuestion
         id
-        name
+        teamName: name
         meetingId
         activeFacilitator
         facilitatorPhase
@@ -478,6 +425,7 @@ export default createFragmentContainer(
           isCheckedIn
           isFacilitator
           isLead
+          isSelf
           userId
         }
         ...MeetingAgendaLastCall_team

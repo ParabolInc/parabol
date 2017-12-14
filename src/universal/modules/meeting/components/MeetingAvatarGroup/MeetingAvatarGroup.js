@@ -28,13 +28,12 @@ const fetchMeetingAvatarMenu = () => System.import('universal/modules/meeting/co
 const MeetingAvatarGroup = (props) => {
   const {
     atmosphere,
-    avatars,
     gotoItem,
     isFacilitating,
     localPhase,
     localPhaseItem,
     styles,
-    team: {teamId, facilitatorPhase, facilitatorPhaseItem}
+    team: {activeFacilitator, teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers}
   } = props;
   const onFacilitatorPhase = facilitatorPhase === localPhase;
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES;
@@ -42,7 +41,7 @@ const MeetingAvatarGroup = (props) => {
     <div className={css(styles.meetingAvatarGroupRoot)}>
       <div className={css(styles.meetingAvatarGroupInner)}>
         {
-          avatars.map((avatar, idx) => {
+          teamMembers.map((avatar, idx) => {
             const {isConnected, isSelf} = avatar;
             const picture = avatar.picture || defaultUserAvatar;
             const count = idx + 1;
@@ -69,16 +68,18 @@ const MeetingAvatarGroup = (props) => {
             const requestFacilitator = () => {
               RequestFacilitatorMutation(atmosphere, teamId);
             };
+            const avatarIsFacilitating = activeFacilitator === avatar.id;
             const handleNavigate = canNavigate && navigateTo || undefined;
             const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator || undefined;
-            const handleRequest = avatar.isFacilitating && !isSelf && requestFacilitator || undefined;
+            const handleRequest = avatarIsFacilitating && !isSelf && requestFacilitator || undefined;
             const toggle = () => (
               <Avatar
-                {...avatar}
                 hasBadge
-                isActive={avatar.isFacilitating}
+                isActive={avatarIsFacilitating}
                 isClickable
                 picture={picture}
+                isConnected={avatar.isConnected}
+                isCheckedIn={avatar.isCheckedIn}
                 size="fill"
               />
             );
@@ -101,7 +102,7 @@ const MeetingAvatarGroup = (props) => {
                     toggle={toggle()}
                   />
                 </div>
-                {avatar.isFacilitating &&
+                {avatarIsFacilitating &&
                 <div className={tagBlockStyles}>
                   <Tag colorPalette="gray" label="Facilitator" />
                 </div>
@@ -117,7 +118,6 @@ const MeetingAvatarGroup = (props) => {
 
 MeetingAvatarGroup.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  avatars: PropTypes.array,
   gotoItem: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
@@ -214,7 +214,16 @@ export default createFragmentContainer(
   graphql`
     fragment MeetingAvatarGroup_team on Team {
       teamId: id
+      activeFacilitator
       facilitatorPhase
       facilitatorPhaseItem
+      teamMembers(sortBy: "checkInOrder") {
+        id
+        isCheckedIn
+        isConnected
+        isSelf
+        picture
+        ...MeetingAvatarMenu_avatar
+      }
     }`
 );

@@ -13,6 +13,7 @@ import NotifyPayment from 'server/graphql/types/NotifyPayment';
 import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
+import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 import {
@@ -29,7 +30,8 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_INVITE,
+  VERSION_INFO
 } from 'universal/utils/constants';
 
 export const notificationInterfaceFields = {
@@ -74,7 +76,8 @@ const Notification = new GraphQLInterfaceType({
       [REQUEST_NEW_USER]: NotifyInvitation,
       [TEAM_INVITE]: NotifyInvitation,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromotion,
-      [TEAM_ARCHIVED]: NotifyTeamArchived
+      [TEAM_ARCHIVED]: NotifyTeamArchived,
+      [VERSION_INFO]: NotifyVersionInfo
     };
 
     return resolveTypeLookup[value.type];

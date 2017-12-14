@@ -37,6 +37,7 @@
     "db:migrate-down-all": "node ./src/server/database/migrate.babel.js down --all",
     "db:migrate-create": "cd ./src/server/database && migrate-rethinkdb create",
     "debug:stripe": "node ./src/server/billing/debug.babel.js",
+    "postdeploy": "node ./src/server/utils/postDeploy.babel.js",
     "flow": "flow",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",

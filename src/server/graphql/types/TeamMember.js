@@ -8,6 +8,7 @@ import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
+import {getUserId} from 'server/utils/authorization';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -45,9 +46,29 @@ const TeamMember = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The place in line for checkIn, regenerated every meeting'
     },
+    isConnected: {
+      type: GraphQLBoolean,
+      description: 'true if the user is connected',
+      resolve: async (source, args, {dataLoader}) => {
+        if (source.hasOwnProperty('isConnected')) {
+          return source.isConnected;
+        }
+        const {userId} = source;
+        const {connectedSockets} = await dataLoader.get('users').load(userId);
+        return Array.isArray(connectedSockets) && connectedSockets.length > 0;
+      }
+    },
     isCheckedIn: {
       type: GraphQLBoolean,
       description: 'true if present, false if absent, null before check-in'
+    },
+    isSelf: {
+      type: GraphQLBoolean,
+      description: 'true if this team member belongs to the user that queried it',
+      resolve: (source, args, {authToken}) => {
+        const {userId} = getUserId(authToken);
+        return source.userId === userId;
+      }
     },
     /* Foreign keys */
     teamId: {
