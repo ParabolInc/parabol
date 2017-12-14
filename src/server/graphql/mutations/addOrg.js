@@ -46,10 +46,8 @@ export default {
     ]);
 
     // RESOLUTION
-    const {newOrg} = await resolvePromiseObj({
-      newTeam: createTeamAndLeader(userId, newTeam, true),
-      newOrg: createNewOrg(orgId, orgName, userId)
-    });
+    const newOrg = await createNewOrg(orgId, orgName, userId);
+    await createTeamAndLeader(userId, newTeam, true);
 
     if (invitees && invitees.length) {
       await inviteTeamMembers(invitees, teamId, userId, dataLoader, socketId);
