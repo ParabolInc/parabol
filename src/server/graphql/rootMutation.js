@@ -56,6 +56,7 @@ import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateProject from 'server/graphql/mutations/updateProject';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
+import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg';
 
 const rootFields = Object.assign({},
   organization,
@@ -96,6 +97,7 @@ export default new GraphQLObjectType({
     leaveIntegration,
     meetingCheckIn,
     moveMeeting,
+    moveTeamToOrg,
     promoteFacilitator,
     promoteToTeamLead,
     rejectOrgApproval,
