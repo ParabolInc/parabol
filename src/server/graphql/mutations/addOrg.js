@@ -3,16 +3,15 @@ import addOrgValidation from 'server/graphql/mutations/helpers/addOrgValidation'
 import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
 import Invitee from 'server/graphql/types/Invitee';
+import TeamInput from 'server/graphql/types/TeamInput';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {ensureUniqueId, getUserId} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import {NEW_AUTH_TOKEN, ORGANIZATION_ADDED} from 'universal/utils/constants';
-import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import createTeamAndLeader from '../models/Team/createFirstTeam/createTeamAndLeader';
-import tmsSignToken from 'server/utils/tmsSignToken';
-import TeamInput from 'server/graphql/types/TeamInput';
 
 export default {
   type: AddOrgPayload,
