@@ -35,16 +35,24 @@ class CheckInQuestion extends Component {
   constructor(props) {
     super(props);
     const {team: {checkInQuestion}} = props;
-    this.checkInQuestionToEditorState(checkInQuestion);
+    const contentState = convertFromRaw(JSON.parse(checkInQuestion));
+    this.state = {
+      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+    };
   }
 
   componentWillReceiveProps(nextProps) {
     const {team: {checkInQuestion}} = nextProps;
     const {team: {oldCheckInQuestion}} = this.props;
     if (checkInQuestion !== oldCheckInQuestion) {
-      this.checkInQuestionToEditorState(checkInQuestion);
+      const contentState = convertFromRaw(JSON.parse(checkInQuestion));
+      this.setState({
+        editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+      });
     }
   }
+
+  getEditorState = () => this.state.editorState;
 
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
@@ -58,14 +66,6 @@ class CheckInQuestion extends Component {
       editorState
     });
   };
-
-  checkInQuestionToEditorState(checkInQuestion) {
-    const getEditorState = () => this.state.editorState;
-    const contentState = convertFromRaw(JSON.parse(checkInQuestion));
-    this.setState({
-      editorState: EditorState.createWithContent(contentState, editorDecorators(getEditorState))
-    });
-  }
 
   selectAllQuestion = () => {
     this.editorRef.focus();

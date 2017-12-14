@@ -25,24 +25,25 @@ const involvementWord = {
 class ProjectInvolves extends Component {
   constructor(props) {
     super(props);
-    this.setEditorState(props.notification.project.content);
+    const {notification: {project: {content}}} = props;
+    const contentState = convertFromRaw(JSON.parse(content));
+    this.state = {
+      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+    };
   }
 
   componentWillReceiveProps(nextProps) {
     const {notification: {project: {content: oldContent}}} = this.props;
     const {notification: {project: {content}}} = nextProps;
     if (content !== oldContent) {
-      this.setEditorState(content);
+      const contentState = convertFromRaw(JSON.parse(content));
+      this.setState({
+        editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+      });
     }
   }
 
-  setEditorState(content) {
-    const contentState = convertFromRaw(JSON.parse(content));
-    const getEditorState = () => this.state.editorState;
-    this.setState({
-      editorState: EditorState.createWithContent(contentState, editorDecorators(getEditorState))
-    });
-  }
+  getEditorState = () => this.state.editorState;
 
   acknowledge = () => {
     const {

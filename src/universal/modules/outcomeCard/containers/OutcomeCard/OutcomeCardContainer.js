@@ -15,12 +15,11 @@ class OutcomeCardContainer extends Component {
   constructor(props) {
     super(props);
     const {atmosphere: {userId}, contentState, project: {editors}} = props;
-    const getEditorState = () => this.state.editorState;
     this.state = {
       activeEditingComponents: Set(),
       cardHasHover: false,
       cardHasFocus: Boolean(editors.find((editor) => editor.userId === userId), editors, userId),
-      editorState: EditorState.createWithContent(contentState, editorDecorators(getEditorState)),
+      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState)),
       cardHasMenuOpen: false
     };
   }
@@ -55,6 +54,8 @@ class OutcomeCardContainer extends Component {
   componentWillUnmount() {
     this._mounted = false;
   }
+
+  getEditorState = () => this.state.editorState;
 
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
