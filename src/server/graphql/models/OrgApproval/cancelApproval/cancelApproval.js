@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {requireTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {NOTIFICATIONS_CLEARED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
@@ -19,7 +19,7 @@ export default {
     // AUTH
     const orgApproval = await r.table('OrgApproval').get(id);
     const {email, orgId, teamId} = orgApproval;
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
     // RESOLUTION

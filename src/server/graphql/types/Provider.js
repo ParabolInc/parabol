@@ -1,13 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {connectionDefinitions, globalIdField} from 'graphql-relay';
-import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import IntegrationService from 'server/graphql/types/IntegrationService';
 
 const Provider = new GraphQLObjectType({
   name: 'Provider',
   description: 'A token for a user to be used on 1 or more teams',
-  interfaces: () => [nodeInterface],
   fields: () => ({
     // shortid
     id: globalIdField('Provider', ({id}) => id),

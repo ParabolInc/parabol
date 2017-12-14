@@ -34,7 +34,7 @@ const OrgMembers = (props) => {
     dispatch,
     org,
     orgId,
-    viewer: {orgMembers},
+    viewer: {organization: {orgUsers}},
     relay: {environment},
     submitMutation,
     onError,
@@ -48,7 +48,7 @@ const OrgMembers = (props) => {
     SetOrgUserRoleMutation(environment, orgId, userId, role);
   };
 
-  const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
+  const billingLeaderCount = orgUsers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
 
   const userRowActions = (orgUser) => {
     const {id, inactive, preferredName} = orgUser;
@@ -171,7 +171,7 @@ const OrgMembers = (props) => {
   return (
     <Panel label="Organization Members">
       <div className={css(styles.listOfAdmins)}>
-        {orgMembers.edges.map(({node: orgUser}) => {
+        {orgUsers.edges.map(({node: orgUser}) => {
           return (
             <OrgUserRow
               key={`orgUser${orgUser.email}`}
@@ -221,21 +221,23 @@ export default createPaginationContainer(
   connect()(withMutationProps(withStyles(styleThunk)(OrgMembers))),
   graphql`
     fragment OrgMembers_viewer on User {
-      orgMembers(first: $first, orgId: $orgId, after: $after) @connection(key: "OrgMembers_orgMembers") {
-        edges {
-          cursor
-          node {
-            id
-            isBillingLeader(orgId: $orgId)
-            email
-            inactive
-            picture
-            preferredName
+      organization(orgId: $orgId) {
+        orgUsers(first: $first, after: $after) @connection(key: "OrgMembers_orgUsers") {
+          edges {
+            cursor
+            node {
+              id
+              isBillingLeader(orgId: $orgId)
+              email
+              inactive
+              picture
+              preferredName
+            }
           }
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
         }
       }
     }
@@ -243,7 +245,7 @@ export default createPaginationContainer(
   {
     direction: 'forward',
     getConnectionFromProps(props) {
-      return props.viewer && props.viewer.orgMembers;
+      return props.viewer && props.viewer.orgUsers;
     },
     getFragmentVariables(prevVars, totalCount) {
       return {

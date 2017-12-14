@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createPaginationContainer} from 'react-relay';
 import {CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader, WindowScroller} from 'react-virtualized';
-import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import NullableProject from 'universal/components/NullableProject/NullableProject';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
 import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot';
@@ -14,7 +14,6 @@ import appTheme from 'universal/styles/theme/theme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {MAX_INT, PERSONAL, TEAM_DASH} from 'universal/utils/constants';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const iconStyle = {
   ...ib,
@@ -113,20 +112,11 @@ class TeamArchive extends Component {
       >
         {/* Put padding here because of aphrodite's async annoyance */}
         <div key={`cardBlockFor${project.id}`} style={{...style, width: CARD_WIDTH, padding: '0.5rem'}}>
-          <OutcomeOrNullCard
+          <NullableProject
             key={key}
             area={TEAM_DASH}
             myUserId={userId}
-            outcome={{
-              ...project,
-              id: fromGlobalId(project.id).id,
-              createdAt: new Date(project.createdAt),
-              updatedAt: new Date(project.updatedAt),
-              teamMember: {
-                ...project.teamMember,
-                id: fromGlobalId(project.teamMember.id).id
-              }
-            }}
+            project={project}
           />
         </div>
       </CellMeasurer>
@@ -225,11 +215,7 @@ class TeamArchive extends Component {
 TeamArchive.propTypes = {
   relay: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  team: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    orgId: PropTypes.string.isRequired,
-    tier: PropTypes.string.isRequired
-  }),
+  team: PropTypes.object,
   teamId: PropTypes.string,
   userId: PropTypes.string.isRequired,
   viewer: PropTypes.object.isRequired
@@ -296,22 +282,7 @@ export default createPaginationContainer(
           cursor
           node {
             id
-            content
-            createdAt
-            integration {
-              service
-              nameWithOwner
-              issueNumber
-            }
-            status
-            tags
-            teamMemberId
-            updatedAt
-            teamMember {
-              id
-              picture
-              preferredName
-            }
+            ...NullableProject_project
           }
         }
         pageInfo {
@@ -319,6 +290,11 @@ export default createPaginationContainer(
           endCursor
         }
       }
+    }
+    fragment TeamArchive_team on Team {
+      teamName: name
+      orgId
+      tier
     }
   `,
   {

@@ -1,36 +1,35 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import {createFragmentContainer} from 'react-relay';
+import {Link} from 'react-router-dom';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
+import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import {CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, SUMMARY, phaseArray} from 'universal/utils/constants';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, phaseArray, SUMMARY, UPDATES} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
-import {Link} from 'react-router-dom';
-import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
-import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const Sidebar = (props) => {
   const {
-    agendaPhaseItem,
-    facilitatorPhase,
-    facilitatorPhaseItem,
     gotoItem,
     gotoAgendaItem,
     isFacilitating,
     localPhase,
     localPhaseItem,
-    meetingPhase,
     styles,
-    teamName,
-    teamId
+    team
   } = props;
+  const {teamId, teamName, agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase} = team;
 
   const relativeLink = `/meeting/${teamId}`;
   const shortUrl = makeHref(relativeLink);
+  const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
+    agendaItems.findIndex((a) => a.isComplete === false) + 1 : 0;
   const canNavigateTo = (phase) => {
     const adjustForFacilitator = isFacilitating ? 1 : 0;
     const phaseInfo = actionMeeting[phase];
@@ -68,7 +67,13 @@ const Sidebar = (props) => {
         <div className={css(styles.brandBlock)}>
           <img className={css(styles.brandLogo)} src={actionUIMark} />
         </div>
-        <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>
+        <Link
+          className={css(styles.teamName)}
+          to={`/team/${teamId}`}
+          title={`Go to the ${teamName} Team Dashboard`}
+        >
+          {teamName}
+        </Link>
         <a className={css(styles.shortUrl)} href={relativeLink}>{shortUrl}</a>
       </div>
       <nav className={css(styles.nav)}>
@@ -104,33 +109,33 @@ const Sidebar = (props) => {
             </div>
           </li>
           {localPhase === SUMMARY &&
-            <li className={css(styles.navListItem, styles.navListItemLinkActive)}>
-              <div
-                className={css(styles.navListItemLink, styles.navListItemLinkActive)}
-                onClick={() => gotoItem(null, SUMMARY)}
-                title={summaryLabel}
-              >
-                <span className={css(styles.bullet)}>{' '}</span>
-                <span className={css(styles.label)}>{summaryLabel}</span>
-              </div>
-            </li>
+          <li className={css(styles.navListItem, styles.navListItemLinkActive)}>
+            <div
+              className={css(styles.navListItemLink, styles.navListItemLinkActive)}
+              onClick={() => gotoItem(null, SUMMARY)}
+              title={summaryLabel}
+            >
+              <span className={css(styles.bullet)}>{' '}</span>
+              <span className={css(styles.label)}>{summaryLabel}</span>
+            </div>
+          </li>
           }
         </ul>
         {localPhase !== SUMMARY &&
-          <div className={css(styles.agendaListBlock)}>
-            <AgendaListAndInputContainer
-              agendaPhaseItem={agendaPhaseItem}
-              canNavigate={agendaListCanNavigate}
-              context={'meeting'}
-              disabled={agendaListDisabled}
-              facilitatorPhase={facilitatorPhase}
-              facilitatorPhaseItem={facilitatorPhaseItem}
-              gotoAgendaItem={gotoAgendaItem}
-              localPhase={localPhase}
-              localPhaseItem={localPhaseItem}
-              teamId={teamId}
-            />
-          </div>
+        <div className={css(styles.agendaListBlock)}>
+          <AgendaListAndInput
+            agendaPhaseItem={agendaPhaseItem}
+            canNavigate={agendaListCanNavigate}
+            context={'meeting'}
+            disabled={agendaListDisabled}
+            facilitatorPhase={facilitatorPhase}
+            facilitatorPhaseItem={facilitatorPhaseItem}
+            gotoAgendaItem={gotoAgendaItem}
+            localPhase={localPhase}
+            localPhaseItem={localPhaseItem}
+            team={team}
+          />
+        </div>
         }
       </nav>
     </div>
@@ -149,8 +154,7 @@ Sidebar.propTypes = {
   localPhaseItem: PropTypes.number,
   meetingPhase: PropTypes.oneOf(phaseArray),
   styles: PropTypes.object,
-  teamName: PropTypes.string,
-  teamId: PropTypes.string
+  team: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -300,4 +304,19 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(Sidebar);
+export default createFragmentContainer(
+  withStyles(styleThunk)(Sidebar),
+  graphql`
+    fragment Sidebar_team on Team {
+      teamId: id
+      teamName: name
+      facilitatorPhase
+      facilitatorPhaseItem
+      meetingPhase
+      agendaItems {
+        isComplete
+      }
+      ...AgendaListAndInput_team
+    }
+  `
+);

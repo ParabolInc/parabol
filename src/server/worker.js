@@ -11,8 +11,6 @@ import emailSSR from './emailSSR';
 import {clientSecret as secretKey} from './utils/auth0Helpers';
 import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler';
-import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
-import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
 import handleIntegration from './integrations/handleIntegration';
@@ -20,6 +18,8 @@ import sendICS from './sendICS';
 import './polyfills';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks';
+import SharedDataLoader from 'shared-dataloader';
+
 // Import .env and expand variables:
 getDotenv();
 
@@ -35,7 +35,8 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   const httpServer = worker.httpServer;
   const {exchange} = scServer;
   httpServer.on('request', app);
-
+  // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
+  const sharedDataLoader = new SharedDataLoader({PROD, onShare: '_share', ttl: 5000});
   // HMR
   if (!PROD) {
     const config = require('../../webpack/webpack.config.dev').default;
@@ -73,7 +74,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   }
 
   // HTTP GraphQL endpoint
-  const graphQLHandler = httpGraphQLHandler(exchange);
+  const graphQLHandler = httpGraphQLHandler(exchange, sharedDataLoader);
   app.post('/graphql', jwt({
     secret: new Buffer(secretKey, 'base64'),
     audience: process.env.AUTH0_CLIENT_ID,
@@ -107,9 +108,6 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   // app.use(raven.middleware.express.errorHandler(process.env.SENTRY_DSN));
 
   // handle sockets
-  const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
-  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwPresencePublishOut);
-  scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwPresenceSubscribe);
-  const connectionHandler = scConnectionHandler(exchange);
+  const connectionHandler = scConnectionHandler(exchange, sharedDataLoader);
   scServer.on('connection', connectionHandler);
 }

@@ -1,5 +1,6 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
 import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
@@ -10,11 +11,12 @@ import {
   NOTIFICATIONS_ADDED,
   NOTIFICATIONS_CLEARED,
   ORGANIZATION_ADDED,
+  ORGANIZATION_UPDATED,
   PROMOTE_TO_BILLING_LEADER
 } from 'universal/utils/constants';
 
 export default {
-  type: GraphQLBoolean,
+  type: UpdateOrgPayload,
   description: 'Set the role of a user',
   args: {
     orgId: {
@@ -30,9 +32,10 @@ export default {
       description: 'the user’s new role'
     }
   },
-  async resolve(source, {orgId, userId, role}, {authToken, socketId}) {
+  async resolve(source, {orgId, userId, role}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
     const now = new Date();
+    const operationId = dataLoader.share();
 
     // AUTH
     const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
@@ -50,12 +53,12 @@ export default {
         })
         .count();
       if (leaderCount === 1) {
-        throw errorObj({_error: 'You’re the last leader, you can’t give that up'});
+        throw new Error('You’re the last leader, you can’t give that up');
       }
     }
 
     // RESOLUTION
-    const {organization} = await r({
+    const {organizationChanges} = await r({
       userOrgsUpdate: r.table('User').get(userId)
         .update((user) => ({
           userOrgs: user('userOrgs').map((userOrg) => {
@@ -69,7 +72,7 @@ export default {
           }),
           updatedAt: now
         })),
-      organization: r.table('Organization').get(orgId)
+      organizationChanges: r.table('Organization').get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').map((orgUser) => {
             return r.branch(
@@ -81,8 +84,14 @@ export default {
             );
           }),
           updatedAt: now
-        }), {returnChanges: true})('changes')(0)('new_val').default(null)
+        }), {returnChanges: true})('changes')(0)
     });
+    const {old_val: oldOrg, new_val: organization} = organizationChanges;
+    const oldUser = oldOrg.orgUsers.find((orgUser) => orgUser.id === userId);
+    const newUser = organization.orgUsers.find((orgUser) => orgUser.id === userId);
+    if (oldUser.role === newUser.role) {
+      return null;
+    }
     if (role === BILLING_LEADER) {
       // add a notification
       const promotionNotification = {
@@ -104,11 +113,11 @@ export default {
           .default([])
       });
       const notificationsAdded = {notifications: existingNotifications.concat(promotionNotification)};
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
+      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId});
 
       // add the org to the list of owned orgs
       const organizationAdded = {organization};
-      getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId: socketId});
+      getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, operationId, mutatorId: socketId});
     } else if (role === null) {
       const {oldPromotionId, removedNotificationIds} = await r({
         oldPromotionId: r.table('Notification')
@@ -129,9 +138,14 @@ export default {
       const deletedIds = oldPromotionId ? removedNotificationIds.concat(oldPromotionId) : removedNotificationIds;
       if (deletedIds.length > 0) {
         const notificationsCleared = {deletedIds};
-        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
+        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, operationId});
       }
     }
-    return true;
+
+    // Update all billing leaders online
+    const organizationUpdated = {updatedOrgUser: newUser, organization};
+    getPubSub().publish(`${ORGANIZATION_UPDATED}.${orgId}`, {organizationUpdated, operationId, mutatorId: socketId});
+
+    return organizationUpdated;
   }
 };

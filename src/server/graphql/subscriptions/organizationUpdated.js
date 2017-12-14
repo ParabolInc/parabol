@@ -1,25 +1,27 @@
-import {GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
-import {getUserId} from 'server/utils/authorization';
+import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
+import {getUserId, requireUserInOrg} from 'server/utils/authorization';
 import {ORGANIZATION_UPDATED} from 'universal/utils/constants';
 
 
 export default {
-  type: new GraphQLNonNull(AddOrgPayload),
-  subscribe: async (source, args, {authToken, socketId}) => {
-    const r = getRethink();
+  type: new GraphQLNonNull(UpdateOrgPayload),
+  args: {
+    orgId: {
+      type: new GraphQLNonNull(GraphQLID)
+    }
+  },
+  subscribe: async (source, {orgId}, {authToken, dataLoader, socketId}) => {
     // AUTH
     const userId = getUserId(authToken);
-    const orgIds = await r.table('Organization').getAll(userId, {index: 'orgUsers'})('id').default(null);
-    if (!orgIds || orgIds.length < 1) {
-      throw new Error('User is not a part of any organizations');
-    }
+    const user = await dataLoader.get('users').load(userId);
+    const userOrgDoc = user.userOrgs.find((userOrg) => userOrg.id === orgId);
+    requireUserInOrg(userOrgDoc, userId, orgId);
 
     // RESOLUTION
-    const channelNames = orgIds.map((id) => `${ORGANIZATION_UPDATED}.${id}`);
+    const channelName = `${ORGANIZATION_UPDATED}.${orgId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelNames, {filterFn});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader});
   }
 };

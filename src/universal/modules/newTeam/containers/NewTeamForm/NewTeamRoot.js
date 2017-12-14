@@ -23,7 +23,7 @@ const NewTeamRoot = ({atmosphere, match: {params: {defaultOrgId}}}) => {
       query={query}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear style={{overflow: 'hidden'}}>
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps && <AnimatedFade key="1">
               <NewTeam

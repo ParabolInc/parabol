@@ -5,7 +5,7 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 const archiveProjectsForDB = async (projects) => {
   const r = getRethink();
-  const archivedProjects = projects.map((project) => {
+  const projectsToArchive = projects.map((project) => {
     const contentState = convertFromRaw(JSON.parse(project.content));
     const nextContentState = addTagToProject(contentState, '#archived');
     const raw = convertToRaw(nextContentState);
@@ -17,17 +17,14 @@ const archiveProjectsForDB = async (projects) => {
       id: project.id
     };
   });
-  await r.expr(archivedProjects).forEach((project) => {
+  return r(projectsToArchive).forEach((project) => {
     return r.table('Project')
       .get(project('id'))
       .update({
         content: project('content'),
         tags: project('tags')
-      });
-  });
-
-  // return the ids of the archived projects
-  return projects.map(({id}) => id);
+      }, {returnChanges: true});
+  })('changes')('new_val');
 };
 
 export default archiveProjectsForDB;

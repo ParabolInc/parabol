@@ -1,7 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import CSSTransition from 'react-transition-group/CSSTransition';
+import {CSSTransition} from 'react-transition-group';
 import withStyles from 'universal/styles/withStyles';
 
 class AnimatedFade extends Component {
@@ -36,7 +36,10 @@ class AnimatedFade extends Component {
       exit: css(styles.exit),
       exitActive: css(styles.exitActive)
     };
-    if (!this.state.ready) return null;
+    if (!this.state.ready) {
+      // CSSTransition doesn't play well with null
+      return <div />;
+    }
 
     return (
       <CSSTransition

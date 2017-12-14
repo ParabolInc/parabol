@@ -2,32 +2,27 @@
 import type {Node} from 'react';
 import type {Project} from 'universal/types/project';
 
-import {cashay} from 'cashay';
 import React from 'react';
 import {DropTarget} from 'react-dnd';
 
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import sortOrderBetween from 'universal/dnd/sortOrderBetween';
-import {MEETING, PROJECT, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
-
-const areaOpLookup = {
-  [MEETING]: 'meetingUpdatesContainer',
-  [USER_DASH]: 'userColumnsContainer',
-  [TEAM_DASH]: 'teamColumnsContainer'
-};
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import {PROJECT} from 'universal/utils/constants';
 
 type Props = {
   connectDropTarget: (node: Node) => Node,
   area: string,
+  atmosphere: Object, // TODO: atmosphere needs a type definition
   lastProject: Project,
-  status: string,
-  queryKey: string
+  status: string
 };
 
 let previousLastProjectId = null;
 let previousDraggedProjectId = null;
 const spec = {
   hover: (props: Props, monitor) => {
-    const {area, lastProject, status, queryKey} = props;
+    const {area, atmosphere, lastProject, status} = props;
     const draggedProject = monitor.getItem();
 
     if (!monitor.isOver({shallow: true})) {
@@ -46,16 +41,17 @@ const spec = {
 
     const sortOrder = sortOrderBetween(lastProject, null, draggedProject, false);
 
-    const gqlArgs = {
-      area,
-      updatedProject: {id: draggedProject.id, status, sortOrder}
+    const noActionNeeded = sortOrder === draggedProject.sortOrder && draggedProject.status === status;
+    if (noActionNeeded) {
+      return;
+    }
+
+    const updatedProject = {
+      id: draggedProject.id,
+      status,
+      sortOrder
     };
-    const op = areaOpLookup[area];
-    const cashayArgs = {
-      ops: {[op]: queryKey},
-      variables: gqlArgs
-    };
-    cashay.mutate('updateProject', cashayArgs);
+    UpdateProjectMutation(atmosphere, updatedProject, area);
   }
 };
 
@@ -67,4 +63,8 @@ const ProjectColumnTrailingSpace = ({connectDropTarget}: Props) => (
   connectDropTarget(<div style={{height: '100%'}} />)
 );
 
-export default DropTarget(PROJECT, spec, collect)(ProjectColumnTrailingSpace);
+export default withAtmosphere(
+  DropTarget(PROJECT, spec, collect)(
+    ProjectColumnTrailingSpace
+  )
+);

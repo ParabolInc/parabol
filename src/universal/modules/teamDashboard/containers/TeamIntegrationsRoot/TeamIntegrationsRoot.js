@@ -16,6 +16,7 @@ import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelA
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 const teamIntegrationsQuery = graphql`
   query TeamIntegrationsRootQuery($teamId: ID!) {
@@ -46,7 +47,7 @@ const subscriptions = [
 const cacheConfig = {ttl: DEFAULT_TTL};
 
 const TeamIntegrationsRoot = ({jwt, atmosphere, teamMemberId}) => {
-  const [, teamId] = teamMemberId.split('::');
+  const {teamId} = fromTeamMemberId(teamMemberId);
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

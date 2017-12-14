@@ -6,15 +6,17 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import fromNow from 'universal/utils/fromNow';
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
+import {createFragmentContainer} from 'react-relay';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
   let editingStatus = null;
-  // no one else is editing
   const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated ';
+
   if (editors.length === 0) {
     editingStatus = isEditing ? <span>{'Editing'}<Ellipsis /></span> : `${timestampLabel} ${fromNow(timestamp)}`;
   } else {
-    const editorNames = editors.map((e) => e.teamMember.preferredName);
+    const editorNames = editors.map((editor) => editor.preferredName);
     // one other is editing
     if (editors.length === 1) {
       const editor = editorNames[0];
@@ -31,20 +33,22 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 };
 
 const EditingStatus = (props) => {
-  const {editors, handleClick, isEditing, timestamp, timestampType, styles} = props;
+  const {atmosphere: {userId: myUserId}, handleClick, project: {editors}, timestamp, timestampType, styles} = props;
+  const otherEditors = editors.filter((editor) => editor.userId !== myUserId);
+  const isEditing = editors.length > otherEditors.length;
   const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated';
   return (
     <div className={css(styles.timestamp)} onClick={handleClick} title={title}>
-      {makeEditingStatus(editors, isEditing, timestamp, timestampType)}
+      {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
     </div>
   );
 };
 
 EditingStatus.propTypes = {
-  editors: PropTypes.array,
+  atmosphere: PropTypes.object.isRequired,
   handleClick: PropTypes.func,
-  isEditing: PropTypes.bool,
-  timestamp: PropTypes.instanceOf(Date),
+  project: PropTypes.object.isRequired,
+  timestamp: PropTypes.string.isRequired,
   timestampType: PropTypes.string,
   styles: PropTypes.object
 };
@@ -61,4 +65,13 @@ const styleThunk = (custom, {isEditing}) => ({
   }
 });
 
-export default withStyles(styleThunk)(EditingStatus);
+export default createFragmentContainer(
+  withAtmosphere(withStyles(styleThunk)(EditingStatus)),
+  graphql`
+    fragment EditingStatus_project on Project {
+      editors {
+        userId
+        preferredName
+      }
+    }`
+);

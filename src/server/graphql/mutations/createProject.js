@@ -1,23 +1,30 @@
 import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
-import ProjectInput from 'server/graphql/types/ProjectInput';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import CreateProjectInput from 'server/graphql/types/CreateProjectInput';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ASSIGNEE, MEETING, MENTIONEE, NOTIFICATIONS_ADDED, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {
+  ASSIGNEE,
+  MEETING,
+  MENTIONEE,
+  NOTIFICATIONS_ADDED,
+  PROJECT_CREATED,
+  PROJECT_INVOLVES
+} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import getPubSub from 'server/utils/getPubSub';
-import AreaEnum from 'server/graphql/types/AreaEnum';
 
 export default {
   type: CreateProjectPayload,
   description: 'Create a new project, triggering a CreateCard for other viewers',
   args: {
     newProject: {
-      type: new GraphQLNonNull(ProjectInput),
+      type: new GraphQLNonNull(CreateProjectInput),
       description: 'The new project including an id, status, and type, and teamMemberId'
     },
     area: {
@@ -25,35 +32,37 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newProject, area}, {authToken, socket}) {
+  async resolve(source, {newProject, area}, {authToken, dataLoader, socketId}) {
     const r = getRethink();
+    const operationId = dataLoader.share();
     const now = new Date();
+
     // AUTH
     const myUserId = getUserId(authToken);
-    // format of id is teamId::taskIdPart
-    requireWebsocket(socket);
-    const [teamId] = newProject.id.split('::');
-    requireSUOrTeamMember(authToken, teamId);
 
     // VALIDATION
-    // TODO make id, status, teamMemberId required
     const schema = makeProjectSchema();
-    // ensure that content is not empty
     const {errors, data: validNewProject} = schema({content: 1, ...newProject});
     handleSchemaErrors(errors);
+    const {teamId, userId, content} = validNewProject;
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const [userId] = validNewProject.teamMemberId.split('::');
-    const {content} = validNewProject;
     const {entityMap} = JSON.parse(content);
     const project = {
       ...validNewProject,
-      userId,
+      id: `${teamId}::${shortid.generate()}`,
+      agendaId: validNewProject.agendaId,
+      content: validNewProject.content,
       createdAt: now,
-      createdBy: authToken.sub,
+      createdBy: myUserId,
+      sortOrder: validNewProject.sortOrder,
+      status: validNewProject.status,
       tags: getTagsFromEntityMap(entityMap),
       teamId,
-      updatedAt: now
+      teamMemberId: `${userId}::${teamId}`,
+      updatedAt: now,
+      userId
     };
     const history = {
       id: shortid.generate(),
@@ -73,7 +82,12 @@ export default {
         })('userId')
         .coerceTo('array') : []
     });
+    const projectCreated = {project};
 
+    getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated, operationId, mutatorId: socketId});
+    getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated, operationId, mutatorId: socketId});
+
+    // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
     const changeAuthorId = `${myUserId}::${teamId}`;
     const notificationsToAdd = [];
@@ -112,6 +126,6 @@ export default {
         getPubSub().publish(`${NOTIFICATIONS_ADDED}.${notificationUserId}`, {notificationsAdded});
       });
     }
-    return {project};
+    return projectCreated;
   }
 };
