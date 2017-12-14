@@ -1,8 +1,10 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
+import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import 'universal/components/ProjectEditor/Draft.css';
@@ -10,10 +12,8 @@ import Tooltip from 'universal/components/Tooltip/Tooltip';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation';
 import ui from 'universal/styles/ui';
-import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import withStyles from 'universal/styles/withStyles';
-import EditorInputWrapper from 'universal/components/EditorInputWrapper';
-import PropTypes from 'prop-types';
+import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 
 const iconStyle = {
   fontSize: '1rem',
@@ -30,33 +30,40 @@ class CheckInQuestion extends Component {
     atmosphere: PropTypes.object.isRequired,
     styles: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired
-  }
-  state = {
-    editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.team.checkInQuestion)), editorDecorators)
   };
+
+  constructor(props) {
+    super(props);
+    const {team: {checkInQuestion}} = props;
+    this.checkInQuestionToEditorState(checkInQuestion);
+  }
 
   componentWillReceiveProps(nextProps) {
     const {team: {checkInQuestion}} = nextProps;
     const {team: {oldCheckInQuestion}} = this.props;
     if (checkInQuestion !== oldCheckInQuestion) {
-      this.setState({
-        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(checkInQuestion)), editorDecorators)
-      });
+      this.checkInQuestionToEditorState(checkInQuestion);
     }
   }
 
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
-    if (wasFocused !== isFocused) {
-      if (!isFocused) {
-        const {atmosphere, team: {id: teamId}} = this.props;
-        const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
-        UpdateCheckInQuestionMutation(atmosphere, teamId, checkInQuestion);
-      }
+    if (wasFocused && !isFocused) {
+      const {atmosphere, team: {id: teamId}} = this.props;
+      const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
+      UpdateCheckInQuestionMutation(atmosphere, teamId, checkInQuestion);
     }
     this.setState({
       editorState
+    });
+  };
+
+  checkInQuestionToEditorState(checkInQuestion) {
+    const getEditorState = () => this.state.editorState;
+    const contentState = convertFromRaw(JSON.parse(checkInQuestion));
+    this.setState({
+      editorState: EditorState.createWithContent(contentState, editorDecorators(getEditorState))
     });
   }
 

@@ -15,11 +15,12 @@ class OutcomeCardContainer extends Component {
   constructor(props) {
     super(props);
     const {atmosphere: {userId}, contentState, project: {editors}} = props;
+    const getEditorState = () => this.state.editorState;
     this.state = {
       activeEditingComponents: Set(),
       cardHasHover: false,
       cardHasFocus: Boolean(editors.find((editor) => editor.userId === userId), editors, userId),
-      editorState: EditorState.createWithContent(contentState, editorDecorators),
+      editorState: EditorState.createWithContent(contentState, editorDecorators(getEditorState)),
       cardHasMenuOpen: false
     };
   }
