@@ -1,4 +1,3 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
 import React, {Component} from 'react';

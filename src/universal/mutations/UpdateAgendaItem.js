@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay';
 
 const mutation = graphql`
-  mutation UpdateAgendaItem($updatedAgendaItem: UpdateAgendaItemInput!) {
+  mutation UpdateAgendaItemMutation($updatedAgendaItem: UpdateAgendaItemInput!) {
     updateAgendaItem(updatedAgendaItem: $updatedAgendaItem) {
       agendaItem {
         id
