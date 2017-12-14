@@ -17,7 +17,7 @@ const makeSubscribeIter = (channelName, options = {}) => {
         if (!dataLoader) console.log('NO DL', channelName);
         dataLoader.useShared(value.operationId);
       // Useful for debugging which subscriptions aren't getting fed an operationId
-      //} else {
+      // } else {
       //  console.log('maybe you can feed this sub an opId?', channelName);
       }
       if (resolve) {
