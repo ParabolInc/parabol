@@ -51,12 +51,11 @@ class Step1PreferredName extends Component {
   }
 
   onPreferredNameSubmit = async (submissionData) => {
-    const {atmosphere, dispatch, user} = this.props;
+    const {atmosphere, dispatch} = this.props;
     const {data: {preferredName}} = step1Validation()(submissionData);
     const options = {
       variables: {
         updatedUser: {
-          id: user.id,
           preferredName
         }
       }
