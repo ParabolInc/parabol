@@ -55,8 +55,8 @@ const MeetingCheckin = (props) => {
           // canEdit={tierSupportsUpdateCheckInQuestion(tier)}
           // currentName={currentName}
           // greeting={checkInGreeting}
-          // isFacilitating={isFacilitating}
           // teamId={teamId}
+          isFacilitating={isFacilitating}
           localPhaseItem={localPhaseItem}
           team={team}
         />
@@ -67,7 +67,7 @@ const MeetingCheckin = (props) => {
               nextMemberName={nextMemberName}
             /> :
             <div className={css(styles.hint)}>
-              <MeetingFacilitationHint showEllipsis={!nextMember || !isMyMeetingSection}>
+              <MeetingFacilitationHint showEllipsis={!nextMemberName || !isMyMeetingSection}>
                 {nextMemberName ?
                   <span>
                     {isMyMeetingSection ?

@@ -9,7 +9,6 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';

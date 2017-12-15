@@ -7,6 +7,7 @@ import CheckInQuestion from './CheckInQuestion';
 
 const MeetingCheckinPrompt = (props) => {
   const {
+    isFacilitating,
     localPhaseItem,
     team
   } = props;
@@ -14,7 +15,11 @@ const MeetingCheckinPrompt = (props) => {
   const currentMember = teamMembers[localPhaseItem - 1];
   const heading = (
     <div>
-      <MeetingCheckInGreeting currentName={currentMember.preferredName} team={team} />
+      <MeetingCheckInGreeting
+        currentName={currentMember.preferredName}
+        isFacilitating={isFacilitating}
+        team={team}
+      />
       <CheckInQuestion team={team} />
     </div>
   );
@@ -28,6 +33,7 @@ const MeetingCheckinPrompt = (props) => {
 };
 
 MeetingCheckinPrompt.propTypes = {
+  isFacilitating: PropTypes.bool.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
   team: PropTypes.object.isRequired
 };

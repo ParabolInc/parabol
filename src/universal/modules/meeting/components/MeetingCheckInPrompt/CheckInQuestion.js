@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 class CheckInQuestion extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
+    isFacilitating: PropTypes.bool.isRequired,
     styles: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired
   }
