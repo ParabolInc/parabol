@@ -1,12 +1,10 @@
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
-import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
 
 export default {
   addTeam,
   createFirstTeam,
-  archiveTeam,
   updateTeamName
 };
 

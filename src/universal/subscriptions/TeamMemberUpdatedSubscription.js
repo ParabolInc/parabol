@@ -2,6 +2,7 @@ const subscription = graphql`
   subscription TeamMemberUpdatedSubscription($teamId: ID!) {
     teamMemberUpdated(teamId: $teamId) {
       teamMember {
+        isLead
         isNotRemoved
         picture
         preferredName

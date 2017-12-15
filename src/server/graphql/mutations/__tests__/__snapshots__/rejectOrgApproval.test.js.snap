@@ -1,0 +1,129 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`rejectOrgApproval rejects the invitee from all teams that wanted them 1`] = `
+Object {
+  "notification": Array [],
+  "orgApproval": Array [
+    Object {
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "deniedBy": 1,
+      "email": 2,
+      "id": 0,
+      "isActive": true,
+      "orgId": 3,
+      "status": "DENIED",
+      "teamId": 4,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`rejectOrgApproval rejects the invitee from all teams that wanted them 2`] = `
+Object {
+  "notificationsAdded": Array [
+    Object {
+      "channelId": 5,
+      "message": Object {
+        "notificationsAdded": Object {
+          "notifications": Array [
+            Object {
+              "deniedByName": "Captain America",
+              "id": 6,
+              "inviteeEmail": 2,
+              "orgId": 3,
+              "reason": "bad hombre",
+              "startAt": 2017-01-01T08:00:00.000Z,
+              "type": "DENY_NEW_USER",
+              "userIds": Array [
+                5,
+              ],
+            },
+          ],
+        },
+        "operationId": 0,
+      },
+    },
+  ],
+  "notificationsCleared": Array [
+    Object {
+      "channelId": 1,
+      "message": Object {
+        "notificationsCleared": Object {
+          "deletedIds": Array [
+            8,
+          ],
+        },
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 5,
+      "message": Object {
+        "notificationsCleared": Object {
+          "deletedIds": Array [
+            8,
+          ],
+        },
+        "operationId": 0,
+      },
+    },
+  ],
+  "orgApprovalRemoved": Array [
+    Object {
+      "channelId": 4,
+      "message": Object {
+        "operationId": 0,
+        "orgApprovalRemoved": Object {
+          "orgApproval": Object {
+            "createdAt": 2017-01-01T07:00:00.000Z,
+            "deniedBy": 1,
+            "email": 2,
+            "id": 0,
+            "isActive": true,
+            "orgId": 3,
+            "status": "DENIED",
+            "teamId": 4,
+            "updatedAt": 2017-01-01T08:00:00.000Z,
+          },
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`rejectOrgApproval rejects the invitee from all teams that wanted them 3`] = `
+Object {
+  "notifications": Array [
+    Object {
+      "id": 7,
+      "inviteeEmail": 2,
+      "inviterName": "Vision",
+      "inviterUserId": 5,
+      "orgId": 3,
+      "startAt": 2017-01-01T07:00:00.000Z,
+      "teamId": 4,
+      "teamName": "Team America",
+      "type": "REQUEST_NEW_USER",
+      "userIds": Array [
+        1,
+        5,
+      ],
+    },
+  ],
+  "orgApprovals": Array [
+    Object {
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "deniedBy": 9,
+      "email": 2,
+      "id": 0,
+      "isActive": true,
+      "orgId": 3,
+      "status": "DENIED",
+      "teamId": 4,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;

@@ -1,8 +1,6 @@
 import {GraphQLObjectType} from 'graphql';
 import organization from 'server/graphql/models/Organization/organizationMutation';
-import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import team from 'server/graphql/models/Team/teamMutation';
-import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
 import user from 'server/graphql/models/User/userMutation';
 import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
@@ -12,6 +10,8 @@ import addOrg from 'server/graphql/mutations/addOrg';
 import addProvider from 'server/graphql/mutations/addProvider';
 import addSlackChannel from 'server/graphql/mutations/addSlackChannel';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
+import archiveTeam from 'server/graphql/mutations/archiveTeam';
+import cancelApproval from 'server/graphql/mutations/cancelApproval';
 import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
 import clearNotification from 'server/graphql/mutations/clearNotification';
 import connectSocket from 'server/graphql/mutations/connectSocket';
@@ -32,6 +32,8 @@ import leaveIntegration from 'server/graphql/mutations/leaveIntegration';
 import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn';
 import moveMeeting from 'server/graphql/mutations/moveMeeting';
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
+import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead';
+import rejectOrgApproval from 'server/graphql/mutations/rejectOrgApproval';
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem';
 import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo';
 import removeProvider from 'server/graphql/mutations/removeProvider';
@@ -56,10 +58,8 @@ import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQue
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 
 const rootFields = Object.assign({},
-  orgApproval,
   organization,
   team,
-  teamMember,
   user
 );
 
@@ -75,6 +75,8 @@ export default new GraphQLObjectType({
     addProvider,
     addSlackChannel,
     approveToOrg,
+    archiveTeam,
+    cancelApproval,
     cancelTeamInvite,
     clearNotification,
     connectSocket,
@@ -95,6 +97,8 @@ export default new GraphQLObjectType({
     meetingCheckIn,
     moveMeeting,
     promoteFacilitator,
+    promoteToTeamLead,
+    rejectOrgApproval,
     removeAgendaItem,
     removeProvider,
     removeSlackChannel,

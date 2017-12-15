@@ -1,35 +1,10 @@
 import {
-  INVITATIONS,
-  ORG_APPROVALS,
   TEAM,
   TEAM_MEMBERS
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
-  {
-    channel: INVITATIONS,
-    string: `
-    subscription($teamId: ID!) {
-      invitations(teamId: $teamId) {
-        id
-        email
-        tokenExpiration
-        updatedAt
-      }
-    }`
-  },
-  {
-    channel: ORG_APPROVALS,
-    string: `
-    subscription($teamId: ID!) {
-      orgApprovals(teamId: $teamId) {
-        id
-        createdAt
-        email
-      }
-    }`
-  },
   {
     channel: TEAM,
     string: `

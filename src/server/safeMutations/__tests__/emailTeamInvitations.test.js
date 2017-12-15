@@ -1,5 +1,6 @@
 import DynamicSerializer from 'dynamic-serializer';
 import MockDate from 'mockdate';
+import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
@@ -24,6 +25,8 @@ describe('emailTeamInvitations', () => {
     const mockDB = new MockDB();
     const invitee = newInvitee();
     const invitee2 = newInvitee();
+    const dataLoader = makeDataLoader();
+    const operationId = dataLoader.share();
     await mockDB.init()
       .newInvitation({email: invitee.email});
     const teamId = mockDB.context.team.id;
@@ -35,7 +38,7 @@ describe('emailTeamInvitations', () => {
     };
 
     // TEST
-    await emailTeamInvitations(invitees, inviter);
+    await emailTeamInvitations(invitees, inviter, undefined, {operationId});
     // VERIFY
     const db = await fetchAndSerialize({
       invitation: r.table('Invitation').getAll(r.args(emails), {index: 'email'}).orderBy('inviteCount').coerceTo('array')
