@@ -325,6 +325,7 @@ class MeetingContainer extends Component {
             <MeetingUpdatesPrompt
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
+              meetingNumber={1}
               team={team}
             />
             }
