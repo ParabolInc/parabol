@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {BILLING_LEADER, LOBBY, PERSONAL} from 'universal/utils/constants';
+import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
 import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember';
 import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg';
 
@@ -9,6 +9,8 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
   const r = getRethink();
 
   const {id: teamId, orgId} = newTeam;
+  const organization = await r.table('Organization').get(orgId);
+  const {tier} = organization;
   const verifiedTeam = {
     ...newTeam,
     activeFacilitator: null,
@@ -19,7 +21,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
     meetingId: null,
     meetingPhase: LOBBY,
     meetingPhaseItem: null,
-    tier: PERSONAL
+    tier
   };
   const options = {
     returnChanges: true,

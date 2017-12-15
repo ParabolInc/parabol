@@ -163,7 +163,7 @@ class TeamArchive extends Component {
 
   render() {
     const {relay: {hasMore}, styles, team, teamId, viewer} = this.props;
-    const {name: teamName, tier, orgId} = team;
+    const {teamName, tier, orgId} = team;
     const {archivedProjects} = viewer;
     const {edges} = archivedProjects;
     // Archive squeeze
