@@ -52,17 +52,6 @@ MeetingUpdatesPrompt.propTypes = {
   styles: PropTypes.object.isRequired
 };
 
-export default createFragmentContainer(
-  withStyles(styleThunk)(MeetingUpdatesPrompt),
-  graphql`
-    fragment MeetingUpdatesPrompt_team on Team {
-      teamMembers(sortBy: "checkInOrder") {
-        picture
-        preferredName
-      }
-    }`
-);
-
 const styleThunk = () => ({
   helpText: {
     fontWeight: 700,
@@ -77,3 +66,14 @@ const styleThunk = () => ({
     }
   }
 });
+
+export default createFragmentContainer(
+  withStyles(styleThunk)(MeetingUpdatesPrompt),
+  graphql`
+    fragment MeetingUpdatesPrompt_team on Team {
+      teamMembers(sortBy: "checkInOrder") {
+        picture
+        preferredName
+      }
+    }`
+);
