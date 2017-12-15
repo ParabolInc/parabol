@@ -10,6 +10,7 @@ import Tooltip from 'universal/components/Tooltip/Tooltip';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import withStyles from 'universal/styles/withStyles';
 import EditorInputWrapper from 'universal/components/EditorInputWrapper';

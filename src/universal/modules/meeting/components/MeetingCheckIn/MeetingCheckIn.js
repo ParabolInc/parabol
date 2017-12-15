@@ -37,11 +37,11 @@ const MeetingCheckin = (props) => {
     gotoNext();
   };
 
-  const self = members.find((m) => m.isSelf);
-  const currentTeamMember = members[localPhaseItem - 1] || {};
+  const {teamMembers} = team;
+  const self = teamMembers.find((m) => m.isSelf);
+  const currentTeamMember = teamMembers[localPhaseItem - 1] || {};
   const myTeamMemberId = self && self.id;
   const isMyMeetingSection = myTeamMemberId === currentTeamMember.id;
-  const {teamMembers} = team;
   const memberIdx = localPhaseItem - 1;
   const currentMember = teamMembers[memberIdx];
   const nextMemberName = teamMembers[localPhaseItem] && teamMembers[localPhaseItem].preferredName;
@@ -50,13 +50,13 @@ const MeetingCheckin = (props) => {
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="1rem">
         <MeetingCheckInPrompt
-          avatar={currentAvatar}
-          checkInQuestion={checkInQuestion}
-          canEdit={tierSupportsUpdateCheckInQuestion(tier)}
-          currentName={currentName}
-          greeting={checkInGreeting}
-          isFacilitating={isFacilitating}
-          teamId={teamId}
+          // avatar={currentAvatar}
+          // checkInQuestion={checkInQuestion}
+          // canEdit={tierSupportsUpdateCheckInQuestion(tier)}
+          // currentName={currentName}
+          // greeting={checkInGreeting}
+          // isFacilitating={isFacilitating}
+          // teamId={teamId}
           localPhaseItem={localPhaseItem}
           team={team}
         />
@@ -137,4 +137,3 @@ export default createFragmentContainer(
       }
     }`
 );
-
