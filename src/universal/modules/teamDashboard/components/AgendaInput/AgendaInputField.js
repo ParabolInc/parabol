@@ -35,12 +35,16 @@ const AgendaInputField = (props) => {
     bindHotkey,
     disabled,
     handleSubmit,
+    setAgendaInputRef,
     styles,
     team: {teamId, agendaItems}
   } = props;
   let inputRef;
   const setRef = (c) => {
     inputRef = c;
+    if (setAgendaInputRef) {
+      setAgendaInputRef(c);
+    }
   };
   const handleAgendaItemSubmit = (submittedData) => {
     const content = submittedData.agendaItem;
@@ -123,6 +127,7 @@ AgendaInputField.propTypes = {
   disabled: PropTypes.bool,
   handleSubmit: PropTypes.func,
   input: PropTypes.object,
+  setAgendaInputRef: PropTypes.func,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired
 };

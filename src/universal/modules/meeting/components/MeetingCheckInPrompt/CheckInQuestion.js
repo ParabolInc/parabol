@@ -16,6 +16,24 @@ import withStyles from 'universal/styles/withStyles';
 import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PropTypes from 'prop-types';
 
+
+const iconStyle = {
+  color: ui.palette.dark,
+  display: 'block',
+  height: '1.5rem',
+  fontSize: '1rem',
+  verticalAlign: 'middle',
+  marginLeft: '0.5rem',
+  paddingTop: '.1875rem',
+  textAlign: 'center',
+  width: '1.25rem'
+};
+
+const buttonStyle = {
+  color: ui.palette.dark,
+  display: 'block'
+};
+
 class CheckInQuestion extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
@@ -73,23 +91,6 @@ class CheckInQuestion extends Component {
     const canEdit = tierSupportsUpdateCheckInQuestion(tier);
     const isEditing = editorState.getSelection().getHasFocus();
 
-    const iconStyle = {
-      color: ui.palette.dark,
-      display: 'block',
-      height: '1.5rem',
-      fontSize: '1rem',
-      verticalAlign: 'middle',
-      marginLeft: '0.5rem',
-      paddingTop: '.1875rem',
-      textAlign: 'center',
-      width: '1.25rem'
-    };
-
-    const buttonStyle = {
-      color: ui.palette.dark,
-      display: 'block'
-    };
-
     const buttonIconStyle = {
       ...iconStyle,
       cursor: 'pointer',
@@ -100,22 +101,14 @@ class CheckInQuestion extends Component {
       ? 'Tap to customize the Social Check-in question.'
       : 'Upgrade to a Pro Account to customize the Social Check-in question.';
 
-    const tooltipProps = {
-      tip: <div>{tip}</div>,
-      originAnchor: {vertical: 'bottom', horizontal: 'center'},
-      targetAnchor: {vertical: 'top', horizontal: 'center'},
-      hideOnFocus: true
-    };
-
-    const tooltipHiddenProps = {
-      ...tooltipProps,
-      isOpen: false
-    };
-
-    const whichTooltipProps = (isEditing || !isFacilitating) ? tooltipHiddenProps : tooltipProps;
-
     return (
-      <Tooltip {...whichTooltipProps}>
+      <Tooltip
+        tip={<div>{tip}</div>}
+        originAnchor={{vertical: 'bottom', horizontal: 'center'}}
+        targetAnchor={{vertical: 'top', horizontal: 'center'}}
+        hideOnFocus
+        isOpen={isFacilitating && !isEditing}
+      >
         <div className={css(styles.root)}>
           <div className={css(styles.editor)}>
             <EditorInputWrapper

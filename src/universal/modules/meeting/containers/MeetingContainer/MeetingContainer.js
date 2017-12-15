@@ -167,6 +167,10 @@ class MeetingContainer extends Component {
     clearTimeout(this.electionTimer);
   }
 
+  setAgendaInputRef = (c) => {
+    this.agendaInputRef = c;
+  };
+
   electFacilitatorIfNone() {
     const {atmosphere, viewer: {team: {activeFacilitator, teamMembers}}} = this.props;
     if (!activeFacilitator) return;
@@ -301,6 +305,7 @@ class MeetingContainer extends Component {
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
     const showMoveMeetingControls = isFacilitating || isBehindMeeting;
     const facilitatorName = getFacilitatorName(activeFacilitator, teamMembers);
+
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
         <Sidebar
@@ -309,6 +314,7 @@ class MeetingContainer extends Component {
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           isFacilitating={isFacilitating}
+          setAgendaInputRef={this.setAgendaInputRef}
           team={team}
         />
         <MeetingMain hasBoxShadow>
@@ -323,9 +329,9 @@ class MeetingContainer extends Component {
             />
             {localPhase === UPDATES &&
             <MeetingUpdatesPrompt
+              agendaInputRef={this.agendaInputRef}
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
-              meetingNumber={1}
               team={team}
             />
             }

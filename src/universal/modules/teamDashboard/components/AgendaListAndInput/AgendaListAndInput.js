@@ -19,6 +19,7 @@ const AgendaListAndInput = (props) => {
     gotoAgendaItem,
     localPhase,
     localPhaseItem,
+    setAgendaInputRef,
     styles,
     team
   } = props;
@@ -31,6 +32,7 @@ const AgendaListAndInput = (props) => {
       <AgendaInput
         context={context}
         disabled={disabled}
+        setAgendaInputRef={setAgendaInputRef}
         team={team}
       />
       <AgendaList
@@ -63,6 +65,7 @@ AgendaListAndInput.propTypes = {
   gotoAgendaItem: PropTypes.func,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
+  setAgendaInputRef: PropTypes.func,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired
 };
