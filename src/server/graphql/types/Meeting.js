@@ -14,7 +14,6 @@ const Meeting = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The number of agenda items completed during the meeting'
     },
-    // isActive: {type: GraphQLBoolean, description: 'true if a meeting is currently in progress'},
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the meeting was created'

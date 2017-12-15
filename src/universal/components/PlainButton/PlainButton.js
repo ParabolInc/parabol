@@ -11,7 +11,7 @@ const PlainButton = ({styles, ...props}) => (
 );
 
 PlainButton.propTypes = {
-  children: PropTypes.any,
+  children: PropTypes.node,
   styles: PropTypes.object.isRequired
 };
 

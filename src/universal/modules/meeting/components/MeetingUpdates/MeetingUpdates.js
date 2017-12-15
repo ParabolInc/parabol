@@ -12,7 +12,7 @@ import withStyles from 'universal/styles/withStyles';
 import {MEETING} from 'universal/utils/constants';
 
 class MeetingUpdates extends Component {
-  state = {};
+  state = {projects: {}};
 
   componentWillMount() {
     this.filterProjects(this.props);

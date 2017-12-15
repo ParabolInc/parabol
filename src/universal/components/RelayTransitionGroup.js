@@ -22,19 +22,18 @@ class RelayTransitionGroup extends Component {
     let child;
     let key;
     if (error) {
-      key = 0;
+      key = 'Error';
       child = cloneElement(errorEl, {error});
     } else if (props) {
-      key = 1;
+      key = 'Ready';
       child = cloneElement(ready, {viewer: props.viewer});
     } else {
-      key = 2;
+      key = 'Loading';
       child = loading;
     }
-    const isLoading = key === 2;
     return (
       <TransitionGroup appear component={null}>
-        <AnimatedFade key={key} exit={!isLoading} unmountOnExit={isLoading}>
+        <AnimatedFade key={key} exit={key !== 'Loading'} unmountOnExit={key === 'Loading'}>
           {child}
         </AnimatedFade>
       </TransitionGroup>

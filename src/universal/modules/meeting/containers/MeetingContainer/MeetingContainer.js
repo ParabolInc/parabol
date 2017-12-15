@@ -1,4 +1,3 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
 import React, {Component} from 'react';
@@ -32,6 +31,7 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
+import UpdateAgendaItemMutation from 'universal/mutations/UpdateAgendaItemMutation';
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -240,7 +240,7 @@ class MeetingContainer extends Component {
   };
 
   gotoAgendaItem = (idx) => async () => {
-    const {teamId, viewer: {team: {activeFacilitator, agendaItems, facilitatorPhase}}, myTeamMemberId} = this.props;
+    const {atmosphere, viewer: {team: {activeFacilitator, agendaItems, facilitatorPhase}}, myTeamMemberId} = this.props;
     const isFacilitating = activeFacilitator === myTeamMemberId;
     const facilitatorPhaseInfo = actionMeeting[facilitatorPhase];
     const agendaPhaseInfo = actionMeeting[AGENDA_ITEMS];
@@ -252,19 +252,14 @@ class MeetingContainer extends Component {
       const desiredItem = agendaItems[idx];
       const nextItem = agendaItems[nextItemIdx];
       const prevItem = agendaItems[nextItemIdx - 1];
-      const options = {
-        ops: {
-          agendaListAndInputContainer: teamId
-        },
-        variables: {
-          updatedAgendaItem: {
-            id: desiredItem.id,
-            sortOrder: prevItem ? (prevItem.sortOrder + nextItem.sortOrder) / 2 : nextItem.sortOrder - SORT_STEP
-          }
-        }
+      const updatedAgendaItem = {
+        id: desiredItem.id,
+        sortOrder: prevItem ? (prevItem.sortOrder + nextItem.sortOrder) / 2 : nextItem.sortOrder - SORT_STEP
       };
-      await cashay.mutate('updateAgendaItem', options);
-      this.gotoItem(nextItemIdx + 1, AGENDA_ITEMS);
+      const onCompleted = () => {
+        this.gotoItem(nextItemIdx + 1, AGENDA_ITEMS);
+      };
+      UpdateAgendaItemMutation(atmosphere, updatedAgendaItem, undefined, onCompleted);
     } else {
       this.gotoItem(idx + 1, AGENDA_ITEMS);
     }
