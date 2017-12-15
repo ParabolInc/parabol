@@ -2,10 +2,12 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'grap
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import OrgApprovalStatusEnum from 'server/graphql/types/OrgApprovalStatusEnum';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
+import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember';
 
 const OrgApproval = new GraphQLObjectType({
   name: 'OrgApproval',
   description: 'The state of approving an email address to join a team and org',
+  interfaces: () => [PossibleTeamMember],
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique approval ID'},
     approvedBy: {
@@ -21,7 +23,7 @@ const OrgApproval = new GraphQLObjectType({
       description: 'The userId of the billing leader that denied the invitee'
     },
     email: {
-      type: new GraphQLNonNull(GraphQLEmailType),
+      type: GraphQLEmailType,
       description: '*The email seeking approval'
     },
     isActive: {

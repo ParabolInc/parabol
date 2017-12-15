@@ -105,37 +105,7 @@ exports[`ArchiveTeam archives a team 2`] = `
 Object {
   "newAuthToken": Array [
     Object {
-      "channelId": 16,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 15,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 14,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 13,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 12,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 11,
+      "channelId": 9,
       "message": Object {
         "newAuthToken": 18,
       },
@@ -147,7 +117,37 @@ Object {
       },
     },
     Object {
-      "channelId": 9,
+      "channelId": 11,
+      "message": Object {
+        "newAuthToken": 18,
+      },
+    },
+    Object {
+      "channelId": 12,
+      "message": Object {
+        "newAuthToken": 18,
+      },
+    },
+    Object {
+      "channelId": 13,
+      "message": Object {
+        "newAuthToken": 18,
+      },
+    },
+    Object {
+      "channelId": 14,
+      "message": Object {
+        "newAuthToken": 18,
+      },
+    },
+    Object {
+      "channelId": 15,
+      "message": Object {
+        "newAuthToken": 18,
+      },
+    },
+    Object {
+      "channelId": 16,
       "message": Object {
         "newAuthToken": 18,
       },
@@ -155,113 +155,18 @@ Object {
   ],
   "notificationsAdded": Array [
     Object {
-      "channelId": 16,
+      "channelId": 9,
       "message": Object {
         "notificationsAdded": Object {
           "notifications": Array [
             Object {
-              "id": 7,
+              "id": 0,
               "orgId": 8,
               "startAt": 2017-01-01T08:00:00.000Z,
               "teamName": "Team America",
               "type": "TEAM_ARCHIVED",
               "userIds": Array [
-                16,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 15,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 6,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                15,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 14,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 5,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                14,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 13,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 4,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                13,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 12,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 3,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                12,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 11,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 2,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                11,
+                9,
               ],
             },
           ],
@@ -288,18 +193,113 @@ Object {
       },
     },
     Object {
-      "channelId": 9,
+      "channelId": 11,
       "message": Object {
         "notificationsAdded": Object {
           "notifications": Array [
             Object {
-              "id": 0,
+              "id": 2,
               "orgId": 8,
               "startAt": 2017-01-01T08:00:00.000Z,
               "teamName": "Team America",
               "type": "TEAM_ARCHIVED",
               "userIds": Array [
-                9,
+                11,
+              ],
+            },
+          ],
+        },
+      },
+    },
+    Object {
+      "channelId": 12,
+      "message": Object {
+        "notificationsAdded": Object {
+          "notifications": Array [
+            Object {
+              "id": 3,
+              "orgId": 8,
+              "startAt": 2017-01-01T08:00:00.000Z,
+              "teamName": "Team America",
+              "type": "TEAM_ARCHIVED",
+              "userIds": Array [
+                12,
+              ],
+            },
+          ],
+        },
+      },
+    },
+    Object {
+      "channelId": 13,
+      "message": Object {
+        "notificationsAdded": Object {
+          "notifications": Array [
+            Object {
+              "id": 4,
+              "orgId": 8,
+              "startAt": 2017-01-01T08:00:00.000Z,
+              "teamName": "Team America",
+              "type": "TEAM_ARCHIVED",
+              "userIds": Array [
+                13,
+              ],
+            },
+          ],
+        },
+      },
+    },
+    Object {
+      "channelId": 14,
+      "message": Object {
+        "notificationsAdded": Object {
+          "notifications": Array [
+            Object {
+              "id": 5,
+              "orgId": 8,
+              "startAt": 2017-01-01T08:00:00.000Z,
+              "teamName": "Team America",
+              "type": "TEAM_ARCHIVED",
+              "userIds": Array [
+                14,
+              ],
+            },
+          ],
+        },
+      },
+    },
+    Object {
+      "channelId": 15,
+      "message": Object {
+        "notificationsAdded": Object {
+          "notifications": Array [
+            Object {
+              "id": 6,
+              "orgId": 8,
+              "startAt": 2017-01-01T08:00:00.000Z,
+              "teamName": "Team America",
+              "type": "TEAM_ARCHIVED",
+              "userIds": Array [
+                15,
+              ],
+            },
+          ],
+        },
+      },
+    },
+    Object {
+      "channelId": 16,
+      "message": Object {
+        "notificationsAdded": Object {
+          "notifications": Array [
+            Object {
+              "id": 7,
+              "orgId": 8,
+              "startAt": 2017-01-01T08:00:00.000Z,
+              "teamName": "Team America",
+              "type": "TEAM_ARCHIVED",
+              "userIds": Array [
+                16,
               ],
             },
           ],

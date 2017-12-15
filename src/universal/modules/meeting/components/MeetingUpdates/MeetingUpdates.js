@@ -27,7 +27,7 @@ class MeetingUpdates extends Component {
   }
 
   filterProjects(props) {
-    const {teamMembers, localPhaseItem, viewer: {projects}} = props;
+    const {localPhaseItem, viewer: {projects, team: {teamMembers}}} = props;
     const currentTeamMember = teamMembers[localPhaseItem - 1];
     const edges = projects.edges.filter(({node}) => node.teamMember.id === currentTeamMember.id);
     this.setState({

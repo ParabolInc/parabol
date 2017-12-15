@@ -60,11 +60,7 @@ const TeamArchiveRoot = ({atmosphere, match, team}) => {
 TeamArchiveRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  team: PropTypes.shape({
-    orgId: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    tier: PropTypes.string.isRequired
-  })
+  team: PropTypes.object
 };
 
 export default withAtmosphere(TeamArchiveRoot);

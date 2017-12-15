@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql';
-import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
+import Invitee from 'server/graphql/types/Invitee';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {ensureUniqueId, getUserId, getUserOrgDoc, requireUserInOrg} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';

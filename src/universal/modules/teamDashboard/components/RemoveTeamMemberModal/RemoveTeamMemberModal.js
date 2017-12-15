@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import {DashModal} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
@@ -8,7 +9,8 @@ import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutati
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const RemoveTeamMemberModal = (props) => {
-  const {atmosphere, closeAfter, closePortal, isClosing, preferredName, teamMemberId} = props;
+  const {atmosphere, closeAfter, closePortal, isClosing, teamMember} = props;
+  const {teamMemberId, preferredName} = teamMember;
   const handleClick = () => {
     closePortal();
     RemoveTeamMemberMutation(atmosphere, teamMemberId);
@@ -40,9 +42,16 @@ RemoveTeamMemberModal.propTypes = {
   closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
-  preferredName: PropTypes.string.isRequired,
-  teamMemberId: PropTypes.string.isRequired,
+  teamMember: PropTypes.object.isRequired,
   toggle: PropTypes.any
 };
 
-export default portal({escToClose: true, closeAfter: 100})(withAtmosphere(RemoveTeamMemberModal));
+export default createFragmentContainer(
+  portal({escToClose: true, closeAfter: 100})(withAtmosphere(RemoveTeamMemberModal)),
+  graphql`
+    fragment RemoveTeamMemberModal_teamMember on TeamMember {
+      teamMemberId: id
+      preferredName
+    }
+  `
+);

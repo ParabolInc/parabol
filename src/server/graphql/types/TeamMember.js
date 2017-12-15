@@ -5,6 +5,7 @@ import connectionFromProjects from 'server/graphql/queries/helpers/connectionFro
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember';
 import {ProjectConnection} from 'server/graphql/types/Project';
 import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
@@ -13,6 +14,7 @@ import {getUserId} from 'server/utils/authorization';
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
   description: 'A member of a team',
+  interfaces: () => [PossibleTeamMember],
   fields: () => ({
     id: {
       type: GraphQLID,
@@ -66,7 +68,7 @@ const TeamMember = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if this team member belongs to the user that queried it',
       resolve: (source, args, {authToken}) => {
-        const {userId} = getUserId(authToken);
+        const userId = getUserId(authToken);
         return source.userId === userId;
       }
     },

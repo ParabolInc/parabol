@@ -7,6 +7,7 @@ import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
+import * as sendEmailPromise from 'server/email/sendEmail';
 import endMeeting from 'server/graphql/mutations/endMeeting';
 import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 
@@ -16,6 +17,7 @@ console.error = jest.fn();
 describe('endMeeting', () => {
   test('generates a meeting summary and sets sort order', async () => {
     // SETUP
+    sendEmailPromise.default = jest.fn(() => true);
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
@@ -43,6 +45,7 @@ describe('endMeeting', () => {
 
   test('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
     // SETUP
+    sendEmailPromise.default = jest.fn(() => true);
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();

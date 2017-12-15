@@ -1,17 +1,13 @@
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLInputObjectType
-} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember';
 
-export const Invitation = new GraphQLObjectType({
+
+const Invitation = new GraphQLObjectType({
   name: 'Invitation',
   description: 'An invitation to become a team member',
+  interfaces: () => [PossibleTeamMember],
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique invitation Id'},
     acceptedAt: {
@@ -23,18 +19,12 @@ export const Invitation = new GraphQLObjectType({
       description: 'The datetime the invitation was created'
     },
     email: {
-      type: new GraphQLNonNull(GraphQLEmailType),
+      type: GraphQLEmailType,
       description: 'The email of the invitee'
     },
     fullName: {
       type: GraphQLString,
       description: 'The name of the invitee, derived from the email address'
-    },
-    hashedToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'Secret token used when inviting a user',
-      // lock it down
-      resolve: () => null
     },
     invitedBy: {type: GraphQLID, description: 'The teamMemberId of the person that sent the invitation'},
     inviteCount: {
@@ -57,21 +47,4 @@ export const Invitation = new GraphQLObjectType({
   })
 });
 
-export const Invitee = new GraphQLInputObjectType({
-  name: 'Invitee',
-  description: 'The email and task of an invited team member',
-  fields: () => ({
-    email: {
-      type: new GraphQLNonNull(GraphQLEmailType),
-      description: 'The email address of the invitee'
-    },
-    fullName: {
-      type: GraphQLString,
-      description: 'The name derived from an RFC5322 email string'
-    },
-    task: {
-      type: GraphQLString,
-      description: 'The current task the invitee is working on'
-    }
-  })
-});
+export default Invitation;

@@ -184,12 +184,17 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
+export const INVITATION_ADDED = 'invitationAdded';
+export const INVITATION_REMOVED = 'invitationRemoved';
+export const INVITATION_UPDATED = 'invitationUpdated';
 export const MEETING_UPDATED = 'meetingUpdated';
 export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATIONS_ADDED = 'notificationsAdded';
 export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const ORGANIZATION_ADDED = 'organizationAdded';
 export const ORGANIZATION_UPDATED = 'organizationUpdated';
+export const ORG_APPROVAL_ADDED = 'orgApprovalAdded';
+export const ORG_APPROVAL_REMOVED = 'orgApprovalRemoved';
 export const PROJECT_UPDATED = 'projectUpdated';
 export const PROJECT_CREATED = 'projectCreated';
 export const PROJECT_DELETED = 'projectDeleted';
