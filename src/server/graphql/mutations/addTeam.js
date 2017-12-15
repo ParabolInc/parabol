@@ -2,10 +2,13 @@ import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql';
 import Invitee from 'server/graphql/types/Invitee';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {ensureUniqueId, getUserId, getUserOrgDoc, requireUserInOrg} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
-import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
-import addTeamValidation from './addTeamValidation';
+import shortid from 'shortid';
+import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import createTeamAndLeader from '../models/Team/createFirstTeam/createTeamAndLeader';
+import addTeamValidation from './helpers/addTeamValidation';
 import TeamInput from 'server/graphql/types/TeamInput';
 
 export default {
@@ -20,7 +23,7 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(Invitee))
     }
   },
-  async resolve(source, args, {authToken, dataLoader, socket, socketId}) {
+  async resolve(source, args, {authToken, dataLoader, socketId}) {
     // AUTH
     const {orgId} = args.newTeam;
     const userId = getUserId(authToken);
@@ -29,18 +32,17 @@ export default {
 
     // VALIDATION
     const {data: {invitees, newTeam}, errors} = addTeamValidation()(args);
-    const {id: teamId} = newTeam;
     handleSchemaErrors(errors);
-    await ensureUniqueId('Team', teamId);
 
     // RESOLUTION
+    const teamId = shortid.generate();
     const newAuthToken = {
       ...authToken,
       tms: Array.isArray(authToken.tms) ? authToken.tms.concat(teamId) : [teamId],
       exp: undefined
     };
-    socket.setAuthToken(newAuthToken);
-    await createTeamAndLeader(userId, newTeam);
+    await createTeamAndLeader(userId, {id: teamId, ...newTeam});
+    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
 
     const inviteeCount = invitees && invitees.length || 0;
     sendSegmentEvent('New Team', userId, {teamId, orgId, inviteeCount});
