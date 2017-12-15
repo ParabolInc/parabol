@@ -55,23 +55,17 @@ class MeetingUpdates extends Component {
       <MeetingMain>
         <MeetingSection flexToFill>
           <div className={css(styles.layout)}>
-            {showMoveMeetingControls ?
+            {showMoveMeetingControls &&
               <Button
                 buttonStyle="flat"
                 colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
                 key={`update${localPhaseItem}`}
-                label={isLastMember ? `Move on to the ${nextPhaseName}` : 'Next team member '}
+                label={isLastMember ? `Advance to the ${nextPhaseName}` : 'Next teammate '}
                 onClick={gotoNext}
                 buttonSize="medium"
-              /> :
-              <MeetingFacilitationHint>
-                {isLastMember ?
-                  <span>{'Waiting for '}<b>{facilitatorName}</b> {`to advance to the ${nextPhaseName}`}</span> :
-                  <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {`to give ${actionMeeting.updates.name}`}</span>
-                }
-              </MeetingFacilitationHint>
+              />
             }
           </div>
           <div className={css(styles.body)}>
