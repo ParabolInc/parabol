@@ -54,8 +54,8 @@ export default {
     const {id: teamId} = validNewTeam;
     const tms = [teamId];
     const orgName = `${user.preferredName}’s Org`;
+    await createNewOrg(orgId, orgName, userId);
     await resolvePromiseObj({
-      newOrg: createNewOrg(orgId, orgName, userId),
       newTeamUpdatedUser: createTeamAndLeader(userId, validNewTeam, true),
       seedTeam: addSeedProjects(userId, teamId)
     });

@@ -29,7 +29,7 @@ export default {
         inactive: false,
         updatedAt: now,
         lastSeenAt: now,
-        connectedSockets: user('connectedSockets').append(socketId)
+        connectedSockets: user('connectedSockets').default([]).append(socketId)
       }), {returnChanges: true})('changes')(0).default({});
 
     const {old_val: oldUser, new_val: user} = userChanges;

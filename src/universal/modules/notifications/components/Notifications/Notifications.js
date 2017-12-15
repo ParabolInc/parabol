@@ -5,7 +5,7 @@ import Atmosphere from 'universal/Atmosphere';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import {requiresAction} from 'universal/data/notification';
+import {requiresAction} from 'universal/types/notification';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';

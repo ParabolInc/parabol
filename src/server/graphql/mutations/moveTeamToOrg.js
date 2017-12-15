@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId} from 'server/utils/authorization';
+import {getUserId, isSuperUser} from 'server/utils/authorization';
 import {ADD_USER} from 'server/utils/serverConstants';
 import {BILLING_LEADER} from 'universal/utils/constants';
 
@@ -22,6 +22,7 @@ export default {
     const r = getRethink();
     // AUTH
     const userId = getUserId(authToken);
+    const su = isSuperUser(authToken);
 
     // VALIDATION
     const {user, team, org} = await r({
@@ -32,16 +33,16 @@ export default {
 
     const {userOrgs} = user;
     const isBillingLeaderForOrg = userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER);
-    if (!isBillingLeaderForOrg) {
+    if (!isBillingLeaderForOrg && !su) {
       throw new Error('You must be a billing leader for the organization you want to move the team to', orgId);
     }
     const {orgId: currentOrgId} = team;
     const isBillingLeaderForTeam = userOrgs.find((userOrg) => userOrg.id === currentOrgId && userOrg.role === BILLING_LEADER);
-    if (!isBillingLeaderForTeam) {
+    if (!isBillingLeaderForTeam && !su) {
       throw new Error('You must be a billing leader for the org that owns that team', teamId);
     }
 
-    if (orgId === currentOrgId) {
+    if (orgId === currentOrgId && !su) {
       throw new Error('That team already belongs to the organization', orgId);
     }
 
