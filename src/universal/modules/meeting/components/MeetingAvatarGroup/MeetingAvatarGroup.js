@@ -78,7 +78,7 @@ const MeetingAvatarGroup = (props) => {
                 isActive={avatarIsFacilitating}
                 isClickable
                 picture={picture}
-                isConnected={avatar.isConnected}
+                isConnected={avatar.isConnected || avatar.isSelf}
                 isCheckedIn={avatar.isCheckedIn}
                 size="fill"
               />
