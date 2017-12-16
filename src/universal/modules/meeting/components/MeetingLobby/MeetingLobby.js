@@ -21,7 +21,10 @@ const MeetingLobby = (props) => {
   const {teamId, teamName} = team;
   const onStartMeetingClick = () => {
     submitMutation();
-    StartMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
+    const foo = (res) => {
+      console.log('res', res)
+    }
+    StartMeetingMutation(atmosphere, teamId, history, onError, foo);
   };
   const meetingUrl = makeHref(`/meeting/${teamId}`);
   return (

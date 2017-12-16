@@ -9,8 +9,8 @@ import shortid from 'shortid';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import addSeedProjects from './addSeedProjects';
 import createFirstTeamValidation from './createFirstTeamValidation';
-import createTeamAndLeader from './createTeamAndLeader';
-import TeamInput from 'server/graphql/types/TeamInput';
+import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader';
+import NewTeamInput from 'server/graphql/types/NewTeamInput';
 
 export default {
   // return the new JWT that has the new tms field
@@ -18,7 +18,7 @@ export default {
   description: 'Create a new team and add the first team member. Called from the welcome wizard',
   args: {
     newTeam: {
-      type: new GraphQLNonNull(TeamInput),
+      type: new GraphQLNonNull(NewTeamInput),
       description: 'The new team object with exactly 1 team member'
     }
   },

@@ -1,9 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const insertNewTeamMember = (userId, teamId, options = {}) => {
   const r = getRethink();
   const {isLead = false, checkInOrder} = options;
-  const teamMemberId = `${userId}::${teamId}`;
+  const teamMemberId = toTeamMemberId(teamId, userId);
   return r.table('User').get(userId)
     .pluck('email', 'picture', 'preferredName')
     .do((user) => {

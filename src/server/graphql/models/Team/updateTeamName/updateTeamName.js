@@ -9,14 +9,14 @@ import {
   GraphQLBoolean
 } from 'graphql';
 import updateTeamNameValidation from './updateTeamNameValidation';
-import TeamInput from 'server/graphql/types/TeamInput';
+import UpdatedTeamInput from 'server/graphql/types/UpdatedTeamInput';
 
 
 export default {
   type: GraphQLBoolean,
   args: {
     updatedTeam: {
-      type: new GraphQLNonNull(TeamInput),
+      type: new GraphQLNonNull(UpdatedTeamInput),
       description: 'The input object containing the teamId and any modified fields'
     }
   },

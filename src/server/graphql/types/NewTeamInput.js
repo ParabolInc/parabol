@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLString, GraphQLInputObjectType} from 'graphql';
 
-const TeamInput = new GraphQLInputObjectType({
-  name: 'TeamInput',
+const NewTeamInput = new GraphQLInputObjectType({
+  name: 'NewTeamInput',
   fields: () => ({
     id: {type: GraphQLID, description: 'The unique team ID'},
     name: {type: GraphQLString, description: 'The name of the team'},
@@ -10,4 +10,4 @@ const TeamInput = new GraphQLInputObjectType({
   })
 });
 
-export default TeamInput;
+export default NewTeamInput;
