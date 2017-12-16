@@ -20,7 +20,7 @@ const DashboardAvatars = (props) => {
                 picture={picture}
                 hasBadge
                 isCheckedIn={avatar.isCheckedIn}
-                isConnected={avatar.isConnected}
+                isConnected={avatar.isConnected || avatar.isSelf}
                 size="smaller"
               />
             </div>
@@ -56,6 +56,7 @@ export default createFragmentContainer(
         id
         isCheckedIn
         isConnected
+        isSelf
         picture
       }
     }`

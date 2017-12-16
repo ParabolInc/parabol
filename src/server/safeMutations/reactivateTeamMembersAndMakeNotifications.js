@@ -34,14 +34,16 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
     teamName
   }));
   await r.table('Notification').insert(notifications);
-  reactivatedUsers.forEach(({id: userId, tms}) => {
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, tms)});
-  });
   reactivatedTeamMembers.forEach((teamMember) => {
     const teamMemberAdded = {teamMember};
     getPubSub().publish(`${TEAM_MEMBER_ADDED}.${teamId}`, {teamMemberAdded, ...subOptions});
   });
-  return makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);
+
+  const reactivationNotifications = makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);
+  reactivatedUsers.forEach(({id: userId, tms}) => {
+    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, tms)});
+  });
+  return reactivationNotifications;
 };
 
 export default reactivateTeamMembersAndMakeNotifications;

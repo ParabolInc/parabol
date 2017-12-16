@@ -37,6 +37,7 @@ const publishJoinTeamNotifications = (teamId, teamName, user) => {
   const notificationsAdded = {
     notifications: [{
       type: JOIN_TEAM,
+      teamId,
       teamName,
       preferredName: user.preferredName || user.email
     }]
@@ -100,8 +101,8 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
     teamId
   };
 
-  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded: {notifications: [addedToTeam]}});
+  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
   return addedToTeam;
 };
 

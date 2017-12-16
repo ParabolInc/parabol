@@ -1,5 +1,6 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
+import Team from 'server/graphql/types/Team';
 
 const NotifyNewTeamMember = new GraphQLObjectType({
   name: 'NotifyNewTeamMember',
@@ -11,9 +12,21 @@ const NotifyNewTeamMember = new GraphQLObjectType({
     //  type: new GraphQLNonNull(GraphQLString),
     //  description: 'The name of the person that invited them onto the team'
     // },
+    teamId: {
+      type: GraphQLID,
+      description: 'The id of the team'
+    },
     teamName: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the team the user is joining'
+      description: 'The name of the team the user is joining',
+      deprecatedReason: 'Use team.name instead'
+    },
+    team: {
+      type: Team,
+      description: 'The team the invitee just joined',
+      resolve: ({teamId}, args, {dataLoader}) => {
+        return dataLoader.get('Team').load(teamId);
+      }
     },
     preferredName: {
       type: GraphQLString,
