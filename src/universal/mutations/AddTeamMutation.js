@@ -6,8 +6,7 @@ const mutation = graphql`
   mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Invitee!]) {
     addTeam(newTeam: $newTeam, invitees: $invitees) {
       team {
-        id
-        name
+        ...DashNavTeam_team
       }
     }
   }

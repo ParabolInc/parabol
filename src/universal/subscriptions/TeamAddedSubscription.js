@@ -4,8 +4,7 @@ const subscription = graphql`
   subscription TeamAddedSubscription {
     teamAdded {
       team {
-        id
-        name
+        ...DashNavTeam_team
       }
     }
   }

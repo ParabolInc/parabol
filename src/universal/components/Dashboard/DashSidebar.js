@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
+import DashNavList from 'universal/components/DashNavList/DashNavList';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -7,17 +9,16 @@ import ui from 'universal/styles/ui';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
-import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
 import DashNavItem from './DashNavItem';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
 import {NavLink} from 'react-router-dom';
 
 const DashSidebar = (props) => {
-  const {notificationsCount, styles} = props;
+  const {styles, viewer} = props;
   return (
     <div className={css(styles.root)}>
-      <StandardHubContainer notificationsCount={notificationsCount} />
+      <StandardHubContainer viewer={viewer} />
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem
@@ -28,7 +29,7 @@ const DashSidebar = (props) => {
         <div className={css(styles.navLabel, styles.navLabelForList)}>
           My Teams
         </div>
-        <DashNavListContainer />
+        <DashNavList viewer={viewer} />
         <NavLink className={css(styles.addTeam)} activeClassName={css(styles.addTeamDisabled)} title="Add New Team" to="/newteam/1">
           <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
@@ -48,8 +49,8 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
-  notificationsCount: PropTypes.number.isRequired,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  viewer: PropTypes.object
 };
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString();
@@ -144,4 +145,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(DashSidebar);
+export default createFragmentContainer(
+  withStyles(styleThunk)(DashSidebar),
+  graphql`
+    fragment DashSidebar_viewer on User {
+      ...StandardHub_viewer
+      ...DashNavList_viewer
+    }  
+  `
+);

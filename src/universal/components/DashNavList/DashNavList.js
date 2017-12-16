@@ -1,28 +1,22 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import DashNavItem from '../Dashboard/DashNavItem';
-import ui from 'universal/styles/ui';
+import {createFragmentContainer} from 'react-relay';
+import {withRouter} from 'react-router-dom';
+import DashNavTeam from 'universal/components/Dashboard/DashNavTeam';
 import appTheme from 'universal/styles/theme/appTheme';
-import FontAwesome from 'react-fontawesome';
+import withStyles from 'universal/styles/withStyles';
 
 const DashNavList = (props) => {
-  const {teams, styles} = props;
-  const hasTeams = teams.length > 0;
+  const {styles, viewer} = props;
+  const {teams} = viewer || {};
+  // const isLoading = !teams;
+  const hasTeams = teams && teams.length > 0;
   return (
     <div className={css(styles.root)}>
       {hasTeams ?
         <div>
-          {teams.map((team) =>
-            (<div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
-              {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment" />}
-              <DashNavItem
-                href={`/team/${team.id}`}
-                label={team.name}
-              />
-            </div>)
-          )}
+          {teams.map((team) => <DashNavTeam key={team.id} team={team} />)}
         </div> :
         <div className={css(styles.emptyTeams)}>It appears you are not a member of any team!</div>
       }
@@ -32,12 +26,7 @@ const DashNavList = (props) => {
 
 DashNavList.propTypes = {
   styles: PropTypes.object,
-  teams: PropTypes.arrayOf(
-    PropTypes.shape({
-      href: PropTypes.string,
-      label: PropTypes.string
-    })
-  )
+  viewer: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -49,22 +38,17 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.sBase,
     fontStyle: 'italic',
     padding: '0 0 .125rem 1rem'
-  },
-
-  iconAndLink: {
-    alignItems: 'center',
-    display: 'flex',
-    position: 'relative'
-  },
-
-  itemIcon: {
-    color: appTheme.palette.light,
-    fontSize: `${ui.iconSize} !important`,
-    position: 'absolute',
-    right: '100%',
-    textAlign: 'center',
-    width: 24
   }
 });
 
-export default withStyles(styleThunk)(DashNavList);
+export default createFragmentContainer(
+  withRouter(withStyles(styleThunk)(DashNavList)),
+  graphql`
+    fragment DashNavList_viewer on User {
+      teams {
+        id
+        ...DashNavTeam_team
+      }
+    }
+  `
+);

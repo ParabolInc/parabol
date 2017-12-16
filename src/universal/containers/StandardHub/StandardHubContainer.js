@@ -15,7 +15,7 @@ const mapStateToProps = (state) => {
 };
 
 const StandardHubContainer = (props) => {
-  const {history, notificationsCount, user: {picture, preferredName, email}} = props;
+  const {history, notificationsCount, user: {picture, preferredName, email}, viewer} = props;
   return (
     <StandardHub
       email={email}
@@ -23,6 +23,7 @@ const StandardHubContainer = (props) => {
       picture={picture}
       preferredName={preferredName}
       history={history}
+      viewer={viewer}
     />
   );
 };
@@ -34,7 +35,8 @@ StandardHubContainer.propTypes = {
     email: PropTypes.string,
     picture: PropTypes.string,
     preferredName: PropTypes.string
-  }).isRequired
+  }).isRequired,
+  viewer: PropTypes.object
 };
 
 // router required to update nested content on route changes

@@ -1,5 +1,4 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -266,5 +265,5 @@ export default withAtmosphere(reduxForm({form: 'newTeam', validate})(
       NewTeamForm)
     )
   )
-)
+  )
 );

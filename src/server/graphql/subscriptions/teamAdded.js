@@ -1,16 +1,11 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import AddAgendaItemPayload from 'server/graphql/types/AddAgendaItemPayload';
+import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import {getUserId, requireAuth} from 'server/utils/authorization';
 import {TEAM_ADDED} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(AddAgendaItemPayload),
-  args: {
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID)
-    }
-  },
+  type: new GraphQLNonNull(AddTeamPayload),
   subscribe: (source, args, {authToken, dataLoader, socketId}) => {
     // AUTH
     requireAuth(authToken);

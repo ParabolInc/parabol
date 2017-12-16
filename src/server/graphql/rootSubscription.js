@@ -33,6 +33,7 @@ import orgApprovalAdded from 'server/graphql/subscriptions/orgApprovalAdded';
 import invitationAdded from 'server/graphql/subscriptions/invitationAdded';
 import invitationRemoved from 'server/graphql/subscriptions/invitationRemoved';
 import invitationUpdated from 'server/graphql/subscriptions/invitationUpdated';
+import teamAdded from 'server/graphql/subscriptions/teamAdded';
 
 const rootFields = Object.assign({},
   invoice,
@@ -70,6 +71,7 @@ export default new GraphQLObjectType({
     slackChannelRemoved,
     providerAdded,
     providerRemoved,
+    teamAdded,
     teamMembersInvited,
     teamMemberAdded,
     teamMemberUpdated,
