@@ -114,7 +114,7 @@ class CheckInQuestion extends Component {
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
-        isOpen={isFacilitating && !isEditing}
+        isOpen={(isFacilitating && !isEditing) ? undefined : false}
       >
         <div className={css(styles.root)}>
           <div className={css(styles.editor)}>
