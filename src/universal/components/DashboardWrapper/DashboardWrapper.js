@@ -7,6 +7,7 @@ import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLa
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import TeamAddedSubscription from 'universal/subscriptions/TeamAddedSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
@@ -37,7 +38,8 @@ const newTeam = () => System.import('universal/modules/newTeam/containers/NewTea
 const subscriptions = [
   NewAuthTokenSubscription,
   NotificationsAddedSubscription,
-  NotificationsClearedSubscription
+  NotificationsClearedSubscription,
+  TeamAddedSubscription
 ];
 
 const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {

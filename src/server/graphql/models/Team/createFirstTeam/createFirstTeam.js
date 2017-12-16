@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
-import {requireAuth} from 'server/utils/authorization';
+import {getUserId, requireAuth} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -26,7 +26,8 @@ export default {
     const r = getRethink();
 
     // AUTH
-    const userId = requireAuth(authToken);
+    requireAuth(authToken);
+    const userId = getUserId(authToken);
 
     // VALIDATION
     const {user, existingTeam} = await r({
