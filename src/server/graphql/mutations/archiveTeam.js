@@ -96,11 +96,11 @@ export default {
       await r.table('Notification').insert(notifications);
       publishTeamArchivedNotifications(notifications);
     }
-    publishAuthTokensWithoutTeam(userDocs);
 
     if (!teamResult) {
       throw new Error('Team was already archived');
     }
+    publishAuthTokensWithoutTeam(userDocs);
     return {team: teamResult};
   }
 };

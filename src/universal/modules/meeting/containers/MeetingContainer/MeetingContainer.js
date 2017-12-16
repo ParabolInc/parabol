@@ -176,8 +176,8 @@ class MeetingContainer extends Component {
     if (!activeFacilitator) return;
 
     const facilitator = teamMembers.find((m) => m.id === activeFacilitator);
-    if (!facilitator.isConnected) {
-      const onlineMembers = teamMembers.filter((m) => m.isConnected);
+    if (!facilitator.isConnected && !facilitator.isSelf) {
+      const onlineMembers = teamMembers.filter((m) => m.isConnected || m.isSelf);
       const callingMember = onlineMembers[0];
       const nextFacilitator = onlineMembers.find((m) => m.isFacilitator) || callingMember;
       if (callingMember.isSelf) {
@@ -430,6 +430,7 @@ export default createFragmentContainer(
           picture
           checkInOrder
           isCheckedIn
+          isConnected
           isFacilitator
           isLead
           isSelf
