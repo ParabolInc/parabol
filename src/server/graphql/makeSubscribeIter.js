@@ -14,10 +14,7 @@ const makeSubscribeIter = (channelName, options = {}) => {
     }
     if (filterFn(value)) {
       if (value.operationId) {
-        if (!dataLoader) console.log('NO DL', channelName);
         dataLoader.useShared(value.operationId);
-      } else {
-        console.log('TODO maybe you can feed this sub an opId?', channelName);
       }
       if (resolve) {
         return {

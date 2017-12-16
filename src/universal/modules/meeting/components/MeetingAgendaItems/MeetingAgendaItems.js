@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -12,10 +13,9 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
-import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
 
 class MeetingAgendaItems extends Component {
-  state = {};
+  state = {agendaProjects: []};
 
   componentWillMount() {
     this.makeAgendaProjects(this.props);

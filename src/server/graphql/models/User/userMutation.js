@@ -10,7 +10,7 @@ import {
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
-import {requireAuth, requireSU} from 'server/utils/authorization';
+import {getUserId, requireAuth, requireSU} from 'server/utils/authorization';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
 import segmentIo from 'server/utils/segmentIo';
 import tmsSignToken from 'server/utils/tmsSignToken';
@@ -155,20 +155,21 @@ export default {
 
       // AUTH
       requireAuth(authToken);
+      const userId = getUserId(authToken);
 
       // VALIDATION
       const schema = makeUserServerSchema();
-      const {data: {id, ...validUpdatedUser}, errors} = schema(updatedUser);
+      const {data: validUpdatedUser, errors} = schema(updatedUser);
       handleSchemaErrors(errors);
 
       // RESOLUTION
       // propagate denormalized changes to TeamMember
       const dbProfileChanges = await r.table('TeamMember')
-        .getAll(id, {index: 'userId'})
+        .getAll(userId, {index: 'userId'})
         .update(validUpdatedUser)
         .do(() => {
           return r.table('User')
-            .get(id)
+            .get(userId)
             .update(validUpdatedUser, {returnChanges: 'always'});
         });
       //
