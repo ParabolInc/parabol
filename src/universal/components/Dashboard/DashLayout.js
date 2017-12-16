@@ -1,21 +1,21 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
 import MeetingDashAlert from 'universal/components/MeetingDashAlert/MeetingDashAlert';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const DashLayout = (props) => {
   const {
     activeMeetings,
     children,
+    hasMeetingAlert,
     styles
   } = props;
-  const hasMeetingNotification = activeMeetings.length > 0;
   return (
     <div className={css(styles.root)}>
       {/* Shows over any dashboard view when there is a meeting. */}
-      {hasMeetingNotification && <MeetingDashAlert activeMeetings={activeMeetings} />}
+      {hasMeetingAlert && <MeetingDashAlert activeMeetings={activeMeetings} />}
       <div className={css(styles.main)}>
         {children}
       </div>
@@ -24,8 +24,9 @@ const DashLayout = (props) => {
 };
 
 DashLayout.propTypes = {
-  activeMeetings: PropTypes.array.isRequired,
+  activeMeetings: PropTypes.array,
   children: PropTypes.any,
+  hasMeetingAlert: PropTypes.bool,
   styles: PropTypes.object
 };
 

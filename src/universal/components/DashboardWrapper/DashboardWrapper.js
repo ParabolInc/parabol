@@ -28,6 +28,7 @@ const query = graphql`
         }
       }
       ...DashSidebar_viewer
+      ...DashLayoutContainer_viewer
     }
   }
 `;
@@ -55,9 +56,10 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
       render={({props: renderProps}) => {
         const notifications = (renderProps && renderProps.viewer) ?
           renderProps.viewer.notifications : undefined;
+        const viewer = renderProps ? renderProps.viewer : null;
         return (
-          <DashLayoutContainer notifications={notifications}>
-            <DashSidebar viewer={renderProps && renderProps.viewer} />
+          <DashLayoutContainer viewer={viewer}>
+            <DashSidebar viewer={viewer} />
             <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
             <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} extraProps={{notifications}} />
             <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />

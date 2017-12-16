@@ -7,36 +7,8 @@ import {reduxSocket} from 'redux-socket-cluster';
 import socketCluster from 'socketcluster-client';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AuthEngine from 'universal/redux/AuthEngine';
-import {TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 import parseChannel from 'universal/utils/parseChannel';
-
-const mapStateToProps = (state) => {
-  return {
-    tms: state.auth.obj.tms,
-    userId: state.auth.obj.sub
-  };
-};
-
-const tmsSubs = [];
-const subscribeToPresence = (oldProps, props) => {
-  const {tms} = props;
-  if (!tms) {
-    throw new Error('Did not finish the welcome wizard! How did you get here?');
-    // TODO redirect?
-  }
-  if (oldProps.tms.length < tms.length) {
-    for (let i = 0; i < tms.length; i++) {
-      const teamId = tms[i];
-      if (tmsSubs.includes(teamId)) continue;
-      tmsSubs.push(teamId);
-      cashay.subscribe(TEAM_MEMBERS, teamId);
-    }
-  } else if (oldProps.tms.length > tms.length) {
-    tmsSubs.length = 0;
-    tmsSubs.push(...tms);
-  }
-};
 
 export default (ComposedComponent) => {
   const reduxSocketOptions = (props) => ({
@@ -66,7 +38,6 @@ export default (ComposedComponent) => {
 
   @withAtmosphere
   @reduxSocket({}, reduxSocketOptions)
-  @connect(mapStateToProps)
   @withRouter
   class SocketWithPresence extends Component {
     static propTypes = {
@@ -80,18 +51,11 @@ export default (ComposedComponent) => {
       location: PropTypes.shape({
         pathname: PropTypes.string.isRequired
       }),
-      tms: PropTypes.array,
       user: PropTypes.object,
-      userId: PropTypes.string
     };
 
     componentDidMount() {
-      subscribeToPresence({tms: []}, this.props);
       this.watchForKickout();
-    }
-
-    componentWillReceiveProps(nextProps) {
-      subscribeToPresence(this.props, nextProps);
     }
 
     componentWillUnmount() {

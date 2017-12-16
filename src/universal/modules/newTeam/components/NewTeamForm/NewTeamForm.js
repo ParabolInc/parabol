@@ -259,11 +259,13 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(reduxForm({form: 'newTeam', validate})(
-  connect(mapStateToProps)(
-    withRouter(withStyles(styleThunk)(
-      NewTeamForm)
+export default withAtmosphere(
+  reduxForm({form: 'newTeam', validate})(
+    connect(mapStateToProps)(
+      withRouter(withStyles(styleThunk)(
+        NewTeamForm
+        )
+      )
     )
-  )
   )
 );
