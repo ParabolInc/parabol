@@ -77,7 +77,7 @@ export default createFragmentContainer(
   graphql`
     fragment TeamColumnsContainer_viewer on User {
       team(teamId: $teamId) {
-        teamMembers(sortBy: "checkInOrder") {
+        teamMembers(sortBy: "preferredName") {
           id
           picture
           preferredName
