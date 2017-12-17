@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql';
 import Team from 'server/graphql/types/Team';
 
-const ArchiveTeamPayload = new GraphQLObjectType({
-  name: 'ArchiveTeamPayload',
+const UpdateTeamPayload = new GraphQLObjectType({
+  name: 'UpdateTeamPayload',
   fields: () => ({
     team: {
       type: Team
@@ -10,4 +10,4 @@ const ArchiveTeamPayload = new GraphQLObjectType({
   })
 });
 
-export default ArchiveTeamPayload;
+export default UpdateTeamPayload;

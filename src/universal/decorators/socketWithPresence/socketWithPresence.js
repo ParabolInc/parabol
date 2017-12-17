@@ -1,7 +1,6 @@
 import {cashay, Transport} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {reduxSocket} from 'redux-socket-cluster';
 import socketCluster from 'socketcluster-client';
@@ -51,7 +50,7 @@ export default (ComposedComponent) => {
       location: PropTypes.shape({
         pathname: PropTypes.string.isRequired
       }),
-      user: PropTypes.object,
+      user: PropTypes.object
     };
 
     componentDidMount() {

@@ -34,6 +34,7 @@ import invitationAdded from 'server/graphql/subscriptions/invitationAdded';
 import invitationRemoved from 'server/graphql/subscriptions/invitationRemoved';
 import invitationUpdated from 'server/graphql/subscriptions/invitationUpdated';
 import teamAdded from 'server/graphql/subscriptions/teamAdded';
+import teamUpdated from 'server/graphql/subscriptions/teamUpdated';
 
 const rootFields = Object.assign({},
   invoice,
@@ -72,6 +73,7 @@ export default new GraphQLObjectType({
     providerAdded,
     providerRemoved,
     teamAdded,
+    teamUpdated,
     teamMembersInvited,
     teamMemberAdded,
     teamMemberUpdated,

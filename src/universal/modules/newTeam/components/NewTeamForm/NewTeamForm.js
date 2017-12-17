@@ -264,7 +264,7 @@ export default withAtmosphere(
     connect(mapStateToProps)(
       withRouter(withStyles(styleThunk)(
         NewTeamForm
-        )
+      )
       )
     )
   )
