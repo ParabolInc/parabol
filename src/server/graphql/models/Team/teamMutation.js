@@ -1,9 +1,7 @@
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
-import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
 
 export default {
-  createFirstTeam,
-  updateTeamName
+  createFirstTeam
 };
 
 
