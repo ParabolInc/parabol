@@ -1,4 +1,4 @@
-import {cashay, Transport} from 'cashay';
+import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
@@ -6,7 +6,6 @@ import {reduxSocket} from 'redux-socket-cluster';
 import socketCluster from 'socketcluster-client';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AuthEngine from 'universal/redux/AuthEngine';
-import subscriber from 'universal/subscriptions/subscriber';
 import parseChannel from 'universal/utils/parseChannel';
 
 export default (ComposedComponent) => {
@@ -14,18 +13,7 @@ export default (ComposedComponent) => {
     AuthEngine,
     socketCluster,
     onConnect: (options, hocOptions, socket) => {
-      if (!cashay.priorityTransport) {
-        const sendToServer = (request) => {
-          return new Promise((resolve) => {
-            socket.emit('graphql', request, (error, response) => {
-              resolve(response);
-            });
-          });
-        };
-        const priorityTransport = new Transport(sendToServer);
-        cashay.create({priorityTransport, subscriber});
-        props.atmosphere.setSocket(socket);
-      }
+      props.atmosphere.setSocket(socket);
     },
     onDisconnect: () => {
       cashay.create({priorityTransport: null});

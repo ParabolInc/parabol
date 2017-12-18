@@ -8,9 +8,6 @@ import githubRepoAdded from 'server/graphql/subscriptions/githubRepoAdded';
 import githubRepoRemoved from 'server/graphql/subscriptions/githubRepoRemoved';
 import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemoved';
 import invoice from './models/Invoice/invoiceSubscription';
-import team from './models/Team/teamSubscription';
-import teamMember from './models/TeamMember/teamMemberSubscription';
-import user from './models/User/userSubscription';
 import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
 import integrationJoined from 'server/graphql/subscriptions/integrationJoined';
 import notificationsAdded from 'server/graphql/subscriptions/notificationsAdded';
@@ -38,9 +35,6 @@ import teamUpdated from 'server/graphql/subscriptions/teamUpdated';
 
 const rootFields = Object.assign({},
   invoice,
-  team,
-  teamMember,
-  user
 );
 
 export default new GraphQLObjectType({

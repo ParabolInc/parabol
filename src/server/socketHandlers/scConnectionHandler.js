@@ -5,8 +5,6 @@ import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants';
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 import isObject from 'universal/utils/isObject';
 import scGraphQLHandler from './scGraphQLHandler';
-import scSubscribeHandler from './scSubscribeHandler';
-
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
@@ -24,7 +22,6 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
     //   if (message === '#2') return;
     //   console.log('SOCKET SAYS:', message);
     // });
-    const subscribeHandler = scSubscribeHandler(exchange, socket);
     const graphQLHandler = scGraphQLHandler(exchange, socket, sharedDataLoader);
     const relaySubscribeHandler = scRelaySubscribeHandler(socket, sharedDataLoader);
     socket.on('message', (message) => {
@@ -38,7 +35,6 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
       }
     });
     socket.on('graphql', graphQLHandler);
-    socket.on('subscribe', subscribeHandler);
     socket.on('gqlSub', relaySubscribeHandler);
     socket.on('gqlUnsub', (opId) => {
       const subscriptionContext = socket.subs[opId];

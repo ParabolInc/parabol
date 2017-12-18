@@ -1,10 +1,3 @@
-import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
-
-export default {
-  createFirstTeam
-};
-
-
 // The since-last-week mega query
 // const updatedMeeting = await r.table('Meeting')
 //   .getAll(teamId, {index: 'teamId'})
