@@ -3,10 +3,10 @@ import ms from 'ms';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
 import {sendBatchEmail} from 'server/email/sendEmail';
-import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 import {requireSU} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {AUTO_PAUSE_THRESH, AUTO_PAUSE_USER, OLD_MEETING_AGE} from 'server/utils/serverConstants';
+import endMeeting from 'server/graphql/mutations/endMeeting';
 
 const intranetPing = {
   type: GraphQLString,

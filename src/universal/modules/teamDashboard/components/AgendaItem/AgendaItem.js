@@ -1,16 +1,17 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import tinycolor from 'tinycolor2';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
-import Avatar from 'universal/components/Avatar/Avatar';
 import {DragSource as dragSource} from 'react-dnd';
-import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
+import FontAwesome from 'react-fontawesome';
+import {createFragmentContainer} from 'react-relay';
+import tinycolor from 'tinycolor2';
+import Avatar from 'universal/components/Avatar/Avatar';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
 
 const projectSource = {
   beginDrag(props) {
@@ -50,14 +51,14 @@ const AgendaItem = (props) => {
     inAgendaGroupFacilitator && isFacilitator && styles.itemFacilitator,
     isComplete && styles.processed,
     disabled && styles.rootDisabled,
-    isComplete && disabled && styles.processedDisabled,
+    isComplete && disabled && styles.processedDisabled
   );
   const contentStyles = css(
     styles.link,
     isComplete && styles.strikethrough,
     canNavigate && styles.canNavigate,
     inAgendaGroupLocal && isLocal && styles.descLocal,
-    inAgendaGroupFacilitator && isFacilitator && styles.descFacilitator,
+    inAgendaGroupFacilitator && isFacilitator && styles.descFacilitator
   );
   const delStyles = css(
     styles.del,
@@ -68,9 +69,9 @@ const AgendaItem = (props) => {
   return connectDragSource(
     <div className={rootStyles} title={content}>
       {canDelete &&
-        <div className={delStyles} onClick={handleRemove}>
-          <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}} />
-        </div>
+      <div className={delStyles} onClick={handleRemove}>
+        <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}} />
+      </div>
       }
       <div className={css(styles.index)}>{idx + 1}.</div>
       <div className={css(styles.content)} onClick={gotoAgendaItem}>
@@ -84,7 +85,8 @@ const AgendaItem = (props) => {
 };
 
 AgendaItem.propTypes = {
-  agendaLength: PropTypes.number,
+  agendaItem: PropTypes.object.isRequired,
+  agendaLength: PropTypes.number.isRequired,
   agendaPhaseItem: PropTypes.number,
   canNavigate: PropTypes.bool,
   connectDragSource: PropTypes.func.isRequired,
@@ -275,6 +277,17 @@ const dragSourceCb = (connectSource, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-export default dragSource(AGENDA_ITEM, projectSource, dragSourceCb)(
-  withStyles(styleThunk)(AgendaItem)
+export default createFragmentContainer(
+  dragSource(AGENDA_ITEM, projectSource, dragSourceCb)(
+    withStyles(styleThunk)(AgendaItem)
+  ),
+  graphql`
+    fragment AgendaItem_agendaItem on AgendaItem {
+      id
+      content
+      isComplete
+      teamMember {
+        picture
+      }
+    }`
 );

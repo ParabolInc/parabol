@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
@@ -8,7 +9,6 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 import withRouter from 'react-router-dom/es/withRouter';
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants';
@@ -24,9 +24,8 @@ const RequestNewUser = (props) => {
     onCompleted,
     history
   } = props;
-  const {id, inviterName, inviteeEmail, orgId, teamName, teamId, team} = notification;
-  const {tier} = team;
-  const {id: dbNotificationId} = fromGlobalId(id);
+  const {notificationId, inviterName, inviteeEmail, orgId, team} = notification;
+  const {teamName, teamId, tier} = team;
   const acceptInvite = () => {
     submitMutation();
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted);
@@ -73,7 +72,7 @@ const RequestNewUser = (props) => {
         </div>
         <div className={css(styles.button)}>
           <RejectOrgApprovalModal
-            dbNotificationId={dbNotificationId}
+            notificationId={notificationId}
             inviteeEmail={inviteeEmail}
             inviterName={inviterName}
             toggle={rejectToggle}
@@ -93,18 +92,29 @@ RequestNewUser.propTypes = {
   styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
-  notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    inviterName: PropTypes.string.isRequired,
-    inviteeEmail: PropTypes.string.isRequired,
-    team: PropTypes.object.isRequired,
-    teamName: PropTypes.string.isRequired,
-    teamId: PropTypes.string.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
   ...defaultStyles
 });
 
-export default withRouter(withStyles(styleThunk)(RequestNewUser));
+export default createFragmentContainer(
+  withRouter(withStyles(styleThunk)(RequestNewUser)),
+  graphql`
+    fragment RequestNewUser_notification on Notification {
+      notificationId: id
+      ... on NotifyInvitation {
+        inviterName
+        inviteeEmail
+        orgId
+        team {
+          teamId: id
+          teamName: name
+          tier
+        }
+        
+      }
+    }
+  `
+);

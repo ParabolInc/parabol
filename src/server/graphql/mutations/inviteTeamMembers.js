@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
+import Invitee from 'server/graphql/types/Invitee';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
-import {Invitee} from '../models/Invitation/invitationSchema';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 
 export default {
@@ -18,13 +18,13 @@ export default {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
     }
   },
-  async resolve(source, {invitees, teamId}, {authToken}) {
+  async resolve(source, {invitees, teamId}, {authToken, dataLoader, socketId}) {
     // AUTH
     await requireOrgLeaderOrTeamMember(authToken, teamId);
     const userId = getUserId(authToken);
 
     // RESOLUTION
-    return inviteTeamMembers(invitees, teamId, userId);
+    return inviteTeamMembers(invitees, teamId, userId, dataLoader, socketId);
   }
 };
 

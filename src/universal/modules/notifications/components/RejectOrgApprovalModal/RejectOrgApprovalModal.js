@@ -1,5 +1,4 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
 import portal from 'react-portal-hoc';
@@ -8,6 +7,8 @@ import Button from 'universal/components/Button/Button';
 import {DashModal} from 'universal/components/Dashboard';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import Type from 'universal/components/Type/Type';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import RejectOrgApprovalMutation from 'universal/mutations/RejectOrgApprovalMutation';
 import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -20,12 +21,13 @@ const validate = (values) => {
 
 const RejectOrgApprovalModal = (props) => {
   const {
+    atmosphere,
     closeAfter,
     closePortal,
     error,
     handleSubmit,
     isClosing,
-    dbNotificationId,
+    notificationId,
     inviteeEmail,
     inviterName,
     submitting,
@@ -34,9 +36,11 @@ const RejectOrgApprovalModal = (props) => {
   const onSubmit = async (submissionData) => {
     const schema = rejectOrgApprovalValidation();
     const {data: {reason}} = schema(submissionData);
-    const variables = {reason, dbNotificationId};
-    const {error: anError} = await cashay.mutate('rejectOrgApproval', {variables});
-    if (anError) throw new SubmissionError(anError);
+    const variables = {reason, notificationId};
+    const onError = (err) => {
+      throw new SubmissionError(err);
+    };
+    RejectOrgApprovalMutation(atmosphere, variables, onError);
     closePortal();
   };
   return (
@@ -72,6 +76,7 @@ const RejectOrgApprovalModal = (props) => {
 };
 
 RejectOrgApprovalModal.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   closeAfter: PropTypes.number.isRequired,
   closePortal: PropTypes.func.isRequired,
   error: PropTypes.string,
@@ -79,7 +84,7 @@ RejectOrgApprovalModal.propTypes = {
   isClosing: PropTypes.bool,
   inviteeEmail: PropTypes.string,
   inviterName: PropTypes.string,
-  dbNotificationId: PropTypes.string.isRequired,
+  notificationId: PropTypes.string.isRequired,
   submitting: PropTypes.bool,
   styles: PropTypes.object
 };
@@ -93,7 +98,8 @@ const styleThunk = () => ({
 });
 
 export default portal({escToClose: true, closeAfter: 100})(
-  reduxForm({form: 'rejectOrgApproval', validate})(
+  withAtmosphere(reduxForm({form: 'rejectOrgApproval', validate})(
     withStyles(styleThunk)(RejectOrgApprovalModal)
+  )
   )
 );

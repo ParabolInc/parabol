@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql';
-import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
+import Invitee from 'server/graphql/types/Invitee';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
-import {ensureUniqueId, getUserId, getUserOrgDoc, requireUserInOrg, requireWebsocket} from 'server/utils/authorization';
+import {ensureUniqueId, getUserId, getUserOrgDoc, requireUserInOrg} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
 import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
-import {TeamInput} from '../teamSchema';
 import addTeamValidation from './addTeamValidation';
+import TeamInput from 'server/graphql/types/TeamInput';
 
 export default {
   type: GraphQLBoolean,
@@ -20,10 +20,9 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(Invitee))
     }
   },
-  async resolve(source, args, {authToken, socket}) {
+  async resolve(source, args, {authToken, dataLoader, socket, socketId}) {
     // AUTH
     const {orgId} = args.newTeam;
-    requireWebsocket(socket);
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
     requireUserInOrg(userOrgDoc, userId, orgId);
@@ -48,7 +47,7 @@ export default {
 
     // handle invitees
     if (inviteeCount > 0) {
-      await inviteTeamMembers(invitees, teamId, userId);
+      await inviteTeamMembers(invitees, teamId, userId, dataLoader, socketId);
     }
     // TODO return a real payload when we move teams to relay
     return true;

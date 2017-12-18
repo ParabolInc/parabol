@@ -1,23 +1,23 @@
-import shortid from 'shortid';
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
+import {verify} from 'jsonwebtoken';
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLID, GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql';
 import sendEmail from 'server/email/sendEmail';
-import {requireAuth, requireSU, requireSUOrSelf} from 'server/utils/authorization';
-import {errorObj, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
-import getS3PutUrl from 'server/utils/getS3PutUrl';
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput';
+import User from 'server/graphql/types/User';
 import {
   auth0AuthenticationClient as auth0Client,
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
-import {verify} from 'jsonwebtoken';
-import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
-import tmsSignToken from 'server/utils/tmsSignToken';
+import {getUserId, requireAuth, requireSU} from 'server/utils/authorization';
+import getS3PutUrl from 'server/utils/getS3PutUrl';
 import segmentIo from 'server/utils/segmentIo';
+import tmsSignToken from 'server/utils/tmsSignToken';
+import {errorObj, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
+import shortid from 'shortid';
+import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import addFeatureFlag from './addFeatureFlag/addFeatureFlag';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput';
-import User from 'server/graphql/types/User';
 
 export default {
   addFeatureFlag,
@@ -154,21 +154,22 @@ export default {
       const r = getRethink();
 
       // AUTH
-      requireSUOrSelf(authToken, updatedUser.id);
+      requireAuth(authToken);
+      const userId = getUserId(authToken);
 
       // VALIDATION
       const schema = makeUserServerSchema();
-      const {data: {id, ...validUpdatedUser}, errors} = schema(updatedUser);
+      const {data: validUpdatedUser, errors} = schema(updatedUser);
       handleSchemaErrors(errors);
 
       // RESOLUTION
       // propagate denormalized changes to TeamMember
       const dbProfileChanges = await r.table('TeamMember')
-        .getAll(id, {index: 'userId'})
+        .getAll(userId, {index: 'userId'})
         .update(validUpdatedUser)
         .do(() => {
           return r.table('User')
-            .get(id)
+            .get(userId)
             .update(validUpdatedUser, {returnChanges: 'always'});
         });
       //

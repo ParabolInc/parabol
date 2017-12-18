@@ -1,8 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields';
-import {Team} from './teamSchema';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import Team from 'server/graphql/types/Team';
+import {requireTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 import {errorObj} from 'server/utils/utils';
 
@@ -19,7 +19,7 @@ export default {
       const r = getRethink();
 
       // AUTH
-      requireSUOrTeamMember(authToken, teamId);
+      requireTeamMember(authToken, teamId);
       const {isArchived} = await r.table('Team').get(teamId)
         .do((team) => ({
           isArchived: team('isArchived').default(false)

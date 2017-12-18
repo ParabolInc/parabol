@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
+import {createFragmentContainer} from 'react-relay';
 
 const MeetingUpdatesPrompt = (props) => {
   const {
     localPhaseItem,
-    members
+    team: {teamMembers}
   } = props;
-  const currentTeamMember = members[localPhaseItem - 1];
+  const currentTeamMember = teamMembers[localPhaseItem - 1];
   const heading = <span>{currentTeamMember.preferredName}, <i>what’s changed since our last meeting</i>?</span>;
   return (
     <MeetingPrompt
@@ -20,7 +21,16 @@ const MeetingUpdatesPrompt = (props) => {
 
 MeetingUpdatesPrompt.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,
-  members: PropTypes.array.isRequired
+  team: PropTypes.object.isRequired
 };
 
-export default MeetingUpdatesPrompt;
+export default createFragmentContainer(
+  MeetingUpdatesPrompt,
+  graphql`
+    fragment MeetingUpdatesPrompt_team on Team {
+      teamMembers(sortBy: "checkInOrder") {
+        picture
+        preferredName
+      }
+    }`
+);

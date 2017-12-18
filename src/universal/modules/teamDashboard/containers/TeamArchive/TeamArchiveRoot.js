@@ -33,9 +33,9 @@ const TeamArchiveRoot = ({atmosphere, match, team}) => {
       subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear style={{overflow: 'hidden'}}>
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps &&
+            {renderProps && team &&
             <AnimatedFade key="1">
               <TeamArchive
                 teamId={teamId}
@@ -60,11 +60,7 @@ const TeamArchiveRoot = ({atmosphere, match, team}) => {
 TeamArchiveRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  team: PropTypes.shape({
-    orgId: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    tier: PropTypes.string.isRequired
-  })
+  team: PropTypes.object
 };
 
 export default withAtmosphere(TeamArchiveRoot);

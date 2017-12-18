@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
-import {getIsTeamLead, getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getIsTeamLead, getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
@@ -29,7 +29,7 @@ export default {
       throw new Error(`${githubGlobalId} does not exist`);
     }
     const {teamId, isActive, userIds, nameWithOwner} = integration;
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
     // VALIDATION

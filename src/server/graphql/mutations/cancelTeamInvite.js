@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import NotificationsClearedPayload from 'server/graphql/types/NotificationsClearedPayload';
-import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
+import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_CLEARED, TEAM_INVITE} from 'universal/utils/constants';
+import {INVITATION_REMOVED, NOTIFICATIONS_CLEARED, TEAM_INVITE} from 'universal/utils/constants';
 
 
 export default {
   name: 'CancelTeamInvite',
-  type: NotificationsClearedPayload,
+  type: CancelTeamInvitePayload,
   description: 'Cancel an invitation',
   args: {
     inviteId: {
@@ -16,55 +16,61 @@ export default {
       description: 'The id of the invitation'
     }
   },
-  async resolve(source, {inviteId}, {authToken, socket}) {
+  async resolve(source, {inviteId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
+    const operationId = dataLoader.share();
 
     // AUTH
-    const invitation = await r.table('Invitation').get(inviteId).default(null);
-    const {email, teamId} = invitation;
+    const {email, teamId} = await r.table('Invitation').get(inviteId).default({});
     if (!teamId) {
       throw new Error('Invitation not found!');
     }
-    requireSUOrTeamMember(authToken, teamId);
-    requireWebsocket(socket);
-
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const {notificationsToClear} = await r({
+    const {invitation, notificationToClear} = await r({
       invitation: r.table('Invitation').get(inviteId).update({
         // set expiration to epoch
         tokenExpiration: new Date(0),
         updatedAt: now
-      }),
+      }, {returnChanges: true})('changes')(0)('new_val').default(null),
       orgApproval: r.table('OrgApproval')
         .getAll(email, {index: 'email'})
         .filter({teamId})
         .update({
           isActive: false
         }),
-      notificationsToClear: r.table('User')
+      notificationToClear: r.table('User')
         .getAll(email, {index: 'email'})
         .nth(0)('id').default(null)
         .do((userId) => {
           return r({
-            deletedIds: r.table('Notification')
+            deletedId: r.table('Notification')
               .getAll(userId, {index: 'userIds'})
               .filter({
                 type: TEAM_INVITE,
                 teamId
               })
-              .delete({returnChanges: true})('changes')('old_val')('id')
-              .default([]),
+              .delete({returnChanges: true})('changes')(0)('old_val')('id')
+              .default(null),
             userId
           });
         })
     });
-    const {userId, deletedIds} = notificationsToClear;
-    const notificationsCleared = {deletedIds};
-    if (deletedIds.length > 0) {
-      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, mutatorId: socket.id});
+    if (invitation) {
+      const invitationRemoved = {invitation};
+      getPubSub().publish(`${INVITATION_REMOVED}.${teamId}`, {invitationRemoved, operationId, mutatorId});
     }
-    return {deletedIds};
+    const {userId, deletedId} = notificationToClear;
+    if (deletedId) {
+      const notificationsCleared = {deletedId: [deletedId]};
+      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, mutatorId});
+    }
+
+    return {
+      invitation,
+      deletedNotificationId: deletedId
+    };
   }
 };

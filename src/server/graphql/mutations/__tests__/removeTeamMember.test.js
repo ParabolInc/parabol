@@ -8,7 +8,6 @@ import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import DynamicSerializer from 'dynamic-serializer';
-import * as getPubSub from 'server/utils/getPubSub';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 
 MockDate.set(__now);
@@ -23,7 +22,6 @@ describe('removeTeamMember', () => {
     // SETUP
     const r = getRethink();
     const mockPubSub = new MockPubSub();
-    getPubSub.default = () => mockPubSub;
     const mockDB = new MockDB();
     const dynamicSerializer = new DynamicSerializer();
     await mockDB

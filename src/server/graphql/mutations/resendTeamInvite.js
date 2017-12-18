@@ -2,9 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import publishNotifications from 'server/utils/publishNotifications';
-
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 
 export default {
   name: 'ResendTeamInvite',
@@ -16,17 +14,17 @@ export default {
       description: 'The id of the invitation'
     }
   },
-  async resolve(source, {inviteId}, {authToken, socket}) {
+  async resolve(source, {inviteId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
-
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
     // AUTH
     const userId = getUserId(authToken);
     const invitation = await r.table('Invitation').get(inviteId);
     if (!invitation) throw new Error('Invitation not found!');
 
     const {email, fullName, orgId, teamId} = invitation;
-    requireSUOrTeamMember(authToken, teamId);
-    requireWebsocket(socket);
+    requireTeamMember(authToken, teamId);
 
 
     // RESOLUTION
@@ -37,8 +35,7 @@ export default {
       teamId
     };
     const invitees = [{email, fullName}];
-    const notificationsToAdd = sendTeamInvitations(invitees, inviter, inviteId);
-    publishNotifications({notificationsToAdd});
+    sendTeamInvitations(invitees, inviter, inviteId, subOptions);
     return true;
   }
 };

@@ -33,6 +33,7 @@ const targetAnchor = {
 const UserProjectsHeader = (props) => {
   const {dispatch, styles, teams, teamFilterId, teamFilterName} = props;
   const toggle = <DashFilterToggle label={teamFilterName} />;
+  // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar" label="My Projects" />

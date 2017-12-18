@@ -1,7 +1,9 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import {Field, reduxForm} from 'redux-form';
+import SubmissionError from 'redux-form/es/SubmissionError';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import Button from 'universal/components/Button/Button';
 import Editable from 'universal/components/Editable/Editable';
@@ -11,10 +13,9 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import inviteUserValidation from './inviteUserValidation';
-import SubmissionError from 'redux-form/es/SubmissionError';
 
 const makeSchemaProps = (props) => {
-  const {invitations, orgApprovals, teamMembers} = props;
+  const {team: {invitations, orgApprovals, teamMembers}} = props;
   const inviteEmails = invitations.map((i) => i.email);
   const teamMemberEmails = teamMembers.map((i) => i.email);
   const orgApprovalEmails = orgApprovals.map((i) => i.email);
@@ -41,10 +42,11 @@ const InviteUser = (props) => {
     handleSubmit,
     styles,
     submitting,
-    teamId,
+    team,
     touch,
     untouch
   } = props;
+  const {teamId} = team;
 
   const updateEditable = async (submissionData) => {
     const schemaProps = makeSchemaProps(props);
@@ -93,7 +95,7 @@ InviteUser.propTypes = {
   picture: PropTypes.string,
   submitting: PropTypes.bool.isRequired,
   styles: PropTypes.object,
-  teamId: PropTypes.string,
+  team: PropTypes.object.isRequired,
   touch: PropTypes.func.isRequired,
   untouch: PropTypes.func.isRequired
 };
@@ -124,8 +126,25 @@ const styleThunk = () => ({
  *
  * See: universal/redux/makeReducer.js
  */
-export default withAtmosphere(
-  reduxForm({form: 'inviteTeamMember', validate})(
-    withStyles(styleThunk)(InviteUser)
-  )
+export default createFragmentContainer(
+  withAtmosphere(
+    reduxForm({form: 'inviteTeamMember', validate})(
+      withStyles(styleThunk)(InviteUser)
+    )
+  ),
+  graphql`
+    fragment InviteUser_team on Team {
+      teamId: id
+      teamMembers(sortBy: "preferredName") {
+        email
+      }
+      invitations {
+        email
+      }
+      orgApprovals {
+        email
+      }
+    }
+
+  `
 );

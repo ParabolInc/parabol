@@ -1,5 +1,6 @@
 import {GraphQLObjectType} from 'graphql';
 import Organization from 'server/graphql/types/Organization';
+import User from 'server/graphql/types/User';
 
 const UpdateOrgPayload = new GraphQLObjectType({
   name: 'UpdateOrgPayload',
@@ -7,6 +8,9 @@ const UpdateOrgPayload = new GraphQLObjectType({
     organization: {
       type: Organization,
       description: 'The updated org'
+    },
+    updatedOrgUser: {
+      type: User
     }
   })
 });

@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
-  requireSUOrTeamMember,
+  requireTeamMember,
   requireWebsocket
 } from 'server/utils/authorization';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -8,8 +8,8 @@ import {
   GraphQLNonNull,
   GraphQLBoolean
 } from 'graphql';
-import {TeamInput} from '../teamSchema';
 import updateTeamNameValidation from './updateTeamNameValidation';
+import TeamInput from 'server/graphql/types/TeamInput';
 
 
 export default {
@@ -25,7 +25,7 @@ export default {
     const now = new Date();
 
     // AUTH
-    requireSUOrTeamMember(authToken, updatedTeam.id);
+    requireTeamMember(authToken, updatedTeam.id);
     requireWebsocket(socket);
 
     // VALIDATION

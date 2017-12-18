@@ -3,13 +3,6 @@ import Schema from 'server/graphql/rootSchema';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from 'universal/utils/parseChannel';
 import {
-  AGENDA,
-  AGENDA_PROJECTS,
-  ARCHIVED_PROJECTS,
-  INVITATIONS,
-  ORG_APPROVALS,
-  PRESENCE,
-  PROJECTS,
   TEAM,
   TEAM_MEMBERS,
   USERS_BY_ORG
@@ -21,18 +14,11 @@ import {
  * By creating this on the server it keeps payloads really small
  * */
 const dechannelfy = {
-  [AGENDA]: (variableString) => ({teamId: variableString}),
-  [AGENDA_PROJECTS]: (agendaId) => ({agendaId}),
-  [ARCHIVED_PROJECTS]: (variableString) => ({teamMemberId: variableString}),
-  [INVITATIONS]: (variableString) => ({teamId: variableString}),
-  [ORG_APPROVALS]: (teamId) => ({teamId}),
-  [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
   [USERS_BY_ORG]: (orgId) => ({orgId})
 };
 
-const temporalSubs = [PRESENCE];
 export default function scSubscribeHandler(exchange, socket) {
   return async function subscribeHandler(subbedChannelName = '') {
     const {channel, variableString} = parseChannel(subbedChannelName);
@@ -55,7 +41,7 @@ export default function scSubscribeHandler(exchange, socket) {
       if (result.errors) {
         console.log('DEBUG GraphQL Subscribe Error:', channel, result.errors);
       }
-    } else if (!temporalSubs.includes(channel)) {
+    } else {
       console.log(`GraphQL subscription for ${channel} not found`);
       // not a graphql subscription
     }

@@ -8,66 +8,79 @@ const subscription = graphql`
         orgId
         startAt
         type
+        
+        # Requirements for persisted notifications
+        ...NotificationRow_notification
+        
+        # Requiremnts for toast notifications (notificationHandler.js)
         ... on NotifyAddedToTeam {
-          teamName
-          teamId
+          id
+          team {
+            name
+          }
         }
         ... on NotifyDenial {
-          reason
-          deniedByName
           inviteeEmail
         }
-        ... on NotifyFacilitatorRequest {
-          requestorName
-          requestorId
+        ... on NotifyKickedOut {
+          isKickout
+          team {
+            id
+            name
+          }
+        }
+        ... on NotifyPayment {
+          orgId
+          last4
+          brand
+        }
+        ... on NotifyProjectInvolves {
+          involvement
+          changeAuthor {
+            preferredName
+          }
+        }
+        ... on NotifyPromotion {
+          orgId
+          groupName
         }
         ... on NotifyInvitation {
           inviterName
           inviteeEmail
-          teamId
-          teamName
           team {
+            id
+            name
             tier
           }
         }
-        ... on NotifyKickedOut {
-          isKickout
+        ... on NotifyTeamArchived {
           teamName
+        }
+        
+        # Requirements for toast notifications that aren't persisted 
+        ... on NotifyFacilitatorRequest {
+          requestor {
+            id
+            preferredName
+          }
+        }
+        ... on NotifyFacilitatorDisconnected {
+          newFacilitator {
+            id
+            preferredName
+            userId
+          }
+          oldFacilitator {
+            preferredName
+          }
           teamId
         }
         ... on NotifyNewTeamMember {
           preferredName
           teamName
         }
-        ... on NotifyPayment {
-          last4
-          brand
-        }
-        ... on NotifyPromotion {
-          groupName
-        }
-        ... on NotifyTeamArchived {
-          teamName
-        }
-        ... on NotifyProjectInvolves {
-          involvement
-          team {
-            id
-            name
-          }
-          changeAuthor {
-            preferredName
-          }
-          project {
-            id
-            content
-            teamMember {
-              picture
-              preferredName
-            }
-            status
-            tags
-          }
+        ... on NotifyVersionInfo {
+          version
         }
       }
     }

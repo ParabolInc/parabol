@@ -1,17 +1,19 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {makePlaceholderStyles} from 'universal/styles/helpers';
-import ui from 'universal/styles/ui';
-import withHotkey from 'react-hotkey-hoc';
 import FontAwesome from 'react-fontawesome';
-import shortid from 'shortid';
-import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import {cashay} from 'cashay';
-import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
+import withHotkey from 'react-hotkey-hoc';
+import {createFragmentContainer} from 'react-relay';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import AddAgendaItemMutation from 'universal/mutations/AddAgendaItemMutation';
+import {makePlaceholderStyles} from 'universal/styles/helpers';
+import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const iconStyle = {
   color: appTheme.palette.dark,
@@ -29,13 +31,12 @@ const iconStyle = {
 };
 const AgendaInputField = (props) => {
   const {
-    agenda,
+    atmosphere,
     bindHotkey,
     disabled,
     handleSubmit,
     styles,
-    teamId,
-    myTeamMemberId
+    team: {teamId, agendaItems}
   } = props;
   let inputRef;
   const setRef = (c) => {
@@ -44,17 +45,13 @@ const AgendaInputField = (props) => {
   const handleAgendaItemSubmit = (submittedData) => {
     const content = submittedData.agendaItem;
     if (!content) return;
-    const options = {
-      variables: {
-        newAgendaItem: {
-          id: `${teamId}::${shortid.generate()}`,
-          content,
-          sortOrder: getNextSortOrder(agenda),
-          teamMemberId: myTeamMemberId
-        }
-      }
+    const newAgendaItem = {
+      content,
+      sortOrder: getNextSortOrder(agendaItems),
+      teamId,
+      teamMemberId: toTeamMemberId(teamId, atmosphere.userId)
     };
-    cashay.mutate('createAgendaItem', options);
+    AddAgendaItemMutation(atmosphere, newAgendaItem);
     inputRef.blur();
   };
 
@@ -77,8 +74,11 @@ const AgendaInputField = (props) => {
     styles.input,
     !disabled && styles.inputNotDisabled
   );
-  if (!disabled) { bindHotkey('+', focusOnInput); }
-  const tip = (<div style={{textAlign: 'center'}}>{'Add meeting topics to discuss,'}<br />{'like “upcoming vacation”'}</div>);
+  if (!disabled) {
+    bindHotkey('+', focusOnInput);
+  }
+  const tip = (
+    <div style={{textAlign: 'center'}}>{'Add meeting topics to discuss,'}<br />{'like “upcoming vacation”'}</div>);
   const input = (
     <form className={rootStyles} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
       <input
@@ -96,7 +96,7 @@ const AgendaInputField = (props) => {
       <FontAwesome name="plus-square-o" style={iconStyle} />
     </form>
   );
-  const showTooltip = Boolean(agenda.length > 0 && !disabled);
+  const showTooltip = Boolean(agendaItems.length > 0 && !disabled);
   return (
     <div>
       {showTooltip ?
@@ -118,21 +118,20 @@ const AgendaInputField = (props) => {
 };
 
 AgendaInputField.propTypes = {
-  agenda: PropTypes.array,
+  atmosphere: PropTypes.object.isRequired,
   bindHotkey: PropTypes.func,
   disabled: PropTypes.bool,
   handleSubmit: PropTypes.func,
   input: PropTypes.object,
-  myTeamMemberId: PropTypes.string.isRequired,
   styles: PropTypes.object,
-  teamId: PropTypes.string
+  team: PropTypes.object.isRequired
 };
 
 const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.mid60l);
 
 const inputCustomStyles = {
-  focus: { backgroundColor: appTheme.palette.light70l },
-  active: { backgroundColor: appTheme.palette.light70l }
+  focus: {backgroundColor: appTheme.palette.light70l},
+  active: {backgroundColor: appTheme.palette.light70l}
 };
 
 const styleThunk = () => ({
@@ -181,4 +180,13 @@ const styleThunk = () => ({
   }
 });
 
-export default withHotkey(withStyles(styleThunk)(AgendaInputField));
+export default createFragmentContainer(
+  withAtmosphere(withHotkey(withStyles(styleThunk)(AgendaInputField))),
+  graphql`
+    fragment AgendaInputField_team on Team {
+      teamId: id
+      agendaItems {
+        sortOrder
+      }
+    }`
+);

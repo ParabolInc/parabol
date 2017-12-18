@@ -1,21 +1,25 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
-import {globalIdField} from 'graphql-relay';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import NotificationEnum from 'server/graphql/types/NotificationEnum';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyDenial from 'server/graphql/types/NotifyDenial';
+import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
 import NotifyPayment from 'server/graphql/types/NotifyPayment';
+import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
+import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
+import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 import {
   ADD_TO_TEAM,
   DENY_NEW_USER,
+  FACILITATOR_DISCONNECTED,
   FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
@@ -26,13 +30,15 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_INVITE,
+  VERSION_INFO
 } from 'universal/utils/constants';
-import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
-import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 
 export const notificationInterfaceFields = {
-  id: globalIdField('Notification', ({id}) => id),
+  id: {
+    type: GraphQLID,
+    description: 'A shortid for the notification'
+  },
   orgId: {
     type: GraphQLID,
     description: '*The unique organization ID for this notification. Can be blank for targeted notifications'
@@ -59,6 +65,7 @@ const Notification = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       [ADD_TO_TEAM]: NotifyAddedToTeam,
       [DENY_NEW_USER]: NotifyDenial,
+      [FACILITATOR_DISCONNECTED]: NotifyFacilitatorDisconnected,
       [FACILITATOR_REQUEST]: NotifyFacilitatorRequest,
       [INVITEE_APPROVED]: NotifyInvitation,
       [JOIN_TEAM]: NotifyNewTeamMember,
@@ -69,7 +76,8 @@ const Notification = new GraphQLInterfaceType({
       [REQUEST_NEW_USER]: NotifyInvitation,
       [TEAM_INVITE]: NotifyInvitation,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromotion,
-      [TEAM_ARCHIVED]: NotifyTeamArchived
+      [TEAM_ARCHIVED]: NotifyTeamArchived,
+      [VERSION_INFO]: NotifyVersionInfo
     };
 
     return resolveTypeLookup[value.type];

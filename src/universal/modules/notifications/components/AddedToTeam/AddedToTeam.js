@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
@@ -8,8 +9,7 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import withRouter from 'react-router-dom/es/withRouter';
+import {withRouter} from 'react-router-dom';
 import {clearNotificationLabel} from '../../helpers/constants';
 
 const AddedToTeam = (props) => {
@@ -23,16 +23,15 @@ const AddedToTeam = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id, team} = notification;
-  const {id: teamId, name: teamName} = team;
-  const {id: dbNotificationId} = fromGlobalId(id);
+  const {notificationId, team} = notification;
+  const {teamId, teamName} = team;
   const acknowledge = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
   };
   const goToTeam = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
     history.push(`/team/${teamId}`);
   };
   return (
@@ -73,14 +72,24 @@ AddedToTeam.propTypes = {
   styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
-  notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    team: PropTypes.object.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
   ...defaultStyles
 });
 
-export default withRouter(withStyles(styleThunk)(AddedToTeam));
+export default createFragmentContainer(
+  withRouter(withStyles(styleThunk)(AddedToTeam)),
+  graphql`
+    fragment AddedToTeam_notification on Notification {
+      notificationId: id
+      ... on NotifyAddedToTeam {
+        team {
+          teamId: id
+          teamName: name
+        }
+      }
+    }
+  `
+);

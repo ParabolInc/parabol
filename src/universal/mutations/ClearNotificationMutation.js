@@ -1,33 +1,31 @@
 import {commitMutation} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
-  mutation ClearNotificationMutation($dbNotificationId: ID!) {
-    clearNotification(dbNotificationId: $dbNotificationId) {
+  mutation ClearNotificationMutation($notificationId: ID!) {
+    clearNotification(notificationId: $notificationId) {
       deletedId
     }
   }
 `;
 
-export const clearNotificationUpdater = (viewer, deletedLocalIds) => {
+export const clearNotificationUpdater = (viewer, deletedIds) => {
   const conn = ConnectionHandler.getConnection(
     viewer,
-    'SocketRoute_notifications'
+    'DashboardWrapper_notifications'
   );
   if (conn) {
-    const deletedGlobalIds = deletedLocalIds.map((id) => toGlobalId('Notification', id));
-    deletedGlobalIds.forEach((globalId) => {
-      ConnectionHandler.deleteNode(conn, globalId);
+    deletedIds.forEach((deletedId) => {
+      ConnectionHandler.deleteNode(conn, deletedId);
     });
   }
 };
 
-const ClearNotificationMutation = (environment, dbNotificationId, onError, onCompleted) => {
+const ClearNotificationMutation = (environment, notificationId, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {dbNotificationId},
+    variables: {notificationId},
     updater: (store) => {
       const viewer = store.get(viewerId);
       const deletedId = store.getRootField('clearNotification').getValue('deletedId');
@@ -35,7 +33,7 @@ const ClearNotificationMutation = (environment, dbNotificationId, onError, onCom
     },
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId);
-      clearNotificationUpdater(viewer, [dbNotificationId]);
+      clearNotificationUpdater(viewer, [notificationId]);
     },
     onCompleted,
     onError

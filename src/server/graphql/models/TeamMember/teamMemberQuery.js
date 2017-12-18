@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 
 export default {
   teamMemberCount: {
@@ -15,7 +15,7 @@ export default {
       const r = getRethink();
 
       // AUTH
-      requireSUOrTeamMember(authToken, teamId);
+      requireTeamMember(authToken, teamId);
 
       // RESOLUTION
       return r.table('TeamMember')

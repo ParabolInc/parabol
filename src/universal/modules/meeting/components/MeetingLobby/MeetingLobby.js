@@ -1,30 +1,28 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import {cashay} from 'cashay';
-import makeHref from 'universal/utils/makeHref';
+import {createFragmentContainer} from 'react-relay';
+import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-
-const createStartMeetingHandler = (members) => () => {
-  const self = members.find((member) => member.isSelf);
-  if (!self) {
-    throw new Error('You are not a member! How can that be?');
-  }
-  const options = {variables: {facilitatorId: self.id}};
-  cashay.mutate('startMeeting', options);
-};
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import StartMeetingMutation from 'universal/mutations/StartMeetingMutation';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import makeHref from 'universal/utils/makeHref';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const MeetingLobby = (props) => {
-  const {members, team, styles} = props;
-  const {id: teamId, name: teamName} = team;
-  const onStartMeetingClick = createStartMeetingHandler(members);
+  const {atmosphere, history, onError, onCompleted, submitMutation, submitting, team, styles} = props;
+  const {teamId, teamName} = team;
+  const onStartMeetingClick = () => {
+    submitMutation();
+    StartMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
+  };
   const meetingUrl = makeHref(`/meeting/${teamId}`);
   return (
     <MeetingMain>
@@ -51,6 +49,7 @@ const MeetingLobby = (props) => {
             onClick={onStartMeetingClick}
             buttonSize="large"
             textTransform="uppercase"
+            waiting={submitting}
           />
         </div>
         <p className={css(styles.label)}>{'Meeting Link:'}</p>
@@ -64,14 +63,17 @@ const MeetingLobby = (props) => {
 };
 
 MeetingLobby.propTypes = {
-  members: PropTypes.array,
+  atmosphere: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   team: PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string
   }),
-  teamId: PropTypes.string,
-  teamName: PropTypes.string
+  submitting: PropTypes.bool,
+  submitMutation: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({
@@ -125,4 +127,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingLobby);
+export default createFragmentContainer(
+  withRouter(withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingLobby)))),
+  graphql`
+    fragment MeetingLobby_team on Team {
+      teamId: id
+      teamName: name
+    }
+  `
+);

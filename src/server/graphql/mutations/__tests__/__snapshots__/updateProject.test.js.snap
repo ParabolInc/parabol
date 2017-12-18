@@ -1,0 +1,140 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateProject throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to team 0\\"}"`;
+
+exports[`updateProject updates the content of the project 1`] = `
+Object {
+  "project": Object {
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "sortOrder": 0,
+    "status": "active",
+    "tags": Array [],
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [
+    Object {
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "id": 4,
+      "projectId": 0,
+      "tags": Array [],
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`updateProject updates the content of the project quickly and do not trigger a new history item 1`] = `
+Object {
+  "project": Object {
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "sortOrder": 0,
+    "status": "active",
+    "tags": Array [],
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [
+    Object {
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "id": 4,
+      "projectId": 0,
+      "status": "active",
+      "tags": Array [],
+      "teamMemberId": 3,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`updateProject updates the sortOrder without changing updatedAt or making a history item 1`] = `
+Object {
+  "project": Object {
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "sortOrder": 2,
+    "status": "active",
+    "tags": Array [],
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T07:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [],
+}
+`;
+
+exports[`updateProject updates the status of the project 1`] = `
+Object {
+  "project": Object {
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "sortOrder": 0,
+    "status": "done",
+    "tags": Array [],
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [
+    Object {
+      "id": 4,
+      "projectId": 0,
+      "status": "done",
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`updateProject updates the teamMember of the project slowly and trigger a new history item 1`] = `
+Object {
+  "project": Object {
+    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "sortOrder": 0,
+    "status": "active",
+    "tags": Array [],
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [
+    Object {
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "id": 4,
+      "projectId": 0,
+      "status": "active",
+      "teamMemberId": 3,
+      "updatedAt": 2017-01-01T07:00:00.000Z,
+    },
+    Object {
+      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "id": 5,
+      "projectId": 0,
+      "status": "active",
+      "teamMemberId": 3,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;

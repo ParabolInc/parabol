@@ -7,10 +7,10 @@ import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
-import {TeamInput} from '../teamSchema';
 import addSeedProjects from './addSeedProjects';
 import createFirstTeamValidation from './createFirstTeamValidation';
 import createTeamAndLeader from './createTeamAndLeader';
+import TeamInput from 'server/graphql/types/TeamInput';
 
 export default {
   // return the new JWT that has the new tms field
@@ -54,8 +54,8 @@ export default {
     const {id: teamId} = validNewTeam;
     const tms = [teamId];
     const orgName = `${user.preferredName}’s Org`;
+    await createNewOrg(orgId, orgName, userId);
     await resolvePromiseObj({
-      newOrg: createNewOrg(orgId, orgName, userId),
       newTeamUpdatedUser: createTeamAndLeader(userId, validNewTeam, true),
       seedTeam: addSeedProjects(userId, teamId)
     });

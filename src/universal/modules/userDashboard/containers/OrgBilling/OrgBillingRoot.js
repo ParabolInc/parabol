@@ -26,7 +26,7 @@ const OrgBillingRoot = ({atmosphere, orgId, org}) => {
       variables={{orgId, first: 3}}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear style={{overflow: 'hidden'}}>
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
               <AnimatedFade key="1">

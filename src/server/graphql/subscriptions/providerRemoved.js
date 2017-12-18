@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 
 export default {
   type: new GraphQLNonNull(RemoveProviderPayload),
@@ -10,9 +10,9 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken, socketId}) => {
+  subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     const channelName = `providerRemoved.${teamId}`;
@@ -21,6 +21,6 @@ export default {
     };
     // no need for a special resolve because we don't send secret info like accessToken
     // we send the userId of the person who removed the provider & the client decides how to update the map
-    return makeSubscribeIter(channelName, {filterFn});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader});
   }
 };

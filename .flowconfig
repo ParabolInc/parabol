@@ -9,5 +9,8 @@
 [lints]
 
 [options]
+module.name_mapper='^client' -> '<PROJECT_ROOT>/src/client'
+module.name_mapper='^server' -> '<PROJECT_ROOT>/src/server'
+module.name_mapper='^universal' -> '<PROJECT_ROOT>/src/universal'
 
 [strict]

@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import AddProviderPayload from 'server/graphql/types/AddProviderPayload';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
 
 
@@ -12,9 +12,9 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: (source, {teamId}, {authToken}) => {
+  subscribe: (source, {teamId}, {authToken, dataLoader}) => {
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     const subscriberUserId = getUserId(authToken);
 
     // RESOLUTION
@@ -38,6 +38,6 @@ export default {
         }
       };
     };
-    return makeSubscribeIter(channelName, {resolve});
+    return makeSubscribeIter(channelName, {resolve, dataLoader});
   }
 };

@@ -15,13 +15,15 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(source, {email, orgId}, {authToken, socket}) {
+  async resolve(source, {email, orgId}, {authToken, dataLoader, socket}) {
+    const operationId = dataLoader.share();
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
     requireOrgLeader(userOrgDoc);
 
-    return approveToOrg(email, orgId, userId, socket.id);
+    const subOptions = {mutatorId: socket.id, operationId};
+    return approveToOrg(email, orgId, userId, subOptions);
   }
 };
 

@@ -10,7 +10,9 @@ export default {
   },
   type: GraphQLBoolean,
   description: 'true if the user is a part of the supplied orgId',
-  resolve: (source, {orgId}) => {
-    return Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
+  resolve: async (source, {orgId}, {dataLoader}) => {
+    const {id: userId} = source;
+    const user = await dataLoader.get('users').load(userId);
+    return Boolean(user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
   }
 };
