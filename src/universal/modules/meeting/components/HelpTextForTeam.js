@@ -32,6 +32,11 @@ const styleThunk = () => ({
     ':hover': {
       opacity: 0.5
     }
+  },
+
+  helpText: {
+    fontWeight: 700,
+    userSelect: 'none'
   }
 });
 
