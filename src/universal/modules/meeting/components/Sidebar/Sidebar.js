@@ -21,6 +21,7 @@ const Sidebar = (props) => {
     isFacilitating,
     localPhase,
     localPhaseItem,
+    setAgendaInputRef,
     styles,
     team
   } = props;
@@ -133,6 +134,7 @@ const Sidebar = (props) => {
             gotoAgendaItem={gotoAgendaItem}
             localPhase={localPhase}
             localPhaseItem={localPhaseItem}
+            setAgendaInputRef={setAgendaInputRef}
             team={team}
           />
         </div>
@@ -153,6 +155,7 @@ Sidebar.propTypes = {
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   meetingPhase: PropTypes.oneOf(phaseArray),
+  setAgendaInputRef: PropTypes.func.isRequired,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired
 };

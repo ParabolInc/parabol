@@ -38,24 +38,14 @@ const MeetingCheckin = (props) => {
   };
 
   const {teamMembers} = team;
-  const self = teamMembers.find((m) => m.isSelf);
-  const currentTeamMember = teamMembers[localPhaseItem - 1] || {};
-  const myTeamMemberId = self && self.id;
-  const isMyMeetingSection = myTeamMemberId === currentTeamMember.id;
   const memberIdx = localPhaseItem - 1;
   const currentMember = teamMembers[memberIdx];
-  const nextMemberName = teamMembers[localPhaseItem] && teamMembers[localPhaseItem].preferredName;
-
+  const {isSelf: isMyMeetingSection} = currentMember;
+  const nextMember = teamMembers[memberIdx + 1];
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="1rem">
         <MeetingCheckInPrompt
-          // avatar={currentAvatar}
-          // checkInQuestion={checkInQuestion}
-          // canEdit={tierSupportsUpdateCheckInQuestion(tier)}
-          // currentName={currentName}
-          // greeting={checkInGreeting}
-          // teamId={teamId}
           isFacilitating={isFacilitating}
           localPhaseItem={localPhaseItem}
           team={team}
@@ -64,11 +54,11 @@ const MeetingCheckin = (props) => {
           {showMoveMeetingControls ?
             <CheckInControls
               checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
-              nextMemberName={nextMemberName}
+              nextMemberName={nextMember && nextMember.preferredName}
             /> :
             <div className={css(styles.hint)}>
-              <MeetingFacilitationHint showEllipsis={!nextMemberName || !isMyMeetingSection}>
-                {nextMemberName ?
+              <MeetingFacilitationHint showEllipsis={!nextMember || !isMyMeetingSection}>
+                {nextMember ?
                   <span>
                     {isMyMeetingSection ?
                       <span>{'Share with your teammates!'}</span> :
@@ -133,6 +123,7 @@ export default createFragmentContainer(
       ...MeetingCheckInPrompt_team
       teamMembers(sortBy: "checkInOrder") {
         id
+        isSelf
         preferredName
       }
     }`

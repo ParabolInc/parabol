@@ -20,7 +20,7 @@ const MeetingCheckinPrompt = (props) => {
         isFacilitating={isFacilitating}
         team={team}
       />
-      <CheckInQuestion team={team} />
+      <CheckInQuestion isFacilitating={isFacilitating} team={team} />
     </div>
   );
   return (

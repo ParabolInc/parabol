@@ -7,7 +7,7 @@ import AgendaInputField from './AgendaInputField';
 import ui from 'universal/styles/ui';
 
 const AgendaInput = (props) => {
-  const {agenda, disabled, handleSubmit, team, styles} = props;
+  const {agenda, disabled, handleSubmit, setAgendaInputRef, team, styles} = props;
   return (
     <div className={css(styles.agendaInputBlock)}>
       <Field
@@ -16,6 +16,7 @@ const AgendaInput = (props) => {
         component={AgendaInputField}
         disabled={disabled}
         handleSubmit={handleSubmit}
+        setAgendaInputRef={setAgendaInputRef}
         team={team}
       />
     </div>
@@ -26,6 +27,7 @@ AgendaInput.propTypes = {
   agenda: PropTypes.array,
   disabled: PropTypes.bool,
   handleSubmit: PropTypes.func,
+  setAgendaInputRef: PropTypes.func,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired
 };

@@ -167,13 +167,17 @@ class MeetingContainer extends Component {
     clearTimeout(this.electionTimer);
   }
 
+  setAgendaInputRef = (c) => {
+    this.agendaInputRef = c;
+  };
+
   electFacilitatorIfNone() {
     const {atmosphere, viewer: {team: {activeFacilitator, teamMembers}}} = this.props;
     if (!activeFacilitator) return;
 
     const facilitator = teamMembers.find((m) => m.id === activeFacilitator);
-    if (!facilitator.isConnected) {
-      const onlineMembers = teamMembers.filter((m) => m.isConnected);
+    if (!facilitator.isConnected && !facilitator.isSelf) {
+      const onlineMembers = teamMembers.filter((m) => m.isConnected || m.isSelf);
       const callingMember = onlineMembers[0];
       const nextFacilitator = onlineMembers.find((m) => m.isFacilitator) || callingMember;
       if (callingMember.isSelf) {
@@ -301,6 +305,7 @@ class MeetingContainer extends Component {
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
     const showMoveMeetingControls = isFacilitating || isBehindMeeting;
     const facilitatorName = getFacilitatorName(activeFacilitator, teamMembers);
+
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
         <Sidebar
@@ -309,6 +314,7 @@ class MeetingContainer extends Component {
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           isFacilitating={isFacilitating}
+          setAgendaInputRef={this.setAgendaInputRef}
           team={team}
         />
         <MeetingMain hasBoxShadow>
@@ -323,9 +329,9 @@ class MeetingContainer extends Component {
             />
             {localPhase === UPDATES &&
             <MeetingUpdatesPrompt
+              agendaInputRef={this.agendaInputRef}
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
-              meetingNumber={1}
               team={team}
             />
             }
@@ -424,6 +430,7 @@ export default createFragmentContainer(
           picture
           checkInOrder
           isCheckedIn
+          isConnected
           isFacilitator
           isLead
           isSelf

@@ -1,8 +1,10 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
+import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import editorDecorators from 'universal/components/ProjectEditor/decorators';
 import 'universal/components/ProjectEditor/Draft.css';
@@ -13,8 +15,24 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import withStyles from 'universal/styles/withStyles';
-import EditorInputWrapper from 'universal/components/EditorInputWrapper';
-import PropTypes from 'prop-types';
+
+
+const iconStyle = {
+  color: ui.palette.dark,
+  display: 'block',
+  height: '1.5rem',
+  fontSize: '1rem',
+  verticalAlign: 'middle',
+  marginLeft: '0.5rem',
+  paddingTop: '.1875rem',
+  textAlign: 'center',
+  width: '1.25rem'
+};
+
+const buttonStyle = {
+  color: ui.palette.dark,
+  display: 'block'
+};
 
 class CheckInQuestion extends Component {
   static propTypes = {
@@ -22,35 +40,42 @@ class CheckInQuestion extends Component {
     isFacilitating: PropTypes.bool.isRequired,
     styles: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired
-  }
-  state = {
-    editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.team.checkInQuestion)), editorDecorators)
   };
+
+  constructor(props) {
+    super(props);
+    const {team: {checkInQuestion}} = props;
+    const contentState = convertFromRaw(JSON.parse(checkInQuestion));
+    this.state = {
+      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+    };
+  }
 
   componentWillReceiveProps(nextProps) {
     const {team: {checkInQuestion}} = nextProps;
     const {team: {oldCheckInQuestion}} = this.props;
     if (checkInQuestion !== oldCheckInQuestion) {
+      const contentState = convertFromRaw(JSON.parse(checkInQuestion));
       this.setState({
-        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(checkInQuestion)), editorDecorators)
+        editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
       });
     }
   }
 
+  getEditorState = () => this.state.editorState;
+
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
-    if (wasFocused !== isFocused) {
-      if (!isFocused) {
-        const {atmosphere, team: {id: teamId}} = this.props;
-        const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
-        UpdateCheckInQuestionMutation(atmosphere, teamId, checkInQuestion);
-      }
+    if (wasFocused && !isFocused) {
+      const {atmosphere, team: {id: teamId}} = this.props;
+      const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
+      UpdateCheckInQuestionMutation(atmosphere, teamId, checkInQuestion);
     }
     this.setState({
       editorState
     });
-  }
+  };
 
   selectAllQuestion = () => {
     this.editorRef.focus();
@@ -73,23 +98,6 @@ class CheckInQuestion extends Component {
     const canEdit = tierSupportsUpdateCheckInQuestion(tier);
     const isEditing = editorState.getSelection().getHasFocus();
 
-    const iconStyle = {
-      color: ui.palette.dark,
-      display: 'block',
-      height: '1.5rem',
-      fontSize: '1rem',
-      verticalAlign: 'middle',
-      marginLeft: '0.5rem',
-      paddingTop: '.1875rem',
-      textAlign: 'center',
-      width: '1.25rem'
-    };
-
-    const buttonStyle = {
-      color: ui.palette.dark,
-      display: 'block'
-    };
-
     const buttonIconStyle = {
       ...iconStyle,
       cursor: 'pointer',
@@ -100,22 +108,14 @@ class CheckInQuestion extends Component {
       ? 'Tap to customize the Social Check-in question.'
       : 'Upgrade to a Pro Account to customize the Social Check-in question.';
 
-    const tooltipProps = {
-      tip: <div>{tip}</div>,
-      originAnchor: {vertical: 'bottom', horizontal: 'center'},
-      targetAnchor: {vertical: 'top', horizontal: 'center'},
-      hideOnFocus: true
-    };
-
-    const tooltipHiddenProps = {
-      ...tooltipProps,
-      isOpen: false
-    };
-
-    const whichTooltipProps = (isEditing || !isFacilitating) ? tooltipHiddenProps : tooltipProps;
-
     return (
-      <Tooltip {...whichTooltipProps}>
+      <Tooltip
+        tip={<div>{tip}</div>}
+        originAnchor={{vertical: 'bottom', horizontal: 'center'}}
+        targetAnchor={{vertical: 'top', horizontal: 'center'}}
+        hideOnFocus
+        isOpen={(isFacilitating && !isEditing) ? undefined : false}
+      >
         <div className={css(styles.root)}>
           <div className={css(styles.editor)}>
             <EditorInputWrapper
