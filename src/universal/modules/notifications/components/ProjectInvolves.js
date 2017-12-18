@@ -166,7 +166,7 @@ export default createFragmentContainer(
       notificationId: id
       ... on NotifyProjectInvolves {
         changeAuthor {
-          changeAuthName: preferredName
+          changeAuthorName: preferredName
         }
         involvement
         team {
