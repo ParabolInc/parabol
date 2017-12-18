@@ -1,5 +1,6 @@
 import DynamicSerializer from 'dynamic-serializer';
 import MockDate from 'mockdate';
+import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 import getRethink from 'server/database/rethinkDriver';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
@@ -27,11 +28,12 @@ describe('ArchiveTeam', () => {
     const teamLeadId = teamMember.find((tm) => tm.teamId === updatedTeam.id && tm.isLead).userId;
     const teamLead = user.find((usr) => usr.id === teamLeadId);
     const authToken = mockAuthToken(teamLead);
+    const dataLoader = makeDataLoader(authToken);
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
     // TEST
-    await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, exchange, socket});
+    await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, dataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -57,12 +59,12 @@ describe('ArchiveTeam', () => {
       .newTeamMember({isLead: true});
     updatedTeam.isArchived = true;
     const authToken = mockAuthToken(user);
+    const dataLoader = makeDataLoader(authToken);
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
-    exchange.publish.mockReset();
     tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
     // TEST
-    await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, exchange, socket});
+    await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, dataLoader, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({

@@ -35,6 +35,11 @@ const fieldsToSerialize = {
     'message.orgApprovalRemoved.orgApproval.orgId',
     'message.orgApprovalRemoved.orgApproval.teamId'
   ],
+  teamUpdated: [
+    'channelId',
+    'message.teamUpdated.team.id',
+    'message.teamUpdated.team.orgId'
+  ],
   teamMemberAdded: [
     'channelId',
     'message.teamMemberAdded.teamMember.id',
