@@ -15,7 +15,7 @@ const MeetingUpdatesPrompt = (props) => {
   const currentTeamMember = teamMembers[localPhaseItem - 1];
   const {isSelf: isMyMeetingSection} = currentTeamMember;
   const isFirstMeeting = meetingNumber === 1;
-  const question = isFirstMeeting ? 'what are you working on for this team' : 'what’s changed since our last meeting';
+  const question = isFirstMeeting ? 'what are you working on' : 'what’s changed with your tasks';
   const heading = <span>{currentTeamMember.preferredName}, <i>{question}</i>{'?'}</span>;
 
   return (

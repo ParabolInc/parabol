@@ -6,7 +6,7 @@ import withStyles from 'universal/styles/withStyles';
 const HelpTextMyRound = (props) => {
   const {styles} = props;
   return (
-    <span className={css(styles.helpText)}>{'(It’s your turn to share. Add cards to track your current work.)'}</span>
+    <span className={css(styles.helpText)}>{'(Your turn to share. Add cards to track your current work.)'}</span>
   );
 };
 

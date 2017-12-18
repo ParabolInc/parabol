@@ -14,7 +14,7 @@ const HelpTextForTeam = (props) => {
     <span className={css(styles.helpText)}>
       {`(${currentTeamMember.preferredName} is sharing. `}
       <span onClick={handleAgendaControl} className={css(styles.agendaControl)}>{'Add agenda items'}</span>
-      {' to discuss new tasks.)'}
+      {' for discussion.)'}
     </span>
   );
 };
