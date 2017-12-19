@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
@@ -37,7 +36,6 @@ class MeetingUpdates extends Component {
 
   render() {
     const {
-      facilitatorName,
       gotoNext,
       localPhaseItem,
       showMoveMeetingControls,
@@ -84,7 +82,6 @@ class MeetingUpdates extends Component {
 }
 
 MeetingUpdates.propTypes = {
-  facilitatorName: PropTypes.string.isRequired,
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number.isRequired,

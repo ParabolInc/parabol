@@ -350,7 +350,6 @@ class MeetingContainer extends Component {
           }
           {localPhase === UPDATES &&
           <MeetingUpdates
-            facilitatorName={facilitatorName}
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
