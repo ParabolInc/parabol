@@ -116,8 +116,8 @@ class ProjectColumn extends Component {
         <Menu
           itemFactory={itemFactory}
           originAnchor={originAnchor}
-          maxHeight="13.5625rem"
-          menuWidth="10rem"
+          maxHeight={ui.dashMenuHeight}
+          menuWidth={ui.dashMenuWidth}
           targetAnchor={targetAnchor}
           toggle={toggle}
           label="Select Team:"

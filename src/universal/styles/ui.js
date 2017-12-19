@@ -263,6 +263,8 @@ const ui = {
     fontWeight: 400,
     lineHeight: '1.5'
   },
+  dashMenuHeight: '13.5625rem',
+  dashMenuWidth: '10rem',
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashAlertsHeight: '5.25rem',

@@ -78,7 +78,7 @@ const TeamProjectsHeader = (props) => {
             <Menu
               itemFactory={itemFactory}
               label="Filter by:"
-              maxHeight="13.5625rem"
+              maxHeight={ui.dashMenuHeight}
               toggle={toggle}
               originAnchor={originAnchor}
               targetAnchor={targetAnchor}
