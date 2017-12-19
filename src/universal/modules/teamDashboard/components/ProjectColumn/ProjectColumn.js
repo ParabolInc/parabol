@@ -116,6 +116,7 @@ class ProjectColumn extends Component {
         <Menu
           itemFactory={itemFactory}
           originAnchor={originAnchor}
+          maxHeight="13.5625rem"
           menuWidth="10rem"
           targetAnchor={targetAnchor}
           toggle={toggle}

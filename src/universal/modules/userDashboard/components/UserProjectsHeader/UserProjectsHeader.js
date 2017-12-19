@@ -45,6 +45,8 @@ const UserProjectsHeader = (props) => {
             {' '}
             <Menu
               label="Filter by:"
+              maxHeight="13.5625rem"
+              menuWidth="10rem"
               originAnchor={originAnchor}
               targetAnchor={targetAnchor}
               toggle={toggle}
