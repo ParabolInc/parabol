@@ -154,7 +154,7 @@ Editable.propTypes = {
 const styleThunk = (customTheme, props) => ({
   editableRoot: {
     display: 'block',
-    height: props.typeStyles.lineHeight,
+    lineHeight: props.typeStyles.lineHeight,
     width: '100%'
   },
 
@@ -166,7 +166,7 @@ const styleThunk = (customTheme, props) => ({
   staticBlock: {
     display: 'inline-block',
     fontSize: 0,
-    height: props.typeStyles.lineHeight,
+    lineHeight: props.typeStyles.lineHeight,
     verticalAlign: 'top',
 
     ':hover': {
