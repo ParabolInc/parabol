@@ -7,6 +7,7 @@ import React, { Component } from 'react';
 import {findDOMNode} from 'react-dom';
 import {graphql} from 'react-relay';
 import NullableProject from 'universal/components/NullableProject/NullableProject';
+import withDragCache, {DragCache} from 'universal/dnd/withDragCache';
 import {PROJECT} from 'universal/utils/constants';
 import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
@@ -26,46 +27,12 @@ type Props = {
   connectDragSource: (node: Node) => Node,
   connectDragPreview: (node: Node) => Node,
   connectDropTarget: (node: Node) => Node,
+  dragCache: DragCache,
   insert: (project: Project, before: boolean) => void,
   isDragging: boolean,
-  isOver: boolean,
   isPreview: boolean,
   myUserId: UserID,
   project: Project
-};
-
-const dragCache: Map<string, ?(string | boolean)> = new Map([
-  ['draggedProjectId', null],
-  ['dropTargetProjectId', null],
-  ['before', null]
-]);
-
-const isSameDrag = (
-  draggedProjectId: string,
-  dropTargetProjectId: string,
-  before: boolean
-): boolean => (
-  draggedProjectId === dragCache.get('draggedProjectId') &&
-  dropTargetProjectId === dragCache.get('dropTargetProjectId') &&
-  before === dragCache.get('before')
-);
-
-const updateDragCache = (
-  draggedProjectId: string,
-  dropTargetProjectId: string,
-  before: boolean
-): void => {
-  dragCache
-    .set('draggedProjectId', draggedProjectId)
-    .set('dropTargetProjectId', dropTargetProjectId)
-    .set('before', before);
-};
-
-const clearDragCache = (): void => {
-  dragCache
-    .set('draggedProjectId', null)
-    .set('dropTargetProjectId', null)
-    .set('before', null);
 };
 
 class DraggableProject extends Component<Props> {
@@ -73,12 +40,6 @@ class DraggableProject extends Component<Props> {
     const {connectDragPreview, isPreview} = this.props;
     if (!isPreview) {
       connectDragPreview(getEmptyImage());
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.isOver && !nextProps.isOver) {
-      clearDragCache();
     }
   }
 
@@ -140,11 +101,20 @@ const projectDragCollect = (connectSource, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-const handleProjectHover = (props, monitor, component) => {
-  const {insert, project} = props;
+const handleProjectHover = (props: Props, monitor, component) => {
+  const {dragCache, insert, project} = props;
   const dropTargetProjectId = project.id;
   const draggedProject = monitor.getItem();
   const draggedProjectId = draggedProject.id;
+
+  if (!monitor.isOver({shallow: true})) {
+    dragCache.clear();
+    return;
+  }
+
+  if (draggedProjectId === dropTargetProjectId) {
+    return;
+  }
 
   // Compute whether I am dropping "before" or "after" the card.
   const {y: mouseY} = monitor.getClientOffset();
@@ -159,21 +129,16 @@ const handleProjectHover = (props, monitor, component) => {
   const dropTargetMidpoint = dropTargetTop + (dropTargetHeight / 2);
   const before = mouseY < dropTargetMidpoint;
 
-  // We're sort of memoizing here, since this hover function gets called
-  // constantly during a drag operation; if the last dragged project and drop
-  // target projects are the same with the same before/after relationship, then
-  // we don't need to re-insert them.
-  if (isSameDrag(draggedProjectId, dropTargetProjectId, before)) {
+  if (dragCache.isSameDrag({draggedProjectId, before})) {
     return;
   }
-  updateDragCache(draggedProjectId, dropTargetProjectId, before);
+  dragCache.update({draggedProjectId, before});
 
   insert(draggedProject, before);
 };
 
-const projectDropCollect = (connect, monitor) => ({
-  connectDropTarget: connect.dropTarget(),
-  isOver: monitor.isOver({shallow: true})
+const projectDropCollect = (connect) => ({
+  connectDropTarget: connect.dropTarget()
 });
 
 const projectDropSpec = {
@@ -181,8 +146,10 @@ const projectDropSpec = {
 };
 
 export default createFragmentContainer(
-  dragSource(PROJECT, projectDragSpec, projectDragCollect)(
-    dropTarget(PROJECT, projectDropSpec, projectDropCollect)(DraggableProject)
+  withDragCache(
+    dragSource(PROJECT, projectDragSpec, projectDragCollect)(
+      dropTarget(PROJECT, projectDropSpec, projectDropCollect)(DraggableProject)
+    )
   ),
   graphql`
     fragment DraggableProject_project on Project {

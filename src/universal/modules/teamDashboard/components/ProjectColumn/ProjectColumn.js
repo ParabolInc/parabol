@@ -140,10 +140,6 @@ class ProjectColumn extends Component {
     // the front or back of the list, this will be `undefined`.
     const boundingProject = projects[targetIndex + (before ? -1 : 1)];
     const sortOrder = sortOrderBetween(targetProject, boundingProject, draggedProject, before);
-    const noActionNeeded = sortOrder === draggedProject.sortOrder && draggedProject.status === status;
-    if (noActionNeeded) {
-      return;
-    }
     const updatedProject = {id: draggedProject.id, sortOrder, status};
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
