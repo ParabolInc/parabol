@@ -10,9 +10,10 @@ const HelpTextForTeam = (props) => {
   const handleAgendaControl = () => {
     agendaInputRef.focus();
   };
+  const isCheckedInFalse = Boolean(currentTeamMember.isCheckedIn === false);
   return (
     <span className={css(styles.helpText)}>
-      {`(${currentTeamMember.preferredName} is sharing. `}
+      <span>{isCheckedInFalse ? '(' : `(${currentTeamMember.preferredName} is sharing. `}</span>
       <span onClick={handleAgendaControl} className={css(styles.agendaControl)}>{'Add agenda items'}</span>
       {' for discussion.)'}
     </span>
@@ -45,5 +46,6 @@ export default createFragmentContainer(
   graphql`
     fragment HelpTextForTeam_currentTeamMember on TeamMember {
       preferredName
+      isCheckedIn
     }`
 );

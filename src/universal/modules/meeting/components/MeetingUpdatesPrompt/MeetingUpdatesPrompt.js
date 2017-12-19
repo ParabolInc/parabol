@@ -11,12 +11,18 @@ const MeetingUpdatesPrompt = (props) => {
     localPhaseItem,
     team
   } = props;
-  const {meetingNumber, teamMembers} = team;
+  const {teamMembers} = team;
   const currentTeamMember = teamMembers[localPhaseItem - 1];
-  const {isSelf: isMyMeetingSection} = currentTeamMember;
-  const isFirstMeeting = meetingNumber === 1;
-  const question = isFirstMeeting ? 'what are you working on' : 'what’s changed with your tasks';
-  const heading = <span>{currentTeamMember.preferredName}, <i>{question}</i>{'?'}</span>;
+  const {isSelf: isMyMeetingSection, isCheckedIn} = currentTeamMember;
+  const isCheckedInFalse = Boolean(isCheckedIn === false);
+  const userHasCards = true;
+  const question = userHasCards ? 'what’s changed with your tasks' : 'what are you working on';
+  const headingHere = <span>{currentTeamMember.preferredName}, <i>{question}</i>{'?'}</span>;
+  const questionNotHere = userHasCards
+    ? `Any updates for ${currentTeamMember.preferredName}`
+    : `What is ${currentTeamMember.preferredName} working on`;
+  const headingNotHere = <span><i>{questionNotHere}</i>{'?'}</span>;
+  const heading = (isCheckedInFalse && !isMyMeetingSection) ? headingNotHere : headingHere;
 
   return (
     <MeetingPrompt
@@ -43,11 +49,11 @@ export default createFragmentContainer(
   MeetingUpdatesPrompt,
   graphql`
     fragment MeetingUpdatesPrompt_team on Team {
-      meetingNumber
       teamMembers(sortBy: "checkInOrder") {
         isSelf
         picture
         preferredName
+        isCheckedIn
         ...HelpTextForTeam_currentTeamMember
       }
     }`
