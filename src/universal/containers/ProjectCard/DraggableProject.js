@@ -144,7 +144,7 @@ const handleProjectHover = (props, monitor, component) => {
   lastDropTargetProjectId = dropTargetProjectId;
   lastBefore = before;
 
-  insert(draggedProject, before);
+  insert(draggedProjectId, before);
 };
 
 const projectDropCollect = (connect) => ({

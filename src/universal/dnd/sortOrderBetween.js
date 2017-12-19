@@ -19,14 +19,16 @@ export default function sortOrderBetween(
   before: boolean
 ): number {
   if (target == null && boundng == null) {
-    return dragged.sortOrder;
+    // if we have the chance to reset the decimals, do it!
+    return SORT_STEP;
   } else if (target == null) {
     throw new Error('`target` cannot be null if `boundng` is not null');
   }
   if (boundng == null) {
     return target.sortOrder + ((SORT_STEP + dndNoise()) * (before ? 1 : -1));
   }
-  return boundng.id === dragged.id
+  // dragged is undefined if it has moved columns mid-drag
+  return boundng.id === (dragged && dragged.id)
     ? boundng.sortOrder
     : (boundng.sortOrder + target.sortOrder) / 2 + dndNoise();
 }
