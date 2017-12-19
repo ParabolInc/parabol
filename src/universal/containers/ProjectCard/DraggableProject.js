@@ -3,7 +3,6 @@ import type {Node} from 'react';
 import type {Project} from 'universal/types/project';
 import type {UserID} from 'universal/types/user';
 
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {findDOMNode} from 'react-dom';
 import {graphql} from 'react-relay';
@@ -33,6 +32,40 @@ type Props = {
   isPreview: boolean,
   myUserId: UserID,
   project: Project
+};
+
+const dragCache: Map<string, ?(string | boolean)> = new Map([
+  ['draggedProjectId', null],
+  ['dropTargetProjectId', null],
+  ['before', null]
+]);
+
+const isSameDrag = (
+  draggedProjectId: string,
+  dropTargetProjectId: string,
+  before: boolean
+): boolean => (
+  draggedProjectId === dragCache.get('draggedProjectId') &&
+  dropTargetProjectId === dragCache.get('dropTargetProjectId') &&
+  before === dragCache.get('before')
+);
+
+const updateDragCache = (
+  draggedProjectId: string,
+  dropTargetProjectId: string,
+  before: boolean
+): void => {
+  dragCache
+    .set('draggedProjectId', draggedProjectId)
+    .set('dropTargetProjectId', dropTargetProjectId)
+    .set('before', before);
+};
+
+const clearDragCache = (): void => {
+  dragCache
+    .set('draggedProjectId', null)
+    .set('dropTargetProjectId', null)
+    .set('before', null);
 };
 
 class DraggableProject extends Component<Props> {
@@ -106,40 +139,6 @@ const projectDragCollect = (connectSource, monitor) => ({
   connectDragPreview: connectSource.dragPreview(),
   isDragging: monitor.isDragging()
 });
-
-const dragCache: Map<string, ?(string | boolean)> = new Map([
-  ['draggedProjectId', null],
-  ['dropTargetProjectId', null],
-  ['before', null]
-]);
-
-const isSameDrag = (
-  draggedProjectId: string,
-  dropTargetProjectId: string,
-  before: boolean
-): boolean => (
-  draggedProjectId === dragCache.get('draggedProjectId') &&
-  dropTargetProjectId === dragCache.get('dropTargetProjectId') &&
-  before === dragCache.get('before')
-);
-
-const updateDragCache = (
-  draggedProjectId: string,
-  dropTargetProjectId: string,
-  before: boolean
-): void => {
-  dragCache
-    .set('draggedProjectId', draggedProjectId)
-    .set('dropTargetProjectId', dropTargetProjectId)
-    .set('before', before);
-};
-
-const clearDragCache = (): void => {
-  dragCache
-    .set('draggedProjectId', null)
-    .set('dropTargetProjectId', null)
-    .set('before', null);
-}
 
 const handleProjectHover = (props, monitor, component) => {
   const {insert, project} = props;
