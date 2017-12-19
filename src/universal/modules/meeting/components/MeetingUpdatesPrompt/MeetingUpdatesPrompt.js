@@ -19,7 +19,7 @@ const MeetingUpdatesPrompt = (props) => {
   const question = userHasCards ? 'what’s changed with your tasks' : 'what are you working on';
   const headingHere = <span>{currentTeamMember.preferredName}, <i>{question}</i>{'?'}</span>;
   const questionNotHere = userHasCards
-    ? `Any updates for ${currentTeamMember.preferredName}`
+    ? `Any updates with ${currentTeamMember.preferredName}’s tasks`
     : `What is ${currentTeamMember.preferredName} working on`;
   const headingNotHere = <span><i>{questionNotHere}</i>{'?'}</span>;
   const heading = (isCheckedInFalse && !isMyMeetingSection) ? headingNotHere : headingHere;
