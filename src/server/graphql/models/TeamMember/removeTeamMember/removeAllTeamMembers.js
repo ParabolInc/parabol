@@ -125,7 +125,6 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
       isKickout
     }))
   };
-  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, newTMS)});
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
 
   const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB);
@@ -134,6 +133,7 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
     // TODO send the archived projects in a mutation payload
     await archiveProjectsForManyRepos(repoChanges);
   }
+  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, newTMS)});
   return true;
 };
 

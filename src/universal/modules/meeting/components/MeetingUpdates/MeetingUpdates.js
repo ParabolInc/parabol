@@ -50,7 +50,7 @@ class MeetingUpdates extends Component {
     const isLastMember = localPhaseItem === teamMembers.length;
     const nextPhaseName = actionMeeting.agendaitems.name;
     const myTeamMemberId = self && self.id;
-    const isMyMeetingSection = myTeamMemberId === currentTeamMember.id;
+    const {isSelf: isMyMeetingSection} = currentTeamMember;
     return (
       <MeetingMain>
         <MeetingSection flexToFill>
@@ -122,6 +122,7 @@ export default createFragmentContainer(
       team(teamId: $teamId) {
         teamMembers(sortBy: "checkInOrder") {
           id
+          isSelf
           preferredName
         }
       }

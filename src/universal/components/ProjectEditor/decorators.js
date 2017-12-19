@@ -16,10 +16,10 @@ const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   );
 };
 
-const decorators = new CompositeDecorator([
+const decorators = (getEditorState) => new CompositeDecorator([
   {
     strategy: findEntity('LINK'),
-    component: EditorLink
+    component: EditorLink(getEditorState)
   },
   {
     strategy: findEntity('TAG'),

@@ -80,6 +80,7 @@ Object {
           "notifications": Array [
             Object {
               "preferredName": "inviteeGuy",
+              "teamId": 1,
               "teamName": "Team America",
               "type": "JOIN_TEAM",
             },
@@ -210,6 +211,7 @@ Object {
           "notifications": Array [
             Object {
               "preferredName": "Vision",
+              "teamId": 2,
               "teamName": "Team America",
               "type": "JOIN_TEAM",
             },

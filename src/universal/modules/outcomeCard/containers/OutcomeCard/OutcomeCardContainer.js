@@ -19,7 +19,7 @@ class OutcomeCardContainer extends Component {
       activeEditingComponents: Set(),
       cardHasHover: false,
       cardHasFocus: Boolean(editors.find((editor) => editor.userId === userId), editors, userId),
-      editorState: EditorState.createWithContent(contentState, editorDecorators),
+      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState)),
       cardHasMenuOpen: false
     };
   }
@@ -54,6 +54,8 @@ class OutcomeCardContainer extends Component {
   componentWillUnmount() {
     this._mounted = false;
   }
+
+  getEditorState = () => this.state.editorState;
 
   setEditorState = (editorState) => {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();

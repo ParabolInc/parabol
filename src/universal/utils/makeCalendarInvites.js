@@ -68,7 +68,8 @@ END:VEVENT
 END:VCALENDAR`;
 };
 
-export const makeIcsUrl = (createdAt, meetingUrl, teamName) => {
+export const makeIcsUrl = (maybeCreatedAt, meetingUrl, teamName) => {
+  const createdAt = ensureDate(maybeCreatedAt);
   const baseUrl = meetingUrl.substr(0, meetingUrl.indexOf('/meeting'));
   return `${baseUrl}/email/createics?teamName=${teamName}&createdAt=${createdAt.getTime()}&meetingUrl=${meetingUrl}`;
 };
