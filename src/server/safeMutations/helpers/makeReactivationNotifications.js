@@ -18,6 +18,7 @@ const makeReactivationNotifications = (notifications, reactivatedUsers, teamMemb
     const rejoinNotification = {
       teamName,
       preferredName,
+      teamId: notification.teamId,
       type: REJOIN_TEAM
     };
     restOfTeamUserIds.forEach((notificationUserId) => {

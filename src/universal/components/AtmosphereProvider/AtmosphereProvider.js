@@ -1,8 +1,15 @@
 import PropTypes from 'prop-types';
 import {Children, Component} from 'react';
 import {connect} from 'react-redux';
+import Atmosphere from 'universal/Atmosphere';
 
 const mapStateToProps = (state) => ({authToken: state.auth.token});
+
+let atmosphere = new Atmosphere();
+
+export const resetAtmosphere = () => {
+  atmosphere = new Atmosphere();
+};
 
 class AtmosphereProvider extends Component {
   static childContextTypes = {
@@ -10,26 +17,25 @@ class AtmosphereProvider extends Component {
   };
 
   static propTypes = {
-    atmosphere: PropTypes.object.isRequired,
     authToken: PropTypes.string,
     children: PropTypes.element.isRequired
   };
 
   getChildContext() {
     return {
-      atmosphere: this.props.atmosphere
+      atmosphere
     };
   }
 
   componentWillMount() {
-    const {atmosphere, authToken} = this.props;
+    const {authToken} = this.props;
     if (authToken) {
       atmosphere.setAuthToken(authToken);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const {atmosphere, authToken} = nextProps;
+    const {authToken} = nextProps;
     if (this.props.authToken !== authToken) {
       atmosphere.setAuthToken(authToken);
     }
