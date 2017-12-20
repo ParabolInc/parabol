@@ -72,6 +72,7 @@ const DropdownInput = (props) => {
       {label && <FieldLabel fieldSize={fieldSize} label={label} htmlFor={name} indent />}
       <div className={fieldInputStyles} tabIndex="1">
         <span>{orgName}</span>
+        {org.tier === PRO && <TagPro />}
         {!disabled &&
           <Menu
             originAnchor={originAnchor}
