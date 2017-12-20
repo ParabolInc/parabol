@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
+import getInviterInfoAndTeamName from 'server/graphql/mutations/helpers/inviteTeamMembers/getInviterInfoAndTeamName';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 

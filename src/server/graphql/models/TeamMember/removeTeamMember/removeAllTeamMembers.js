@@ -7,7 +7,7 @@ import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
 import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
-const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
+const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => {
   const {isKickout} = options;
   const r = getRethink();
   const now = new Date();
@@ -54,8 +54,8 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
     });
 
   // assign active projects to the team lead
-  const {changedProviders, newTMS, teams} = await r({
-    teamMember: r.table('TeamMember')
+  const {changedProviders, newTMS, teamMembers, teams} = await r({
+    teamMembers: r.table('TeamMember')
       .getAll(r.args(teamMemberIds), {index: 'id'})
       .update({
         isNotRemoved: false,
@@ -134,7 +134,7 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
     await archiveProjectsForManyRepos(repoChanges);
   }
   getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, newTMS)});
-  return true;
+  return teamMembers;
 };
 
 export default removeAllTeamMembers;

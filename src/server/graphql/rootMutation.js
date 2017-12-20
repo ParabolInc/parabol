@@ -59,6 +59,7 @@ import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg';
 import addTeam from 'server/graphql/mutations/addTeam';
 import updateTeamName from 'server/graphql/mutations/updateTeamName';
 import createFirstTeam from 'server/graphql/mutations/createFirstTeam';
+import removeOrgUser from 'server/graphql/mutations/removeOrgUser';
 
 const rootFields = Object.assign({},
   organization,
@@ -108,6 +109,7 @@ export default new GraphQLObjectType({
     removeProvider,
     removeSlackChannel,
     removeGitHubRepo,
+    removeOrgUser,
     removeTeamMember,
     requestFacilitator,
     resendTeamInvite,

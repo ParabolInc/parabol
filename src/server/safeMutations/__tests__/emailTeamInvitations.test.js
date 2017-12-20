@@ -6,9 +6,9 @@ import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import newInvitee from 'server/__tests__/utils/newInvitee';
 import getRethink from 'server/database/rethinkDriver';
-import * as createEmailPromises from 'server/graphql/models/Invitation/inviteTeamMembers/createEmailPromises';
-import * as hashInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/hashInviteTokenKey';
-import * as resolveSentEmails from 'server/graphql/models/Invitation/inviteTeamMembers/resolveSentEmails';
+import * as createEmailPromises from 'server/graphql/mutations/helpers/inviteTeamMembers/createEmailPromises';
+import * as hashInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamMembers/hashInviteTokenKey';
+import * as resolveSentEmails from 'server/graphql/mutations/helpers/inviteTeamMembers/resolveSentEmails';
 import emailTeamInvitations from 'server/safeMutations/emailTeamInvitations';
 
 MockDate.set(__now);
