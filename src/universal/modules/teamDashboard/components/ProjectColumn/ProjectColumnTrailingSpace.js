@@ -14,7 +14,7 @@ type Props = {
   connectDropTarget: (node: Node) => Node,
   area: string,
   atmosphere: Object, // TODO: atmosphere needs a type definition
-  lastProject: Project,
+  projects: Array<Project>,
   status: string
 };
 
@@ -22,7 +22,8 @@ let previousLastProjectId = null;
 let previousDraggedProjectId = null;
 const spec = {
   hover: (props: Props, monitor) => {
-    const {area, atmosphere, lastProject, status} = props;
+    const {area, atmosphere, projects, status} = props;
+    const lastProject = projects[projects.length - 1];
     const draggedProject = monitor.getItem();
 
     if (!monitor.isOver({shallow: true})) {
@@ -40,8 +41,8 @@ const spec = {
     previousLastProjectId = lastProject && lastProject.id;
 
     const sortOrder = sortOrderBetween(lastProject, null, draggedProject, false);
-
-    const noActionNeeded = sortOrder === draggedProject.sortOrder && draggedProject.status === status;
+    const isDraggedInColumn = Boolean(projects.find((p) => p.id === draggedProject.id));
+    const noActionNeeded = isDraggedInColumn && sortOrder === draggedProject.sortOrder && draggedProject.status === status;
     if (noActionNeeded) {
       return;
     }

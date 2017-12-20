@@ -132,19 +132,20 @@ class ProjectColumn extends Component {
    * `before` - whether the dragged project is being inserted before (true) or
    * after (false) the target project.
    */
-  insertProject = (draggedProject, targetProject, before) => {
+  insertProject = (draggedProjectId, targetProject, before) => {
     const {area, atmosphere, projects, status} = this.props;
     const targetIndex = projects.findIndex((p) => p.id === targetProject.id);
     // `boundingProject` is the project which sandwiches the dragged project on
     // the opposite side of the target project.  When the target project is in
     // the front or back of the list, this will be `undefined`.
     const boundingProject = projects[targetIndex + (before ? -1 : 1)];
+    const draggedProject = projects.find((p) => p.id === draggedProjectId);
     const sortOrder = sortOrderBetween(targetProject, boundingProject, draggedProject, before);
-    const noActionNeeded = sortOrder === draggedProject.sortOrder && draggedProject.status === status;
+    const noActionNeeded = draggedProject && sortOrder === draggedProject.sortOrder && draggedProject.status === status;
     if (noActionNeeded) {
       return;
     }
-    const updatedProject = {id: draggedProject.id, sortOrder, status};
+    const updatedProject = {id: draggedProjectId, sortOrder, status};
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
@@ -210,12 +211,12 @@ class ProjectColumn extends Component {
                 area={area}
                 project={project}
                 myUserId={atmosphere.userId}
-                insert={(draggedProject, before) => this.insertProject(draggedProject, project, before)}
+                insert={(draggedProjectId, before) => this.insertProject(draggedProjectId, project, before)}
               />
             ))}
             <ProjectColumnTrailingSpace
               area={area}
-              lastProject={projects[projects.length - 1]}
+              projects={projects}
               status={status}
             />
           </ScrollZone>
