@@ -1,18 +1,21 @@
+// @flow
+import type {Project} from 'universal/types/project';
+
 import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import withHotkey from 'react-hotkey-hoc';
 import {withRouter} from 'react-router';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import NullableProject from 'universal/components/NullableProject/NullableProject';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import sortOrderBetween from 'universal/dnd/sortOrderBetween';
 import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
 
-const makeCards = (array, myUserId, itemStyle, handleAddProject) => {
-  return array.map((project) => {
+const makeCards = (projects, myUserId, itemStyle, handleAddProject) => {
+  return projects.map((project) => {
     const {id} = project;
     const key = `$outcomeCard${id}`;
     return (
@@ -43,19 +46,33 @@ const makePlaceholders = (length, itemStyle) => {
   /* eslint-enable */
 };
 
-class MeetingAgendaCards extends Component {
+type Props = {
+  agendaId: string,
+  atmosphere: Object, // TODO: atmosphere type
+  bindHotkey: (key: string, cb: () => void) => void,
+  history: Object,
+  projects: Project[],
+  styles: Object,
+  teamId: string
+};
+
+class MeetingAgendaCards extends Component<Props> {
   componentWillMount() {
     const {bindHotkey} = this.props;
     bindHotkey('p', this.handleAddProject());
   }
 
   handleAddProject = (content) => () => {
-    const {atmosphere, teamId, agendaId} = this.props;
+    const {agendaId, atmosphere, projects, teamId} = this.props;
     const {userId} = atmosphere;
+    const maybeLastProject = projects[projects.length - 1];
+    const sortOrder = sortOrderBetween(
+      maybeLastProject, null, null, false
+    );
     const newProject = {
       content,
       status: ACTIVE,
-      sortOrder: 0,
+      sortOrder,
       agendaId,
       userId,
       teamId
@@ -81,16 +98,6 @@ class MeetingAgendaCards extends Component {
     );
   }
 }
-
-MeetingAgendaCards.propTypes = {
-  agendaId: PropTypes.string.isRequired,
-  atmosphere: PropTypes.object.isRequired,
-  bindHotkey: PropTypes.func,
-  history: PropTypes.object.isRequired,
-  projects: PropTypes.array.isRequired,
-  styles: PropTypes.object,
-  teamId: PropTypes.string.isRequired
-};
 
 const styleThunk = () => ({
   root: {

@@ -10,23 +10,26 @@ type Sortable = {
 
 /**
  * Computes the sort order of a project to be sandwiched between
- * `target` and `boundng`.
+ * `target` and `bounding`.
  */
 export default function sortOrderBetween(
   target: ?Sortable,
-  boundng: ?Sortable,
-  dragged: Sortable,
+  bounding: ?Sortable,
+  toInsert: ?Sortable,
   before: boolean
 ): number {
-  if (target == null && boundng == null) {
-    return dragged.sortOrder;
-  } else if (target == null) {
-    throw new Error('`target` cannot be null if `boundng` is not null');
+  if (target == null && bounding == null && toInsert == null) {
+    return 0;
   }
-  if (boundng == null) {
+  if (target == null && bounding == null && toInsert != null) {
+    return toInsert.sortOrder;
+  } else if (target == null) {
+    throw new Error('`target` cannot be null if `bounding` is not null');
+  }
+  if (bounding == null) {
     return target.sortOrder + ((SORT_STEP + dndNoise()) * (before ? 1 : -1));
   }
-  return boundng.id === dragged.id
-    ? boundng.sortOrder
-    : (boundng.sortOrder + target.sortOrder) / 2 + dndNoise();
+  return toInsert && toInsert.id === bounding.id
+    ? bounding.sortOrder
+    : (bounding.sortOrder + target.sortOrder) / 2 + dndNoise();
 }
