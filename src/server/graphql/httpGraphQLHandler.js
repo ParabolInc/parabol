@@ -1,6 +1,6 @@
 import {graphql} from 'graphql';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
-import IntranetSchema from './intranetSchema';
+import IntranetSchema from 'server/graphql/intranetSchema/intranetSchema';
 import Schema from './rootSchema';
 
 export default (exchange, sharedDataLoader) => async (req, res) => {
