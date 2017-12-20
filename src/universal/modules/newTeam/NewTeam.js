@@ -104,6 +104,7 @@ export default createFragmentContainer(
       organizations {
         id
         name
+        tier
       }
     }
   `

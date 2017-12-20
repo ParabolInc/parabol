@@ -1,13 +1,16 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
-import ui from 'universal/styles/ui';
-import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
+import TagPro from 'universal/components/Tag/TagPro';
 import {Menu, MenuItem} from 'universal/modules/menu';
+import {textOverflow} from 'universal/styles/helpers';
+import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {PRO} from 'universal/utils/constants';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -47,7 +50,12 @@ const DropdownInput = (props) => {
         <MenuItem
           isActive={value === anOrg.id}
           key={`orgDropdownMenuItem${anOrg.id}`}
-          label={anOrg.name}
+          label={
+            <span className={css(styles.orgNameMenuItem)}>
+              <span>{anOrg.name}</span>
+              {anOrg.tier === PRO && <TagPro />}
+            </span>
+          }
           onClick={() => {
             onChange(anOrg.id);
           }}
@@ -125,6 +133,13 @@ const styleThunk = (theme, {fieldSize}) => {
       borderTop: `.0625rem solid ${ui.menuBorderColor}`,
       padding: '.5rem .5rem 0',
       width: '100%'
+    },
+
+    orgNameMenuItem: {
+      ...textOverflow,
+      fontSize: ui.menuItemFontSize,
+      lineHeight: ui.menuItemHeight,
+      padding: `0 ${ui.menuGutterHorizontal}`
     }
   });
 };
