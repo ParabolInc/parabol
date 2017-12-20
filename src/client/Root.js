@@ -18,6 +18,5 @@ export default function Root({store}) {
 }
 
 Root.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
   store: PropTypes.object.isRequired
 };

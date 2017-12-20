@@ -16,20 +16,21 @@ const mutation = graphql`
   }
 `;
 
+
 const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {teamId},
     optimisticUpdater: (store) => {
       const team = store.get(teamId);
+      const meetingId = team.getValue('meetingId');
+      history.push(`/summary/${meetingId}`);
       team
         .setValue(null, 'activeFacilitator')
         .setValue(SUMMARY, 'facilitatorPhase')
         .setValue(null, 'facilitatorPhaseItem')
         .setValue(SUMMARY, 'meetingPhase')
         .setValue(null, 'meetingPhaseItem');
-      const meetingId = team.getValue('meetingId');
-      history.push(`/summary/${meetingId}`);
     },
     onCompleted,
     onError
