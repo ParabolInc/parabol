@@ -9,7 +9,8 @@ describe('makeReactivationNotifications', () => {
   test('creates a notification for the reactivated user giving them a new authToken', () => {
     // SETUP
     const notifications = [{
-      id: 1
+      id: 1,
+      teamId: 'team123'
     }];
     const reactivatedUsers = [{
       id: 1,
@@ -30,7 +31,8 @@ describe('makeReactivationNotifications', () => {
       preferredName: 'One'
     }];
     const notifications = [{
-      id: 1
+      id: 1,
+      teamId: 'team123'
     }];
     const teamMembers = [
       {id: '2:team456', preferredName: 'Two', userId: 2, isNotRemoved: true},

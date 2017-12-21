@@ -5,6 +5,7 @@ Object {
   "1": Array [
     Object {
       "id": 1,
+      "teamId": "team123",
     },
   ],
 }
@@ -15,11 +16,13 @@ Object {
   "1": Array [
     Object {
       "id": 1,
+      "teamId": "team123",
     },
   ],
   "2": Array [
     Object {
       "preferredName": "One",
+      "teamId": "team123",
       "teamName": "The 456s",
       "type": "REJOIN_TEAM",
     },
@@ -27,6 +30,7 @@ Object {
   "3": Array [
     Object {
       "preferredName": "One",
+      "teamId": "team123",
       "teamName": "The 456s",
       "type": "REJOIN_TEAM",
     },
