@@ -73,7 +73,7 @@ DraggableProject.propTypes = {
   connectDragSource: PropTypes.func,
   connectDragPreview: PropTypes.func,
   connectDropTarget: PropTypes.func.isRequired,
-  insert: PropTypes.func.isRequired,
+  insertProject: PropTypes.func.isRequired,
   isDragging: PropTypes.bool,
   isPreview: PropTypes.bool,
   myUserId: PropTypes.string,
@@ -100,11 +100,8 @@ const projectDragCollect = (connectSource, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-let lastDraggedProjectId;
-let lastDropTargetProjectId;
-let lastBefore;
 const handleProjectHover = (props, monitor, component) => {
-  const {insert, project} = props;
+  const {insertProject, project} = props;
   const dropTargetProjectId = project.id;
   const draggedProject = monitor.getItem();
   const draggedProjectId = draggedProject.id;
@@ -123,28 +120,7 @@ const handleProjectHover = (props, monitor, component) => {
   const dropTargetMidpoint = dropTargetTop + (dropTargetHeight / 2);
   const before = mouseY < dropTargetMidpoint;
 
-  // We're sort of memoizing here, since this hover function gets called
-  // constantly during a drag operation; if the last dragged project and drop
-  // target projects are the same with the same before/after relationship, then
-  // we don't need to re-insert them.
-  if (!monitor.isOver({shallow: true})) {
-    lastDraggedProjectId = null;
-    lastDropTargetProjectId = null;
-    lastBefore = null;
-    return;
-  }
-  if (
-    lastDraggedProjectId === draggedProjectId &&
-    dropTargetProjectId === lastDropTargetProjectId &&
-    before === lastBefore
-  ) {
-    return;
-  }
-  lastDraggedProjectId = draggedProjectId;
-  lastDropTargetProjectId = dropTargetProjectId;
-  lastBefore = before;
-
-  insert(draggedProjectId, before);
+  insertProject(draggedProjectId, dropTargetProjectId, before);
 };
 
 const projectDropCollect = (connect) => ({

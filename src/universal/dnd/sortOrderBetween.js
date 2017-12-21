@@ -1,34 +1,30 @@
 // @flow
 
+import type {Project} from 'universal/types/project';
 import {SORT_STEP} from 'universal/utils/constants';
 import dndNoise from 'universal/utils/dndNoise';
 
-type Sortable = {
-  id: string,
-  sortOrder: number
+type Options = {
+  isInsert: ?boolean,
+  boundedOffset: ?number
 };
 
 /**
- * Computes the sort order of a project to be sandwiched between
- * `target` and `boundng`.
+ * Computes the sort order of a dragged project
  */
-export default function sortOrderBetween(
-  target: ?Sortable,
-  boundng: ?Sortable,
-  dragged: Sortable,
-  before: boolean
-): number {
-  if (target == null && boundng == null) {
-    // if we have the chance to reset the decimals, do it!
-    return SORT_STEP;
-  } else if (target == null) {
-    throw new Error('`target` cannot be null if `boundng` is not null');
+export default function sortOrderBetween(projects: Array<Project>, desiredIdx: number, options: Options = {}): number {
+  if (projects.length === 0) {
+    return SORT_STEP + dndNoise();
   }
-  if (boundng == null) {
-    return target.sortOrder + ((SORT_STEP + dndNoise()) * (before ? 1 : -1));
+  if (desiredIdx === 0) {
+    return projects[0].sortOrder + SORT_STEP + dndNoise();
   }
-  // dragged is undefined if it has moved columns mid-drag
-  return boundng.id === (dragged && dragged.id)
-    ? boundng.sortOrder
-    : (boundng.sortOrder + target.sortOrder) / 2 + dndNoise();
+
+  const {isInsert} = options;
+  const boundedOffset = isInsert ? -1 : options.boundedOffset;
+  const maxLen = projects.length + (isInsert ? 0 : -1);
+  if (desiredIdx === maxLen) {
+    return projects[projects.length - 1].sortOrder - SORT_STEP + dndNoise();
+  }
+  return (projects[desiredIdx].sortOrder + projects[desiredIdx + boundedOffset].sortOrder) / 2 + dndNoise();
 }

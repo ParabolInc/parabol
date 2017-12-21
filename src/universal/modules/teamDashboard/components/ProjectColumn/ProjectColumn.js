@@ -132,20 +132,33 @@ class ProjectColumn extends Component {
    * `before` - whether the dragged project is being inserted before (true) or
    * after (false) the target project.
    */
-  insertProject = (draggedProjectId, targetProject, before) => {
+  insertProject = (draggedProjectId, targetProjectId, topOfTarget) => {
     const {area, atmosphere, projects, status} = this.props;
-    const targetIndex = projects.findIndex((p) => p.id === targetProject.id);
-    // `boundingProject` is the project which sandwiches the dragged project on
-    // the opposite side of the target project.  When the target project is in
-    // the front or back of the list, this will be `undefined`.
-    const boundingProject = projects[targetIndex + (before ? -1 : 1)];
-    const draggedProject = projects.find((p) => p.id === draggedProjectId);
-    const sortOrder = sortOrderBetween(targetProject, boundingProject, draggedProject, before);
-    const noActionNeeded = draggedProject && sortOrder === draggedProject.sortOrder && draggedProject.status === status;
-    if (noActionNeeded) {
-      return;
+    let updatedProject;
+    if (!targetProjectId) {
+      // handle trailing space
+      const targetProjectIdx = projects.length - 1;
+      const lastProject = projects[targetProjectIdx];
+      if (lastProject && lastProject.id === draggedProjectId) return;
+      const sortOrder = sortOrderBetween(projects, projects.length, {isInsert: true});
+      updatedProject = {id: draggedProjectId, sortOrder, status};
+    } else {
+      const targetProjectIdx = projects.findIndex((p) => p.id === targetProjectId);
+      const draggedProjectIdx = projects.findIndex((p) => p.id === draggedProjectId);
+      if (draggedProjectIdx === -1) {
+        // handle different column
+        const desiredProjectIdx = topOfTarget ? targetProjectIdx : targetProjectIdx + 1;
+        const sortOrder = sortOrderBetween(projects, desiredProjectIdx, {isInsert: true});
+        updatedProject = {id: draggedProjectId, sortOrder, status};
+      } else {
+        // handle same column
+        const draggedIsBefore = draggedProjectIdx < targetProjectIdx;
+        if (draggedIsBefore === topOfTarget || draggedProjectIdx === targetProjectIdx) return;
+        const boundedOffset = draggedIsBefore ? 1 : -1;
+        const sortOrder = sortOrderBetween(projects, targetProjectIdx, {boundedOffset});
+        updatedProject = {id: draggedProjectId, sortOrder};
+      }
     }
-    const updatedProject = {id: draggedProjectId, sortOrder, status};
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
@@ -211,12 +224,12 @@ class ProjectColumn extends Component {
                 area={area}
                 project={project}
                 myUserId={atmosphere.userId}
-                insert={(draggedProjectId, before) => this.insertProject(draggedProjectId, project, before)}
+                insertProject={this.insertProject}
               />
             ))}
             <ProjectColumnTrailingSpace
               area={area}
-              projects={projects}
+              insertProject={this.insertProject}
               status={status}
             />
           </ScrollZone>
