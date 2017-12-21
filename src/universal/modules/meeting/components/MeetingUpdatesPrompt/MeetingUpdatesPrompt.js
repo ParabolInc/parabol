@@ -14,8 +14,8 @@ const MeetingUpdatesPrompt = (props) => {
   } = props;
   const {teamMembers} = team;
   const currentTeamMember = teamMembers[localPhaseItem - 1];
-  const {isSelf: isMyMeetingSection, isCheckedIn} = currentTeamMember;
-  const isCheckedInFalse = Boolean(isCheckedIn === false);
+  const {isSelf: isMyMeetingSection} = currentTeamMember;
+  const isCheckedInFalse = currentTeamMember.isCheckedIn === false;
   const question = updateUserHasProjects ? 'what’s changed with your tasks' : 'what are you working on';
   const headingHere = <span>{currentTeamMember.preferredName}, <i>{question}</i>{'?'}</span>;
   const questionNotHere = updateUserHasProjects
@@ -29,7 +29,9 @@ const MeetingUpdatesPrompt = (props) => {
       avatar={currentTeamMember.picture}
       heading={heading}
       helpText={isMyMeetingSection ?
-        <HelpTextMyRound /> :
+        <HelpTextMyRound
+          updateUserHasProjects={updateUserHasProjects}
+        /> :
         <HelpTextForTeam
           agendaInputRef={agendaInputRef}
           currentTeamMember={currentTeamMember}
