@@ -24,7 +24,7 @@ import dndNoise from 'universal/utils/dndNoise';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
-import ProjectColumnTrailingSpace from './ProjectColumnTrailingSpace';
+import ProjectColumnDropZone from './ProjectColumnDropZone';
 
 // The `ScrollZone` component manages an overflowed block-level element,
 // scrolling its contents when another element is dragged close to its edges.
@@ -141,10 +141,6 @@ class ProjectColumn extends Component {
     // the front or back of the list, this will be `undefined`.
     const boundingProject = projects[targetIndex + (before ? -1 : 1)];
     const sortOrder = sortOrderBetween(targetProject, boundingProject, draggedProject, before);
-    const noActionNeeded = sortOrder === draggedProject.sortOrder && draggedProject.status === status;
-    if (noActionNeeded) {
-      return;
-    }
     const updatedProject = {id: draggedProject.id, sortOrder, status};
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
@@ -214,7 +210,7 @@ class ProjectColumn extends Component {
                 insert={(draggedProject, before) => this.insertProject(draggedProject, project, before)}
               />
             ))}
-            <ProjectColumnTrailingSpace
+            <ProjectColumnDropZone
               area={area}
               lastProject={projects[projects.length - 1]}
               status={status}

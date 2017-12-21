@@ -1,7 +1,13 @@
-import PropTypes from 'prop-types';
+// @flow
+import type {Node} from 'react';
+import type {Project} from 'universal/types/project';
+import type {UserID} from 'universal/types/user';
+
 import React, { Component } from 'react';
 import {findDOMNode} from 'react-dom';
+import {graphql} from 'react-relay';
 import NullableProject from 'universal/components/NullableProject/NullableProject';
+import withDragCache, {DragCache} from 'universal/dnd/withDragCache';
 import {PROJECT} from 'universal/utils/constants';
 import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
@@ -16,7 +22,20 @@ const importantProjectProps = [
   'integration'
 ];
 
-class DraggableProject extends Component {
+type Props = {
+  area: string,
+  connectDragSource: (node: Node) => Node,
+  connectDragPreview: (node: Node) => Node,
+  connectDropTarget: (node: Node) => Node,
+  dragCache: DragCache,
+  insert: (project: Project, before: boolean) => void,
+  isDragging: boolean,
+  isPreview: boolean,
+  myUserId: UserID,
+  project: Project
+};
+
+class DraggableProject extends Component<Props> {
   componentDidMount() {
     const {connectDragPreview, isPreview} = this.props;
     if (!isPreview) {
@@ -67,24 +86,6 @@ class DraggableProject extends Component {
   }
 }
 
-
-DraggableProject.propTypes = {
-  area: PropTypes.string,
-  connectDragSource: PropTypes.func,
-  connectDragPreview: PropTypes.func,
-  connectDropTarget: PropTypes.func.isRequired,
-  insert: PropTypes.func.isRequired,
-  isDragging: PropTypes.bool,
-  isPreview: PropTypes.bool,
-  myUserId: PropTypes.string,
-  project: PropTypes.shape({
-    id: PropTypes.string,
-    content: PropTypes.string,
-    status: PropTypes.string,
-    teamMemberId: PropTypes.string
-  })
-};
-
 const projectDragSpec = {
   beginDrag(props) {
     return props.project;
@@ -100,49 +101,38 @@ const projectDragCollect = (connectSource, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-let lastDraggedProjectId;
-let lastDropTargetProjectId;
-let lastBefore;
-const handleProjectHover = (props, monitor, component) => {
-  const {insert, project} = props;
+const handleProjectHover = (props: Props, monitor, component) => {
+  const {dragCache, insert, project} = props;
   const dropTargetProjectId = project.id;
   const draggedProject = monitor.getItem();
   const draggedProjectId = draggedProject.id;
 
-  // Don't drag-and-drop on ourselves
+  if (!monitor.isOver({shallow: true})) {
+    dragCache.clear();
+    return;
+  }
+
   if (draggedProjectId === dropTargetProjectId) {
     return;
   }
 
   // Compute whether I am dropping "before" or "after" the card.
   const {y: mouseY} = monitor.getClientOffset();
+  const dropTargetDOMNode = findDOMNode(component); // eslint-disable-line react/no-find-dom-node
+  if (!dropTargetDOMNode || dropTargetDOMNode instanceof Text) {
+    return;
+  }
   const {
     top: dropTargetTop,
     height: dropTargetHeight
-  } = findDOMNode(component).getBoundingClientRect(); // eslint-disable-line react/no-find-dom-node
+  } = dropTargetDOMNode.getBoundingClientRect();
   const dropTargetMidpoint = dropTargetTop + (dropTargetHeight / 2);
   const before = mouseY < dropTargetMidpoint;
 
-  // We're sort of memoizing here, since this hover function gets called
-  // constantly during a drag operation; if the last dragged project and drop
-  // target projects are the same with the same before/after relationship, then
-  // we don't need to re-insert them.
-  if (!monitor.isOver({shallow: true})) {
-    lastDraggedProjectId = null;
-    lastDropTargetProjectId = null;
-    lastBefore = null;
+  if (dragCache.isSameDrag({draggedProjectId, before})) {
     return;
   }
-  if (
-    lastDraggedProjectId === draggedProjectId &&
-    dropTargetProjectId === lastDropTargetProjectId &&
-    before === lastBefore
-  ) {
-    return;
-  }
-  lastDraggedProjectId = draggedProjectId;
-  lastDropTargetProjectId = dropTargetProjectId;
-  lastBefore = before;
+  dragCache.update({draggedProjectId, before});
 
   insert(draggedProject, before);
 };
@@ -156,8 +146,10 @@ const projectDropSpec = {
 };
 
 export default createFragmentContainer(
-  dragSource(PROJECT, projectDragSpec, projectDragCollect)(
-    dropTarget(PROJECT, projectDropSpec, projectDropCollect)(DraggableProject)
+  withDragCache(
+    dragSource(PROJECT, projectDragSpec, projectDragCollect)(
+      dropTarget(PROJECT, projectDropSpec, projectDropCollect)(DraggableProject)
+    )
   ),
   graphql`
     fragment DraggableProject_project on Project {
