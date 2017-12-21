@@ -10,7 +10,7 @@ const HelpTextForTeam = (props) => {
   const handleAgendaControl = () => {
     agendaInputRef.focus();
   };
-  const isCheckedInFalse = Boolean(currentTeamMember.isCheckedIn === false);
+  const isCheckedInFalse = currentTeamMember.isCheckedIn === false;
   return (
     <span className={css(styles.helpText)}>
       <span>{isCheckedInFalse ? '(' : `(${currentTeamMember.preferredName} is sharing. `}</span>
@@ -21,7 +21,7 @@ const HelpTextForTeam = (props) => {
 };
 
 HelpTextForTeam.propTypes = {
-  agendaInputRef: PropTypes.element.isRequired,
+  agendaInputRef: PropTypes.instanceOf(Element),
   styles: PropTypes.object,
   currentTeamMember: PropTypes.object.isRequired
 };

@@ -26,12 +26,13 @@ class MeetingUpdates extends Component {
   }
 
   filterProjects(props) {
-    const {localPhaseItem, viewer: {projects, team: {teamMembers}}} = props;
+    const {localPhaseItem, setUpdateUserHasProjects, viewer: {projects, team: {teamMembers}}} = props;
     const currentTeamMember = teamMembers[localPhaseItem - 1];
     const edges = projects.edges.filter(({node}) => node.teamMember.id === currentTeamMember.id);
     this.setState({
       projects: {edges}
     });
+    setUpdateUserHasProjects(Boolean(edges.length));
   }
 
   render() {
@@ -86,6 +87,7 @@ MeetingUpdates.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
   showMoveMeetingControls: PropTypes.bool,
+  setUpdateUserHasProjects: PropTypes.func.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
 };

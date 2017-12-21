@@ -9,16 +9,16 @@ const MeetingUpdatesPrompt = (props) => {
   const {
     agendaInputRef,
     localPhaseItem,
-    team
+    team,
+    updateUserHasProjects
   } = props;
   const {teamMembers} = team;
   const currentTeamMember = teamMembers[localPhaseItem - 1];
   const {isSelf: isMyMeetingSection, isCheckedIn} = currentTeamMember;
   const isCheckedInFalse = Boolean(isCheckedIn === false);
-  const userHasCards = true;
-  const question = userHasCards ? 'what’s changed with your tasks' : 'what are you working on';
+  const question = updateUserHasProjects ? 'what’s changed with your tasks' : 'what are you working on';
   const headingHere = <span>{currentTeamMember.preferredName}, <i>{question}</i>{'?'}</span>;
-  const questionNotHere = userHasCards
+  const questionNotHere = updateUserHasProjects
     ? `Any updates with ${currentTeamMember.preferredName}’s tasks`
     : `What is ${currentTeamMember.preferredName} working on`;
   const headingNotHere = <span><i>{questionNotHere}</i>{'?'}</span>;
@@ -39,10 +39,10 @@ const MeetingUpdatesPrompt = (props) => {
 };
 
 MeetingUpdatesPrompt.propTypes = {
-  agendaInputRef: PropTypes.element.isRequired,
+  agendaInputRef: PropTypes.instanceOf(Element),
   localPhaseItem: PropTypes.number.isRequired,
   team: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  updateUserHasProjects: PropTypes.bool
 };
 
 export default createFragmentContainer(

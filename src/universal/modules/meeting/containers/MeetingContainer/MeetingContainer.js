@@ -80,6 +80,8 @@ class MeetingContainer extends Component {
     onError: PropTypes.func.isRequired
   };
 
+  state = {updateUserHasProjects: null};
+
   componentWillMount() {
     const {
       atmosphere,
@@ -169,6 +171,12 @@ class MeetingContainer extends Component {
 
   setAgendaInputRef = (c) => {
     this.agendaInputRef = c;
+  };
+
+  setUpdateUserHasProjects = (updateUserHasProjects) => {
+    if (updateUserHasProjects !== this.state.updateUserHasProjects) {
+      this.setState({updateUserHasProjects});
+    }
   };
 
   electFacilitatorIfNone() {
@@ -332,6 +340,7 @@ class MeetingContainer extends Component {
               agendaInputRef={this.agendaInputRef}
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
+              updateUserHasProjects={this.state.updateUserHasProjects}
               team={team}
             />
             }
@@ -353,6 +362,7 @@ class MeetingContainer extends Component {
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
+            setUpdateUserHasProjects={this.setUpdateUserHasProjects}
             showMoveMeetingControls={showMoveMeetingControls}
             viewer={viewer}
           />
