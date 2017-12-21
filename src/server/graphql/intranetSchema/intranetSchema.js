@@ -10,7 +10,7 @@ const queryFields = {
   endOldMeetings,
   sendBatchNotificationEmails,
   intranetPing
-}
+};
 
 const query = new GraphQLObjectType({
   name: 'IntranetQuery',

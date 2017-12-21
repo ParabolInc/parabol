@@ -11,6 +11,9 @@ const UpdateOrgPayload = new GraphQLObjectType({
     },
     updatedOrgUser: {
       type: User
+    },
+    removedOrgUser: {
+      type: User
     }
   })
 });

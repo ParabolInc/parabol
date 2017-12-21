@@ -6,7 +6,7 @@ import TeamMember from 'server/graphql/types/TeamMember';
 const RemoveOrgUserPayload = new GraphQLObjectType({
   name: 'RemoveOrgUserPayload',
   fields: () => ({
-    inactivatedApprovals: {
+    inactivatedOrgApprovals: {
       type: new GraphQLList(OrgApproval)
     },
     organization: {

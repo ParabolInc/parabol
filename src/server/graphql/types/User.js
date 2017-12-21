@@ -163,7 +163,7 @@ const User = new GraphQLObjectType({
       description: 'the orgs and roles for this user on each',
       resolve: (source, args, {authToken}) => {
         const userId = getUserId(authToken);
-        return (userId === source.id) ? source.tms : undefined;
+        return (userId === source.id) ? source.userOrgs : undefined;
       }
     },
     welcomeSentAt: {

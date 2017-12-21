@@ -7,7 +7,7 @@ import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
 import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
 
-const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => {
+const removeAllTeamMembers = async (maybeTeamMemberIds, options) => {
   const {isKickout} = options;
   const r = getRethink();
   const now = new Date();
@@ -60,7 +60,7 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => 
       .update({
         isNotRemoved: false,
         updatedAt: now
-      }),
+      }, {returnChanges: true})('changes')('new_val').default([]),
     projects: r(teamIds).forEach((teamId) => {
       return r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
