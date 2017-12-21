@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
+import UpdateTeamPayload from 'server/graphql/types/UpdateTeamPayload';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, requireTeamLead, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamLead} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, TEAM_ARCHIVED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, TEAM_ARCHIVED, TEAM_UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const publishAuthTokensWithoutTeam = (userDocs) => {
@@ -29,22 +29,22 @@ const publishTeamArchivedNotifications = (notifications, subOptions) => {
 };
 
 export default {
-  type: ArchiveTeamPayload,
+  type: UpdateTeamPayload,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(source, {teamId}, {authToken, socket}) {
+  async resolve(source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
+    const operationId = dataLoader.share();
 
     // AUTH
     const userId = getUserId(authToken);
     const teamMemberId = toTeamMemberId(teamId, userId);
     await requireTeamLead(teamMemberId);
-    requireWebsocket(socket);
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', userId, {teamId});
@@ -100,7 +100,15 @@ export default {
     if (!teamResult) {
       throw new Error('Team was already archived');
     }
+
+    // the client doesn't care whether we hard deleted or archived. just tell them we archived so it removes from list
+    const team = {
+      ...teamResult,
+      isArchived: true
+    };
+    const teamUpdated = {team};
+    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated, operationId, mutatorId});
     publishAuthTokensWithoutTeam(userDocs);
-    return {team: teamResult};
+    return teamUpdated;
   }
 };

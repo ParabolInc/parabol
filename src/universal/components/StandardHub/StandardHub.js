@@ -1,38 +1,40 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {textOverflow} from 'universal/styles/helpers';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import FontAwesome from 'react-fontawesome';
+import {createFragmentContainer} from 'react-relay';
 import {NavLink} from 'react-router-dom';
 import Avatar from 'universal/components/Avatar/Avatar';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import Badge from 'universal/components/Badge/Badge';
 import {Menu, MenuItem} from 'universal/modules/menu';
+import {textOverflow} from 'universal/styles/helpers';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
+import appTheme from 'universal/styles/theme/appTheme';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'left'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'left'
+};
 
 const StandardHub = (props) => {
   const {
     email,
-    notificationsCount,
     picture,
     preferredName,
     history,
-    styles
+    styles,
+    viewer
   } = props;
-
-  const originAnchor = {
-    vertical: 'bottom',
-    horizontal: 'left'
-  };
-
-  const targetAnchor = {
-    vertical: 'top',
-    horizontal: 'left'
-  };
-
+  const notifications = viewer && viewer.notifications && viewer.notifications.edges;
+  const notificationsCount = notifications ? notifications.length : 0;
   const goToSettings = () =>
     history.push('/me/settings');
 
@@ -71,8 +73,7 @@ const StandardHub = (props) => {
 
   const notificationsStyles = css(
     styles.notifications,
-    notificationsCount > 0 && styles.notificationsWithBadge,
-    // location === '/me/notifications' && styles.notificationsActive
+    notificationsCount > 0 && styles.notificationsWithBadge
   );
 
   const iconStyle = {
@@ -99,9 +100,9 @@ const StandardHub = (props) => {
       >
         <FontAwesome name="bell" style={iconStyle} />
         {notificationsCount > 0 &&
-          <div className={css(styles.badgeBlock)}>
-            <Badge value={notificationsCount} />
-          </div>
+        <div className={css(styles.badgeBlock)}>
+          <Badge value={notificationsCount} />
+        </div>
         }
       </NavLink>
     </div>
@@ -114,7 +115,8 @@ StandardHub.propTypes = {
   picture: PropTypes.string,
   preferredName: PropTypes.string,
   history: PropTypes.object,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  viewer: PropTypes.object
 };
 
 const maxWidth = '6.5rem';
@@ -209,4 +211,17 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(StandardHub);
+export default createFragmentContainer(
+  withStyles(styleThunk)(StandardHub),
+  graphql`
+    fragment StandardHub_viewer on User {
+      notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
+        edges {
+          node {
+            id
+          }
+        }
+      }
+    }
+  `
+);

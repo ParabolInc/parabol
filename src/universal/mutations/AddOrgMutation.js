@@ -2,7 +2,7 @@ import {commitMutation} from 'react-relay';
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
 
 const mutation = graphql`
-  mutation AddOrgMutation($newTeam: TeamInput!, $invitees: [Invitee!], $orgName: String!) {
+  mutation AddOrgMutation($newTeam: NewTeamInput!, $invitees: [Invitee!], $orgName: String!) {
     addOrg(newTeam: $newTeam, invitees: $invitees, orgName: $orgName) {
       organization {
         id

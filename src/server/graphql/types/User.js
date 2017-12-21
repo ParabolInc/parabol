@@ -129,9 +129,15 @@ const User = new GraphQLObjectType({
     },
     teams: {
       type: new GraphQLList(Team),
-      description: 'all the teams the user is on',
-      resolve: (source, args, {authToken, dataLoader}) => {
-        return dataLoader.get('teams').loadMany(authToken.tms);
+      description: 'all the teams the user is on. Returns empty if the user is not the viewer.',
+      resolve: async (source, args, {authToken, dataLoader}) => {
+        const userId = getUserId(authToken);
+        if (userId !== source.id) {
+          return [];
+        }
+        const teams = await dataLoader.get('teams').loadMany(authToken.tms);
+        teams.sort((a, b) => a.name > b.name ? 1 : -1);
+        return teams;
       }
     },
     teamMember: {

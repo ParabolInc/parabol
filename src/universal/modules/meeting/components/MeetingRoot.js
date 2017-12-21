@@ -49,8 +49,7 @@ const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
   const {params: {localPhase, localPhaseItem, teamId}} = match;
   return (
     <QueryRenderer
-      // flush the meeting immediately so we can start a new one
-      cacheConfig={{ttl: 1000}}
+      cacheConfig={{ttl: 30000}}
       environment={atmosphere}
       query={query}
       variables={{teamId}}

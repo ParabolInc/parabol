@@ -8,9 +8,6 @@ import githubRepoAdded from 'server/graphql/subscriptions/githubRepoAdded';
 import githubRepoRemoved from 'server/graphql/subscriptions/githubRepoRemoved';
 import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemoved';
 import invoice from './models/Invoice/invoiceSubscription';
-import team from './models/Team/teamSubscription';
-import teamMember from './models/TeamMember/teamMemberSubscription';
-import user from './models/User/userSubscription';
 import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
 import integrationJoined from 'server/graphql/subscriptions/integrationJoined';
 import notificationsAdded from 'server/graphql/subscriptions/notificationsAdded';
@@ -33,12 +30,11 @@ import orgApprovalAdded from 'server/graphql/subscriptions/orgApprovalAdded';
 import invitationAdded from 'server/graphql/subscriptions/invitationAdded';
 import invitationRemoved from 'server/graphql/subscriptions/invitationRemoved';
 import invitationUpdated from 'server/graphql/subscriptions/invitationUpdated';
+import teamAdded from 'server/graphql/subscriptions/teamAdded';
+import teamUpdated from 'server/graphql/subscriptions/teamUpdated';
 
 const rootFields = Object.assign({},
   invoice,
-  team,
-  teamMember,
-  user
 );
 
 export default new GraphQLObjectType({
@@ -70,6 +66,8 @@ export default new GraphQLObjectType({
     slackChannelRemoved,
     providerAdded,
     providerRemoved,
+    teamAdded,
+    teamUpdated,
     teamMembersInvited,
     teamMemberAdded,
     teamMemberUpdated,

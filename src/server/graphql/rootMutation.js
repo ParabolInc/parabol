@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
 import organization from 'server/graphql/models/Organization/organizationMutation';
-import team from 'server/graphql/models/Team/teamMutation';
 import user from 'server/graphql/models/User/userMutation';
 import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
@@ -57,10 +56,12 @@ import updateProject from 'server/graphql/mutations/updateProject';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg';
+import addTeam from 'server/graphql/mutations/addTeam';
+import updateTeamName from 'server/graphql/mutations/updateTeamName';
+import createFirstTeam from 'server/graphql/mutations/createFirstTeam';
 
 const rootFields = Object.assign({},
   organization,
-  team,
   user
 );
 
@@ -75,12 +76,14 @@ export default new GraphQLObjectType({
     addOrg,
     addProvider,
     addSlackChannel,
+    addTeam,
     approveToOrg,
     archiveTeam,
     cancelApproval,
     cancelTeamInvite,
     clearNotification,
     connectSocket,
+    createFirstTeam,
     createGitHubIssue,
     createProject,
     deleteProject,
@@ -122,6 +125,7 @@ export default new GraphQLObjectType({
     updateOrg,
     updateCheckInQuestion,
     updateProject,
+    updateTeamName,
     upgradeToPro
   })
 });

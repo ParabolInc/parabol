@@ -5,10 +5,10 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import AtmosphereProvider from 'universal/components/AtmosphereProvider/AtmosphereProvider';
 import ActionContainer from 'universal/containers/Action/ActionContainer';
 
-export default function Root({store, atmosphere}) {
+export default function Root({store}) {
   return (
     <Provider store={store}>
-      <AtmosphereProvider atmosphere={atmosphere}>
+      <AtmosphereProvider>
         <Router>
           <ActionContainer />
         </Router>
@@ -18,6 +18,5 @@ export default function Root({store, atmosphere}) {
 }
 
 Root.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
   store: PropTypes.object.isRequired
 };

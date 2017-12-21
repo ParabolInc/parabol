@@ -6,7 +6,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {CHECKIN, MEETING_UPDATED} from 'universal/utils/constants';
+import {CHECKIN, MEETING_UPDATED, TEAM_UPDATED} from 'universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
@@ -20,7 +20,7 @@ export default {
       description: 'The team starting the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId, dataLoader}) {
+  async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const operationId = dataLoader.share();
 
@@ -65,7 +65,8 @@ export default {
     startSlackMeeting(teamId);
 
     const meetingUpdated = {team};
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
+    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated: meetingUpdated, mutatorId, operationId});
     return meetingUpdated;
   }
 };

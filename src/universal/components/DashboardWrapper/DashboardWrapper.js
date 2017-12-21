@@ -7,6 +7,8 @@ import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLa
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import TeamAddedSubscription from 'universal/subscriptions/TeamAddedSubscription';
+import TeamUpdatedSubscription from 'universal/subscriptions/TeamUpdatedSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
@@ -26,6 +28,8 @@ const query = graphql`
           }
         }
       }
+      ...DashSidebar_viewer
+      ...DashLayoutContainer_viewer
     }
   }
 `;
@@ -37,7 +41,9 @@ const newTeam = () => System.import('universal/modules/newTeam/containers/NewTea
 const subscriptions = [
   NewAuthTokenSubscription,
   NotificationsAddedSubscription,
-  NotificationsClearedSubscription
+  NotificationsClearedSubscription,
+  TeamAddedSubscription,
+  TeamUpdatedSubscription
 ];
 
 const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
@@ -52,10 +58,10 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
       render={({props: renderProps}) => {
         const notifications = (renderProps && renderProps.viewer) ?
           renderProps.viewer.notifications : undefined;
-        const notificationsCount = notifications && notifications.edges ? notifications.edges.length : 0;
+        const viewer = renderProps ? renderProps.viewer : null;
         return (
-          <DashLayoutContainer notifications={notifications}>
-            <DashSidebar notificationsCount={notificationsCount} />
+          <DashLayoutContainer viewer={viewer}>
+            <DashSidebar viewer={viewer} />
             <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
             <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} extraProps={{notifications}} />
             <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />

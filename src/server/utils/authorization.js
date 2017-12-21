@@ -18,9 +18,9 @@ export const getIsTeamLead = (teamMemberId) => {
 };
 
 export const requireAuth = (authToken) => {
-  const userId = getUserId(authToken);
-  if (userId) return userId;
-  throw errorObj({_error: 'Unauthorized. Must be logged in for this action.'});
+  if (!authToken) {
+    throw new Error('Unauthorized. Must be logged in for this action.');
+  }
 };
 
 /*

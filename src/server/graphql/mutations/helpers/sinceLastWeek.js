@@ -1,14 +1,3 @@
-import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
-import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
-import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
-
-export default {
-  addTeam,
-  createFirstTeam,
-  updateTeamName
-};
-
-
 // The since-last-week mega query
 // const updatedMeeting = await r.table('Meeting')
 //   .getAll(teamId, {index: 'teamId'})

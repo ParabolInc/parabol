@@ -25,7 +25,7 @@ const NotifyNewTeamMember = new GraphQLObjectType({
       type: Team,
       description: 'The team the invitee just joined',
       resolve: ({teamId}, args, {dataLoader}) => {
-        return dataLoader.get('Team').load(teamId);
+        return dataLoader.get('teams').load(teamId);
       }
     },
     preferredName: {

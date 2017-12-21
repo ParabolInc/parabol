@@ -9,7 +9,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, MEETING_UPDATED, PROJECT_UPDATED, SUMMARY} from 'universal/utils/constants';
+import {DONE, LOBBY, MEETING_UPDATED, PROJECT_UPDATED, SUMMARY, TEAM_UPDATED} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
@@ -21,7 +21,7 @@ export default {
       description: 'The team that will be having the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId, dataLoader}) {
+  async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const operationId = dataLoader.share();
 
@@ -84,14 +84,13 @@ export default {
           });
       });
     const updatedProjects = await getEndMeetingSortOrders(completedMeeting);
-    const {projectsToArchive} = await r({
+    const {projectsToArchive, team} = await r({
       updatedSortOrders: r(updatedProjects)
         .forEach((project) => {
           return r.table('Project').get(project('id')).update({
             sortOrder: project('sortOrder')
           });
         }),
-      // send to summary view
       team: r.table('Team').get(teamId)
         .update({
           facilitatorPhase: LOBBY,
@@ -100,7 +99,7 @@ export default {
           facilitatorPhaseItem: null,
           meetingPhaseItem: null,
           activeFacilitator: null
-        }),
+        }, {returnChanges: true})('changes')(0)('new_val'),
       agenda: r.table('AgendaItem').getAll(teamId, {index: 'teamId'})
         .update({
           isActive: false
@@ -130,7 +129,7 @@ export default {
         const projectUpdated = {project};
         // since this is from the meeting, we don't need to remove it from the user dash
         // because we are guaranteed they have a sub going for the team dash
-        getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated});
+        getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, mutatorId, operationId});
       });
     }
     const {meetingNumber} = completedMeeting;
@@ -141,17 +140,18 @@ export default {
     endSlackMeeting(meetingId, teamId);
 
     const summaryMeeting = {
-      id: teamId,
+      ...team,
       facilitatorPhase: SUMMARY,
       meetingPhase: SUMMARY,
-      facilitatorPhaseItem: null,
-      meetingPhaseItem: null,
       meetingId
     };
     const meetingUpdated = {team: summaryMeeting};
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated: meetingUpdated, mutatorId, operationId});
+    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
     sendEmailSummary(completedMeeting);
-    return meetingUpdated;
+
+    // send the truth to the meeting facilitator so we don't need to adjust the store in endMeetingMutation
+    return {team};
 
     // TODO maybe update team members via pubsub?
   }

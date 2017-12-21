@@ -8,7 +8,6 @@ export default function addTeamValidation() {
       fullName
     }],
     newTeam: {
-      id: requiredId,
       name: teamName,
       orgId: requiredId
     }

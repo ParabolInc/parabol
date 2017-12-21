@@ -1,5 +1,4 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -16,6 +15,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import AddOrgMutation from 'universal/mutations/AddOrgMutation';
+import AddTeamMutation from 'universal/mutations/AddTeamMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
@@ -82,20 +82,20 @@ class NewTeamForm extends Component {
       const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
       const parsedInvitees = parseEmailAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
-      const variables = {
-        newTeam: {
-          id: newTeamId,
-          name: teamName,
-          orgId
-        },
-        invitees
+      const newTeam = {
+        name: teamName,
+        orgId
       };
-      await cashay.mutate('addTeam', {variables});
-      dispatch(showSuccess({
-        title: 'Team successfully created!',
-        message: `Here's your new team dashboard for ${teamName}`
-      }));
-      history.push(`/team/${newTeamId}`);
+
+      const handleCompleted = (res) => {
+        const {addTeam: {team: {id: teamId}}} = res;
+        dispatch(showSuccess({
+          title: 'Team successfully created!',
+          message: `Here's your new team dashboard for ${teamName}`
+        }));
+        history.push(`/team/${teamId}`);
+      };
+      AddTeamMutation(atmosphere, newTeam, invitees, undefined, handleCompleted);
     }
   };
 
@@ -259,11 +259,13 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(reduxForm({form: 'newTeam', validate})(
-  connect(mapStateToProps)(
-    withRouter(withStyles(styleThunk)(
-      NewTeamForm)
+export default withAtmosphere(
+  reduxForm({form: 'newTeam', validate})(
+    connect(mapStateToProps)(
+      withRouter(withStyles(styleThunk)(
+        NewTeamForm
+      )
+      )
     )
   )
-)
 );

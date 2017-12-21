@@ -1,4 +1,5 @@
 import {cashay} from 'cashay';
+import {resetAtmosphere} from 'universal/components/AtmosphereProvider/AtmosphereProvider';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 import {removeAuthToken} from 'universal/redux/authDuck';
@@ -23,6 +24,7 @@ const signout = (atmosphere, dispatch, history) => {
     dispatch(showSuccess(signoutSuccess));
   }
   cashay.clear();
+  resetAtmosphere();
 };
 
 export default signout;

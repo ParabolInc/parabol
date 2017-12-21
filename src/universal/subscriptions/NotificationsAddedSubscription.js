@@ -77,7 +77,9 @@ const subscription = graphql`
         }
         ... on NotifyNewTeamMember {
           preferredName
-          teamName
+          team {
+            name
+          }
         }
         ... on NotifyVersionInfo {
           version

@@ -307,6 +307,31 @@ Object {
       },
     },
   ],
+  "teamUpdated": Array [
+    Object {
+      "channelId": 17,
+      "message": Object {
+        "mutatorId": undefined,
+        "operationId": 0,
+        "teamUpdated": Object {
+          "team": Object {
+            "activeFacilitator": null,
+            "facilitatorPhase": "lobby",
+            "facilitatorPhaseItem": null,
+            "id": 17,
+            "isArchived": true,
+            "isPaid": true,
+            "meetingId": null,
+            "meetingPhase": "lobby",
+            "meetingPhaseItem": null,
+            "name": "Team America",
+            "orgId": 8,
+            "tier": "personal",
+          },
+        },
+      },
+    },
+  ],
 }
 `;
 
@@ -348,6 +373,31 @@ Object {
       "channelId": 0,
       "message": Object {
         "newAuthToken": 2,
+      },
+    },
+  ],
+  "teamUpdated": Array [
+    Object {
+      "channelId": 3,
+      "message": Object {
+        "mutatorId": undefined,
+        "operationId": 0,
+        "teamUpdated": Object {
+          "team": Object {
+            "activeFacilitator": null,
+            "facilitatorPhase": "lobby",
+            "facilitatorPhaseItem": null,
+            "id": 3,
+            "isArchived": true,
+            "isPaid": true,
+            "meetingId": null,
+            "meetingPhase": "lobby",
+            "meetingPhaseItem": null,
+            "name": "The Lonely Ones",
+            "orgId": 4,
+            "tier": "personal",
+          },
+        },
       },
     },
   ],

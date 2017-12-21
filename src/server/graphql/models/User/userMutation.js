@@ -64,7 +64,8 @@ export default {
     },
     resolve(source, {contentType, contentLength}, {authToken}) {
       // AUTH
-      const userId = requireAuth(authToken);
+      requireAuth(authToken);
+      const userId = getUserId(authToken);
 
       // VALIDATION
       const ext = validateAvatarUpload(contentType, contentLength);

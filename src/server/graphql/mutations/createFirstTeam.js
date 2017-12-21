@@ -1,24 +1,24 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
-import {requireAuth} from 'server/utils/authorization';
+import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader';
+import CreateFirstTeamPayload from 'server/graphql/types/CreateFirstTeamPayload';
+import NewTeamInput from 'server/graphql/types/NewTeamInput';
+import {getUserId, requireAuth} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
-import addSeedProjects from './addSeedProjects';
-import createFirstTeamValidation from './createFirstTeamValidation';
-import createTeamAndLeader from './createTeamAndLeader';
-import TeamInput from 'server/graphql/types/TeamInput';
+import addSeedProjects from './helpers/addSeedProjects';
+import createFirstTeamValidation from './helpers/createFirstTeamValidation';
 
 export default {
-  // return the new JWT that has the new tms field
-  type: GraphQLID,
+  type: CreateFirstTeamPayload,
   description: 'Create a new team and add the first team member. Called from the welcome wizard',
   args: {
     newTeam: {
-      type: new GraphQLNonNull(TeamInput),
+      type: new GraphQLNonNull(NewTeamInput),
       description: 'The new team object with exactly 1 team member'
     }
   },
@@ -26,40 +26,37 @@ export default {
     const r = getRethink();
 
     // AUTH
-    const userId = requireAuth(authToken);
+    requireAuth(authToken);
+    const userId = getUserId(authToken);
 
     // VALIDATION
-    const {user, existingTeam} = await r({
-      user: r.table('User')
-        .get(userId)
-        .pluck('id', 'preferredName', 'userOrgs'),
-      existingTeam: r.table('Team').get(newTeam.id)('id').default(null)
-    });
+    const user = await r.table('User')
+      .get(userId)
+      .pluck('id', 'preferredName', 'userOrgs');
 
     if (user.userOrgs && user.userOrgs.length > 0) {
       throw new Error('cannot use createFirstTeam when already part of an org');
     }
 
-    if (existingTeam) {
-      throw new Error('Hmmm, that team id already exists, try again.');
-    }
-
     const schema = createFirstTeamValidation();
-    const {data, errors} = schema(newTeam);
+    const {data: {name}, errors} = schema(newTeam);
     handleSchemaErrors(errors);
 
     // RESOLUTION
     const orgId = shortid.generate();
-    const validNewTeam = {...data, orgId};
-    const {id: teamId} = validNewTeam;
-    const tms = [teamId];
+    const teamId = shortid.generate();
+    const validNewTeam = {id: teamId, orgId, name};
     const orgName = `${user.preferredName}’s Org`;
     await createNewOrg(orgId, orgName, userId);
-    await resolvePromiseObj({
+    const {newTeamUpdatedUser: {team, teamLead, tms}} = await resolvePromiseObj({
       newTeamUpdatedUser: createTeamAndLeader(userId, validNewTeam, true),
       seedTeam: addSeedProjects(userId, teamId)
     });
-    sendSegmentEvent('Welcome Step2 Completed', userId, {teamId: newTeam.id});
-    return tmsSignToken(authToken, tms);
+    sendSegmentEvent('Welcome Step2 Completed', userId, {teamId});
+    return {
+      team,
+      teamLead,
+      jwt: tmsSignToken(authToken, tms)
+    };
   }
 };

@@ -22,7 +22,7 @@ const AgendaAndProjects = (props) => {
           <AgendaHeader hideAgenda={hideAgenda} teamId={teamId} />
         </div>
         <div className={css(styles.projectsLayout)}>
-          <TeamProjectsHeaderContainer teamId={teamId} />
+          <TeamProjectsHeaderContainer team={team} />
         </div>
       </div>
       <div className={css(styles.agendaAndProjects)}>
@@ -91,6 +91,7 @@ export default createFragmentContainer(
         teamId: id
         teamName: name
         ...AgendaListAndInput_team
+        ...TeamProjectsHeaderContainer_team
       }
       teamMember(teamId: $teamId) {
         hideAgenda
