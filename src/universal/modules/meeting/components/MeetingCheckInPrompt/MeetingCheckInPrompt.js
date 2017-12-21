@@ -5,9 +5,9 @@ import MeetingCheckInGreeting from 'universal/modules/meeting/components/Meeting
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import CheckInQuestion from './CheckInQuestion';
 
-
 const MeetingCheckinPrompt = (props) => {
   const {
+    isFacilitating,
     localPhaseItem,
     team
   } = props;
@@ -15,8 +15,12 @@ const MeetingCheckinPrompt = (props) => {
   const currentMember = teamMembers[localPhaseItem - 1];
   const heading = (
     <div>
-      <MeetingCheckInGreeting currentName={currentMember.preferredName} team={team} />
-      <CheckInQuestion team={team} />
+      <MeetingCheckInGreeting
+        currentName={currentMember.preferredName}
+        isFacilitating={isFacilitating}
+        team={team}
+      />
+      <CheckInQuestion isFacilitating={isFacilitating} team={team} />
     </div>
   );
   return (
@@ -29,6 +33,7 @@ const MeetingCheckinPrompt = (props) => {
 };
 
 MeetingCheckinPrompt.propTypes = {
+  isFacilitating: PropTypes.bool.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
   team: PropTypes.object.isRequired
 };

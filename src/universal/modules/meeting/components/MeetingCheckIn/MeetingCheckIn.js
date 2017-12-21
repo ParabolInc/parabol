@@ -19,6 +19,7 @@ const MeetingCheckin = (props) => {
     atmosphere,
     facilitatorName,
     gotoNext,
+    isFacilitating,
     localPhaseItem,
     showMoveMeetingControls,
     submitMutation,
@@ -39,12 +40,13 @@ const MeetingCheckin = (props) => {
   const {teamMembers} = team;
   const memberIdx = localPhaseItem - 1;
   const currentMember = teamMembers[memberIdx];
-  const nextMemberName = teamMembers[localPhaseItem] && teamMembers[localPhaseItem].preferredName;
-
+  const {isSelf: isMyMeetingSection} = currentMember;
+  const nextMember = teamMembers[memberIdx + 1];
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="1rem">
         <MeetingCheckInPrompt
+          isFacilitating={isFacilitating}
           localPhaseItem={localPhaseItem}
           team={team}
         />
@@ -52,14 +54,18 @@ const MeetingCheckin = (props) => {
           {showMoveMeetingControls ?
             <CheckInControls
               checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
-              nextMemberName={nextMemberName}
+              nextMemberName={nextMember && nextMember.preferredName}
             /> :
             <div className={css(styles.hint)}>
-              <MeetingFacilitationHint>
-                {nextMemberName ?
-                  <span>{'Waiting for'} <b>{currentMember.preferredName}</b> {'to share with the team'}</span> :
-                  <span>{'Waiting for'}
-                    <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
+              <MeetingFacilitationHint showEllipsis={!nextMember || !isMyMeetingSection}>
+                {nextMember ?
+                  <span>
+                    {isMyMeetingSection ?
+                      <span>{'Share with your teammates!'}</span> :
+                      <span>{'Waiting for'} <b>{currentMember.preferredName}</b> {'to share with the team'}</span>
+                    }
+                  </span> :
+                  <span>{'Waiting for'} <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
                 }
               </MeetingFacilitationHint>
             </div>
@@ -74,6 +80,7 @@ MeetingCheckin.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   facilitatorName: PropTypes.string.isRequired,
   gotoNext: PropTypes.func.isRequired,
+  isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number,
   showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
@@ -116,8 +123,8 @@ export default createFragmentContainer(
       ...MeetingCheckInPrompt_team
       teamMembers(sortBy: "checkInOrder") {
         id
+        isSelf
         preferredName
       }
     }`
 );
-

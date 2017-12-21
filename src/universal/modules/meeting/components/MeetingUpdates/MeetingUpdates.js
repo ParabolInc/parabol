@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
@@ -27,17 +26,17 @@ class MeetingUpdates extends Component {
   }
 
   filterProjects(props) {
-    const {localPhaseItem, viewer: {projects, team: {teamMembers}}} = props;
+    const {localPhaseItem, setUpdateUserHasProjects, viewer: {projects, team: {teamMembers}}} = props;
     const currentTeamMember = teamMembers[localPhaseItem - 1];
     const edges = projects.edges.filter(({node}) => node.teamMember.id === currentTeamMember.id);
     this.setState({
       projects: {edges}
     });
+    setUpdateUserHasProjects(Boolean(edges.length));
   }
 
   render() {
     const {
-      facilitatorName,
       gotoNext,
       localPhaseItem,
       showMoveMeetingControls,
@@ -55,23 +54,17 @@ class MeetingUpdates extends Component {
       <MeetingMain>
         <MeetingSection flexToFill>
           <div className={css(styles.layout)}>
-            {showMoveMeetingControls ?
+            {showMoveMeetingControls &&
               <Button
                 buttonStyle="flat"
                 colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
                 key={`update${localPhaseItem}`}
-                label={isLastMember ? `Move on to the ${nextPhaseName}` : 'Next team member '}
+                label={isLastMember ? `Advance to the ${nextPhaseName}` : 'Next teammate '}
                 onClick={gotoNext}
                 buttonSize="medium"
-              /> :
-              <MeetingFacilitationHint>
-                {isLastMember ?
-                  <span>{'Waiting for '}<b>{facilitatorName}</b> {`to advance to the ${nextPhaseName}`}</span> :
-                  <span>{'Waiting for '}<b>{currentTeamMember.preferredName}</b> {`to give ${actionMeeting.updates.name}`}</span>
-                }
-              </MeetingFacilitationHint>
+              />
             }
           </div>
           <div className={css(styles.body)}>
@@ -90,11 +83,11 @@ class MeetingUpdates extends Component {
 }
 
 MeetingUpdates.propTypes = {
-  facilitatorName: PropTypes.string.isRequired,
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
   showMoveMeetingControls: PropTypes.bool,
+  setUpdateUserHasProjects: PropTypes.func.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
 };

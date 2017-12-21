@@ -80,6 +80,8 @@ class MeetingContainer extends Component {
     onError: PropTypes.func.isRequired
   };
 
+  state = {updateUserHasProjects: null};
+
   componentWillMount() {
     const {
       atmosphere,
@@ -166,6 +168,16 @@ class MeetingContainer extends Component {
   componentWillUnmount() {
     clearTimeout(this.electionTimer);
   }
+
+  setAgendaInputRef = (c) => {
+    this.agendaInputRef = c;
+  };
+
+  setUpdateUserHasProjects = (updateUserHasProjects) => {
+    if (updateUserHasProjects !== this.state.updateUserHasProjects) {
+      this.setState({updateUserHasProjects});
+    }
+  };
 
   electFacilitatorIfNone() {
     const {atmosphere, viewer: {team: {activeFacilitator, teamMembers}}} = this.props;
@@ -301,6 +313,7 @@ class MeetingContainer extends Component {
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
     const showMoveMeetingControls = isFacilitating || isBehindMeeting;
     const facilitatorName = getFacilitatorName(activeFacilitator, teamMembers);
+
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
         <Sidebar
@@ -309,6 +322,7 @@ class MeetingContainer extends Component {
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           isFacilitating={isFacilitating}
+          setAgendaInputRef={this.setAgendaInputRef}
           team={team}
         />
         <MeetingMain hasBoxShadow>
@@ -323,8 +337,10 @@ class MeetingContainer extends Component {
             />
             {localPhase === UPDATES &&
             <MeetingUpdatesPrompt
+              agendaInputRef={this.agendaInputRef}
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
+              updateUserHasProjects={this.state.updateUserHasProjects}
               team={team}
             />
             }
@@ -335,6 +351,7 @@ class MeetingContainer extends Component {
             facilitatorName={facilitatorName}
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
+            isFacilitating={isFacilitating}
             localPhaseItem={localPhaseItem}
             showMoveMeetingControls={showMoveMeetingControls}
             team={team}
@@ -342,10 +359,10 @@ class MeetingContainer extends Component {
           }
           {localPhase === UPDATES &&
           <MeetingUpdates
-            facilitatorName={facilitatorName}
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
+            setUpdateUserHasProjects={this.setUpdateUserHasProjects}
             showMoveMeetingControls={showMoveMeetingControls}
             viewer={viewer}
           />

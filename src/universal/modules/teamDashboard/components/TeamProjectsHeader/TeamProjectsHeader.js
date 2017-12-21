@@ -73,11 +73,12 @@ const TeamProjectsHeader = (props) => {
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>
           <div className={css(styles.filterRow)}>
-            <b style={inlineBlock}>Show Projects for</b><span style={inlineBlock}>:</span>
+            <b style={inlineBlock}>{'Show Projects for'}</b><span style={inlineBlock}>:</span>
             {' '}
             <Menu
               itemFactory={itemFactory}
               label="Filter by:"
+              maxHeight={ui.dashMenuHeight}
               toggle={toggle}
               originAnchor={originAnchor}
               targetAnchor={targetAnchor}
