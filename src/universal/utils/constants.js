@@ -209,6 +209,24 @@ export const AGENDA_ITEM_ADDED = 'agendaItemAdded';
 export const AGENDA_ITEM_UPDATED = 'agendaItemUpdated';
 export const AGENDA_ITEM_REMOVED = 'agendaItemRemoved';
 
+
+/* WebSocket Events */
+// loosely based off of: https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md
+// client to server
+// subscribe
+export const GQL_START = 'GQL_START';
+// unsubscribe
+export const GQL_STOP = 'GQL_STOP';
+// execute query or mutation
+export const GQL_EXEC = 'GQL_EXEC';
+//server to client
+// error starting subscription
+export const GQL_ERROR = 'GQL_ERROR';
+// unsubscribed
+export const GQL_COMPLETE = 'GQL_COMPLETE';
+// published message
+export const GQL_DATA = 'GQL_DATA';
+
 /* Relay Subscription Event Types */
 export const ADD = 'add';
 export const UPDATE = 'update';

@@ -7,6 +7,8 @@ const unsubscribeRelaySub = (socket) => {
       asyncIterator.return();
     }
     socket.subs = {};
+    // flag all of these as eligible for resubscribing
+    socket.availableResubs = opIds;
   }
 };
 

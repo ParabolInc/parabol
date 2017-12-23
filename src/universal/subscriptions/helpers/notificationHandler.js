@@ -2,6 +2,7 @@ import {matchPath} from 'react-router-dom';
 import {ConnectionHandler} from 'relay-runtime';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
+import {handleRemoveTeam} from 'universal/mutations/ArchiveTeamMutation';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
@@ -170,6 +171,7 @@ const notificationHandler = {
           }
         }
       }));
+      handleRemoveTeam(store, viewerId, teamId);
       addNotificationUpdater(store, viewerId, payload);
     }
     const {pathname} = location;

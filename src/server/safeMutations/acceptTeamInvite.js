@@ -14,7 +14,7 @@ import {
   JOIN_TEAM,
   NEW_AUTH_TOKEN,
   NOTIFICATIONS_ADDED,
-  NOTIFICATIONS_CLEARED,
+  NOTIFICATIONS_CLEARED, TEAM_ADDED,
   TEAM_MEMBER_ADDED
 } from 'universal/utils/constants';
 
@@ -100,7 +100,13 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
     teamName,
     teamId
   };
-
+  //const teamAdded = {
+  //  team: {
+  //    id: teamId
+  //  },
+  //  notification: addedToTeam
+  //}
+  //getPubSub().publish(`${TEAM_ADDED}.${userId}`, {})
   getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded: {notifications: [addedToTeam]}});
   getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
   return addedToTeam;

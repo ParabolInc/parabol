@@ -1,4 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
+import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 
@@ -10,7 +11,11 @@ const AddTeamPayload = new GraphQLObjectType({
     },
     teamLead: {
       type: TeamMember,
-      description: 'The teamMember that just created the new team'
+      description: 'The teamMember that just created the new team, if this is a creation'
+    },
+    notification: {
+      type: NotifyAddedToTeam,
+      description: 'The notification that you were just added, if this is a reactivation or acceptance'
     }
   })
 });
