@@ -7,7 +7,8 @@ const subscription = graphql`
   subscription TeamAddedSubscription {
     teamAdded {
       team {
-        ...DashNavTeam_team
+        id
+        isPaid
         name
       }
       notification {

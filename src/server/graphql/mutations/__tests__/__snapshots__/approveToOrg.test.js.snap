@@ -6,7 +6,7 @@ Object {
     Object {
       "createdAt": 2017-01-01T08:00:00.000Z,
       "email": "<<constant>>",
-      "hashedToken": "HA$H",
+      "hashedToken": "<<constant>>",
       "id": "<<constant>>",
       "inviteCount": 1,
       "invitedBy": "<<constant>>",
@@ -182,7 +182,7 @@ Object {
     Object {
       "createdAt": 2017-01-01T08:00:00.000Z,
       "email": "<<constant>>",
-      "hashedToken": "HA$H",
+      "hashedToken": "<<constant>>",
       "id": "<<constant>>",
       "inviteCount": 1,
       "invitedBy": "<<constant>>",
@@ -193,7 +193,7 @@ Object {
     Object {
       "createdAt": 2017-01-01T08:00:00.000Z,
       "email": "<<constant>>",
-      "hashedToken": "HA$H",
+      "hashedToken": "<<constant>>",
       "id": "<<constant>>",
       "inviteCount": 1,
       "invitedBy": "<<constant>>",
@@ -492,7 +492,7 @@ Object {
     Object {
       "createdAt": 2017-01-01T08:00:00.000Z,
       "email": "<<constant>>",
-      "hashedToken": "HA$H",
+      "hashedToken": "<<constant>>",
       "id": "<<constant>>",
       "inviteCount": 1,
       "invitedBy": "<<constant>>",
@@ -503,7 +503,7 @@ Object {
     Object {
       "createdAt": 2017-01-01T08:00:00.000Z,
       "email": "<<constant>>",
-      "hashedToken": "HA$H",
+      "hashedToken": "<<constant>>",
       "id": "<<constant>>",
       "inviteCount": 1,
       "invitedBy": "<<constant>>",

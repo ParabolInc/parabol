@@ -34,7 +34,7 @@ const addNodeToArray = (newNode, parent, arrayName, sortValue, options = {}) => 
   const idxFinder = descending ? getDescendingIdx : getAscendingIdx;
   const nextIdx = idxFinder(newName, arr, sortValue);
   const newArr = [...arr.slice(0, nextIdx), newNode, ...arr.slice(nextIdx)];
-  parent.setLinkedRecords(newArr, arrayName);
+  parent.setLinkedRecords(newArr, arrayName, storageKeyArgs);
 };
 
 export default addNodeToArray;

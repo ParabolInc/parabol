@@ -6,6 +6,7 @@ const mutation = graphql`
     acceptTeamInviteNotification(notificationId: $notificationId) {
       team {
         id
+        isPaid
         name
       }
     }
@@ -18,7 +19,7 @@ const AcceptTeamInviteMutation = (environment, notificationId, onError, onComple
     mutation,
     variables: {notificationId},
     updater: (store) => {
-      const team = store.getRootField('acceptTeamInviteEmail').getLinkedRecord('team');
+      const team = store.getRootField('acceptTeamInviteNotification').getLinkedRecord('team');
       handleAddTeamToViewerTeams(store, viewerId, team);
     },
     onCompleted,

@@ -13,7 +13,10 @@ const mutation = graphql`
   mutation AcceptTeamInviteEmailMutation($inviteToken: ID!) {
     acceptTeamInviteEmail(inviteToken: $inviteToken) {
       team {
+        # No way to use fragments in mutations without borked onCompleted. 
+        # See https://github.com/facebook/relay/issues/2250
         id
+        isPaid
         name
       }
       authToken

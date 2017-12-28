@@ -6,7 +6,9 @@ const mutation = graphql`
   mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Invitee!]) {
     addTeam(newTeam: $newTeam, invitees: $invitees) {
       team {
-        ...DashNavTeam_team
+        id
+        isPaid
+        name
       }
     }
   }
@@ -28,7 +30,7 @@ const AddTeamMutation = (environment, newTeam, invitees, onError, onCompleted) =
       handleAddTeamToViewerTeams(store, viewerId, team);
     },
     optimisticUpdater: (store) => {
-      const team = createProxyRecord(store, 'Team', newTeam);
+      const team = createProxyRecord(store, 'Team', {...newTeam, isPaid: true});
       handleAddTeamToViewerTeams(store, viewerId, team);
     },
     onCompleted,
