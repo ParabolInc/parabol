@@ -10,6 +10,15 @@ const fieldsToSerialize = {
     'message.invitationAdded.invitation.invitedBy',
     'message.invitationAdded.invitation.teamId'
   ],
+  invitationRemoved: [
+    'channelId',
+    'message.invitationRemoved.invitation.id',
+    'message.invitationRemoved.invitation.email',
+    'message.invitationRemoved.invitation.hashedToken',
+    'message.invitationRemoved.invitation.inviteToken',
+    'message.invitationRemoved.invitation.invitedBy',
+    'message.invitationRemoved.invitation.teamId'
+  ],
   newAuthToken: [
     'channelId',
     'message.newAuthToken'
@@ -35,6 +44,12 @@ const fieldsToSerialize = {
     'message.orgApprovalRemoved.orgApproval.orgId',
     'message.orgApprovalRemoved.orgApproval.teamId'
   ],
+  teamAdded: [
+    'channelId',
+    'message.teamAdded.notification.teamId',
+    'message.teamAdded.teamId',
+    'message.teamAdded.teamMemberId'
+  ],
   teamUpdated: [
     'channelId',
     'message.teamUpdated.team.id',
@@ -43,6 +58,7 @@ const fieldsToSerialize = {
   teamMemberAdded: [
     'channelId',
     'message.teamMemberAdded.teamMember.id',
+    'message.teamMemberAdded.teamMember.email',
     'message.teamMemberAdded.teamMember.teamId',
     'message.teamMemberAdded.teamMember.userId'
   ]

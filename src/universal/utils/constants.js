@@ -219,7 +219,7 @@ export const GQL_START = 'GQL_START';
 export const GQL_STOP = 'GQL_STOP';
 // execute query or mutation
 export const GQL_EXEC = 'GQL_EXEC';
-//server to client
+// server to client
 // error starting subscription
 export const GQL_ERROR = 'GQL_ERROR';
 // unsubscribed

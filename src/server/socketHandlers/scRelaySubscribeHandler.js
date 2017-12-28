@@ -63,7 +63,7 @@ export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
       // }, 5000)
       await forAwaitEach(asyncIterator, iterableCb);
       const resubIdx = socket.availableResubs.indexOf(opId);
-      console.log('resubIdx', opId, resubIdx, socket.availableResubs)
+      console.log('resubIdx', opId, resubIdx, socket.availableResubs);
       if (resubIdx !== -1) {
         // reinitialize the subscription
         handleSubscribe();
@@ -73,6 +73,5 @@ export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
       }
     };
     handleSubscribe();
-
   };
 }

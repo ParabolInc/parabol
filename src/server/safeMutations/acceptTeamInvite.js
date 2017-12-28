@@ -17,6 +17,7 @@ import {
   NOTIFICATIONS_CLEARED, TEAM_ADDED,
   TEAM_MEMBER_ADDED
 } from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const publishRemovedInvitations = (expiredEmailInvitations, operationId) => {
   expiredEmailInvitations.forEach((invitation) => {
@@ -50,6 +51,7 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
   const now = new Date();
   const {operationId} = subOptions;
   const userId = getUserId(authToken);
+  const teamMemberId = toTeamMemberId(teamId, userId);
   const {team: {orgId, name: teamName}, user} = await r({
     team: r.table('Team').get(teamId).pluck('orgId', 'name'),
     user: r.table('User').get(userId)
@@ -72,8 +74,7 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
         updatedAt: now
       }, {returnChanges: true})('changes')('new_val').default([]),
     expireInviteNotificationIds: getTeamInviteNotifications(orgId, teamId, [email])
-      .delete({returnChanges: true})('changes')
-      .map((change) => change('old_val')('id'))
+      .delete({returnChanges: true})('changes')('old_val')('id')
       .default([])
   });
 
@@ -93,23 +94,23 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
   const newAuthToken = tmsSignToken(authToken, tms);
   const addedToTeam = {
     // no ID to rule out permanent notification. they already know, they are the ones who did it!
-    authToken: newAuthToken,
-    orgId,
     startAt: now,
     type: ADD_TO_TEAM,
-    teamName,
     teamId
   };
-  //const teamAdded = {
-  //  team: {
-  //    id: teamId
-  //  },
-  //  notification: addedToTeam
-  //}
-  //getPubSub().publish(`${TEAM_ADDED}.${userId}`, {})
-  getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded: {notifications: [addedToTeam]}});
+  const teamAdded = {
+    notification: addedToTeam,
+    teamId,
+    teamMemberId
+  };
+  getPubSub().publish(`${TEAM_ADDED}.${userId}`, {teamAdded, ...subOptions});
   getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
-  return addedToTeam;
+
+  return {
+    authToken: newAuthToken,
+    teamId,
+    teamMemberId
+  };
 };
 
 export default acceptTeamInvite;

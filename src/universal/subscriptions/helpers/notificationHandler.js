@@ -299,7 +299,14 @@ const notificationHandler = {
         label: 'Accept!',
         callback: () => {
           const notificationId = payload.getValue('id');
-          AcceptTeamInviteMutation(environment, notificationId);
+          const onCompleted = () => {
+            dispatch(showInfo({
+              autoDismiss: 10,
+              title: 'Congratulations!',
+              message: `You’ve been added to team ${teamName}`
+            }));
+          };
+          AcceptTeamInviteMutation(environment, notificationId, undefined, onCompleted);
         }
       }
     }));

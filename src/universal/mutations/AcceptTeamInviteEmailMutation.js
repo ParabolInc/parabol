@@ -1,36 +1,37 @@
 import jwtDecode from 'jwt-decode';
 import {commitMutation} from 'react-relay';
 import {
-  invalidInvitation,
-  inviteExpired,
-  inviteNotFound,
-  successfulExistingJoin,
-  successfulJoin,
+  invalidInvitation, inviteExpired, inviteNotFound, successfulExistingJoin, successfulJoin,
   teamAlreadyJoined
 } from 'universal/modules/invitation/helpers/notifications';
 import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import {handleAddTeamToViewerTeams} from 'universal/mutations/AddTeamMutation';
 import {setAuthToken} from 'universal/redux/authDuck';
 
 const mutation = graphql`
   mutation AcceptTeamInviteEmailMutation($inviteToken: ID!) {
     acceptTeamInviteEmail(inviteToken: $inviteToken) {
+      team {
+        id
+        name
+      }
       authToken
-      teamName
-      teamId
     }
   }
 `;
 
 const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, history) => {
-  // const {viewerId} = environment;
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {inviteToken},
     updater: (store) => {
-      const payload = store.getRootField('acceptTeamInviteEmail');
-      const authToken = payload.getValue('authToken');
-      const teamId = payload.getValue('teamId');
+      const team = store.getRootField('acceptTeamInviteEmail').getLinkedRecord('team');
+      handleAddTeamToViewerTeams(store, viewerId, team);
+    },
+    onCompleted: (data) => {
+      const {acceptTeamInviteEmail: {team: {id: teamId}, authToken}} = data;
       const {tms} = jwtDecode(authToken);
       dispatch(setAuthToken(authToken));
       if (tms.length <= 1) {
@@ -42,10 +43,6 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
         history.push(`/team/${teamId}`);
       }
     },
-    // optimisticUpdater: (store) => {
-    // TODO add the team to the sidebar when we move teams to relay
-    // },
-    // onCompleted,
     onError: (error) => {
       const {_error: errorType} = error || {};
       if (errorType === 'alreadyJoined') {

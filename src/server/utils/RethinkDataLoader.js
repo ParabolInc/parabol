@@ -123,6 +123,7 @@ export default class RethinkDataLoader {
 
   agendaItems = makeStandardLoader('AgendaItem');
   organizations = makeStandardLoader('Organization');
+  notifications = makeStandardLoader('Notification');
   projects = makeStandardLoader('Project');
   teams = makeStandardLoader('Team');
   teamMembers = makeStandardLoader('TeamMember');

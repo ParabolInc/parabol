@@ -11,6 +11,7 @@ import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {NEW_AUTH_TOKEN, TEAM_ADDED} from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import addTeamValidation from './helpers/addTeamValidation';
 
 
@@ -33,6 +34,7 @@ export default {
   },
   async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
+
     // AUTH
     const {orgId} = args.newTeam;
     const userId = getUserId(authToken);
@@ -45,7 +47,7 @@ export default {
 
     // RESOLUTION
     const teamId = shortid.generate();
-    const {team, teamLead} = await createTeamAndLeader(userId, {id: teamId, ...newTeam});
+    await createTeamAndLeader(userId, {id: teamId, ...newTeam});
     const inviteeCount = invitees && invitees.length || 0;
 
     // handle invitees
@@ -55,8 +57,8 @@ export default {
     }
 
     const teamAdded = {
-      team,
-      teamLead
+      teamId,
+      teamMemberId: toTeamMemberId(teamId, userId)
     };
     getPubSub().publish(`${TEAM_ADDED}.${userId}`, {teamAdded, mutatorId, operationId});
     publishNewAuthToken(authToken.tms, teamId, userId);

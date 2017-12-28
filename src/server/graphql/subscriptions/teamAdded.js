@@ -1,11 +1,11 @@
 import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
+import TeamAddedPayload from 'server/graphql/types/TeamAddedPayload';
 import {getUserId, requireAuth} from 'server/utils/authorization';
 import {TEAM_ADDED} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(AddTeamPayload),
+  type: new GraphQLNonNull(TeamAddedPayload),
   subscribe: (source, args, {authToken, dataLoader, socketId}) => {
     // AUTH
     requireAuth(authToken);

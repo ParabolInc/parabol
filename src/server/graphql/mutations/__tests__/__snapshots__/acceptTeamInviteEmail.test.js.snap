@@ -1,12 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`acceptTeamInvite adds an invitee who was not previously in the org 1`] = `
+exports[`acceptTeamInviteEmail adds an invitee who was not previously in the org 1`] = `
 Object {
-  "invitation": Array [],
+  "invitation": Array [
+    Object {
+      "acceptedAt": 2017-01-01T08:00:00.000Z,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": "<<constant>>",
+      "hashedToken": "<<constant>>",
+      "id": "<<constant>>",
+      "inviteCount": 1,
+      "invitedBy": "<<constant>>",
+      "teamId": "<<constant>>",
+      "tokenExpiration": 1970-01-01T00:00:00.000Z,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
   "notification": Array [],
   "teamMember": Object {
     "checkInOrder": 4,
-    "email": "invitee@mockTeam+acceptTeamInvite1.co",
+    "email": "invitee@mockTeam+acceptTeamInviteEmail1.co",
     "id": 3,
     "isCheckedIn": null,
     "isFacilitator": true,
@@ -20,7 +33,7 @@ Object {
   "user": Object {
     "cachedAt": 2017-01-01T07:00:00.000Z,
     "createdAt": 2017-01-01T07:00:00.000Z,
-    "email": "invitee@mockTeam+acceptTeamInvite1.co",
+    "email": "invitee@mockTeam+acceptTeamInviteEmail1.co",
     "emailVerified": false,
     "id": 0,
     "identities": Array [],
@@ -45,34 +58,39 @@ Object {
 }
 `;
 
-exports[`acceptTeamInvite adds an invitee who was not previously in the org 2`] = `
+exports[`acceptTeamInviteEmail adds an invitee who was not previously in the org 2`] = `
 Object {
+  "invitationRemoved": Array [
+    Object {
+      "channelId": 1,
+      "message": Object {
+        "invitationRemoved": Object {
+          "invitation": Object {
+            "acceptedAt": 2017-01-01T08:00:00.000Z,
+            "createdAt": 2017-01-01T07:00:00.000Z,
+            "email": 6,
+            "hashedToken": 7,
+            "id": 5,
+            "inviteCount": 1,
+            "invitedBy": 8,
+            "teamId": 1,
+            "tokenExpiration": 1970-01-01T00:00:00.000Z,
+            "updatedAt": 2017-01-01T08:00:00.000Z,
+          },
+        },
+        "operationId": 0,
+      },
+    },
+  ],
   "newAuthToken": Array [
     Object {
       "channelId": 0,
       "message": Object {
-        "newAuthToken": 5,
+        "newAuthToken": 9,
       },
     },
   ],
   "notificationsAdded": Array [
-    Object {
-      "channelId": 0,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "authToken": "FAKEENCODEDJWT",
-              "orgId": 2,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamId": 1,
-              "teamName": "Team America",
-              "type": "ADD_TO_TEAM",
-            },
-          ],
-        },
-      },
-    },
     Object {
       "channelId": 1,
       "message": Object {
@@ -95,8 +113,26 @@ Object {
       "message": Object {
         "notificationsCleared": Object {
           "deletedIds": Array [
-            6,
+            10,
           ],
+        },
+      },
+    },
+  ],
+  "teamAdded": Array [
+    Object {
+      "channelId": 0,
+      "message": Object {
+        "mutatorId": undefined,
+        "operationId": 0,
+        "teamAdded": Object {
+          "notification": Object {
+            "startAt": 2017-01-01T08:00:00.000Z,
+            "teamId": 1,
+            "type": "ADD_TO_TEAM",
+          },
+          "teamId": 1,
+          "teamMemberId": 3,
         },
       },
     },
@@ -105,10 +141,12 @@ Object {
     Object {
       "channelId": 1,
       "message": Object {
+        "mutatorId": undefined,
+        "operationId": 0,
         "teamMemberAdded": Object {
           "teamMember": Object {
             "checkInOrder": 9,
-            "email": "invitee@mockTeam+acceptTeamInvite1.co",
+            "email": 6,
             "id": 3,
             "isCheckedIn": null,
             "isFacilitator": true,
@@ -126,9 +164,23 @@ Object {
 }
 `;
 
-exports[`acceptTeamInvite adds an invitee who was previously in the org 1`] = `
+exports[`acceptTeamInviteEmail adds an invitee who was previously in the org 1`] = `
 Object {
-  "invitation": Array [],
+  "invitation": Array [
+    Object {
+      "acceptedAt": 2017-01-01T08:00:00.000Z,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": "<<constant>>",
+      "hashedToken": "$2a$10$HdSFfY82SEVkDLrU8We6Bu561wdfYAIKRvH4g3lqAfuUVfqV8k1RW",
+      "id": "<<constant>>",
+      "inviteCount": 1,
+      "inviteToken": "qQrg64bVC6xe9z",
+      "invitedBy": "<<constant>>",
+      "teamId": "<<constant>>",
+      "tokenExpiration": 1970-01-01T00:00:00.000Z,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
   "notification": Array [],
   "teamMember": Object {
     "checkInOrder": 6,
@@ -176,34 +228,40 @@ Object {
 }
 `;
 
-exports[`acceptTeamInvite adds an invitee who was previously in the org 2`] = `
+exports[`acceptTeamInviteEmail adds an invitee who was previously in the org 2`] = `
 Object {
+  "invitationRemoved": Array [
+    Object {
+      "channelId": 2,
+      "message": Object {
+        "invitationRemoved": Object {
+          "invitation": Object {
+            "acceptedAt": 2017-01-01T08:00:00.000Z,
+            "createdAt": 2017-01-01T07:00:00.000Z,
+            "email": 8,
+            "hashedToken": 9,
+            "id": 7,
+            "inviteCount": 1,
+            "inviteToken": 10,
+            "invitedBy": 11,
+            "teamId": 2,
+            "tokenExpiration": 1970-01-01T00:00:00.000Z,
+            "updatedAt": 2017-01-01T08:00:00.000Z,
+          },
+        },
+        "operationId": 0,
+      },
+    },
+  ],
   "newAuthToken": Array [
     Object {
       "channelId": 0,
       "message": Object {
-        "newAuthToken": 7,
+        "newAuthToken": 12,
       },
     },
   ],
   "notificationsAdded": Array [
-    Object {
-      "channelId": 0,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "authToken": "FAKEENCODEDJWT",
-              "orgId": 3,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamId": 2,
-              "teamName": "Team America",
-              "type": "ADD_TO_TEAM",
-            },
-          ],
-        },
-      },
-    },
     Object {
       "channelId": 2,
       "message": Object {
@@ -226,8 +284,26 @@ Object {
       "message": Object {
         "notificationsCleared": Object {
           "deletedIds": Array [
-            8,
+            13,
           ],
+        },
+      },
+    },
+  ],
+  "teamAdded": Array [
+    Object {
+      "channelId": 0,
+      "message": Object {
+        "mutatorId": undefined,
+        "operationId": 0,
+        "teamAdded": Object {
+          "notification": Object {
+            "startAt": 2017-01-01T08:00:00.000Z,
+            "teamId": 2,
+            "type": "ADD_TO_TEAM",
+          },
+          "teamId": 2,
+          "teamMemberId": 5,
         },
       },
     },
@@ -236,10 +312,12 @@ Object {
     Object {
       "channelId": 2,
       "message": Object {
+        "mutatorId": undefined,
+        "operationId": 0,
         "teamMemberAdded": Object {
           "teamMember": Object {
             "checkInOrder": 1,
-            "email": "vision@avengers.org",
+            "email": 8,
             "id": 5,
             "isCheckedIn": null,
             "isFacilitator": true,

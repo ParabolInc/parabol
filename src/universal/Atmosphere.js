@@ -126,7 +126,7 @@ export default class Atmosphere extends Environment {
     const {opId} = message;
     const {observer} = this.getSubscription(opId);
     if (observer.onCompleted) {
-      observer.onCompleted()
+      observer.onCompleted();
     }
   };
   handleGQLData = (message) => {
@@ -191,7 +191,7 @@ export default class Atmosphere extends Environment {
         this.unregisterQuery(queryKeys);
         delete this.subscriptions[opId];
       }
-    }
+    };
   };
 
   registerQuery = (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {

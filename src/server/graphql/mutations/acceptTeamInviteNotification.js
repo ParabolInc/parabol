@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
+import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
 import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 
 export default {
-  type: new GraphQLNonNull(NotifyAddedToTeam),
+  type: new GraphQLNonNull(AcceptTeamInvitePayload),
   description: 'Approve an outsider to join the organization',
   args: {
     notificationId: {

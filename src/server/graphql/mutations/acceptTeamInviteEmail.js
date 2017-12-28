@@ -2,11 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
 import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
+import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
 import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 
 export default {
-  type: new GraphQLNonNull(NotifyAddedToTeam),
+  type: new GraphQLNonNull(AcceptTeamInvitePayload),
   description: `Add a user to a Team given an invitationToken.
     If the invitationToken is valid, returns the auth token with the new team added to tms.
     Side effect: deletes all other outstanding invitations for user.`,

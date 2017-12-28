@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {resolveTeam} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import Team from 'server/graphql/types/Team';
 
@@ -12,16 +13,10 @@ const NotifyAddedToTeam = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The new auth token for the user.'
     },
-    // inviterName: {
-    //  type: new GraphQLNonNull(GraphQLString),
-    //  description: 'The name of the person that invited them onto the team'
-    // },
     team: {
       type: Team,
       description: 'The team the invitee is being invited to',
-      resolve: ({teamId}, args, {dataLoader}) => {
-        return dataLoader.get('teams').load(teamId);
-      }
+      resolve: resolveTeam
     },
     teamName: {
       type: new GraphQLNonNull(GraphQLString),
