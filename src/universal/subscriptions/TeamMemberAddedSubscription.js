@@ -1,14 +1,18 @@
 import addNodeToArray from 'universal/utils/relay/addNodeToArray';
 
 const subscription = graphql`
-  subscription TeamMemberAddedSubscription($teamId: ID!) {
-    teamMemberAdded(teamId: $teamId) {
+  subscription TeamMemberAddedSubscription {
+    teamMemberAdded {
       teamMember {
+        id
+        checkInOrder
+        isLead
+        isCheckedIn
+        isConnected
         isNotRemoved
         picture
         preferredName
-        checkInOrder
-        isCheckedIn
+        teamId
       }
     }
   }
@@ -20,13 +24,13 @@ export const handleAddTeamMember = (store, teamId, newNode) => {
   addNodeToArray(newNode, team, 'teamMembers', 'preferredName', {storageKeyArgs: {sortBy: 'preferredName'}});
 };
 
-const TeamMemberAddedSubscription = (environment, queryVariables) => {
-  const {teamId} = queryVariables;
+const TeamMemberAddedSubscription = () => {
   return {
     subscription,
-    variables: {teamId},
+    variables: {},
     updater: (store) => {
       const newNode = store.getRootField('teamMemberAdded').getLinkedRecord('teamMember');
+      const teamId = newNode.getValue('teamId');
       handleAddTeamMember(store, teamId, newNode);
     }
   };

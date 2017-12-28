@@ -1,14 +1,16 @@
 const subscription = graphql`
-  subscription TeamMemberUpdatedSubscription($teamId: ID!) {
-    teamMemberUpdated(teamId: $teamId) {
+  subscription TeamMemberUpdatedSubscription {
+    teamMemberUpdated {
       teamMember {
+        id
+        checkInOrder
         isLead
+        isCheckedIn
+        isConnected
         isNotRemoved
         picture
         preferredName
-        checkInOrder
-        isCheckedIn
-        isConnected
+        teamId
       }
     }
   }
@@ -16,6 +18,7 @@ const subscription = graphql`
 
 export const handleUpdateTeamMember = (store, teamId) => {
   const team = store.get(teamId);
+  if (!team) return;
   const sorts = ['checkInOrder', 'preferredName'];
   sorts.forEach((sortBy) => {
     const teamMembers = team.getLinkedRecords('teamMembers', {sortBy});
@@ -26,12 +29,12 @@ export const handleUpdateTeamMember = (store, teamId) => {
   });
 };
 
-const TeamMemberUpdatedSubscription = (environment, queryVariables) => {
-  const {teamId} = queryVariables;
+const TeamMemberUpdatedSubscription = () => {
   return {
     subscription,
-    variables: {teamId},
+    variables: {},
     updater: (store) => {
+      const teamId = store.getRootField('teamMemberUpdated').getLinkedRecord('teamMember').getValue('teamId');
       handleUpdateTeamMember(store, teamId);
     }
   };

@@ -11,8 +11,6 @@ import InvitationRemovedSubscription from 'universal/subscriptions/InvitationRem
 import InvitationUpdatedSubscription from 'universal/subscriptions/InvitationUpdatedSubscription';
 import OrgApprovalAddedSubscription from 'universal/subscriptions/OrgApprovalAddedSubscription';
 import OrgApprovalRemovedSubscription from 'universal/subscriptions/OrgApprovalRemovedSubscription';
-import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
-import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -28,9 +26,7 @@ const subscriptions = [
   InvitationRemovedSubscription,
   InvitationUpdatedSubscription,
   OrgApprovalRemovedSubscription,
-  OrgApprovalAddedSubscription,
-  TeamMemberAddedSubscription,
-  TeamMemberUpdatedSubscription
+  OrgApprovalAddedSubscription
 ];
 
 const TeamSettingsRoot = ({atmosphere, teamId}) => {

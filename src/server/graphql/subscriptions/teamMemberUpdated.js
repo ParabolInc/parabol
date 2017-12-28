@@ -1,23 +1,16 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {getUserId} from 'server/utils/authorization';
 import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(UpdateTeamMemberPayload),
-  args: {
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID)
-    }
-  },
-  subscribe: async (source, {teamId}, {authToken, socketId, dataLoader}) => {
-    // AUTH
-    requireTeamMember(authToken, teamId);
-
-    // RESOLUTION
-    const channelName = `${TEAM_MEMBER_UPDATED}.${teamId}`;
+  subscribe: async (source, args, {authToken, socketId, dataLoader}) => {
+    const userId = getUserId(authToken);
+    const {tms: teamIds} = authToken;
+    const channelNames = teamIds.concat(userId).map((id) => `${TEAM_MEMBER_UPDATED}.${id}`);
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, dataLoader});
+    return makeSubscribeIter(channelNames, {filterFn, dataLoader});
   }
 };
