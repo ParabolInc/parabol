@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import makeReactivationNotifications from 'server/safeMutations/helpers/makeReactivationNotifications';
 import shortid from 'shortid';
-import {ADD_TO_TEAM, NEW_AUTH_TOKEN, TEAM_MEMBER_ADDED} from 'universal/utils/constants';
+import {ADD_TO_TEAM, ADDED, NEW_AUTH_TOKEN, TEAM_MEMBER} from 'universal/utils/constants';
 import getPubSub from 'server/utils/getPubSub';
 import tmsSignToken from 'server/utils/tmsSignToken';
 
@@ -12,10 +12,10 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
   const now = new Date();
   const userIds = invitees.map(({userId}) => userId);
   const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
-  const {reactivatedTeamMembers, reactivatedUsers} = await r({
+  const {reactivatedUsers} = await r({
     reactivatedTeamMembers: r.table('TeamMember')
       .getAll(r.args(teamMemberIds), {index: 'id'})
-      .update({isNotRemoved: true}, {returnChanges: true})('changes')('new_val'),
+      .update({isNotRemoved: true}),
     reactivatedUsers: r.table('User')
       .getAll(r.args(userIds))
       .update((user) => {
@@ -34,9 +34,8 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
     teamName
   }));
   await r.table('Notification').insert(notifications);
-  reactivatedTeamMembers.forEach((teamMember) => {
-    const teamMemberAdded = {teamMember};
-    getPubSub().publish(`${TEAM_MEMBER_ADDED}.${teamId}`, {teamMemberAdded, ...subOptions});
+  teamMemberIds.forEach((teamMemberId) => {
+    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId, type: ADDED}, ...subOptions});
   });
 
   const reactivationNotifications = makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);

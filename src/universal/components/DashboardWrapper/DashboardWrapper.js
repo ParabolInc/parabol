@@ -8,8 +8,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import TeamAddedSubscription from 'universal/subscriptions/TeamAddedSubscription';
-import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
-import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
+import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
 import TeamUpdatedSubscription from 'universal/subscriptions/TeamUpdatedSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
@@ -46,8 +45,7 @@ const subscriptions = [
   NotificationsClearedSubscription,
   TeamAddedSubscription,
   TeamUpdatedSubscription,
-  TeamMemberAddedSubscription,
-  TeamMemberUpdatedSubscription
+  TeamMemberSubscription
 ];
 
 const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {

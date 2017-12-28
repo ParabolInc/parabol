@@ -4,7 +4,7 @@ import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayloa
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
-import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
+import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -51,9 +51,8 @@ export default {
     }
     const operationId = dataLoader.share();
     const teamMemberUpdated = {teamMember: promotee};
-    const leaderUpdated = {teamMember: teamLead};
-    getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated, operationId, mutatorId});
-    getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated: leaderUpdated, operationId, mutatorId});
+    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId: myTeamMemberId, type: UPDATED}, operationId, mutatorId });
+    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId, type: UPDATED}, operationId, mutatorId});
     return teamMemberUpdated;
   }
 };

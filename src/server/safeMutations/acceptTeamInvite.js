@@ -9,13 +9,8 @@ import getPubSub from 'server/utils/getPubSub';
 import {ADD_USER} from 'server/utils/serverConstants';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {
-  ADD_TO_TEAM,
-  INVITATION_REMOVED,
-  JOIN_TEAM,
-  NEW_AUTH_TOKEN,
-  NOTIFICATIONS_ADDED,
-  NOTIFICATIONS_CLEARED, TEAM_ADDED,
-  TEAM_MEMBER_ADDED
+  ADD_TO_TEAM, ADDED, INVITATION_REMOVED, JOIN_TEAM, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED,
+  TEAM_ADDED, TEAM_MEMBER
 } from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -87,8 +82,7 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
   publishClearNotifications(expireInviteNotificationIds, userId);
   publishJoinTeamNotifications(teamId, teamName, user);
 
-  const teamMemberAdded = {teamMember};
-  getPubSub().publish(`${TEAM_MEMBER_ADDED}.${teamId}`, {teamMemberAdded, ...subOptions});
+  getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId, type: ADDED}, ...subOptions});
 
   // Send the new team member a welcome & a new token
   const newAuthToken = tmsSignToken(authToken, tms);

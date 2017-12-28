@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {requireTeamMember} from 'server/utils/authorization';
 import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
 import getPubSub from 'server/utils/getPubSub';
-import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
+import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 
 export default {
   type: UpdateTeamMemberPayload,
@@ -18,7 +18,7 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve(source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId}) {
+  async resolve(source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
 
@@ -32,7 +32,7 @@ export default {
       .update({isCheckedIn}, {returnChanges: true})('changes')(0)('new_val');
 
     const teamMemberUpdated = {teamMember};
-    getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated, mutatorId: socketId, operationId});
+    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId, type: UPDATED}, mutatorId, operationId});
     return teamMemberUpdated;
   }
 };

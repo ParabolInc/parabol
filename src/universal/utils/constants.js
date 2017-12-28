@@ -202,9 +202,7 @@ export const TEAM_ADDED = 'teamAdded';
 export const TEAM_UPDATED = 'teamUpdated';
 export const TEAM_REMOVED = 'teamRemoved';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
-export const TEAM_MEMBER_ADDED = 'teamMemberAdded';
-export const TEAM_MEMBER_REMOVED = 'teamMemberRemoved';
-export const TEAM_MEMBER_UPDATED = 'teamMemberUpdated';
+export const TEAM_MEMBER = 'teamMember';
 export const AGENDA_ITEM_ADDED = 'agendaItemAdded';
 export const AGENDA_ITEM_UPDATED = 'agendaItemUpdated';
 export const AGENDA_ITEM_REMOVED = 'agendaItemRemoved';
@@ -228,10 +226,9 @@ export const GQL_COMPLETE = 'GQL_COMPLETE';
 export const GQL_DATA = 'GQL_DATA';
 
 /* Relay Subscription Event Types */
-export const ADD = 'add';
-export const UPDATE = 'update';
-export const DELETE = 'delete';
-export const REPLACE = 'replace';
+export const ADDED = 'added';
+export const UPDATED = 'updated';
+export const REMOVED = 'removed';
 
 /* Parabol Payment level */
 export const PERSONAL = 'personal';

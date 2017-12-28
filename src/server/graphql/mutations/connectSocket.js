@@ -5,7 +5,7 @@ import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {UNPAUSE_USER} from 'server/utils/serverConstants';
-import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
+import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 
@@ -48,14 +48,17 @@ export default {
       const teamMemberIds = tms.map((teamId) => toTeamMemberId(teamId, userId));
       const teamMembers = await dataLoader.get('teamMembers').loadMany(teamMemberIds);
       teamMembers.forEach((teamMember) => {
-        const teamMemberUpdated = {
-          teamMember: {
-            ...teamMember,
-            isConnected: true
-          }
-        };
         const {teamId} = teamMember;
-        getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated, operationId, mutatorId: socketId});
+        const payload = {
+          teamMember: {
+            teamMemberId: teamMember.id,
+            isConnected: true,
+            type: UPDATED
+          },
+          operationId,
+          mutatorId: socketId
+        };
+        getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, payload);
       });
     }
     sendAppVersion(userId);
