@@ -9,19 +9,6 @@ const NotifyNewTeamMember = new GraphQLObjectType({
   interfaces: () => [Notification],
   fields: () => ({
     ...notificationInterfaceFields,
-    // inviterName: {
-    //  type: new GraphQLNonNull(GraphQLString),
-    //  description: 'The name of the person that invited them onto the team'
-    // },
-    teamId: {
-      type: GraphQLID,
-      description: 'The id of the team'
-    },
-    teamName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the team the user is joining',
-      deprecatedReason: 'Use team.name instead'
-    },
     team: {
       type: Team,
       description: 'The team the invitee just joined',

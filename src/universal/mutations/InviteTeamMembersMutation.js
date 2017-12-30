@@ -1,10 +1,14 @@
 import {commitMutation} from 'react-relay';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import {handleAddTeamMember} from 'universal/subscriptions/TeamMemberSubscription';
 import {ALREADY_ON_TEAM, PENDING_APPROVAL, REACTIVATED, SUCCESS} from 'universal/utils/constants';
 
 const mutation = graphql`
   mutation InviteTeamMembersMutation($teamId: ID!, $invitees: [Invitee!]!) {
     inviteTeamMembers(invitees: $invitees, teamId: $teamId) {
+      reactivatedTeamMembers {
+        ...TeamMemberSubscription_teamMember
+      }
       results {
         email
         result
@@ -58,29 +62,28 @@ export const inviteTeamMembersUpdater = (results, dispatch) => {
   });
 };
 
+const handleReactivatedTeamMembers = (store, reactivatedTeamMembers) => {
+  if (!reactivatedTeamMembers) return;
+  reactivatedTeamMembers.forEach((newTeamMember) => {
+    handleAddTeamMember(store, newTeamMember);
+  })
+};
+
 const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {invitees, teamId},
     updater: (store) => {
-      const results = store.getRootField('inviteTeamMembers').getLinkedRecords('results')
+      const payload = store.getRootField('inviteTeamMembers');
+      const results = payload.getLinkedRecords('results')
         .map((result) => ({
           email: result.getValue('email'),
           result: result.getValue('result')
         }));
       inviteTeamMembersUpdater(results, dispatch);
-      // addInvitationUpdater(store, viewerId, teamId, node);
+      const reactivatedTeamMembers = payload.getLinkedRecords('reactivatedTeamMembers');
+      handleReactivatedTeamMembers(store, reactivatedTeamMembers);
     },
-    // optimisticUpdater: (store) => {
-    //  // TODO feed isBillingLeader in here & then invite them if true, or set to pending if false
-    //  //const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId);
-    //  //const repoId = `addGitHubRepo:${tempId++}`;
-    //  //const repo = store.create(repoId, GITHUB)
-    //  //  .setValue(invitees, 'nameWithOwner')
-    //  //  .setValue(repoId, 'id')
-    //  //  .setLinkedRecords([teamMemberNode], 'teamMembers');
-    //  //addInvitationUpdater(store, viewerId, teamId, repo);
-    // },
     onCompleted,
     onError
   });

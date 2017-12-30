@@ -1,11 +1,11 @@
 import getRethink from 'server/database/rethinkDriver';
-import makeReactivationNotifications from 'server/safeMutations/helpers/makeReactivationNotifications';
-import shortid from 'shortid';
-import {ADD_TO_TEAM, ADDED, NEW_AUTH_TOKEN, TEAM_MEMBER} from 'universal/utils/constants';
 import getPubSub from 'server/utils/getPubSub';
 import tmsSignToken from 'server/utils/tmsSignToken';
+import shortid from 'shortid';
+import {ADD_TO_TEAM, NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
-const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, teamMembers, subOptions = {}) => {
+const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter) => {
   if (invitees.length === 0) return [];
   const {orgId, teamId, teamName} = inviter;
   const r = getRethink();
@@ -36,15 +36,15 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
     teamName
   }));
   await r.table('Notification').insert(notifications);
-  teamMemberIds.forEach((teamMemberId) => {
-    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId, type: ADDED}, ...subOptions});
-  });
-
-  const reactivationNotifications = makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);
   reactivatedUsers.forEach(({id: userId, tms}) => {
     getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, tms)});
   });
-  return reactivationNotifications;
+
+  return notifications.map((notification, idx) => ({
+    notificationId: notification.id,
+    teamMemberId: toTeamMemberId(teamId, notification.userIds[0]),
+    preferredName: reactivatedUsers[idx].preferredName
+  }));
 };
 
 export default reactivateTeamMembersAndMakeNotifications;

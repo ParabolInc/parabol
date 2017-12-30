@@ -3,6 +3,9 @@ import Invitee from 'server/graphql/types/Invitee';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
+import getPubSub from 'server/utils/getPubSub';
+import {ADDED, REJOIN_TEAM, TEAM_MEMBER} from 'universal/utils/constants';
+
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -26,7 +29,20 @@ export default {
 
     // RESOLUTION
     const subOptions = {mutatorId, operationId};
-    return inviteTeamMembers(invitees, teamId, userId, subOptions);
+    const {reactivations, results} = await inviteTeamMembers(invitees, teamId, userId, subOptions);
+    const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId);
+
+    // HANDLE REACTIVATION
+    // send a team + persisted notification to the reactivated team member
+
+    // send a team member + temporary toast to the rest of the users
+    reactivations.forEach(({teamMemberId, preferredName}) => {
+      const notification = {type: REJOIN_TEAM, teamId, preferredName};
+      getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId, notification, type: ADDED}, ...subOptions});
+    });
+
+    //
+    return {reactivatedTeamMemberIds, results};
   }
 };
 
