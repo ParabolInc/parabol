@@ -45,7 +45,9 @@ const subscription = graphql`
           groupName
         }
         ... on NotifyInvitation {
-          inviterName
+          inviter {
+            preferredName
+          }
           inviteeEmail
           team {
             id

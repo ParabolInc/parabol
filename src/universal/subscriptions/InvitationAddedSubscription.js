@@ -1,4 +1,4 @@
-import addNodeToArray from 'universal/utils/relay/addNodeToArray';
+import handleAddInvitations from 'universal/mutations/handlers/handleAddInvitations';
 
 const subscription = graphql`
   subscription InvitationAddedSubscription($teamId: ID!) {
@@ -6,6 +6,7 @@ const subscription = graphql`
       invitation {
         id
         email
+        teamId
         updatedAt
       }
     }
@@ -18,9 +19,8 @@ const InvitationAddedSubscription = (environment, queryVariables) => {
     subscription,
     variables: {teamId},
     updater: (store) => {
-      const newNode = store.getRootField('invitationAdded').getLinkedRecord('invitation');
-      const team = store.get(teamId);
-      addNodeToArray(newNode, team, 'invitations', 'createdAt');
+      const invitation = store.getRootField('invitationAdded').getLinkedRecord('invitation');
+      handleAddInvitations(invitation, store);
     }
   };
 };

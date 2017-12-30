@@ -24,7 +24,7 @@ const RequestNewUser = (props) => {
     onCompleted,
     history
   } = props;
-  const {notificationId, inviterName, inviteeEmail, orgId, team} = notification;
+  const {notificationId, inviter: {inviterName}, inviteeEmail, orgId, team} = notification;
   const {teamName, teamId, tier} = team;
   const acceptInvite = () => {
     submitMutation();
@@ -105,7 +105,9 @@ export default createFragmentContainer(
     fragment RequestNewUser_notification on Notification {
       notificationId: id
       ... on NotifyInvitation {
-        inviterName
+        inviter {
+          inviterName: preferredName
+        }
         inviteeEmail
         orgId
         team {

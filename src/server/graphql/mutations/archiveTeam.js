@@ -97,7 +97,7 @@ export default {
     getPubSub().publish(`${TEAM}.${viewerId}`, {data: {team, type: REMOVED}, ...subOptions});
 
     if (notificationData) {
-      const {team: {name: teamName, orgId}, userIds} = notificationData;
+      const {team: {orgId}, userIds} = notificationData;
       const notifications = userIds
         .filter((userId) => userId !== viewerId)
         .map((notifiedUserId) => ({
@@ -106,7 +106,7 @@ export default {
           startAt: now,
           type: TEAM_ARCHIVED,
           userIds: [notifiedUserId],
-          teamId,
+          teamId
         }));
       await r.table('Notification').insert(notifications);
       publishTeamArchivedNotifications(notifications, team, subOptions);

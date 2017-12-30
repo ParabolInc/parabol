@@ -1,8 +1,7 @@
 import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import TeamSubscriptionPayload from 'server/graphql/types/TeamSubscriptionPayload';
-import {getUserId} from 'server/utils/authorization';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import {getUserId, requireAuth} from 'server/utils/authorization';
 import {TEAM} from 'universal/utils/constants';
 
 export default {

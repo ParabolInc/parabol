@@ -25,7 +25,7 @@ const publishUpdatedInvitations = (updatedInvitations, {operationId}) => {
 };
 
 export default async function emailTeamInvitations(invitees, inviter, inviteId, subOptions) {
-  if (invitees.length === 0) return undefined;
+  if (invitees.length === 0) return {newInvitations: [], updatedInvitations: []};
   const {teamId, userId: inviterUserId} = inviter;
   const r = getRethink();
   const now = new Date();

@@ -4,6 +4,7 @@ import getPubSub from 'server/utils/getPubSub';
 import {APPROVED} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {NOTIFICATIONS_ADDED, TEAM_INVITE} from 'universal/utils/constants';
+import promiseAllObj from 'universal/utils/promiseAllObj';
 
 const maybeAutoApproveToOrg = (invitees, inviter) => {
   const r = getRethink();
@@ -34,10 +35,10 @@ const publishTeamInvites = (invitations, {operationId}) => {
 };
 
 const sendTeamInvitations = async (invitees, inviter, inviteId, subOptions) => {
-  if (invitees.length === 0) return [];
+  if (invitees.length === 0) return {newInvitations: [], updatedInvitations: []};
   const r = getRethink();
   const now = new Date();
-  const {orgId, inviterName, teamId, teamName} = inviter;
+  const {orgId, inviterName, inviterUserId, teamId, teamName} = inviter;
   const inviteeUsers = invitees.filter((invitee) => Boolean(invitee.userId));
 
   const invitations = inviteeUsers
@@ -48,26 +49,27 @@ const sendTeamInvitations = async (invitees, inviter, inviteId, subOptions) => {
       orgId,
       userIds: [invitee.userId],
       inviteeEmail: invitee.email,
+      inviterUserId,
       inviterName,
       teamId,
       teamName
     }));
 
   const userIds = inviteeUsers.map(({userId}) => userId);
-  await Promise.all([
-    r.table('Notification')
+  const {upsertedInvitations} = await promiseAllObj({
+    newNotifications: r.table('Notification')
       .getAll(r.args(userIds), {index: 'userIds'})
       .filter({type: TEAM_INVITE, teamId})('userIds')(0).default([])
       .do((userIdsWithNote) => {
         return r.expr(invitations).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
       })
       .do((newNotifications) => r.table('Notification').insert(newNotifications)),
-    emailTeamInvitations(invitees, inviter, inviteId, subOptions),
-    maybeAutoApproveToOrg(invitees, inviter)
-  ]);
+    upsertedInvitations: emailTeamInvitations(invitees, inviter, inviteId, subOptions),
+    autoApprove: maybeAutoApproveToOrg(invitees, inviter)
+  });
 
   publishTeamInvites(invitations, subOptions);
-  return undefined;
+  return upsertedInvitations;
 };
 
 export default sendTeamInvitations;

@@ -16,8 +16,7 @@ import notificationsAdded from 'server/graphql/subscriptions/notificationsAdded'
 import notificationsCleared from 'server/graphql/subscriptions/notificationsCleared';
 import organizationAdded from 'server/graphql/subscriptions/organizationAdded';
 import organizationUpdated from 'server/graphql/subscriptions/organizationUpdated';
-import orgApprovalAdded from 'server/graphql/subscriptions/orgApprovalAdded';
-import orgApprovalRemoved from 'server/graphql/subscriptions/orgApprovalRemoved';
+import orgApprovalSubscription from 'server/graphql/subscriptions/orgApprovalSubscription';
 import projectCreated from 'server/graphql/subscriptions/projectCreated';
 import projectDeleted from 'server/graphql/subscriptions/projectDeleted';
 import projectUpdated from 'server/graphql/subscriptions/projectUpdated';
@@ -52,8 +51,7 @@ export default new GraphQLObjectType({
     newAuthToken,
     notificationsAdded,
     notificationsCleared,
-    orgApprovalAdded,
-    orgApprovalRemoved,
+    orgApprovalSubscription,
     organizationAdded,
     organizationUpdated,
     projectCreated,

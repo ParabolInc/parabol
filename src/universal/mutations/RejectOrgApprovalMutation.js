@@ -1,21 +1,20 @@
 import {commitMutation} from 'react-relay';
-import {handleRemoveOrgApproval} from 'universal/mutations/CancelApprovalMutation';
+import {handleRemovedNotifications} from 'universal/mutations/ApproveToOrgMutation';
 import {clearNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
+import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 
 const mutation = graphql`
   mutation RejectOrgApprovalMutation($notificationId: ID!, $reason: String!) {
     rejectOrgApproval(notificationId: $notificationId, reason: $reason) {
-      notifications {
+      removedRequestNotifications {
         id
       }
-      orgApprovals {
+      removedOrgApprovals {
         id
-        teamId
       }
     }
   }
 `;
-
 
 const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted) => {
   const {viewerId} = environment;
@@ -25,16 +24,10 @@ const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted)
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('rejectOrgApproval');
-      const notifications = payload.getLinkedRecords('notifications');
-      const notificationIds = notifications.map((notification) => notification.getValue('id'));
-      clearNotificationUpdater(viewer, notificationIds);
-
-      const orgApprovals = payload.getLinkedRecords('orgApprovals');
-      orgApprovals.forEach((orgApproval) => {
-        const teamId = orgApproval.getValue('teamId');
-        const orgApprovalId = orgApproval.getValue('id');
-        handleRemoveOrgApproval(store, teamId, orgApprovalId);
-      });
+      const removedRequestNotifications = payload.getLinkedRecords('removedRequestNotifications');
+      const removedOrgApprovals = payload.getLinkedRecords('removedOrgApprovals');
+      handleRemovedNotifications(viewer, removedRequestNotifications);
+      handleRemoveOrgApprovals(removedOrgApprovals, store);
     },
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId);

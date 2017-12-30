@@ -5,13 +5,17 @@ import OrgApproval from 'server/graphql/types/OrgApproval';
 const RejectOrgApprovalPayload = new GraphQLObjectType({
   name: 'RejectOrgApprovalPayload',
   fields: () => ({
-    notifications: {
+    removedRequestNotifications: {
       type: new GraphQLList(NotifyInvitation),
       description: 'The list of notifications to remove. There may be multiple if many inviters requested the same email'
     },
-    orgApprovals: {
+    removedOrgApprovals: {
       type: new GraphQLList(OrgApproval),
-      description: 'The list of notifications to remove. There may be multiple if many inviters requested the same email'
+      description: 'The list of notifications to remove. There may be multiple if many inviters requested the same email',
+      resolve: ({removedOrgApprovalIds}, args, {dataLoader}) => {
+        if (!removedOrgApprovalIds) return [];
+        return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds);
+      }
     }
   })
 });

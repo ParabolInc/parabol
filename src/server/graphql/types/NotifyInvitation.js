@@ -1,6 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {resolveTeam} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import Team from 'server/graphql/types/Team';
+import User from 'server/graphql/types/User';
 
 const NotifyInvitation = new GraphQLObjectType({
   name: 'NotifyInvitation',
@@ -10,10 +12,6 @@ const NotifyInvitation = new GraphQLObjectType({
     inviterUserId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId of the person that invited the email'
-    },
-    inviterName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the person that invited the email'
     },
     inviteeEmail: {
       type: new GraphQLNonNull(GraphQLString),
@@ -27,12 +25,16 @@ const NotifyInvitation = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The team name the inviteeEmail is being invited to'
     },
+    inviter: {
+      type: User,
+      description: 'The user that triggered the invitation',
+      resolve: ({inviterUserId}, args, {dataLoader}) => {
+        return dataLoader.get('users').load(inviterUserId);
+      }
+    },
     team: {
       type: Team,
-      description: 'The team the project is on',
-      resolve: ({teamId}, args, {dataLoader}) => {
-        return dataLoader.get('teams').load(teamId);
-      }
+      resolve: resolveTeam
     },
     ...notificationInterfaceFields
   })

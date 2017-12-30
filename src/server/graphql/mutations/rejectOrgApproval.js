@@ -7,13 +7,8 @@ import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authoriza
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
-
-const publishDenialNotification = (denialNotification, {operationId}) => {
-  const userId = denialNotification.userIds[0];
-  const notificationsAdded = {notifications: [denialNotification]};
-  getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId});
-};
+import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, REMOVED} from 'universal/utils/constants';
+import promiseAllObj from 'universal/utils/promiseAllObj';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -27,15 +22,15 @@ export default {
       type: GraphQLString
     }
   },
-  async resolve(source, args, {authToken, dataLoader, socketId}) {
+  async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
-    const subOptions = {operationId, mutatorId: socketId};
+    const subOptions = {operationId, mutatorId};
 
     // AUTH
     const {notificationId} = args;
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     const rejectionNotification = await r.table('Notification').get(notificationId)
       .pluck('orgId', 'inviterUserId', 'inviteeEmail')
       .default(null);
@@ -43,7 +38,7 @@ export default {
       throw errorObj({reason: `Notification ${notificationId} no longer exists!`});
     }
     const {orgId, inviterUserId, inviteeEmail} = rejectionNotification;
-    const userOrgDoc = await getUserOrgDoc(userId, orgId);
+    const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
     requireOrgLeader(userOrgDoc);
 
     // VALIDATION
@@ -51,7 +46,7 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const deniedByName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
+    const deniedByName = await r.table('User').get(viewerId)('preferredName').default('A Billing Leader');
     const denialNotification = {
       id: shortid.generate(),
       type: DENY_NEW_USER,
@@ -64,15 +59,27 @@ export default {
     };
 
     // TODO include mutatorId in publishes once we're completely on Relay
-    const [{removedApprovals, removedNotifications}] = await Promise.all([
-      removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: userId}, subOptions),
-      r.table('Notification').insert(denialNotification)
-    ]);
-    publishDenialNotification(denialNotification, subOptions);
+    const {removedApprovalsAndNotifications} = await promiseAllObj({
+      removedApprovalsAndNotifications: removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: viewerId}),
+      addNotification: r.table('Notification').insert(denialNotification)
+    });
 
-    return {
-      notifications: removedNotifications.filter((notification) => notification.userIds.includes(userId)),
-      orgApprovals: removedApprovals
-    };
+    const {removedOrgApprovals, removedRequestNotifications} = removedApprovalsAndNotifications;
+    const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
+
+    // publish the removed org approval to the team
+    removedOrgApprovals.forEach((orgApproval) => {
+      const {id: orgApprovalId, teamId} = orgApproval;
+      getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApprovalId}, ...subOptions});
+    });
+
+    // publish the removed request notifications to all org leaders
+    removedRequestNotifications.forEach((notification) => {
+      const {userIds} = notification;
+      userIds.forEach((userId) => {
+        getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notification, type: REMOVED}, ...subOptions});
+      });
+    });
+    return {removedOrgApprovalIds, removedRequestNotifications};
   }
 };

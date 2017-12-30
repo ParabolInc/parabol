@@ -9,8 +9,7 @@ import TeamSettings from 'universal/modules/teamDashboard/components/TeamSetting
 import InvitationAddedSubscription from 'universal/subscriptions/InvitationAddedSubscription';
 import InvitationRemovedSubscription from 'universal/subscriptions/InvitationRemovedSubscription';
 import InvitationUpdatedSubscription from 'universal/subscriptions/InvitationUpdatedSubscription';
-import OrgApprovalAddedSubscription from 'universal/subscriptions/OrgApprovalAddedSubscription';
-import OrgApprovalRemovedSubscription from 'universal/subscriptions/OrgApprovalRemovedSubscription';
+import OrgApprovalSubscription from 'universal/subscriptions/OrgApprovalSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -25,8 +24,7 @@ const subscriptions = [
   InvitationAddedSubscription,
   InvitationRemovedSubscription,
   InvitationUpdatedSubscription,
-  OrgApprovalRemovedSubscription,
-  OrgApprovalAddedSubscription
+  OrgApprovalSubscription
 ];
 
 const TeamSettingsRoot = ({atmosphere, teamId}) => {

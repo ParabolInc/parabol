@@ -52,7 +52,6 @@ export default function notificationTemplate(template) {
     return {
       type,
       inviterUserId: inviter.id,
-      inviterName: inviter.preferredName,
       inviteeEmail: template.email || newInvitee().email,
       teamId: this.context.team.id,
       teamName: this.context.team.name,

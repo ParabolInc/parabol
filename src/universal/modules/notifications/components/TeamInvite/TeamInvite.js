@@ -23,7 +23,7 @@ const TeamInvite = (props) => {
     onError,
     onCompleted
   } = props;
-  const {notificationId, inviterName, team} = notification;
+  const {notificationId, inviter: {inviterName}, team} = notification;
   const {teamName} = team;
   const handleCompleted = () => {
     dispatch(showInfo({
@@ -89,7 +89,9 @@ export default createFragmentContainer(
     fragment TeamInvite_notification on Notification {
       notificationId: id
       ... on NotifyInvitation {
-        inviterName
+        inviter {
+          inviterName: preferredName
+        }
         team {
           teamName: name
         }

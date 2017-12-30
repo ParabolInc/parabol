@@ -1,13 +1,12 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import Invitee from 'server/graphql/types/Invitee';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
-import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
+import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {TEAM} from 'universal/subscriptions/constants';
-import {ADDED, REJOIN_TEAM, TEAM_MEMBER} from 'universal/utils/constants';
+import {ADDED, NOTIFICATION, ORG_APPROVAL, REJOIN_TEAM, REMOVED, TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -31,7 +30,14 @@ export default {
 
     // RESOLUTION
     const subOptions = {mutatorId, operationId};
-    const {reactivations, results} = await inviteTeamMembers(invitees, teamId, viewerId, subOptions);
+    const {
+      orgApprovalIds,
+      reactivations,
+      results,
+      removedOrgApprovals,
+      removedRequestNotifications,
+      requestNotifications
+    } = await inviteTeamMembers(invitees, teamId, viewerId, subOptions);
     const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId);
 
     // HANDLE REACTIVATION
@@ -45,7 +51,31 @@ export default {
       getPubSub().publish(`${TEAM}.${userId}`, {data: {teamId, notificationId, type: ADDED}, ...subOptions});
     });
 
-    return {reactivatedTeamMemberIds, results};
+    // HANDLE NON-ORG LEADERS NEEDING APPROVAL
+    orgApprovalIds.forEach((orgApprovalId) => {
+      getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApprovalId, type: ADDED}, ...subOptions});
+    });
+    requestNotifications.forEach((requestNotification) => {
+      const {id: notificationId, userIds} = requestNotification;
+      userIds.forEach((userId) => {
+        // if the org leader triggers this it won't be in the mutation payload, so mutatorId is not passed in
+        getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notificationId, type: ADDED}, operationId});
+      });
+    });
+
+    // HANDLE ORG LEADER INVITING A PENDING ORG APPROVAL INVITEE
+    const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
+    removedOrgApprovalIds.forEach((removedOrgApprovalId) => {
+      getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {removedOrgApprovalId, type: REMOVED}, ...subOptions});
+    });
+    removedRequestNotifications.forEach((notification) => {
+      const {userIds} = notification;
+      userIds.forEach((userId) => {
+        // if the org leader triggers this it won't be in the mutation payload, so mutatorId is not passed in
+        getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notification, type: REMOVED}, operationId});
+      });
+    });
+    return {orgApprovalIds, reactivatedTeamMemberIds, removedOrgApprovalIds, results};
   }
 };
 

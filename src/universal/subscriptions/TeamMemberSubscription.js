@@ -1,7 +1,8 @@
+import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers';
 import {handleNotification} from 'universal/subscriptions/NotificationsAddedSubscription';
-import addNodeToArray from 'universal/utils/relay/addNodeToArray';
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
 
+// eslint-disable-next-line no-unused-expressions
 graphql`
   fragment TeamMemberSubscription_teamMember on TeamMember {
     id
@@ -39,16 +40,8 @@ const subscription = graphql`
       }
     }
   }
-  
-`;
 
-export const handleAddTeamMember = (store, newTeamMember) => {
-  const teamId = newTeamMember && newTeamMember.getValue('teamId');
-  if (!teamId) return;
-  const team = store.get(teamId);
-  addNodeToArray(newTeamMember, team, 'teamMembers', 'checkInOrder', {storageKeyArgs: {sortBy: 'checkInOrder'}});
-  addNodeToArray(newTeamMember, team, 'teamMembers', 'preferredName', {storageKeyArgs: {sortBy: 'preferredName'}});
-};
+`;
 
 export const handleUpdateTeamMember = (store, updatedTeamMember) => {
   if (!updatedTeamMember) return;
@@ -84,7 +77,7 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
       const type = payload.getValue('__typename');
       if (type === 'TeamMemberAdded') {
         const notification = payload.getLinkedRecord('notification');
-        handleAddTeamMember(store, teamMember, notification, dispatch);
+        handleAddTeamMembers(teamMember, store);
         handleNotification(notification, {dispatch});
       } else if (type === 'TeamMemberUpdated') {
         handleUpdateTeamMember(store, teamMember);

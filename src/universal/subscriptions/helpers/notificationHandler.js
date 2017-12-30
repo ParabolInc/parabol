@@ -254,7 +254,7 @@ const notificationHandler = {
   },
   [REQUEST_NEW_USER]: (payload, {dispatch, history, store, environment}) => {
     const {viewerId} = environment;
-    const inviterName = payload.getValue('inviterName');
+    const inviterName = payload.getLinkedRecord('inviter').getValue('preferredName');
     // TODO highlight the id, but don't store the state in the url cuz ugly
     dispatch(showInfo({
       autoDismiss: 10,
@@ -288,7 +288,7 @@ const notificationHandler = {
   },
   [TEAM_INVITE]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
-    const inviterName = payload.getValue('inviterName');
+    const inviterName = payload.getLinkedRecord('inviter').getValue('preferredName');
     const team = payload.getLinkedRecord('team');
     const teamName = team.getValue('name');
     dispatch(showInfo({

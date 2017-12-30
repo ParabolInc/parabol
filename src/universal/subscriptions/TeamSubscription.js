@@ -2,6 +2,7 @@ import {handleAddTeamToViewerTeams} from 'universal/mutations/AddTeamMutation';
 import {handleRemoveTeam} from 'universal/mutations/ArchiveTeamMutation';
 import {handleNotification} from 'universal/subscriptions/NotificationsAddedSubscription';
 
+// eslint-disable-next-line no-unused-expressions
 graphql`
   fragment TeamSubscription_team on Team {
     id

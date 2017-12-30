@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_CLEARED, ORG_APPROVAL_REMOVED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {NOTIFICATIONS_CLEARED, ORG_APPROVAL, REMOVED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default {
   type: CancelApprovalPayload,
@@ -19,13 +19,13 @@ export default {
     const operationId = dataLoader.share();
 
     // AUTH
-    const orgApproval = await r.table('OrgApproval').get(orgApprovalId);
-    const {email, orgId, teamId} = orgApproval;
+    const orgApprovalDoc = await r.table('OrgApproval').get(orgApprovalId);
+    const {email, orgId, teamId} = orgApprovalDoc;
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const {removedApproval, removedNotification} = await r({
-      removedApproval: r.table('OrgApproval')
+    const {orgApproval, removedNotification} = await r({
+      orgApproval: r.table('OrgApproval')
         .get(orgApprovalId)
         .update({
           isActive: false
@@ -48,9 +48,7 @@ export default {
       });
     }
 
-    const orgApprovalRemoved = {orgApproval: removedApproval};
-    getPubSub().publish(`${ORG_APPROVAL_REMOVED}.${teamId}`, {orgApprovalRemoved, mutatorId, operationId});
-
-    return orgApprovalRemoved;
+    getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApproval, type: REMOVED}, mutatorId, operationId});
+    return {orgApproval};
   }
 };

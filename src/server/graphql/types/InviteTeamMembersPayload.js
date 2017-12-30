@@ -17,6 +17,7 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'The list of emails that turned out to be reactivated team members',
       resolve: ({reactivatedTeamMemberIds}, args, {dataLoader}) => {
+        if (reactivatedTeamMemberIds.length === 0) return [];
         return dataLoader.get('teamMembers').loadMany(reactivatedTeamMemberIds);
       }
     },
@@ -24,6 +25,7 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       type: new GraphQLList(Invitation),
       description: 'The list of invitations successfully sent out',
       resolve: ({invitationIds}, args, {dataLoader}) => {
+        if (invitationIds.length === 0) return [];
         return dataLoader.get('invitations').loadMany(invitationIds);
       }
     },
@@ -31,7 +33,16 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       type: new GraphQLList(OrgApproval),
       description: 'The list of orgApprovals sent to the org leader',
       resolve: ({orgApprovalIds}, args, {dataLoader}) => {
+        if (orgApprovalIds.length === 0) return [];
         return dataLoader.get('orgApprovals').loadMany(orgApprovalIds);
+      }
+    },
+    orgApprovalsRemoved: {
+      type: new GraphQLList(OrgApproval),
+      description: 'The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval',
+      resolve: ({removedOrgApprovalIds}, args, {dataLoader}) => {
+        if (removedOrgApprovalIds.length === 0) return [];
+        return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds);
       }
     },
     errors: {

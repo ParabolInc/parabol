@@ -35,7 +35,7 @@ export default {
       teamId
     };
     const invitees = [{email, fullName}];
-    sendTeamInvitations(invitees, inviter, inviteId, subOptions);
+    const {newInvitations, updatedInvitations} = await sendTeamInvitations(invitees, inviter, inviteId, subOptions);
     return true;
   }
 };

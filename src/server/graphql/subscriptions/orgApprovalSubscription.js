@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import AddOrgApprovalPayload from 'server/graphql/types/AddOrgApprovalPayload';
+import OrgApprovalSubscriptionPayload from 'server/graphql/types/OrgApprovalSubscriptionPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import {ORG_APPROVAL_ADDED} from 'universal/utils/constants';
+import {ORG_APPROVAL} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(AddOrgApprovalPayload),
+  type: new GraphQLNonNull(OrgApprovalSubscriptionPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -16,8 +16,9 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const channelName = `${ORG_APPROVAL_ADDED}.${teamId}`;
+    const channelName = `${ORG_APPROVAL}.${teamId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, dataLoader});
+    const resolve = ({data}) => ({orgApprovalSubscription: data});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve});
   }
 };
