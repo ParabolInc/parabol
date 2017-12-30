@@ -32,7 +32,7 @@ export default {
       .update({isCheckedIn}, {returnChanges: true})('changes')(0)('new_val');
 
     const teamMemberUpdated = {teamMember};
-    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId, type: UPDATED}, mutatorId, operationId});
+    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId, type: UPDATED}, mutatorId, operationId});
     return teamMemberUpdated;
   }
 };

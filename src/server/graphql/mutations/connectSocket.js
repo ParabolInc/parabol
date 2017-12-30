@@ -50,7 +50,7 @@ export default {
       teamMembers.forEach((teamMember) => {
         const {teamId} = teamMember;
         const payload = {
-          teamMember: {
+          data: {
             teamMemberId: teamMember.id,
             isConnected: true,
             type: UPDATED

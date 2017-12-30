@@ -11,7 +11,9 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
   const r = getRethink();
   const now = new Date();
   const userIds = invitees.map(({userId}) => userId);
-  const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
+  const teamMemberIds = invitees
+    .map(({teamMemberId}) => teamMemberId)
+    .filter(Boolean);
   const {reactivatedUsers} = await r({
     reactivatedTeamMembers: r.table('TeamMember')
       .getAll(r.args(teamMemberIds), {index: 'id'})
@@ -35,7 +37,7 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
   }));
   await r.table('Notification').insert(notifications);
   teamMemberIds.forEach((teamMemberId) => {
-    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId, type: ADDED}, ...subOptions});
+    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId, type: ADDED}, ...subOptions});
   });
 
   const reactivationNotifications = makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);

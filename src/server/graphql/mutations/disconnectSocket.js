@@ -30,7 +30,7 @@ export default {
       tms.forEach((teamId) => {
         const teamMemberId = toTeamMemberId(teamId, userId);
         const payload = {
-          teamMember: {
+          data: {
             teamMemberId,
             isConnected: true,
             type: UPDATED

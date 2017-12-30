@@ -1,33 +1,45 @@
+import {handleNotification} from 'universal/subscriptions/NotificationsAddedSubscription';
 import addNodeToArray from 'universal/utils/relay/addNodeToArray';
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
 
+graphql`
+  fragment TeamMemberSubscription_teamMember on TeamMember {
+    id
+    checkInOrder
+    isLead
+    isCheckedIn
+    isConnected
+    isNotRemoved
+    picture
+    preferredName
+    teamId
+  }
+`;
+
 const subscription = graphql`
   subscription TeamMemberSubscription {
-    teamMember {
-      added {
-        id
-        checkInOrder
-        isLead
-        isCheckedIn
-        isConnected
-        isNotRemoved
-        picture
-        preferredName
-        teamId
+    teamMemberSubscription {
+      __typename
+      ... on TeamMemberAdded {
+        teamMember {
+          ...TeamMemberSubscription_teamMember
+        }
+        notification {
+          type
+          preferredName
+          team {
+            name
+          }
+        }
       }
-      updated {
-        id
-        checkInOrder
-        isLead
-        isCheckedIn
-        isConnected
-        isNotRemoved
-        picture
-        preferredName
-        teamId
+      ... on TeamMemberUpdated {
+        teamMember {
+          ...TeamMemberSubscription_teamMember
+        }
       }
     }
   }
+  
 `;
 
 export const handleAddTeamMember = (store, newTeamMember) => {
@@ -61,14 +73,20 @@ export const handleUpdateTeamMember = (store, updatedTeamMember) => {
   }
 };
 
-const TeamMemberSubscription = () => {
+const TeamMemberSubscription = (environment, queryVariables, subParams) => {
+  const {dispatch} = subParams;
   return {
     subscription,
     variables: {},
     updater: (store) => {
-      const payload = store.getRootField('teamMember');
-      const addedTeamMember = payload.getLinkedRecord('added');
-      handleAddTeamMember(store, addedTeamMember);
+      const payload = store.getRootField('teamMemberSubscription');
+      const teamMember = payload.getLinkedRecord('teamMember');
+      const type = payload.getValue('__typename');
+      if (type === 'TeamMemberAdded') {
+        const notification = payload.getLinkedRecord('notification');
+        handleAddTeamMember(store, teamMember, notification, dispatch);
+        handleNotification(notification, {dispatch});
+      }
       const updatedTeamMember = payload.getLinkedRecord('updated');
       handleUpdateTeamMember(store, updatedTeamMember);
     }

@@ -34,9 +34,7 @@ const approvePendingApprovals = async (orgApprovals, inviter, subOptions) => {
   return mergeObjectsWithArrValues(...results);
 };
 
-const inviteTeamMembers = async (invitees, teamId, userId, dataLoader, mutatorId) => {
-  const operationId = dataLoader.share();
-  const subOptions = {mutatorId, operationId};
+const inviteTeamMembers = async (invitees, teamId, userId, subOptions) => {
   const r = getRethink();
   const {name: teamName, orgId} = await r.table('Team').get(teamId).pluck('name', 'orgId');
 

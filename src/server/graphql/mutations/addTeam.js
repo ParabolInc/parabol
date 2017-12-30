@@ -53,7 +53,8 @@ export default {
     // handle invitees
     sendSegmentEvent('New Team', userId, {teamId, orgId, inviteeCount});
     if (inviteeCount > 0) {
-      await inviteTeamMembers(invitees, teamId, userId, dataLoader, mutatorId);
+      const subOptions = {mutatorId, operationId};
+      await inviteTeamMembers(invitees, teamId, userId, subOptions);
     }
 
     const teamAdded = {

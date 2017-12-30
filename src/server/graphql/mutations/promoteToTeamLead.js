@@ -51,8 +51,8 @@ export default {
     }
     const operationId = dataLoader.share();
     const teamMemberUpdated = {teamMember: promotee};
-    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId: myTeamMemberId, type: UPDATED}, operationId, mutatorId });
-    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId, type: UPDATED}, operationId, mutatorId});
+    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId: myTeamMemberId, type: UPDATED}, operationId, mutatorId });
+    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId, type: UPDATED}, operationId, mutatorId});
     return teamMemberUpdated;
   }
 };

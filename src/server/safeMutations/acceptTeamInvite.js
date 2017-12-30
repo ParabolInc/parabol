@@ -82,7 +82,7 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
   publishClearNotifications(expireInviteNotificationIds, userId);
   publishJoinTeamNotifications(teamId, teamName, user);
 
-  getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {teamMember: {teamMemberId, type: ADDED}, ...subOptions});
+  getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId, type: ADDED}, ...subOptions});
 
   // Send the new team member a welcome & a new token
   const newAuthToken = tmsSignToken(authToken, tms);

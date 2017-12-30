@@ -11,6 +11,7 @@ export default {
     const {tms: teamIds} = authToken;
     const channelNames = teamIds.concat(userId).map((id) => `${TEAM_MEMBER}.${id}`);
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelNames, {filterFn, dataLoader});
+    const resolve = ({data}) => ({teamMemberSubscription: data});
+    return makeSubscribeIter(channelNames, {filterFn, dataLoader, resolve});
   }
 };

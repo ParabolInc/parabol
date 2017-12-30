@@ -89,6 +89,14 @@ const subscription = graphql`
   }
 `;
 
+export const handleNotification = (payload, options) => {
+  if (!payload) return;
+  const type = payload.getValue('type');
+  const handler = notificationHandler[type];
+  if (handler) {
+    handler(payload, options);
+  }
+};
 
 const NotificationsAddedSubscription = (environment, queryVariables, {dispatch, history, location}) => {
   const {viewerId} = environment;
@@ -98,11 +106,7 @@ const NotificationsAddedSubscription = (environment, queryVariables, {dispatch, 
       const options = {dispatch, environment, history, location, store, viewerId};
       const notifications = store.getRootField('notificationsAdded').getLinkedRecords('notifications');
       notifications.forEach((payload) => {
-        const type = payload.getValue('type');
-        const handler = notificationHandler[type];
-        if (handler) {
-          handler(payload, options);
-        }
+        handleNotification(payload, options);
       });
     }
   };

@@ -29,7 +29,9 @@ export default {
       description: 'The name of the new team'
     }
   },
-  async resolve(source, args, {authToken, dataLoader, socketId}) {
+  async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
+    const operationId = dataLoader.share();
+
     // AUTH
     const {orgId} = args.newTeam;
     const userId = getUserId(authToken);
@@ -49,7 +51,8 @@ export default {
     await createTeamAndLeader(userId, newTeam, true);
 
     if (invitees && invitees.length) {
-      await inviteTeamMembers(invitees, teamId, userId, dataLoader, socketId);
+      const subOptions = {mutatorId, operationId};
+      await inviteTeamMembers(invitees, teamId, userId, subOptions);
     }
     const newAuthToken = tmsSignToken({
       ...authToken,
@@ -57,7 +60,7 @@ export default {
     }, authToken.tms.concat(teamId));
     sendSegmentEvent('New Org', userId, {orgId, teamId});
     const organizationAdded = {organization: newOrg};
-    getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId: socketId});
+    getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId});
     getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
     return organizationAdded;
   }
