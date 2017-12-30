@@ -54,7 +54,9 @@ const subscription = graphql`
           }
         }
         ... on NotifyTeamArchived {
-          teamName
+          team {
+            name
+          }
         }
         
         # Requirements for toast notifications that aren't persisted 

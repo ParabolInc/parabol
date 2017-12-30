@@ -21,7 +21,7 @@ const TeamArchived = (props) => {
     onError,
     onCompleted
   } = props;
-  const {notificationId, teamName} = notification;
+  const {notificationId, team: {teamName}} = notification;
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
@@ -76,7 +76,9 @@ export default createFragmentContainer(
     fragment TeamArchived_notification on Notification {
       notificationId: id
       ... on NotifyTeamArchived {
-        teamName
+        team {
+          teamName: name
+        }
       }
     }
   `

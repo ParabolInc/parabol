@@ -36,6 +36,30 @@ const subscription = graphql`
           ...TeamSubscription_team
         }
       }
+      ... on TeamRemoved {
+        team {
+          id
+        }
+        notification {
+          id
+          orgId
+          startAt
+          type
+          ... on NotifyTeamArchived {
+            team {
+              name
+            }
+          }
+          ... on NotifyKickedOut {
+            isKickout
+            team {
+              id
+              name
+            }
+          }
+        }
+        
+      }
     }
   }
 `;
@@ -50,17 +74,14 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const payload = store.getRootField('teamSubscription');
       const team = payload.getLinkedRecord('team');
       const type = payload.getValue('__typename');
+      const notification = payload.getLinkedRecord('notification');
       if (type === 'TeamAdded') {
-        const notification = payload.getLinkedRecord('notification');
         handleAddTeamToViewerTeams(store, viewerId, team);
-        handleNotification(notification, {dispatch, environment, store});
-      } else if (type === 'TeamUpdated') {
-        const isArchived = team.getValue('isArchived');
-        if (isArchived) {
-          const teamId = team.getValue('id');
-          handleRemoveTeam(store, viewerId, teamId);
-        }
+      } else if (type === 'TeamRemoved') {
+        const teamId = team.getValue('id');
+        handleRemoveTeam(store, viewerId, teamId);
       }
+      handleNotification(notification, {dispatch, environment, store});
     }
   };
 };

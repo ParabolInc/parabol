@@ -7,7 +7,7 @@ import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, TEAM_ARCHIVED, TEAM, UPDATED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, REMOVED, TEAM, TEAM_ARCHIVED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const publishAuthTokensWithoutTeam = (userDocs) => {
@@ -20,11 +20,11 @@ const publishAuthTokensWithoutTeam = (userDocs) => {
   });
 };
 
-const publishTeamArchivedNotifications = (notifications, subOptions) => {
+const publishTeamArchivedNotifications = (notifications, team, subOptions) => {
   notifications.forEach((notification) => {
-    const userId = notification.userIds[0];
-    const notificationsAdded = {notifications: [notification]};
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, ...subOptions});
+    const {id: notificationId, userIds} = notification;
+    const userId = userIds[0];
+    getPubSub().publish(`${TEAM}.${userId}`, {data: {team, type: REMOVED, notificationId}, ...subOptions});
   });
 };
 
@@ -40,14 +40,14 @@ export default {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
-
+    const subOptions = {operationId, mutatorId};
     // AUTH
-    const userId = getUserId(authToken);
-    const teamMemberId = toTeamMemberId(teamId, userId);
+    const viewerId = getUserId(authToken);
+    const teamMemberId = toTeamMemberId(teamId, viewerId);
     await requireTeamLead(teamMemberId);
 
     // RESOLUTION
-    sendSegmentEvent('Archive Team', userId, {teamId});
+    sendSegmentEvent('Archive Team', viewerId, {teamId});
     const {teamResults: {notificationData, teamResult}, userDocs} = await r.table('Team')
       .get(teamId)
       .pluck('name', 'orgId')
@@ -83,20 +83,6 @@ export default {
         )
       }));
 
-    if (notificationData) {
-      const {team: {name: teamName, orgId}, userIds} = notificationData;
-      const notifications = userIds.map((notifiedUserId) => ({
-        id: shortid.generate(),
-        orgId,
-        startAt: now,
-        type: TEAM_ARCHIVED,
-        userIds: [notifiedUserId],
-        teamName
-      }));
-      await r.table('Notification').insert(notifications);
-      publishTeamArchivedNotifications(notifications);
-    }
-
     if (!teamResult) {
       throw new Error('Team was already archived');
     }
@@ -106,9 +92,27 @@ export default {
       ...teamResult,
       isArchived: true
     };
-    const teamUpdated = {team};
-    getPubSub().publish(`${TEAM}.${teamId}`, {data: {teamId, type: UPDATED}, operationId, mutatorId});
+
+    // tell the mutator, but don't give them a notification
+    getPubSub().publish(`${TEAM}.${viewerId}`, {data: {team, type: REMOVED}, ...subOptions});
+
+    if (notificationData) {
+      const {team: {name: teamName, orgId}, userIds} = notificationData;
+      const notifications = userIds
+        .filter((userId) => userId !== viewerId)
+        .map((notifiedUserId) => ({
+          id: shortid.generate(),
+          orgId,
+          startAt: now,
+          type: TEAM_ARCHIVED,
+          userIds: [notifiedUserId],
+          teamId,
+        }));
+      await r.table('Notification').insert(notifications);
+      publishTeamArchivedNotifications(notifications, team, subOptions);
+    }
     publishAuthTokensWithoutTeam(userDocs);
-    return teamUpdated;
+
+    return {team};
   }
 };

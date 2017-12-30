@@ -271,7 +271,7 @@ const notificationHandler = {
   },
   [TEAM_ARCHIVED]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
-    const teamName = payload.getValue('teamName');
+    const teamName = payload.getLinkedRecord('team').getValue('name');
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'That’s it, folks!',
