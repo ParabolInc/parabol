@@ -7,7 +7,7 @@ import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, TEAM_ARCHIVED, TEAM_UPDATED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, TEAM_ARCHIVED, TEAM, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const publishAuthTokensWithoutTeam = (userDocs) => {
@@ -107,7 +107,7 @@ export default {
       isArchived: true
     };
     const teamUpdated = {team};
-    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated, operationId, mutatorId});
+    getPubSub().publish(`${TEAM}.${teamId}`, {data: {teamId, type: UPDATED}, operationId, mutatorId});
     publishAuthTokensWithoutTeam(userDocs);
     return teamUpdated;
   }

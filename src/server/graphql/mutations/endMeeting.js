@@ -9,7 +9,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, MEETING_UPDATED, PROJECT_UPDATED, SUMMARY, TEAM_UPDATED} from 'universal/utils/constants';
+import {DONE, LOBBY, MEETING_UPDATED, PROJECT_UPDATED, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
@@ -146,7 +146,7 @@ export default {
       meetingId
     };
     const meetingUpdated = {team: summaryMeeting};
-    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated: meetingUpdated, mutatorId, operationId});
+    getPubSub().publish(`${TEAM}.${teamId}`, {data: {team: summaryMeeting, type: UPDATED}, mutatorId, operationId});
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
     sendEmailSummary(completedMeeting);
 

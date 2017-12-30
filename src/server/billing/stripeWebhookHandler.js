@@ -96,4 +96,4 @@ export default async function stripeWebhookHandler(req, res) {
   if (result.errors) {
     console.log('Stripe GraphQL Error:', result.errors);
   }
-};
+}

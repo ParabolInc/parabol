@@ -6,7 +6,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {CHECKIN, MEETING_UPDATED, TEAM_UPDATED} from 'universal/utils/constants';
+import {CHECKIN, MEETING_UPDATED, TEAM, UPDATED} from 'universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
@@ -66,7 +66,7 @@ export default {
 
     const meetingUpdated = {team};
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
-    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated: meetingUpdated, mutatorId, operationId});
+    getPubSub().publish(`${TEAM}.${teamId}`, {data: {teamId, type: UPDATED}, mutatorId, operationId});
     return meetingUpdated;
   }
 };

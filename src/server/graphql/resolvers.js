@@ -1,17 +1,13 @@
-export const resolveTeam = ({teamId}, args, {dataLoader}) => dataLoader.get('teams').load(teamId);
+export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
+  return teamId ? dataLoader.get('teams').load(teamId) : team;
+};
 
 export const resolveTeamMember = ({teamMemberId, teamMember}, args, {dataLoader}) => {
-  if (teamMemberId) {
-    return dataLoader.get('teamMembers').load(teamMemberId);
-  }
-  return teamMember;
+  return teamMemberId ? dataLoader.get('teamMembers').load(teamMemberId) : teamMember;
 };
 
 export const resolveNotification = ({notificationId, notification}, args, {dataLoader}) => {
-  if (notificationId) {
-    return dataLoader.get('notifications').load(notificationId);
-  }
-  return notification;
+  return notificationId ? dataLoader.get('notifications').load(notificationId) : notification;
 };
 
 export const resolveSub = (type, resolver) => (source, args, context) => {

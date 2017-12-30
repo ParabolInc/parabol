@@ -5,7 +5,7 @@ import UpdateTeamPayload from 'server/graphql/types/UpdateTeamPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
-import {TEAM_UPDATED} from 'universal/utils/constants';
+import {TEAM, UPDATED} from 'universal/utils/constants';
 import updateTeamNameValidation from './helpers/updateTeamNameValidation';
 
 
@@ -41,7 +41,7 @@ export default {
       throw new Error('Update already called!');
     }
     const teamUpdated = {team};
-    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated, mutatorId, operationId});
+    getPubSub().publish(`${TEAM}.${teamId}`, {data: {teamId, type: UPDATED}, mutatorId, operationId});
     return teamUpdated;
   }
 };

@@ -3,8 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {LOBBY, MEETING_UPDATED, TEAM_UPDATED} from 'universal/utils/constants';
-
+import {LOBBY, MEETING_UPDATED, TEAM, UPDATED} from 'universal/utils/constants';
 
 export default {
   type: UpdateMeetingPayload,
@@ -38,7 +37,7 @@ export default {
       throw new Error('meeting already updated!');
     }
     const meetingUpdated = {team};
-    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated: meetingUpdated, mutatorId, operationId});
+    getPubSub().publish(`${TEAM}.${teamId}`, {data: {teamId, type: UPDATED}, mutatorId, operationId});
     getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
     return meetingUpdated;
   }

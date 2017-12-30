@@ -10,7 +10,7 @@ import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, TEAM_ADDED} from 'universal/utils/constants';
+import {ADDED, NEW_AUTH_TOKEN, TEAM} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import addTeamValidation from './helpers/addTeamValidation';
 
@@ -61,7 +61,7 @@ export default {
       teamId,
       teamMemberId: toTeamMemberId(teamId, userId)
     };
-    getPubSub().publish(`${TEAM_ADDED}.${userId}`, {teamAdded, mutatorId, operationId});
+    getPubSub().publish(`${TEAM}.${userId}`, {data: {teamId, type: ADDED}, mutatorId, operationId});
     publishNewAuthToken(authToken.tms, teamId, userId);
     return teamAdded;
   }

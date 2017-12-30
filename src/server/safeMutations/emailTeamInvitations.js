@@ -55,4 +55,4 @@ export default async function emailTeamInvitations(invitees, inviter, inviteId, 
   publishNewInvitations(newInvitations, subOptions);
   publishUpdatedInvitations(updatedInvitations, subOptions);
   return {newInvitations, updatedInvitations};
-};
+}

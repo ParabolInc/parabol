@@ -10,7 +10,7 @@ import {ADD_USER} from 'server/utils/serverConstants';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {
   ADD_TO_TEAM, ADDED, INVITATION_REMOVED, JOIN_TEAM, NEW_AUTH_TOKEN, NOTIFICATIONS_ADDED, NOTIFICATIONS_CLEARED,
-  TEAM_ADDED, TEAM_MEMBER
+  TEAM, TEAM_MEMBER
 } from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -55,7 +55,7 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
   const userTeams = user.tms || [];
   const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
   const tms = [...userTeams, teamId];
-  const {expiredEmailInvitations, expireInviteNotificationIds, teamMember} = await r({
+  const {expiredEmailInvitations, expireInviteNotificationIds} = await r({
     // add the team to the user doc
     userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
     teamMember: insertNewTeamMember(userId, teamId),
@@ -86,18 +86,12 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
 
   // Send the new team member a welcome & a new token
   const newAuthToken = tmsSignToken(authToken, tms);
-  const addedToTeam = {
+  const notification = {
     // no ID to rule out permanent notification. they already know, they are the ones who did it!
-    startAt: now,
     type: ADD_TO_TEAM,
     teamId
   };
-  const teamAdded = {
-    notification: addedToTeam,
-    teamId,
-    teamMemberId
-  };
-  getPubSub().publish(`${TEAM_ADDED}.${userId}`, {teamAdded, ...subOptions});
+  getPubSub().publish(`${TEAM}.${userId}`, {data: {teamId, notification, type: ADDED}, ...subOptions});
   getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
 
   return {

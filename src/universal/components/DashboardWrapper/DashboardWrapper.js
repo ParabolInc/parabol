@@ -7,9 +7,8 @@ import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLa
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import TeamAddedSubscription from 'universal/subscriptions/TeamAddedSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
-import TeamUpdatedSubscription from 'universal/subscriptions/TeamUpdatedSubscription';
+import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
@@ -43,8 +42,7 @@ const subscriptions = [
   NewAuthTokenSubscription,
   NotificationsAddedSubscription,
   NotificationsClearedSubscription,
-  TeamAddedSubscription,
-  TeamUpdatedSubscription,
+  TeamSubscription,
   TeamMemberSubscription
 ];
 

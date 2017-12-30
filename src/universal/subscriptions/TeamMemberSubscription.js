@@ -86,9 +86,9 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
         const notification = payload.getLinkedRecord('notification');
         handleAddTeamMember(store, teamMember, notification, dispatch);
         handleNotification(notification, {dispatch});
+      } else if (type === 'TeamMemberUpdated') {
+        handleUpdateTeamMember(store, teamMember);
       }
-      const updatedTeamMember = payload.getLinkedRecord('updated');
-      handleUpdateTeamMember(store, updatedTeamMember);
     }
   };
 };

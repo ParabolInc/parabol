@@ -66,7 +66,7 @@ const handleReactivatedTeamMembers = (store, reactivatedTeamMembers) => {
   if (!reactivatedTeamMembers) return;
   reactivatedTeamMembers.forEach((newTeamMember) => {
     handleAddTeamMember(store, newTeamMember);
-  })
+  });
 };
 
 const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onError, onCompleted) => {
