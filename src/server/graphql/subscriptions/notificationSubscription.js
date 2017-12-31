@@ -1,11 +1,11 @@
 import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import NotificationsAddedPayload from 'server/graphql/types/NotificationsAddedPayload';
+import NotificationSubscriptionPayload from 'server/graphql/types/NotificationSubscriptionPayload';
 import {getUserId, requireAuth} from 'server/utils/authorization';
 import {NOTIFICATION} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(NotificationsAddedPayload),
+  type: new GraphQLNonNull(NotificationSubscriptionPayload),
   subscribe: (source, args, {authToken, dataLoader, socketId}) => {
     // AUTH
     requireAuth(authToken);

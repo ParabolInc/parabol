@@ -13,7 +13,9 @@ export default {
       description: 'The teamMemberId of the person who is being removed'
     }
   },
-  async resolve(source, {teamMemberId}, {authToken}) {
+  async resolve(source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const operationId = dataLoader.share();
+
     // AUTH
     const myUserId = getUserId(authToken);
     const {userId, teamId} = fromTeamMemberId(teamMemberId);
@@ -23,7 +25,7 @@ export default {
       await requireTeamLead(myTeamMemberId);
     }
     // RESOLUTION
-    await removeAllTeamMembers(teamMemberId, {isKickout: !isSelf});
+    await removeAllTeamMembers(teamMemberId, {isKickout: !isSelf}, {mutatorId, operationId});
     return true;
   }
 };

@@ -1,6 +1,5 @@
 import {commitMutation} from 'react-relay';
-import {handleRemovedNotifications} from 'universal/mutations/ApproveToOrgMutation';
-import {clearNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 
 const mutation = graphql`
@@ -22,17 +21,15 @@ const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted)
     mutation,
     variables,
     updater: (store) => {
-      const viewer = store.get(viewerId);
       const payload = store.getRootField('rejectOrgApproval');
       const removedRequestNotifications = payload.getLinkedRecords('removedRequestNotifications');
       const removedOrgApprovals = payload.getLinkedRecords('removedOrgApprovals');
-      handleRemovedNotifications(viewer, removedRequestNotifications);
+      handleRemoveNotifications(removedRequestNotifications, store, viewerId);
       handleRemoveOrgApprovals(removedOrgApprovals, store);
     },
     optimisticUpdater: (store) => {
-      const viewer = store.get(viewerId);
-      const notificationIds = [variables.notificationId];
-      clearNotificationUpdater(viewer, notificationIds);
+      const {notificationId} = variables;
+      handleRemoveNotifications(notificationId, store, viewerId);
     },
     onCompleted,
     onError

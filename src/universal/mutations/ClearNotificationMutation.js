@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay';
 import {ConnectionHandler} from 'relay-runtime';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 
 const mutation = graphql`
   mutation ClearNotificationMutation($notificationId: ID!) {
@@ -27,13 +28,11 @@ const ClearNotificationMutation = (environment, notificationId, onError, onCompl
     mutation,
     variables: {notificationId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
       const deletedId = store.getRootField('clearNotification').getValue('deletedId');
-      clearNotificationUpdater(viewer, [deletedId]);
+      handleRemoveNotifications(deletedId, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      const viewer = store.get(viewerId);
-      clearNotificationUpdater(viewer, [notificationId]);
+      handleRemoveNotifications(notificationId, store, viewerId);
     },
     onCompleted,
     onError

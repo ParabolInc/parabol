@@ -2,7 +2,6 @@ import {matchPath} from 'react-router-dom';
 import {ConnectionHandler} from 'relay-runtime';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
-import {handleRemoveTeam} from 'universal/mutations/ArchiveTeamMutation';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
@@ -144,23 +143,19 @@ const notificationHandler = {
     const team = payload.getLinkedRecord('team');
     const teamName = team.getValue('name');
     const teamId = team.getValue('id');
-    const isKickout = payload.getValue('isKickout');
-    if (isKickout) {
-      dispatch(showWarning({
-        autoDismiss: 10,
-        title: 'So long!',
-        message: `You have been removed from ${teamName}`,
-        action: {
-          label: 'OK',
-          callback: () => {
-            const notificationId = payload.getValue('id');
-            ClearNotificationMutation(environment, notificationId);
-          }
+    dispatch(showWarning({
+      autoDismiss: 10,
+      title: 'So long!',
+      message: `You have been removed from ${teamName}`,
+      action: {
+        label: 'OK',
+        callback: () => {
+          const notificationId = payload.getValue('id');
+          ClearNotificationMutation(environment, notificationId);
         }
-      }));
-      handleRemoveTeam(store, viewerId, teamId);
-      addNotificationToConn(store, viewerId, payload);
-    }
+      }
+    }));
+    addNotificationToConn(store, viewerId, payload);
     const {pathname} = location;
     const onExTeamRoute = Boolean(matchPath(pathname, {
       path: `(/team/${teamId}|/meeting/${teamId})`

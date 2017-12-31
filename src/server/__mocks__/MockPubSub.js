@@ -1,6 +1,15 @@
 import * as getPubSub from 'server/utils/getPubSub';
 
 const fieldsToSerialize = {
+  invitation: [
+    'channelId',
+    'message.data.invitation.id',
+    'message.data.invitation.email',
+    'message.data.invitation.hashedToken',
+    'message.data.invitation.id',
+    'message.data.invitation.invitedBy',
+    'message.data.invitation.teamId'
+  ],
   invitationAdded: [
     'channelId',
     'message.invitationAdded.invitation.id',
@@ -23,13 +32,13 @@ const fieldsToSerialize = {
     'channelId',
     'message.newAuthToken'
   ],
-  notificationsAdded: [
+  notification: [
     'channelId',
-    'message.notificationsAdded.notifications.id',
-    'message.notificationsAdded.notifications.orgId',
-    'message.notificationsAdded.notifications.teamId',
-    'message.notificationsAdded.notifications.userIds',
-    'message.notificationsAdded.notifications.inviteeEmail'
+    'message.data.notifications.id',
+    'message.data.notifications.orgId',
+    'message.data.notifications.teamId',
+    'message.data.notifications.userIds',
+    'message.data.notifications.inviteeEmail'
   ],
   notificationsCleared: [
     'channelId',

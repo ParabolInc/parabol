@@ -3,7 +3,7 @@ import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
 import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
 import {REMOVE_USER} from 'server/utils/serverConstants';
 import {validateAvatarUpload} from 'server/utils/utils';
@@ -23,12 +23,13 @@ export default {
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken, socket}) {
+    async resolve(source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
       const r = getRethink();
       const now = new Date();
+      const operationId = dataLoader.share();
+      const subOptions = {mutatorId, operationId};
 
       // AUTH
-      requireWebsocket(socket);
       const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
       requireOrgLeader(userOrgDoc);
 
@@ -36,7 +37,7 @@ export default {
       const teamIds = await r.table('Team')
         .getAll(orgId, {index: 'orgId'})('id');
       const teamMemberIds = teamIds.map((teamId) => `${userId}::${teamId}`);
-      await removeAllTeamMembers(teamMemberIds, {isKickout: true});
+      await removeAllTeamMembers(teamMemberIds, {isKickout: true}, subOptions);
       await r({
         updatedOrg: r.table('Organization').get(orgId)
           .update((org) => ({

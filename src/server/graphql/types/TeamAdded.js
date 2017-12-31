@@ -20,7 +20,7 @@ const TeamAdded = new GraphQLObjectType({
     },
     team: {
       type: Team,
-      resolve: resolveSub(ADDED, resolveTeam)
+      resolve: resolveTeam
     },
     teamMember: {
       type: TeamMember,

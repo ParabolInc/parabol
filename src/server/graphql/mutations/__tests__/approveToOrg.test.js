@@ -50,7 +50,7 @@ describe('approveToOrg', () => {
     }, dynamicSerializer);
 
     expect(db).toMatchSnapshot();
-    expect(serializeGraphQLType(res, 'NotificationsClearedPayload', dynamicSerializer)).toMatchSnapshot();
+    expect(serializeGraphQLType(res, 'ApproveToOrgPayload', dynamicSerializer)).toMatchSnapshot();
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 
@@ -90,7 +90,7 @@ describe('approveToOrg', () => {
     }, dynamicSerializer);
 
     expect(db).toMatchSnapshot();
-    expect(serializeGraphQLType(res, 'NotificationsClearedPayload', dynamicSerializer)).toMatchSnapshot();
+    expect(serializeGraphQLType(res, 'ApproveToOrgPayload', dynamicSerializer)).toMatchSnapshot();
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 
@@ -131,7 +131,7 @@ describe('approveToOrg', () => {
 
     expect(db).toMatchSnapshot();
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
-    expect(serializeGraphQLType(res, 'NotificationsClearedPayload', dynamicSerializer)).toMatchSnapshot();
+    expect(serializeGraphQLType(res, 'ApproveToOrgPayload', dynamicSerializer)).toMatchSnapshot();
   });
 
   test('throws if the caller does not own the notification', async () => {

@@ -11,8 +11,7 @@ import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscripti
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
-import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
-import NotificationsClearedSubscription from 'universal/subscriptions/NotificationsClearedSubscription';
+import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 
 const query = graphql`
   query DashboardWrapperQuery {
@@ -40,8 +39,7 @@ const newTeam = () => System.import('universal/modules/newTeam/containers/NewTea
 
 const subscriptions = [
   NewAuthTokenSubscription,
-  NotificationsAddedSubscription,
-  NotificationsClearedSubscription,
+  NotificationSubscription,
   TeamSubscription,
   TeamMemberSubscription
 ];

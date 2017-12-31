@@ -10,8 +10,7 @@ import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
 import invitationSubscription from 'server/graphql/subscriptions/invitationSubscription';
 import meetingUpdated from 'server/graphql/subscriptions/meetingUpdated';
 import newAuthToken from 'server/graphql/subscriptions/newAuthToken';
-import notificationsAdded from 'server/graphql/subscriptions/notificationsAdded';
-import notificationsCleared from 'server/graphql/subscriptions/notificationsCleared';
+import notificationSubscription from 'server/graphql/subscriptions/notificationSubscription';
 import organizationAdded from 'server/graphql/subscriptions/organizationAdded';
 import organizationUpdated from 'server/graphql/subscriptions/organizationUpdated';
 import orgApprovalSubscription from 'server/graphql/subscriptions/orgApprovalSubscription';
@@ -45,8 +44,7 @@ export default new GraphQLObjectType({
     invitationSubscription,
     meetingUpdated,
     newAuthToken,
-    notificationsAdded,
-    notificationsCleared,
+    notificationSubscription,
     orgApprovalSubscription,
     organizationAdded,
     organizationUpdated,
