@@ -1,21 +1,7 @@
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers';
-import {handleNotification} from 'universal/subscriptions/NotificationsAddedSubscription';
+import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
-
-// eslint-disable-next-line no-unused-expressions
-graphql`
-  fragment TeamMemberSubscription_teamMember on TeamMember {
-    id
-    checkInOrder
-    isLead
-    isCheckedIn
-    isConnected
-    isNotRemoved
-    picture
-    preferredName
-    teamId
-  }
-`;
 
 const subscription = graphql`
   subscription TeamMemberSubscription {
@@ -23,19 +9,24 @@ const subscription = graphql`
       __typename
       ... on TeamMemberAdded {
         teamMember {
-          ...TeamMemberSubscription_teamMember
+          ...CompleteTeamMemberFrag @relay(mask: false)
         }
         notification {
           type
-          preferredName
           team {
             name
           }
+          teamMember {
+            preferredName
+          }
+        }
+        removedInvitation {
+          id
         }
       }
       ... on TeamMemberUpdated {
         teamMember {
-          ...TeamMemberSubscription_teamMember
+          ...CompleteTeamMemberFrag @relay(mask: false)
         }
       }
     }
@@ -77,8 +68,11 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
       const type = payload.getValue('__typename');
       if (type === 'TeamMemberAdded') {
         const notification = payload.getLinkedRecord('notification');
+        const removedInvitation = payload.getLinkedRecord('removedInvitation');
+        const removedInvitationId = removedInvitation && removedInvitation.getValue('id');
         handleAddTeamMembers(teamMember, store);
-        handleNotification(notification, {dispatch});
+        handleAddNotifications(notification, {dispatch, environment, store});
+        handleRemoveInvitations(removedInvitationId, store);
       } else if (type === 'TeamMemberUpdated') {
         handleUpdateTeamMember(store, teamMember);
       }

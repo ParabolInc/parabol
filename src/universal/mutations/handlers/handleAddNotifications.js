@@ -4,39 +4,25 @@ import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 import {handleRemoveTeam} from 'universal/mutations/ArchiveTeamMutation';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
+import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
-  ADD_TO_TEAM,
-  APP_UPGRADE_PENDING_KEY,
-  APP_UPGRADE_PENDING_RELOAD,
-  APP_VERSION_KEY,
-  DENY_NEW_USER,
-  FACILITATOR_DISCONNECTED,
-  FACILITATOR_REQUEST,
-  INVITEE_APPROVED,
-  JOIN_TEAM,
-  KICKED_OUT,
-  MENTIONEE,
-  PAYMENT_REJECTED,
-  PROJECT_INVOLVES,
-  PROMOTE_TO_BILLING_LEADER,
-  REJOIN_TEAM,
-  REQUEST_NEW_USER,
-  TEAM_ARCHIVED,
-  TEAM_INVITE,
-  VERSION_INFO
+  ADD_TO_TEAM, APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY, DENY_NEW_USER,
+  FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, JOIN_TEAM, KICKED_OUT, MENTIONEE, PAYMENT_REJECTED,
+  PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_ARCHIVED, TEAM_INVITE, VERSION_INFO
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
-export const addNotificationUpdater = (store, viewerId, newNode) => {
+export const addNotificationToConn = (store, viewerId, newNode) => {
   const viewer = store.get(viewerId);
   const conn = ConnectionHandler.getConnection(
     viewer,
     'DashboardWrapper_notifications'
   );
+  if (!conn) return;
   const nodeId = newNode.getValue('id');
   const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('id') === nodeId);
-  if (conn && matchingNodes.length === 0) {
+  if (matchingNodes.length === 0) {
     const newEdge = ConnectionHandler.createEdge(
       store,
       conn,
@@ -47,6 +33,7 @@ export const addNotificationUpdater = (store, viewerId, newNode) => {
     ConnectionHandler.insertEdgeBefore(conn, newEdge);
   }
 };
+
 
 const notificationHandler = {
   [ADD_TO_TEAM]: (payload, {dispatch, store, environment}) => {
@@ -69,7 +56,7 @@ const notificationHandler = {
       }
     }));
     if (notificationId) {
-      addNotificationUpdater(store, viewerId, payload);
+      addNotificationToConn(store, viewerId, payload);
     }
   },
   [DENY_NEW_USER]: (payload, {dispatch, store, history, environment}) => {
@@ -86,7 +73,7 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationUpdater(store, viewerId, payload);
+    addNotificationToConn(store, viewerId, payload);
   },
   [FACILITATOR_DISCONNECTED]: (payload, {environment, dispatch, store}) => {
     const oldFacilitatorName = payload
@@ -140,12 +127,12 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationUpdater(store, viewerId, payload);
+    addNotificationToConn(store, viewerId, payload);
   },
   [JOIN_TEAM]: (payload, {dispatch}) => {
-    const preferredName = payload.getValue('preferredName');
-    const team = payload.getLinkedRecord('team');
-    const teamName = team.getValue('name');
+    const teamName = payload.getLinkedRecord('team').getValue('name');
+    const preferredName = payload.getLinkedRecord('teamMember').getValue('preferredName');
+
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Ahoy, a new crewmate!',
@@ -172,7 +159,7 @@ const notificationHandler = {
         }
       }));
       handleRemoveTeam(store, viewerId, teamId);
-      addNotificationUpdater(store, viewerId, payload);
+      addNotificationToConn(store, viewerId, payload);
     }
     const {pathname} = location;
     const onExTeamRoute = Boolean(matchPath(pathname, {
@@ -196,7 +183,7 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationUpdater(store, viewerId, payload);
+    addNotificationToConn(store, viewerId, payload);
   },
   [PROJECT_INVOLVES]: (payload, {dispatch, history, environment, store}) => {
     const inMeeting = Boolean(matchPath(location.pathname, {
@@ -223,7 +210,7 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationUpdater(store, viewerId, payload);
+    addNotificationToConn(store, viewerId, payload);
   },
   [PROMOTE_TO_BILLING_LEADER]: (payload, {dispatch, history, environment, store}) => {
     const {viewerId} = environment;
@@ -240,7 +227,7 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationUpdater(store, viewerId, payload);
+    addNotificationToConn(store, viewerId, payload);
   },
   [REJOIN_TEAM]: (payload, {dispatch}) => {
     const preferredName = payload.getValue('preferredName');
@@ -267,7 +254,7 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationUpdater(store, viewerId, payload);
+    addNotificationToConn(store, viewerId, payload);
   },
   [TEAM_ARCHIVED]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
@@ -284,7 +271,7 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationUpdater(store, viewerId, payload);
+    addNotificationToConn(store, viewerId, payload);
   },
   [TEAM_INVITE]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
@@ -310,7 +297,7 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationUpdater(store, viewerId, payload);
+    addNotificationToConn(store, viewerId, payload);
   },
   [VERSION_INFO]: (payload, {dispatch, history}) => {
     const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
@@ -333,4 +320,13 @@ const notificationHandler = {
   }
 };
 
-export default notificationHandler;
+const handleAddNotification = (newNode, options) => {
+  const type = newNode.getValue('type');
+  const handler = notificationHandler[type];
+  if (handler) {
+    handler(newNode, options);
+  }
+};
+
+const handleAddNotifications = pluralizeHandler(handleAddNotification);
+export default handleAddNotifications;

@@ -1,7 +1,8 @@
 import {GraphQLObjectType, GraphQLString} from 'graphql';
-import {resolveTeam} from 'server/graphql/resolvers';
+import {resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import Team from 'server/graphql/types/Team';
+import TeamMember from 'server/graphql/types/TeamMember';
 
 const NotifyNewTeamMember = new GraphQLObjectType({
   name: 'NotifyNewTeamMember',
@@ -13,6 +14,11 @@ const NotifyNewTeamMember = new GraphQLObjectType({
       type: Team,
       description: 'The team the invitee just joined',
       resolve: resolveTeam
+    },
+    teamMember: {
+      type: TeamMember,
+      description: 'The team member that joined/rejoined the team',
+      resolve: resolveTeamMember
     },
     preferredName: {
       type: GraphQLString,

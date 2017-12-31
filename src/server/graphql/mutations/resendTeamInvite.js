@@ -1,12 +1,15 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTeamMembers/getInviterInfoAndTeamName';
+import ResendTeamInvitePayload from 'server/graphql/types/ResendTeamInvitePayload';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {INVITATION, UPDATED} from 'universal/utils/constants';
 
 export default {
   name: 'ResendTeamInvite',
-  type: GraphQLBoolean,
+  type: ResendTeamInvitePayload,
   description: 'Resend an invitation',
   args: {
     inviteId: {
@@ -26,7 +29,6 @@ export default {
     const {email, fullName, orgId, teamId} = invitation;
     requireTeamMember(authToken, teamId);
 
-
     // RESOLUTION
     const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
     const inviter = {
@@ -35,7 +37,10 @@ export default {
       teamId
     };
     const invitees = [{email, fullName}];
-    const {newInvitations, updatedInvitations} = await sendTeamInvitations(invitees, inviter, inviteId, subOptions);
-    return true;
+    await sendTeamInvitations(invitees, inviter, inviteId);
+    const invitationId = inviteId;
+    getPubSub().publish(`${INVITATION}.${teamId}`, {data: {invitationId, type: UPDATED}, ...subOptions});
+
+    return {invitationId};
   }
 };

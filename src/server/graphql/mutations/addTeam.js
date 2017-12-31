@@ -1,9 +1,9 @@
 import {GraphQLList, GraphQLNonNull} from 'graphql';
 import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader';
+import handleNewTeamInvitees from 'server/graphql/mutations/helpers/handleNewTeamInvitees';
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
-import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {getUserId, getUserOrgDoc, requireUserInOrg} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
@@ -34,6 +34,7 @@ export default {
   },
   async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const {orgId} = args.newTeam;
@@ -52,17 +53,15 @@ export default {
 
     // handle invitees
     sendSegmentEvent('New Team', userId, {teamId, orgId, inviteeCount});
-    if (inviteeCount > 0) {
-      const subOptions = {mutatorId, operationId};
-      await inviteTeamMembers(invitees, teamId, userId, subOptions);
-    }
 
-    const teamAdded = {
-      teamId,
-      teamMemberId: toTeamMemberId(teamId, userId)
-    };
-    getPubSub().publish(`${TEAM}.${userId}`, {data: {teamId, type: ADDED}, mutatorId, operationId});
+    const invitationIds = await handleNewTeamInvitees(invitees, teamId, userId, subOptions);
+
+    getPubSub().publish(`${TEAM}.${userId}`, {data: {teamId, type: ADDED}, ...subOptions});
     publishNewAuthToken(authToken.tms, teamId, userId);
-    return teamAdded;
+    return {
+      teamId,
+      teamMemberId: toTeamMemberId(teamId, userId),
+      invitationIds
+    };
   }
 };

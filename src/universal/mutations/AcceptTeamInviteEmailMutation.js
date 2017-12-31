@@ -1,38 +1,47 @@
 import jwtDecode from 'jwt-decode';
 import {commitMutation} from 'react-relay';
-import {
-  invalidInvitation, inviteExpired, inviteNotFound, successfulExistingJoin, successfulJoin,
-  teamAlreadyJoined
-} from 'universal/modules/invitation/helpers/notifications';
-import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import {successfulExistingJoin, successfulJoin} from 'universal/modules/invitation/helpers/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
-import {handleAddTeamToViewerTeams} from 'universal/mutations/AddTeamMutation';
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import handleToastError from 'universal/mutations/handlers/handleToastError';
 import {setAuthToken} from 'universal/redux/authDuck';
 
 const mutation = graphql`
   mutation AcceptTeamInviteEmailMutation($inviteToken: ID!) {
     acceptTeamInviteEmail(inviteToken: $inviteToken) {
       team {
-        # No way to use fragments in mutations without borked onCompleted. 
-        # See https://github.com/facebook/relay/issues/2250
-        id
-        isPaid
-        name
+        ...CompleteTeamFrag @relay(mask: false)
       }
       authToken
+      removedNotification {
+        id
+      }
+      error {
+        title
+        message
+      }
     }
   }
 `;
 
-const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, history) => {
+const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, history, onError) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {inviteToken},
     updater: (store) => {
-      const team = store.getRootField('acceptTeamInviteEmail').getLinkedRecord('team');
-      handleAddTeamToViewerTeams(store, viewerId, team);
+      const payload = store.getRootField('acceptTeamInviteEmail');
+      const team = payload.getLinkedRecord('team');
+      const removedNotification = payload.getLinkedRecord('removedNotification');
+      const error = payload.getLinkedRecord('error');
+      const notificationId = removedNotification && removedNotification.getValue('id');
+      handleAddTeams(team, store, viewerId);
+      handleRemoveNotifications(notificationId, store, viewerId);
+      handleToastError(error, dispatch);
     },
+    onError,
     onCompleted: (data) => {
       const {acceptTeamInviteEmail: {team: {id: teamId}, authToken}} = data;
       const {tms} = jwtDecode(authToken);
@@ -44,22 +53,6 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
       } else {
         dispatch(showSuccess(successfulExistingJoin));
         history.push(`/team/${teamId}`);
-      }
-    },
-    onError: (error) => {
-      const {_error: errorType} = error || {};
-      if (errorType === 'alreadyJoined') {
-        dispatch(showError(teamAlreadyJoined));
-        history.push('/me/settings');
-      } else if (errorType === 'invalidToken') {
-        dispatch(showError(invalidInvitation));
-      } else if (errorType === 'notFound') {
-        dispatch(showWarning(inviteNotFound));
-      } else if (errorType === 'expiredInvitation') {
-        dispatch(showWarning(inviteExpired));
-      } else {
-        console.warn('unable to accept invitation:');
-        console.warn(error);
       }
     }
   });

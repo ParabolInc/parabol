@@ -7,9 +7,7 @@ import githubRepoAdded from 'server/graphql/subscriptions/githubRepoAdded';
 import githubRepoRemoved from 'server/graphql/subscriptions/githubRepoRemoved';
 import integrationJoined from 'server/graphql/subscriptions/integrationJoined';
 import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
-import invitationAdded from 'server/graphql/subscriptions/invitationAdded';
-import invitationRemoved from 'server/graphql/subscriptions/invitationRemoved';
-import invitationUpdated from 'server/graphql/subscriptions/invitationUpdated';
+import invitationSubscription from 'server/graphql/subscriptions/invitationSubscription';
 import meetingUpdated from 'server/graphql/subscriptions/meetingUpdated';
 import newAuthToken from 'server/graphql/subscriptions/newAuthToken';
 import notificationsAdded from 'server/graphql/subscriptions/notificationsAdded';
@@ -44,9 +42,7 @@ export default new GraphQLObjectType({
     githubRepoRemoved,
     integrationJoined,
     integrationLeft,
-    invitationAdded,
-    invitationRemoved,
-    invitationUpdated,
+    invitationSubscription,
     meetingUpdated,
     newAuthToken,
     notificationsAdded,

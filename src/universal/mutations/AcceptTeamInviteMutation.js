@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay';
-import {handleAddTeamToViewerTeams} from 'universal/mutations/AddTeamMutation';
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 
 const mutation = graphql`
   mutation AcceptTeamInviteMutation($notificationId: ID!) {
@@ -19,8 +20,10 @@ const AcceptTeamInviteMutation = (environment, notificationId, onError, onComple
     mutation,
     variables: {notificationId},
     updater: (store) => {
-      const team = store.getRootField('acceptTeamInviteNotification').getLinkedRecord('team');
-      handleAddTeamToViewerTeams(store, viewerId, team);
+      const payload = store.getRootField('acceptTeamInviteNotification');
+      const team = payload.getLinkedRecord('team');
+      handleAddTeams(team, store, viewerId);
+      handleRemoveNotifications(notificationId, store, viewerId);
     },
     onCompleted,
     onError

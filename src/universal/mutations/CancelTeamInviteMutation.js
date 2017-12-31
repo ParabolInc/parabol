@@ -1,6 +1,6 @@
 import {commitMutation} from 'react-relay';
-import {clearNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
+import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 
 const mutation = graphql`
   mutation CancelTeamInviteMutation($inviteId: ID!) {
@@ -13,27 +13,19 @@ const mutation = graphql`
   }
 `;
 
-export const handleRemoveInvitation = (store, teamId, invitationId) => {
-  const team = store.get(teamId);
-  safeRemoveNodeFromArray(invitationId, team, 'invitations');
-};
-
 const CancelTeamInviteMutation = (environment, inviteId, teamId, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {inviteId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
       const payload = store.getRootField('cancelTeamInvite');
       const deletedNotificationId = payload.getValue('deletedNotificationId');
-      if (deletedNotificationId) {
-        clearNotificationUpdater(viewer, [deletedNotificationId]);
-      }
-      handleRemoveInvitation(store, teamId, inviteId);
+      handleRemoveNotifications(deletedNotificationId, store, viewerId);
+      handleRemoveInvitations(inviteId, store);
     },
     optimisticUpdater: (store) => {
-      handleRemoveInvitation(store, teamId, inviteId);
+      handleRemoveInvitations(inviteId, store);
     },
     onCompleted,
     onError

@@ -2,20 +2,23 @@ import {commitMutation} from 'react-relay';
 
 const mutation = graphql`
   mutation ResendTeamInviteMutation($inviteId: ID!) {
-    resendTeamInvite(inviteId: $inviteId)
+    resendTeamInvite(inviteId: $inviteId) {
+      invitation {
+        updatedAt
+      }
+    }
+    
   }
 `;
 
 const ResendTeamInviteMutation = (environment, inviteId, onError, onCompleted) => {
-  const updater = (store) => {
-    const now = new Date();
-    store.get(inviteId).setValue(now.toJSON(), 'updatedAt');
-  };
   return commitMutation(environment, {
     mutation,
     variables: {inviteId},
-    updater,
-    optimisticUpdater: updater,
+    optimisticUpdater: (store) => {
+      const now = new Date();
+      store.get(inviteId).setValue(now.toJSON(), 'updatedAt');
+    },
     onCompleted,
     onError
   });

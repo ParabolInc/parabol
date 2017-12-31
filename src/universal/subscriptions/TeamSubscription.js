@@ -1,17 +1,7 @@
-import {handleAddTeamToViewerTeams} from 'universal/mutations/AddTeamMutation';
 import {handleRemoveTeam} from 'universal/mutations/ArchiveTeamMutation';
-import {handleNotification} from 'universal/subscriptions/NotificationsAddedSubscription';
-
-// eslint-disable-next-line no-unused-expressions
-graphql`
-  fragment TeamSubscription_team on Team {
-    id
-    name
-    isPaid
-    meetingId
-    isArchived
-  }
-`;
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -25,16 +15,16 @@ const subscription = graphql`
             name
           }
         }
+        removedTeamInviteNotification {
+          id
+        }
         team {
-          ...TeamSubscription_team
-          teamMembers(sortBy: "preferredName") {
-            ...TeamMemberSubscription_teamMember     
-          }
+          ...CompleteTeamFragWithMembers @relay(mask: false)
         }
       }
       ... on TeamUpdated {
         team {
-          ...TeamSubscription_team
+          ...CompleteTeamFrag @relay(mask: false)
         }
       }
       ... on TeamRemoved {
@@ -77,12 +67,15 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const type = payload.getValue('__typename');
       const notification = payload.getLinkedRecord('notification');
       if (type === 'TeamAdded') {
-        handleAddTeamToViewerTeams(store, viewerId, team);
+        const removedNotification = payload.getLinkedRecord('removedTeamInviteNotification');
+        const removedNotificationId = removedNotification && removedNotification.getValue('id');
+        handleAddTeams(team, store, viewerId);
+        handleRemoveNotifications(removedNotificationId, store, viewerId);
       } else if (type === 'TeamRemoved') {
         const teamId = team.getValue('id');
         handleRemoveTeam(store, viewerId, teamId);
       }
-      handleNotification(notification, {dispatch, environment, store});
+      handleAddNotifications(notification, {dispatch, environment, store});
     }
   };
 };

@@ -1,4 +1,4 @@
-import {addOrgUpdater} from 'universal/mutations/AddOrgMutation';
+import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization';
 
 const subscription = graphql`
   subscription OrganizationAddedSubscription {
@@ -24,7 +24,7 @@ const OrganizationAddedSubscription = (environment) => {
     variables: {},
     updater: (store) => {
       const newNode = store.getRootField('organizationAdded').getLinkedRecord('organization');
-      addOrgUpdater(store, viewerId, newNode);
+      handleAddOrganization(newNode, store, viewerId);
     }
   };
 };

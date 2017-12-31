@@ -18,7 +18,7 @@ const mutation = graphql`
         id
       }
       reactivatedTeamMembers {
-        ...TeamMemberSubscription_teamMember
+        ...CompleteTeamMemberFrag @relay(mask: false)
       }
       results {
         email

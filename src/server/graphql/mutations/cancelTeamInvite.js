@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {INVITATION_REMOVED, NOTIFICATIONS_CLEARED, TEAM_INVITE} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATIONS_CLEARED, REMOVED, TEAM_INVITE} from 'universal/utils/constants';
 
 
 export default {
@@ -20,6 +20,7 @@ export default {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const {email, teamId} = await r.table('Invitation').get(inviteId).default({});
@@ -29,12 +30,12 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const {invitation, notificationToClear} = await r({
+    const {notificationToClear} = await r({
       invitation: r.table('Invitation').get(inviteId).update({
         // set expiration to epoch
         tokenExpiration: new Date(0),
         updatedAt: now
-      }, {returnChanges: true})('changes')(0)('new_val').default(null),
+      }),
       orgApproval: r.table('OrgApproval')
         .getAll(email, {index: 'email'})
         .filter({teamId})
@@ -58,10 +59,7 @@ export default {
           });
         })
     });
-    if (invitation) {
-      const invitationRemoved = {invitation};
-      getPubSub().publish(`${INVITATION_REMOVED}.${teamId}`, {invitationRemoved, operationId, mutatorId});
-    }
+    getPubSub().publish(`${INVITATION}.${teamId}`, {data: {invitationId: inviteId, type: REMOVED}, ...subOptions});
     const {userId, deletedId} = notificationToClear;
     if (deletedId) {
       const notificationsCleared = {deletedId: [deletedId]};
@@ -69,7 +67,7 @@ export default {
     }
 
     return {
-      invitation,
+      invitationId: inviteId,
       deletedNotificationId: deletedId
     };
   }

@@ -1,23 +1,16 @@
 import {commitMutation} from 'react-relay';
-import addNodeToArray from 'universal/utils/relay/addNodeToArray';
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
 const mutation = graphql`
   mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Invitee!]) {
     addTeam(newTeam: $newTeam, invitees: $invitees) {
       team {
-        id
-        isPaid
-        name
+        ...CompleteTeamFragWithMembers @relay(mask: false)
       }
     }
   }
 `;
-
-export const handleAddTeamToViewerTeams = (store, viewerId, newNode) => {
-  const viewer = store.get(viewerId);
-  addNodeToArray(newNode, viewer, 'teams', 'name');
-};
 
 const AddTeamMutation = (environment, newTeam, invitees, onError, onCompleted) => {
   const {viewerId} = environment;
@@ -27,11 +20,11 @@ const AddTeamMutation = (environment, newTeam, invitees, onError, onCompleted) =
     updater: (store) => {
       const payload = store.getRootField('addTeam');
       const team = payload.getLinkedRecord('team');
-      handleAddTeamToViewerTeams(store, viewerId, team);
+      handleAddTeams(team, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const team = createProxyRecord(store, 'Team', {...newTeam, isPaid: true});
-      handleAddTeamToViewerTeams(store, viewerId, team);
+      handleAddTeams(team, store, viewerId);
     },
     onCompleted,
     onError

@@ -7,10 +7,7 @@ const subscription = graphql`
       __typename
       ... on OrgApprovalAdded {
         orgApproval {
-          id
-          createdAt
-          email
-          teamId
+          ...CompleteOrgApprovalFrag @relay(mask: false)
         }
       }
       ... on OrgApprovalRemoved {

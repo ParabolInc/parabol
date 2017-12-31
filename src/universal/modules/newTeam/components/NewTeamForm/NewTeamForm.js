@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import shortid from 'shortid';
 import Button from 'universal/components/Button/Button';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import InputField from 'universal/components/InputField/InputField';
@@ -52,7 +51,6 @@ const mapStateToProps = (state) => {
 class NewTeamForm extends Component {
   onSubmit = async (submittedData) => {
     const {atmosphere, dispatch, isNewOrganization, history} = this.props;
-    const newTeamId = shortid.generate();
     if (isNewOrganization) {
       const schema = addOrgSchema();
       const {data: {teamName, inviteesRaw, orgName}, errors} = schema(submittedData);
@@ -62,19 +60,18 @@ class NewTeamForm extends Component {
       const parsedInvitees = parseEmailAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
       const newTeam = {
-        id: newTeamId,
-        name: teamName,
-        orgId: shortid.generate()
+        name: teamName
       };
       const handleError = (err) => {
         throw new SubmissionError(err._error);
       };
-      const handleCompleted = () => {
+      const handleCompleted = (res) => {
+        const {addOrg: {team: {id: teamId}}} = res;
         dispatch(showSuccess({
           title: 'Organization successfully created!',
           message: `Here's your new team dashboard for ${teamName}`
         }));
-        history.push(`/team/${newTeamId}`);
+        history.push(`/team/${teamId}`);
       };
       AddOrgMutation(atmosphere, newTeam, invitees, orgName, handleError, handleCompleted);
     } else {

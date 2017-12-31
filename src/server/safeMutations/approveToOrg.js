@@ -94,12 +94,17 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
 
   const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
 
-  const newInvitationsByInviter = await Promise.all(inviters.map((inviter) => {
+  const sentTeamInvitations = await Promise.all(inviters.map((inviter) => {
     return sendTeamInvitations(invitees, inviter, undefined, subOptions);
   }));
 
-  const newInvitations = newInvitationsByInviter.reduce((arr, upserts) => {
+  const newInvitations = sentTeamInvitations.reduce((arr, upserts) => {
     arr.push(...upserts.newInvitations);
+    return arr;
+  }, []);
+
+  const teamInviteNotifications = sentTeamInvitations.reduce((arr, upserts) => {
+    arr.push(...upserts.teamInviteNotifications);
     return arr;
   }, []);
 
@@ -107,7 +112,8 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
     removedRequestNotifications: removedNotifications,
     removedOrgApprovals,
     newInvitations,
-    inviteeApprovedNotifications
+    inviteeApprovedNotifications,
+    teamInviteNotifications
   };
 };
 

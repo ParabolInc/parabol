@@ -70,7 +70,7 @@ export default {
     // publish the removed org approval to the team
     removedOrgApprovals.forEach((orgApproval) => {
       const {id: orgApprovalId, teamId} = orgApproval;
-      getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApprovalId}, ...subOptions});
+      getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApprovalId, type: REMOVED}, ...subOptions});
     });
 
     // publish the removed request notifications to all org leaders

@@ -10,7 +10,7 @@ import {isBillingLeader} from 'server/utils/authorization';
 import {ASK_APPROVAL, DENIED, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 
-const inviteTeamMembers = async (invitees, teamId, userId, subOptions) => {
+const inviteTeamMembers = async (invitees, teamId, userId) => {
   const r = getRethink();
   const {name: teamName, orgId} = await r.table('Team').get(teamId).pluck('name', 'orgId');
 
@@ -56,17 +56,18 @@ const inviteTeamMembers = async (invitees, teamId, userId, subOptions) => {
   const inviteesNeedingApproval = detailedInvitations.filter(({action}) => action === ASK_APPROVAL);
   const pendingApprovalEmails = inviteesNeedingApproval.map(({email}) => email);
   const approvalsToClear = inviteesToInvite.map(({email}) => email);
-  const {reactivations, newPendingApprovals, removedApprovalsAndNotifications} = await resolvePromiseObj({
+  const {reactivations, newPendingApprovals, removedApprovalsAndNotifications, teamInvites} = await resolvePromiseObj({
     // leave out the mutatorId so the sender gets the full team member (should refactor when completey on relay)
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter),
     removedApprovalsAndNotifications: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
-    teamInvites: sendTeamInvitations(inviteesToInvite, inviter, undefined, subOptions),
+    teamInvites: sendTeamInvitations(inviteesToInvite, inviter),
     newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter)
   });
 
   return {
     ...newPendingApprovals,
     ...removedApprovalsAndNotifications,
+    ...teamInvites,
     reactivations,
     results: getResults(detailedInvitations)
   };

@@ -184,9 +184,6 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
-export const INVITATION_ADDED = 'invitationAdded';
-export const INVITATION_REMOVED = 'invitationRemoved';
-export const INVITATION_UPDATED = 'invitationUpdated';
 export const INVITATION = 'invitation';
 export const MEETING_UPDATED = 'meetingUpdated';
 export const NEW_AUTH_TOKEN = 'newAuthToken';
@@ -207,16 +204,18 @@ export const AGENDA_ITEM_UPDATED = 'agendaItemUpdated';
 export const AGENDA_ITEM_REMOVED = 'agendaItemRemoved';
 
 
-/* WebSocket Events */
-// loosely based off of: https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md
-// client to server
+/*
+ * WebSocket Events
+ * loosely based off of: https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md
+ */
+/* CLIENT-TO-SERVER */
 // subscribe
 export const GQL_START = 'GQL_START';
 // unsubscribe
 export const GQL_STOP = 'GQL_STOP';
 // execute query or mutation
 export const GQL_EXEC = 'GQL_EXEC';
-// server to client
+/* SERVER-TO-CLIENT */
 // error starting subscription
 export const GQL_ERROR = 'GQL_ERROR';
 // unsubscribed

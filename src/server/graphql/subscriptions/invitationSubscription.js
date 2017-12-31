@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import RemoveInvitationPayload from 'server/graphql/types/RemoveInvitationPayload';
+import InvitationSubscriptionPayload from 'server/graphql/types/InvitationSubscriptionPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import {INVITATION_REMOVED} from 'universal/utils/constants';
+import {INVITATION} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(RemoveInvitationPayload),
+  type: new GraphQLNonNull(InvitationSubscriptionPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -16,8 +16,9 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const channelName = `${INVITATION_REMOVED}.${teamId}`;
+    const channelName = `${INVITATION}.${teamId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, dataLoader});
+    const resolve = ({data}) => ({invitationSubscription: data});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve});
   }
 };

@@ -1,6 +1,7 @@
 import {GraphQLObjectType} from 'graphql';
 import {resolveNotification, resolveSub, resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
+import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import {ADDED} from 'universal/utils/constants';
@@ -12,6 +13,10 @@ const TeamAdded = new GraphQLObjectType({
       type: NotifyAddedToTeam,
       description: 'The notification that you were just added, if this is a reactivation or acceptance',
       resolve: resolveNotification
+    },
+    removedTeamInviteNotification: {
+      type: NotifyInvitation,
+      description: 'The invite notification to remove, if this is an acceptance'
     },
     team: {
       type: Team,

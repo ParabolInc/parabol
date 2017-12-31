@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql';
+import {resolveInvitation} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
 
 const CancelTeamInvitePayload = new GraphQLObjectType({
@@ -6,7 +7,8 @@ const CancelTeamInvitePayload = new GraphQLObjectType({
   fields: () => ({
     invitation: {
       type: Invitation,
-      description: 'The cancelled invitation'
+      description: 'The cancelled invitation',
+      resolve: resolveInvitation
     },
     deletedNotificationId: {
       type: GraphQLID,

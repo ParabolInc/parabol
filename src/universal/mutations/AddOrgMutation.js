@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay';
-import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
+import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization';
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
 
 const mutation = graphql`
   mutation AddOrgMutation($newTeam: NewTeamInput!, $invitees: [Invitee!], $orgName: String!) {
@@ -14,19 +15,12 @@ const mutation = graphql`
         picture
         tier
       }
+      team {
+        ...CompleteTeamFragWithMembers
+      }
     }
   }
 `;
-
-export const addOrgUpdater = (store, viewerId, newNode) => {
-  // update the organizations page
-  const viewer = store.get(viewerId);
-  const organizations = viewer.getLinkedRecords('organizations');
-  if (organizations) {
-    const newNodes = insertNodeBefore(organizations, newNode, 'name');
-    viewer.setLinkedRecords(newNodes, 'organizations');
-  }
-};
 
 const AddOrgMutation = (environment, newTeam, invitees, orgName, onError, onCompleted) => {
   const {viewerId} = environment;
@@ -34,8 +28,11 @@ const AddOrgMutation = (environment, newTeam, invitees, orgName, onError, onComp
     mutation,
     variables: {newTeam, invitees, orgName},
     updater: (store) => {
-      const node = store.getRootField('addOrg').getLinkedRecord('organization');
-      addOrgUpdater(store, viewerId, node);
+      const payload = store.getRootField('addOrg');
+      const organization = payload.getLinkedRecord('organization');
+      const team = payload.getLinkedRecord('team');
+      handleAddOrganization(organization, store, viewerId);
+      handleAddTeams(team, store, viewerId);
     },
     onCompleted,
     onError
