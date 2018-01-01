@@ -4,6 +4,7 @@ import handleAddInvitations from 'universal/mutations/handlers/handleAddInvitati
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 const mutation = graphql`
   mutation ApproveToOrgMutation($email: String!, $orgId: ID!) {
@@ -34,8 +35,10 @@ const ApproveToOrgMutation = (environment, email, orgId, onError, onCompleted) =
       const removedRequestNotifications = payload.getLinkedRecords('removedRequestNotifications');
       const removedOrgApprovals = payload.getLinkedRecords('removedOrgApprovals');
       const newInvitations = payload.getLinkedRecords('newInvitations');
-      handleRemoveNotifications(removedRequestNotifications, store, viewerId);
-      handleRemoveOrgApprovals(removedOrgApprovals, store);
+      const notificationIds = getInProxy(removedRequestNotifications, 'id');
+      const orgApprovalIds = getInProxy(removedOrgApprovals, 'id');
+      handleRemoveNotifications(notificationIds, store, viewerId);
+      handleRemoveOrgApprovals(orgApprovalIds, store);
       handleAddInvitations(newInvitations, store);
     },
     optimisticUpdater: (store) => {
@@ -44,9 +47,12 @@ const ApproveToOrgMutation = (environment, email, orgId, onError, onCompleted) =
         viewer,
         'DashboardWrapper_notifications'
       );
-      const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('inviteeEmail') === email && node.getValue('orgId') === orgId);
-      const deletedIds = matchingNodes.map((node) => node.getValue('id'));
-      handleRemoveNotifications(deletedIds, store, viewerId);
+      const notifications = filterNodesInConn(
+        conn,
+        (node) => node.getValue('inviteeEmail') === email && node.getValue('orgId') === orgId
+      );
+      const notificationIds = getInProxy(notifications, 'id');
+      handleRemoveNotifications(notificationIds, store, viewerId);
     },
     onCompleted,
     onError

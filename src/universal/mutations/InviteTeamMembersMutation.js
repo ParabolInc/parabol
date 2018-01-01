@@ -4,6 +4,7 @@ import handleAddOrgApprovals from 'universal/mutations/handlers/handleAddOrgAppr
 import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers';
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 import {ALREADY_ON_TEAM, PENDING_APPROVAL, REACTIVATED, SUCCESS} from 'universal/utils/constants';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 const mutation = graphql`
   mutation InviteTeamMembersMutation($teamId: ID!, $invitees: [Invitee!]!) {
@@ -78,8 +79,9 @@ const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onEr
       const reactivatedTeamMembers = payload.getLinkedRecords('reactivatedTeamMembers');
       const orgApprovalsSent = payload.getLinkedRecords('orgApprovalsSent');
       const orgApprovalsRemoved = payload.getLinkedRecords('orgApprovalsRemoved');
+      const orgApprovalIds = getInProxy(orgApprovalsRemoved, 'id');
       handleAddOrgApprovals(orgApprovalsSent, store);
-      handleRemoveOrgApprovals(orgApprovalsRemoved, store);
+      handleRemoveOrgApprovals(orgApprovalIds, store);
       const results = payload.getLinkedRecords('results')
         .map((result) => ({
           email: result.getValue('email'),

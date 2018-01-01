@@ -98,6 +98,7 @@ module.exports = {
     "__CLIENT__": true,
     "__WEBPACK__": true,
     "socket": true,
-    "graphql": true
+    "graphql": true,
+    "System": true
   }
-}
+};

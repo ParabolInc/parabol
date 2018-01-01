@@ -1,11 +1,12 @@
 import {commitMutation} from 'react-relay';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import toOrgMemberId from 'universal/utils/relay/toOrgMemberId';
 
 const mutation = graphql`
   mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: String) {
     setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-      updatedOrgUser {
-        isBillingLeader(orgId: $orgId)
+      updatedOrgMember {
+        isBillingLeader
       }
     }
   }
@@ -17,9 +18,10 @@ const SetOrgUserRoleMutation = (environment, orgId, userId, role, onError, onCom
     variables: {orgId, userId, role},
     optimisticUpdater: (store) => {
       const isBillingLeader = role === BILLING_LEADER;
-      const user = store.get(userId);
-      if (!user) return;
-      user.setValue(isBillingLeader, 'isBillingLeader', {orgId});
+      const orgMemberId = toOrgMemberId(orgId, userId);
+      const orgMember = store.get(orgMemberId);
+      if (!orgMember) return;
+      orgMember.setValue(isBillingLeader, 'isBillingLeader');
     },
     onCompleted,
     onError

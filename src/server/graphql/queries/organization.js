@@ -14,11 +14,11 @@ export default {
   description: 'get a single organization and the count of users by status',
   resolve: async (source, {orgId}, {authToken, dataLoader}) => {
     // AUTH
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     const org = await dataLoader.get('organizations').load(orgId);
 
     const {orgUsers} = org;
-    const myOrgUser = orgUsers.find((user) => user.id === userId);
+    const myOrgUser = orgUsers.find((user) => user.id === viewerId);
     if (!myOrgUser || myOrgUser.role !== BILLING_LEADER) {
       throw new Error('Must be a billing leader');
     }

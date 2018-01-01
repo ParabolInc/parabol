@@ -1,5 +1,6 @@
 import handleAddOrgApprovals from 'universal/mutations/handlers/handleAddOrgApprovals';
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 const subscription = graphql`
   subscription OrgApprovalSubscription($teamId: ID!) {
@@ -31,7 +32,7 @@ const OrgApprovalSubscription = (environment, queryVariables) => {
       if (type === 'OrgApprovalAdded') {
         handleAddOrgApprovals(orgApproval, store);
       } else if (type === 'OrgApprovalRemoved') {
-        const orgApprovalId = orgApproval.getValue('id');
+        const orgApprovalId = getInProxy(orgApproval, 'id');
         handleRemoveOrgApprovals(orgApprovalId, store);
       }
     }

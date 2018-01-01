@@ -7,6 +7,7 @@ import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLa
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
@@ -41,7 +42,8 @@ const subscriptions = [
   NewAuthTokenSubscription,
   NotificationSubscription,
   TeamSubscription,
-  TeamMemberSubscription
+  TeamMemberSubscription,
+  OrganizationSubscription
 ];
 
 const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {

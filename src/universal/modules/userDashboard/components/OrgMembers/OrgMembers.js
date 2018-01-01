@@ -34,7 +34,7 @@ const OrgMembers = (props) => {
     dispatch,
     org,
     orgId,
-    viewer: {organization: {orgUsers}},
+    viewer: {organization: {orgMembers}},
     relay: {environment},
     submitMutation,
     onError,
@@ -48,17 +48,17 @@ const OrgMembers = (props) => {
     SetOrgUserRoleMutation(environment, orgId, userId, role);
   };
 
-  const billingLeaderCount = orgUsers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
+  const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
 
-  const userRowActions = (orgUser) => {
-    const {id, inactive, preferredName} = orgUser;
+  const userRowActions = (orgMember) => {
+    const {user: {userId, inactive, preferredName}} = orgMember;
     const itemFactory = () => {
       const {userId: myUserId} = environment;
       const listItems = [];
-      if (orgUser.isBillingLeader) {
+      if (orgMember.isBillingLeader) {
         if (billingLeaderCount > 1) {
           listItems.push(
-            <MenuItem label="Remove Billing Leader role" onClick={setRole(id)} />
+            <MenuItem label="Remove Billing Leader role" onClick={setRole(userId)} />
           );
         } else {
           listItems.push(
@@ -67,24 +67,24 @@ const OrgMembers = (props) => {
         }
       } else {
         listItems.push(
-          <MenuItem label="Promote to Billing Leader" onClick={setRole(id, BILLING_LEADER)} />
+          <MenuItem label="Promote to Billing Leader" onClick={setRole(userId, BILLING_LEADER)} />
         );
       }
-      if (myUserId !== orgUser.id) {
+      if (myUserId !== userId) {
         listItems.push(
           <RemoveFromOrgModal
             orgId={orgId}
             preferredName={preferredName}
-            userId={id}
+            userId={userId}
             toggle={<MenuItem label="Remove from Organization" />}
           />
         );
       }
-      if (billingLeaderCount > 1 && myUserId === orgUser.id) {
+      if (billingLeaderCount > 1 && myUserId === userId) {
         listItems.push(
           <LeaveOrgModal
             orgId={orgId}
-            userId={id}
+            userId={userId}
             toggle={<MenuItem label="Leave Organization" />}
           />
         );
@@ -104,7 +104,7 @@ const OrgMembers = (props) => {
           }));
           onError(error);
         };
-        InactivateUserMutation(environment, orgUser.id, handleError, onCompleted);
+        InactivateUserMutation(environment, userId, handleError, onCompleted);
       } else {
         dispatch(
           showInfo({
@@ -115,9 +115,17 @@ const OrgMembers = (props) => {
       }
     };
     const toggleLabel = inactive ? 'Inactive' : 'Active';
-    const makeToggle = () => <Toggle active={!inactive} block disabled={isPersonalTier} label={toggleLabel} onClick={toggleHandler} />;
+    const makeToggle = () => (<Toggle
+      active={!inactive}
+      block
+      disabled={isPersonalTier}
+      label={toggleLabel}
+      onClick={toggleHandler}
+    />);
     const toggleTip = (<div>{'You only need to manage activity on the Pro plan.'}</div>);
-    const menuTip = (<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or Organization.'}</div>);
+    const menuTip = (
+      <div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or Organization.'}
+      </div>);
     const menuButtonProps = {
       buttonSize: 'small',
       buttonStyle: 'flat',
@@ -143,7 +151,7 @@ const OrgMembers = (props) => {
           }
         </div>
         <div className={css(styles.menuToggleBlock)}>
-          {(orgUser.isBillingLeader && billingLeaderCount === 1) ?
+          {(orgMember.isBillingLeader && billingLeaderCount === 1) ?
             <Tooltip
               tip={menuTip}
               maxHeight={60}
@@ -171,12 +179,12 @@ const OrgMembers = (props) => {
   return (
     <Panel label="Organization Members">
       <div className={css(styles.listOfAdmins)}>
-        {orgUsers.edges.map(({node: orgUser}) => {
+        {orgMembers.edges.map(({node: orgMember}) => {
           return (
             <OrgUserRow
-              key={`orgUser${orgUser.email}`}
-              actions={userRowActions(orgUser)}
-              orgUser={orgUser}
+              key={`orgUser${orgMember.user.email}`}
+              actions={userRowActions(orgMember)}
+              orgMember={orgMember}
             />
           );
         })}
@@ -222,16 +230,18 @@ export default createPaginationContainer(
   graphql`
     fragment OrgMembers_viewer on User {
       organization(orgId: $orgId) {
-        orgUsers(first: $first, after: $after) @connection(key: "OrgMembers_orgUsers") {
+        orgMembers(first: $first, after: $after) @connection(key: "OrgMembers_orgMembers") {
           edges {
             cursor
             node {
-              id
-              isBillingLeader(orgId: $orgId)
-              email
-              inactive
-              picture
-              preferredName
+              ...OrgUserRow_orgMember
+              isBillingLeader
+              user {
+                userId: id
+                email
+                inactive
+                preferredName
+              }
             }
           }
           pageInfo {
@@ -245,7 +255,7 @@ export default createPaginationContainer(
   {
     direction: 'forward',
     getConnectionFromProps(props) {
-      return props.viewer && props.viewer.orgUsers;
+      return props.viewer && props.viewer.orgMembers;
     },
     getFragmentVariables(prevVars, totalCount) {
       return {

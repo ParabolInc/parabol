@@ -4,6 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CreditCard from 'server/graphql/types/CreditCard';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import {OrganizationMemberConnection} from 'server/graphql/types/OrganizationMember';
 import OrgUserCount from 'server/graphql/types/OrgUserCount';
 import TierEnum from 'server/graphql/types/TierEnum';
 import User, {UserConnection} from 'server/graphql/types/User';
@@ -77,23 +78,26 @@ const Organization = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the organization was last updated'
     },
-    orgUsers: {
+    orgMembers: {
       args: {
         ...forwardConnectionArgs
       },
-      type: UserConnection,
-      async resolve({orgUsers}, {first}, {dataLoader}) {
+      type: OrganizationMemberConnection,
+      async resolve({id: orgId, orgUsers}, {first}, {dataLoader}) {
         if (!Array.isArray(orgUsers)) return null;
 
         // RESOLUTION
         const limitedOrgUsers = orgUsers.slice(0, first);
 
         const userIds = limitedOrgUsers.map(({id}) => id);
-        const nodes = await dataLoader.get('users').loadMany(userIds);
-        nodes.sort((a, b) => a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1);
-        const edges = nodes.map((node) => ({
-          cursor: node.preferredName.toLowerCase(),
-          node
+        const users = await dataLoader.get('users').loadMany(userIds);
+        users.sort((a, b) => a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1);
+        const edges = users.map((user) => ({
+          cursor: user.preferredName.toLowerCase(),
+          node: {
+            userId: user.id,
+            orgId
+          }
         }));
 
         const firstEdge = edges[0];

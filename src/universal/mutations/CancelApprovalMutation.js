@@ -12,15 +12,14 @@ const mutation = graphql`
 `;
 
 const CancelApprovalMutation = (environment, orgApprovalId, teamId, onError, onCompleted) => {
+  const updater = (store) => {
+    handleRemoveOrgApprovals(orgApprovalId, store);
+  };
   return commitMutation(environment, {
     mutation,
     variables: {orgApprovalId},
-    updater: (store) => {
-      handleRemoveOrgApprovals(orgApprovalId, store);
-    },
-    optimisticUpdater: (store) => {
-      handleRemoveOrgApprovals(orgApprovalId, store);
-    },
+    updater,
+    optimisticUpdater: updater,
     onCompleted,
     onError
   });

@@ -1,6 +1,7 @@
 import handleEditProject from 'universal/mutations/handlers/handleEditProject';
 import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 const subscription = graphql`
   subscription ProjectSubscription {
@@ -49,7 +50,7 @@ const ProjectSubscription = (environment) => {
       } else if (type === 'ProjectUpdated') {
         handleUpsertProjects(project, store, viewerId);
       } else if (type === 'ProjectRemoved') {
-        const projectId = project.getValue('id');
+        const projectId = getInProxy(project, 'id');
         handleRemoveProjects(projectId, store, viewerId);
       } else if (type === 'ProjectEdited') {
         handleEditProject(payload, store);

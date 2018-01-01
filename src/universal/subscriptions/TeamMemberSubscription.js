@@ -1,6 +1,7 @@
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers';
 import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
+import getInProxy from 'universal/utils/relay/getInProxy';
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
 
 const subscription = graphql`
@@ -69,7 +70,7 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
       if (type === 'TeamMemberAdded') {
         const notification = payload.getLinkedRecord('notification');
         const removedInvitation = payload.getLinkedRecord('removedInvitation');
-        const removedInvitationId = removedInvitation && removedInvitation.getValue('id');
+        const removedInvitationId = getInProxy(removedInvitation, 'id');
         handleAddTeamMembers(teamMember, store);
         handleAddNotifications(notification, {dispatch, environment, store});
         handleRemoveInvitations(removedInvitationId, store);

@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
+import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload';
 import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
@@ -16,7 +16,7 @@ import {
 } from 'universal/utils/constants';
 
 export default {
-  type: UpdateOrgPayload,
+  type: SetOrgUserRolePayload,
   description: 'Set the role of a user',
   args: {
     orgId: {
@@ -146,6 +146,6 @@ export default {
     const organizationUpdated = {updatedOrgUser: newUser, organization};
     getPubSub().publish(`${ORGANIZATION_UPDATED}.${orgId}`, {organizationUpdated, operationId, mutatorId: socketId});
 
-    return organizationUpdated;
+    return {orgId, userId};
   }
 };

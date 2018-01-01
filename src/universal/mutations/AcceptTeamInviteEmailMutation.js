@@ -7,6 +7,7 @@ import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleToastError from 'universal/mutations/handlers/handleToastError';
 import {setAuthToken} from 'universal/redux/authDuck';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 const mutation = graphql`
   mutation AcceptTeamInviteEmailMutation($inviteToken: ID!) {
@@ -36,7 +37,7 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
       const team = payload.getLinkedRecord('team');
       const removedNotification = payload.getLinkedRecord('removedNotification');
       const error = payload.getLinkedRecord('error');
-      const notificationId = removedNotification && removedNotification.getValue('id');
+      const notificationId = getInProxy(removedNotification, 'id');
       handleAddTeams(team, store, viewerId);
       handleRemoveNotifications(notificationId, store, viewerId);
       handleToastError(error, dispatch);

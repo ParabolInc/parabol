@@ -1,12 +1,8 @@
-import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
+import addNodeToArray from 'universal/utils/relay/addNodeToArray';
 
 const handleAddOrganization = (newNode, store, viewerId) => {
   const viewer = store.get(viewerId);
-  const organizations = viewer.getLinkedRecords('organizations');
-  if (organizations) {
-    const newNodes = insertNodeBefore(organizations, newNode, 'name');
-    viewer.setLinkedRecords(newNodes, 'organizations');
-  }
+  addNodeToArray(newNode, viewer, 'organizations', 'name');
 };
 
 export default handleAddOrganization;

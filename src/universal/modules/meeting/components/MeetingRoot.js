@@ -13,10 +13,12 @@ import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAdded
 import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
 import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
 import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
+import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
 import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
+import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -32,10 +34,12 @@ const subscriptions = [
   AgendaItemUpdatedSubscription,
   AgendaItemRemovedSubscription,
   MeetingUpdatedSubscription,
+  NewAuthTokenSubscription,
+  NotificationSubscription,
+  OrganizationSubscription,
   ProjectSubscription,
   TeamMemberSubscription,
-  NewAuthTokenSubscription,
-  NotificationSubscription
+  TeamSubscription
 ];
 
 const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {

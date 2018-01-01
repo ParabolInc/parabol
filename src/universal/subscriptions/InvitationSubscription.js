@@ -1,5 +1,6 @@
 import handleAddInvitations from 'universal/mutations/handlers/handleAddInvitations';
 import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 const subscription = graphql`
   subscription InvitationSubscription($teamId: ID!) {
@@ -36,7 +37,7 @@ const InvitationSubscription = (environment, queryVariables) => {
       if (type === 'InvitationAdded') {
         handleAddInvitations(invitation, store);
       } else if (type === 'InvitationRemoved') {
-        const invitationId = invitation.getValue('id');
+        const invitationId = getInProxy(invitation, 'id');
         handleRemoveInvitations(invitationId, store);
       }
     }
