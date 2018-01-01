@@ -8,7 +8,7 @@ import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {
-  ADDED, ASSIGNEE, MEETING, MENTIONEE, NOTIFICATIONS_ADDED, PROJECT,
+  ADDED, ASSIGNEE, MEETING, MENTIONEE, NOTIFICATION, PROJECT,
   PROJECT_INVOLVES
 } from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
@@ -119,9 +119,9 @@ export default {
     if (notificationsToAdd.length) {
       await r.table('Notification').insert(notificationsToAdd);
       notificationsToAdd.forEach((notification) => {
-        const notificationsAdded = {notifications: [notification]};
-        const notificationUserId = notification.userIds[0];
-        getPubSub().publish(`${NOTIFICATIONS_ADDED}.${notificationUserId}`, {notificationsAdded});
+        const {id: notificationId, userIds} = notification;
+        const notificationUserId = userIds[0];
+        getPubSub().publish(`${NOTIFICATION}.${notificationUserId}`, {data: {type: ADDED, notificationId}, ...subOptions});
       });
     }
     return projectCreated;

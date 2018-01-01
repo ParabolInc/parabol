@@ -19,7 +19,6 @@ import providerAdded from 'server/graphql/subscriptions/providerAdded';
 import providerRemoved from 'server/graphql/subscriptions/providerRemoved';
 import slackChannelAdded from 'server/graphql/subscriptions/slackChannelAdded';
 import slackChannelRemoved from 'server/graphql/subscriptions/slackChannelRemoved';
-import teamMembersInvited from 'server/graphql/subscriptions/teamMembersInvited';
 import teamMemberSubscription from 'server/graphql/subscriptions/teamMemberSubscription';
 import teamSubscription from 'server/graphql/subscriptions/teamSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
@@ -52,7 +51,6 @@ export default new GraphQLObjectType({
     providerAdded,
     providerRemoved,
     teamSubscription,
-    teamMembersInvited,
     teamMemberSubscription,
     ...rootFields
   })

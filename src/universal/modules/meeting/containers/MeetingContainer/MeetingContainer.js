@@ -175,7 +175,7 @@ class MeetingContainer extends Component {
   };
 
   electFacilitatorIfNone() {
-    const {atmosphere, viewer: {team: {activeFacilitator, teamMembers}}} = this.props;
+    const {atmosphere, dispatch, viewer: {team: {activeFacilitator, teamMembers}}} = this.props;
     if (!activeFacilitator) return;
 
     const facilitator = teamMembers.find((m) => m.id === activeFacilitator);
@@ -187,7 +187,7 @@ class MeetingContainer extends Component {
         PromoteFacilitatorMutation(atmosphere, {
           facilitatorId: nextFacilitator.id,
           disconnectedFacilitatorId: facilitator.id
-        });
+        }, dispatch);
       }
     }
   }

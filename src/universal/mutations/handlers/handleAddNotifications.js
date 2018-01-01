@@ -72,19 +72,13 @@ const notificationHandler = {
     }));
     addNotificationToConn(store, viewerId, payload);
   },
-  [FACILITATOR_DISCONNECTED]: (payload, {environment, dispatch, store}) => {
+  [FACILITATOR_DISCONNECTED]: (payload, {environment, dispatch}) => {
     const oldFacilitatorName = payload
       .getLinkedRecord('oldFacilitator')
       .getValue('preferredName');
     const newFacilitator = payload.getLinkedRecord('newFacilitator');
     const newFacilitatorName = newFacilitator.getValue('preferredName');
-    const newFacilitatorTeamMemberId = newFacilitator.getValue('id');
     const newFacilitatorUserId = newFacilitator.getValue('userId');
-    const teamId = payload.getValue('teamId');
-    const team = store.get(teamId);
-    // this can happen if it comes it during a refresh
-    if (!team) return;
-    team.setValue(newFacilitatorTeamMemberId, 'activeFacilitator');
     const {userId} = environment;
     const facilitatorIntro = userId === newFacilitatorUserId ? 'You are' : `${newFacilitatorName} is`;
     dispatch(showInfo({
@@ -94,7 +88,6 @@ const notificationHandler = {
   },
   [FACILITATOR_REQUEST]: (payload, {environment, dispatch}) => {
     const requestor = payload.getLinkedRecord('requestor');
-    if (!requestor) return;
     const requestorName = requestor.getValue('preferredName');
     const requestorId = requestor.getValue('id');
     dispatch(showInfo({
@@ -104,7 +97,7 @@ const notificationHandler = {
       action: {
         label: 'Promote',
         callback: () => {
-          PromoteFacilitatorMutation(environment, {facilitatorId: requestorId});
+          PromoteFacilitatorMutation(environment, {facilitatorId: requestorId}, dispatch);
         }
       }
     }));

@@ -195,7 +195,6 @@ export const ORGANIZATION_UPDATED = 'organizationUpdated';
 export const ORG_APPROVAL = 'orgApproval';
 // export const PROJECT = 'project'; // TODO refactor so it doesn't conflict with DnD
 export const TEAM = 'team';
-export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
 export const TEAM_MEMBER = 'teamMember';
 export const AGENDA_ITEM_ADDED = 'agendaItemAdded';
 export const AGENDA_ITEM_UPDATED = 'agendaItemUpdated';

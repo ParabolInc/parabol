@@ -1,7 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {FACILITATOR_REQUEST, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
+import {ADDED, FACILITATOR_REQUEST, NOTIFICATION} from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   name: 'RequestFacilitator',
@@ -16,27 +17,24 @@ export default {
     const operationId = dataLoader.share();
 
     // AUTH
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     requireTeamMember(authToken, teamId);
 
     // VALIDATION
-    const requestorId = `${userId}::${teamId}`;
+    const requestorId = toTeamMemberId(teamId, viewerId);
     const {activeFacilitator} = await dataLoader.get('teams').load(teamId);
     if (activeFacilitator === requestorId) {
-      // no UI for this
       throw new Error('You are already the facilitator');
     }
 
     // RESOLUTION
     const [currentFacilitatorUserId] = activeFacilitator.split('::');
-    const notificationsAdded = {
-      notifications: [{
-        requestorId,
-        type: FACILITATOR_REQUEST
-      }]
+    const notification = {
+      requestorId,
+      type: FACILITATOR_REQUEST
     };
 
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${currentFacilitatorUserId}`, {notificationsAdded, operationId});
+    getPubSub().publish(`${NOTIFICATION}.${currentFacilitatorUserId}`, {data: {type: ADDED, notification}, operationId});
     return true;
   }
 };

@@ -1,3 +1,7 @@
+export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
+  return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem;
+};
+
 export const resolveInvitation = ({invitationId, invitation}, args, {dataLoader}) => {
   return invitationId ? dataLoader.get('invitations').load(invitationId) : invitation;
 };

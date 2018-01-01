@@ -70,17 +70,6 @@ const subscription = graphql`
               preferredName
             }
           }
-          ... on NotifyFacilitatorDisconnected {
-            newFacilitator {
-              id
-              preferredName
-              userId
-            }
-            oldFacilitator {
-              preferredName
-            }
-            teamId
-          }
           ... on NotifyNewTeamMember {
             preferredName
             team {

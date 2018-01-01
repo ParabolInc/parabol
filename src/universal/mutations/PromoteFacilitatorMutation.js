@@ -1,4 +1,5 @@
 import {commitMutation} from 'react-relay';
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 
 const mutation = graphql`
   mutation PromoteFacilitatorMutation($facilitatorId: ID!, $disconnectedFacilitatorId: ID) {
@@ -6,15 +7,23 @@ const mutation = graphql`
       team {
         activeFacilitator
       }
+      notification {
+        ...FacilitatorDisconnectedToastFrag @relay(mask: false)
+      }
     }
   }
 `;
 
-const PromoteFacilitatorMutation = (environment, input, onError, onCompleted) => {
-  const {facilitatorId, disconnectedFacilitatorId} = input;
+const PromoteFacilitatorMutation = (environment, variables, dispatch, onError, onCompleted) => {
+  const {facilitatorId} = variables;
   return commitMutation(environment, {
     mutation,
-    variables: {disconnectedFacilitatorId, facilitatorId},
+    variables,
+    updater: (store) => {
+      const payload = store.getRootField('promoteFacilitator');
+      const notification = payload.getLinkedRecord('notification');
+      handleAddNotifications(notification, {dispatch, environment, store});
+    },
     optimisticUpdater: (store) => {
       const [, teamId] = facilitatorId.split('::');
       store.get(teamId)
