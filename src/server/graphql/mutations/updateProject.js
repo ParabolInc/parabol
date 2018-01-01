@@ -9,7 +9,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {MEETING, PROJECT_UPDATED} from 'universal/utils/constants';
+import {MEETING, PROJECT, UPDATED} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
@@ -28,10 +28,11 @@ export default {
       description: 'the updated project including the id, and at least one other field'
     }
   },
-  async resolve(source, {area, updatedProject}, {authToken, dataLoader, socketId}) {
+  async resolve(source, {area, updatedProject}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const myUserId = getUserId(authToken);
@@ -99,16 +100,14 @@ export default {
 
     // send project updated messages
     const {new_val: project, old_val: oldProject} = projectChanges;
-    const projectUpdated = {project};
-    const affectedUsers = Array.from(new Set([projectChanges.new_val.userId, projectChanges.old_val.userId]));
-    affectedUsers.forEach((affectedUserId) => {
-      getPubSub().publish(`${PROJECT_UPDATED}.${affectedUserId}`, {projectUpdated, operationId, mutatorId: socketId});
-    });
-    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, operationId, mutatorId: socketId});
+    const isPrivate = project.tags.includes('private');
+    const wasPrivate = oldProject.tags.includes('private');
+    const data = {type: UPDATED, projectId, isPrivate, wasPrivate, userId: project.userId};
+    getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
 
     // send notifications to assignees and mentionees
     publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
 
-    return projectUpdated;
+    return {projectId};
   }
 };

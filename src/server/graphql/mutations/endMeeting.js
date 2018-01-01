@@ -9,7 +9,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, MEETING_UPDATED, PROJECT_UPDATED, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
+import {DONE, LOBBY, MEETING_UPDATED, PROJECT, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
@@ -126,10 +126,10 @@ export default {
     if (projectsToArchive.length) {
       const archivedProjects = await archiveProjectsForDB(projectsToArchive);
       archivedProjects.forEach((project) => {
-        const projectUpdated = {project};
-        // since this is from the meeting, we don't need to remove it from the user dash
-        // because we are guaranteed they have a sub going for the team dash
-        getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, mutatorId, operationId});
+        const {id: projectId, tags, userId} = project;
+        const isPrivate = tags.includes('private');
+        const data = {type: UPDATED, projectId, isPrivate, wasPrivate: isPrivate, userId};
+        getPubSub().publish(`${PROJECT}.${teamId}`, {data, mutatorId, operationId});
       });
     }
     const {meetingNumber} = completedMeeting;

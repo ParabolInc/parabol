@@ -1,5 +1,3 @@
-import ms from 'ms';
-/* eslint-disable no-undef */
 import PropTypes from 'prop-types';
 import React from 'react';
 import {graphql} from 'react-relay';
@@ -10,12 +8,8 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UserDashMain from 'universal/modules/userDashboard/components/UserDashMain/UserDashMain';
-import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
-import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
-
-// short ttl for projects to avoid sending duplicates when switching from team to user dash
-const cacheConfig = {ttl: ms('10s')};
+import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
+import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
   query UserDashRootQuery {
@@ -26,9 +20,7 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  ProjectUpdatedSubscription,
-  ProjectCreatedSubscription,
-  ProjectDeletedSubscription
+  ProjectSubscription
 ];
 
 const UserDashRoot = ({atmosphere}) => {

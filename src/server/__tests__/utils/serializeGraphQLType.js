@@ -11,7 +11,7 @@ const fieldsToSerialize = {
     'removedRequestNotifications.inviterUserId',
     'removedRequestNotifications.orgId',
     'removedRequestNotifications.teamId',
-    'removedRequestNotifications.userIds',
+    'removedRequestNotifications.userIds'
   ],
   NotificationsClearedPayload: [
     'deletedIds'

@@ -1,4 +1,3 @@
-import ms from 'ms';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
@@ -11,9 +10,8 @@ import AgendaAndProjects from 'universal/modules/teamDashboard/components/Agenda
 import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAddedSubscription';
 import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
 import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
-import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
-import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
+import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
   query AgendaAndProjectsRootQuery($teamId: ID!) {
@@ -24,14 +22,11 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  ProjectUpdatedSubscription,
-  ProjectCreatedSubscription,
-  ProjectDeletedSubscription,
+  ProjectSubscription,
   AgendaItemAddedSubscription,
   AgendaItemUpdatedSubscription,
   AgendaItemRemovedSubscription
 ];
-const cacheConfig = {ttl: ms('10s')};
 
 const AgendaAndProjectsRoot = (props) => {
   const {atmosphere, match: {params: {teamId}}} = props;

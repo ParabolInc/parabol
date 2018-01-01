@@ -2,8 +2,8 @@ import {GraphQLObjectType} from 'graphql';
 import {resolveProject} from 'server/graphql/resolvers';
 import Project from 'server/graphql/types/Project';
 
-const CreateGitHubIssuePayload = new GraphQLObjectType({
-  name: 'CreateGitHubIssuePayload',
+const ProjectUpdated = new GraphQLObjectType({
+  name: 'ProjectUpdated',
   fields: () => ({
     project: {
       type: Project,
@@ -12,4 +12,4 @@ const CreateGitHubIssuePayload = new GraphQLObjectType({
   })
 });
 
-export default CreateGitHubIssuePayload;
+export default ProjectUpdated;

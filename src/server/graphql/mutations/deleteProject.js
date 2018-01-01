@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_CLEARED, PROJECT_DELETED, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {NOTIFICATIONS_CLEARED, PROJECT, PROJECT_INVOLVES, REMOVED} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
 export default {
@@ -15,12 +15,11 @@ export default {
       description: 'The projectId to delete'
     }
   },
-  async resolve(source, {projectId}, {authToken, dataLoader}) {
+  async resolve(source, {projectId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
-
+    const subOptions = {mutatorId, operationId};
     // AUTH
-    const userId = getUserId(authToken);
     // format of id is teamId::shortId
     const [teamId] = projectId.split('::');
     requireTeamMember(authToken, teamId);
@@ -35,17 +34,18 @@ export default {
     if (!project) {
       throw new Error('Project does not exist');
     }
-    const projectDeleted = {project};
-    getPubSub().publish(`${PROJECT_DELETED}.${teamId}`, {projectDeleted, operationId});
-    getPubSub().publish(`${PROJECT_DELETED}.${userId}`, {projectDeleted, operationId});
+    const {content, tags, userId} = project;
+    const wasPrivate = tags.includes('private');
+    const data = {type: REMOVED, projectId, isPrivate: wasPrivate, wasPrivate, userId};
+    getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
 
     // handle notifications
-    const {entityMap} = JSON.parse(project.content);
-    const userIdsWithNotifications = getTypeFromEntityMap('MENTION', entityMap).concat(project.userId);
+    const {entityMap} = JSON.parse(content);
+    const userIdsWithNotifications = getTypeFromEntityMap('MENTION', entityMap).concat(userId);
     const clearedNotifications = await r.table('Notification')
       .getAll(r.args(userIdsWithNotifications), {index: 'userIds'})
       .filter({
-        projectId: project.id,
+        projectId,
         type: PROJECT_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
@@ -57,6 +57,6 @@ export default {
       getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notificationUserId}`, {notificationsCleared});
     });
 
-    return projectDeleted;
+    return {project};
   }
 };

@@ -1,22 +1,19 @@
 import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AreaEnum from 'server/graphql/types/AreaEnum';
-import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import CreateProjectInput from 'server/graphql/types/CreateProjectInput';
+import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {
-  ASSIGNEE,
-  MEETING,
-  MENTIONEE,
-  NOTIFICATIONS_ADDED,
-  PROJECT_CREATED,
+  ADDED, ASSIGNEE, MEETING, MENTIONEE, NOTIFICATIONS_ADDED, PROJECT,
   PROJECT_INVOLVES
 } from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
 export default {
@@ -32,15 +29,14 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newProject, area}, {authToken, dataLoader, socketId}) {
+  async resolve(source, {newProject, area}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const now = new Date();
-
+    const subOptions = {operationId, mutatorId};
     // AUTH
-    const myUserId = getUserId(authToken);
-
     // VALIDATION
+    const viewerId = getUserId(authToken);
     const schema = makeProjectSchema();
     const {errors, data: validNewProject} = schema({content: 1, ...newProject});
     handleSchemaErrors(errors);
@@ -48,19 +44,22 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
+    const teamMemberId = toTeamMemberId(teamId, userId);
+    const projectId = `${teamId}::${shortid.generate()}`;
     const {entityMap} = JSON.parse(content);
+    const tags = getTagsFromEntityMap(entityMap);
+    const isPrivate = tags.includes('private');
     const project = {
-      ...validNewProject,
-      id: `${teamId}::${shortid.generate()}`,
+      id: projectId,
       agendaId: validNewProject.agendaId,
       content: validNewProject.content,
       createdAt: now,
-      createdBy: myUserId,
+      createdBy: viewerId,
       sortOrder: validNewProject.sortOrder,
       status: validNewProject.status,
-      tags: getTagsFromEntityMap(entityMap),
+      tags,
       teamId,
-      teamMemberId: `${userId}::${teamId}`,
+      teamMemberId,
       updatedAt: now,
       userId
     };
@@ -83,13 +82,12 @@ export default {
         .coerceTo('array') : []
     });
     const projectCreated = {project};
-
-    getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated, operationId, mutatorId: socketId});
-    getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated, operationId, mutatorId: socketId});
+    const data = {type: ADDED, projectId, isPrivate, wasPrivate: false, userId};
+    getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
-    const changeAuthorId = `${myUserId}::${teamId}`;
+    const changeAuthorId = toTeamMemberId(teamId, viewerId);
     const notificationsToAdd = [];
     if (changeAuthorId !== project.teamMemberId && !usersToIgnore.includes(project.userId)) {
       notificationsToAdd.push({
@@ -105,7 +103,7 @@ export default {
     }
 
     getTypeFromEntityMap('MENTION', entityMap)
-      .filter((mention) => mention !== myUserId && mention !== project.userId && !usersToIgnore.includes(mention))
+      .filter((mention) => mention !== viewerId && mention !== project.userId && !usersToIgnore.includes(mention))
       .forEach((mentioneeUserId) => {
         notificationsToAdd.push({
           id: shortid.generate(),

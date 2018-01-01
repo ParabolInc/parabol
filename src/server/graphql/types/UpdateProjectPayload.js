@@ -1,16 +1,13 @@
 import {GraphQLObjectType} from 'graphql';
+import {resolveProject} from 'server/graphql/resolvers';
 import Project from 'server/graphql/types/Project';
-import ProjectEditorPayload from 'server/graphql/types/ProjectEditorPayload';
 
 const UpdateProjectPayload = new GraphQLObjectType({
   name: 'UpdateProjectPayload',
   fields: () => ({
     project: {
-      type: Project
-    },
-    editor: {
-      type: ProjectEditorPayload,
-      description: 'An announcement to all subscribers that someone is editing the project'
+      type: Project,
+      resolve: resolveProject
     }
   })
 });

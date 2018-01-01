@@ -13,12 +13,11 @@ import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAdded
 import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
 import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
 import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
-import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
-import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
+import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
+import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
   query MeetingRootQuery($teamId: ID!) {
@@ -33,9 +32,7 @@ const subscriptions = [
   AgendaItemUpdatedSubscription,
   AgendaItemRemovedSubscription,
   MeetingUpdatedSubscription,
-  ProjectUpdatedSubscription,
-  ProjectCreatedSubscription,
-  ProjectDeletedSubscription,
+  ProjectSubscription,
   TeamMemberSubscription,
   NewAuthTokenSubscription,
   NotificationSubscription
@@ -45,7 +42,7 @@ const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
   const {params: {localPhase, localPhaseItem, teamId}} = match;
   return (
     <QueryRenderer
-      cacheConfig={{ttl: 30000}}
+      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{teamId}}

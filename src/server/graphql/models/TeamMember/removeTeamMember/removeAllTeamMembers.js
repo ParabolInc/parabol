@@ -5,7 +5,7 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getPubSub from 'server/utils/getPubSub';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
-import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, REMOVED} from 'universal/utils/constants';
+import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, REMOVED, TEAM} from 'universal/utils/constants';
 
 const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => {
   const {isKickout} = options;
@@ -119,11 +119,12 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => 
     await r.table('Notification').insert(notifications);
   }
 
+  const {operationId} = subOptions;
   notifications.forEach((notification) => {
     const {teamId} = notification;
     // don't publish notifications if they kicked themselves out
     const notificationId = isKickout ? notification.id : undefined;
-    getPubSub().publish(`${TEAM}.${userId}`, {data: {type: REMOVED, teamId, notificationId}, ...subOptions})
+    getPubSub().publish(`${TEAM}.${userId}`, {data: {type: REMOVED, teamId, notificationId}, operationId});
   });
 
   const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB);

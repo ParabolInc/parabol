@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay';
-import {handleProjectConnections} from 'universal/mutations/UpdateProjectMutation';
+import handleEditProject from 'universal/mutations/handlers/handleEditProject';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 import clientTempId from 'universal/utils/relay/clientTempId';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
@@ -10,36 +11,7 @@ const mutation = graphql`
   mutation CreateProjectMutation($newProject: CreateProjectInput!, $area: AreaEnum) {
     createProject(newProject: $newProject, area: $area) {
       project {
-        id
-        agendaId
-        content
-        createdAt
-        createdBy
-        editors {
-          preferredName
-          userId
-        }
-        integration {
-          service
-          nameWithOwner
-          issueNumber
-        }
-        sortOrder
-        status
-        tags
-        teamMemberId
-        updatedAt
-        userId
-        teamId
-        team {
-          id
-          name
-        }
-        teamMember {
-          id
-          picture
-          preferredName
-        }
+        ...CompleteProjectFrag @relay(mask: false)
       }
     }
   }
@@ -47,6 +19,7 @@ const mutation = graphql`
 
 const CreateProjectMutation = (environment, newProject, area, onError, onCompleted) => {
   const {viewerId} = environment;
+  const isEditing = !newProject.content;
   return commitMutation(environment, {
     mutation,
     variables: {
@@ -54,19 +27,21 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
       newProject
     },
     updater: (store) => {
-      const projectEditor = getOptimisticProjectEditor(store, newProject.userId);
-      const project = store.getRootField('createProject')
-        .getLinkedRecord('project')
-        .setLinkedRecords([projectEditor], 'editors');
-      handleProjectConnections(store, viewerId, project);
+      const project = store.getRootField('createProject').getLinkedRecord('project');
+      const projectId = project.getValue('id');
+      const userId = project.getValue('userId');
+      const editorPayload = getOptimisticProjectEditor(store, userId, projectId, isEditing);
+      handleEditProject(editorPayload, store);
+      handleUpsertProjects(project, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {teamId, userId} = newProject;
       const teamMemberId = toTeamMemberId(teamId, userId);
       const now = new Date().toJSON();
+      const projectId = clientTempId(teamId);
       const optimisticProject = {
         ...newProject,
-        id: clientTempId(teamId),
+        id: projectId,
         teamId,
         userId,
         createdAt: now,
@@ -76,14 +51,12 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
         teamMemberId,
         content: newProject.content || makeEmptyStr()
       };
-
-      const editors = newProject.content ? [] : [getOptimisticProjectEditor(store, userId)];
       const project = createProxyRecord(store, 'Project', optimisticProject)
         .setLinkedRecord(store.get(teamMemberId), 'teamMember')
-        .setLinkedRecord(store.get(teamId), 'team')
-        .setLinkedRecords(editors, 'editors');
-
-      handleProjectConnections(store, viewerId, project);
+        .setLinkedRecord(store.get(teamId), 'team');
+      const editorPayload = getOptimisticProjectEditor(store, userId, projectId, isEditing);
+      handleEditProject(editorPayload, store);
+      handleUpsertProjects(project, store, viewerId);
     },
     onError,
     onCompleted

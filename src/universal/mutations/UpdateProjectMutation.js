@@ -1,9 +1,6 @@
 import {commitMutation} from 'react-relay';
-import {ConnectionHandler} from 'relay-runtime';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
-import getNodeById from 'universal/utils/relay/getNodeById';
-import {insertEdgeAfter} from 'universal/utils/relay/insertEdge';
-import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 
@@ -11,107 +8,11 @@ const mutation = graphql`
   mutation UpdateProjectMutation($updatedProject: UpdateProjectInput!) {
     updateProject(updatedProject: $updatedProject) {
       project {
-        id
-        content
-        createdAt
-        createdBy
-        integration {
-          service
-          nameWithOwner
-          issueNumber
-        }
-        sortOrder
-        status
-        tags
-        teamMemberId
-        updatedAt
-        userId
-        teamId
-        team {
-          id
-          name
-        }
-        teamMember {
-          id
-          picture
-          preferredName
-        }
+        ...CompleteProjectFrag @relay(mask: false)
       }
     }
   }
 `;
-
-export const getUserDashConnection = (viewer) => ConnectionHandler.getConnection(
-  viewer,
-  'UserColumnsContainer_projects'
-);
-
-export const getTeamDashConnection = (viewer, teamId) => ConnectionHandler.getConnection(
-  viewer,
-  'TeamColumnsContainer_projects',
-  {teamId}
-);
-
-export const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getConnection(
-  viewer,
-  'TeamArchive_archivedProjects',
-  {teamId}
-);
-
-// export const getMeetingUpdatesConnections = (store, teamId) => {
-//  const team = store.get(teamId);
-//  if (!team) return [];
-//  const teamMembers = team.getLinkedRecords('teamMembers', {sortBy: 'checkInOrder'});
-//  if (!teamMembers) return [];
-//  return teamMembers.map((teamMember) => {
-//    return ConnectionHandler.getConnection(
-//      teamMember,
-//      'MeetingUpdates_projects'
-//    );
-//  })
-// };
-
-export const handleProjectConnections = (store, viewerId, project) => {
-  if (!project) return;
-  // we currently have 3 connections, user, team, and team archive
-  const viewer = store.get(viewerId);
-  const teamId = project.getValue('teamId');
-  const projectId = project.getValue('id');
-  const tags = project.getValue('tags');
-  const isNowArchived = tags.includes('archived');
-  const archiveConn = getArchiveConnection(viewer, teamId);
-  const teamConn = getTeamDashConnection(viewer, teamId);
-  const userConn = getUserDashConnection(viewer);
-  const safePutNodeInConn = (conn) => {
-    if (conn && !getNodeById(projectId, conn)) {
-      const newEdge = ConnectionHandler.createEdge(
-        store,
-        conn,
-        project,
-        'ProjectEdge'
-      );
-      newEdge.setValue(project.getValue('updatedAt'), 'cursor');
-      insertEdgeAfter(conn, newEdge, 'updatedAt');
-    }
-  };
-
-  if (isNowArchived) {
-    safeRemoveNodeFromConn(projectId, teamConn);
-    safeRemoveNodeFromConn(projectId, userConn);
-    safePutNodeInConn(archiveConn);
-  } else {
-    safeRemoveNodeFromConn(projectId, archiveConn);
-    safePutNodeInConn(teamConn);
-    if (userConn) {
-      const ownedByViewer = project.getValue('userId') === viewerId;
-      if (ownedByViewer) {
-        safePutNodeInConn(userConn);
-      } else {
-        safeRemoveNodeFromConn(projectId, userConn);
-      }
-    }
-  }
-};
 
 const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, onError) => {
   const {viewerId} = environment;
@@ -125,7 +26,7 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
     },
     updater: (store) => {
       const project = store.getRootField('updateProject').getLinkedRecord('project');
-      handleProjectConnections(store, viewerId, project);
+      handleUpsertProjects(project, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {id, content, userId} = updatedProject;
@@ -150,7 +51,7 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
         const nextTags = getTagsFromEntityMap(entityMap);
         project.setValue(nextTags, 'tags');
       }
-      handleProjectConnections(store, viewerId, project);
+      handleUpsertProjects(project, store, viewerId);
     },
     onCompleted,
     onError

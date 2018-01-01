@@ -3,6 +3,7 @@ import {ConnectionHandler} from 'relay-runtime';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
+import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn';
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
@@ -14,10 +15,7 @@ import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
 export const addNotificationToConn = (store, viewerId, newNode) => {
   const viewer = store.get(viewerId);
-  const conn = ConnectionHandler.getConnection(
-    viewer,
-    'DashboardWrapper_notifications'
-  );
+  const conn = getNotificationsConn(viewer);
   if (!conn) return;
   const nodeId = newNode.getValue('id');
   const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('id') === nodeId);

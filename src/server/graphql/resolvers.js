@@ -14,6 +14,10 @@ export const resolveOrgApproval = ({orgApprovalId, orgApproval}, args, {dataLoad
   return orgApprovalId ? dataLoader.get('orgApprovals').load(orgApprovalId) : orgApproval;
 };
 
+export const resolveProject = ({project, projectId}, args, {dataLoader}) => {
+  return projectId ? dataLoader.get('projects').load(projectId) : project;
+};
+
 export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
   return teamId ? dataLoader.get('teams').load(teamId) : team;
 };
@@ -22,7 +26,6 @@ export const resolveTeamMember = ({teamMemberId, teamMember}, args, {dataLoader}
   return teamMemberId ? dataLoader.get('teamMembers').load(teamMemberId) : teamMember;
 };
 
-export const resolveSub = (type, resolver) => (source, args, context) => {
-  if (type !== source.type) return null;
-  return resolver(source, args, context);
+export const resolveUser = ({userId, user}, args, {dataLoader}) => {
+  return userId ? dataLoader.get('users').load(userId) : user;
 };

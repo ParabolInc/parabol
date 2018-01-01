@@ -1,10 +1,9 @@
 import {GraphQLObjectType} from 'graphql';
-import {resolveNotification, resolveSub, resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
+import {resolveNotification, resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
-import {ADDED} from 'universal/utils/constants';
 
 const TeamAdded = new GraphQLObjectType({
   name: 'TeamAdded',

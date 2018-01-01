@@ -7,8 +7,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamArchive from 'universal/modules/teamDashboard/components/TeamArchive/TeamArchive';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
-
+import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 
 const query = graphql`
   query TeamArchiveRootQuery($teamId: ID!, $first: Int!, $after: DateTime) {
@@ -19,7 +18,7 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  ProjectUpdatedSubscription
+  ProjectSubscription
 ];
 
 const TeamArchiveRoot = ({atmosphere, match, team}) => {

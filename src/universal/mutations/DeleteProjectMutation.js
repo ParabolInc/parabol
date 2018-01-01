@@ -1,11 +1,6 @@
 import {commitMutation} from 'react-relay';
-import {
-  getArchiveConnection,
-  getTeamDashConnection,
-  getUserDashConnection
-} from 'universal/mutations/UpdateProjectMutation';
+import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
 import isTempId from 'universal/utils/relay/isTempId';
-import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
 
 const mutation = graphql`
   mutation DeleteProjectMutation($projectId: ID!) {
@@ -17,22 +12,11 @@ const mutation = graphql`
   }
 `;
 
-export const removeFromProjectConnections = (store, viewerId, projectId, teamId) => {
-  // we currently have 3 connections, user, team, and team archive
-  const viewer = store.get(viewerId);
-  const archiveConn = getArchiveConnection(viewer, teamId);
-  const teamConn = getTeamDashConnection(viewer, teamId);
-  const userConn = getUserDashConnection(viewer);
-  safeRemoveNodeFromConn(projectId, teamConn);
-  safeRemoveNodeFromConn(projectId, userConn);
-  safeRemoveNodeFromConn(projectId, archiveConn);
-};
-
 const DeleteProjectMutation = (environment, projectId, teamId, onError, onCompleted) => {
   if (isTempId(projectId)) return undefined;
   const {viewerId} = environment;
   const updater = (store) => {
-    removeFromProjectConnections(store, viewerId, projectId, teamId);
+    handleRemoveProjects(projectId, store, viewerId);
   };
   return commitMutation(environment, {
     mutation,

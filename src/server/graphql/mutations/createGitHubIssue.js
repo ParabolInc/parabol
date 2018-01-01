@@ -2,10 +2,10 @@ import {convertFromRaw} from 'draft-js';
 import {stateToMarkdown} from 'draft-js-export-markdown';
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
+import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {GITHUB, PROJECT_UPDATED} from 'universal/utils/constants';
+import {GITHUB, PROJECT, UPDATED} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 // const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
@@ -44,7 +44,7 @@ const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner) => {
 
 export default {
   name: 'CreateGitHubIssue',
-  type: UpdateProjectPayload,
+  type: CreateGitHubIssuePayload,
   args: {
     projectId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -55,10 +55,11 @@ export default {
       description: 'The owner/repo string'
     }
   },
-  resolve: async (source, {nameWithOwner, projectId}, {authToken, dataLoader, socketId}) => {
+  resolve: async (source, {nameWithOwner, projectId}, {authToken, dataLoader, socketId: mutatorId}) => {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const [teamId] = projectId.split('::');
@@ -167,9 +168,9 @@ export default {
         updatedAt: now
       }, {returnChanges: true})('changes')(0)('new_val').default(null);
 
-    const projectUpdated = {project: integratedProject};
-    getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, operationId, mutatorId: socketId});
-    getPubSub().publish(`${PROJECT_UPDATED}.${userId}`, {projectUpdated, operationId, mutatorId: socketId});
-    return projectUpdated;
+    const isPrivate = integratedProject.tags.includes('private');
+    const data = {type: UPDATED, projectId, isPrivate, wasPrivate: isPrivate, userId: integratedProject.userId};
+    getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
+    return {projectId};
   }
 };

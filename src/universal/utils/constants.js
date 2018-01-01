@@ -193,9 +193,7 @@ export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
 export const ORGANIZATION_ADDED = 'organizationAdded';
 export const ORGANIZATION_UPDATED = 'organizationUpdated';
 export const ORG_APPROVAL = 'orgApproval';
-export const PROJECT_UPDATED = 'projectUpdated';
-export const PROJECT_CREATED = 'projectCreated';
-export const PROJECT_DELETED = 'projectDeleted';
+// export const PROJECT = 'project'; // TODO refactor so it doesn't conflict with DnD
 export const TEAM = 'team';
 export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
 export const TEAM_MEMBER = 'teamMember';
@@ -227,6 +225,8 @@ export const GQL_DATA = 'GQL_DATA';
 export const ADDED = 'added';
 export const UPDATED = 'updated';
 export const REMOVED = 'removed';
+// used just for projects
+export const EDITED = 'edited';
 
 /* Parabol Payment level */
 export const PERSONAL = 'personal';
