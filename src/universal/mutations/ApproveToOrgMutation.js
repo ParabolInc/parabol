@@ -1,5 +1,4 @@
 import {commitMutation} from 'react-relay';
-import {ConnectionHandler} from 'relay-runtime';
 import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn';
 import handleAddInvitations from 'universal/mutations/handlers/handleAddInvitations';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';

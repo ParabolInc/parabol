@@ -4,21 +4,17 @@ import handleNewTeamInvitees from 'server/graphql/mutations/helpers/handleNewTea
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, getUserOrgDoc, requireUserInOrg} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ADDED, NEW_AUTH_TOKEN, TEAM} from 'universal/utils/constants';
+import {ADDED, NEW_AUTH_TOKEN, TEAM, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import addTeamValidation from './helpers/addTeamValidation';
 
-
-const publishNewAuthToken = (oldTMS, teamId, userId) => {
-  const newTMS = Array.isArray(oldTMS) ? oldTMS.concat(teamId) : [teamId];
-  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, newTMS)});
-};
 
 export default {
   type: AddTeamPayload,
@@ -57,7 +53,10 @@ export default {
     const invitationIds = await handleNewTeamInvitees(invitees, teamId, userId, subOptions);
 
     getPubSub().publish(`${TEAM}.${userId}`, {data: {teamId, type: ADDED}, ...subOptions});
-    publishNewAuthToken(authToken.tms, teamId, userId);
+    const oldTMS = authToken.tms || [];
+    const tms = oldTMS.concat(teamId);
+    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
+    publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
     return {
       teamId,
       teamMemberId: toTeamMemberId(teamId, userId),

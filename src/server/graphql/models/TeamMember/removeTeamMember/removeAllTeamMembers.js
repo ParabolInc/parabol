@@ -2,10 +2,9 @@ import getRethink from 'server/database/rethinkDriver';
 import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
 import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import getPubSub from 'server/utils/getPubSub';
-import tmsSignToken from 'server/utils/tmsSignToken';
+import publish from 'server/utils/publish';
 import shortid from 'shortid';
-import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, REMOVED, TEAM} from 'universal/utils/constants';
+import {GITHUB, KICKED_OUT, NEW_AUTH_TOKEN, REMOVED, TEAM, UPDATED} from 'universal/utils/constants';
 
 const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => {
   const {isKickout} = options;
@@ -99,8 +98,6 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => 
       .filter((notification) => r(teamIds).contains(notification('teamId')))
       .delete()
   });
-  // update the tms on auth0 in async
-  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newTMS});
 
   const notifications = teams.map((team) => {
     const {id: teamId, name: teamName, orgId} = team;
@@ -124,7 +121,7 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => 
     const {teamId} = notification;
     // don't publish notifications if they kicked themselves out
     const notificationId = isKickout ? notification.id : undefined;
-    getPubSub().publish(`${TEAM}.${userId}`, {data: {type: REMOVED, teamId, notificationId}, operationId});
+    publish(TEAM, userId, REMOVED, {teamId, notificationId}, {operationId});
   });
 
   const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB);
@@ -133,7 +130,8 @@ const removeAllTeamMembers = async (maybeTeamMemberIds, options, subOptions) => 
     // TODO send the archived projects in a mutation payload
     await archiveProjectsForManyRepos(repoChanges);
   }
-  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, newTMS)});
+  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newTMS});
+  publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms: newTMS});
   return true;
 };
 

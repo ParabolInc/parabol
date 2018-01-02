@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {NOTIFICATION, PROJECT, PROJECT_INVOLVES, REMOVED} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';

@@ -6,13 +6,14 @@ import handleNewTeamInvitees from 'server/graphql/mutations/helpers/handleNewTea
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
 import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ADDED, NEW_AUTH_TOKEN, ORGANIZATION} from 'universal/utils/constants';
+import {ADDED, NEW_AUTH_TOKEN, ORGANIZATION, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
@@ -50,13 +51,12 @@ export default {
 
     const invitationIds = await handleNewTeamInvitees(invitees, teamId, viewerId, subOptions);
 
-    const newAuthToken = tmsSignToken({
-      ...authToken,
-      exp: undefined
-    }, authToken.tms.concat(teamId));
+    const tms = authToken.tms.concat(teamId);
     sendSegmentEvent('New Org', viewerId, {orgId, teamId});
     getPubSub().publish(`${ORGANIZATION}.${viewerId}`, {data: {type: ADDED, orgId}, ...subOptions});
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${viewerId}`, {newAuthToken});
+
+    auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
+    publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
 
     return {
       orgId,

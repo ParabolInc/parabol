@@ -1,5 +1,4 @@
 import {commitMutation} from 'react-relay';
-import {ConnectionHandler} from 'relay-runtime';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 
 const mutation = graphql`

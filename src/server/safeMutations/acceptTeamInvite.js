@@ -6,9 +6,10 @@ import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifica
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {ADD_USER} from 'server/utils/serverConstants';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {ADD_TO_TEAM, ADDED, JOIN_TEAM, NEW_AUTH_TOKEN, TEAM, TEAM_MEMBER} from 'universal/utils/constants';
+import {ADD_TO_TEAM, ADDED, JOIN_TEAM, NEW_AUTH_TOKEN, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const acceptTeamInvite = async (teamId, authToken, email, subOptions) => {
@@ -49,7 +50,7 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions) => {
 
   // Send the new team member a welcome & a new token
   const newAuthToken = tmsSignToken(authToken, tms);
-  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
+  publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
   // Tell the new team member about the team, welcome them, and remove their outstanding invitation notifications

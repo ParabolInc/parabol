@@ -4,19 +4,17 @@ import UpdateTeamPayload from 'server/graphql/types/UpdateTeamPayload';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import tmsSignToken from 'server/utils/tmsSignToken';
 import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, REMOVED, TEAM, TEAM_ARCHIVED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, REMOVED, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const publishAuthTokensWithoutTeam = (userDocs) => {
   userDocs.forEach((user) => {
     const {id, tms} = user;
-    // update the tms on auth0 in async
     auth0ManagementClient.users.updateAppMetadata({id}, {tms});
-    // update the server socket, if they're logged in
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${id}`, {newAuthToken: tmsSignToken({sub: id}, tms)});
+    publish(NEW_AUTH_TOKEN, id, UPDATED, {tms});
   });
 };
 

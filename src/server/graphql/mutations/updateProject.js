@@ -109,14 +109,13 @@ export default {
     const {notificationsToRemove, notificationsToAdd} = publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
 
     notificationsToRemove.forEach((notification) => {
-      const {userIds: [userId], id: notificationId} = notification;
-      getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {type: REMOVED, notificationId}}, ...subOptions);
+      const {userIds: [notificationUserId], id: notificationId} = notification;
+      getPubSub().publish(`${NOTIFICATION}.${notificationUserId}`, {data: {type: REMOVED, notificationId}}, ...subOptions);
     });
 
     notificationsToAdd.forEach((notification) => {
-      const {userIds, id: notificationId} = notification;
-      connst[userId] = userIds;
-      getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {type: ADDED, notificationId}}, ...subOptions);
+      const {userIds: [notificationUserId], id: notificationId} = notification;
+      getPubSub().publish(`${NOTIFICATION}.${notificationUserId}`, {data: {type: ADDED, notificationId}}, ...subOptions);
     });
 
     return {projectId};

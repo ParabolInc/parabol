@@ -1,8 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
-import getPubSub from 'server/utils/getPubSub';
-import tmsSignToken from 'server/utils/tmsSignToken';
+import publish from 'server/utils/publish';
 import shortid from 'shortid';
-import {ADD_TO_TEAM, NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import {ADD_TO_TEAM, NEW_AUTH_TOKEN, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter) => {
@@ -37,7 +36,7 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter) => {
   }));
   await r.table('Notification').insert(notifications);
   reactivatedUsers.forEach(({id: userId, tms}) => {
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, tms)});
+    publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
   });
 
   return notifications.map((notification, idx) => ({
