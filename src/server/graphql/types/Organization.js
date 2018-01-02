@@ -7,7 +7,7 @@ import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
 import {OrganizationMemberConnection} from 'server/graphql/types/OrganizationMember';
 import OrgUserCount from 'server/graphql/types/OrgUserCount';
 import TierEnum from 'server/graphql/types/TierEnum';
-import User, {UserConnection} from 'server/graphql/types/User';
+import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import {BILLING_LEADER} from 'universal/utils/constants';
 

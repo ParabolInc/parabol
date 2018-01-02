@@ -86,15 +86,13 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   connect()(withStyles(styleThunk)(TeamInvite)),
   graphql`
-    fragment TeamInvite_notification on Notification {
+    fragment TeamInvite_notification on NotifyInvitation {
       notificationId: id
-      ... on NotifyInvitation {
-        inviter {
-          inviterName: preferredName
-        }
-        team {
-          teamName: name
-        }
+      inviter {
+        inviterName: preferredName
+      }
+      team {
+        teamName: name
       }
     }`
 );

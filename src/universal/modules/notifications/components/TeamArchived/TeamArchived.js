@@ -73,12 +73,10 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withStyles(styleThunk)(TeamArchived),
   graphql`
-    fragment TeamArchived_notification on Notification {
+    fragment TeamArchived_notification on NotifyTeamArchived {
       notificationId: id
-      ... on NotifyTeamArchived {
-        team {
-          teamName: name
-        }
+      team {
+        teamName: name
       }
     }
   `

@@ -6,13 +6,8 @@ import getPubSub from 'server/utils/getPubSub';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {
-  BILLING_LEADER,
-  billingLeaderTypes,
-  NOTIFICATIONS_ADDED,
-  NOTIFICATIONS_CLEARED,
-  ORGANIZATION_ADDED,
-  ORGANIZATION_UPDATED,
-  PROMOTE_TO_BILLING_LEADER
+  ADDED, BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER, REMOVED,
+  UPDATED
 } from 'universal/utils/constants';
 
 export default {
@@ -32,11 +27,11 @@ export default {
       description: 'the user’s new role'
     }
   },
-  async resolve(source, {orgId, userId, role}, {authToken, dataLoader, socketId}) {
+  async resolve(source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
-
+    const subOptions = {mutatorId, operationId};
     // AUTH
     const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
     requireOrgLeader(userOrgDoc);
@@ -93,18 +88,17 @@ export default {
       return null;
     }
     if (role === BILLING_LEADER) {
-      // add a notification
+      const promotionNotificationId = shortid.generate();
       const promotionNotification = {
-        id: shortid.generate(),
+        id: promotionNotificationId,
         type: PROMOTE_TO_BILLING_LEADER,
         startAt: now,
         orgId,
-        userIds: [userId],
-        groupName: organization.name
+        userIds: [userId]
       };
-      const {existingNotifications} = await r({
+      const {existingNotificationIds} = await r({
         insert: r.table('Notification').insert(promotionNotification),
-        existingNotifications: r.table('Notification')
+        existingNotificationIds: r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
           .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
           .update((notification) => ({
@@ -112,13 +106,21 @@ export default {
           }), {returnChanges: true})('changes')('new_val')
           .default([])
       });
-      const notificationsAdded = {notifications: existingNotifications.concat(promotionNotification)};
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId});
-
+      const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId);
       // add the org to the list of owned orgs
-      const organizationAdded = {organization};
-      getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, operationId, mutatorId: socketId});
-    } else if (role === null) {
+      getPubSub().publish(`${ORGANIZATION}.${userId}`, {
+        data: {
+          type: ADDED,
+          orgId,
+          notificationIdsAdded
+        },
+        ...subOptions
+      });
+
+      getPubSub().publish(`${ORGANIZATION}.${orgId}`, {data: {type: UPDATED, orgId, userId}, ...subOptions});
+      return {orgId, userId, notificationIdsAdded};
+    }
+    if (role === null) {
       const {oldPromotionId, removedNotificationIds} = await r({
         oldPromotionId: r.table('Notification')
           .getAll(userId, {index: 'userIds'})
@@ -126,7 +128,7 @@ export default {
             orgId,
             type: PROMOTE_TO_BILLING_LEADER
           })
-          .delete({returnChanges: true})('changes')(0)('old_val')('id').default(null),
+          .delete({returnChanges: true})('changes')(0)('old_val')('id').default([]),
         removedNotificationIds: r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
           .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
@@ -135,17 +137,19 @@ export default {
           }), {returnChanges: true})('changes')('new_val')('id')
           .default([])
       });
-      const deletedIds = oldPromotionId ? removedNotificationIds.concat(oldPromotionId) : removedNotificationIds;
-      if (deletedIds.length > 0) {
-        const notificationsCleared = {deletedIds};
-        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, operationId});
-      }
+      const notificationIdsRemoved = oldPromotionId.concat(removedNotificationIds);
+      getPubSub().publish(`${ORGANIZATION}.${userId}`, {
+        data: {
+          type: REMOVED,
+          orgId,
+          notificationIdsRemoved
+        },
+        ...subOptions
+      });
+
+      getPubSub().publish(`${ORGANIZATION}.${orgId}`, {data: {type: UPDATED, orgId, userId}, ...subOptions});
+      return {orgId, userId, notificationIdsRemoved};
     }
-
-    // Update all billing leaders online
-    const organizationUpdated = {updatedOrgUser: newUser, organization};
-    getPubSub().publish(`${ORGANIZATION_UPDATED}.${orgId}`, {organizationUpdated, operationId, mutatorId: socketId});
-
-    return {orgId, userId};
+    return null;
   }
 };

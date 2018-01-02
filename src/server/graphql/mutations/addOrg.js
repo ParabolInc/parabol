@@ -12,7 +12,7 @@ import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, ORGANIZATION_ADDED} from 'universal/utils/constants';
+import {ADDED, NEW_AUTH_TOKEN, ORGANIZATION} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
@@ -36,7 +36,7 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
 
     // VALIDATION
     const {data: {invitees, newTeam, orgName}, errors} = addOrgValidation()(args);
@@ -45,24 +45,23 @@ export default {
     // RESOLUTION
     const orgId = shortid.generate();
     const teamId = shortid.generate();
-    const newOrg = await createNewOrg(orgId, orgName, userId);
-    await createTeamAndLeader(userId, {id: teamId, ...newTeam}, true);
+    await createNewOrg(orgId, orgName, viewerId);
+    await createTeamAndLeader(viewerId, {id: teamId, ...newTeam}, true);
 
-    const invitationIds = await handleNewTeamInvitees(invitees, teamId, userId, subOptions);
+    const invitationIds = await handleNewTeamInvitees(invitees, teamId, viewerId, subOptions);
 
     const newAuthToken = tmsSignToken({
       ...authToken,
       exp: undefined
     }, authToken.tms.concat(teamId));
-    sendSegmentEvent('New Org', userId, {orgId, teamId});
-    const organizationAdded = {organization: newOrg};
-    getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, ...subOptions});
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
+    sendSegmentEvent('New Org', viewerId, {orgId, teamId});
+    getPubSub().publish(`${ORGANIZATION}.${viewerId}`, {data: {type: ADDED, orgId}, ...subOptions});
+    getPubSub().publish(`${NEW_AUTH_TOKEN}.${viewerId}`, {newAuthToken});
 
     return {
       orgId,
       teamId,
-      teamMemberId: toTeamMemberId(teamId, userId),
+      teamMemberId: toTeamMemberId(teamId, viewerId),
       invitationIds
     };
   }

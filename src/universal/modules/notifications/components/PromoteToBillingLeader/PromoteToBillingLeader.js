@@ -23,7 +23,7 @@ const PromoteToBillingLeader = (props) => {
     onError,
     onCompleted
   } = props;
-  const {notificationId, orgName, orgId} = notification;
+  const {notificationId, organization: {orgName, orgId}} = notification;
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
@@ -94,11 +94,11 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withRouter(withStyles(styleThunk)(PromoteToBillingLeader)),
   graphql`
-    fragment PromoteToBillingLeader_notification on Notification {
+    fragment PromoteToBillingLeader_notification on NotifyPromoteToOrgLeader {
       notificationId: id
-      ... on NotifyPromotion {
-        orgId
-        orgName: groupName
+      organization {
+        orgId: id
+        orgName: name
       }
     }
   `

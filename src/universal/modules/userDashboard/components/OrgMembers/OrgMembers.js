@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {createPaginationContainer} from 'react-relay';
+import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
@@ -32,6 +33,7 @@ const targetAnchor = {
 const OrgMembers = (props) => {
   const {
     dispatch,
+    history,
     org,
     orgId,
     viewer: {organization: {orgMembers}},
@@ -45,7 +47,8 @@ const OrgMembers = (props) => {
   const {tier} = org;
   const isPersonalTier = tier === PERSONAL;
   const setRole = (userId, role = null) => () => {
-    SetOrgUserRoleMutation(environment, orgId, userId, role);
+    const variables = {orgId, userId, role};
+    SetOrgUserRoleMutation(environment, variables, {dispatch, history});
   };
 
   const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
@@ -194,6 +197,7 @@ const OrgMembers = (props) => {
 };
 
 OrgMembers.propTypes = {
+  history: PropTypes.object.isRequired,
   relay: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   org: PropTypes.object,
@@ -226,7 +230,7 @@ const styleThunk = () => ({
 });
 
 export default createPaginationContainer(
-  connect()(withMutationProps(withStyles(styleThunk)(OrgMembers))),
+  withRouter(connect()(withMutationProps(withStyles(styleThunk)(OrgMembers)))),
   graphql`
     fragment OrgMembers_viewer on User {
       organization(orgId: $orgId) {

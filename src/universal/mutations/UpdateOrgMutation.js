@@ -4,7 +4,6 @@ const mutation = graphql`
   mutation UpdateOrgMutation($updatedOrg: UpdateOrgInput!) {
     updateOrg(updatedOrg: $updatedOrg) {
       organization {
-        id
         name
         picture
       }
@@ -15,6 +14,7 @@ const mutation = graphql`
 const UpdateOrgMutation = (environment, updatedOrg, onCompleted, onError) => {
   return commitMutation(environment, {
     mutation,
+    variables: {updatedOrg},
     optimisticUpdater: (store) => {
       const {id, picture, name} = updatedOrg;
       const organization = store.get(id);
@@ -26,7 +26,6 @@ const UpdateOrgMutation = (environment, updatedOrg, onCompleted, onError) => {
         organization.setValue(name, 'name');
       }
     },
-    variables: {updatedOrg},
     onCompleted,
     onError
   });

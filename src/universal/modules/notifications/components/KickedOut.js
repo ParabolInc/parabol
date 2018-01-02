@@ -75,12 +75,10 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withStyles(styleThunk)(KickedOut),
   graphql`
-    fragment KickedOut_notification on Notification {
+    fragment KickedOut_notification on NotifyKickedOut {
       notificationId: id
-      ... on NotifyKickedOut {
-        team {
-          teamName: name
-        }
+      team {
+        teamName: name
       }
     }
   `

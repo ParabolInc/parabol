@@ -2,6 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
+import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
@@ -9,7 +10,6 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {withRouter} from 'react-router-dom';
 import {clearNotificationLabel} from '../helpers/constants';
 
 const InviteeApproved = (props) => {
@@ -80,14 +80,12 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withRouter(withStyles(styleThunk)(InviteeApproved)),
   graphql`
-    fragment InviteeApproved_notification on Notification {
+    fragment InviteeApproved_notification on NotifyInvitation {
       notificationId: id
-      ... on NotifyInvitation {
-        inviteeEmail
-        team {
-          teamId: id
-          teamName: name
-        }
+      inviteeEmail
+      team {
+        teamId: id
+        teamName: name
       }
     }
   `

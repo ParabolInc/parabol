@@ -157,11 +157,14 @@ const notificationHandler = {
   },
   [PAYMENT_REJECTED]: (payload, {dispatch, environment, store, history}) => {
     const {viewerId} = environment;
-    const orgId = payload.getValue('orgId');
+    const organization = payload.getLinkedRecord('organization');
+    const orgId = organization.getValue('id');
+    const orgName = organization.getValue('name');
+    // TODO add brand and last 4
     dispatch(showWarning({
       autoDismiss: 10,
       title: 'Oh no!',
-      message: 'Your credit card was rejected.',
+      message: `Your credit card for ${orgName} was rejected.`,
       action: {
         label: 'Fix it!',
         callback: () => {
@@ -200,12 +203,13 @@ const notificationHandler = {
   },
   [PROMOTE_TO_BILLING_LEADER]: (payload, {dispatch, history, environment, store}) => {
     const {viewerId} = environment;
-    const orgId = payload.getValue('orgId');
-    const groupName = payload.getValue('groupName');
+    const organization = payload.getLinkedRecord('organization');
+    const orgId = organization.getValue('id');
+    const orgName = organization.getValue('name');
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Congratulations!',
-      message: `You’ve been promoted to billing leader for ${groupName}`,
+      message: `You’ve been promoted to billing leader for ${orgName}`,
       action: {
         label: 'Check it out!',
         callback: () => {

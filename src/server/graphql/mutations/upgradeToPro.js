@@ -3,12 +3,12 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
-import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import {fromEpochSeconds} from 'server/utils/epochTime';
+import getPubSub from 'server/utils/getPubSub';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
-import {ORGANIZATION_UPDATED, PRO} from 'universal/utils/constants';
-import getPubSub from 'server/utils/getPubSub';
+import {ORGANIZATION, PRO, TEAM, UPDATED} from 'universal/utils/constants';
 
 export default {
   type: UpgradeToProPayload,
@@ -23,12 +23,13 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve(source, {orgId, stripeToken}, {authToken, socketId}) {
+  async resolve(source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
-    requireWebsocket(socketId);
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
     requireOrgLeader(userOrgDoc);
@@ -65,7 +66,7 @@ export default {
 
     const {current_period_end, current_period_start} = subscription;
     const creditCard = getCCFromCustomer(customer);
-    const {updatedOrg, updatedTeams} = await r({
+    const {teamIds} = await r({
       updatedOrg: r.table('Organization').get(orgId).update({
         creditCard,
         tier: PRO,
@@ -74,21 +75,23 @@ export default {
         stripeId: customer.id,
         stripeSubscriptionId: subscription.id,
         updatedAt: now
-      }, {returnChanges: true})('changes')(0)('new_val').default({}),
-      updatedTeams: r.table('Team')
+      }),
+      teamIds: r.table('Team')
         .getAll(orgId, {index: 'orgId'})
         .update({
           isPaid: true,
           tier: PRO,
           updatedAt: now
-        }, {returnChanges: true})('changes')(0)('new_val').default([])
+        }, {returnChanges: true})('changes')('new_val')('id').default([])
     });
     sendSegmentEvent('Upgrade to Pro', userId, {orgId});
-    const organizationUpdated = {organization: updatedOrg};
-    getPubSub().publish(`${ORGANIZATION_UPDATED}`, {organizationUpdated, mutatorId: socketId});
+    getPubSub().publish(`${ORGANIZATION}.${orgId}`, {data: {type: UPDATED, orgId}, ...subOptions});
+    teamIds.forEach((teamId) => {
+      getPubSub().publish(`${TEAM}.${teamId}`, {data: {type: UPDATED, teamId}, ...subOptions});
+    });
     return {
-      organization: updatedOrg,
-      teams: updatedTeams
+      orgId,
+      teamIds
     };
   }
 };

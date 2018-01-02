@@ -2,19 +2,23 @@ import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import OrganizationSubscriptionPayload from 'server/graphql/types/OrganizationSubscriptionPayload';
 import {getUserId} from 'server/utils/authorization';
-import {ORGANIZATION} from 'universal/utils/constants';
+import {BILLING_LEADER, ORGANIZATION} from 'universal/utils/constants';
 
 
 export default {
   type: new GraphQLNonNull(OrganizationSubscriptionPayload),
-  subscribe: (source, args, {authToken, dataLoader, socketId}) => {
+  subscribe: async (source, args, {authToken, dataLoader, socketId}) => {
     // AUTH
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
+    const viewer = await dataLoader.get('users').load(viewerId);
+    const orgIds = viewer.userOrgs
+      .filter((userOrg) => userOrg.role === BILLING_LEADER)
+      .map(({id}) => id);
 
     // RESOLUTION
-    const channelName = `${ORGANIZATION}.${userId}`;
+    const channelNames = orgIds.concat(viewerId).map((id) => `${ORGANIZATION}.${id}`);
     const filterFn = (value) => value.mutatorId !== socketId;
     const resolve = ({data}) => ({organizationSubscription: data});
-    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve});
+    return makeSubscribeIter(channelNames, {filterFn, dataLoader, resolve});
   }
 };

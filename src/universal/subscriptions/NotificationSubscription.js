@@ -31,20 +31,11 @@ const subscription = graphql`
               name
             }
           }
-          ... on NotifyPayment {
-            orgId
-            last4
-            brand
-          }
           ... on NotifyProjectInvolves {
             involvement
             changeAuthor {
               preferredName
             }
-          }
-          ... on NotifyPromotion {
-            orgId
-            groupName
           }
           ... on NotifyInvitation {
             inviter {

@@ -9,9 +9,9 @@ import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequ
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
-import NotifyPayment from 'server/graphql/types/NotifyPayment';
+import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected';
 import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
-import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
+import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLeader';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
@@ -70,12 +70,12 @@ const Notification = new GraphQLInterfaceType({
       [INVITEE_APPROVED]: NotifyInvitation,
       [JOIN_TEAM]: NotifyNewTeamMember,
       [KICKED_OUT]: NotifyKickedOut,
-      [PAYMENT_REJECTED]: NotifyPayment,
+      [PAYMENT_REJECTED]: NotifyPaymentRejected,
       [PROJECT_INVOLVES]: NotifyProjectInvolves,
       [REJOIN_TEAM]: NotifyNewTeamMember,
       [REQUEST_NEW_USER]: NotifyInvitation,
       [TEAM_INVITE]: NotifyInvitation,
-      [PROMOTE_TO_BILLING_LEADER]: NotifyPromotion,
+      [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
       [TEAM_ARCHIVED]: NotifyTeamArchived,
       [VERSION_INFO]: NotifyVersionInfo
     };

@@ -4,10 +4,11 @@ import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
 import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
-import NotifyPayment from 'server/graphql/types/NotifyPayment';
-import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
+import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected';
+import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLeader';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
+import OrganizationAddedNotification from 'server/graphql/types/OrganizationAddedNotification';
 import mutation from './rootMutation';
 import query from './rootQuery';
 import subscription from './rootSubscription';
@@ -26,10 +27,11 @@ export default new GraphQLSchema({
     NotifyInvitation,
     NotifyKickedOut,
     NotifyNewTeamMember,
-    NotifyPayment,
+    NotifyPaymentRejected,
     NotifyProjectInvolves,
-    NotifyPromotion,
+    NotifyPromoteToOrgLeader,
     NotifyTeamArchived,
-    NotifyVersionInfo
+    NotifyVersionInfo,
+    OrganizationAddedNotification
   ]
 });
