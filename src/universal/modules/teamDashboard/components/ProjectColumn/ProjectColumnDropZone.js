@@ -1,6 +1,6 @@
 // @flow
 import type {Node} from 'react';
-import type {Project} from 'universal/types/project';
+import type {Project, ProjectID, Status} from 'universal/types/project';
 
 import React from 'react';
 import {DropTarget} from 'react-dnd';
@@ -16,8 +16,15 @@ type Props = {
   area: string,
   atmosphere: Object, // TODO: atmosphere needs a type definition
   dragCache: DragCache,
+  getProjectById: (ProjectID) => Project,
   lastProject: ?Project, // the last project in a column; may be undefined if the column is empty
-  status: string
+  status: Status
+};
+
+type UpdateProjectMutationArgs = {
+  id: ProjectID,
+  sortOrder: number,
+  status?: Status
 };
 
 // Represents the trailing space at the end of a column.  Acts as a drop target
@@ -30,9 +37,16 @@ const ProjectColumnDropZone = (props: Props) => (
 
 const spec = {
   hover: (props: Props, monitor) => {
-    const {area, atmosphere, dragCache, lastProject, status} = props;
-    const draggedProject = monitor.getItem();
-    const draggedProjectId = draggedProject.id;
+    const {
+      area,
+      atmosphere,
+      dragCache,
+      getProjectById,
+      lastProject,
+      status
+    } = props;
+    const draggedProjectId = monitor.getItem().projectId;
+    const draggedProject = getProjectById(draggedProjectId);
 
     if (!monitor.isOver({shallow: true})) {
       dragCache.clear();
@@ -45,11 +59,13 @@ const spec = {
 
     const sortOrder = sortOrderBetween(lastProject, null, draggedProject, false);
 
-    const updatedProject = {
+    const updatedProject: UpdateProjectMutationArgs = {
       id: draggedProject.id,
-      status,
       sortOrder
     };
+    if (draggedProject.status !== status) {
+      updatedProject.status = status;
+    }
     UpdateProjectMutation(atmosphere, updatedProject, area);
   }
 };

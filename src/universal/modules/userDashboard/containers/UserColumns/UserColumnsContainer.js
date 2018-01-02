@@ -12,6 +12,11 @@ const mapStateToProps = (state) => {
 };
 
 class UserColumnsContainer extends Component {
+  getProjectById = (projectId) =>
+    this.props.viewer.projects.edges
+      .map(({ node }) => node)
+      .find(({ id }) => projectId === id);
+
   componentWillMount() {
     this.filterByTeamMember(this.props);
   }
@@ -42,8 +47,9 @@ class UserColumnsContainer extends Component {
     const {projects} = this.state;
     return (
       <ProjectColumns
-        projects={projects}
         area={USER_DASH}
+        getProjectById={this.getProjectById}
+        projects={projects}
         teams={teams}
         userId={userId}
       />

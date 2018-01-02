@@ -1,6 +1,6 @@
 // @flow
 import type {Node} from 'react';
-import type {Project} from 'universal/types/project';
+import type {Project, ProjectID} from 'universal/types/project';
 import type {UserID} from 'universal/types/user';
 
 import React, { Component } from 'react';
@@ -28,6 +28,7 @@ type Props = {
   connectDragPreview: (node: Node) => Node,
   connectDropTarget: (node: Node) => Node,
   dragCache: DragCache,
+  getProjectById: (ProjectID) => Project,
   insert: (project: Project, before: boolean) => void,
   isDragging: boolean,
   isPreview: boolean,
@@ -88,10 +89,10 @@ class DraggableProject extends Component<Props> {
 
 const projectDragSpec = {
   beginDrag(props) {
-    return props.project;
+    return {projectId: props.project.id};
   },
   isDragging(props, monitor) {
-    return props.project.id === monitor.getItem().id;
+    return props.project.id === monitor.getItem().projectId;
   }
 };
 
@@ -102,10 +103,10 @@ const projectDragCollect = (connectSource, monitor) => ({
 });
 
 const handleProjectHover = (props: Props, monitor, component) => {
-  const {dragCache, insert, project} = props;
+  const {dragCache, getProjectById, insert, project} = props;
   const dropTargetProjectId = project.id;
-  const draggedProject = monitor.getItem();
-  const draggedProjectId = draggedProject.id;
+  const draggedProjectId = monitor.getItem().projectId;
+  const draggedProject = getProjectById(draggedProjectId);
 
   if (!monitor.isOver({shallow: true})) {
     dragCache.clear();

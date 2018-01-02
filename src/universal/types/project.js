@@ -22,17 +22,15 @@ export type ProjectID = string;
 
 type Tag = 'archived' | 'private';
 
+export type Status = ACTIVE | DONE | FUTURE | STUCK;
+
 export type Project = {
   content: EntityMap,
   createdAt: Date,
   createdBy: UserID,
   id: ProjectID,
   sortOrder: number,
-  status:
-    | ACTIVE
-    | DONE
-    | FUTURE
-    | STUCK,
+  status: Status,
   tags: Tag[],
   teamId: TeamID,
   teamMemberId: TeamMemberID,

@@ -63,6 +63,7 @@ class ProjectColumn extends Component {
     atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     firstColumn: PropTypes.bool,
+    getProjectById: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     isMyMeetingSection: PropTypes.bool,
     lastColumn: PropTypes.bool,
@@ -127,6 +128,15 @@ class ProjectColumn extends Component {
     return null;
   };
 
+  projectIsInPlace = (draggedProject, targetProject, before) => {
+    const {projects} = this.props;
+    const targetIndex = projects.findIndex((p) => p.id === targetProject.id);
+    const boundingProject = projects[targetIndex + (before ? -1 : 1)];
+    return Boolean(
+      boundingProject && boundingProject.id === draggedProject.id
+    );
+  };
+
   /**
    * `draggedProject` - project being dragged-and-dropped
    * `targetProject` - the project being "dropped on"
@@ -134,14 +144,20 @@ class ProjectColumn extends Component {
    * after (false) the target project.
    */
   insertProject = (draggedProject, targetProject, before) => {
-    const {area, atmosphere, projects, status} = this.props;
+    if (this.projectIsInPlace(draggedProject, targetProject, before)) {
+      return;
+    }
+    const {area, atmosphere, projects} = this.props;
     const targetIndex = projects.findIndex((p) => p.id === targetProject.id);
     // `boundingProject` is the project which sandwiches the dragged project on
     // the opposite side of the target project.  When the target project is in
     // the front or back of the list, this will be `undefined`.
     const boundingProject = projects[targetIndex + (before ? -1 : 1)];
     const sortOrder = sortOrderBetween(targetProject, boundingProject, draggedProject, before);
-    const updatedProject = {id: draggedProject.id, sortOrder, status};
+    const updatedProject = {id: draggedProject.id, sortOrder};
+    if (draggedProject.status !== targetProject.status) {
+      updatedProject.status = targetProject.status;
+    }
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
@@ -169,6 +185,7 @@ class ProjectColumn extends Component {
       area,
       atmosphere,
       firstColumn,
+      getProjectById,
       lastColumn,
       status,
       projects,
@@ -205,6 +222,7 @@ class ProjectColumn extends Component {
               <DraggableProject
                 key={`teamCard${project.id}`}
                 area={area}
+                getProjectById={getProjectById}
                 project={project}
                 myUserId={atmosphere.userId}
                 insert={(draggedProject, before) => this.insertProject(draggedProject, project, before)}
@@ -212,6 +230,7 @@ class ProjectColumn extends Component {
             ))}
             <ProjectColumnDropZone
               area={area}
+              getProjectById={getProjectById}
               lastProject={projects[projects.length - 1]}
               status={status}
             />
