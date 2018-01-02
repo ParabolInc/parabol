@@ -1,19 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
-import getPubSub from 'server/utils/getPubSub';
 import {APPROVED, PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
-import {INVITEE_APPROVED, NOTIFICATIONS_ADDED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
-const publishInviteesApproved = (notifications, {operationId}) => {
-  notifications.forEach((notification) => {
-    const userId = notification.userIds[0];
-    const notificationsAdded = {notifications: [notification]};
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId});
-  });
-};
-
-const approveToOrg = async (email, orgId, userId, subOptions) => {
+const approveToOrg = async (email, orgId, userId) => {
   const r = getRethink();
   const now = new Date();
   // get all notifications for this email to join this org
@@ -90,12 +81,11 @@ const approveToOrg = async (email, orgId, userId, subOptions) => {
       .default([]),
     inviteeUser: r.table('User').getAll(email, {index: 'email'}).nth(0).default(null)
   });
-  publishInviteesApproved(inviteeApprovedNotifications, subOptions);
 
   const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
 
   const sentTeamInvitations = await Promise.all(inviters.map((inviter) => {
-    return sendTeamInvitations(invitees, inviter, undefined, subOptions);
+    return sendTeamInvitations(invitees, inviter);
   }));
 
   const newInvitations = sentTeamInvitations.reduce((arr, upserts) => {

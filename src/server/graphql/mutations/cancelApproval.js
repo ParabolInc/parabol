@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_CLEARED, ORG_APPROVAL, REMOVED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {NOTIFICATION, ORG_APPROVAL, REMOVED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default {
   type: CancelApprovalPayload,
@@ -17,7 +17,7 @@ export default {
   async resolve(source, {orgApprovalId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
-
+    const subOptions = {mutatorId, operationId};
     // AUTH
     const orgApprovalDoc = await r.table('OrgApproval').get(orgApprovalId);
     const {email, orgId, teamId} = orgApprovalDoc;
@@ -42,13 +42,19 @@ export default {
     });
 
     if (removedNotification) {
-      const notificationsCleared = {deletedIds: [removedNotification.id]};
-      removedNotification.userIds.forEach((userId) => {
-        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
+      const {userIds} = removedNotification;
+      userIds.forEach((userId) => {
+        getPubSub().publish(`${NOTIFICATION}.${userId}`, {
+          data: {
+            type: REMOVED,
+            notification: removedNotification
+          },
+          ...subOptions
+        });
       });
     }
 
-    getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApproval, type: REMOVED}, mutatorId, operationId});
+    getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApproval, type: REMOVED}, ...subOptions});
     return {orgApproval};
   }
 };

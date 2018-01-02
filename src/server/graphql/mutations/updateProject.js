@@ -9,7 +9,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {MEETING, PROJECT, UPDATED} from 'universal/utils/constants';
+import {ADDED, MEETING, NOTIFICATION, PROJECT, REMOVED, UPDATED} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
@@ -106,7 +106,18 @@ export default {
     getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
 
     // send notifications to assignees and mentionees
-    publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
+    const {notificationsToRemove, notificationsToAdd} = publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
+
+    notificationsToRemove.forEach((notification) => {
+      const {userIds: [userId], id: notificationId} = notification;
+      getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {type: REMOVED, notificationId}}, ...subOptions);
+    });
+
+    notificationsToAdd.forEach((notification) => {
+      const {userIds, id: notificationId} = notification;
+      connst[userId] = userIds;
+      getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {type: ADDED, notificationId}}, ...subOptions);
+    });
 
     return {projectId};
   }

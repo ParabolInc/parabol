@@ -1,5 +1,5 @@
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_ADDED, VERSION_INFO} from 'universal/utils/constants';
+import {ADDED, NOTIFICATION, VERSION_INFO} from 'universal/utils/constants';
 import sleep from 'universal/utils/sleep';
 import packageJSON from '../../../../../package.json';
 
@@ -10,14 +10,11 @@ const sendAppVersion = async (userId) => {
   await sleep(5000);
 
   // Emit current app version to notify client of possible change
-  const notificationsAdded = {
-    notifications: [{
-      type: VERSION_INFO,
-      version: APP_VERSION
-
-    }]
+  const notification = {
+    type: VERSION_INFO,
+    version: APP_VERSION
   };
-  getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
+  getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notification, type: ADDED}});
 };
 
 export default sendAppVersion;

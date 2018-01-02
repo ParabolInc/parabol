@@ -25,6 +25,9 @@ const subscription = graphql`
         updatedOrgMember {
           isBillingLeader
         }
+        notification {
+          ...PaymentRejected_notification @relay(mask: false)
+        }
       }
       ... on OrganizationRemoved {
         organization {
@@ -53,6 +56,9 @@ const OrganizationSubscription = (environment, queryVariables, subParams) => {
         const notifications = payload.getLinkedRecords('notificationsAdded');
         handleAddOrganization(organization, store, viewerId);
         handleAddNotifications(notifications, options);
+      } else if (type === 'OrganizationUpdated') {
+        const notification = payload.getLinkedRecord('notification');
+        handleAddNotifications(notification, options);
       } else if (type === 'OrganizationRemoved') {
         const organizationId = getInProxy(organization, 'id');
         const notificationsRemoved = payload.getLinkedRecords('notificationsRemoved');

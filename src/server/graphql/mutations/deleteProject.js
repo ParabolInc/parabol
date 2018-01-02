@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_CLEARED, PROJECT, PROJECT_INVOLVES, REMOVED} from 'universal/utils/constants';
+import {NOTIFICATION, PROJECT, PROJECT_INVOLVES, REMOVED} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
 export default {
@@ -19,12 +19,14 @@ export default {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
+
     // AUTH
     // format of id is teamId::shortId
     const [teamId] = projectId.split('::');
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
+    const viewerId = getUserId(authToken);
     const {project} = await r({
       project: r.table('Project').get(projectId).delete({returnChanges: true})('changes')(0)('old_val').default(null),
       projectHistory: r.table('ProjectHistory')
@@ -49,14 +51,15 @@ export default {
         type: PROJECT_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
-      .pluck('id', 'userIds')
       .default([]);
     clearedNotifications.forEach((notification) => {
-      const notificationsCleared = {deletedIds: [notification.id]};
-      const notificationUserId = notification.userIds[0];
-      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notificationUserId}`, {notificationsCleared});
+      const {userIds: [notificationUserId]} = notification;
+      getPubSub().publish(`${NOTIFICATION}.${notificationUserId}`, {data: {type: REMOVED, notification}, ...subOptions});
     });
 
-    return {project};
+    return {
+      projectId,
+      removedInvolvementNotifications: clearedNotifications.find((n) => n.userIds[0] === viewerId)
+    };
   }
 };

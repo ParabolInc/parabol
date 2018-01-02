@@ -32,7 +32,7 @@ export default {
       removedOrgApprovals,
       newInvitations,
       inviteeApprovedNotifications
-    } = await approveToOrg(email, orgId, viewerId, subOptions);
+    } = await approveToOrg(email, orgId, viewerId);
 
     const invitationIds = newInvitations.map(({id}) => id);
 

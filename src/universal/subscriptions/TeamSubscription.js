@@ -49,7 +49,6 @@ const subscription = graphql`
             }
           }
         }
-        
       }
     }
   }
