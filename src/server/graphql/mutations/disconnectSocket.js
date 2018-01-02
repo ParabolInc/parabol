@@ -1,7 +1,7 @@
 import {GraphQLBoolean} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -27,18 +27,10 @@ export default {
       // If that was the last socket, tell everyone they went offline
       const operationId = dataLoader.share();
       const {tms} = disconnectedUser;
+      const subOptions = {mutatorId: socketId, operationId};
       tms.forEach((teamId) => {
         const teamMemberId = toTeamMemberId(teamId, userId);
-        const payload = {
-          data: {
-            teamMemberId,
-            isConnected: true,
-            type: UPDATED
-          },
-          operationId,
-          mutatorId: socketId
-        };
-        getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, payload);
+        publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId, isConnected: true}, subOptions);
       });
     }
     return true;

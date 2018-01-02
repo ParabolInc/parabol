@@ -3,10 +3,10 @@ import fetchAllLines from 'server/billing/helpers/fetchAllLines';
 import terminateSubscription from 'server/billing/helpers/terminateSubscription';
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {BILLING_LEADER, FAILED, PAYMENT_REJECTED, UPDATED, ORGANIZATION} from 'universal/utils/constants';
+import {BILLING_LEADER, FAILED, ORGANIZATION, PAYMENT_REJECTED, UPDATED} from 'universal/utils/constants';
 
 export default {
   name: 'StripeFailPayment',
@@ -75,8 +75,7 @@ export default {
         update: r.table('Invoice').get(invoiceId).update({status: FAILED}),
         insert: r.table('Notification').insert(notification)
       });
-
-      getPubSub().publish(`${ORGANIZATION}.${orgId}`, {data: {type: UPDATED, orgId, notificationId}});
+      publish(ORGANIZATION, orgId, UPDATED, {orgId, notificationId});
     }
   }
 };

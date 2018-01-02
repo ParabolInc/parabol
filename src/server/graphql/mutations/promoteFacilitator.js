@@ -2,8 +2,8 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
-import {FACILITATOR_DISCONNECTED, MEETING_UPDATED} from 'universal/utils/constants';
+import publish from 'server/utils/publish';
+import {FACILITATOR_DISCONNECTED, MEETING_UPDATED, UPDATED} from 'universal/utils/constants';
 
 export default {
   type: PromoteFacilitatorPayload,
@@ -21,6 +21,7 @@ export default {
   async resolve(source, {disconnectedFacilitatorId, facilitatorId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const [, teamId] = facilitatorId.split('::');
@@ -48,7 +49,7 @@ export default {
       type: FACILITATOR_DISCONNECTED
     };
 
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {data: {teamId, notification}, mutatorId, operationId});
+    publish(MEETING_UPDATED, teamId, UPDATED, {teamId, notification}, subOptions);
     return {notification, teamId};
   }
 };

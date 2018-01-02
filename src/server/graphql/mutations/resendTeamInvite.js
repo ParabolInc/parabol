@@ -4,7 +4,7 @@ import getInviterInfoAndTeamName from 'server/graphql/models/Invitation/inviteTe
 import ResendTeamInvitePayload from 'server/graphql/types/ResendTeamInvitePayload';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {INVITATION, UPDATED} from 'universal/utils/constants';
 
 export default {
@@ -39,8 +39,7 @@ export default {
     const invitees = [{email, fullName}];
     await sendTeamInvitations(invitees, inviter, inviteId);
     const invitationId = inviteId;
-    getPubSub().publish(`${INVITATION}.${teamId}`, {data: {invitationId, type: UPDATED}, ...subOptions});
-
+    publish(INVITATION, teamId, UPDATED, {invitationId}, subOptions);
     return {invitationId};
   }
 };

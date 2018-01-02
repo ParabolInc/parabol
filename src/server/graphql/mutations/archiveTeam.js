@@ -3,7 +3,6 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdateTeamPayload from 'server/graphql/types/UpdateTeamPayload';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import shortid from 'shortid';
@@ -22,7 +21,7 @@ const publishTeamArchivedNotifications = (notifications, team, subOptions) => {
   notifications.forEach((notification) => {
     const {id: notificationId, userIds} = notification;
     const userId = userIds[0];
-    getPubSub().publish(`${TEAM}.${userId}`, {data: {team, type: REMOVED, notificationId}, ...subOptions});
+    publish(TEAM, userId, REMOVED, {notificationId, team}, subOptions);
   });
 };
 
@@ -92,7 +91,7 @@ export default {
     };
 
     // tell the mutator, but don't give them a notification
-    getPubSub().publish(`${TEAM}.${viewerId}`, {data: {team, type: REMOVED}, ...subOptions});
+    publish(TEAM, viewerId, REMOVED, {team}, subOptions);
 
     if (notificationData) {
       const {team: {orgId}, userIds} = notificationData;

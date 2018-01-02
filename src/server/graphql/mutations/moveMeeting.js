@@ -3,10 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {AGENDA_ITEMS, CHECKIN, MEETING_UPDATED} from 'universal/utils/constants';
+import {AGENDA_ITEMS, CHECKIN, MEETING_UPDATED, UPDATED} from 'universal/utils/constants';
 
 export default {
   type: UpdateMeetingPayload,
@@ -29,9 +29,10 @@ export default {
       description: 'If true, execute the mutation without regard for meeting flow'
     }
   },
-  async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, socketId, dataLoader}) {
+  async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
     // TODO: transform these console statements into configurable logger statements:
     /*
      console.log('moveMeeting()');
@@ -147,7 +148,7 @@ export default {
       completedAgendaItem,
       team
     };
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId: socketId, operationId});
+    publish(MEETING_UPDATED, teamId, UPDATED, {team, completedAgendaItem}, subOptions);
     return meetingUpdated;
   }
 };

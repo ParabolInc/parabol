@@ -6,7 +6,7 @@ import AreaEnum from 'server/graphql/types/AreaEnum';
 import UpdateProjectInput from 'server/graphql/types/UpdateProjectInput';
 import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {ADDED, MEETING, NOTIFICATION, PROJECT, REMOVED, UPDATED} from 'universal/utils/constants';
@@ -102,20 +102,19 @@ export default {
     const {new_val: project, old_val: oldProject} = projectChanges;
     const isPrivate = project.tags.includes('private');
     const wasPrivate = oldProject.tags.includes('private');
-    const data = {type: UPDATED, projectId, isPrivate, wasPrivate, userId: project.userId};
-    getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
+    publish(PROJECT, teamId, UPDATED, {projectId, isPrivate, wasPrivate, userId: project.userId}, subOptions);
 
     // send notifications to assignees and mentionees
     const {notificationsToRemove, notificationsToAdd} = publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
 
     notificationsToRemove.forEach((notification) => {
-      const {userIds: [notificationUserId], id: notificationId} = notification;
-      getPubSub().publish(`${NOTIFICATION}.${notificationUserId}`, {data: {type: REMOVED, notificationId}}, ...subOptions);
+      const {userIds: [notificationUserId]} = notification;
+      publish(NOTIFICATION, notificationUserId, REMOVED, {notification}, subOptions);
     });
 
     notificationsToAdd.forEach((notification) => {
       const {userIds: [notificationUserId], id: notificationId} = notification;
-      getPubSub().publish(`${NOTIFICATION}.${notificationUserId}`, {data: {type: ADDED, notificationId}}, ...subOptions);
+      publish(NOTIFICATION, notificationUserId, ADDED, {notificationId}, subOptions);
     });
 
     return {projectId};

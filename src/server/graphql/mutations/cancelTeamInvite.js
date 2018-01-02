@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, REMOVED, TEAM_INVITE} from 'universal/utils/constants';
 
 
@@ -56,16 +56,10 @@ export default {
             .default(null);
         })
     });
-    getPubSub().publish(`${INVITATION}.${teamId}`, {data: {invitationId, type: REMOVED}, ...subOptions});
+    publish(INVITATION, teamId, REMOVED, {invitationId}, subOptions);
     if (removedTeamInviteNotification) {
       const {userIds: [userId]} = removedTeamInviteNotification;
-      getPubSub().publish(`${NOTIFICATION}.${userId}`, {
-        data: {
-          type: REMOVED,
-          notification: removedTeamInviteNotification
-        },
-        ...subOptions
-      });
+      publish(NOTIFICATION, userId, REMOVED, {notification: removedTeamInviteNotification}, subOptions);
     }
     return {invitationId};
   }

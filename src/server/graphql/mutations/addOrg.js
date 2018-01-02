@@ -8,7 +8,6 @@ import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -53,8 +52,7 @@ export default {
 
     const tms = authToken.tms.concat(teamId);
     sendSegmentEvent('New Org', viewerId, {orgId, teamId});
-    getPubSub().publish(`${ORGANIZATION}.${viewerId}`, {data: {type: ADDED, orgId}, ...subOptions});
-
+    publish(ORGANIZATION, viewerId, ADDED, {orgId}, subOptions);
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
 

@@ -5,7 +5,6 @@ import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember';
 import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
 import publish from 'server/utils/publish';
 import {ADD_USER} from 'server/utils/serverConstants';
 import tmsSignToken from 'server/utils/tmsSignToken';
@@ -55,16 +54,7 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions) => {
 
   // Tell the new team member about the team, welcome them, and remove their outstanding invitation notifications
   const notification = {type: ADD_TO_TEAM, teamId};
-  getPubSub().publish(`${TEAM}.${userId}`, {
-    data: {
-      teamId,
-      teamMemberId,
-      notification,
-      removedTeamInviteNotification,
-      type: ADDED
-    },
-    ...subOptions
-  });
+  publish(TEAM, userId, ADDED, {teamId, teamMemberId, notification, removedTeamInviteNotification}, subOptions);
 
   // Tell the rest of the team about the new team member, toast the event, and remove their old invitations
   const joinNotification = {
@@ -72,8 +62,8 @@ const acceptTeamInvite = async (teamId, authToken, email, subOptions) => {
     teamId,
     teamMemberId
   };
-  const data = {teamMemberId, notification: joinNotification, invitationId: removedInvitationId, type: ADDED};
-  getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data, ...subOptions});
+  const data = {teamMemberId, notification: joinNotification, invitationId: removedInvitationId};
+  publish(TEAM_MEMBER, teamId, ADDED, data, subOptions);
 
   return {
     newAuthToken,

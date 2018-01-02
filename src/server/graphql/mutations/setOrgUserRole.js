@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload';
 import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {
@@ -108,16 +108,8 @@ export default {
       });
       const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId);
       // add the org to the list of owned orgs
-      getPubSub().publish(`${ORGANIZATION}.${userId}`, {
-        data: {
-          type: ADDED,
-          orgId,
-          notificationIdsAdded
-        },
-        ...subOptions
-      });
-
-      getPubSub().publish(`${ORGANIZATION}.${orgId}`, {data: {type: UPDATED, orgId, userId}, ...subOptions});
+      publish(ORGANIZATION, userId, ADDED, {orgId, notificationIdsAdded}, subOptions);
+      publish(ORGANIZATION, orgId, UPDATED, {orgId, userId}, subOptions);
       return {orgId, userId, notificationIdsAdded};
     }
     if (role === null) {
@@ -138,16 +130,8 @@ export default {
           .default([])
       });
       const notificationIdsRemoved = oldPromotionId.concat(removedNotificationIds);
-      getPubSub().publish(`${ORGANIZATION}.${userId}`, {
-        data: {
-          type: REMOVED,
-          orgId,
-          notificationIdsRemoved
-        },
-        ...subOptions
-      });
-
-      getPubSub().publish(`${ORGANIZATION}.${orgId}`, {data: {type: UPDATED, orgId, userId}, ...subOptions});
+      publish(ORGANIZATION, userId, REMOVED, {orgId, notificationIdsRemoved}, subOptions);
+      publish(ORGANIZATION, orgId, UPDATED, {orgId, userId}, subOptions);
       return {orgId, userId, notificationIdsRemoved};
     }
     return null;

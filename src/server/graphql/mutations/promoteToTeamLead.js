@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
@@ -19,6 +19,8 @@ export default {
   },
   async resolve(source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const myUserId = getUserId(authToken);
@@ -49,10 +51,10 @@ export default {
     if (!promotee || !teamLead) {
       throw new Error('Could not promote');
     }
-    const operationId = dataLoader.share();
+
     const teamMemberUpdated = {teamMember: promotee};
-    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId: myTeamMemberId, type: UPDATED}, operationId, mutatorId });
-    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId, type: UPDATED}, operationId, mutatorId});
+    publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId: myTeamMemberId}, subOptions);
+    publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId}, subOptions);
     return teamMemberUpdated;
   }
 };

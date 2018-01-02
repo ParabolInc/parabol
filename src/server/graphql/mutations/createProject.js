@@ -4,13 +4,10 @@ import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateProjectInput from 'server/graphql/types/CreateProjectInput';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {
-  ADDED, ASSIGNEE, MEETING, MENTIONEE, NOTIFICATION, PROJECT,
-  PROJECT_INVOLVES
-} from 'universal/utils/constants';
+import {ADDED, ASSIGNEE, MEETING, MENTIONEE, NOTIFICATION, PROJECT, PROJECT_INVOLVES} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -82,8 +79,7 @@ export default {
         .coerceTo('array') : []
     });
     const projectCreated = {project};
-    const data = {type: ADDED, projectId, isPrivate, wasPrivate: false, userId};
-    getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
+    publish(PROJECT, teamId, ADDED, {projectId, isPrivate, wasPrivate: false, userId}, subOptions);
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
@@ -121,7 +117,7 @@ export default {
       notificationsToAdd.forEach((notification) => {
         const {id: notificationId, userIds} = notification;
         const notificationUserId = userIds[0];
-        getPubSub().publish(`${NOTIFICATION}.${notificationUserId}`, {data: {type: ADDED, notificationId}, ...subOptions});
+        publish(NOTIFICATION, notificationUserId, ADDED, {notificationId}, subOptions);
       });
     }
     return projectCreated;

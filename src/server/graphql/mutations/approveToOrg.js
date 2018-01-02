@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import approveToOrg from 'server/safeMutations/approveToOrg';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {ADDED, INVITATION, NOTIFICATION, ORG_APPROVAL, REMOVED} from 'universal/utils/constants';
 
 
@@ -40,27 +40,27 @@ export default {
     removedRequestNotifications.forEach((notification) => {
       const {userIds} = notification;
       userIds.forEach((userId) => {
-        getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notification, type: REMOVED}, ...subOptions});
+        publish(NOTIFICATION, userId, REMOVED, {notification}, subOptions);
       });
     });
 
     // tell the teammembers that the org approval has been removed
     removedOrgApprovals.forEach((orgApproval) => {
       const {id: orgApprovalId, teamId} = orgApproval;
-      getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApprovalId, type: REMOVED}, ...subOptions});
+      publish(ORG_APPROVAL, teamId, REMOVED, {orgApprovalId}, subOptions);
     });
 
     // tell the teammembers that the org approval was replaced with an invitation
     newInvitations.forEach((invitation) => {
       const {id: invitationId, teamId} = invitation;
-      getPubSub().publish(`${INVITATION}.${teamId}`, {data: {invitationId, type: ADDED}, ...subOptions});
+      publish(INVITATION, teamId, ADDED, {invitationId}, subOptions);
     });
 
     // tell the inviters that their invitee was approved
     inviteeApprovedNotifications.forEach((notification) => {
       const {id: notificationId, userIds} = notification;
       userIds.forEach((userId) => {
-        getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notificationId, type: ADDED}, ...subOptions});
+        publish(NOTIFICATION, userId, ADDED, {notificationId}, subOptions);
       });
     });
 

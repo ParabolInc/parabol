@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {CHECKIN, MEETING_UPDATED, TEAM, UPDATED} from 'universal/utils/constants';
@@ -23,6 +23,7 @@ export default {
   async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const userId = getUserId(authToken);
@@ -65,8 +66,8 @@ export default {
     startSlackMeeting(teamId);
 
     const meetingUpdated = {team};
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
-    getPubSub().publish(`${TEAM}.${teamId}`, {data: {teamId, type: UPDATED}, mutatorId, operationId});
+    publish(MEETING_UPDATED, teamId, UPDATED, {team}, subOptions);
+    publish(TEAM, teamId, UPDATED, {teamId}, subOptions);
     return meetingUpdated;
   }
 };

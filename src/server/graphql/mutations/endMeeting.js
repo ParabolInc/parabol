@@ -6,7 +6,7 @@ import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
 import {DONE, LOBBY, MEETING_UPDATED, PROJECT, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
@@ -24,6 +24,7 @@ export default {
   async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     requireTeamMember(authToken, teamId);
@@ -128,8 +129,7 @@ export default {
       archivedProjects.forEach((project) => {
         const {id: projectId, tags, userId} = project;
         const isPrivate = tags.includes('private');
-        const data = {type: UPDATED, projectId, isPrivate, wasPrivate: isPrivate, userId};
-        getPubSub().publish(`${PROJECT}.${teamId}`, {data, mutatorId, operationId});
+        publish(PROJECT, teamId, UPDATED, {projectId, isPrivate, wasPrivate: isPrivate, userId}, subOptions);
       });
     }
     const {meetingNumber} = completedMeeting;
@@ -145,14 +145,11 @@ export default {
       meetingPhase: SUMMARY,
       meetingId
     };
-    const meetingUpdated = {team: summaryMeeting};
-    getPubSub().publish(`${TEAM}.${teamId}`, {data: {team: summaryMeeting, type: UPDATED}, mutatorId, operationId});
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
+    publish(TEAM, teamId, UPDATED, {team: summaryMeeting}, subOptions);
+    publish(MEETING_UPDATED, teamId, UPDATED, {team: summaryMeeting}, subOptions);
     sendEmailSummary(completedMeeting);
 
     // send the truth to the meeting facilitator so we don't need to adjust the store in endMeetingMutation
     return {team};
-
-    // TODO maybe update team members via pubsub?
   }
 };

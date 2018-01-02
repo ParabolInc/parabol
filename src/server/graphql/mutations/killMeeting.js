@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {LOBBY, MEETING_UPDATED, TEAM, UPDATED} from 'universal/utils/constants';
 
 export default {
@@ -17,7 +17,7 @@ export default {
   async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const operationId = dataLoader.share();
-
+    const subOptions = {mutatorId, operationId};
     // AUTH
     requireTeamMember(authToken, teamId);
 
@@ -37,8 +37,8 @@ export default {
       throw new Error('meeting already updated!');
     }
     const meetingUpdated = {team};
-    getPubSub().publish(`${TEAM}.${teamId}`, {data: {teamId, type: UPDATED}, mutatorId, operationId});
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
+    publish(TEAM, teamId, UPDATED, {teamId}, subOptions);
+    publish(MEETING_UPDATED, teamId, UPDATED, {team}, subOptions);
     return meetingUpdated;
   }
 };

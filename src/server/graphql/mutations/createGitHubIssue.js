@@ -4,7 +4,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {GITHUB, PROJECT, UPDATED} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
@@ -66,7 +66,7 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // VALIDATION
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     const project = await r.table('Project').get(projectId);
     if (!project) {
       throw new Error('That project no longer exists');
@@ -105,7 +105,7 @@ export default {
       throw new Error('This repo does not have an admin! Please re-integrate the repo');
     }
 
-    const creatorProvider = providers.find((provider) => provider.userId === userId);
+    const creatorProvider = providers.find((provider) => provider.userId === viewerId);
 
     if (!rawContentStr) {
       throw new Error('You must add some text before submitting a project to github');
@@ -122,7 +122,7 @@ export default {
     const contentState = convertFromRaw(rawContent);
     let body = stateToMarkdown(contentState);
     if (!creatorProvider) {
-      const creatorName = await r.table('User').get(userId)('preferredName');
+      const creatorName = await r.table('User').get(viewerId)('preferredName');
       body = `${body}\n\n_Added by ${creatorName}_`;
     }
     const payload = {
@@ -169,8 +169,9 @@ export default {
       }, {returnChanges: true})('changes')(0)('new_val').default(null);
 
     const isPrivate = integratedProject.tags.includes('private');
-    const data = {type: UPDATED, projectId, isPrivate, wasPrivate: isPrivate, userId: integratedProject.userId};
-    getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
+    const wasPrivate = isPrivate;
+    const {userId} = integratedProject;
+    publish(PROJECT, teamId, UPDATED, {projectId, isPrivate, wasPrivate, userId}, subOptions);
     return {projectId};
   }
 };

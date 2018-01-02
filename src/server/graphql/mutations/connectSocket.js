@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import sendAppVersion from 'server/graphql/mutations/helpers/sendAppVersion';
 import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {UNPAUSE_USER} from 'server/utils/serverConstants';
 import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -47,18 +47,10 @@ export default {
       const operationId = dataLoader.share();
       const teamMemberIds = tms.map((teamId) => toTeamMemberId(teamId, userId));
       const teamMembers = await dataLoader.get('teamMembers').loadMany(teamMemberIds);
+      const subOptions = {mutatorId: socketId, operationId};
       teamMembers.forEach((teamMember) => {
-        const {teamId} = teamMember;
-        const payload = {
-          data: {
-            teamMemberId: teamMember.id,
-            isConnected: true,
-            type: UPDATED
-          },
-          operationId,
-          mutatorId: socketId
-        };
-        getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, payload);
+        const {id: teamMemberId, teamId} = teamMember;
+        publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId, isConnected: true}, subOptions);
       });
     }
     sendAppVersion(userId);

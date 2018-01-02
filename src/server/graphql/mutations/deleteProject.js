@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {NOTIFICATION, PROJECT, PROJECT_INVOLVES, REMOVED} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
@@ -38,8 +38,7 @@ export default {
     }
     const {content, tags, userId} = project;
     const wasPrivate = tags.includes('private');
-    const data = {type: REMOVED, projectId, isPrivate: wasPrivate, wasPrivate, userId};
-    getPubSub().publish(`${PROJECT}.${teamId}`, {data, ...subOptions});
+    publish(PROJECT, teamId, REMOVED, {projectId, isPrivate: wasPrivate, wasPrivate, userId}, subOptions);
 
     // handle notifications
     const {entityMap} = JSON.parse(content);
@@ -54,7 +53,7 @@ export default {
       .default([]);
     clearedNotifications.forEach((notification) => {
       const {userIds: [notificationUserId]} = notification;
-      getPubSub().publish(`${NOTIFICATION}.${notificationUserId}`, {data: {type: REMOVED, notification}, ...subOptions});
+      publish(NOTIFICATION, notificationUserId, REMOVED, {notification}, subOptions);
     });
 
     return {

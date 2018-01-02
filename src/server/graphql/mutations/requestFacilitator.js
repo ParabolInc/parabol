@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {ADDED, FACILITATOR_REQUEST, NOTIFICATION} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -34,7 +34,7 @@ export default {
       type: FACILITATOR_REQUEST
     };
 
-    getPubSub().publish(`${NOTIFICATION}.${currentFacilitatorUserId}`, {data: {type: ADDED, notification}, operationId});
+    publish(NOTIFICATION, currentFacilitatorUserId, ADDED, {notification}, {operationId});
     return true;
   }
 };

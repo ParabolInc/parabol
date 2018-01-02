@@ -4,7 +4,7 @@ import rejectOrgApprovalValidation from 'server/graphql/mutations/helpers/reject
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, REMOVED} from 'universal/utils/constants';
@@ -70,14 +70,14 @@ export default {
     // publish the removed org approval to the team
     removedOrgApprovals.forEach((orgApproval) => {
       const {id: orgApprovalId, teamId} = orgApproval;
-      getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApprovalId, type: REMOVED}, ...subOptions});
+      publish(ORG_APPROVAL, teamId, REMOVED, {orgApprovalId}, subOptions);
     });
 
     // publish the removed request notifications to all org leaders
     removedRequestNotifications.forEach((notification) => {
       const {userIds} = notification;
       userIds.forEach((userId) => {
-        getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notification, type: REMOVED}, ...subOptions});
+        publish(NOTIFICATION, userId, REMOVED, {notification}, subOptions);
       });
     });
     return {removedOrgApprovalIds, removedRequestNotifications};

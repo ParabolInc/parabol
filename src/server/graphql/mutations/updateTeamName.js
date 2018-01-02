@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdatedTeamInput from 'server/graphql/types/UpdatedTeamInput';
 import UpdateTeamPayload from 'server/graphql/types/UpdateTeamPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import {TEAM, UPDATED} from 'universal/utils/constants';
 import updateTeamNameValidation from './helpers/updateTeamNameValidation';
@@ -21,6 +21,7 @@ export default {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     requireTeamMember(authToken, updatedTeam.id);
@@ -41,7 +42,7 @@ export default {
       throw new Error('Update already called!');
     }
     const teamUpdated = {team};
-    getPubSub().publish(`${TEAM}.${teamId}`, {data: {teamId, type: UPDATED}, mutatorId, operationId});
+    publish(TEAM, teamId, UPDATED, {teamId}, subOptions);
     return teamUpdated;
   }
 };

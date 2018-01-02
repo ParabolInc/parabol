@@ -1,5 +1,5 @@
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {ADDED, INVITATION, NOTIFICATION} from 'universal/utils/constants';
 
 const handleNewTeamInvitees = async (invitees, teamId, userId, subOptions) => {
@@ -8,11 +8,11 @@ const handleNewTeamInvitees = async (invitees, teamId, userId, subOptions) => {
   teamInviteNotifications.forEach((notification) => {
     const {id: notificationId, userIds} = notification;
     const invitedUserId = userIds[0];
-    getPubSub().publish(`${NOTIFICATION}.${invitedUserId}`, {data: {notificationId, type: ADDED}, ...subOptions});
+    publish(NOTIFICATION, invitedUserId, ADDED, {notificationId}, subOptions);
   });
   const invitationIds = newInvitations.map(({id}) => id);
   invitationIds.forEach((invitationId) => {
-    getPubSub().publish(`${INVITATION}.${teamId}`, {data: {invitationId, type: ADDED}, ...subOptions});
+    publish(INVITATION, teamId, ADDED, {invitationId}, subOptions);
   });
   return invitationIds;
 };

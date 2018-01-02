@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {NOTIFICATION, REMOVED} from 'universal/utils/constants';
 
 export default {
@@ -29,7 +29,7 @@ export default {
       .get(notificationId)
       .delete();
 
-    getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notification, type: REMOVED}, ...subOptions});
+    publish(NOTIFICATION, userId, REMOVED, {notification}, subOptions);
     return {notification};
   }
 };

@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {NOTIFICATION, ORG_APPROVAL, REMOVED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default {
@@ -44,17 +44,11 @@ export default {
     if (removedNotification) {
       const {userIds} = removedNotification;
       userIds.forEach((userId) => {
-        getPubSub().publish(`${NOTIFICATION}.${userId}`, {
-          data: {
-            type: REMOVED,
-            notification: removedNotification
-          },
-          ...subOptions
-        });
+        publish(NOTIFICATION, userId, REMOVED, {notification: removedNotification}, subOptions);
       });
     }
 
-    getPubSub().publish(`${ORG_APPROVAL}.${teamId}`, {data: {orgApproval, type: REMOVED}, ...subOptions});
+    publish(ORG_APPROVAL, teamId, REMOVED, {orgApproval}, subOptions);
     return {orgApproval};
   }
 };

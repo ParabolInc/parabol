@@ -3,10 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput';
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
-import updateOrgValidation from './helpers/updateOrgValidation';
 import {ORGANIZATION, UPDATED} from 'universal/utils/constants';
+import updateOrgValidation from './helpers/updateOrgValidation';
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),
@@ -21,6 +21,7 @@ export default {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const userId = getUserId(authToken);
@@ -40,7 +41,7 @@ export default {
     await r.table('Organization')
       .get(orgId)
       .update(dbUpdate);
-    getPubSub().publish(`${ORGANIZATION}.${orgId}`, {data: {type: UPDATED, orgId}, mutatorId, operationId});
+    publish(ORGANIZATION, orgId, UPDATED, {orgId}, subOptions);
     return {orgId};
   }
 };

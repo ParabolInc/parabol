@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {requireTeamMember} from 'server/utils/authorization';
 import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
-import getPubSub from 'server/utils/getPubSub';
+import {requireTeamMember} from 'server/utils/authorization';
+import publish from 'server/utils/publish';
 import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 
 export default {
@@ -21,6 +21,7 @@ export default {
   async resolve(source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // teamMemberId is of format 'userId::teamId'
     const [, teamId] = teamMemberId.split('::');
@@ -32,7 +33,7 @@ export default {
       .update({isCheckedIn}, {returnChanges: true})('changes')(0)('new_val');
 
     const teamMemberUpdated = {teamMember};
-    getPubSub().publish(`${TEAM_MEMBER}.${teamId}`, {data: {teamMemberId, type: UPDATED}, mutatorId, operationId});
+    publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId}, subOptions);
     return teamMemberUpdated;
   }
 };

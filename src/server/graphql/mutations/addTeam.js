@@ -6,7 +6,6 @@ import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, getUserOrgDoc, requireUserInOrg} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -14,7 +13,6 @@ import shortid from 'shortid';
 import {ADDED, NEW_AUTH_TOKEN, TEAM, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import addTeamValidation from './helpers/addTeamValidation';
-
 
 export default {
   type: AddTeamPayload,
@@ -52,7 +50,7 @@ export default {
 
     const invitationIds = await handleNewTeamInvitees(invitees, teamId, userId, subOptions);
 
-    getPubSub().publish(`${TEAM}.${userId}`, {data: {teamId, type: ADDED}, ...subOptions});
+    publish(TEAM, userId, ADDED, {teamId}, subOptions);
     const oldTMS = authToken.tms || [];
     const tms = oldTMS.concat(teamId);
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});

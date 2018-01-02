@@ -1,4 +1,4 @@
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {ADDED, NOTIFICATION, VERSION_INFO} from 'universal/utils/constants';
 import sleep from 'universal/utils/sleep';
 import packageJSON from '../../../../../package.json';
@@ -14,7 +14,7 @@ const sendAppVersion = async (userId) => {
     type: VERSION_INFO,
     version: APP_VERSION
   };
-  getPubSub().publish(`${NOTIFICATION}.${userId}`, {data: {notification, type: ADDED}});
+  publish(NOTIFICATION, userId, ADDED, {notification});
 };
 
 export default sendAppVersion;

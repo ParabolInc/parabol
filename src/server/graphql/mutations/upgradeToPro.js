@@ -5,7 +5,7 @@ import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustome
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import {fromEpochSeconds} from 'server/utils/epochTime';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {ORGANIZATION, PRO, TEAM, UPDATED} from 'universal/utils/constants';
@@ -85,9 +85,9 @@ export default {
         }, {returnChanges: true})('changes')('new_val')('id').default([])
     });
     sendSegmentEvent('Upgrade to Pro', userId, {orgId});
-    getPubSub().publish(`${ORGANIZATION}.${orgId}`, {data: {type: UPDATED, orgId}, ...subOptions});
+    publish(ORGANIZATION, orgId, UPDATED, {orgId}, subOptions);
     teamIds.forEach((teamId) => {
-      getPubSub().publish(`${TEAM}.${teamId}`, {data: {type: UPDATED, teamId}, ...subOptions});
+      publish(TEAM, teamId, UPDATED, {teamId}, subOptions);
     });
     return {
       orgId,

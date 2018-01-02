@@ -18,6 +18,7 @@ export default {
     // RESOLUTION
     const channelName = `${MEETING_UPDATED}.${teamId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, dataLoader});
+    const resolve = ({data}) => ({meetingUpdated: data});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve});
   }
 };
