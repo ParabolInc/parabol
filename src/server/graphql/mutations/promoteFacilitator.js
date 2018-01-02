@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {FACILITATOR_DISCONNECTED, MEETING_UPDATED, UPDATED} from 'universal/utils/constants';
+import {CHANGE_FACILITATOR, FACILITATOR_CHANGED, FACILITATOR_DISCONNECTED, MEETING} from 'universal/utils/constants';
 
 export default {
   type: PromoteFacilitatorPayload,
@@ -49,7 +49,7 @@ export default {
       type: FACILITATOR_DISCONNECTED
     };
 
-    publish(MEETING_UPDATED, teamId, UPDATED, {teamId, notification}, subOptions);
+    publish(MEETING, teamId, FACILITATOR_CHANGED, {teamId, notification}, subOptions);
     return {notification, teamId};
   }
 };

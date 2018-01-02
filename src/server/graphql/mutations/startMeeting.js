@@ -1,18 +1,18 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
-import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
+import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {CHECKIN, MEETING_UPDATED, TEAM, UPDATED} from 'universal/utils/constants';
+import {CHECKIN, MEETING, TEAM, UPDATED} from 'universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 
 export default {
-  type: UpdateMeetingPayload,
+  type: StartMeetingPayload,
   description: 'Start a meeting from the lobby',
   args: {
     teamId: {
@@ -50,8 +50,8 @@ export default {
       meetingPhase: CHECKIN,
       meetingPhaseItem: 1
     };
-    const {team} = await r({
-      team: r.table('Team').get(teamId).update(updatedTeam, {returnChanges: true})('changes')(0)('new_val'),
+    await r({
+      team: r.table('Team').get(teamId).update(updatedTeam),
       meeting: r.table('Meeting').insert({
         id: meetingId,
         createdAt: now,
@@ -65,9 +65,10 @@ export default {
     });
     startSlackMeeting(teamId);
 
-    const meetingUpdated = {team};
-    publish(MEETING_UPDATED, teamId, UPDATED, {team}, subOptions);
+    publish(MEETING, teamId, UPDATED, {teamId}, subOptions);
+
+    // let everyone know that a meeting is underway
     publish(TEAM, teamId, UPDATED, {teamId}, subOptions);
-    return meetingUpdated;
+    return {teamId};
   }
 };

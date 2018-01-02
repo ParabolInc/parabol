@@ -185,12 +185,12 @@ export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
 export const INVITATION = 'invitation';
-export const MEETING_UPDATED = 'meetingUpdated';
 export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATION = 'notification';
 export const ORGANIZATION = 'organization';
 export const ORG_APPROVAL = 'orgApproval';
 // export const PROJECT = 'project'; // TODO refactor so it doesn't conflict with DnD
+// export const MEETING = 'meeting'; // conflicts with area
 export const TEAM = 'team';
 export const TEAM_MEMBER = 'teamMember';
 export const AGENDA_ITEM_ADDED = 'agendaItemAdded';
@@ -223,6 +223,10 @@ export const UPDATED = 'updated';
 export const REMOVED = 'removed';
 // used just for projects
 export const EDITED = 'edited';
+// used just for meetings
+export const MOVED = 'moved';
+export const FACILITATOR_CHANGED = 'facilitatorChanged';
+
 
 /* Parabol Payment level */
 export const PERSONAL = 'personal';

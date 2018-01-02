@@ -1,15 +1,15 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
-import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
+import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {AGENDA_ITEMS, CHECKIN, MEETING_UPDATED, UPDATED} from 'universal/utils/constants';
+import {AGENDA_ITEMS, CHECKIN, MEETING, MOVED} from 'universal/utils/constants';
 
 export default {
-  type: UpdateMeetingPayload,
+  type: MoveMeetingPayload,
   description: 'Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.',
   args: {
     teamId: {
@@ -33,16 +33,7 @@ export default {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
-    // TODO: transform these console statements into configurable logger statements:
-    /*
-     console.log('moveMeeting()');
-     console.log('teamId');
-     console.log(teamId);
-     console.log('nextPhase');
-     console.log(nextPhase);
-     console.log('nextPhaseItem');
-     console.log(nextPhaseItem);
-     */
+
     // AUTH
     requireTeamMember(authToken, teamId);
 
@@ -108,20 +99,6 @@ export default {
     const goingForwardAPhase = nextPhase && nextPhaseInfo.index > meetingPhaseInfo.index;
     const onSamePhaseWithItems = (!nextPhase || nextPhase === meetingPhase) && meetingPhaseInfo.items;
 
-    let setAgendaItemToComplete;
-    if (facilitatorPhase === AGENDA_ITEMS) {
-      setAgendaItemToComplete = r.table('AgendaItem')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .orderBy('sortOrder')
-        .nth(facilitatorPhaseItem - 1)
-        .update({isComplete: true}, {returnChanges: true})('changes')(0)('new_val').default(null);
-    }
-    /*
-     console.log('moveMeeting');
-     console.log(moveMeeting);
-     */
-
     let newMeetingPhaseItem;
     if (goingForwardAPhase) {
       newMeetingPhaseItem = nextPhaseInfo.items ? nextPhaseItem : null;
@@ -136,19 +113,17 @@ export default {
       meetingPhaseItem: newMeetingPhaseItem
     };
 
-    const {completedAgendaItem, team} = await r({
-      team: r.table('Team').get(teamId).update(updatedState, {returnChanges: true})('changes')(0)('new_val').default(null),
-      completedAgendaItem: setAgendaItemToComplete
+    const {completedAgendaItem} = await r({
+      team: r.table('Team').get(teamId).update(updatedState),
+      completedAgendaItem: facilitatorPhase === AGENDA_ITEMS && r.table('AgendaItem')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
+        .orderBy('sortOrder')
+        .nth(facilitatorPhaseItem - 1)
+        .update({isComplete: true}, {returnChanges: true})('changes')(0)('new_val').default(null)
     });
 
-    if (!team) {
-      throw new Error('meeting already updated!');
-    }
-    const meetingUpdated = {
-      completedAgendaItem,
-      team
-    };
-    publish(MEETING_UPDATED, teamId, UPDATED, {team, completedAgendaItem}, subOptions);
-    return meetingUpdated;
+    publish(MEETING, teamId, MOVED, {teamId, agendaItemId: completedAgendaItem.id}, subOptions);
+    return {teamId, agendaItemId: completedAgendaItem.id};
   }
 };

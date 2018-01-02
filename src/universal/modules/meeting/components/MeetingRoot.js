@@ -12,7 +12,7 @@ import MeetingContainer from 'universal/modules/meeting/containers/MeetingContai
 import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAddedSubscription';
 import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
 import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
-import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
+import MeetingSubscription from 'universal/subscriptions/MeetingSubscription';
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
 import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
@@ -33,7 +33,7 @@ const subscriptions = [
   AgendaItemAddedSubscription,
   AgendaItemUpdatedSubscription,
   AgendaItemRemovedSubscription,
-  MeetingUpdatedSubscription,
+  MeetingSubscription,
   NewAuthTokenSubscription,
   NotificationSubscription,
   OrganizationSubscription,

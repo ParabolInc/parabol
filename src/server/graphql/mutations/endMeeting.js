@@ -9,7 +9,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, MEETING_UPDATED, PROJECT, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
+import {DONE, LOBBY, MEETING, PROJECT, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
@@ -146,7 +146,7 @@ export default {
       meetingId
     };
     publish(TEAM, teamId, UPDATED, {team: summaryMeeting}, subOptions);
-    publish(MEETING_UPDATED, teamId, UPDATED, {team: summaryMeeting}, subOptions);
+    publish(MEETING, teamId, UPDATED, {team: summaryMeeting}, subOptions);
     sendEmailSummary(completedMeeting);
 
     // send the truth to the meeting facilitator so we don't need to adjust the store in endMeetingMutation

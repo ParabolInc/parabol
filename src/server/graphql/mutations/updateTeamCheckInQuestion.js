@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
 import {requireTeamCanUpdateCheckInQuestion, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {MEETING_UPDATED, UPDATED} from 'universal/utils/constants';
+import {MEETING, UPDATED} from 'universal/utils/constants';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
 
 export default {
@@ -32,11 +32,11 @@ export default {
     const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion);
 
     // RESOLUTION
-    const team = await r.table('Team')
+    await r.table('Team')
       .get(teamId)
-      .update({checkInQuestion: normalizedCheckInQuestion}, {returnChanges: true})('changes')(0)('new_val').default(null);
+      .update({checkInQuestion: normalizedCheckInQuestion});
 
-    publish(MEETING_UPDATED, teamId, UPDATED, {team}, subOptions);
-    return {team};
+    publish(MEETING, teamId, UPDATED, {teamId}, subOptions);
+    return {teamId};
   }
 };
