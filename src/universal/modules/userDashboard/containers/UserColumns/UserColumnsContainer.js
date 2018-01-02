@@ -12,11 +12,6 @@ const mapStateToProps = (state) => {
 };
 
 class UserColumnsContainer extends Component {
-  getProjectById = (projectId) =>
-    this.props.viewer.projects.edges
-      .map(({ node }) => node)
-      .find(({ id }) => projectId === id);
-
   componentWillMount() {
     this.filterByTeamMember(this.props);
   }
@@ -28,6 +23,11 @@ class UserColumnsContainer extends Component {
       this.filterByTeamMember(nextProps);
     }
   }
+
+  getProjectById = (projectId) =>
+    this.props.viewer.projects.edges
+      .map(({ node }) => node)
+      .find(({ id }) => projectId === id);
 
   filterByTeamMember(props) {
     const {teamFilterId, viewer: {projects}} = props;
