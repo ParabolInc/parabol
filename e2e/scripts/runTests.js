@@ -22,9 +22,9 @@ commander
     '--url <url>',
     'URL of the application under test.  If not provided, runs a prod-like server locally.'
   )
-  .option('-i', '--inspect', 'Run the test process under the node inspector')
-  .option('-m', '--mocha-timeout', `Timeout (in milliseconds) for individual tests.  (Default ${MOCHA_TIMEOUT})`)
-  .option('-s', '--server-timeout', `Only applies Time (in milliseconds) for individual tests.  (Default ${SERVER_TIMEOUT})`)
+  .option('-i, --inspect', 'Run the test process under the node inspector')
+  .option('-m, --mocha-timeout', `Timeout (in milliseconds) for individual tests.  (Default ${MOCHA_TIMEOUT})`)
+  .option('-s, --server-timeout', `Only applies Time (in milliseconds) for individual tests.  (Default ${SERVER_TIMEOUT})`)
   .parse(process.argv);
 
 function startAppServer(serverTimeout) {
@@ -54,7 +54,7 @@ async function main({ url, inspect, mochaTimeout = MOCHA_TIMEOUT, serverTimeout 
   if (inspect) {
     // sending the SIGUSR1 signal to the current process activates the debugger
     // see https://nodejs.org/en/docs/inspector/
-    process.kill('SIGUSR1');
+    process.kill(process.pid, 'SIGUSR1');
   }
 
   if (!(await hasDrivers())) {
@@ -64,16 +64,11 @@ async function main({ url, inspect, mochaTimeout = MOCHA_TIMEOUT, serverTimeout 
 
   addDriversToPATH();
 
-  let appServerProc;
-  const kill = (proc) => {
-    if (proc) {
-      proc.kill('SIGINT');
-    }
-  };
   if (url) {
     declareAppServerUrl(url);
   } else {
-    appServerProc = await startAppServer(serverTimeout);
+    const appServerProc = await startAppServer(serverTimeout);
+    process.on('exit', () => appServerProc.kill('SIGINT'));
     declareAppServerUrl('http://localhost:3000');
   }
 
@@ -85,12 +80,10 @@ async function main({ url, inspect, mochaTimeout = MOCHA_TIMEOUT, serverTimeout 
     const files = await globP('e2e/tests/**/*.test.js');
     files.forEach(mocha.addFile.bind(mocha));
     mocha.run((failures) => {
-      kill(appServerProc);
       process.exit(failures);
     });
   } catch (error) {
     console.error(error);
-    kill(appServerProc);
   }
 }
 
