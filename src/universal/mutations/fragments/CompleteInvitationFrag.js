@@ -1,4 +1,4 @@
-export default graphql`
+graphql`
   fragment CompleteInvitationFrag on Invitation {
     id
     email

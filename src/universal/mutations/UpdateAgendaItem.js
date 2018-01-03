@@ -1,13 +1,19 @@
 import {commitMutation} from 'react-relay';
 
+graphql`
+  fragment UpdateAgendaItemMutation_payload on UpdateAgendaItemPayload {
+    agendaItem {
+      id
+      isComplete
+      sortOrder
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation UpdateAgendaItemMutation($updatedAgendaItem: UpdateAgendaItemInput!) {
     updateAgendaItem(updatedAgendaItem: $updatedAgendaItem) {
-      agendaItem {
-        id
-        isComplete
-        sortOrder
-      }
+      ...UpdateAgendaItemMutation_payload @relay(mask: false)      
     }
   }
 `;

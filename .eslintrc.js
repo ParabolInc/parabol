@@ -66,6 +66,9 @@ module.exports = {
       WARN,
       140
     ],
+    "no-unused-expressions": [ERROR, {
+      "allowTaggedTemplates": true
+    }],
     "object-curly-spacing": OFF,
     "react/forbid-prop-types": OFF,
     "react/jsx-filename-extension": OFF,

@@ -7,9 +7,7 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
-import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAddedSubscription';
-import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
-import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
+import AgendaItemSubscription from 'universal/subscriptions/AgendaItemSubscription';
 import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
@@ -23,9 +21,7 @@ const query = graphql`
 
 const subscriptions = [
   ProjectSubscription,
-  AgendaItemAddedSubscription,
-  AgendaItemUpdatedSubscription,
-  AgendaItemRemovedSubscription
+  AgendaItemSubscription,
 ];
 
 const AgendaAndProjectsRoot = (props) => {

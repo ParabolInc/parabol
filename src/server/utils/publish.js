@@ -1,7 +1,12 @@
 import getPubSub from 'server/utils/getPubSub';
 
-const publish = (topic, channel, type, data, subOptions) => {
-  getPubSub().publish(`${topic}.${channel}`, {data: {type, ...data}, ...subOptions});
+const publish = (topic, channel, type, payload, subOptions) => {
+  const data = {
+    ...payload,
+    type
+  };
+
+  getPubSub().publish(`${topic}.${channel}`, {data, ...subOptions});
 };
 
 export default publish;

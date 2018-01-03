@@ -191,12 +191,9 @@ export const ORGANIZATION = 'organization';
 export const ORG_APPROVAL = 'orgApproval';
 // export const PROJECT = 'project'; // TODO refactor so it doesn't conflict with DnD
 // export const MEETING = 'meeting'; // conflicts with area
+// export const AGENDA_ITEM = 'agendaItem'; // conflict
 export const TEAM = 'team';
 export const TEAM_MEMBER = 'teamMember';
-export const AGENDA_ITEM_ADDED = 'agendaItemAdded';
-export const AGENDA_ITEM_UPDATED = 'agendaItemUpdated';
-export const AGENDA_ITEM_REMOVED = 'agendaItemRemoved';
-
 
 /*
  * WebSocket Events

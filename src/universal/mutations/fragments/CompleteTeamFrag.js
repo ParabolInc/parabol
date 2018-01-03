@@ -1,4 +1,4 @@
-export default graphql`
+graphql`
   fragment CompleteTeamFrag on Team {
     id
     name

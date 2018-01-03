@@ -1,4 +1,4 @@
-export default graphql`
+graphql`
   fragment FacilitatorDisconnectedToastFrag on NotifyFacilitatorDisconnected {
     type
     newFacilitator {

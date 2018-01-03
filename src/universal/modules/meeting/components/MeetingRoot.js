@@ -9,15 +9,13 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingContainer from 'universal/modules/meeting/containers/MeetingContainer/MeetingContainer';
-import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAddedSubscription';
-import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
-import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
+import AgendaItemSubscription from 'universal/subscriptions/AgendaItemSubscription';
 import MeetingSubscription from 'universal/subscriptions/MeetingSubscription';
+import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
+import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
 import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
-import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
-import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
@@ -30,9 +28,7 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  AgendaItemAddedSubscription,
-  AgendaItemUpdatedSubscription,
-  AgendaItemRemovedSubscription,
+  AgendaItemSubscription,
   MeetingSubscription,
   NewAuthTokenSubscription,
   NotificationSubscription,
@@ -57,7 +53,7 @@ const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
         const myTeamMemberId = `${userId}::${teamId}`;
         return (
           <TransitionGroup appear component={null}>
-            {error && <ErrorComponent height={'14rem'} error={error} />}
+            {error && <ErrorComponent height={'14rem'} error={error}/>}
             {renderProps &&
             <AnimatedFade key="1">
               <MeetingContainer
@@ -72,7 +68,7 @@ const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingView />
+              <LoadingView/>
             </AnimatedFade>
             }
           </TransitionGroup>

@@ -1,4 +1,4 @@
-export default graphql`
+graphql`
   fragment CompleteTeamFragWithMembers on Team {
     ...CompleteTeamFrag @relay(mask: false)
     teamMembers(sortBy: "preferredName") {

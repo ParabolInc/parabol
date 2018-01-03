@@ -1,30 +1,36 @@
-import clientTempId from 'universal/utils/relay/clientTempId';
 import {commitMutation} from 'react-relay';
-import addNodeToArray from 'universal/utils/relay/addNodeToArray';
+import handleAddAgendaItems from 'universal/mutations/handlers/handleAddAgendaItems';
+import clientTempId from 'universal/utils/relay/clientTempId';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
-const mutation = graphql`
-  mutation AddAgendaItemMutation($newAgendaItem: CreateAgendaItemInput!) {
-    addAgendaItem(newAgendaItem: $newAgendaItem) {
-      agendaItem {
+graphql`
+  fragment AddAgendaItemMutation_payload on AddAgendaItemPayload {
+    agendaItem {
+      id
+      content
+      isComplete
+      sortOrder
+      teamId
+      teamMember {
         id
-        content
-        isComplete
-        sortOrder
-        teamId
-        teamMember {
-          id
-          picture
-          preferredName
-        }
+        picture
+        preferredName
       }
     }
   }
 `;
 
-export const handleAddAgendaItemUpdater = (store, teamId, newNode) => {
-  const team = store.get(teamId);
-  addNodeToArray(newNode, team, 'agendaItems', 'sortOrder');
+const mutation = graphql`
+  mutation AddAgendaItemMutation($newAgendaItem: CreateAgendaItemInput!) {
+    addAgendaItem(newAgendaItem: $newAgendaItem) {
+      ...AddAgendaItemMutation_payload @relay(mask: false)
+    }
+  }
+`;
+
+export const addAgendaItemUpdater = (payload, store) => {
+  const agendaItem = payload.getLinkedRecord('agendaItem');
+  handleAddAgendaItems(agendaItem, store);
 };
 
 const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted) => {
@@ -33,8 +39,8 @@ const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted)
     mutation,
     variables: {newAgendaItem},
     updater: (store) => {
-      const node = store.getRootField('addAgendaItem').getLinkedRecord('agendaItem');
-      handleAddAgendaItemUpdater(store, teamId, node);
+      const payload = store.getRootField('addAgendaItem');
+      addAgendaItemUpdater(payload, store);
     },
     optimisticUpdater: (store) => {
       const optimisticAgendaItem = {
@@ -44,7 +50,7 @@ const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted)
         isComplete: false
       };
       const agendaItemNode = createProxyRecord(store, 'AgendaItem', optimisticAgendaItem);
-      handleAddAgendaItemUpdater(store, teamId, agendaItemNode);
+      handleAddAgendaItems(agendaItemNode, store);
     },
     onCompleted,
     onError

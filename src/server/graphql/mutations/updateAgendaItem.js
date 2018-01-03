@@ -3,9 +3,9 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdateAgendaItemInput from 'server/graphql/types/UpdateAgendaItemInput';
 import UpdateAgendaItemPayload from 'server/graphql/types/UpdateAgendaItemPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
-import {AGENDA_ITEM_UPDATED} from 'universal/utils/constants';
+import {AGENDA_ITEM} from 'universal/utils/constants';
 import makeUpdateAgendaItemSchema from 'universal/validation/makeUpdateAgendaItemSchema';
 
 export default {
@@ -17,13 +17,15 @@ export default {
       description: 'The updated item including an id, content, status, sortOrder'
     }
   },
-  async resolve(source, {updatedAgendaItem}, {authToken, dataLoader, socketId}) {
+  async resolve(source, {updatedAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const now = new Date();
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const [teamId] = updatedAgendaItem.id.split('::');
+    const {id: agendaItemId} = updatedAgendaItem;
+    const [teamId] = agendaItemId.split('::');
     requireTeamMember(authToken, teamId);
 
     // VALIDATION
@@ -32,18 +34,14 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const agendaItem = await r.table('AgendaItem').get(id)
+    await r.table('AgendaItem').get(id)
       .update({
         ...doc,
         updatedAt: now
-      }, {returnChanges: true})('changes')(0)('new_val')
-      .default(null);
+      });
 
-    if (!agendaItem) {
-      throw new Error('Agenda item does not exist');
-    }
-    const agendaItemUpdated = {agendaItem};
-    getPubSub().publish(`${AGENDA_ITEM_UPDATED}.${teamId}`, {agendaItemUpdated, operationId, mutatorId: socketId});
-    return agendaItemUpdated;
+    const data = {agendaItemId};
+    publish(AGENDA_ITEM, teamId, UpdateAgendaItemPayload, data, subOptions);
+    return data;
   }
 };

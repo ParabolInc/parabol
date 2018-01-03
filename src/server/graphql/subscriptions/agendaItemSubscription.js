@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import RemoveAgendaItemPayload from 'server/graphql/types/RemoveAgendaItemPayload';
+import AgendaItemSubscriptionPayload from 'server/graphql/types/AgendaItemSubscriptionPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import {AGENDA_ITEM_REMOVED} from 'universal/utils/constants';
+import {AGENDA_ITEM} from 'universal/utils/constants';
 
 export default {
-  type: new GraphQLNonNull(RemoveAgendaItemPayload),
+  type: new GraphQLNonNull(AgendaItemSubscriptionPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -16,8 +16,9 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const channelName = `${AGENDA_ITEM_REMOVED}.${teamId}`;
+    const channelName = `${AGENDA_ITEM}.${teamId}`;
     const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, dataLoader});
+    const resolve = ({data}) => ({agendaItemSubscription: data});
+    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve});
   }
 };

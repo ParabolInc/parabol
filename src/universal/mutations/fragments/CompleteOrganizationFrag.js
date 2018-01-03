@@ -1,4 +1,4 @@
-export default graphql`
+graphql`
   fragment CompleteOrganizationFrag on Organization {
     id
     createdAt

@@ -1,4 +1,4 @@
-export default graphql`
+graphql`
   fragment CompleteProjectFrag on Project {
     id
     agendaId

@@ -1,7 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
-import agendaItemAdded from 'server/graphql/subscriptions/agendaItemAdded';
-import agendaItemRemoved from 'server/graphql/subscriptions/agendaItemRemoved';
-import agendaItemUpdated from 'server/graphql/subscriptions/agendaItemUpdated';
+import agendaItemSubscription from 'server/graphql/subscriptions/agendaItemSubscription';
 import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemoved';
 import githubRepoAdded from 'server/graphql/subscriptions/githubRepoAdded';
 import githubRepoRemoved from 'server/graphql/subscriptions/githubRepoRemoved';
@@ -29,9 +27,7 @@ const rootFields = Object.assign({},
 export default new GraphQLObjectType({
   name: 'Subscription',
   fields: () => ({
-    agendaItemAdded,
-    agendaItemRemoved,
-    agendaItemUpdated,
+    agendaItemSubscription,
     githubMemberRemoved,
     githubRepoAdded,
     githubRepoRemoved,

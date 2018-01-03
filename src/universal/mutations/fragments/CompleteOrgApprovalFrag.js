@@ -1,4 +1,4 @@
-export default graphql`
+graphql`
   fragment CompleteOrgApprovalFrag on OrgApproval {
     id
     createdAt
