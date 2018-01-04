@@ -24,6 +24,7 @@
 //  isEditing
 // }
 
+import {createProjectProjectUpdater} from 'universal/mutations/CreateProjectMutation';
 import {removeTeamMemberProjectsUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 
 const subscription = graphql`
@@ -31,7 +32,8 @@ const subscription = graphql`
     projectSubscription {
       __typename
       ...RemoveTeamMemberMutation_project
-      ...CreateGitHubIssueMutation_project
+      ...CreateGitHubIssueMutation_project,
+      ...CreateProjectMutation_project
     }
   }
 `;
@@ -47,6 +49,9 @@ const ProjectSubscription = (environment) => {
       switch (type) {
         case 'RemoveTeamMemberOtherPayload':
           removeTeamMemberProjectsUpdater(payload, store, viewerId);
+          break;
+        case 'CreateProjectPayload':
+          createProjectProjectUpdater(payload, store, viewerId, false);
           break;
         default:
           console.error('TeamSubscription case fail', type);

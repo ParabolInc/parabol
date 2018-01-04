@@ -3,6 +3,7 @@ import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload';
+import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import User from 'server/graphql/types/User';
 
@@ -11,6 +12,7 @@ const types = [
   CancelApprovalPayload,
   CancelTeamInvitePayload,
   ClearNotificationPayload,
+  CreateProjectPayload,
   User,
   NotifyVersionInfo
 ];

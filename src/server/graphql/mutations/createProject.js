@@ -45,7 +45,6 @@ export default {
     const projectId = `${teamId}::${shortid.generate()}`;
     const {entityMap} = JSON.parse(content);
     const tags = getTagsFromEntityMap(entityMap);
-    const isPrivate = tags.includes('private');
     const project = {
       id: projectId,
       agendaId: validNewProject.agendaId,
@@ -78,8 +77,6 @@ export default {
         })('userId')
         .coerceTo('array') : []
     });
-    const projectCreated = {project};
-    publish(PROJECT, teamId, ADDED, {projectId, isPrivate, wasPrivate: false, userId}, subOptions);
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
@@ -112,14 +109,18 @@ export default {
           teamId
         });
       });
+    const data = {projectId, notifications: notificationsToAdd};
+
     if (notificationsToAdd.length) {
       await r.table('Notification').insert(notificationsToAdd);
       notificationsToAdd.forEach((notification) => {
-        const {id: notificationId, userIds} = notification;
+        const {userIds} = notification;
         const notificationUserId = userIds[0];
-        publish(NOTIFICATION, notificationUserId, ADDED, {notificationId}, subOptions);
+        publish(NOTIFICATION, notificationUserId, CreateProjectPayload, data, subOptions);
       });
     }
-    return projectCreated;
+
+    publish(PROJECT, teamId, CreateProjectPayload, data, subOptions);
+    return data;
   }
 };

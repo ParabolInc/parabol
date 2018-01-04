@@ -158,33 +158,6 @@ const notificationHandler = {
     }));
     addNotificationToConn(store, viewerId, payload);
   },
-  [PROJECT_INVOLVES]: (payload, {dispatch, history, environment, store}) => {
-    const inMeeting = Boolean(matchPath(location.pathname, {
-      path: '/meeting',
-      exact: false,
-      strict: false
-    }));
-    if (inMeeting) {
-      return;
-    }
-    const {viewerId} = environment;
-    const involvement = payload.getValue('involvement');
-    const changeAuthorName = payload.getLinkedRecord('changeAuthor').getValue('preferredName');
-    const wording = involvement === MENTIONEE ? 'mentioned you in' : 'assigned you to';
-    const message = `${changeAuthorName} ${wording} a project`;
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'Fresh work!',
-      message,
-      action: {
-        label: 'Check it out!',
-        callback: () => {
-          history.push('/me/notifications');
-        }
-      }
-    }));
-    addNotificationToConn(store, viewerId, payload);
-  },
   [PROMOTE_TO_BILLING_LEADER]: (payload, {dispatch, history, environment, store}) => {
     const {viewerId} = environment;
     const organization = payload.getLinkedRecord('organization');
