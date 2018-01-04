@@ -1,7 +1,8 @@
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 const handleEditProject = (payload, store) => {
-  const projectId = payload.getLinkedRecord('project').getValue('id');
+  const projectId = getInProxy(payload, 'project', 'id');
   const project = store.get(projectId);
   if (!project) return;
   const editor = payload.getLinkedRecord('editor');

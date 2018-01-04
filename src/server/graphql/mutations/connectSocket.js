@@ -47,12 +47,7 @@ export default {
       const listeningUserIds = await r.table('TeamMember')
         .getAll(r.args(tms), {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
-        .distinct()
-        //.do((userIds) => {
-        //  return r.table('User').getAll(r.args(userIds))
-        //    .filter((row) => row('connectedSockets').count().ge(1))('id')
-        //    .default([]);
-        //});
+        .distinct();
 
       // Tell everyone this user is now online
       listeningUserIds.forEach((onlineUserId) => {

@@ -1,4 +1,4 @@
-import {GraphQLObjectType} from 'graphql';
+import {GraphQLID, GraphQLObjectType} from 'graphql';
 import {resolveProject} from 'server/graphql/resolvers';
 import Project from 'server/graphql/types/Project';
 
@@ -8,6 +8,13 @@ const UpdateProjectPayload = new GraphQLObjectType({
     project: {
       type: Project,
       resolve: resolveProject
+    },
+    privitizedProjectId: {
+      type: GraphQLID,
+      description: 'If a project was just turned private, this its ID, else null',
+      resolve: ({projectId, isPrivitized}) => {
+        return isPrivitized ? projectId : null;
+      }
     }
   })
 });

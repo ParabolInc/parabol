@@ -17,6 +17,11 @@ export const resolveNotification = ({notificationId, notification}, args, {dataL
   return notificationId ? dataLoader.get('notifications').load(notificationId) : notification;
 };
 
+export const resolveNotificationForViewer = ({notifications}, args, {authToken}) => {
+  if (!notifications) return null;
+  const viewerId = getUserId(authToken);
+  return notifications ? notifications.find((n) => n.userIds.includes(viewerId)) : notifications;
+};
 export const resolveNotifications = ({notificationIds, notifications}, args, {dataLoader}) => {
   return (notificationIds && notificationIds.length > 0) ?
     dataLoader.get('notifications').loadMany(notificationIds) : notifications;
@@ -32,10 +37,9 @@ export const resolveOrgApproval = ({orgApprovalId, orgApproval}, args, {dataLoad
 
 export const resolveProject = async ({project, projectId}, args, {authToken, dataLoader}) => {
   const projectDoc = projectId ? await dataLoader.get('projects').load(projectId) : project;
-  const isViewer = projectDoc.userId === getUserId(authToken);
-  if (isViewer) return projectDoc;
-  const isPrivate = projectDoc.tags.includes('private');
-  return isPrivate ? null : projectDoc;
+  const {userId, tags} = projectDoc;
+  const isViewer = userId === getUserId(authToken);
+  return (isViewer || !tags.includes('private')) ? projectDoc : null;
 };
 
 export const resolveProjects = async ({projectIds}, args, {dataLoader}) => {

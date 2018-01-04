@@ -67,16 +67,16 @@ export default {
       teamMemberId: project.teamMemberId,
       updatedAt: project.updatedAt
     };
-    const {usersToIgnore} = await r({
+    const {teamMembers} = await r({
       project: r.table('Project').insert(project),
       history: r.table('ProjectHistory').insert(history),
-      usersToIgnore: area === MEETING ? await r.table('TeamMember')
+      teamMembers: r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
-          isCheckedIn: true
-        })('userId')
-        .coerceTo('array') : []
+          isNotRemoved: true
+        })
     });
+    const usersToIgnore = area === MEETING ? teamMembers.filter((m) => m.isCheckedIn).map(({userId}) => userId) : [];
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
@@ -114,13 +114,17 @@ export default {
     if (notificationsToAdd.length) {
       await r.table('Notification').insert(notificationsToAdd);
       notificationsToAdd.forEach((notification) => {
-        const {userIds} = notification;
-        const notificationUserId = userIds[0];
+        const {userIds: [notificationUserId]} = notification;
         publish(NOTIFICATION, notificationUserId, CreateProjectPayload, data, subOptions);
       });
     }
 
-    publish(PROJECT, teamId, CreateProjectPayload, data, subOptions);
+    const isPrivate = tags.includes('private');
+    teamMembers.forEach((teamMember) => {
+      if (!isPrivate ||teamMember.userId === userId) {
+        publish(PROJECT,teamMember.userId, CreateProjectPayload, data, subOptions);
+      }
+    });
     return data;
   }
 };

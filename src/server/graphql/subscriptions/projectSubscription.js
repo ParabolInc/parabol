@@ -22,11 +22,11 @@ const projectSubscription = {
 
     // RESOLUTION
     const viewerId = getUserId(authToken);
-    const {tms: teamIds} = authToken;
-    const channelNames = teamIds.map((id) => `${PROJECT}.${id}`);
+    const channelName = `${PROJECT}.${viewerId}`;
     const filterFn = ({mutatorId}) => mutatorId !== socketId;
     const resolve = ({data}) => ({projectSubscription: data});
-    return makeSubscribeIter(channelNames, {filterFn, dataLoader, resolve});
+
+    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve});
   }
 };
 

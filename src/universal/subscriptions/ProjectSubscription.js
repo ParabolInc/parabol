@@ -14,17 +14,12 @@
 //  }
 // }
 // ... on ProjectEdited {
-//  project {
-//    id
-//  }
-//  editor {
-//    id
-//    preferredName
-//  }
-//  isEditing
+
 // }
 
 import {createProjectProjectUpdater} from 'universal/mutations/CreateProjectMutation';
+import {deleteProjectProjectUpdater} from 'universal/mutations/DeleteProjectMutation';
+import {editProjectProjectUpdater} from 'universal/mutations/EditProjectMutation';
 import {removeTeamMemberProjectsUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 
 const subscription = graphql`
@@ -33,7 +28,9 @@ const subscription = graphql`
       __typename
       ...RemoveTeamMemberMutation_project
       ...CreateGitHubIssueMutation_project,
-      ...CreateProjectMutation_project
+      ...CreateProjectMutation_project,
+      ...DeleteProjectMutation_project,
+      ...EditProjectMutation_project
     }
   }
 `;
@@ -52,6 +49,12 @@ const ProjectSubscription = (environment) => {
           break;
         case 'CreateProjectPayload':
           createProjectProjectUpdater(payload, store, viewerId, false);
+          break;
+        case 'DeleteProjectPayload':
+          deleteProjectProjectUpdater(payload, store, viewerId);
+          break;
+        case 'EditProjectPayload':
+          editProjectProjectUpdater(payload, store);
           break;
         default:
           console.error('TeamSubscription case fail', type);

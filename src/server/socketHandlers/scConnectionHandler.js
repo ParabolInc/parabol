@@ -50,7 +50,9 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
       graphQLHandler({
         query: `
         mutation DisconnectSocket {
-          disconnectSocket
+          disconnectSocket {
+            id
+          }
         }
       `
       });

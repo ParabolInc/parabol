@@ -4,6 +4,7 @@ import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelAppro
 import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation';
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
 import {createProjectNotificationUpdater} from 'universal/mutations/CreateProjectMutation';
+import {deleteProjectNotificationUpdater} from 'universal/mutations/DeleteProjectMutation';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -96,7 +97,8 @@ const subscription = graphql`
       ...CancelTeamInviteMutation_notification
       ...ClearNotificationMutation_notification
       ...CreateProjectMutation_notification
-      # ConnectSocket
+      ...DeleteProjectMutation_notification
+      # ConnectSocket/DisconnectSocket
       ... on User {
         id
         isConnected
@@ -168,6 +170,9 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           break;
         case 'CreateProjectPayload':
           createProjectNotificationUpdater(payload, store, viewerId, options);
+          break;
+        case 'DeleteProjectPayload':
+          deleteProjectNotificationUpdater(payload, store, viewerId);
           break;
         case 'User':
           connectSocketUserUpdater(payload, store, viewerId);

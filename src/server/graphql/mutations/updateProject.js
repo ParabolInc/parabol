@@ -84,16 +84,17 @@ export default {
           );
         });
     }
-    const {projectChanges, usersToIgnore} = await r({
+    const {projectChanges, teamMembers} = await r({
       projectChanges: r.table('Project').get(projectId).update(newProject, {returnChanges: true})('changes')(0).default(null),
       history: projectHistory,
-      usersToIgnore: area === MEETING ? await r.table('TeamMember')
+      teamMembers: r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
-          isCheckedIn: true
-        })('userId')
-        .coerceTo('array') : []
+          isNotRemoved: true
+        })
+        .coerceTo('array')
     });
+    const usersToIgnore = area === MEETING ? teamMembers.filter((m) => m.isCheckedIn).map(({userId}) => userId) : [];
     if (!projectChanges) {
       throw new Error('Project already updated or does not exist');
     }
@@ -102,7 +103,14 @@ export default {
     const {new_val: project, old_val: oldProject} = projectChanges;
     const isPrivate = project.tags.includes('private');
     const wasPrivate = oldProject.tags.includes('private');
-    publish(PROJECT, teamId, UPDATED, {projectId, isPrivate, wasPrivate, userId: project.userId}, subOptions);
+    const {userId: projectUserId} = project;
+    const isPrivitized = isPrivate && !wasPrivate;
+    const isPublic = !isPrivate || isPrivitized;
+    const data = {isPrivitized, projectId};
+    teamMembers.forEach(({userId}) => {
+      if (isPublic || userId === projectUserId) {
+        publish(PROJECT, userId, UpdateProjectPayload, data, subOptions);
+    });
 
     // send notifications to assignees and mentionees
     const {notificationsToRemove, notificationsToAdd} = publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
@@ -117,6 +125,6 @@ export default {
       publish(NOTIFICATION, notificationUserId, ADDED, {notificationId}, subOptions);
     });
 
-    return {projectId};
+    return data;
   }
 };

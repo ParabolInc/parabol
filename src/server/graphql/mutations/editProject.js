@@ -2,7 +2,8 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import EditProjectPayload from 'server/graphql/types/EditProjectPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {EDITED, PROJECT} from 'universal/utils/constants';
+import {PROJECT} from 'universal/utils/constants';
+import promiseAllObj from 'universal/utils/promiseAllObj';
 
 export default {
   type: EditProjectPayload,
@@ -27,14 +28,18 @@ export default {
 
     // RESOLUTION
     // grab the project to see if it's private, don't share with other if it is
-    const project = await dataLoader.get('projects').load(projectId);
-    const {isPrivate, userId} = project;
-    const data = {projectId, isPrivate, wasPrivate: isPrivate, userId, editorUserId: viewerId, isEditing};
-    publish(PROJECT, teamId, EDITED, data, subOptions);
-    return {
-      projectId,
-      userId: viewerId,
-      isEditing
-    };
+    const {project, teamMembers} = await promiseAllObj({
+      project: dataLoader.get('projects').load(projectId),
+      teamMembers: dataLoader.get('teamMembersByTeamId').load(teamId)
+    });
+    const {tags, userId: projectUserId} = project;
+    const isPrivate = tags.includes('private');
+    const data = {projectId, editorId: viewerId, isEditing};
+    teamMembers.forEach((teamMember) => {
+      if (!isPrivate || projectUserId === teamMember.userId) {
+        publish(PROJECT, teamId, EditProjectPayload, data, subOptions);
+      }
+    });
+    return data;
   }
 };

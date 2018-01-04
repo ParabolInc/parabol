@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
-import {resolveProject} from 'server/graphql/resolvers';
+import {resolveNotificationForViewer, resolveProject} from 'server/graphql/resolvers';
 import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 import Project from 'server/graphql/types/Project';
 
@@ -11,9 +11,10 @@ const DeleteProjectPayload = new GraphQLObjectType({
       description: 'The project that was deleted',
       resolve: resolveProject
     },
-    removedInvolvementNotification: {
+    involvementNotification: {
       type: NotifyProjectInvolves,
-      description: 'The notification stating that the viewer was mentioned or assigned'
+      description: 'The notification stating that the viewer was mentioned or assigned',
+      resolve: resolveNotificationForViewer
     }
   })
 });
