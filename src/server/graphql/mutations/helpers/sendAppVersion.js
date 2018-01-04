@@ -1,5 +1,6 @@
+import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import publish from 'server/utils/publish';
-import {ADDED, NOTIFICATION, VERSION_INFO} from 'universal/utils/constants';
+import {NOTIFICATION, VERSION_INFO} from 'universal/utils/constants';
 import sleep from 'universal/utils/sleep';
 import packageJSON from '../../../../../package.json';
 
@@ -10,11 +11,11 @@ const sendAppVersion = async (userId) => {
   await sleep(5000);
 
   // Emit current app version to notify client of possible change
-  const notification = {
+  const data = {
     type: VERSION_INFO,
     version: APP_VERSION
   };
-  publish(NOTIFICATION, userId, ADDED, {notification});
+  publish(NOTIFICATION, userId, NotifyVersionInfo, data);
 };
 
 export default sendAppVersion;

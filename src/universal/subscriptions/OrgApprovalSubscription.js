@@ -1,4 +1,5 @@
 import {approveToOrgOrgApprovalUpdater} from 'universal/mutations/ApproveToOrgMutation';
+import {cancelApprovalOrgApprovalUpdater} from 'universal/mutations/CancelApprovalMutation';
 
 // ... on OrgApprovalAdded {
 //  orgApproval {
@@ -16,6 +17,7 @@ const subscription = graphql`
     orgApprovalSubscription(teamId: $teamId) {
       __typename
       ...ApproveToOrgMutation_orgApproval
+      ...CancelApprovalMutation_orgApproval
     }
   }
 `;
@@ -31,6 +33,9 @@ const OrgApprovalSubscription = (environment, queryVariables) => {
       switch (type) {
         case 'ApproveToOrgPayload':
           approveToOrgOrgApprovalUpdater(payload, store);
+          break;
+        case 'CancelApprovalPayload':
+          cancelApprovalOrgApprovalUpdater(payload, store);
           break;
         default:
           console.error('OrgApprovalSubscription case fail', type);

@@ -1,7 +1,7 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
 import {resolveInvitations, resolveNotifications} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
-import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
 import OrgApproval from 'server/graphql/types/OrgApproval';
 
@@ -9,7 +9,7 @@ const ApproveToOrgPayload = new GraphQLObjectType({
   name: 'ApproveToOrgPayload',
   fields: () => ({
     removedRequestNotifications: {
-      type: new GraphQLList(NotifyInvitation),
+      type: new GraphQLList(NotifyRequestNewUser),
       description: 'The notifications removed after approving an email to the organization'
     },
     removedOrgApprovals: {

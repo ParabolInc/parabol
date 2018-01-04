@@ -3,8 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NOTIFICATION, REMOVED, TEAM_INVITE} from 'universal/utils/constants';
-
+import {INVITATION, NOTIFICATION, TEAM_INVITE} from 'universal/utils/constants';
 
 export default {
   name: 'CancelTeamInvite',
@@ -56,11 +55,12 @@ export default {
             .default(null);
         })
     });
-    publish(INVITATION, teamId, REMOVED, {invitationId}, subOptions);
+    const data = {invitationId, removedTeamInviteNotification};
+    publish(INVITATION, teamId, CancelTeamInvitePayload, data, subOptions);
     if (removedTeamInviteNotification) {
       const {userIds: [userId]} = removedTeamInviteNotification;
-      publish(NOTIFICATION, userId, REMOVED, {notification: removedTeamInviteNotification}, subOptions);
+      publish(NOTIFICATION, userId, CancelTeamInvitePayload, data, subOptions);
     }
-    return {invitationId};
+    return data;
   }
 };

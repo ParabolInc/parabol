@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLInterfaceType} from 'graphql';
-import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected';
 import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLeader';
 
@@ -15,7 +15,7 @@ const OrganizationAddedNotification = new GraphQLInterfaceType({
   resolveType({type}) {
     const resolveTypeLookup = {
       [PAYMENT_REJECTED]: NotifyPaymentRejected,
-      [REQUEST_NEW_USER]: NotifyInvitation,
+      [REQUEST_NEW_USER]: NotifyRequestNewUser,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader
     };
 

@@ -102,7 +102,7 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withRouter(withStyles(styleThunk)(RequestNewUser)),
   graphql`
-    fragment RequestNewUser_notification on NotifyInvitation {
+    fragment RequestNewUser_notification on NotifyRequestNewUser {
       notificationId: id
       inviter {
         inviterName: preferredName

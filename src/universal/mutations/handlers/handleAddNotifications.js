@@ -7,9 +7,8 @@ import getNotificationsConn from 'universal/mutations/connections/getNotificatio
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
-  ADD_TO_TEAM, APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY, DENY_NEW_USER,
-  FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT, MENTIONEE, PAYMENT_REJECTED,
-  PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_INVITE, VERSION_INFO
+  ADD_TO_TEAM, DENY_NEW_USER, FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT,
+  MENTIONEE, PAYMENT_REJECTED, PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_INVITE
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
@@ -256,25 +255,6 @@ const notificationHandler = {
       }
     }));
     addNotificationToConn(store, viewerId, payload);
-  },
-  [VERSION_INFO]: (payload, {dispatch, history}) => {
-    const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-    const versionOnServer = payload.getValue('version');
-    if (versionOnServer !== versionInStorage) {
-      dispatch(showWarning({
-        title: 'New stuff!',
-        message: 'A new version of Parabol is available',
-        autoDismiss: 0,
-        action: {
-          label: 'Log out and upgrade',
-          callback: () => {
-            history.replace('/signout');
-          }
-        }
-      }));
-      window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
-        APP_UPGRADE_PENDING_RELOAD);
-    }
   }
 };
 

@@ -42,7 +42,7 @@ const subscription = graphql`
 `;
 
 const OrganizationSubscription = (environment) => {
-  //const {dispatch, history} = subParams;
+  // const {dispatch, history} = subParams;
   const {viewerId} = environment;
   return {
     subscription,

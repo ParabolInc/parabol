@@ -1,15 +1,27 @@
 import {commitMutation} from 'react-relay';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import getInProxy from 'universal/utils/relay/getInProxy';
+
+graphql`
+  fragment ClearNotificationMutation_notification on ClearNotificationPayload {
+    notification {
+      id
+    }
+  }
+`;
 
 const mutation = graphql`
   mutation ClearNotificationMutation($notificationId: ID!) {
     clearNotification(notificationId: $notificationId) {
-      notification {
-        id
-      }
+      ...ClearNotificationMutation_notification @relay(mask: false)
     }
   }
 `;
+
+export const clearNotificationNotificationUpdater = (payload, store, viewerId) => {
+  const notificationId = getInProxy(payload, 'notification', 'id');
+  handleRemoveNotifications(notificationId, store, viewerId);
+};
 
 const ClearNotificationMutation = (environment, notificationId, onError, onCompleted) => {
   const {viewerId} = environment;
@@ -17,7 +29,8 @@ const ClearNotificationMutation = (environment, notificationId, onError, onCompl
     mutation,
     variables: {notificationId},
     updater: (store) => {
-      handleRemoveNotifications(notificationId, store, viewerId);
+      const payload = store.getRootField('clearNotification');
+      clearNotificationNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       handleRemoveNotifications(notificationId, store, viewerId);

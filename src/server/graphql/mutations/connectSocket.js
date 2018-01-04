@@ -5,8 +5,7 @@ import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {UNPAUSE_USER} from 'server/utils/serverConstants';
-import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {NOTIFICATION} from 'universal/utils/constants';
 
 
 export default {
@@ -43,16 +42,24 @@ export default {
     }
 
     if (connectedSockets.length === 1) {
-      // Tell everyone this user is now online
       const operationId = dataLoader.share();
-      const teamMemberIds = tms.map((teamId) => toTeamMemberId(teamId, userId));
-      const teamMembers = await dataLoader.get('teamMembers').loadMany(teamMemberIds);
       const subOptions = {mutatorId: socketId, operationId};
-      teamMembers.forEach((teamMember) => {
-        const {id: teamMemberId, teamId} = teamMember;
-        publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId, isConnected: true}, subOptions);
+      const listeningUserIds = await r.table('TeamMember')
+        .getAll(r.args(tms), {index: 'teamId'})
+        .filter({isNotRemoved: true})('userId')
+        .distinct()
+        //.do((userIds) => {
+        //  return r.table('User').getAll(r.args(userIds))
+        //    .filter((row) => row('connectedSockets').count().ge(1))('id')
+        //    .default([]);
+        //});
+
+      // Tell everyone this user is now online
+      listeningUserIds.forEach((onlineUserId) => {
+        publish(NOTIFICATION, onlineUserId, User, user, subOptions);
       });
     }
+    // TODO just send this to the socketId, not all users
     sendAppVersion(userId);
     return user;
   }

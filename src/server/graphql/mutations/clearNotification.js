@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {NOTIFICATION, REMOVED} from 'universal/utils/constants';
+import {NOTIFICATION} from 'universal/utils/constants';
 
 export default {
   type: ClearNotificationPayload,
@@ -29,7 +29,8 @@ export default {
       .get(notificationId)
       .delete();
 
-    publish(NOTIFICATION, userId, REMOVED, {notification}, subOptions);
-    return {notification};
+    const data = {notification};
+    publish(NOTIFICATION, userId, ClearNotificationPayload, data, subOptions);
+    return data;
   }
 };

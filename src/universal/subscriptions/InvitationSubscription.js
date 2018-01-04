@@ -1,4 +1,5 @@
 import {approveToOrgInvitationUpdater} from 'universal/mutations/ApproveToOrgMutation';
+import {cancelTeamInviteInvitationUpdater} from 'universal/mutations/CancelTeamInviteMutation';
 
 // ...on InvitationAdded {
 // ...CompleteInvitationFrag @relay(mask: false)
@@ -19,7 +20,8 @@ const subscription = graphql`
   subscription InvitationSubscription($teamId: ID!) {
     invitationSubscription(teamId: $teamId) {
       __typename
-      ...ApproveToOrgMutation_invitation      
+      ...ApproveToOrgMutation_invitation
+      ...CancelTeamInviteMutation_invitation
     }
   }
 `;
@@ -35,6 +37,9 @@ const InvitationSubscription = (environment, queryVariables) => {
       switch (type) {
         case 'ApproveToOrgPayload':
           approveToOrgInvitationUpdater(payload, store);
+          break;
+        case 'CancelTeamInvitePaylaod':
+          cancelTeamInviteInvitationUpdater(payload, store);
           break;
         default:
           console.error('InvitationSubscription case fail', type);
