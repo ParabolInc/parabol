@@ -5,7 +5,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {GITHUB, PROJECT, UPDATED} from 'universal/utils/constants';
+import {GITHUB, PROJECT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 // const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
@@ -157,7 +157,7 @@ export default {
       }
     }
 
-    const integratedProject = await r.table('Project').get(projectId)
+    await r.table('Project').get(projectId)
       .update({
         integration: {
           integrationId,
@@ -166,12 +166,10 @@ export default {
           nameWithOwner
         },
         updatedAt: now
-      }, {returnChanges: true})('changes')(0)('new_val').default(null);
+      });
 
-    const isPrivate = integratedProject.tags.includes('private');
-    const wasPrivate = isPrivate;
-    const {userId} = integratedProject;
-    publish(PROJECT, teamId, UPDATED, {projectId, isPrivate, wasPrivate, userId}, subOptions);
-    return {projectId};
+    const data = {projectId};
+    publish(PROJECT, teamId, CreateGitHubIssuePayload, data, subOptions);
+    return data;
   }
 };

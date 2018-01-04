@@ -24,12 +24,8 @@ const projectSubscription = {
     const viewerId = getUserId(authToken);
     const {tms: teamIds} = authToken;
     const channelNames = teamIds.map((id) => `${PROJECT}.${id}`);
-    const filterFn = (value) => {
-      const {data: {isPrivate, wasPrivate, userId}, mutatorId} = value;
-      if (mutatorId === socketId) return false;
-      return !(isPrivate && wasPrivate && userId !== viewerId);
-    };
-    const resolve = ({data}) => ({projectSubscription: getChannelData(data, viewerId)});
+    const filterFn = ({mutatorId}) => mutatorId !== socketId;
+    const resolve = ({data}) => ({projectSubscription: data});
     return makeSubscribeIter(channelNames, {filterFn, dataLoader, resolve});
   }
 };

@@ -31,6 +31,7 @@ const subscription = graphql`
     projectSubscription {
       __typename
       ...RemoveTeamMemberMutation_project
+      ...CreateGitHubIssueMutation_project
     }
   }
 `;

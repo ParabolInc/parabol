@@ -30,12 +30,20 @@ export const resolveOrgApproval = ({orgApprovalId, orgApproval}, args, {dataLoad
   return orgApprovalId ? dataLoader.get('orgApprovals').load(orgApprovalId) : orgApproval;
 };
 
-export const resolveProject = ({project, projectId}, args, {dataLoader}) => {
-  return projectId ? dataLoader.get('projects').load(projectId) : project;
+export const resolveProject = async ({project, projectId}, args, {authToken, dataLoader}) => {
+  const projectDoc = projectId ? await dataLoader.get('projects').load(projectId) : project;
+  const isViewer = projectDoc.userId === getUserId(authToken);
+  if (isViewer) return projectDoc;
+  const isPrivate = projectDoc.tags.includes('private');
+  return isPrivate ? null : projectDoc;
 };
 
-export const resolveProjects = ({projectIds, projects}, args, {dataLoader}) => {
-  return (projectIds && projectIds.length > 0) ? dataLoader.get('projects').loadMany(projectIds) : projects;
+export const resolveProjects = async ({projectIds}, args, {dataLoader}) => {
+  if (!projectIds || projectIds.length === 0) return null;
+  const projects = await dataLoader.get('projects').loadMany(projectIds);
+  const {userId} = projects[0];
+  const isViewer = userId === getUserId(authToken);
+  return isViewer ? projects : projects.filter((p) => !p.tags.includes('private'));
 };
 
 export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
