@@ -3,6 +3,7 @@
  * flag.
  */
 import child_process from 'child_process'; // eslint-disable-line
+import path from 'path';
 import {promisify} from 'util';
 
 import commander from 'commander';
@@ -25,6 +26,7 @@ commander
   .option('-i, --inspect', 'Run the test process under the node inspector')
   .option('-m, --mocha-timeout', `Timeout (in milliseconds) for individual tests.  (Default ${MOCHA_TIMEOUT})`)
   .option('-s, --server-timeout', `Only applies Time (in milliseconds) for individual tests.  (Default ${SERVER_TIMEOUT})`)
+  .option('-t, --test-file <testFile>', 'Specify the test file to run, relative to `./e2e/tests/`.')
   .parse(process.argv);
 
 function startAppServer(serverTimeout) {
@@ -50,7 +52,7 @@ function declareAppServerUrl(url) {
   global.E2E_APP_SERVER_URL = url;
 }
 
-async function main({ url, inspect, mochaTimeout = MOCHA_TIMEOUT, serverTimeout = SERVER_TIMEOUT}) {
+async function main({ url, inspect, testFile, mochaTimeout = MOCHA_TIMEOUT, serverTimeout = SERVER_TIMEOUT}) {
   if (inspect) {
     // sending the SIGUSR1 signal to the current process activates the debugger
     // see https://nodejs.org/en/docs/inspector/
@@ -77,7 +79,10 @@ async function main({ url, inspect, mochaTimeout = MOCHA_TIMEOUT, serverTimeout 
       timeout: mochaTimeout,
       ui: 'bdd'
     });
-    const files = await globP('e2e/tests/**/*.test.js');
+    const testsDir = path.join(__dirname, '..', 'tests');
+    const files = testFile
+      ? [path.join(testsDir, testFile)]
+      : await globP(path.join(testsDir, '**/*.test.js'));
     files.forEach(mocha.addFile.bind(mocha));
     mocha.run((failures) => {
       process.exit(failures);

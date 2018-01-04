@@ -1,0 +1,23 @@
+{
+  "files.exclude": {
+    ".DS_Store": "explorerExcludedFiles",
+    ".env": "explorerExcludedFiles",
+    ".idea/": "explorerExcludedFiles",
+    "build/": "explorerExcludedFiles",
+    "coverage/": "explorerExcludedFiles",
+    "dll/": "explorerExcludedFiles",
+    "dump.rdb": "explorerExcludedFiles",
+    "node_modules/": "explorerExcludedFiles",
+    "npm-debug.log": "explorerExcludedFiles",
+    "package-lock.json": "explorerExcludedFiles",
+    "yarn-error.log": "explorerExcludedFiles",
+    "rethinkdb_data/": "explorerExcludedFiles",
+    "rethinkdb_dump_*": "explorerExcludedFiles",
+    "stats.json": "explorerExcludedFiles",
+    "test-report.xml": "explorerExcludedFiles",
+    "webdrivers/": "explorerExcludedFiles",
+    "webpack-assets.json": "explorerExcludedFiles",
+    "**/__generated__/": "explorerExcludedFiles",
+    "e2e/lib/": "explorerExcludedFiles"
+  }
+}
