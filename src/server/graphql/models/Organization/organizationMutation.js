@@ -50,10 +50,10 @@ export default {
         return arr;
       }, []);
 
-      //const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
+      // const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
       //  arr.push(...res.removedNotifications);
       //  return arr;
-      //}, []);
+      // }, []);
 
       const {updatedUser} = await r({
         updatedOrg: r.table('Organization').get(orgId)
@@ -100,26 +100,26 @@ export default {
       publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
       auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
-      const data = {teamIds, teamMemberIds, projectIds, orgId, userId};
+      // const data = {teamIds, teamMemberIds, projectIds, orgId, userId};
 
       // Kick this guy out of the org
       // TODO incorporate removedOrgNotifications
       // TODO move this to Relay
       return true;
-      //publish(ORGANIZATION, userId, RemoveOrgUserPayload, data, subOptions);
+      // publish(ORGANIZATION, userId, RemoveOrgUserPayload, data, subOptions);
       //
-      //// tell the org members that 1 got kicked out
-      //publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions);
+      // // tell the org members that 1 got kicked out
+      // publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions);
       //
-      //perTeamRes.forEach((res) => {
+      // perTeamRes.forEach((res) => {
       //  const {teamId} = res;
       //  // tel the team members that 1 got removed
       //  publish(TEAM_MEMBER, teamId, RemoveOrgUserPayload, data, subOptions);
       //
       //  // tell the project teams that the projects changed
       //  publish(PROJECT, teamId, RemoveOrgUserPayload, data, subOptions);
-      //});
-      //return {removedNotifications: removedTeamNotifications, projectIds, teamIds, teamMemberIds, orgId};
+      // });
+      // return {removedNotifications: removedTeamNotifications, projectIds, teamIds, teamMemberIds, orgId};
     }
   },
   createOrgPicturePutUrl: {

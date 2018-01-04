@@ -1,5 +1,8 @@
 import {GraphQLInterfaceType} from 'graphql';
-import {resolveInvitation, resolveTeam, resolveTeamMember, resolveUser} from 'server/graphql/resolvers';
+import {
+  resolveIfViewer, resolveInvitation, resolveTeam, resolveTeamMember,
+  resolveUser
+} from 'server/graphql/resolvers';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
 import Invitation from 'server/graphql/types/Invitation';
@@ -22,9 +25,7 @@ export const acceptTeamInviteFields = {
   removedNotification: {
     type: NotifyTeamInvite,
     description: 'The invite notification removed once accepted',
-    resolve: ({removedNotification, userId}, args, {authToken}) => {
-      return userId === getUserId(authToken) ? removedNotification : undefined;
-    }
+    resolve: resolveIfViewer('removedNotification')
   },
   removedInvitation: {
     type: Invitation,

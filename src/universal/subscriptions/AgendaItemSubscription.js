@@ -24,7 +24,7 @@ const AgendaItemSubscription = (environment, queryVariables) => {
       switch (type) {
         case 'AddAgendaItemPayload':
           addAgendaItemUpdater(payload, store);
-          break
+          break;
         case 'RemoveAgendaItemPayload':
           removeAgendaItemUpdater(payload, store);
           break;

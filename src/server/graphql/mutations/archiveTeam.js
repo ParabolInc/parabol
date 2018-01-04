@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import UpdateTeamPayload from 'server/graphql/types/UpdateTeamPayload';
+import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, REMOVED, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const publishAuthTokensWithoutTeam = (userDocs) => {
@@ -17,16 +17,8 @@ const publishAuthTokensWithoutTeam = (userDocs) => {
   });
 };
 
-const publishTeamArchivedNotifications = (notifications, team, subOptions) => {
-  notifications.forEach((notification) => {
-    const {id: notificationId, userIds} = notification;
-    const userId = userIds[0];
-    publish(TEAM, userId, REMOVED, {notificationId, team}, subOptions);
-  });
-};
-
 export default {
-  type: UpdateTeamPayload,
+  type: ArchiveTeamPayload,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -38,6 +30,7 @@ export default {
     const now = new Date();
     const operationId = dataLoader.share();
     const subOptions = {operationId, mutatorId};
+
     // AUTH
     const viewerId = getUserId(authToken);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
@@ -84,18 +77,18 @@ export default {
       throw new Error('Team was already archived');
     }
 
-    // the client doesn't care whether we hard deleted or archived. just tell them we archived so it removes from list
     const team = {
       ...teamResult,
       isArchived: true
     };
 
     // tell the mutator, but don't give them a notification
-    publish(TEAM, viewerId, REMOVED, {team}, subOptions);
+    publish(TEAM, viewerId, ArchiveTeamPayload, {team}, subOptions);
 
+    let notifications;
     if (notificationData) {
       const {team: {orgId}, userIds} = notificationData;
-      const notifications = userIds
+      notifications = userIds
         .filter((userId) => userId !== viewerId)
         .map((notifiedUserId) => ({
           id: shortid.generate(),
@@ -106,10 +99,13 @@ export default {
           teamId
         }));
       await r.table('Notification').insert(notifications);
-      publishTeamArchivedNotifications(notifications, team, subOptions);
     }
+
+    const data = {team, notifications};
+    publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions);
+
     publishAuthTokensWithoutTeam(userDocs);
 
-    return {team};
+    return data;
   }
 };

@@ -8,8 +8,18 @@ export const resolveInvitation = ({invitationId, invitation}, args, {dataLoader}
   return invitationId ? dataLoader.get('invitations').load(invitationId) : invitation;
 };
 
+export const resolveInvitations = ({invitationIds, invitations}, args, {dataLoader}) => {
+  return (invitationIds && invitationIds.length > 0) ?
+    dataLoader.get('invitations').loadMany(invitationIds) : invitations;
+};
+
 export const resolveNotification = ({notificationId, notification}, args, {dataLoader}) => {
   return notificationId ? dataLoader.get('notifications').load(notificationId) : notification;
+};
+
+export const resolveNotifications = ({notificationIds, notifications}, args, {dataLoader}) => {
+  return (notificationIds && notificationIds.length > 0) ?
+    dataLoader.get('notifications').loadMany(notificationIds) : notifications;
 };
 
 export const resolveOrganization = ({orgId, organization}, args, {dataLoader}) => {
@@ -49,6 +59,11 @@ export const resolveUser = ({userId, user}, args, {dataLoader}) => {
   return userId ? dataLoader.get('users').load(userId) : user;
 };
 
+
+/* Special resolvesr */
+export const resolveIfViewer = (ifViewerField, defaultValue) => (source, args, {authToken}) => {
+  return source.userId === getUserId(authToken) ? source[ifViewerField] : defaultValue;
+};
 
 export const resolveTypeForViewer = (selfPayload, otherPayload) => ({userId}, {authToken}) => {
   return userId === getUserId(authToken) ? selfPayload : otherPayload;

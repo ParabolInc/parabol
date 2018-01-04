@@ -1,17 +1,8 @@
-import {GraphQLUnionType} from 'graphql';
-import NotificationAdded from 'server/graphql/types/NotificationAdded';
-import NotificationRemoved from 'server/graphql/types/NotificationRemoved';
-import {ADDED, REMOVED} from 'universal/utils/constants';
+import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 
-const resolveTypeLookup = {
-  [ADDED]: NotificationAdded,
-  [REMOVED]: NotificationRemoved
-};
+const types = [
+  ApproveToOrgPayload
+];
 
-const NotificationSubscriptionPayload = new GraphQLUnionType({
-  name: 'NotificationSubscriptionPayload',
-  types: () => Object.values(resolveTypeLookup),
-  resolveType: ({type}) => resolveTypeLookup[type]
-});
-
-export default NotificationSubscriptionPayload;
+export default new GraphQLSubscriptionType('NotificationSubscriptionPayload', types);

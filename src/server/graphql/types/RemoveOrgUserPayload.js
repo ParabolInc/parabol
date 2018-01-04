@@ -43,7 +43,7 @@ export const removeOrgUserFields = {
 const RemoveOrgUserPayload = new GraphQLInterfaceType({
   name: 'RemoveOrgUserPayload',
   fields: () => removeOrgUserFields,
-  resolveType: resolveTypeForViewer(RemoveOrgUserSelfPayload,RemoveOrgUserOtherPayload)
+  resolveType: resolveTypeForViewer(RemoveOrgUserSelfPayload, RemoveOrgUserOtherPayload)
 });
 
 export default RemoveOrgUserPayload;

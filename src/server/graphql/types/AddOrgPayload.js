@@ -1,5 +1,5 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveOrganization, resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
+import {resolveInvitations, resolveOrganization, resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
 import Organization from 'server/graphql/types/Organization';
 import Team from 'server/graphql/types/Team';
@@ -23,10 +23,7 @@ const AddOrgPayload = new GraphQLObjectType({
     },
     invitations: {
       type: new GraphQLList(Invitation),
-      resolve: ({invitationIds}, args, {dataLoader}) => {
-        if (!invitationIds || invitationIds.length === 0) return [];
-        return dataLoader.get('invitations').loadMany(invitationIds);
-      }
+      resolve: resolveInvitations
     }
   })
 });

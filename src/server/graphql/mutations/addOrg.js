@@ -12,7 +12,7 @@ import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ADDED, NEW_AUTH_TOKEN, ORGANIZATION, UPDATED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, ORGANIZATION, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
@@ -52,15 +52,14 @@ export default {
 
     const tms = authToken.tms.concat(teamId);
     sendSegmentEvent('New Org', viewerId, {orgId, teamId});
-    publish(ORGANIZATION, viewerId, ADDED, {orgId}, subOptions);
-    auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
-    publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
 
-    return {
-      orgId,
-      teamId,
-      teamMemberId: toTeamMemberId(teamId, viewerId),
-      invitationIds
-    };
+    const teamMemberId = toTeamMemberId(teamId, viewerId);
+    const data = {orgId, teamId, teamMemberId, invitationIds};
+    publish(ORGANIZATION, viewerId, AddOrgPayload, data, subOptions);
+
+    publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
+    auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
+
+    return data;
   }
 };

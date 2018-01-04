@@ -1,19 +1,19 @@
-//... on ProjectAdded {
+// ... on ProjectAdded {
 //  project {
 //  ...CompleteProjectFrag @relay(mask: false)
 //  }
-//}
-//... on ProjectUpdated {
+// }
+// ... on ProjectUpdated {
 //  project {
 //  ...CompleteProjectFrag @relay(mask: false)
 //  }
-//}
-//... on ProjectRemoved {
+// }
+// ... on ProjectRemoved {
 //  project {
 //    id
 //  }
-//}
-//... on ProjectEdited {
+// }
+// ... on ProjectEdited {
 //  project {
 //    id
 //  }
@@ -22,7 +22,9 @@
 //    preferredName
 //  }
 //  isEditing
-//}
+// }
+
+import {removeTeamMemberProjectsUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 
 const subscription = graphql`
   subscription ProjectSubscription {
@@ -50,18 +52,18 @@ const ProjectSubscription = (environment) => {
       }
     }
 
-    //const project = payload.getLinkedRecord('project');
-    //const type = payload.getValue('__typename');
-    //if (type === 'ProjectAdded') {
+    // const project = payload.getLinkedRecord('project');
+    // const type = payload.getValue('__typename');
+    // if (type === 'ProjectAdded') {
     //  handleUpsertProjects(project, store, viewerId);
-    //} else if (type === 'ProjectUpdated') {
+    // } else if (type === 'ProjectUpdated') {
     //  handleUpsertProjects(project, store, viewerId);
-    //} else if (type === 'ProjectRemoved') {
+    // } else if (type === 'ProjectRemoved') {
     //  const projectId = getInProxy(project, 'id');
     //  handleRemoveProjects(projectId, store, viewerId);
-    //} else if (type === 'ProjectEdited') {
+    // } else if (type === 'ProjectEdited') {
     //  handleEditProject(payload, store);
-    //}
+    // }
   };
 };
 

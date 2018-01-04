@@ -1,20 +1,8 @@
-import {GraphQLUnionType} from 'graphql';
-import OrgApprovalAdded from 'server/graphql/types/OrgApprovalAdded';
-import OrgApprovalRemoved from 'server/graphql/types/OrgApprovalRemoved';
-import {ADDED, REMOVED} from 'universal/utils/constants';
+import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 
-const OrgApprovalSubscriptionPayload = new GraphQLUnionType({
-  name: 'OrgApprovalSubscriptionPayload',
-  types: () => [OrgApprovalAdded, OrgApprovalRemoved],
-  resolveType(value) {
-    // type lookup needs to be resolved in a thunk since there is a circular reference when loading
-    // alternative to treating it like a DB driver if GCing is an issue
-    const resolveTypeLookup = {
-      [ADDED]: OrgApprovalAdded,
-      [REMOVED]: OrgApprovalRemoved
-    };
+const types = [
+  ApproveToOrgPayload
+];
 
-    return resolveTypeLookup[value.type];
-  }
-});
-export default OrgApprovalSubscriptionPayload;
+export default new GraphQLSubscriptionType('OrgApprovalSubscriptionPayload', types);

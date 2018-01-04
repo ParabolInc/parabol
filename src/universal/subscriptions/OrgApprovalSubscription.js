@@ -1,21 +1,21 @@
-import handleAddOrgApprovals from 'universal/mutations/handlers/handleAddOrgApprovals';
-import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
-import getInProxy from 'universal/utils/relay/getInProxy';
+import {approveToOrgOrgApprovalUpdater} from 'universal/mutations/ApproveToOrgMutation';
+
+// ... on OrgApprovalAdded {
+//  orgApproval {
+//  ...CompleteOrgApprovalFrag @relay(mask: false)
+//  }
+// }
+// ... on OrgApprovalRemoved {
+//  orgApproval {
+//    id
+//  }
+// }
 
 const subscription = graphql`
   subscription OrgApprovalSubscription($teamId: ID!) {
     orgApprovalSubscription(teamId: $teamId) {
       __typename
-      ... on OrgApprovalAdded {
-        orgApproval {
-          ...CompleteOrgApprovalFrag @relay(mask: false)
-        }
-      }
-      ... on OrgApprovalRemoved {
-        orgApproval {
-          id
-        }
-      }
+      ...ApproveToOrgMutation_orgApproval
     }
   }
 `;
@@ -28,13 +28,22 @@ const OrgApprovalSubscription = (environment, queryVariables) => {
     updater: (store) => {
       const payload = store.getRootField('orgApprovalSubscription');
       const type = payload.getValue('__typename');
-      const orgApproval = payload.getLinkedRecord('orgApproval');
-      if (type === 'OrgApprovalAdded') {
-        handleAddOrgApprovals(orgApproval, store);
-      } else if (type === 'OrgApprovalRemoved') {
-        const orgApprovalId = getInProxy(orgApproval, 'id');
-        handleRemoveOrgApprovals(orgApprovalId, store);
+      switch (type) {
+        case 'ApproveToOrgPayload':
+          approveToOrgOrgApprovalUpdater(payload, store);
+          break;
+        default:
+          console.error('OrgApprovalSubscription case fail', type);
       }
+
+
+      // const orgApproval = payload.getLinkedRecord('orgApproval');
+      // if (type === 'OrgApprovalAdded') {
+      //  handleAddOrgApprovals(orgApproval, store);
+      // } else if (type === 'OrgApprovalRemoved') {
+      //  const orgApprovalId = getInProxy(orgApproval, 'id');
+      //  handleRemoveOrgApprovals(orgApprovalId, store);
+      // }
     }
   };
 };

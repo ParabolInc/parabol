@@ -80,7 +80,7 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withRouter(withStyles(styleThunk)(InviteeApproved)),
   graphql`
-    fragment InviteeApproved_notification on NotifyInvitation {
+    fragment InviteeApproved_notification on NotifyInviteeApproved {
       notificationId: id
       inviteeEmail
       team {

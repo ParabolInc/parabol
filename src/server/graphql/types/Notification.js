@@ -7,6 +7,7 @@ import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
+import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
 import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected';
@@ -68,7 +69,7 @@ const Notification = new GraphQLInterfaceType({
       [DENY_NEW_USER]: NotifyDenial,
       [FACILITATOR_DISCONNECTED]: NotifyFacilitatorDisconnected,
       [FACILITATOR_REQUEST]: NotifyFacilitatorRequest,
-      [INVITEE_APPROVED]: NotifyInvitation,
+      [INVITEE_APPROVED]: NotifyInviteeApproved,
       [JOIN_TEAM]: NotifyNewTeamMember,
       [KICKED_OUT]: NotifyKickedOut,
       [PAYMENT_REJECTED]: NotifyPaymentRejected,

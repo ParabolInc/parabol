@@ -9,7 +9,7 @@ import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMu
 import {
   ADD_TO_TEAM, APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY, DENY_NEW_USER,
   FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT, MENTIONEE, PAYMENT_REJECTED,
-  PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_ARCHIVED, TEAM_INVITE, VERSION_INFO
+  PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_INVITE, VERSION_INFO
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
@@ -231,23 +231,6 @@ const notificationHandler = {
     }));
     addNotificationToConn(store, viewerId, payload);
   },
-  [TEAM_ARCHIVED]: (payload, {dispatch, store, environment}) => {
-    const {viewerId} = environment;
-    const teamName = payload.getLinkedRecord('team').getValue('name');
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'That’s it, folks!',
-      message: `${teamName} has been archived.`,
-      action: {
-        label: 'OK',
-        callback: () => {
-          const notificationId = payload.getValue('id');
-          ClearNotificationMutation(environment, notificationId);
-        }
-      }
-    }));
-    addNotificationToConn(store, viewerId, payload);
-  },
   [TEAM_INVITE]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
     const inviterName = payload.getLinkedRecord('inviter').getValue('preferredName');
@@ -295,11 +278,21 @@ const notificationHandler = {
   }
 };
 
-const handleAddNotification = (newNode, options) => {
-  const type = newNode.getValue('type');
-  const handler = notificationHandler[type];
-  if (handler) {
-    handler(newNode, options);
+const handleAddNotification = (newNode, store, viewerId) => {
+  const viewer = store.get(viewerId);
+  const conn = getNotificationsConn(viewer);
+  if (!conn) return;
+  const nodeId = newNode.getValue('id');
+  const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('id') === nodeId);
+  if (matchingNodes.length === 0) {
+    const newEdge = ConnectionHandler.createEdge(
+      store,
+      conn,
+      newNode,
+      'NotificationEdge'
+    );
+    newEdge.setValue(newNode.getValue('startAt'), 'cursor');
+    ConnectionHandler.insertEdgeBefore(conn, newEdge);
   }
 };
 

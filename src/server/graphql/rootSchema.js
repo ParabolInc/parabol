@@ -5,6 +5,7 @@ import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected';
 import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
 import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
+import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
 import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected';
@@ -26,12 +27,13 @@ export default new GraphQLSchema({
     NotifyFacilitatorDisconnected,
     NotifyFacilitatorRequest,
     NotifyInvitation,
+    NotifyInviteeApproved,
     NotifyKickedOut,
     NotifyNewTeamMember,
     NotifyPaymentRejected,
     NotifyProjectInvolves,
     NotifyPromoteToOrgLeader,
     NotifyTeamArchived,
-    NotifyVersionInfo,
+    NotifyVersionInfo
   ]
 });

@@ -53,7 +53,7 @@ const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
         const myTeamMemberId = `${userId}::${teamId}`;
         return (
           <TransitionGroup appear component={null}>
-            {error && <ErrorComponent height={'14rem'} error={error}/>}
+            {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">
               <MeetingContainer
@@ -68,7 +68,7 @@ const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
             }
             {!renderProps && !error &&
             <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingView/>
+              <LoadingView />
             </AnimatedFade>
             }
           </TransitionGroup>
