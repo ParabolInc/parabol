@@ -3,7 +3,7 @@ import handleRemoveAgendaItems from 'universal/mutations/handlers/handleRemoveAg
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment RemoveAgendaItemMutation_payload on RemoveAgendaItemPayload {
+  fragment RemoveAgendaItemMutation_agendaItem on RemoveAgendaItemPayload {
     agendaItem {
       id
     }
@@ -13,7 +13,7 @@ graphql`
 const mutation = graphql`
   mutation RemoveAgendaItemMutation($agendaItemId: ID!) {
     removeAgendaItem(agendaItemId: $agendaItemId) {
-      ...RemoveAgendaItemMutation_payload @relay(mask: false)
+      ...RemoveAgendaItemMutation_agendaItem @relay(mask: false)
     }
   }
 `;

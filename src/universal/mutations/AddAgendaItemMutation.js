@@ -4,7 +4,7 @@ import clientTempId from 'universal/utils/relay/clientTempId';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
 graphql`
-  fragment AddAgendaItemMutation_payload on AddAgendaItemPayload {
+  fragment AddAgendaItemMutation_agendaItem on AddAgendaItemPayload {
     agendaItem {
       id
       content
@@ -23,7 +23,7 @@ graphql`
 const mutation = graphql`
   mutation AddAgendaItemMutation($newAgendaItem: CreateAgendaItemInput!) {
     addAgendaItem(newAgendaItem: $newAgendaItem) {
-      ...AddAgendaItemMutation_payload @relay(mask: false)
+      ...AddAgendaItemMutation_agendaItem @relay(mask: false)
     }
   }
 `;
