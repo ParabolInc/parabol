@@ -5,6 +5,7 @@ import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTea
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
 import {createProjectNotificationUpdater} from 'universal/mutations/CreateProjectMutation';
 import {deleteProjectNotificationUpdater} from 'universal/mutations/DeleteProjectMutation';
+import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -98,6 +99,7 @@ const subscription = graphql`
       ...ClearNotificationMutation_notification
       ...CreateProjectMutation_notification
       ...DeleteProjectMutation_notification
+      ...InviteTeamMembersMutation_notification
       # ConnectSocket/DisconnectSocket
       ... on User {
         id
@@ -129,7 +131,6 @@ const connectSocketUserUpdater = (payload, store, viewerId) => {
 const popUpgradeAppToast = (payload, {dispatch, history}) => {
   const versionOnServer = payload.getValue('version');
   const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-  console.log('version', versionOnServer, versionInStorage)
   if (versionOnServer !== versionInStorage) {
     dispatch(showWarning({
       title: 'New stuff!',
@@ -173,6 +174,9 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           break;
         case 'DeleteProjectPayload':
           deleteProjectNotificationUpdater(payload, store, viewerId);
+          break;
+        case 'InviteTeamMembersPayload':
+          inviteTeamMembersNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'User':
           connectSocketUserUpdater(payload, store, viewerId);

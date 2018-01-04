@@ -3,6 +3,8 @@ import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteE
 import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
+import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
+import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
 import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberSelfPayload';
 
@@ -10,10 +12,12 @@ import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberSe
 const types = [
   AcceptTeamInviteEmailPayload,
   AcceptTeamInviteNotificationPayload,
-  RemoveTeamMemberOtherPayload,
-  RemoveTeamMemberSelfPayload,
   AddTeamPayload,
-  ArchiveTeamPayload
+  ArchiveTeamPayload,
+  EndMeetingPayload,
+  InviteTeamMembersPayload,
+  RemoveTeamMemberOtherPayload,
+  RemoveTeamMemberSelfPayload
 ];
 
 export default new GraphQLSubscriptionType('TeamSubscriptionPayload', types);

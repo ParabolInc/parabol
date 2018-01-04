@@ -44,7 +44,7 @@ graphql`
       }
     }
   }
-`
+`;
 
 const mutation = graphql`
   mutation CreateProjectMutation($newProject: CreateProjectInput!, $area: AreaEnum) {
@@ -56,7 +56,7 @@ const mutation = graphql`
 
 const popInvolvementToast = (notification, {dispatch, location, history}) => {
   const involvement = notification.getValue('involvement');
-  const changeAuthorName = getInProxy(notification,'changeAuthor','preferredName');
+  const changeAuthorName = getInProxy(notification, 'changeAuthor', 'preferredName');
   const inMeeting = Boolean(matchPath(location.pathname, {
     path: '/meeting',
     exact: false,
@@ -96,9 +96,9 @@ export const createProjectNotificationUpdater = (payload, store, viewerId, optio
 
   // No need to pass options for the mutation because you can't notify yourself of your involvement
   if (options) {
-    popInvolvementToast(notification, options)
+    popInvolvementToast(notification, options);
   }
-}
+};
 
 const CreateProjectMutation = (environment, newProject, area, onError, onCompleted) => {
   const {viewerId} = environment;

@@ -47,6 +47,7 @@ export default async function createPendingApprovals(outOfOrgEmails, inviteSende
 
   return {
     requestNotifications,
-    orgApprovalIds: pendingApprovals.map(({id}) => id)
+    orgApprovalIds: pendingApprovals.map(({id}) => id),
+    billingLeaderUserIds: userIds
   };
 }

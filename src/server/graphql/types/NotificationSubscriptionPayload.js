@@ -5,6 +5,7 @@ import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayloa
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
+import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import User from 'server/graphql/types/User';
 
@@ -15,6 +16,7 @@ const types = [
   ClearNotificationPayload,
   CreateProjectPayload,
   DeleteProjectPayload,
+  InviteTeamMembersPayload,
   User,
   NotifyVersionInfo
 ];

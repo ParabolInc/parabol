@@ -5,7 +5,7 @@ import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM} from 'universal/subscriptions/constants';
-import {ADDED, NOTIFICATION, ORG_APPROVAL, REJOIN_TEAM, REMOVED, TEAM_MEMBER} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATION, ORG_APPROVAL, TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 export default {
@@ -31,50 +31,64 @@ export default {
     // RESOLUTION
     const subOptions = {mutatorId, operationId};
     const {
+      billingLeaderUserIds,
       orgApprovalIds,
       reactivations,
-      results,
       removedOrgApprovals,
       removedRequestNotifications,
-      requestNotifications
+      requestNotifications,
+      newInvitations,
+      teamInviteNotifications: inviteNotifications
     } = await inviteTeamMembers(invitees, teamId, viewerId, subOptions);
     const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId);
-
-    // HANDLE REACTIVATION
-    reactivations.forEach(({notificationId, teamMemberId, preferredName}) => {
-      // send a team member + temporary toast to the rest of the users
-      const notification = {type: REJOIN_TEAM, teamId, preferredName};
-      publish(TEAM_MEMBER, teamId, ADDED, {teamId, notification}, subOptions);
-      // send a team + persisted notification to the reactivated team member
-      const {userId} = fromTeamMemberId(teamMemberId);
-      publish(TEAM, userId, ADDED, {teamId, notificationId}, subOptions);
-    });
-
-    // HANDLE NON-ORG LEADERS NEEDING APPROVAL
-    orgApprovalIds.forEach((orgApprovalId) => {
-      publish(ORG_APPROVAL, teamId, ADDED, {orgApprovalId}, subOptions);
-    });
-    requestNotifications.forEach((requestNotification) => {
-      const {id: notificationId, userIds} = requestNotification;
-      userIds.forEach((userId) => {
-        // if the org leader triggers this it won't be in the mutation payload, so mutatorId is not passed in
-        publish(NOTIFICATION, userId, ADDED, {notificationId}, {operationId});
-      });
-    });
-
-    // HANDLE ORG LEADER INVITING A PENDING ORG APPROVAL INVITEE
+    const reactivationNotificationIds = reactivations.map(({notificationId}) => notificationId);
+    const requestNotificationIds = requestNotifications.map(({id}) => id);
     const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
-    removedOrgApprovalIds.forEach((removedOrgApprovalId) => {
-      publish(ORG_APPROVAL, teamId, REMOVED, {removedOrgApprovalId}, subOptions);
+    const invitationIds = newInvitations.map(({id}) => id);
+
+    const data = {
+      orgApprovalIds,
+      removedOrgApprovalIds,
+      reactivatedTeamMemberIds,
+      teamId,
+      reactivationNotificationIds,
+      removedRequestNotifications,
+      requestNotificationIds,
+      invitationIds,
+      inviteNotifications
+    };
+    // HANDLE REACTIVATION
+
+    // send the reactivated team members to the rest of the team
+    if (reactivatedTeamMemberIds.length) {
+      publish(TEAM_MEMBER, teamId, InviteTeamMembersPayload, data, subOptions);
+    }
+
+    // send a team + persisted notification to the reactivated team member
+    reactivations.forEach(({teamMemberId}) => {
+      const {userId} = fromTeamMemberId(teamMemberId);
+      publish(TEAM, userId, InviteTeamMembersPayload, data, subOptions);
     });
-    removedRequestNotifications.forEach((notification) => {
-      const {userIds} = notification;
-      userIds.forEach((userId) => {
-        // if the org leader triggers this it won't be in the mutation payload, so mutatorId is not passed in
-        publish(NOTIFICATION, userId, REMOVED, {notification}, {operationId});
+
+    if (orgApprovalIds.length || removedOrgApprovalIds.length) {
+      publish(ORG_APPROVAL, teamId, InviteTeamMembersPayload, data, subOptions);
+    }
+    if (invitationIds.length) {
+      publish(INVITATION, teamId, InviteTeamMembersPayload, data, subOptions);
+    }
+
+    if (requestNotifications.length || removedRequestNotifications.length) {
+      billingLeaderUserIds.forEach((userId) => {
+        publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions);
       });
+    }
+
+    inviteNotifications.forEach((notification) => {
+      const {userIds: [userId]} = notification;
+      publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions);
     });
-    return {orgApprovalIds, reactivatedTeamMemberIds, removedOrgApprovalIds, results};
+
+    return data;
   }
 };
 

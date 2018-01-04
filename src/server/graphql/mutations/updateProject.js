@@ -1,6 +1,7 @@
 import {GraphQLNonNull} from 'graphql';
 import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
+import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore';
 import publishChangeNotifications from 'server/graphql/mutations/helpers/publishChangeNotifications';
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import UpdateProjectInput from 'server/graphql/types/UpdateProjectInput';
@@ -9,7 +10,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ADDED, MEETING, NOTIFICATION, PROJECT, REMOVED, UPDATED} from 'universal/utils/constants';
+import {ADDED, MEETING, NOTIFICATION, PROJECT, REMOVED} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
@@ -94,7 +95,7 @@ export default {
         })
         .coerceTo('array')
     });
-    const usersToIgnore = area === MEETING ? teamMembers.filter((m) => m.isCheckedIn).map(({userId}) => userId) : [];
+    const usersToIgnore = getUsersToIgnore(area, teamMembers);
     if (!projectChanges) {
       throw new Error('Project already updated or does not exist');
     }
@@ -110,6 +111,7 @@ export default {
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === projectUserId) {
         publish(PROJECT, userId, UpdateProjectPayload, data, subOptions);
+      }
     });
 
     // send notifications to assignees and mentionees

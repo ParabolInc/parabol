@@ -1,14 +1,13 @@
 import {matchPath} from 'react-router-dom';
 import {ConnectionHandler} from 'relay-runtime';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
-import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn';
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
-  ADD_TO_TEAM, DENY_NEW_USER, FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT,
-  MENTIONEE, PAYMENT_REJECTED, PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_INVITE
+  DENY_NEW_USER, FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT, PAYMENT_REJECTED,
+  PROMOTE_TO_BILLING_LEADER, REQUEST_NEW_USER
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
@@ -32,24 +31,6 @@ export const addNotificationToConn = (store, viewerId, newNode) => {
 
 
 const notificationHandler = {
-  [ADD_TO_TEAM]: (payload, {dispatch, store, environment}) => {
-    const {viewerId} = environment;
-    const team = payload.getLinkedRecord('team');
-    const teamName = team.getValue('name');
-    const notificationId = payload.getValue('id');
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'Congratulations!',
-      message: `You’ve been added to team ${teamName}`,
-      action: {
-        label: 'Great!',
-        callback: () => {
-          ClearNotificationMutation(environment, notificationId);
-        }
-      }
-    }));
-    addNotificationToConn(store, viewerId, payload);
-  },
   [DENY_NEW_USER]: (payload, {dispatch, store, history, environment}) => {
     const {viewerId} = environment;
     const inviteeEmail = payload.getValue('inviteeEmail');
@@ -176,57 +157,9 @@ const notificationHandler = {
     }));
     addNotificationToConn(store, viewerId, payload);
   },
-  [REJOIN_TEAM]: (payload, {dispatch}) => {
-    const preferredName = payload.getValue('preferredName');
-    const team = payload.getLinkedRecord('team');
-    const teamName = team.getValue('name');
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'They’re back!',
-      message: `${preferredName} has rejoined ${teamName}`
-    }));
-  },
   [REQUEST_NEW_USER]: (payload, {dispatch, history, store, environment}) => {
     const {viewerId} = environment;
-    const inviterName = payload.getLinkedRecord('inviter').getValue('preferredName');
-    // TODO highlight the id, but don't store the state in the url cuz ugly
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'Approval Requested!',
-      message: `${inviterName} would like to invite someone to their team`,
-      action: {
-        label: 'Check it out',
-        callback: () => {
-          history.push('/me/notifications');
-        }
-      }
-    }));
-    addNotificationToConn(store, viewerId, payload);
-  },
-  [TEAM_INVITE]: (payload, {dispatch, store, environment}) => {
-    const {viewerId} = environment;
-    const inviterName = payload.getLinkedRecord('inviter').getValue('preferredName');
-    const team = payload.getLinkedRecord('team');
-    const teamName = team.getValue('name');
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'You’re invited!',
-      message: `${inviterName} would like you to join their team ${teamName}`,
-      action: {
-        label: 'Accept!',
-        callback: () => {
-          const notificationId = payload.getValue('id');
-          const onCompleted = () => {
-            dispatch(showInfo({
-              autoDismiss: 10,
-              title: 'Congratulations!',
-              message: `You’ve been added to team ${teamName}`
-            }));
-          };
-          AcceptTeamInviteMutation(environment, notificationId, dispatch, undefined, onCompleted);
-        }
-      }
-    }));
+
     addNotificationToConn(store, viewerId, payload);
   }
 };

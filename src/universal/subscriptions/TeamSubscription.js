@@ -1,6 +1,8 @@
 import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
 import {addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation';
 import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation';
+import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation';
+import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 
 // ... on TeamAdded {
@@ -54,7 +56,9 @@ const subscription = graphql`
       ...AcceptTeamInviteMutation_team
       ...RemoveTeamMemberMutation_team
       ...AddTeamMutation_team
-      ...ArchiveTeamMutation_team
+      ...ArchiveTeamMutation_team,
+      ...EndMeetingMutation_team
+      ...InviteTeamMembersMutation_team
     }
   }
 `;
@@ -82,6 +86,13 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'ArchiveTeamMutationPayload':
           archiveTeamTeamUpdater(payload, store, environment, dispatch);
           break;
+        case 'EndMeetingPayload':
+          endMeetingTeamUpdater(payload, store);
+          break;
+        case 'InviteTeamMembersPayload':
+          inviteTeamMembersTeamUpdater(payload, store, viewerId);
+          break;
+
         default:
           console.error('TeamSubscription case fail', type);
       }

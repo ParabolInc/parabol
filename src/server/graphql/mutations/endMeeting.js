@@ -3,17 +3,17 @@ import getRethink from 'server/database/rethinkDriver';
 import getEndMeetingSortOrders from 'server/graphql/mutations/helpers/endMeeting/getEndMeetingSortOrders';
 import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEmailSummary';
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
-import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
+import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
 import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, MEETING, PROJECT, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
+import {DONE, LOBBY, PROJECT, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
-  type: UpdateMeetingPayload,
+  type: EndMeetingPayload,
   description: 'Finish a meeting and go to the summary',
   args: {
     teamId: {
@@ -139,17 +139,18 @@ export default {
     sendSegmentEvent('Meeting Completed', userIds, {teamId, meetingNumber});
     endSlackMeeting(meetingId, teamId);
 
-    const summaryMeeting = {
-      ...team,
-      facilitatorPhase: SUMMARY,
-      meetingPhase: SUMMARY,
-      meetingId
+    const data = {
+      team: {
+        ...team,
+        facilitatorPhase: SUMMARY,
+        meetingPhase: SUMMARY,
+        meetingId
+      }
     };
-    publish(TEAM, teamId, UPDATED, {team: summaryMeeting}, subOptions);
-    publish(MEETING, teamId, UPDATED, {team: summaryMeeting}, subOptions);
+    publish(TEAM, teamId, EndMeetingPayload, data, subOptions);
     sendEmailSummary(completedMeeting);
 
     // send the truth to the meeting facilitator so we don't need to adjust the store in endMeetingMutation
-    return {team};
+    return data;
   }
 };

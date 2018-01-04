@@ -1,4 +1,5 @@
 import {acceptTeamInviteTeamMemberUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
+import {inviteTeamMembersTeamMemberUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 
 // ... on TeamMemberAdded {
@@ -31,9 +32,9 @@ const subscription = graphql`
       __typename
       ...AcceptTeamInviteMutation_teamMember
       ...RemoveTeamMemberMutation_teamMember
+      ...InviteTeamMembersMutation_teamMember
     }
   }
-
 `;
 
 const TeamMemberSubscription = (environment, queryVariables, subParams) => {
@@ -53,6 +54,10 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamMemberUpdater(payload, store);
           break;
+        case 'InviteTeamMembersPayload':
+          inviteTeamMembersTeamMemberUpdater(payload, store, dispatch);
+          break;
+
         default:
           console.error('TeamMemberSubscription case fail', type);
       }

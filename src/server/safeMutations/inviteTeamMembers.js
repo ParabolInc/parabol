@@ -1,5 +1,4 @@
 import getRethink from 'server/database/rethinkDriver';
-import getResults from 'server/graphql/mutations/helpers/inviteTeamMembers/getResults';
 import makeDetailedInvitations from 'server/graphql/mutations/helpers/inviteTeamMembers/makeDetailedInvitations';
 import createPendingApprovals from 'server/safeMutations/createPendingApprovals';
 import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reactivateTeamMembersAndMakeNotifications';
@@ -57,7 +56,6 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
   const pendingApprovalEmails = inviteesNeedingApproval.map(({email}) => email);
   const approvalsToClear = inviteesToInvite.map(({email}) => email);
   const {reactivations, newPendingApprovals, removedApprovalsAndNotifications, teamInvites} = await resolvePromiseObj({
-    // leave out the mutatorId so the sender gets the full team member (should refactor when completey on relay)
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter),
     removedApprovalsAndNotifications: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
     teamInvites: sendTeamInvitations(inviteesToInvite, inviter),
@@ -68,8 +66,7 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
     ...newPendingApprovals,
     ...removedApprovalsAndNotifications,
     ...teamInvites,
-    reactivations,
-    results: getResults(detailedInvitations)
+    reactivations
   };
 };
 

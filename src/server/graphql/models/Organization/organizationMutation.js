@@ -27,11 +27,11 @@ export default {
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
+    async resolve(source, {orgId, userId}, {authToken}) {
       const r = getRethink();
       const now = new Date();
-      const operationId = dataLoader.share();
-      const subOptions = {mutatorId, operationId};
+      // const operationId = dataLoader.share();
+      // const subOptions = {mutatorId, operationId};
 
       // AUTH
       const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
@@ -41,14 +41,14 @@ export default {
       const teamIds = await r.table('Team')
         .getAll(orgId, {index: 'orgId'})('id');
       const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId));
-      const perTeamRes = await Promise.all(teamMemberIds.map((teamMemberId) => {
+      await Promise.all(teamMemberIds.map((teamMemberId) => {
         return removeTeamMember(teamMemberId, {isKickout: true});
       }));
 
-      const projectIds = perTeamRes.reduce((arr, res) => {
-        arr.push(...res.archivedProjectIds, ...res.reassignedProjectIds);
-        return arr;
-      }, []);
+      //const projectIds = perTeamRes.reduce((arr, res) => {
+      //  arr.push(...res.archivedProjectIds, ...res.reassignedProjectIds);
+      //  return arr;
+      //}, []);
 
       // const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
       //  arr.push(...res.removedNotifications);

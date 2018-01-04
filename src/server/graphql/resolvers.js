@@ -17,11 +17,22 @@ export const resolveNotification = ({notificationId, notification}, args, {dataL
   return notificationId ? dataLoader.get('notifications').load(notificationId) : notification;
 };
 
-export const resolveNotificationForViewer = ({notifications}, args, {authToken}) => {
-  if (!notifications) return null;
+export const resolveNotificationForViewer = async ({notificationIds, notifications}, args, {authToken, dataLoader}) => {
+  const notificationDocs = (notificationIds && notificationIds.length > 0) ?
+    await dataLoader.get('notifications').loadMany(notificationIds) : notifications;
   const viewerId = getUserId(authToken);
-  return notifications ? notifications.find((n) => n.userIds.includes(viewerId)) : notifications;
+  return notificationDocs ? notificationDocs.find((n) => n.userIds.includes(viewerId)) : notificationDocs;
 };
+
+export const makeResovleNotificationForViewer = (idArray, docArray) => async (source, args, {authToken, dataLoader}) => {
+  const notificationIds = source[idArray];
+  const notifications = source[docArray];
+  const notificationDocs = (notificationIds && notificationIds.length > 0) ?
+    await dataLoader.get('notifications').loadMany(notificationIds) : notifications;
+  const viewerId = getUserId(authToken);
+  return notificationDocs ? notificationDocs.find((n) => n.userIds.includes(viewerId)) : notificationDocs;
+};
+
 export const resolveNotifications = ({notificationIds, notifications}, args, {dataLoader}) => {
   return (notificationIds && notificationIds.length > 0) ?
     dataLoader.get('notifications').loadMany(notificationIds) : notifications;
@@ -42,7 +53,7 @@ export const resolveProject = async ({project, projectId}, args, {authToken, dat
   return (isViewer || !tags.includes('private')) ? projectDoc : null;
 };
 
-export const resolveProjects = async ({projectIds}, args, {dataLoader}) => {
+export const resolveProjects = async ({projectIds}, args, {authToken, dataLoader}) => {
   if (!projectIds || projectIds.length === 0) return null;
   const projects = await dataLoader.get('projects').loadMany(projectIds);
   const {userId} = projects[0];

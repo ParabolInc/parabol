@@ -1,5 +1,6 @@
 import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore';
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateProjectInput from 'server/graphql/types/CreateProjectInput';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
@@ -7,7 +8,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ADDED, ASSIGNEE, MEETING, MENTIONEE, NOTIFICATION, PROJECT, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {ASSIGNEE, MENTIONEE, NOTIFICATION, PROJECT, PROJECT_INVOLVES} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -76,7 +77,7 @@ export default {
           isNotRemoved: true
         })
     });
-    const usersToIgnore = area === MEETING ? teamMembers.filter((m) => m.isCheckedIn).map(({userId}) => userId) : [];
+    const usersToIgnore = getUsersToIgnore(area, teamMembers);
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
@@ -121,8 +122,8 @@ export default {
 
     const isPrivate = tags.includes('private');
     teamMembers.forEach((teamMember) => {
-      if (!isPrivate ||teamMember.userId === userId) {
-        publish(PROJECT,teamMember.userId, CreateProjectPayload, data, subOptions);
+      if (!isPrivate || teamMember.userId === userId) {
+        publish(PROJECT, teamMember.userId, CreateProjectPayload, data, subOptions);
       }
     });
     return data;

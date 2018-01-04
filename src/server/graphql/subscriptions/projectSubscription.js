@@ -3,16 +3,7 @@ import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import ProjectSubscriptionPayload from 'server/graphql/types/ProjectSubscriptionPayload';
 import {getUserId} from 'server/utils/authorization';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import {ADDED, PROJECT, REMOVED, UPDATED} from 'universal/utils/constants';
-
-const getChannelData = (data, viewerId) => {
-  const {isPrivate, wasPrivate, userId} = data;
-  if (data.type === UPDATED && viewerId !== userId && isPrivate !== wasPrivate) {
-    const type = isPrivate ? REMOVED : ADDED;
-    return {...data, type};
-  }
-  return data;
-};
+import {PROJECT} from 'universal/utils/constants';
 
 const projectSubscription = {
   type: new GraphQLNonNull(ProjectSubscriptionPayload),
