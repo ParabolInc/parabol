@@ -1,22 +1,14 @@
-import {GraphQLUnionType} from 'graphql';
-import TeamMemberAdded from 'server/graphql/types/TeamMemberAdded';
-import TeamMemberUpdated from 'server/graphql/types/TeamMemberUpdated';
-import {ADDED, UPDATED} from 'universal/utils/constants';
+import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
+import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
+import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
+import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberSelfPayload';
 
-const TeanMemberSubscriptionPayload = new GraphQLUnionType({
-  name: 'TeanMemberSubscriptionPayload',
-  // fields: () => teamMemberSubPayloadInterfaceFields,
-  types: () => [TeamMemberAdded, TeamMemberUpdated],
-  resolveType(value) {
-    // type lookup needs to be resolved in a thunk since there is a circular reference when loading
-    // alternative to treating it like a DB driver if GCing is an issue
-    const resolveTypeLookup = {
-      [ADDED]: TeamMemberAdded,
-      [UPDATED]: TeamMemberUpdated
-      // [REMOVED]: TeamMemberRemoved
-    };
+const types = [
+  RemoveTeamMemberOtherPayload,
+  RemoveTeamMemberSelfPayload,
+  AcceptTeamInviteNotificationPayload,
+  AcceptTeamInviteEmailPayload
+];
 
-    return resolveTypeLookup[value.type];
-  }
-});
-export default TeanMemberSubscriptionPayload;
+export default new GraphQLSubscriptionType('TeanMemberSubscriptionPayload', types);

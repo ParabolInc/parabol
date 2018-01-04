@@ -8,7 +8,7 @@ import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
   ADD_TO_TEAM, APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY, DENY_NEW_USER,
-  FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, JOIN_TEAM, KICKED_OUT, MENTIONEE, PAYMENT_REJECTED,
+  FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT, MENTIONEE, PAYMENT_REJECTED,
   PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_ARCHIVED, TEAM_INVITE, VERSION_INFO
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
@@ -38,7 +38,6 @@ const notificationHandler = {
     const team = payload.getLinkedRecord('team');
     const teamName = team.getValue('name');
     const notificationId = payload.getValue('id');
-    // notificationId isn't always present because if i accept to join i want the authToken but no notification
     dispatch(showInfo({
       autoDismiss: 10,
       title: 'Congratulations!',
@@ -46,15 +45,11 @@ const notificationHandler = {
       action: {
         label: 'Great!',
         callback: () => {
-          if (notificationId) {
-            ClearNotificationMutation(environment, notificationId);
-          }
+          ClearNotificationMutation(environment, notificationId);
         }
       }
     }));
-    if (notificationId) {
-      addNotificationToConn(store, viewerId, payload);
-    }
+    addNotificationToConn(store, viewerId, payload);
   },
   [DENY_NEW_USER]: (payload, {dispatch, store, history, environment}) => {
     const {viewerId} = environment;
@@ -118,16 +113,6 @@ const notificationHandler = {
       }
     }));
     addNotificationToConn(store, viewerId, payload);
-  },
-  [JOIN_TEAM]: (payload, {dispatch}) => {
-    const teamName = payload.getLinkedRecord('team').getValue('name');
-    const preferredName = payload.getLinkedRecord('teamMember').getValue('preferredName');
-
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'Ahoy, a new crewmate!',
-      message: `${preferredName} just joined team ${teamName}`
-    }));
   },
   [KICKED_OUT]: (payload, {dispatch, history, location, environment, store}) => {
     const {viewerId} = environment;
@@ -283,7 +268,7 @@ const notificationHandler = {
               message: `You’ve been added to team ${teamName}`
             }));
           };
-          AcceptTeamInviteMutation(environment, notificationId, undefined, onCompleted);
+          AcceptTeamInviteMutation(environment, notificationId, dispatch, undefined, onCompleted);
         }
       }
     }));

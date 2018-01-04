@@ -2,14 +2,18 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
 import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
-import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
+import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
+import publish from 'server/utils/publish';
+import tmsSignToken from 'server/utils/tmsSignToken';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import {NEW_AUTH_TOKEN, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
-  type: new GraphQLNonNull(AcceptTeamInvitePayload),
+  type: new GraphQLNonNull(AcceptTeamInviteEmailPayload),
   description: `Add a user to a Team given an invitationToken.
     If the invitationToken is valid, returns the auth token with the new team added to tms.
     Side effect: deletes all other outstanding invitations for user.`,
@@ -23,6 +27,7 @@ export default {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     requireAuth(authToken);
@@ -91,13 +96,31 @@ export default {
 
     // RESOLUTION
     const viewerId = getUserId(authToken);
-    const {removedNotification, newAuthToken} = acceptTeamInvite(teamId, authToken, email, {operationId, mutatorId});
-    return {
+    const {removedNotification, removedInvitationId: invitationId} = acceptTeamInvite(teamId, authToken, email);
+    const oldTMS = authToken.tms || [];
+    const tms = oldTMS.concat(teamId);
+    const teamMemberId = toTeamMemberId(teamId, viewerId);
+    const newAuthToken = tmsSignToken(authToken, tms);
+
+    const data = {
+      userId: viewerId,
       teamId,
-      teamMemberId: toTeamMemberId(teamId, viewerId),
+      teamMemberId,
       removedNotification,
-      authToken: newAuthToken
+      invitationId
     };
+
+    // Send the new team member a welcome & a new token
+    publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
+    auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
+
+    // Tell the new team member about the team, welcome them, and remove their outstanding invitation notifications
+    publish(TEAM, viewerId, AcceptTeamInviteEmailPayload, data, subOptions);
+
+    // Tell the rest of the team about the new team member, toast the event, and remove their old invitations
+    publish(TEAM_MEMBER, teamId, AcceptTeamInviteEmailPayload, data, subOptions);
+
+    return {...data, authToken: newAuthToken};
   }
 };
 

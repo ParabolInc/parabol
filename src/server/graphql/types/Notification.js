@@ -13,6 +13,7 @@ import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected';
 import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLeader';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
@@ -74,7 +75,7 @@ const Notification = new GraphQLInterfaceType({
       [PROJECT_INVOLVES]: NotifyProjectInvolves,
       [REJOIN_TEAM]: NotifyNewTeamMember,
       [REQUEST_NEW_USER]: NotifyInvitation,
-      [TEAM_INVITE]: NotifyInvitation,
+      [TEAM_INVITE]: NotifyTeamInvite,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
       [TEAM_ARCHIVED]: NotifyTeamArchived,
       [VERSION_INFO]: NotifyVersionInfo

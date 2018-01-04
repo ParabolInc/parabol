@@ -36,7 +36,7 @@ const TeamInvite = (props) => {
 
   const accept = () => {
     submitMutation();
-    AcceptTeamInviteMutation(atmosphere, notificationId, onError, handleCompleted);
+    AcceptTeamInviteMutation(atmosphere, notificationId, dispatch, onError, handleCompleted);
   };
 
   return (
@@ -86,7 +86,7 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   connect()(withStyles(styleThunk)(TeamInvite)),
   graphql`
-    fragment TeamInvite_notification on NotifyInvitation {
+    fragment TeamInvite_notification on NotifyTeamInvite {
       notificationId: id
       inviter {
         inviterName: preferredName

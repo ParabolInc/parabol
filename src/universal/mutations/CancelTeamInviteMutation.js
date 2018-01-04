@@ -16,10 +16,10 @@ const CancelTeamInviteMutation = (environment, invitationId, teamId, onError, on
     mutation,
     variables: {invitationId},
     updater: (store) => {
-      handleRemoveInvitations(invitationId, store);
+      handleRemoveInvitations(invitationId, store, teamId);
     },
     optimisticUpdater: (store) => {
-      handleRemoveInvitations(invitationId, store);
+      handleRemoveInvitations(invitationId, store, teamId);
     },
     onCompleted,
     onError

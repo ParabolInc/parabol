@@ -38,7 +38,7 @@ const InvitationSubscription = (environment, queryVariables) => {
         handleAddInvitations(invitation, store);
       } else if (type === 'InvitationRemoved') {
         const invitationId = getInProxy(invitation, 'id');
-        handleRemoveInvitations(invitationId, store);
+        handleRemoveInvitations(invitationId, store, teamId);
       }
     }
   };

@@ -21,7 +21,7 @@ const query = graphql`
 
 const subscriptions = [
   ProjectSubscription,
-  AgendaItemSubscription,
+  AgendaItemSubscription
 ];
 
 const AgendaAndProjectsRoot = (props) => {

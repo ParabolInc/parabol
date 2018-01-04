@@ -1,80 +1,97 @@
-import {handleRemoveTeam} from 'universal/mutations/ArchiveTeamMutation';
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
-import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
-import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import {acceptTeamInviteEmailUpdater} from 'universal/mutations/AcceptTeamInviteEmailMutation';
+import {
+  acceptTeamInviteNotificationUpdater,
+  acceptTeamInviteTeamUpdater
+} from 'universal/mutations/AcceptTeamInviteMutation';
+import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 
+// ... on TeamAdded {
+//  notification {
+//    id
+//    team {
+//      id
+//      name
+//    }
+//  }
+//  removedTeamInviteNotification {
+//    id
+//  }
+//  team {
+//  ...CompleteTeamFragWithMembers @relay(mask: false)
+//  }
+// }
+// ... on TeamUpdated {
+//  team {
+//  ...CompleteTeamFrag @relay(mask: false)
+//  }
+// }
+// ... on TeamRemoved {
+//  team {
+//    id
+//  }
+//  notification {
+//    id
+//    orgId
+//    startAt
+//    type
+//  ... on NotifyTeamArchived {
+//      team {
+//        name
+//      }
+//    }
+//  ... on NotifyKickedOut {
+//      isKickout
+//      team {
+//        id
+//        name
+//      }
+//    }
+//  }
+// }
 const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
-      ... on TeamAdded {
-        notification {
-          id
-          team {
-            id
-            name
-          }
-        }
-        removedTeamInviteNotification {
-          id
-        }
-        team {
-          ...CompleteTeamFragWithMembers @relay(mask: false)
-        }
-      }
-      ... on TeamUpdated {
-        team {
-          ...CompleteTeamFrag @relay(mask: false)
-        }
-      }
-      ... on TeamRemoved {
-        team {
-          id
-        }
-        notification {
-          id
-          orgId
-          startAt
-          type
-          ... on NotifyTeamArchived {
-            team {
-              name
-            }
-          }
-          ... on NotifyKickedOut {
-            isKickout
-            team {
-              id
-              name
-            }
-          }
-        }
-      }
+      ...AcceptTeamInviteEmailMutation_team
+      ...AcceptTeamInviteMutation_team
+      ...RemoveTeamMemberMutation_team
     }
   }
 `;
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch} = subParams;
+  const {dispatch, history, location} = subParams;
   const {viewerId} = environment;
   return {
     subscription,
     variables: {},
     updater: (store) => {
       const payload = store.getRootField('teamSubscription');
-      const team = payload.getLinkedRecord('team');
       const type = payload.getValue('__typename');
-      const notification = payload.getLinkedRecord('notification');
-      if (type === 'TeamAdded') {
-        const removedNotification = payload.getLinkedRecord('removedTeamInviteNotification');
-        const removedNotificationId = removedNotification && removedNotification.getValue('id');
-        handleAddTeams(team, store, viewerId);
-        handleRemoveNotifications(removedNotificationId, store, viewerId);
-      } else if (type === 'TeamRemoved') {
-        const teamId = team.getValue('id');
-        handleRemoveTeam(store, viewerId, teamId);
+      switch (type) {
+        case 'AcceptTeamInvitePayload':
+        case 'AcceptTeamInviteEmailPayload':
+          acceptTeamInviteTeamUpdater(payload, store, viewerId);
+          break;
+        case 'RemoveTeamMemberSelfPayload':
+          removeTeamMemberTeamUpdater(payload, store, viewerId, {dispatch, history, location});
+          break;
+        default:
+          console.error('TeamSubscription case fail', type);
       }
-      handleAddNotifications(notification, {dispatch, environment, store});
+
+      // const team = payload.getLinkedRecord('team');
+      // const notification = payload.getLinkedRecord('notification');
+      // if (type === 'TeamAdded') {
+      //  const removedNotification = payload.getLinkedRecord('removedTeamInviteNotification');
+      //  const removedNotificationId = removedNotification && removedNotification.getValue('id');
+      //  handleAddTeams(team, store, viewerId);
+      //  handleRemoveNotifications(removedNotificationId, store, viewerId);
+      // } else if (type === 'TeamRemoved') {
+      //  const teamId = team.getValue('id');
+      //  handleRemoveTeam(store, viewerId, teamId);
+      // }
+      // handleAddNotifications(notification, {dispatch, environment, store});
     }
   };
 };

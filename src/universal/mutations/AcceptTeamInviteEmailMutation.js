@@ -3,29 +3,40 @@ import {commitMutation} from 'react-relay';
 import {successfulExistingJoin, successfulJoin} from 'universal/modules/invitation/helpers/notifications';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
-import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
-import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
 import handleToastError from 'universal/mutations/handlers/handleToastError';
 import {setAuthToken} from 'universal/redux/authDuck';
-import getInProxy from 'universal/utils/relay/getInProxy';
+
+graphql`
+  fragment AcceptTeamInviteEmailMutation_team on AcceptTeamInviteEmailPayload {
+    team {
+      ...CompleteTeamFrag @relay(mask: false)
+    }
+    authToken
+    removedNotification {
+      id
+    }
+    error {
+      title
+      message
+    }
+
+  }
+`;
 
 const mutation = graphql`
   mutation AcceptTeamInviteEmailMutation($inviteToken: ID!) {
     acceptTeamInviteEmail(inviteToken: $inviteToken) {
-      team {
-        ...CompleteTeamFrag @relay(mask: false)
-      }
-      authToken
-      removedNotification {
-        id
-      }
-      error {
-        title
-        message
-      }
+      ...AcceptTeamInviteEmailMutation_team @relay(mask: false)
     }
   }
 `;
+
+export const acceptTeamInviteEmailTeamUpdater = (payload, store, viewerId, dispatch) => {
+  const error = payload.getLinkedRecord('error');
+  handleToastError(error, dispatch);
+  acceptTeamInviteTeamUpdater(payload, store, viewerId, dispatch);
+};
 
 const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, history, onError) => {
   const {viewerId} = environment;
@@ -34,13 +45,7 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
     variables: {inviteToken},
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInviteEmail');
-      const team = payload.getLinkedRecord('team');
-      const removedNotification = payload.getLinkedRecord('removedNotification');
-      const error = payload.getLinkedRecord('error');
-      const notificationId = getInProxy(removedNotification, 'id');
-      handleAddTeams(team, store, viewerId);
-      handleRemoveNotifications(notificationId, store, viewerId);
-      handleToastError(error, dispatch);
+      acceptTeamInviteEmailTeamUpdater(payload, store, viewerId, dispatch);
     },
     onError,
     onCompleted: (data) => {

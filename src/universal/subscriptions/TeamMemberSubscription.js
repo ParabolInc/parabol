@@ -1,82 +1,72 @@
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
-import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers';
-import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
-import getInProxy from 'universal/utils/relay/getInProxy';
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
+import {acceptTeamInviteTeamMemberUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
+import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
+
+// ... on TeamMemberAdded {
+//  teamMember {
+//  ...CompleteTeamMemberFrag
+//  }
+//  notification {
+//    type
+//      team {
+//      name
+//    }
+//    teamMember {
+//      preferredName
+//    }
+//  }
+//  removedInvitation {
+//    id
+//    teamId
+//  }
+// }
+// ... on TeamMemberUpdated {
+//  teamMember {
+//  ...CompleteTeamMemberFrag
+//  }
+// }
 
 const subscription = graphql`
   subscription TeamMemberSubscription {
     teamMemberSubscription {
       __typename
-      ... on TeamMemberAdded {
-        teamMember {
-          ...CompleteTeamMemberFrag @relay(mask: false)
-        }
-        notification {
-          type
-          team {
-            name
-          }
-          teamMember {
-            preferredName
-          }
-        }
-        removedInvitation {
-          id
-        }
-      }
-      ... on TeamMemberUpdated {
-        teamMember {
-          ...CompleteTeamMemberFrag @relay(mask: false)
-        }
-      }
+      ...AcceptTeamInviteMutation_teamMember
+      ...RemoveTeamMemberMutation_teamMember
     }
   }
 
 `;
 
-export const handleUpdateTeamMember = (store, updatedTeamMember) => {
-  if (!updatedTeamMember) return;
-  const teamId = updatedTeamMember.getValue('teamId');
-  const isNotRemoved = updatedTeamMember.getValue('isNotRemoved');
-  const team = teamId && store.get(teamId);
-  if (!team) return;
-  const sorts = ['checkInOrder', 'preferredName'];
-  if (isNotRemoved) {
-    sorts.forEach((sortBy) => {
-      const teamMembers = team.getLinkedRecords('teamMembers', {sortBy});
-      if (!teamMembers) return;
-      teamMembers.sort((a, b) => a.getValue(sortBy) > b.getValue(sortBy) ? 1 : -1);
-      team.setLinkedRecords(teamMembers, 'teamMembers', {sortBy});
-    });
-  } else {
-    const teamMemberId = updatedTeamMember.getValue('id');
-    sorts.forEach((sortBy) => {
-      const teamMembers = team.getLinkedRecords('teamMembers', {sortBy});
-      safeRemoveNodeFromArray(teamMemberId, teamMembers, 'teamMembers', {storageKeyArgs: {sortBy}});
-    });
-  }
-};
-
 const TeamMemberSubscription = (environment, queryVariables, subParams) => {
   const {dispatch} = subParams;
+  const {viewerId} = environment;
   return {
     subscription,
     variables: {},
     updater: (store) => {
       const payload = store.getRootField('teamMemberSubscription');
-      const teamMember = payload.getLinkedRecord('teamMember');
       const type = payload.getValue('__typename');
-      if (type === 'TeamMemberAdded') {
-        const notification = payload.getLinkedRecord('notification');
-        const removedInvitation = payload.getLinkedRecord('removedInvitation');
-        const removedInvitationId = getInProxy(removedInvitation, 'id');
-        handleAddTeamMembers(teamMember, store);
-        handleAddNotifications(notification, {dispatch, environment, store});
-        handleRemoveInvitations(removedInvitationId, store);
-      } else if (type === 'TeamMemberUpdated') {
-        handleUpdateTeamMember(store, teamMember);
+      switch (type) {
+        case 'AcceptTeamInviteNotificationPayload':
+        case 'AcceptTeamInviteEmailPayload':
+          acceptTeamInviteTeamMemberUpdater(payload, store, viewerId, dispatch);
+          break;
+        case 'RemoveTeamMemberPayload':
+          removeTeamMemberTeamMemberUpdater(payload, store);
+          break;
+        default:
+          console.error('TeamMemberSubscription case fail', type);
       }
+      // if (type === 'TeamMemberAdded') {
+      //  const notification = payload.getLinkedRecord('notification');
+      //  const removedInvitation = payload.getLinkedRecord('removedInvitation');
+      //  const removedInvitationId = getInProxy(removedInvitation, 'id');
+      //  const removedInvitationTeamId = getInProxy(removedInvitation, 'teamId');
+      //  handleAddTeamMembers(teamMember, store);
+      //  handleAddNotifications(notification, {dispatch, environment, store});
+      //  handleRemoveInvitations(removedInvitationId, store, removedInvitationTeamId);
+      // } else if (type === 'TeamMemberUpdated') {
+      //  handleUpdateTeamMembers(teamMember, store);
+      // }
     }
   };
 };
