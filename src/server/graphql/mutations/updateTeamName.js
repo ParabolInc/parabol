@@ -1,7 +1,7 @@
 import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdatedTeamInput from 'server/graphql/types/UpdatedTeamInput';
-import UpdateTeamPayload from 'server/graphql/types/UpdateTeamPayload';
+import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -10,7 +10,7 @@ import updateTeamNameValidation from './helpers/updateTeamNameValidation';
 
 
 export default {
-  type: UpdateTeamPayload,
+  type: UpdateTeamNamePayload,
   args: {
     updatedTeam: {
       type: new GraphQLNonNull(UpdatedTeamInput),
@@ -35,14 +35,10 @@ export default {
       name,
       updatedAt: now
     };
-    const team = await r.table('Team').get(teamId).update(dbUpdate, {returnChanges: true})('changes')(0)('new_val')
-      .default(null);
+    await r.table('Team').get(teamId).update(dbUpdate);
 
-    if (!team) {
-      throw new Error('Update already called!');
-    }
-    const teamUpdated = {team};
-    publish(TEAM, teamId, UPDATED, {teamId}, subOptions);
-    return teamUpdated;
+    const data = {teamId};
+    publish(TEAM, teamId, UPDATED, data, subOptions);
+    return data;
   }
 };

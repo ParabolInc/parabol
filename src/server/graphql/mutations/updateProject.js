@@ -10,7 +10,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ADDED, MEETING, NOTIFICATION, PROJECT, REMOVED} from 'universal/utils/constants';
+import {PROJECT} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
@@ -36,7 +36,7 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const myUserId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     const {id: projectId} = updatedProject;
     const [teamId] = projectId.split('::');
     requireTeamMember(authToken, teamId);
@@ -47,16 +47,16 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const {agendaId, content, status, userId, sortOrder} = validUpdatedProject;
+    const {agendaId, content, status, userId: projectUserId, sortOrder} = validUpdatedProject;
 
     const newProject = {
       agendaId,
       content,
       status,
-      userId,
+      userId: projectUserId,
       tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
       teamId,
-      teamMemberId: userId ? `${userId}::${teamId}` : undefined,
+      teamMemberId: projectUserId ? `${projectUserId}::${teamId}` : undefined,
       sortOrder
     };
 
@@ -104,27 +104,16 @@ export default {
     const {new_val: project, old_val: oldProject} = projectChanges;
     const isPrivate = project.tags.includes('private');
     const wasPrivate = oldProject.tags.includes('private');
-    const {userId: projectUserId} = project;
     const isPrivitized = isPrivate && !wasPrivate;
     const isPublic = !isPrivate || isPrivitized;
-    const data = {isPrivitized, projectId};
+
+    // get notification diffs
+    const {notificationsToRemove, notificationsToAdd} = publishChangeNotifications(project, oldProject, viewerId, usersToIgnore);
+    const data = {isPrivitized, projectId, notificationsToAdd, notificationsToRemove};
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === projectUserId) {
         publish(PROJECT, userId, UpdateProjectPayload, data, subOptions);
       }
-    });
-
-    // send notifications to assignees and mentionees
-    const {notificationsToRemove, notificationsToAdd} = publishChangeNotifications(project, oldProject, myUserId, usersToIgnore);
-
-    notificationsToRemove.forEach((notification) => {
-      const {userIds: [notificationUserId]} = notification;
-      publish(NOTIFICATION, notificationUserId, REMOVED, {notification}, subOptions);
-    });
-
-    notificationsToAdd.forEach((notification) => {
-      const {userIds: [notificationUserId], id: notificationId} = notification;
-      publish(NOTIFICATION, notificationUserId, ADDED, {notificationId}, subOptions);
     });
 
     return data;

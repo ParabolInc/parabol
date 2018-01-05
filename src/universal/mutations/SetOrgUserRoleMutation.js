@@ -66,11 +66,11 @@ const popPromoteToBillingLeaderToast = (payload, {dispatch, history}) => {
 
 export const setOrgUserRoleAddedOrganizationUpdater = (payload, store, viewerId, options) => {
   const notificationsAdded = payload.getLinkedRecords('notificationsAdded');
-  handleAddNotifications(notificationsAdded,store, viewerId);
+  handleAddNotifications(notificationsAdded, store, viewerId);
   popPromoteToBillingLeaderToast(payload, options);
 };
 
-export const setOrgUserRoleRemovedOrganizationUpdater = (payload, store) => {
+export const setOrgUserRoleRemovedOrganizationUpdater = (payload, store, viewerId) => {
   const notificationsRemoved = payload.getLinkedRecords('notificationsRemoved');
   const notificationIdsRemoved = getInProxy(notificationsRemoved, 'id');
   handleRemoveNotifications(notificationIdsRemoved, store, viewerId);

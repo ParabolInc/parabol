@@ -67,6 +67,9 @@ const subscription = graphql`
       ...PromoteFacilitatorMutation_team
       ...RequestFacilitatorMutation_team
       ...StartMeetingMutation_team
+      ...UpdateCheckInQuestionMutation_team
+      ...UpdateTeamNameMutation_team
+      ...UpgradeToProMutation_organization
     }
   }
 `;

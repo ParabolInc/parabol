@@ -9,6 +9,7 @@ import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifi
 import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
+import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 // ... on NotificationAdded {
@@ -222,7 +223,7 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           popUpgradeAppToast(payload, options);
           break;
         case 'StripeFailPaymentPayload':
-          stripeFailPaymentNotificationUpdater(payload, store, viewer, options);
+          stripeFailPaymentNotificationUpdater(payload, store, viewerId, options);
           break;
         default:
           console.error('NotificationSubscription case fail', type);

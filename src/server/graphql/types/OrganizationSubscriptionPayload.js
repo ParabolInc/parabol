@@ -5,6 +5,7 @@ import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAdded
 import SetOrgUserRoleAnnoucePayload from 'server/graphql/types/SetOrgUserRoleAnnoucePayload';
 import SetOrgUserRoleRemovedPayload from 'server/graphql/types/SetOrgUserRoleRemovedPayload';
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
+import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 
 const types = [
   AddOrgPayload,
@@ -12,7 +13,8 @@ const types = [
   SetOrgUserRoleAddedPayload,
   SetOrgUserRoleRemovedPayload,
   SetOrgUserRoleAnnoucePayload,
-  UpdateOrgPayload
+  UpdateOrgPayload,
+  UpgradeToProPayload
 ];
 
 export default new GraphQLSubscriptionType('OrganizationSubscriptionPayload', types);

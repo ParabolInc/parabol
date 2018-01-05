@@ -12,6 +12,9 @@ import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberO
 import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberSelfPayload';
 import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPayload';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
+import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
+import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
+import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 
 
 const types = [
@@ -27,7 +30,10 @@ const types = [
   RequestFacilitatorPayload,
   StartMeetingPayload,
   RemoveTeamMemberOtherPayload,
-  RemoveTeamMemberSelfPayload
+  RemoveTeamMemberSelfPayload,
+  UpdateCheckInQuestionPayload,
+  UpdateTeamNamePayload,
+  UpgradeToProPayload
 ];
 
 export default new GraphQLSubscriptionType('TeamSubscriptionPayload', types);

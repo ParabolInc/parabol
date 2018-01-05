@@ -1,4 +1,3 @@
-import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload';
 import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation';
 import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation';
 import {
@@ -36,7 +35,6 @@ import {
 //  }
 // }
 
-const
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
@@ -47,6 +45,7 @@ const subscription = graphql`
       ...SetOrgUserRoleMutationRemoved_organization
       ...SetOrgUserRoleMutationAnnounced_organization
       ...UpdateOrgMutation_organization
+      ...UpgradeToProMutation_organization
     }
   }
 `;
@@ -72,7 +71,7 @@ const OrganizationSubscription = (environment, queryVariables, subParams) => {
           setOrgUserRoleAddedOrganizationUpdater(payload, store, viewerId, options);
           break;
         case 'SetOrgUserRoleRemovedPayload':
-          setOrgUserRoleRemovedOrganizationUpdater(payload, store);
+          setOrgUserRoleRemovedOrganizationUpdater(payload, store, viewerId);
           break;
         default:
           console.error('OrganizationSubscription case fail', type);

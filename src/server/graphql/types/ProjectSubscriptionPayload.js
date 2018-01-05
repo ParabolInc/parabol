@@ -5,6 +5,7 @@ import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
 import EditProjectPayload from 'server/graphql/types/EditProjectPayload';
 import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
 import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberSelfPayload';
+import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 
 const types = [
   CreateGitHubIssuePayload,
@@ -12,7 +13,8 @@ const types = [
   DeleteProjectPayload,
   EditProjectPayload,
   RemoveTeamMemberOtherPayload,
-  RemoveTeamMemberSelfPayload
+  RemoveTeamMemberSelfPayload,
+  UpdateProjectPayload
 ];
 
 export default new GraphQLSubscriptionType('ProjectSubscriptionPayload', types);

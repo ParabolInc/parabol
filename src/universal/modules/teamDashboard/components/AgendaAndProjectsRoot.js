@@ -8,7 +8,6 @@ import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
 import AgendaItemSubscription from 'universal/subscriptions/AgendaItemSubscription';
-import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -20,7 +19,6 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  ProjectSubscription,
   AgendaItemSubscription
 ];
 

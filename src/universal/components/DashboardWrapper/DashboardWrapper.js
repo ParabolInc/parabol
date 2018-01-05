@@ -8,6 +8,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
+import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
@@ -41,6 +42,7 @@ const newTeam = () => System.import('universal/modules/newTeam/containers/NewTea
 const subscriptions = [
   NewAuthTokenSubscription,
   NotificationSubscription,
+  ProjectSubscription,
   TeamSubscription,
   TeamMemberSubscription,
   OrganizationSubscription

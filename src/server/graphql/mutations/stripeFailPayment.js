@@ -7,7 +7,7 @@ import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayl
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {BILLING_LEADER, FAILED, NOTIFICATION, ORGANIZATION, PAYMENT_REJECTED} from 'universal/utils/constants';
+import {BILLING_LEADER, FAILED, NOTIFICATION, PAYMENT_REJECTED} from 'universal/utils/constants';
 
 export default {
   name: 'StripeFailPayment',
@@ -40,7 +40,7 @@ export default {
     const org = await r.table('Organization').get(orgId).pluck('creditCard', 'stripeSubscriptionId');
     const {creditCard, stripeSubscriptionId} = org;
 
-    if (paid || stripeSubscriptionId !== subscription) return;
+    if (paid || stripeSubscriptionId !== subscription) return {orgId};
 
     // RESOLUTION
     if (creditCard.last4) {

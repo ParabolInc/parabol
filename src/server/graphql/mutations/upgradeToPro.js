@@ -8,7 +8,7 @@ import {fromEpochSeconds} from 'server/utils/epochTime';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
-import {ORGANIZATION, PRO, TEAM, UPDATED} from 'universal/utils/constants';
+import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants';
 
 export default {
   type: UpgradeToProPayload,
@@ -85,13 +85,15 @@ export default {
         }, {returnChanges: true})('changes')('new_val')('id').default([])
     });
     sendSegmentEvent('Upgrade to Pro', userId, {orgId});
-    publish(ORGANIZATION, orgId, UPDATED, {orgId}, subOptions);
+    const data = {orgId, teamIds};
+    publish(ORGANIZATION, orgId, UpgradeToProPayload, data, subOptions);
+
     teamIds.forEach((teamId) => {
-      publish(TEAM, teamId, UPDATED, {teamId}, subOptions);
+      // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
+      // This is probably a smelly piece of code telling me I should be sending this per-userId or per-org
+      const teamData = {orgId, teamIds: [teamId]};
+      publish(TEAM, teamId, UpgradeToProPayload, teamData, subOptions);
     });
-    return {
-      orgId,
-      teamIds
-    };
+    return data;
   }
 };

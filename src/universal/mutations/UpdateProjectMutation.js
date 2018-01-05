@@ -1,18 +1,59 @@
 import {commitMutation} from 'react-relay';
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
+import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
+
+graphql`
+  fragment UpdateProjectMutation_project on UpdateProjectPayload {
+    project {
+      content
+      sortOrder
+      status
+      tags
+      teamMemberId
+      updatedAt
+      userId
+      teamMember {
+        id
+        picture
+        preferredName
+      }
+    }
+    addedNotification {
+      ...ProjectInvolves_notification @relay(mask: false)
+    }
+    removedNotification {
+      id
+    }
+  }
+`;
 
 const mutation = graphql`
   mutation UpdateProjectMutation($updatedProject: UpdateProjectInput!) {
     updateProject(updatedProject: $updatedProject) {
-      project {
-        ...CompleteProjectFrag @relay(mask: false)
-      }
+      ...UpdateProjectMutation_project @relay (mask: false)
     }
   }
 `;
+
+export const updateProjectProjectUpdater = (payload, store, viewerId, options) => {
+  const project = payload.getLinkedRecord('project');
+  handleUpsertProjects(project);
+
+  const addedNotification = payload.getLinkedRecord('addedNotification');
+  handleAddNotifications(addedNotification, store, viewerId);
+  if (options) {
+    popInvolvementToast(payload, options);
+  }
+
+  const removedNotificationId = getInProxy(payload, 'removedNotification', 'id');
+  handleRemoveNotifications(removedNotificationId);
+};
 
 const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, onError) => {
   const {viewerId} = environment;
@@ -25,8 +66,8 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
       updatedProject
     },
     updater: (store) => {
-      const project = store.getRootField('updateProject').getLinkedRecord('project');
-      handleUpsertProjects(project, store, viewerId);
+      const payload = store.getRootField('updateProject');
+      updateProjectProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {id, content, userId} = updatedProject;

@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql';
-import {resolveProject} from 'server/graphql/resolvers';
+import {makeResovleNotificationForViewer, resolveProject} from 'server/graphql/resolvers';
+import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 import Project from 'server/graphql/types/Project';
 
 const UpdateProjectPayload = new GraphQLObjectType({
@@ -15,6 +16,14 @@ const UpdateProjectPayload = new GraphQLObjectType({
       resolve: ({projectId, isPrivitized}) => {
         return isPrivitized ? projectId : null;
       }
+    },
+    addedNotification: {
+      type: NotifyProjectInvolves,
+      resolve: makeResovleNotificationForViewer('notificationIdsToAdd', 'notificationsToAdd')
+    },
+    removedNotification: {
+      type: NotifyProjectInvolves,
+      resolve: makeResovleNotificationForViewer('notificationIdsToRemove', 'notificationsToRemove')
     }
   })
 });

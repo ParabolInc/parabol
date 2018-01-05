@@ -10,7 +10,6 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingContainer from 'universal/modules/meeting/containers/MeetingContainer/MeetingContainer';
 import AgendaItemSubscription from 'universal/subscriptions/AgendaItemSubscription';
-import MeetingSubscription from 'universal/subscriptions/MeetingSubscription';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
@@ -29,7 +28,6 @@ const query = graphql`
 
 const subscriptions = [
   AgendaItemSubscription,
-  MeetingSubscription,
   NewAuthTokenSubscription,
   NotificationSubscription,
   OrganizationSubscription,

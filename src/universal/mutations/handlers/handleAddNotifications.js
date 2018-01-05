@@ -4,10 +4,7 @@ import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn';
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
-import {
-  DENY_NEW_USER, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT,
-  PAYMENT_REJECTED
-} from 'universal/utils/constants';
+import {DENY_NEW_USER, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT} from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
 export const addNotificationToConn = (store, viewerId, newNode) => {

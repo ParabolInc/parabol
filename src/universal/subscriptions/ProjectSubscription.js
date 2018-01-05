@@ -21,6 +21,7 @@ import {createProjectProjectUpdater} from 'universal/mutations/CreateProjectMuta
 import {deleteProjectProjectUpdater} from 'universal/mutations/DeleteProjectMutation';
 import {editProjectProjectUpdater} from 'universal/mutations/EditProjectMutation';
 import {removeTeamMemberProjectsUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
+import {updateProjectProjectUpdater} from 'universal/mutations/UpdateProjectMutation';
 
 const subscription = graphql`
   subscription ProjectSubscription {
@@ -31,11 +32,12 @@ const subscription = graphql`
       ...CreateProjectMutation_project,
       ...DeleteProjectMutation_project,
       ...EditProjectMutation_project
+      ...UpdateProjectMutation_project
     }
   }
 `;
 
-const ProjectSubscription = (environment) => {
+const ProjectSubscription = (environment, queryVariables, {dispatch, history, location}) => {
   const {viewerId} = environment;
   return {
     subscription,
@@ -55,6 +57,9 @@ const ProjectSubscription = (environment) => {
           break;
         case 'EditProjectPayload':
           editProjectProjectUpdater(payload, store);
+          break;
+        case 'UpdateProjectPayload':
+          updateProjectProjectUpdater(payload, store, viewerId, {dispatch, history, location});
           break;
         default:
           console.error('TeamSubscription case fail', type);

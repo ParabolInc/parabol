@@ -1,14 +1,11 @@
 import {commitMutation} from 'react-relay';
-import {matchPath} from 'react-router-dom';
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleEditProject from 'universal/mutations/handlers/handleEditProject';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
-import {MENTIONEE} from 'universal/utils/constants';
+import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 import clientTempId from 'universal/utils/relay/clientTempId';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
-import getInProxy from 'universal/utils/relay/getInProxy';
 import getOptimisticProjectEditor from 'universal/utils/relay/getOptimisticProjectEditor';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -53,31 +50,6 @@ const mutation = graphql`
     }
   }
 `;
-
-const popInvolvementToast = (notification, {dispatch, location, history}) => {
-  const involvement = notification.getValue('involvement');
-  const changeAuthorName = getInProxy(notification, 'changeAuthor', 'preferredName');
-  const inMeeting = Boolean(matchPath(location.pathname, {
-    path: '/meeting',
-    exact: false,
-    strict: false
-  }));
-  if (inMeeting) return;
-
-  const wording = involvement === MENTIONEE ? 'mentioned you in' : 'assigned you to';
-  const message = `${changeAuthorName} ${wording} a project`;
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'Fresh work!',
-    message,
-    action: {
-      label: 'Check it out!',
-      callback: () => {
-        history.push('/me/notifications');
-      }
-    }
-  }));
-};
 
 export const createProjectProjectUpdater = (payload, store, viewerId, isEditing) => {
   const project = payload.getLinkedRecord('project');

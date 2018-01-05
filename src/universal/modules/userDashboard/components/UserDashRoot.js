@@ -8,7 +8,6 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UserDashMain from 'universal/modules/userDashboard/components/UserDashMain/UserDashMain';
-import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -19,17 +18,12 @@ const query = graphql`
   }
 `;
 
-const subscriptions = [
-  ProjectSubscription
-];
-
 const UserDashRoot = ({atmosphere}) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
-      subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear component={null}>
