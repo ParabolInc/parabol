@@ -1,3 +1,4 @@
+import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload';
 import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation';
 import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation';
 import {
@@ -35,6 +36,7 @@ import {
 //  }
 // }
 
+const
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
@@ -44,6 +46,7 @@ const subscription = graphql`
       ...SetOrgUserRoleMutationAdded_organiation
       ...SetOrgUserRoleMutationRemoved_organization
       ...SetOrgUserRoleMutationAnnounced_organization
+      ...UpdateOrgMutation_organization
     }
   }
 `;

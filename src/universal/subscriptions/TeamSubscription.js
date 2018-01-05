@@ -66,6 +66,7 @@ const subscription = graphql`
       ...MoveMeetingMutation_team
       ...PromoteFacilitatorMutation_team
       ...RequestFacilitatorMutation_team
+      ...StartMeetingMutation_team
     }
   }
 `;

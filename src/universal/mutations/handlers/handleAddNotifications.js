@@ -88,25 +88,6 @@ const notificationHandler = {
     if (onExTeamRoute) {
       history.push('/me');
     }
-  },
-  [PAYMENT_REJECTED]: (payload, {dispatch, environment, store, history}) => {
-    const {viewerId} = environment;
-    const organization = payload.getLinkedRecord('organization');
-    const orgId = organization.getValue('id');
-    const orgName = organization.getValue('name');
-    // TODO add brand and last 4
-    dispatch(showWarning({
-      autoDismiss: 10,
-      title: 'Oh no!',
-      message: `Your credit card for ${orgName} was rejected.`,
-      action: {
-        label: 'Fix it!',
-        callback: () => {
-          history.push(`/me/organizations/${orgId}`);
-        }
-      }
-    }));
-    addNotificationToConn(store, viewerId, payload);
   }
 };
 

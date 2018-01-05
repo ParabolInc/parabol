@@ -1,12 +1,18 @@
 import {commitMutation} from 'react-relay';
 
+graphql`
+  fragment UpdateOrgMutation_organization on UpdateOrgPayload{
+    organization {
+      name
+      picture
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation UpdateOrgMutation($updatedOrg: UpdateOrgInput!) {
     updateOrg(updatedOrg: $updatedOrg) {
-      organization {
-        name
-        picture
-      }
+      ...UpdateOrgMutation_organization @relay(mask: false)
     }
   }
 `;

@@ -16,7 +16,11 @@ const eventLookup = {
       getVars: ({id: invoiceId}) => ({invoiceId}),
       query: `
         mutation StripeFailPayment($invoiceId: ID!) {
-          stripeFailPayment(invoiceId: $invoiceId)
+          stripeFailPayment(invoiceId: $invoiceId) {
+            organization {
+              id
+            }
+          }
         }
       `
     },

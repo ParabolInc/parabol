@@ -1,17 +1,18 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import fetchAllLines from 'server/billing/helpers/fetchAllLines';
 import terminateSubscription from 'server/billing/helpers/terminateSubscription';
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
+import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {BILLING_LEADER, FAILED, ORGANIZATION, PAYMENT_REJECTED, UPDATED} from 'universal/utils/constants';
+import {BILLING_LEADER, FAILED, NOTIFICATION, ORGANIZATION, PAYMENT_REJECTED} from 'universal/utils/constants';
 
 export default {
   name: 'StripeFailPayment',
   description: 'When stripe tells us an invoice payment failed, update it in our DB',
-  type: GraphQLBoolean,
+  type: StripeFailPaymentPayload,
   args: {
     invoiceId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -75,7 +76,10 @@ export default {
         update: r.table('Invoice').get(invoiceId).update({status: FAILED}),
         insert: r.table('Notification').insert(notification)
       });
-      publish(ORGANIZATION, orgId, UPDATED, {orgId, notificationId});
+      const data = {orgId, notificationId};
+      // TODO add in subOptins when we move GraphQL to its own microservice
+      publish(NOTIFICATION, orgId, StripeFailPaymentPayload, data);
+      return data;
     }
   }
 };

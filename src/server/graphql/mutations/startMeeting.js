@@ -6,7 +6,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {CHECKIN, MEETING, TEAM, UPDATED} from 'universal/utils/constants';
+import {CHECKIN, TEAM} from 'universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
@@ -65,10 +65,8 @@ export default {
     });
     startSlackMeeting(teamId);
 
-    publish(MEETING, teamId, UPDATED, {teamId}, subOptions);
-
-    // let everyone know that a meeting is underway
-    publish(TEAM, teamId, UPDATED, {teamId}, subOptions);
-    return {teamId};
+    const data = {teamId};
+    publish(TEAM, teamId, StartMeetingPayload, data, subOptions);
+    return data;
   }
 };

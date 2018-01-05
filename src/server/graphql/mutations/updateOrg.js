@@ -5,7 +5,7 @@ import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
-import {ORGANIZATION, UPDATED} from 'universal/utils/constants';
+import {ORGANIZATION} from 'universal/utils/constants';
 import updateOrgValidation from './helpers/updateOrgValidation';
 
 export default {
@@ -41,7 +41,9 @@ export default {
     await r.table('Organization')
       .get(orgId)
       .update(dbUpdate);
-    publish(ORGANIZATION, orgId, UPDATED, {orgId}, subOptions);
-    return {orgId};
+
+    const data = {orgId};
+    publish(ORGANIZATION, orgId, UpdateOrgPayload, data, subOptions);
+    return data;
   }
 };

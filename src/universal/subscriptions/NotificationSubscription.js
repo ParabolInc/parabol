@@ -5,6 +5,7 @@ import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTea
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
 import {createProjectNotificationUpdater} from 'universal/mutations/CreateProjectMutation';
 import {deleteProjectNotificationUpdater} from 'universal/mutations/DeleteProjectMutation';
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
@@ -102,16 +103,23 @@ const subscription = graphql`
       ...DeleteProjectMutation_notification
       ...InviteTeamMembersMutation_notification
       ...RejectOrgApprovalMutation_notification
-      
+
       # ConnectSocket/DisconnectSocket
       ... on User {
         id
         isConnected
       }
-      
+
       # App Version Updater
       ... on NotifyVersionInfo {
         version
+      }
+
+      # Stripe webhooks
+      ... on StripeFailPaymentPayload {
+        notification {
+          ...PaymentRejected_notification @relay(mask: false)
+        }
       }
     }
   }
@@ -149,6 +157,29 @@ const popUpgradeAppToast = (payload, {dispatch, history}) => {
     window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
       APP_UPGRADE_PENDING_RELOAD);
   }
+};
+
+const popPaymentFailedToast = (payload, {dispatch, history}) => {
+  const orgId = getInProxy(payload, 'organization', 'id');
+  const orgName = getInProxy(payload, 'organization', 'name');
+  // TODO add brand and last 4
+  dispatch(showWarning({
+    autoDismiss: 10,
+    title: 'Oh no!',
+    message: `Your credit card for ${orgName} was rejected.`,
+    action: {
+      label: 'Fix it!',
+      callback: () => {
+        history.push(`/me/organizations/${orgId}`);
+      }
+    }
+  }));
+};
+
+const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options) => {
+  const notification = payload.getLinkedRecord('notification');
+  handleAddNotifications(notification, store, viewerId);
+  popPaymentFailedToast(payload, options);
 };
 
 const NotificationSubscription = (environment, queryVariables, {dispatch, history, location}) => {
@@ -189,6 +220,9 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           break;
         case 'NotifyVersionInfo':
           popUpgradeAppToast(payload, options);
+          break;
+        case 'StripeFailPaymentPayload':
+          stripeFailPaymentNotificationUpdater(payload, store, viewer, options);
           break;
         default:
           console.error('NotificationSubscription case fail', type);
