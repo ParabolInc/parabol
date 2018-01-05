@@ -6,8 +6,8 @@ import getNotificationsConn from 'universal/mutations/connections/getNotificatio
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
-  DENY_NEW_USER, FACILITATOR_DISCONNECTED, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT, PAYMENT_REJECTED,
-  PROMOTE_TO_BILLING_LEADER, REQUEST_NEW_USER
+  DENY_NEW_USER, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT, PAYMENT_REJECTED, PROMOTE_TO_BILLING_LEADER,
+  REQUEST_NEW_USER
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
@@ -46,20 +46,6 @@ const notificationHandler = {
       }
     }));
     addNotificationToConn(store, viewerId, payload);
-  },
-  [FACILITATOR_DISCONNECTED]: (payload, {environment, dispatch}) => {
-    const oldFacilitatorName = payload
-      .getLinkedRecord('oldFacilitator')
-      .getValue('preferredName');
-    const newFacilitator = payload.getLinkedRecord('newFacilitator');
-    const newFacilitatorName = newFacilitator.getValue('preferredName');
-    const newFacilitatorUserId = newFacilitator.getValue('userId');
-    const {userId} = environment;
-    const facilitatorIntro = userId === newFacilitatorUserId ? 'You are' : `${newFacilitatorName} is`;
-    dispatch(showInfo({
-      title: `${oldFacilitatorName} Disconnected!`,
-      message: `${facilitatorIntro} the new facilitator`
-    }));
   },
   [FACILITATOR_REQUEST]: (payload, {environment, dispatch}) => {
     const requestor = payload.getLinkedRecord('requestor');

@@ -6,7 +6,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {AGENDA_ITEMS, CHECKIN, MEETING, MOVED} from 'universal/utils/constants';
+import {AGENDA_ITEMS, CHECKIN, TEAM} from 'universal/utils/constants';
 
 export default {
   type: MoveMeetingPayload,
@@ -46,7 +46,8 @@ export default {
         meetingPhase: CHECKIN,
         meetingPhaseItem: 1
       });
-      return true;
+      publish(TEAM, teamId, MoveMeetingPayload, {teamId}, subOptions);
+      return {teamId};
     }
 
     // VALIDATION
@@ -123,7 +124,9 @@ export default {
         .update({isComplete: true}, {returnChanges: true})('changes')(0)('new_val').default(null)
     });
 
-    publish(MEETING, teamId, MOVED, {teamId, agendaItemId: completedAgendaItem.id}, subOptions);
-    return {teamId, agendaItemId: completedAgendaItem.id};
+    const data = {teamId, agendaItemId: completedAgendaItem.id};
+    publish(AGENDA_ITEMS, teamId, MoveMeetingPayload, data, subOptions);
+    publish(TEAM, teamId, MoveMeetingPayload, data, subOptions);
+    return data;
   }
 };

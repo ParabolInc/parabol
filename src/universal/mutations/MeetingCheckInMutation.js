@@ -1,11 +1,17 @@
 import {commitMutation} from 'react-relay';
 
+graphql`
+  fragment MeetingCheckInMutation_teamMember on MeetingCheckInPayload {
+    teamMember {
+      isCheckedIn
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation MeetingCheckInMutation($teamMemberId: ID!, $isCheckedIn: Boolean) {
     meetingCheckIn(teamMemberId: $teamMemberId, isCheckedIn: $isCheckedIn) {
-      teamMember {
-        isCheckedIn
-      }
+      ...MeetingCheckInMutation_teamMember @relay(mask: false)
     }
   }
 `;

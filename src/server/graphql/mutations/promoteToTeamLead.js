@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
+import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
@@ -9,7 +9,7 @@ import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
-  type: UpdateTeamMemberPayload,
+  type: PromoteToTeamLeadPayload,
   description: 'Promote another team member to be the leader',
   args: {
     teamMemberId: {
@@ -35,26 +35,21 @@ export default {
     }
 
     // RESOLUTION
-    const {promotee, teamLead} = await r({
+    await r({
       teamLead: r.table('TeamMember')
         .get(myTeamMemberId)
         .update({
           isLead: false
-        }, {returnChanges: true})('changes')(0)('new_val').default(null),
+        }),
       promotee: r.table('TeamMember')
         .get(teamMemberId)
         .update({
           isLead: true
-        }, {returnChanges: true})('changes')(0)('new_val').default(null)
+        })
     });
 
-    if (!promotee || !teamLead) {
-      throw new Error('Could not promote');
-    }
-
-    const teamMemberUpdated = {teamMember: promotee};
-    publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId: myTeamMemberId}, subOptions);
-    publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId}, subOptions);
-    return teamMemberUpdated;
+    const data = {oldTeamLeadId: myTeamMemberId, newTeamLeadId: teamMemberId};
+    publish(TEAM_MEMBER, teamId, UPDATED, data, subOptions);
+    return data;
   }
 };

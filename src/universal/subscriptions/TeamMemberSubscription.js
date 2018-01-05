@@ -33,6 +33,8 @@ const subscription = graphql`
       ...AcceptTeamInviteMutation_teamMember
       ...RemoveTeamMemberMutation_teamMember
       ...InviteTeamMembersMutation_teamMember
+      ...MeetingCheckInMutation_teamMember
+      ...PromoteToTeamLeadMutation_teamMember
     }
   }
 `;

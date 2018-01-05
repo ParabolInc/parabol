@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
+import MeetingCheckInPayload from 'server/graphql/types/MeetingCheckInPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {TEAM_MEMBER} from 'universal/utils/constants';
 
 export default {
-  type: UpdateTeamMemberPayload,
+  type: MeetingCheckInPayload,
   description: 'Check a member in as present or absent',
   args: {
     teamMemberId: {
@@ -28,12 +28,12 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const teamMember = await r.table('TeamMember')
+    await r.table('TeamMember')
       .get(teamMemberId)
-      .update({isCheckedIn}, {returnChanges: true})('changes')(0)('new_val');
+      .update({isCheckedIn});
 
-    const teamMemberUpdated = {teamMember};
-    publish(TEAM_MEMBER, teamId, UPDATED, {teamMemberId}, subOptions);
-    return teamMemberUpdated;
+    const data = {teamMemberId};
+    publish(TEAM_MEMBER, teamId, MeetingCheckInPayload, data, subOptions);
+    return data;
   }
 };

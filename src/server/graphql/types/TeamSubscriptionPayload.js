@@ -5,6 +5,9 @@ import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
+import KillMeetingPayload from 'server/graphql/types/KillMeetingPayload';
+import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
+import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPayload';
 import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
 import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberSelfPayload';
 
@@ -16,6 +19,9 @@ const types = [
   ArchiveTeamPayload,
   EndMeetingPayload,
   InviteTeamMembersPayload,
+  KillMeetingPayload,
+  MoveMeetingPayload,
+  PromoteFacilitatorPayload,
   RemoveTeamMemberOtherPayload,
   RemoveTeamMemberSelfPayload
 ];

@@ -9,6 +9,7 @@ const subscription = graphql`
       ...AddAgendaItemMutation_agendaItem
       ...RemoveAgendaItemMutation_agendaItem
       ...UpdateAgendaItemMutation_agendaItem
+      ...MoveMeetingMutation_agendaItem
     }
   }
 `;

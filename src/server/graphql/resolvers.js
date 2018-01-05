@@ -84,6 +84,11 @@ export const resolveUser = ({userId, user}, args, {dataLoader}) => {
 
 
 /* Special resolvesr */
+
+export const makeResolve = (idName, docName, dataLoaderName) => (source, args, {dataLoader}) => {
+  const idValue = source[idName];
+  return idValue ? dataLoader.get(dataLoaderName).load(idValue) : source[docName];
+};
 export const resolveIfViewer = (ifViewerField, defaultValue) => (source, args, {authToken}) => {
   return source.userId === getUserId(authToken) ? source[ifViewerField] : defaultValue;
 };
