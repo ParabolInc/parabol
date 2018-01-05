@@ -1,13 +1,12 @@
 // @flow
 import type {Node} from 'react';
-import type {Project} from 'universal/types/project';
+import type {Project, ProjectID} from 'universal/types/project';
 import type {UserID} from 'universal/types/user';
 
 import React, { Component } from 'react';
 import {findDOMNode} from 'react-dom';
 import {graphql} from 'react-relay';
 import NullableProject from 'universal/components/NullableProject/NullableProject';
-import withDragCache, {DragCache} from 'universal/dnd/withDragCache';
 import {PROJECT} from 'universal/utils/constants';
 import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
@@ -27,7 +26,7 @@ type Props = {
   connectDragSource: (node: Node) => Node,
   connectDragPreview: (node: Node) => Node,
   connectDropTarget: (node: Node) => Node,
-  dragCache: DragCache,
+  getProjectById: (ProjectID) => Project,
   insert: (project: Project, before: boolean) => void,
   isDragging: boolean,
   isPreview: boolean,
@@ -88,10 +87,10 @@ class DraggableProject extends Component<Props> {
 
 const projectDragSpec = {
   beginDrag(props) {
-    return props.project;
+    return {projectId: props.project.id};
   },
   isDragging(props, monitor) {
-    return props.project.id === monitor.getItem().id;
+    return props.project.id === monitor.getItem().projectId;
   }
 };
 
@@ -102,13 +101,12 @@ const projectDragCollect = (connectSource, monitor) => ({
 });
 
 const handleProjectHover = (props: Props, monitor, component) => {
-  const {dragCache, insert, project} = props;
+  const {getProjectById, insert, project} = props;
   const dropTargetProjectId = project.id;
-  const draggedProject = monitor.getItem();
-  const draggedProjectId = draggedProject.id;
+  const draggedProjectId = monitor.getItem().projectId;
+  const draggedProject = getProjectById(draggedProjectId);
 
   if (!monitor.isOver({shallow: true})) {
-    dragCache.clear();
     return;
   }
 
@@ -129,11 +127,6 @@ const handleProjectHover = (props: Props, monitor, component) => {
   const dropTargetMidpoint = dropTargetTop + (dropTargetHeight / 2);
   const before = mouseY < dropTargetMidpoint;
 
-  if (dragCache.isSameDrag({draggedProjectId, before})) {
-    return;
-  }
-  dragCache.update({draggedProjectId, before});
-
   insert(draggedProject, before);
 };
 
@@ -146,10 +139,8 @@ const projectDropSpec = {
 };
 
 export default createFragmentContainer(
-  withDragCache(
-    dragSource(PROJECT, projectDragSpec, projectDragCollect)(
-      dropTarget(PROJECT, projectDropSpec, projectDropCollect)(DraggableProject)
-    )
+  dragSource(PROJECT, projectDragSpec, projectDragCollect)(
+    dropTarget(PROJECT, projectDropSpec, projectDropCollect)(DraggableProject)
   ),
   graphql`
     fragment DraggableProject_project on Project {

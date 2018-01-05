@@ -35,6 +35,7 @@ class ProjectColumns extends Component {
     const {
       alignColumns,
       area,
+      getProjectById,
       isMyMeetingSection,
       myTeamMemberId,
       styles,
@@ -53,6 +54,7 @@ class ProjectColumns extends Component {
               area={area}
               isMyMeetingSection={isMyMeetingSection}
               firstColumn={idx === 0}
+              getProjectById={getProjectById}
               lastColumn={idx === (lanes.length - 1)}
               myTeamMemberId={myTeamMemberId}
               teamMemberFilterId={teamMemberFilterId}
@@ -75,6 +77,7 @@ ProjectColumns.propTypes = {
     'right'
   ]),
   area: PropTypes.string,
+  getProjectById: PropTypes.func.isRequired,
   isMyMeetingSection: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object.isRequired,

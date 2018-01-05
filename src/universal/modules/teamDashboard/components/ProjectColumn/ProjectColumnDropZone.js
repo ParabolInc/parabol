@@ -1,13 +1,12 @@
 // @flow
 import type {Node} from 'react';
-import type {Project} from 'universal/types/project';
+import type {Project, ProjectID, Status} from 'universal/types/project';
 
 import React from 'react';
 import {DropTarget} from 'react-dnd';
 
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import sortOrderBetween from 'universal/dnd/sortOrderBetween';
-import withDragCache, {DragCache} from 'universal/dnd/withDragCache';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import {PROJECT} from 'universal/utils/constants';
 
@@ -15,9 +14,15 @@ type Props = {
   connectDropTarget: (node: Node) => Node,
   area: string,
   atmosphere: Object, // TODO: atmosphere needs a type definition
-  dragCache: DragCache,
+  getProjectById: (ProjectID) => Project,
   lastProject: ?Project, // the last project in a column; may be undefined if the column is empty
-  status: string
+  status: Status
+};
+
+type UpdateProjectMutationArgs = {
+  id: ProjectID,
+  sortOrder: number,
+  status?: Status
 };
 
 // Represents the trailing space at the end of a column.  Acts as a drop target
@@ -30,26 +35,32 @@ const ProjectColumnDropZone = (props: Props) => (
 
 const spec = {
   hover: (props: Props, monitor) => {
-    const {area, atmosphere, dragCache, lastProject, status} = props;
-    const draggedProject = monitor.getItem();
-    const draggedProjectId = draggedProject.id;
+    const {
+      area,
+      atmosphere,
+      getProjectById,
+      lastProject,
+      status
+    } = props;
+    const draggedProjectId = monitor.getItem().projectId;
+    const draggedProject = getProjectById(draggedProjectId);
 
     if (!monitor.isOver({shallow: true})) {
-      dragCache.clear();
       return;
     }
-    if (dragCache.isSameDrag({draggedProjectId, status})) {
+    if (lastProject && draggedProject.id === lastProject.id) {
       return;
     }
-    dragCache.update({draggedProjectId, status});
 
     const sortOrder = sortOrderBetween(lastProject, null, draggedProject, false);
 
-    const updatedProject = {
+    const updatedProject: UpdateProjectMutationArgs = {
       id: draggedProject.id,
-      status,
       sortOrder
     };
+    if (draggedProject.status !== status) {
+      updatedProject.status = status;
+    }
     UpdateProjectMutation(atmosphere, updatedProject, area);
   }
 };
@@ -59,9 +70,7 @@ const collect = (connect) => ({
 });
 
 export default withAtmosphere(
-  withDragCache(
-    DropTarget(PROJECT, spec, collect)(
-      ProjectColumnDropZone
-    )
+  DropTarget(PROJECT, spec, collect)(
+    ProjectColumnDropZone
   )
 );
