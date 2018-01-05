@@ -1,13 +1,17 @@
 import {commitMutation} from 'react-relay';
 
+graphql`
+  fragment ResendTeamInviteMutation_invitation on ResendTeamInvitePayload {
+    invitation {
+      updatedAt
+    }
+  }
+`;
 const mutation = graphql`
   mutation ResendTeamInviteMutation($inviteId: ID!) {
     resendTeamInvite(inviteId: $inviteId) {
-      invitation {
-        updatedAt
-      }
+     ...ResendTeamInviteMutation_invitation @relay(mask: false) 
     }
-    
   }
 `;
 

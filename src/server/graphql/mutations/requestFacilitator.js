@@ -1,20 +1,22 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
+import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {ADDED, FACILITATOR_REQUEST, NOTIFICATION} from 'universal/utils/constants';
+import {TEAM} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   name: 'RequestFacilitator',
   description: 'Request to become the facilitator in a meeting',
-  type: GraphQLBoolean,
+  type: RequestFacilitatorPayload,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (source, {teamId}, {authToken, dataLoader}) => {
+  resolve: async (source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) => {
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const viewerId = getUserId(authToken);
@@ -29,12 +31,9 @@ export default {
 
     // RESOLUTION
     const [currentFacilitatorUserId] = activeFacilitator.split('::');
-    const notification = {
-      requestorId,
-      type: FACILITATOR_REQUEST
-    };
 
-    publish(NOTIFICATION, currentFacilitatorUserId, ADDED, {notification}, {operationId});
-    return true;
+    const data = {requestorId};
+    publish(TEAM, currentFacilitatorUserId, RequestFacilitatorPayload, data, subOptions);
+    return data;
   }
 };

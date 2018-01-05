@@ -5,9 +5,10 @@ import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayl
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
+import publishBatch from 'server/utils/publishBatch';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, REMOVED} from 'universal/utils/constants';
+import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL} from 'universal/utils/constants';
 import promiseAllObj from 'universal/utils/promiseAllObj';
 
 export default {
@@ -66,20 +67,21 @@ export default {
 
     const {removedOrgApprovals, removedRequestNotifications} = removedApprovalsAndNotifications;
     const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
+    const data = {removedOrgApprovalIds, removedRequestNotifications};
+
 
     // publish the removed org approval to the team
-    removedOrgApprovals.forEach((orgApproval) => {
-      const {id: orgApprovalId, teamId} = orgApproval;
-      publish(ORG_APPROVAL, teamId, REMOVED, {orgApprovalId}, subOptions);
-    });
+    const makeApprovals = (val) => ({removedOrgApprovalIds: val.map(({id}) => id)});
+    publishBatch(ORG_APPROVAL, 'teamId', RejectOrgApprovalPayload, removedOrgApprovals, subOptions, makeApprovals);
+
 
     // publish the removed request notifications to all org leaders
     removedRequestNotifications.forEach((notification) => {
       const {userIds} = notification;
       userIds.forEach((userId) => {
-        publish(NOTIFICATION, userId, REMOVED, {notification}, subOptions);
+        publish(NOTIFICATION, userId, RejectOrgApprovalPayload, data, subOptions);
       });
     });
-    return {removedOrgApprovalIds, removedRequestNotifications};
+    return data;
   }
 };

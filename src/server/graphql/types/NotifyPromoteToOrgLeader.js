@@ -2,7 +2,7 @@ import {GraphQLObjectType} from 'graphql';
 import {resolveOrganization} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import Organization from 'server/graphql/types/Organization';
-import OrganizationAddedNotification from 'server/graphql/types/OrganizationAddedNotification';
+import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification';
 
 const NotifyPromoteToOrgLeader = new GraphQLObjectType({
   name: 'NotifyPromoteToOrgLeader',

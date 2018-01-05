@@ -3,18 +3,42 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 import getInProxy from 'universal/utils/relay/getInProxy';
 
-const mutation = graphql`
-  mutation RejectOrgApprovalMutation($notificationId: ID!, $reason: String!) {
-    rejectOrgApproval(notificationId: $notificationId, reason: $reason) {
-      removedRequestNotifications {
-        id
-      }
-      removedOrgApprovals {
-        id
-      }
+graphql`
+  fragment RejectOrgApprovalMutation_orgApproval on RejectOrgApprovalPayload {
+    removedOrgApprovals {
+      id
     }
   }
 `;
+
+graphql`
+  fragment RejectOrgApprovalMutation_notification on RejectOrgApprovalPayload {
+    removedRequestNotifications {
+      id
+    }
+  }
+`;
+
+const mutation = graphql`
+  mutation RejectOrgApprovalMutation($notificationId: ID!, $reason: String!) {
+    rejectOrgApproval(notificationId: $notificationId, reason: $reason) {
+    ...RejectOrgApprovalMutation_orgApproval @relay(mask: false)      
+    ...RejectOrgApprovalMutation_notification @relay(mask: false)
+    }
+  }
+`;
+
+export const rejectOrgApprovalOrgApprovalUpdater = (payload, store) => {
+  const removedOrgApprovals = payload.getLinkedRecords('removedOrgApprovals');
+  const orgApprovalIds = getInProxy(removedOrgApprovals, 'id');
+  handleRemoveOrgApprovals(orgApprovalIds, store);
+};
+
+export const rejectOrgApprovalNotificationUpdater = (payload, store, viewerId) => {
+  const removedRequestNotifications = payload.getLinkedRecords('removedRequestNotifications');
+  const notificationIds = getInProxy(removedRequestNotifications, 'id');
+  handleRemoveNotifications(notificationIds, store, viewerId);
+};
 
 const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted) => {
   const {viewerId} = environment;
@@ -23,12 +47,8 @@ const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted)
     variables,
     updater: (store) => {
       const payload = store.getRootField('rejectOrgApproval');
-      const removedRequestNotifications = payload.getLinkedRecords('removedRequestNotifications');
-      const removedOrgApprovals = payload.getLinkedRecords('removedOrgApprovals');
-      const orgApprovalIds = getInProxy(removedOrgApprovals, 'id');
-      const notificationIds = getInProxy(removedRequestNotifications, 'id');
-      handleRemoveNotifications(notificationIds, store, viewerId);
-      handleRemoveOrgApprovals(orgApprovalIds, store);
+      rejectOrgApprovalOrgApprovalUpdater(payload, store);
+      rejectOrgApprovalNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {notificationId} = variables;

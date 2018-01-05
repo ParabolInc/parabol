@@ -4,10 +4,9 @@ import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn';
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
-import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {
-  DENY_NEW_USER, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT, PAYMENT_REJECTED, PROMOTE_TO_BILLING_LEADER,
-  REQUEST_NEW_USER
+  DENY_NEW_USER, FACILITATOR_REQUEST, INVITEE_APPROVED, KICKED_OUT,
+  PAYMENT_REJECTED
 } from 'universal/utils/constants';
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 
@@ -46,22 +45,6 @@ const notificationHandler = {
       }
     }));
     addNotificationToConn(store, viewerId, payload);
-  },
-  [FACILITATOR_REQUEST]: (payload, {environment, dispatch}) => {
-    const requestor = payload.getLinkedRecord('requestor');
-    const requestorName = requestor.getValue('preferredName');
-    const requestorId = requestor.getValue('id');
-    dispatch(showInfo({
-      title: `${requestorName} wants to facilitate`,
-      message: 'Tap ‘Promote’ to hand over the reins',
-      autoDismiss: 0,
-      action: {
-        label: 'Promote',
-        callback: () => {
-          PromoteFacilitatorMutation(environment, {facilitatorId: requestorId}, dispatch);
-        }
-      }
-    }));
   },
   [INVITEE_APPROVED]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
@@ -123,29 +106,6 @@ const notificationHandler = {
         }
       }
     }));
-    addNotificationToConn(store, viewerId, payload);
-  },
-  [PROMOTE_TO_BILLING_LEADER]: (payload, {dispatch, history, environment, store}) => {
-    const {viewerId} = environment;
-    const organization = payload.getLinkedRecord('organization');
-    const orgId = organization.getValue('id');
-    const orgName = organization.getValue('name');
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'Congratulations!',
-      message: `You’ve been promoted to billing leader for ${orgName}`,
-      action: {
-        label: 'Check it out!',
-        callback: () => {
-          history.push(`/me/organizations/${orgId}/members`);
-        }
-      }
-    }));
-    addNotificationToConn(store, viewerId, payload);
-  },
-  [REQUEST_NEW_USER]: (payload, {dispatch, history, store, environment}) => {
-    const {viewerId} = environment;
-
     addNotificationToConn(store, viewerId, payload);
   }
 };

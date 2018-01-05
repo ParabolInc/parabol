@@ -12,8 +12,8 @@ const publishBatch = (topic, channelKey, type, dataArray, subOptions, payloadMak
   const channels = Object.keys(groupedByChannel);
   for (let ii = 0; ii < channels.length; ii++) {
     const channel = channels[ii];
-    const val = groupedByChannel[channel];
-    publish(topic, channel, type, payloadMaker(val), subOptions);
+    const valArray = groupedByChannel[channel];
+    publish(topic, channel, type, payloadMaker(valArray), subOptions);
   }
 };
 

@@ -7,6 +7,7 @@ import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
+import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import User from 'server/graphql/types/User';
 
 const types = [
@@ -17,6 +18,7 @@ const types = [
   CreateProjectPayload,
   DeleteProjectPayload,
   InviteTeamMembersPayload,
+  RejectOrgApprovalPayload,
   User,
   NotifyVersionInfo
 ];

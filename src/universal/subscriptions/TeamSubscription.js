@@ -6,6 +6,7 @@ import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMember
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation';
 import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation';
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
+import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 
 // ... on TeamAdded {
 //  notification {
@@ -64,6 +65,7 @@ const subscription = graphql`
       ...KillMeetingMutation_team
       ...MoveMeetingMutation_team
       ...PromoteFacilitatorMutation_team
+      ...RequestFacilitatorMutation_team
     }
   }
 `;
@@ -102,6 +104,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'PromoteFacilitatorPayload':
           promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
+          break;
+        case 'RequestFacilitatorPayload':
+          requestFacilitatorTeamUpdater(payload, {dispatch, environment});
           break;
         default:
           console.error('TeamSubscription case fail', type);

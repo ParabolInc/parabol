@@ -5,10 +5,7 @@ import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {
-  ADDED, BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER, REMOVED,
-  UPDATED
-} from 'universal/utils/constants';
+import {BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
   type: SetOrgUserRolePayload,
@@ -108,9 +105,10 @@ export default {
       });
       const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId);
       // add the org to the list of owned orgs
-      publish(ORGANIZATION, userId, ADDED, {orgId, notificationIdsAdded}, subOptions);
-      publish(ORGANIZATION, orgId, UPDATED, {orgId, userId}, subOptions);
-      return {orgId, userId, notificationIdsAdded};
+      const data = {orgId, userId, notificationIdsAdded};
+      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
+      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
+      return data;
     }
     if (role === null) {
       const {oldPromotionId, removedNotificationIds} = await r({
@@ -130,9 +128,10 @@ export default {
           .default([])
       });
       const notificationIdsRemoved = oldPromotionId.concat(removedNotificationIds);
-      publish(ORGANIZATION, userId, REMOVED, {orgId, notificationIdsRemoved}, subOptions);
-      publish(ORGANIZATION, orgId, UPDATED, {orgId, userId}, subOptions);
-      return {orgId, userId, notificationIdsRemoved};
+      const data = {orgId, userId, notificationIdsRemoved};
+      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
+      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
+      return data;
     }
     return null;
   }

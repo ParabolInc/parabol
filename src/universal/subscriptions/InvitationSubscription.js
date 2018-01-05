@@ -24,6 +24,7 @@ const subscription = graphql`
       ...ApproveToOrgMutation_invitation
       ...CancelTeamInviteMutation_invitation
       ...InviteTeamMembersMutation_invitation
+      ...ResendTeamInviteMutation_invitation
     }
   }
 `;

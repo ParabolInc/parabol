@@ -5,8 +5,8 @@ import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLea
 
 import {PAYMENT_REJECTED, PROMOTE_TO_BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
 
-const OrganizationAddedNotification = new GraphQLInterfaceType({
-  name: 'OrganizationAddedNotification',
+const OrganizationNotification = new GraphQLInterfaceType({
+  name: 'OrganizationNotification',
   fields: {
     id: {
       type: GraphQLID
@@ -23,4 +23,4 @@ const OrganizationAddedNotification = new GraphQLInterfaceType({
   }
 });
 
-export default OrganizationAddedNotification;
+export default OrganizationNotification;

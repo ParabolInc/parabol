@@ -1,6 +1,6 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
 import Organization from 'server/graphql/types/Organization';
-import OrganizationAddedNotification from 'server/graphql/types/OrganizationAddedNotification';
+import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification';
 
 const OrganizationRemoved = new GraphQLObjectType({
   name: 'OrganizationRemoved',

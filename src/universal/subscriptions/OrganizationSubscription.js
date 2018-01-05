@@ -1,5 +1,9 @@
 import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation';
 import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation';
+import {
+  setOrgUserRoleAddedOrganizationUpdater,
+  setOrgUserRoleRemovedOrganizationUpdater
+} from 'universal/mutations/SetOrgUserRoleMutation';
 
 // ...on OrganizationAdded {
 //  organization {
@@ -37,12 +41,15 @@ const subscription = graphql`
       __typename
       ...AddOrgMutation_organization
       ...ApproveToOrgMutation_organization
+      ...SetOrgUserRoleMutationAdded_organiation
+      ...SetOrgUserRoleMutationRemoved_organization
+      ...SetOrgUserRoleMutationAnnounced_organization
     }
   }
 `;
 
-const OrganizationSubscription = (environment) => {
-  // const {dispatch, history} = subParams;
+const OrganizationSubscription = (environment, queryVariables, subParams) => {
+  const {dispatch, history} = subParams;
   const {viewerId} = environment;
   return {
     subscription,
@@ -50,7 +57,7 @@ const OrganizationSubscription = (environment) => {
     updater: (store) => {
       const payload = store.getRootField('organizationSubscription');
       const type = payload.getLinkedRecord('__typename');
-
+      const options = {dispatch, history};
       switch (type) {
         case 'AddOrgPayload':
           addOrgMutationOrganizationUpdater(payload, store, viewerId);
@@ -58,8 +65,14 @@ const OrganizationSubscription = (environment) => {
         case 'ApproveToOrgPayload':
           approveToOrgOrganizationUpdater(payload, store, viewerId);
           break;
+        case 'SetOrgUserRoleAddedPayload':
+          setOrgUserRoleAddedOrganizationUpdater(payload, store, viewerId, options);
+          break;
+        case 'SetOrgUserRoleRemovedPayload':
+          setOrgUserRoleRemovedOrganizationUpdater(payload, store);
+          break;
         default:
-          console.error('TeamSubscription case fail', type);
+          console.error('OrganizationSubscription case fail', type);
       }
       // const organization = payload.getLinkedRecord('organization');
       // const options = {dispatch, environment, history, store};

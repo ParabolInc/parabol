@@ -45,10 +45,10 @@ export default {
         return removeTeamMember(teamMemberId, {isKickout: true});
       }));
 
-      //const projectIds = perTeamRes.reduce((arr, res) => {
+      // const projectIds = perTeamRes.reduce((arr, res) => {
       //  arr.push(...res.archivedProjectIds, ...res.reassignedProjectIds);
       //  return arr;
-      //}, []);
+      // }, []);
 
       // const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
       //  arr.push(...res.removedNotifications);

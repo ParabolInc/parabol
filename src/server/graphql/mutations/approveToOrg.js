@@ -47,12 +47,12 @@ export default {
     publishBatch(ORG_APPROVAL, 'teamId', ApproveToOrgPayload, removedOrgApprovals, subOptions, makeOrgPayload);
 
     // tell the teammembers that the org approval was replaced with an invitation
-    const makeInvitationPayload = (val) => ({invitationId: val.id});
+    const makeInvitationPayload = (val) => ({invitationId: val.map(({id}) => id)});
     publishBatch(INVITATION, 'teamId', ApproveToOrgPayload, newInvitations, subOptions, makeInvitationPayload);
 
     // tell the inviters that their invitee was approved
     const channelGetter = (val) => val.userIds[0];
-    const makeNote = (val) => ({notificationId: val.id});
+    const makeNote = (val) => ({notificationId: val.map(({id}) => id)});
     publishBatch(NOTIFICATION, channelGetter, ApproveToOrgPayload, inviteeApprovedNotifications, subOptions, makeNote);
 
     return data;

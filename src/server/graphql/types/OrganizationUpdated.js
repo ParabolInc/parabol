@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql';
 import {resolveNotification, resolveOrganization} from 'server/graphql/resolvers';
 import Organization from 'server/graphql/types/Organization';
-import OrganizationAddedNotification from 'server/graphql/types/OrganizationAddedNotification';
+import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification';
 import OrganizationMember from 'server/graphql/types/OrganizationMember';
 
 const OrganizationUpdated = new GraphQLObjectType({

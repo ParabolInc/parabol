@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {resolveTeam} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import OrganizationAddedNotification from 'server/graphql/types/OrganizationAddedNotification';
+import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification';
 import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
 
