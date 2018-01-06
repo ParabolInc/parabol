@@ -27,22 +27,6 @@ export const addNotificationToConn = (store, viewerId, newNode) => {
 
 
 const notificationHandler = {
-  [DENY_NEW_USER]: (payload, {dispatch, store, history, environment}) => {
-    const {viewerId} = environment;
-    const inviteeEmail = payload.getValue('inviteeEmail');
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'Oh no!',
-      message: `${inviteeEmail} was denied to join the team.`,
-      action: {
-        label: 'Find out why',
-        callback: () => {
-          history.push('/me/notifications');
-        }
-      }
-    }));
-    addNotificationToConn(store, viewerId, payload);
-  },
   [INVITEE_APPROVED]: (payload, {dispatch, store, environment}) => {
     const {viewerId} = environment;
     const inviteeEmail = payload.getValue('inviteeEmail');

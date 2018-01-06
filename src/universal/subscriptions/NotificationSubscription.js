@@ -7,7 +7,10 @@ import {createProjectNotificationUpdater} from 'universal/mutations/CreateProjec
 import {deleteProjectNotificationUpdater} from 'universal/mutations/DeleteProjectMutation';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
-import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
+import {
+  rejectOrgApprovalInviterNotificationUpdater,
+  rejectOrgApprovalNotificationUpdater
+} from 'universal/mutations/RejectOrgApprovalMutation';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -103,7 +106,8 @@ const subscription = graphql`
       ...CreateProjectMutation_notification
       ...DeleteProjectMutation_notification
       ...InviteTeamMembersMutation_notification
-      ...RejectOrgApprovalMutation_notification
+      ...RejectOrgApprovalMutationLeader_notification
+      ...RejectOrgApprovalMutationInviter_notification
 
       # ConnectSocket/DisconnectSocket
       ... on User {
@@ -213,7 +217,10 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
         case 'InviteTeamMembersPayload':
           inviteTeamMembersNotificationUpdater(payload, store, viewerId, options);
           break;
-        case 'RejectOrgApprovalPayload':
+        case 'RejectOrgApprovalInviterPayload':
+          rejectOrgApprovalInviterNotificationUpdater(payload, store, viewerId, options);
+          break;
+        case 'RejectOrgApprovalLeaderPayload':
           rejectOrgApprovalNotificationUpdater(payload, store, viewerId);
           break;
         case 'User':

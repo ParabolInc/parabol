@@ -7,7 +7,8 @@ import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
-import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
+import RejectOrgApprovalInviterPayload from 'server/graphql/types/RejectOrgApprovalInviterPayload';
+import RejectOrgApprovalOrgLeaderPayload from 'server/graphql/types/RejectOrgApprovalOrgLeaderPayload';
 import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload';
 import User from 'server/graphql/types/User';
 
@@ -19,7 +20,8 @@ const types = [
   CreateProjectPayload,
   DeleteProjectPayload,
   InviteTeamMembersPayload,
-  RejectOrgApprovalPayload,
+  RejectOrgApprovalInviterPayload,
+  RejectOrgApprovalOrgLeaderPayload,
   StripeFailPaymentPayload,
   User,
   NotifyVersionInfo

@@ -8,7 +8,7 @@ import {INVITATION, NOTIFICATION, ORG_APPROVAL, ORGANIZATION} from 'universal/ut
 
 
 export default {
-  type: new GraphQLNonNull(ApproveToOrgPayload),
+  type: ApproveToOrgPayload,
   description: 'Approve an outsider to join the organization',
   args: {
     email: {
