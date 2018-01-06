@@ -1,5 +1,5 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {makeResovleNotificationForViewer, resolveNotificationForViewer, resolveTeam} from 'server/graphql/resolvers';
+import {makeResolveNotificationForViewer, resolveNotificationForViewer, resolveTeam} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
@@ -57,17 +57,17 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
     removedRequestNotification: {
       type: NotifyRequestNewUser,
       description: 'A removed request notification if the org leader invited the invitee instead of approving',
-      resolve: makeResovleNotificationForViewer('removedRequestNotificationIds', 'removedRequestNotifications')
+      resolve: makeResolveNotificationForViewer('removedRequestNotificationIds', 'removedRequestNotifications')
     },
     requestNotification: {
       type: NotifyRequestNewUser,
       description: 'The notification sent to the org billing leader requesting to be approved',
-      resolve: makeResovleNotificationForViewer('requestNotificationIds', 'requestNotifications')
+      resolve: makeResolveNotificationForViewer('requestNotificationIds', 'requestNotifications')
     },
     teamInviteNotification: {
       type: NotifyTeamInvite,
       description: 'The notification sent to the invitee',
-      resolve: makeResovleNotificationForViewer('inviteNotificationIds', 'inviteNotifications')
+      resolve: makeResolveNotificationForViewer('inviteNotificationIds', 'inviteNotifications')
     }
   })
 });

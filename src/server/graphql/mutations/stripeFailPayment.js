@@ -43,43 +43,41 @@ export default {
     if (paid || stripeSubscriptionId !== subscription) return {orgId};
 
     // RESOLUTION
-    if (creditCard.last4) {
-      const stripeLineItems = await fetchAllLines(invoiceId);
-      const nextMonthCharges = stripeLineItems.find((line) => line.description === null && line.proration === false);
-      const nextMonthAmount = nextMonthCharges && nextMonthCharges.amount || 0;
+    const stripeLineItems = await fetchAllLines(invoiceId);
+    const nextMonthCharges = stripeLineItems.find((line) => line.description === null && line.proration === false);
+    const nextMonthAmount = nextMonthCharges && nextMonthCharges.amount || 0;
 
-      const orgDoc = await terminateSubscription(orgId);
-      const userIds = orgDoc.orgUsers.reduce((billingLeaders, orgUser) => {
-        if (orgUser.role === BILLING_LEADER) {
-          billingLeaders.push(orgUser.id);
-        }
-        return billingLeaders;
-      }, []);
-      const {last4, brand} = creditCard;
-      await stripe.customers.update(customerId, {
-        // amount_due includes the old account_balance, so we can (kinda) atomically set this
-        // we take out the charge for future services since we are ending service immediately
-        account_balance: amountDue - nextMonthAmount
-      });
-      const notificationId = shortid.generate();
-      const notification = {
-        id: notificationId,
-        type: PAYMENT_REJECTED,
-        startAt: now,
-        orgId,
-        userIds,
-        last4,
-        brand
-      };
+    const orgDoc = await terminateSubscription(orgId);
+    const userIds = orgDoc.orgUsers.reduce((billingLeaders, orgUser) => {
+      if (orgUser.role === BILLING_LEADER) {
+        billingLeaders.push(orgUser.id);
+      }
+      return billingLeaders;
+    }, []);
+    const {last4, brand} = creditCard;
+    await stripe.customers.update(customerId, {
+      // amount_due includes the old account_balance, so we can (kinda) atomically set this
+      // we take out the charge for future services since we are ending service immediately
+      account_balance: amountDue - nextMonthAmount
+    });
+    const notificationId = shortid.generate();
+    const notification = {
+      id: notificationId,
+      type: PAYMENT_REJECTED,
+      startAt: now,
+      orgId,
+      userIds,
+      last4,
+      brand
+    };
 
-      await r({
-        update: r.table('Invoice').get(invoiceId).update({status: FAILED}),
-        insert: r.table('Notification').insert(notification)
-      });
-      const data = {orgId, notificationId};
-      // TODO add in subOptins when we move GraphQL to its own microservice
-      publish(NOTIFICATION, orgId, StripeFailPaymentPayload, data);
-      return data;
-    }
+    await r({
+      update: r.table('Invoice').get(invoiceId).update({status: FAILED}),
+      insert: r.table('Notification').insert(notification)
+    });
+    const data = {orgId, notificationId};
+    // TODO add in subOptins when we move GraphQL to its own microservice
+    publish(NOTIFICATION, orgId, StripeFailPaymentPayload, data);
+    return data;
   }
 };

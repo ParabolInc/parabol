@@ -8,7 +8,7 @@ graphql`
       activeFacilitator
     }
     disconnectedFacilitator {
-      preferedName
+      preferredName
     }
     newFacilitator {
       preferredName

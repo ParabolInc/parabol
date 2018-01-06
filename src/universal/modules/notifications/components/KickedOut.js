@@ -78,6 +78,7 @@ export default createFragmentContainer(
     fragment KickedOut_notification on NotifyKickedOut {
       notificationId: id
       team {
+        id
         teamName: name
       }
     }

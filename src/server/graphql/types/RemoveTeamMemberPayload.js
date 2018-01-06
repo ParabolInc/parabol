@@ -1,15 +1,12 @@
 import {GraphQLInterfaceType, GraphQLList} from 'graphql';
-import {
-  resolveNotification, resolveProjects, resolveTeam, resolveTeamMember, resolveTypeForViewer,
-  resolveUser
-} from 'server/graphql/resolvers';
-import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
+import {resolveProjects, resolveTeam, resolveTeamMember, resolveUser} from 'server/graphql/resolvers';
 import Project from 'server/graphql/types/Project';
+import RemoveTeamMemberExMemberPayload from 'server/graphql/types/RemoveTeamMemberExMemberPayload';
 import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
-import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberSelfPayload';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import User from 'server/graphql/types/User';
+import {getUserId} from 'server/utils/authorization';
 
 
 export const removeTeamMemberFields = {
@@ -28,11 +25,6 @@ export const removeTeamMemberFields = {
     description: 'The projects that got reassigned',
     resolve: resolveProjects
   },
-  notification: {
-    type: NotifyKickedOut,
-    description: 'A notification if you were kicked out by the team leader',
-    resolve: resolveNotification
-  },
   user: {
     type: User,
     description: 'The user removed from the team',
@@ -43,7 +35,10 @@ export const removeTeamMemberFields = {
 const RemoveTeamMemberPayload = new GraphQLInterfaceType({
   name: 'RemoveTeamMemberPayload',
   fields: () => removeTeamMemberFields,
-  resolveType: resolveTypeForViewer(RemoveTeamMemberSelfPayload, RemoveTeamMemberOtherPayload)
+  resolveType: ({userId}, {authToken}) => {
+    const viewerId = getUserId(authToken);
+    return viewerId === userId ? RemoveTeamMemberExMemberPayload : RemoveTeamMemberOtherPayload;
+  }
 });
 
 export default RemoveTeamMemberPayload;

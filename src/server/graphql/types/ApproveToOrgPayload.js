@@ -1,8 +1,11 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveInvitations, resolveNotifications} from 'server/graphql/resolvers';
+import {
+  makeResolveNotificationForViewer, makeResolveNotificationsForViewer,
+  resolveInvitations
+} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import OrgApproval from 'server/graphql/types/OrgApproval';
 
 const ApproveToOrgPayload = new GraphQLObjectType({
@@ -10,7 +13,8 @@ const ApproveToOrgPayload = new GraphQLObjectType({
   fields: () => ({
     removedRequestNotifications: {
       type: new GraphQLList(NotifyRequestNewUser),
-      description: 'The notifications removed after approving an email to the organization'
+      description: 'The notifications removed after approving an email to the organization',
+      resolve: makeResolveNotificationForViewer('-', 'removedRequestNotifications')
     },
     removedOrgApprovals: {
       type: new GraphQLList(OrgApproval),
@@ -24,7 +28,7 @@ const ApproveToOrgPayload = new GraphQLObjectType({
     inviteeApprovedNotifications: {
       type: new GraphQLList(NotifyInviteeApproved),
       description: 'The notifications to send out to the inviters',
-      resolve: resolveNotifications
+      resolve: makeResolveNotificationsForViewer('-', 'inviteeApprovedNotifications')
     }
   })
 });

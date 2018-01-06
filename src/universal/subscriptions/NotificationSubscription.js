@@ -15,86 +15,6 @@ import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} fr
 import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
-// ... on NotificationAdded {
-//  notification {
-//    id
-//    orgId
-//    startAt
-//    type
-//
-//          # Requirements for persisted notifications
-//  ...NotificationRow_notification
-//
-//          # Requiremnts for toast notifications (notificationHandler.js)
-//  ... on NotifyAddedToTeam {
-//      id
-//      team {
-//        name
-//      }
-//    }
-//  ... on NotifyDenial {
-//      inviteeEmail
-//    }
-//  ... on NotifyKickedOut {
-//      team {
-//        id
-//        name
-//      }
-//    }
-//  ... on NotifyProjectInvolves {
-//      involvement
-//      changeAuthor {
-//        preferredName
-//      }
-//    }
-//  ,,, on NotifyInviteeApproved {
-//      inviteeEmail
-//      team {
-//        id
-//        name
-//      }
-//    }
-//  ... on NotifyInvitation {
-//      inviter {
-//        preferredName
-//      }
-//      inviteeEmail
-//      team {
-//        id
-//        name
-//        tier
-//      }
-//    }
-//  ... on NotifyTeamArchived {
-//      team {
-//        name
-//      }
-//    }
-//
-//          # Requirements for toast notifications that aren't persisted
-//  ... on NotifyFacilitatorRequest {
-//      requestor {
-//        id
-//        preferredName
-//      }
-//    }
-//  ... on NotifyNewTeamMember {
-//      preferredName
-//      team {
-//        name
-//      }
-//    }
-//  ... on NotifyVersionInfo {
-//      version
-//    }
-//  }
-// }
-// ... on NotificationRemoved {
-//  notification {
-//    id
-//  }
-// }
-
 const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
@@ -197,7 +117,7 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
       const type = payload.getValue('__typename');
       switch (type) {
         case 'ApproveToOrgPayload':
-          approveToOrgNotificationUpdater(payload, options);
+          approveToOrgNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'CancelApprovalPayload':
           cancelApprovalNotificationUpdater(payload, store, viewerId);
@@ -235,13 +155,6 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
         default:
           console.error('NotificationSubscription case fail', type);
       }
-      // const notification = payload.getLinkedRecord('notification');
-      // if (type === 'NotificationAdded') {
-      //  handleAddNotifications(notification, options);
-      // } else if (type === 'NotificationRemoved') {
-      //  const notificationId = notification.getValue('id');
-      //  handleRemoveNotifications(notificationId, store, viewerId);
-      // }
     }
   };
 };

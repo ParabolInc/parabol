@@ -21,7 +21,7 @@ graphql`
 
 graphql`
   fragment SetOrgUserRoleMutationRemoved_organization on SetOrgUserRoleRemovedPayload {
-    organiation {
+    organization {
       id
     }
     notificationsRemoved {
@@ -31,7 +31,7 @@ graphql`
 `;
 
 graphql`
-  fragment SetOrgUserRoleMutationAnnounced_organization on SetOrgUserRoleAnnouncedPayload {
+  fragment SetOrgUserRoleMutationAnnounced_organization on SetOrgUserRoleAnnouncePayload{
     updatedOrgMember {
       isBillingLeader
     }
@@ -41,7 +41,7 @@ graphql`
 const mutation = graphql`
   mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: String) {
     setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-      ...SetOrgUserRoleMutationAnnouced_organization @relay(mask: false)
+      ...SetOrgUserRoleMutationAnnounced_organization @relay(mask: false)
     }
   }
 `;
@@ -62,7 +62,6 @@ const popPromoteToBillingLeaderToast = (payload, {dispatch, history}) => {
     }
   }));
 };
-
 
 export const setOrgUserRoleAddedOrganizationUpdater = (payload, store, viewerId, options) => {
   const notificationsAdded = payload.getLinkedRecords('notificationsAdded');

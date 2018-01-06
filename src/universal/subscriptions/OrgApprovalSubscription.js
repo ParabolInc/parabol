@@ -3,17 +3,6 @@ import {cancelApprovalOrgApprovalUpdater} from 'universal/mutations/CancelApprov
 import {inviteTeamMembesrOrgApprovalUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {rejectOrgApprovalOrgApprovalUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
 
-// ... on OrgApprovalAdded {
-//  orgApproval {
-//  ...CompleteOrgApprovalFrag @relay(mask: false)
-//  }
-// }
-// ... on OrgApprovalRemoved {
-//  orgApproval {
-//    id
-//  }
-// }
-
 const subscription = graphql`
   subscription OrgApprovalSubscription($teamId: ID!) {
     orgApprovalSubscription(teamId: $teamId) {
@@ -50,15 +39,6 @@ const OrgApprovalSubscription = (environment, queryVariables) => {
         default:
           console.error('OrgApprovalSubscription case fail', type);
       }
-
-
-      // const orgApproval = payload.getLinkedRecord('orgApproval');
-      // if (type === 'OrgApprovalAdded') {
-      //  handleAddOrgApprovals(orgApproval, store);
-      // } else if (type === 'OrgApprovalRemoved') {
-      //  const orgApprovalId = getInProxy(orgApproval, 'id');
-      //  handleRemoveOrgApprovals(orgApprovalId, store);
-      // }
     }
   };
 };

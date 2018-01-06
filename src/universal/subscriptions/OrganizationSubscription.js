@@ -5,36 +5,6 @@ import {
   setOrgUserRoleRemovedOrganizationUpdater
 } from 'universal/mutations/SetOrgUserRoleMutation';
 
-// ...on OrganizationAdded {
-//  organization {
-//  ...CompleteOrganizationFrag @relay(mask: false)
-//  }
-//  notificationsAdded {
-//  ...PromoteToBillingLeader_notification @relay(mask: false)
-//  ...PaymentRejected_notification @relay(mask: false)
-//  ...RequestNewUser_notification @relay(mask: false)
-//  }
-// }
-// ... on OrganizationUpdated {
-//  organization {
-//  ...CompleteOrganizationFrag @relay(mask: false)
-//  }
-//  updatedOrgMember {
-//    isBillingLeader
-//  }
-//  notification {
-//  ...PaymentRejected_notification @relay(mask: false)
-//  }
-// }
-// ... on OrganizationRemoved {
-//  organization {
-//    id
-//  }
-//  notificationsRemoved {
-//    id
-//  }
-// }
-
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
@@ -76,22 +46,6 @@ const OrganizationSubscription = (environment, queryVariables, subParams) => {
         default:
           console.error('OrganizationSubscription case fail', type);
       }
-      // const organization = payload.getLinkedRecord('organization');
-      // const options = {dispatch, environment, history, store};
-      // if (type === 'OrganizationAdded') {
-      //  const notifications = payload.getLinkedRecords('notificationsAdded');
-      //  handleAddOrganization(organization, store, viewerId);
-      //  handleAddNotifications(notifications, options);
-      // } else if (type === 'OrganizationUpdated') {
-      //  const notification = payload.getLinkedRecord('notification');
-      //  handleAddNotifications(notification, options);
-      // } else if (type === 'OrganizationRemoved') {
-      //  const organizationId = getInProxy(organization, 'id');
-      //  const notificationsRemoved = payload.getLinkedRecords('notificationsRemoved');
-      //  const notificationIds = getInProxy(notificationsRemoved, 'id');
-      //  handleRemoveOrganization(organizationId, store, viewerId);
-      //  handleRemoveNotifications(notificationIds, store, viewerId);
-      // }
     }
   };
 };

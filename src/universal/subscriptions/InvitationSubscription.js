@@ -2,21 +2,6 @@ import {approveToOrgInvitationUpdater} from 'universal/mutations/ApproveToOrgMut
 import {cancelTeamInviteInvitationUpdater} from 'universal/mutations/CancelTeamInviteMutation';
 import {inviteTeamMembersInvitationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 
-// ...on InvitationAdded {
-// ...CompleteInvitationFrag @relay(mask: false)
-// }
-// }
-// ... on InvitationUpdated {
-//  invitation {
-//  ...CompleteInvitationFrag @relay(mask: false)
-//  }
-// }
-// ... on InvitationRemoved {
-//  invitation {
-//    id
-//  }
-// }
-
 const subscription = graphql`
   subscription InvitationSubscription($teamId: ID!) {
     invitationSubscription(teamId: $teamId) {
@@ -50,14 +35,6 @@ const InvitationSubscription = (environment, queryVariables) => {
         default:
           console.error('InvitationSubscription case fail', type);
       }
-
-      // const invitation = payload.getLinkedRecord('invitation');
-      // if (type === 'InvitationAdded') {
-      //  handleAddInvitations(invitation, store);
-      // } else if (type === 'InvitationRemoved') {
-      //  const invitationId = getInProxy(invitation, 'id');
-      //  handleRemoveInvitations(invitationId, store, teamId);
-      // }
     }
   };
 };

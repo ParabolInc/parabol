@@ -42,10 +42,11 @@ export default {
     const projectIds = [...archivedProjectIds, ...reassignedProjectIds];
     const data = {teamId, teamMemberId, projectIds, notificationId, removedNotifications, userId};
 
-    // There are 2 confusing things here, 1) is it self inflicted and 2) is the receiver the one getting kicked out
-    // isSelf refers to the latter. if self-inflicted, notificationId will be present (not great)
+    // messages to the rest of the team reporting the kick out
     publish(TEAM_MEMBER, teamId, RemoveTeamMemberPayload, data, subOptions);
     publish(PROJECT, teamId, RemoveTeamMemberPayload, data, subOptions);
+
+    // individualized message to the user getting kicked out
     publish(TEAM, userId, RemoveTeamMemberPayload, data, subOptions);
 
     return data;

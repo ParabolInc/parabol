@@ -21,16 +21,25 @@ export const resolveNotificationForViewer = async ({notificationIds, notificatio
   const notificationDocs = (notificationIds && notificationIds.length > 0) ?
     await dataLoader.get('notifications').loadMany(notificationIds) : notifications;
   const viewerId = getUserId(authToken);
-  return notificationDocs ? notificationDocs.find((n) => n.userIds.includes(viewerId)) : notificationDocs;
+  return notificationDocs ? notificationDocs.find((n) => n.userIds.includes(viewerId)) : null;
 };
 
-export const makeResovleNotificationForViewer = (idArray, docArray) => async (source, args, {authToken, dataLoader}) => {
+export const makeResolveNotificationForViewer = (idArray, docArray) => async (source, args, {authToken, dataLoader}) => {
   const notificationIds = source[idArray];
   const notifications = source[docArray];
   const notificationDocs = (notificationIds && notificationIds.length > 0) ?
     await dataLoader.get('notifications').loadMany(notificationIds) : notifications;
   const viewerId = getUserId(authToken);
-  return notificationDocs ? notificationDocs.find((n) => n.userIds.includes(viewerId)) : notificationDocs;
+  return notificationDocs ? notificationDocs.find((n) => n.userIds.includes(viewerId)) : null;
+};
+
+export const makeResolveNotificationsForViewer = (idArray, docArray) => async (source, args, {authToken, dataLoader}) => {
+  const notificationIds = source[idArray];
+  const notifications = source[docArray];
+  const notificationDocs = (notificationIds && notificationIds.length > 0) ?
+    await dataLoader.get('notifications').loadMany(notificationIds) : notifications;
+  const viewerId = getUserId(authToken);
+  return notificationDocs ? notificationDocs.filter((n) => n.userIds.includes(viewerId)) : null;
 };
 
 export const resolveNotifications = ({notificationIds, notifications}, args, {dataLoader}) => {

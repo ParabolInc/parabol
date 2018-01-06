@@ -1,4 +1,6 @@
 import {commitMutation} from 'react-relay';
+import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn';
 import handleAddInvitations from 'universal/mutations/handlers/handleAddInvitations';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
@@ -38,12 +40,7 @@ graphql`
 graphql`
   fragment ApproveToOrgMutation_notification on ApproveToOrgPayload {
     inviteeApprovedNotifications {
-      id
-      inviteeEmail
-      team {
-        id
-        name
-      }
+      ...InviteeApproved_notification @relay(mask: false)
     }
   }
 `;
@@ -57,6 +54,28 @@ const mutation = graphql`
     }
   }
 `;
+
+const popInviteeApprovedToast = (payload, {dispatch, environment}) => {
+  const notifications = payload.getLinkedRecords('inviteeApprovedNotifications');
+  const inviteeEmails = getInProxy(notifications, 'inviteeEmail');
+  if (!inviteeEmails) return;
+  // the server reutrns a notification for each team the invitee was approved to, but we only need 1 toast
+  const [inviteeEmail] = inviteeEmails;
+  dispatch(showInfo({
+    autoDismiss: 10,
+    title: 'Approved!',
+    message: `${inviteeEmail} has been approved by your organization. We just sent them an invitation.`,
+    action: {
+      label: 'Great!',
+      callback: () => {
+        const notificationIds = getInProxy(notifications, 'id');
+        notificationIds.forEach((notificationId) => {
+          ClearNotificationMutation(environment, notificationId);
+        });
+      }
+    }
+  }));
+};
 
 export const approveToOrgOrganizationUpdater = (payload, store, viewerId) => {
   const removedRequestNotifications = payload.getLinkedRecords('removedRequestNotifications');
@@ -75,9 +94,10 @@ export const approveToOrgInvitationUpdater = (payload, store) => {
   handleAddInvitations(newInvitations, store);
 };
 
-export const approveToOrgNotificationUpdater = (payload, options) => {
-  const notifications = payload.getLinkedRecords('inviteeAPprovedNotifications');
-  handleAddNotifications(notifications, options);
+export const approveToOrgNotificationUpdater = (payload, store, viewerId, options) => {
+  const notifications = payload.getLinkedRecords('inviteeApprovedNotifications');
+  handleAddNotifications(notifications, store, viewerId);
+  popInviteeApprovedToast(payload, options);
 };
 
 const ApproveToOrgMutation = (environment, email, orgId, onError, onCompleted) => {

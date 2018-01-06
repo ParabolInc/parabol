@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
+import {GraphQLList, GraphQLObjectType} from 'graphql';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
-import {rejectOrgApprovalFields} from 'server/graphql/types/RejectOrgApprovalPayload';
+import RejectOrgApprovalPayload, {rejectOrgApprovalFields} from 'server/graphql/types/RejectOrgApprovalPayload';
 import {getUserId} from 'server/utils/authorization';
 
 const RejectOrgApprovalOrgLeaderPayload = new GraphQLObjectType({

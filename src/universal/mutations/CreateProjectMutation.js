@@ -64,7 +64,7 @@ export const createProjectProjectUpdater = (payload, store, viewerId, isEditing)
 export const createProjectNotificationUpdater = (payload, store, viewerId, options) => {
   const notification = payload.getLinkedRecord('involvementNotification');
   if (!notification) return;
-  handleAddNotifications(payload, store, viewerId);
+  handleAddNotifications(notification, store, viewerId);
 
   // No need to pass options for the mutation because you can't notify yourself of your involvement
   if (options) {

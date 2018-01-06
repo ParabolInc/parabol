@@ -1,4 +1,7 @@
 import {commitMutation} from 'react-relay';
+import {matchPath} from 'react-router-dom';
+import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
@@ -32,18 +35,15 @@ graphql`
 `;
 
 graphql`
-  fragment RemoveTeamMemberMutation_team on RemoveTeamMemberSelfPayload {
+  fragment RemoveTeamMemberMutation_team on RemoveTeamMemberExMemberPayload {
     updatedProjects {
       id
     }
     removedNotifications {
       id
     }
-    notification {
-      team {
-        id
-        name
-      }
+    kickOutNotification {
+      ...KickedOut_notification @relay(mask: false)
     }
     team {
       id
@@ -61,15 +61,42 @@ const mutation = graphql`
   }
 `;
 
+const popKickedOutNotification = (payload, {dispatch, environment, history, location}) => {
+  const kickOutNotification = payload.getLinkedRecord('kickOutNotification');
+  const teamId = getInProxy(kickOutNotification, 'team', 'id');
+  if (!teamId) return;
+  const teamName = getInProxy(kickOutNotification, 'team', 'name');
+  dispatch(showWarning({
+    autoDismiss: 10,
+    title: 'So long!',
+    message: `You have been removed from ${teamName}`,
+    action: {
+      label: 'OK',
+      callback: () => {
+        const notificationId = payload.getValue('id');
+        ClearNotificationMutation(environment, notificationId);
+      }
+    }
+  }));
+  const {pathname} = location;
+  const onExTeamRoute = Boolean(matchPath(pathname, {
+    path: `(/team/${teamId}|/meeting/${teamId})`
+  }));
+  if (onExTeamRoute) {
+    history.push('/me');
+  }
+};
+
 export const removeTeamMemberProjectsUpdater = (payload, store, viewerId) => {
   const type = payload.getValue('__typename');
-  const projects = payload.getLinkedRecord('updatedProjects');
-  if (type === 'RemoveTeamMemberSelfPayload') {
+  const projects = payload.getLinkedRecords('updatedProjects');
+  if (type === 'RemoveTeamMemberExMemberPayload') {
     const projectIds = getInProxy(projects, 'id');
     handleRemoveProjects(projectIds, store, viewerId);
-  } else {
+  } else if (type === 'RemoveTeamMemberOtherPayload') {
     handleUpsertProjects(projects, store, viewerId);
   }
+  console.error('removeTeamMemberProjectsUpdater unhandled type', type);
 };
 
 export const removeTeamMemberTeamMemberUpdater = (payload, store) => {
@@ -85,7 +112,8 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId, options) =
   handleRemoveTeams(teamId, store, viewerId);
 
   const notification = payload.getLinkedRecord('notification');
-  handleAddNotifications(notification, options);
+  handleAddNotifications(notification, store, viewerId);
+  popKickedOutNotification(payload, options);
 };
 
 export const removeTeamMemberUpdater = (payload, store, viewerId, options) => {

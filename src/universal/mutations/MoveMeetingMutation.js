@@ -42,8 +42,6 @@ const MoveMeetingMutation = (environment, input, history, onError, onCompleted) 
       const currentMeetingPhaseItem = team.getValue('meetingPhaseItem');
       const nextPhaseInfo = actionMeeting[nextPhase];
       const meetingPhaseInfo = actionMeeting[currentMeetingPhase];
-      // console.log('next phase', nextPhase, nextPhaseItem)
-      // console.log('current Meeting phase', currentMeetingPhase, currentMeetingPhaseItem)
       if (nextPhase) {
         team.setValue(nextPhase, 'facilitatorPhase');
         if (nextPhaseInfo.index >= meetingPhaseInfo.index) {

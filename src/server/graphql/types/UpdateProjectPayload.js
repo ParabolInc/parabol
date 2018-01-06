@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql';
-import {makeResovleNotificationForViewer, resolveProject} from 'server/graphql/resolvers';
+import {makeResolveNotificationForViewer, resolveProject} from 'server/graphql/resolvers';
 import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 import Project from 'server/graphql/types/Project';
 
@@ -19,11 +19,11 @@ const UpdateProjectPayload = new GraphQLObjectType({
     },
     addedNotification: {
       type: NotifyProjectInvolves,
-      resolve: makeResovleNotificationForViewer('notificationIdsToAdd', 'notificationsToAdd')
+      resolve: makeResolveNotificationForViewer('notificationIdsToAdd', 'notificationsToAdd')
     },
     removedNotification: {
       type: NotifyProjectInvolves,
-      resolve: makeResovleNotificationForViewer('notificationIdsToRemove', 'notificationsToRemove')
+      resolve: makeResolveNotificationForViewer('notificationIdsToRemove', 'notificationsToRemove')
     }
   })
 });

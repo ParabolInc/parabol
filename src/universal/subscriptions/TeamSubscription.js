@@ -8,49 +8,6 @@ import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilita
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 
-// ... on TeamAdded {
-//  notification {
-//    id
-//    team {
-//      id
-//      name
-//    }
-//  }
-//  removedTeamInviteNotification {
-//    id
-//  }
-//  team {
-//  ...CompleteTeamFragWithMembers @relay(mask: false)
-//  }
-// }
-// ... on TeamUpdated {
-//  team {
-//  ...CompleteTeamFrag @relay(mask: false)
-//  }
-// }
-// ... on TeamRemoved {
-//  team {
-//    id
-//  }
-//  notification {
-//    id
-//    orgId
-//    startAt
-//    type
-//  ... on NotifyTeamArchived {
-//      team {
-//        name
-//      }
-//    }
-//  ... on NotifyKickedOut {
-//      isKickout
-//      team {
-//        id
-//        name
-//      }
-//    }
-//  }
-// }
 const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
@@ -115,19 +72,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         default:
           console.error('TeamSubscription case fail', type);
       }
-
-      // const team = payload.getLinkedRecord('team');
-      // const notification = payload.getLinkedRecord('notification');
-      // if (type === 'TeamAdded') {
-      //  const removedNotification = payload.getLinkedRecord('removedTeamInviteNotification');
-      //  const removedNotificationId = removedNotification && removedNotification.getValue('id');
-      //  handleAddTeams(team, store, viewerId);
-      //  handleRemoveNotifications(removedNotificationId, store, viewerId);
-      // } else if (type === 'TeamRemoved') {
-      //  const teamId = team.getValue('id');
-      //  handleRemoveTeam(store, viewerId, teamId);
-      // }
-      // handleAddNotifications(notification, {dispatch, environment, store});
     }
   };
 };

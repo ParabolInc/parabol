@@ -1,12 +1,12 @@
 import {GraphQLObjectType} from 'graphql';
 import SetOrgUserRolePayload, {setOrgUserRoleFields} from 'server/graphql/types/SetOrgUserRolePayload';
 
-const SetOrgUserRoleAnnoucePayload = new GraphQLObjectType({
-  name: 'SetOrgUserRoleAnnoucePayload',
+const SetOrgUserRoleAnnouncePayload = new GraphQLObjectType({
+  name: 'SetOrgUserRoleAnnouncePayload',
   interfaces: () => [SetOrgUserRolePayload],
   fields: () => ({
     ...setOrgUserRoleFields
   })
 });
 
-export default SetOrgUserRoleAnnoucePayload;
+export default SetOrgUserRoleAnnouncePayload;

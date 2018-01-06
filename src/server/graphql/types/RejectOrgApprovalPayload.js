@@ -2,6 +2,7 @@ import {GraphQLInterfaceType, GraphQLList} from 'graphql';
 import OrgApproval from 'server/graphql/types/OrgApproval';
 import RejectOrgApprovalInviterPayload from 'server/graphql/types/RejectOrgApprovalInviterPayload';
 import RejectOrgApprovalOrgLeaderPayload from 'server/graphql/types/RejectOrgApprovalOrgLeaderPayload';
+import {getUserId} from 'server/utils/authorization';
 
 export const rejectOrgApprovalFields = {
   removedOrgApprovals: {
@@ -16,8 +17,10 @@ export const rejectOrgApprovalFields = {
 
 const RejectOrgApprovalPayload = new GraphQLInterfaceType({
   name: 'RejectOrgApprovalPayload',
-  resolveType: ({notificationIds}) => {
-    return notificationIds ? RejectOrgApprovalInviterPayload : RejectOrgApprovalOrgLeaderPayload;
+  resolveType: ({deniedNotifications}, {authToken}) => {
+    const viewerId = getUserId(authToken);
+    const isInviter = Boolean(deniedNotifications.find((n) => n.userIds.includes(viewerId)));
+    return isInviter ? RejectOrgApprovalInviterPayload : RejectOrgApprovalOrgLeaderPayload;
   },
   fields: () => ({
     ...rejectOrgApprovalFields

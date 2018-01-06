@@ -33,7 +33,7 @@ const AgendaItemSubscription = (environment, queryVariables) => {
           handleUpdateAgendaItems(store, teamId);
           break;
         default:
-          console.error('TeamSubscription case fail', type);
+          console.error('AgendaItemSubscription case fail', type);
       }
     }
   };

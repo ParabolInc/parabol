@@ -9,7 +9,6 @@ import publishBatch from 'server/utils/publishBatch';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL} from 'universal/utils/constants';
-import promiseAllObj from 'universal/utils/promiseAllObj';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -23,15 +22,16 @@ export default {
       type: GraphQLString
     }
   },
-  async resolve(source, {notificationId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
     const subOptions = {operationId, mutatorId};
 
     // AUTH
+    const {notificationId} = args;
     const viewerId = getUserId(authToken);
-    const rejectionNotification = await r.table('Notification').get(notificationId)
+    const rejectionNotification = await r.table('Notification').get(notificationId);
     if (!rejectionNotification) {
       throw errorObj({reason: `Notification ${notificationId} no longer exists!`});
     }
@@ -50,7 +50,7 @@ export default {
     const {removedOrgApprovals, removedRequestNotifications} =
       await removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: viewerId});
 
-    const deniedNotifications =  removedRequestNotifications.map(({inviterUserId}) => ({
+    const deniedNotifications = removedRequestNotifications.map(({inviterUserId}) => ({
       id: shortid.generate(),
       type: DENY_NEW_USER,
       startAt: now,
@@ -62,8 +62,7 @@ export default {
     }));
     await r.table('Notification').insert(deniedNotifications);
     const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
-    const notificationIds = deniedNotifications.map(({id}) => id);
-    const data = {notificationIds, removedOrgApprovalIds, removedRequestNotifications};
+    const data = {deniedNotifications, removedOrgApprovalIds, removedRequestNotifications};
 
     // publish the removed org approval to the team
     const makeApprovals = (val) => ({removedOrgApprovalIds: val.map(({id}) => id)});

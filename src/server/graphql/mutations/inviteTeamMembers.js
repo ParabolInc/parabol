@@ -4,8 +4,7 @@ import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayl
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {TEAM} from 'universal/subscriptions/constants';
-import {INVITATION, NOTIFICATION, ORG_APPROVAL, TEAM_MEMBER} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATION, ORG_APPROVAL, TEAM_MEMBER, TEAM} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 export default {

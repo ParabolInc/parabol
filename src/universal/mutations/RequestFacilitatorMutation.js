@@ -7,7 +7,7 @@ graphql`
   fragment RequestFacilitatorMutation_team on RequestFacilitatorPayload {
     requestor {
       id
-      name
+      preferredName
     }
   }
 `;

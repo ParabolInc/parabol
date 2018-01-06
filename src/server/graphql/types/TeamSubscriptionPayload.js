@@ -9,7 +9,7 @@ import KillMeetingPayload from 'server/graphql/types/KillMeetingPayload';
 import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
 import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPayload';
 import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
-import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberSelfPayload';
+import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberExMemberPayload';
 import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPayload';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';

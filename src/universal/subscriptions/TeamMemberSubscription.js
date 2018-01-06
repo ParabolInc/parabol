@@ -2,30 +2,6 @@ import {acceptTeamInviteTeamMemberUpdater} from 'universal/mutations/AcceptTeamI
 import {inviteTeamMembersTeamMemberUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 
-// ... on TeamMemberAdded {
-//  teamMember {
-//  ...CompleteTeamMemberFrag
-//  }
-//  notification {
-//    type
-//      team {
-//      name
-//    }
-//    teamMember {
-//      preferredName
-//    }
-//  }
-//  removedInvitation {
-//    id
-//    teamId
-//  }
-// }
-// ... on TeamMemberUpdated {
-//  teamMember {
-//  ...CompleteTeamMemberFrag
-//  }
-// }
-
 const subscription = graphql`
   subscription TeamMemberSubscription {
     teamMemberSubscription {
@@ -59,21 +35,9 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
         case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamMemberUpdater(payload, store, dispatch);
           break;
-
         default:
           console.error('TeamMemberSubscription case fail', type);
       }
-      // if (type === 'TeamMemberAdded') {
-      //  const notification = payload.getLinkedRecord('notification');
-      //  const removedInvitation = payload.getLinkedRecord('removedInvitation');
-      //  const removedInvitationId = getInProxy(removedInvitation, 'id');
-      //  const removedInvitationTeamId = getInProxy(removedInvitation, 'teamId');
-      //  handleAddTeamMembers(teamMember, store);
-      //  handleAddNotifications(notification, {dispatch, environment, store});
-      //  handleRemoveInvitations(removedInvitationId, store, removedInvitationTeamId);
-      // } else if (type === 'TeamMemberUpdated') {
-      //  handleUpdateTeamMembers(teamMember, store);
-      // }
     }
   };
 };
