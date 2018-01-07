@@ -1,7 +1,5 @@
 import jwtDecode from 'jwt-decode';
 import {commitMutation} from 'react-relay';
-import {successfulExistingJoin, successfulJoin} from 'universal/modules/invitation/helpers/notifications';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
 import handleToastError from 'universal/mutations/handlers/handleToastError';
@@ -49,16 +47,19 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
     },
     onError,
     onCompleted: (data) => {
-      const {acceptTeamInviteEmail: {team: {id: teamId}, authToken}} = data;
-      const {tms} = jwtDecode(authToken);
-      dispatch(setAuthToken(authToken));
-      if (tms.length <= 1) {
-        dispatch(showSuccess(successfulJoin));
-        dispatch(setWelcomeActivity(`/team/${teamId}`));
-        history.push('/me/settings');
+      const {acceptTeamInviteEmail: {error, team, authToken}} = data;
+      if (error) {
+        history.push('/signout');
       } else {
-        dispatch(showSuccess(successfulExistingJoin));
-        history.push(`/team/${teamId}`);
+        const {id: teamId} = team;
+        const {tms} = jwtDecode(authToken);
+        dispatch(setAuthToken(authToken));
+        if (tms.length <= 1) {
+          dispatch(setWelcomeActivity(`/team/${teamId}`));
+          history.push('/me/settings');
+        } else {
+          history.push(`/team/${teamId}`);
+        }
       }
     }
   });

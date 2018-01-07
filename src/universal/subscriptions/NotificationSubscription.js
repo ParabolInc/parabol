@@ -6,10 +6,13 @@ import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNot
 import {createProjectNotificationUpdater} from 'universal/mutations/CreateProjectMutation';
 import {deleteProjectNotificationUpdater} from 'universal/mutations/DeleteProjectMutation';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
-import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
+import {
+  inviteTeamMembersInviteeNotificationUpdater,
+  inviteTeamMembersOrgLeaderNotificationUpdater
+} from 'universal/mutations/InviteTeamMembersMutation';
 import {
   rejectOrgApprovalInviterNotificationUpdater,
-  rejectOrgApprovalNotificationUpdater
+  rejectOrgApprovalLeaderNotificationUpdater
 } from 'universal/mutations/RejectOrgApprovalMutation';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
@@ -25,7 +28,8 @@ const subscription = graphql`
       ...ClearNotificationMutation_notification
       ...CreateProjectMutation_notification
       ...DeleteProjectMutation_notification
-      ...InviteTeamMembersMutation_notification
+      ...InviteTeamMembersMutationInvitee_notification
+      ...InviteTeamMembersMutationOrgLeader_notification
       ...RejectOrgApprovalMutationLeader_notification
       ...RejectOrgApprovalMutationInviter_notification
 
@@ -43,6 +47,7 @@ const subscription = graphql`
       # Stripe webhooks
       ... on StripeFailPaymentPayload {
         notification {
+          type
           ...PaymentRejected_notification @relay(mask: false)
         }
       }
@@ -134,14 +139,17 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
         case 'DeleteProjectPayload':
           deleteProjectNotificationUpdater(payload, store, viewerId);
           break;
-        case 'InviteTeamMembersPayload':
-          inviteTeamMembersNotificationUpdater(payload, store, viewerId, options);
+        case 'InviteTeamMembersInviteePayload':
+          inviteTeamMembersInviteeNotificationUpdater(payload, store, viewerId, options);
+          break;
+        case 'InviteTeamMembersOrgLeaderPayload':
+          inviteTeamMembersOrgLeaderNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'RejectOrgApprovalInviterPayload':
           rejectOrgApprovalInviterNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'RejectOrgApprovalLeaderPayload':
-          rejectOrgApprovalNotificationUpdater(payload, store, viewerId);
+          rejectOrgApprovalLeaderNotificationUpdater(payload, store, viewerId);
           break;
         case 'User':
           connectSocketUserUpdater(payload, store, viewerId);

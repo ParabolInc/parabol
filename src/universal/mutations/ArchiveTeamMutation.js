@@ -11,10 +11,8 @@ graphql`
       id
     }
     notification {
-      id
-      team {
-        name
-      }
+      type
+      ...TeamArchived_notification
     }
   }
 `;

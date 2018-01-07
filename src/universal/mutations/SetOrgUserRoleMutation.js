@@ -12,6 +12,7 @@ graphql`
       ...CompleteOrganizationFrag @relay(mask: false)
     }
     notificationsAdded {
+      type
       ...PromoteToBillingLeader_notification @relay(mask: false)
       ...PaymentRejected_notification @relay(mask: false)
       ...RequestNewUser_notification @relay(mask: false)

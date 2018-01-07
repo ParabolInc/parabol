@@ -24,6 +24,7 @@ graphql`
 graphql`
   fragment RejectOrgApprovalMutationInviter_notification on RejectOrgApprovalInviterPayload {
     deniedNotification {
+      type
       ...DenyNewUser_notification @relay(mask: false)
     }
   }

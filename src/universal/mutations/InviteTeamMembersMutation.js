@@ -12,7 +12,28 @@ import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveO
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment InviteTeamMembersMutation_teamMember on InviteTeamMembersPayload {
+  fragment InviteTeamMembersMutationInvitee_team on InviteTeamMembersInviteePayload {
+    team {
+      ...CompleteTeamFragWithMembers @relay(mask: false)
+    }
+  }
+`;
+
+graphql`
+  fragment InviteTeamMembersMutationInvitee_notification on InviteTeamMembersInviteePayload {
+    reactivationNotification {
+      type
+      ...AddedToTeam_notification @relay(mask: false)
+    }
+    teamInviteNotification {
+      type
+      ...TeamInvite_notification @relay(mask: false)
+    }
+  }
+`;
+
+graphql`
+  fragment InviteTeamMembersMutationAnnounce_teamMember on InviteTeamMembersAnnouncePayload {
     reactivatedTeamMembers {
       ...CompleteTeamMemberFrag @relay(mask: false)
     }
@@ -23,7 +44,7 @@ graphql`
 `;
 
 graphql`
-  fragment InviteTeamMembersMutation_orgApproval on InviteTeamMembersPayload {
+  fragment InviteTeamMembersMutationAnnounce_orgApproval on InviteTeamMembersAnnouncePayload {
     orgApprovalsSent {
       ...CompleteOrgApprovalFrag @relay(mask: false)
     }
@@ -34,15 +55,7 @@ graphql`
 `;
 
 graphql`
-  fragment InviteTeamMembersMutation_team on InviteTeamMembersPayload {
-    team {
-      ...CompleteTeamFragWithMembers @relay(mask: false)
-    }
-  }
-`;
-
-graphql`
-  fragment InviteTeamMembersMutation_invitation on InviteTeamMembersPayload {
+  fragment InviteTeamMembersMutationAnnounce_invitation on InviteTeamMembersAnnouncePayload {
     invitationsSent {
       ...CompleteInvitationFrag @relay(mask: false)
     }
@@ -50,18 +63,13 @@ graphql`
 `;
 
 graphql`
-  fragment InviteTeamMembersMutation_notification on InviteTeamMembersPayload {
-    reactivationNotification {
-      ...AddedToTeam_notification @relay(mask: false)
-    }
+  fragment InviteTeamMembersMutationOrgLeader_notification on InviteTeamMembersOrgLeaderPayload {
     removedRequestNotification {
       id
     }
     requestNotification {
+      type
       ...RequestNewUser_notification @relay(mask: false)
-    }
-    teamInviteNotification {
-      ...TeamInvite_notification @relay(mask: false)
     }
   }
 `;
@@ -69,9 +77,10 @@ graphql`
 const mutation = graphql`
   mutation InviteTeamMembersMutation($teamId: ID!, $invitees: [Invitee!]!) {
     inviteTeamMembers(invitees: $invitees, teamId: $teamId) {
-      ...InviteTeamMembersMutation_teamMember @relay(mask: false)
-      ...InviteTeamMembersMutation_orgApproval @relay(mask: false)
-      ...InviteTeamMembersMutation_invitation @relay(mask: false)
+      ...InviteTeamMembersMutationAnnounce_teamMember @relay(mask: false)
+      ...InviteTeamMembersMutationAnnounce_orgApproval @relay(mask: false)
+      ...InviteTeamMembersMutationAnnounce_invitation @relay(mask: false)
+      ...InviteTeamMembersMutationOrgLeader_notification @relay(mask:false)
     }
   }
 `;
@@ -159,14 +168,7 @@ const popTeamInviteNotificationToast = (teamInviteNotification, {dispatch, envir
     action: {
       label: 'Accept!',
       callback: () => {
-        const onCompleted = () => {
-          dispatch(showInfo({
-            autoDismiss: 10,
-            title: 'Congratulations!',
-            message: `You’ve been added to team ${teamName}`
-          }));
-        };
-        AcceptTeamInviteMutation(environment, notificationId, dispatch, undefined, onCompleted);
+        AcceptTeamInviteMutation(environment, notificationId, dispatch);
       }
     }
   }));
@@ -174,6 +176,7 @@ const popTeamInviteNotificationToast = (teamInviteNotification, {dispatch, envir
 
 const popRequestNewUserNotificationToast = (requestNotification, {dispatch, history}) => {
   const inviterName = getInProxy(requestNotification, 'inviter', 'preferredName');
+  if (!inviterName) return;
   dispatch(showInfo({
     autoDismiss: 10,
     title: 'Approval Requested!',
@@ -187,7 +190,7 @@ const popRequestNewUserNotificationToast = (requestNotification, {dispatch, hist
   }));
 };
 
-export const inviteTeamMembersNotificationUpdater = (payload, store, viewerId, options) => {
+export const inviteTeamMembersInviteeNotificationUpdater = (payload, store, viewerId, options) => {
   const reactivationNotification = payload.getLinkedRecord('reactivationNotification');
   handleAddNotifications(reactivationNotification, store, viewerId);
   popReactivatedNotificationToast(reactivationNotification, options);
@@ -195,13 +198,15 @@ export const inviteTeamMembersNotificationUpdater = (payload, store, viewerId, o
   const teamInviteNotification = payload.getLinkedRecord('teamInviteNotification');
   handleAddNotifications(teamInviteNotification, store, viewerId);
   popTeamInviteNotificationToast(teamInviteNotification, options);
+};
+
+export const inviteTeamMembersOrgLeaderNotificationUpdater = (payload, store, viewerId, options) => {
+  const removedRequestNotificationId = getInProxy(payload, 'removedRequestNotification', 'id');
+  handleRemoveNotifications(removedRequestNotificationId, store, viewerId);
 
   const requestNotification = payload.getLinkedRecord('requestNotification');
   handleAddNotifications(requestNotification, store, viewerId);
   popRequestNewUserNotificationToast(requestNotification, options);
-
-  const removedRequestNotificationId = getInProxy(payload, 'removedRequestNotification', 'id');
-  handleRemoveNotifications(removedRequestNotificationId, store, viewerId);
 };
 
 export const inviteTeamMembersTeamMemberUpdater = (payload, store, dispatch, isMutator) => {

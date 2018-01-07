@@ -43,6 +43,7 @@ graphql`
       id
     }
     kickOutNotification {
+      type
       ...KickedOut_notification @relay(mask: false)
     }
     team {

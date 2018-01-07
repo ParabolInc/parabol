@@ -41,7 +41,6 @@ export default {
     } = await inviteTeamMembers(invitees, teamId, viewerId, subOptions);
     const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId);
     const reactivationNotificationIds = reactivations.map(({notificationId}) => notificationId);
-    const requestNotificationIds = requestNotifications.map(({id}) => id);
     const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
     const invitationIds = newInvitations.map(({id}) => id);
 
@@ -52,41 +51,39 @@ export default {
       teamId,
       reactivationNotificationIds,
       removedRequestNotifications,
-      requestNotificationIds,
+      requestNotifications,
       invitationIds,
       inviteNotifications
     };
-    // HANDLE REACTIVATION
 
-    // send the reactivated team members to the rest of the team
-    if (reactivatedTeamMemberIds.length) {
-      publish(TEAM_MEMBER, teamId, InviteTeamMembersPayload, data, subOptions);
-    }
-
-    // send a team + persisted notification to the reactivated team member
+    // Tell each invitee
     reactivations.forEach(({teamMemberId}) => {
       const {userId} = fromTeamMemberId(teamMemberId);
       publish(TEAM, userId, InviteTeamMembersPayload, data, subOptions);
     });
-
-    if (orgApprovalIds.length || removedOrgApprovalIds.length) {
-      publish(ORG_APPROVAL, teamId, InviteTeamMembersPayload, data, subOptions);
-    }
-    if (invitationIds.length) {
-      publish(INVITATION, teamId, InviteTeamMembersPayload, data, subOptions);
-    }
-
-    if (requestNotifications.length || removedRequestNotifications.length) {
-      billingLeaderUserIds.forEach((userId) => {
-        publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions);
-      });
-    }
 
     inviteNotifications.forEach((notification) => {
       const {userIds: [userId]} = notification;
       publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions);
     });
 
+    // tell the billing leaders (added or removed org approval requests)
+    if (requestNotifications.length || removedRequestNotifications.length) {
+      billingLeaderUserIds.forEach((userId) => {
+        publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions);
+      });
+    }
+
+    // tell the rest of the team
+    if (orgApprovalIds.length || removedOrgApprovalIds.length) {
+      publish(ORG_APPROVAL, teamId, InviteTeamMembersPayload, data, subOptions);
+    }
+    if (invitationIds.length) {
+      publish(INVITATION, teamId, InviteTeamMembersPayload, data, subOptions);
+    }
+    if (reactivatedTeamMemberIds.length) {
+      publish(TEAM_MEMBER, teamId, InviteTeamMembersPayload, data, subOptions);
+    }
     return data;
   }
 };

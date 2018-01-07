@@ -11,7 +11,7 @@ import ArchiveTeamMutation from 'universal/mutations/ArchiveTeamMutation';
 class ArchiveTeamContainer extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
-    dispatch: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
     team: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired
   };

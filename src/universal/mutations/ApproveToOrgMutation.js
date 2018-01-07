@@ -40,6 +40,7 @@ graphql`
 graphql`
   fragment ApproveToOrgMutation_notification on ApproveToOrgPayload {
     inviteeApprovedNotifications {
+      type
       ...InviteeApproved_notification @relay(mask: false)
     }
   }

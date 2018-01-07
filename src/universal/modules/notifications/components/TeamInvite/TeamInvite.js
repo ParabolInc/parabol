@@ -7,7 +7,6 @@ import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -25,24 +24,15 @@ const TeamInvite = (props) => {
   } = props;
   const {notificationId, inviter: {inviterName}, team} = notification;
   const {teamName} = team;
-  const handleCompleted = () => {
-    dispatch(showInfo({
-      autoDismiss: 10,
-      title: 'Congratulations!',
-      message: `You’ve been added to team ${teamName}`
-    }));
-    onCompleted();
-  };
-
   const accept = () => {
     submitMutation();
-    AcceptTeamInviteMutation(atmosphere, notificationId, dispatch, onError, handleCompleted);
+    AcceptTeamInviteMutation(atmosphere, notificationId, dispatch, onError, onCompleted);
   };
 
   return (
     <Row compact>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="users" size="small" />
+        <IconAvatar icon="users" size="small"/>
       </div>
       <div className={css(styles.message)}>
         {'You have been invited by '}

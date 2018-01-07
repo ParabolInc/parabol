@@ -25,6 +25,7 @@ graphql`
       }
     }
     addedNotification {
+      type
       ...ProjectInvolves_notification @relay(mask: false)
     }
     removedNotification {
