@@ -1,9 +1,9 @@
 import {GraphQLList, GraphQLNonNull} from 'graphql';
+import addTeamInvitees from 'server/graphql/mutations/helpers/addTeamInvitees';
 import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader';
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
-import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, getUserOrgDoc, requireUserInOrg} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
@@ -50,20 +50,14 @@ export default {
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
 
+    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(invitees, teamId, viewerId);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
-    const data = {orgId, teamId, teamMemberId};
+    const data = {orgId, teamId, teamMemberId, invitationIds, teamInviteNotifications};
 
-    if (inviteeCount > 0) {
-      const {teamInviteNotifications, newInvitations} = await inviteTeamMembers(invitees, teamId, viewerId);
-      // mutative!
-      data.teamInviteNotifications = teamInviteNotifications;
-      data.invitationIds = newInvitations.map(({id}) => id);
-      teamInviteNotifications.forEach((notification) => {
-        const {userIds: [invitedUserId]} = notification;
-        publish(NOTIFICATION, invitedUserId, AddTeamPayload, data, subOptions);
-      });
-    }
-
+    teamInviteNotifications.forEach((notification) => {
+      const {userIds: [invitedUserId]} = notification;
+      publish(NOTIFICATION, invitedUserId, AddTeamPayload, data, subOptions);
+    });
     publish(TEAM, viewerId, AddTeamPayload, data, subOptions);
 
     return data;

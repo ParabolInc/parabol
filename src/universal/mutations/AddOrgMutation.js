@@ -7,7 +7,7 @@ import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamIn
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment AddOrgMutation_organization on AddOrgCreatorPayload {
+  fragment AddOrgMutation_organization on AddOrgPayload {
     organization {
       id
       name
@@ -25,7 +25,7 @@ graphql`
 `;
 
 graphql`
-  fragment AddOrgMutation_notification on AddOrgInviteePayload {
+  fragment AddOrgMutation_notification on AddOrgPayload {
     teamInviteNotification {
       type
       ...TeamInvite_notification @relay(mask: false)
@@ -43,6 +43,7 @@ const mutation = graphql`
 
 const popOrganizationCreatedToast = (payload, {dispatch, history}) => {
   const teamId = getInProxy(payload, 'team', 'id');
+  if (!teamId) return;
   const teamName = getInProxy(payload, 'team', 'name');
   dispatch(showSuccess({
     title: 'Organization successfully created!',
@@ -65,6 +66,7 @@ export const addOrgMutationNotificationUpdater = (payload, store, viewerId, opti
   handleAddNotifications(notification, store, viewerId);
   popTeamInviteNotificationToast(notification, options);
 };
+
 const AddOrgMutation = (environment, variables, options, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {

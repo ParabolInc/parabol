@@ -125,10 +125,10 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
       const payload = store.getRootField('notificationSubscription');
       const type = payload.getValue('__typename');
       switch (type) {
-        case 'AddOrgInviteePayload':
+        case 'AddOrgPayload':
           addOrgMutationNotificationUpdater(payload, store, viewerId, options);
           break;
-        case 'AddTeamInviteePayload':
+        case 'AddTeamPayload':
           addTeamMutationNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'ApproveToOrgPayload':

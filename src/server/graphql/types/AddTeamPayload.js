@@ -1,11 +1,12 @@
-import {GraphQLInterfaceType, GraphQLList} from 'graphql';
-import {resolveInvitations, resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
-import AddTeamCreatorPayload from 'server/graphql/types/AddTeamCreatorPayload';
-import AddTeamInviteePayload from 'server/graphql/types/AddTeamInviteePayload';
+import {GraphQLObjectType, GraphQLList} from 'graphql';
+import {
+  makeResolveNotificationForViewer, resolveInvitations, resolveTeam,
+  resolveTeamMember
+} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
-import {getUserId} from 'server/utils/authorization';
 
 export const addTeamFields = {
   team: {
@@ -20,16 +21,16 @@ export const addTeamFields = {
   invitations: {
     type: new GraphQLList(Invitation),
     resolve: resolveInvitations
+  },
+  teamInviteNotification: {
+    type: NotifyTeamInvite,
+    description: 'The invitation sent when an team was being created',
+    resolve: makeResolveNotificationForViewer('-', 'teamInviteNotifications')
   }
 };
 
-const AddTeamPayload = new GraphQLInterfaceType({
+const AddTeamPayload = new GraphQLObjectType({
   name: 'AddTeamPayload',
-  resolveType: ({teamInviteNotifications}, {authToken}) => {
-    const viewerId = getUserId(authToken);
-    const isInvitee = Boolean(teamInviteNotifications && teamInviteNotifications.find((n) => n.userIds.includes(viewerId)));
-    return isInvitee ? AddTeamInviteePayload : AddTeamCreatorPayload;
-  },
   fields: () => addTeamFields
 });
 

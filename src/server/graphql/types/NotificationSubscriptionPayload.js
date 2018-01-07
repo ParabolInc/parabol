@@ -1,6 +1,6 @@
 import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
-import AddOrgInviteePayload from 'server/graphql/types/AddOrgInviteePayload';
-import AddTeamInviteePayload from 'server/graphql/types/AddTeamInviteePayload';
+import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
+import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
@@ -16,8 +16,8 @@ import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayl
 import User from 'server/graphql/types/User';
 
 const types = [
-  AddOrgInviteePayload,
-  AddTeamInviteePayload,
+  AddOrgPayload,
+  AddTeamPayload,
   ApproveToOrgPayload,
   CancelApprovalPayload,
   CancelTeamInvitePayload,

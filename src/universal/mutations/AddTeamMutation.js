@@ -7,7 +7,7 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment AddTeamMutation_team on AddTeamCreatorPayload {
+  fragment AddTeamMutation_team on AddTeamPayload {
     team {
       ...CompleteTeamFragWithMembers @relay(mask: false)
     }
@@ -15,7 +15,7 @@ graphql`
 `;
 
 graphql`
-  fragment AddTeamMutation_notification on AddTeamInviteePayload {
+  fragment AddTeamMutation_notification on AddTeamPayload {
     teamInviteNotification {
       type
       ...TeamInvite_notification @relay(mask: false)
@@ -33,6 +33,7 @@ const mutation = graphql`
 
 const popTeamCreatedToast = (payload, {dispatch, history}) => {
   const teamId = getInProxy(payload, 'team', 'id');
+  if (!teamId) return;
   const teamName = getInProxy(payload, 'team', 'name');
   dispatch(showSuccess({
     title: 'Team successfully created!',

@@ -1,11 +1,11 @@
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
 import addOrgValidation from 'server/graphql/mutations/helpers/addOrgValidation';
+import addTeamInvitees from 'server/graphql/mutations/helpers/addTeamInvitees';
 import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
 import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader';
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
 import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
-import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
@@ -54,21 +54,13 @@ export default {
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
 
+    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(invitees, teamId, viewerId);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
-    const data = {orgId, teamId, teamMemberId};
-
-    if (inviteeCount > 0) {
-      const {teamInviteNotifications, newInvitations} = await inviteTeamMembers(invitees, teamId, viewerId);
-      // mutative!
-      data.teamInviteNotifications = teamInviteNotifications;
-      data.invitationIds = newInvitations.map(({id}) => id);
-      teamInviteNotifications.forEach((notification) => {
-        const {userIds} = notification;
-        const invitedUserId = userIds[0];
-        publish(NOTIFICATION, invitedUserId, AddOrgPayload, data, subOptions);
-      });
-    }
-
+    const data = {orgId, teamId, teamMemberId, invitationIds, teamInviteNotifications};
+    teamInviteNotifications.forEach((notification) => {
+      const {userIds: [inviteeUserId]} = notification;
+      publish(NOTIFICATION, inviteeUserId, AddOrgPayload, data, subOptions);
+    });
     publish(ORGANIZATION, viewerId, AddOrgPayload, data, subOptions);
 
 

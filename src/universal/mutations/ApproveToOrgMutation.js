@@ -109,8 +109,8 @@ export const approveToOrgNotificationUpdater = (payload, store, viewerId, option
   handleAddNotifications(teamInviteNotifications, store, viewerId);
   if (teamInviteNotifications) {
     teamInviteNotifications.forEach((notification) => {
-      popTeamInviteNotificationToast(notification, options)
-    })
+      popTeamInviteNotificationToast(notification, options);
+    });
   }
 };
 

@@ -1,7 +1,7 @@
 import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
-import AddTeamCreatorPayload from 'server/graphql/types/AddTeamCreatorPayload';
+import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
 import InviteTeamMembersInviteePayload from 'server/graphql/types/InviteTeamMembersInviteePayload';
@@ -20,7 +20,7 @@ import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 const types = [
   AcceptTeamInviteEmailPayload,
   AcceptTeamInviteNotificationPayload,
-  AddTeamCreatorPayload,
+  AddTeamPayload,
   ArchiveTeamPayload,
   EndMeetingPayload,
   InviteTeamMembersInviteePayload,
