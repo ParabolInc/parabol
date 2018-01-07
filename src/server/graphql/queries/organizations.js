@@ -10,6 +10,6 @@ export default {
 
     // RESOLUTION
     const allOrgs = await dataLoader.get('orgsByUserId').load(userId);
-    return allOrgs.sort((a, b) => a.name < b.name);
+    return allOrgs.sort((a, b) => a.name > b.name ? 1 : -1);
   }
 };

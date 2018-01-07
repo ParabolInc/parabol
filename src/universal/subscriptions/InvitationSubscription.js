@@ -21,7 +21,7 @@ const InvitationSubscription = (environment, queryVariables) => {
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('invitationSubscription');
-      const type = payload.getLinkedRecord('__typename');
+      const type = payload.getValue('__typename');
       switch (type) {
         case 'ApproveToOrgPayload':
           approveToOrgInvitationUpdater(payload, store);

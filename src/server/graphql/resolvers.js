@@ -1,4 +1,5 @@
 import {getUserId} from 'server/utils/authorization';
+import nullIfEmpty from 'universal/utils/nullIfEmpty';
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem;
@@ -39,7 +40,9 @@ export const makeResolveNotificationsForViewer = (idArray, docArray) => async (s
   const notificationDocs = (notificationIds && notificationIds.length > 0) ?
     await dataLoader.get('notifications').loadMany(notificationIds) : notifications;
   const viewerId = getUserId(authToken);
-  return notificationDocs ? notificationDocs.filter((n) => n.userIds.includes(viewerId)) : null;
+  if (!notificationDocs) return null;
+  const viewerNotifications = notificationDocs.filter((n) => n.userIds.includes(viewerId));
+  return nullIfEmpty(viewerNotifications);
 };
 
 export const resolveNotifications = ({notificationIds, notifications}, args, {dataLoader}) => {
@@ -67,7 +70,7 @@ export const resolveProjects = async ({projectIds}, args, {authToken, dataLoader
   const projects = await dataLoader.get('projects').loadMany(projectIds);
   const {userId} = projects[0];
   const isViewer = userId === getUserId(authToken);
-  return isViewer ? projects : projects.filter((p) => !p.tags.includes('private'));
+  return isViewer ? projects : nullIfEmpty(projects.filter((p) => !p.tags.includes('private')));
 };
 
 export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {

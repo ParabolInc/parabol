@@ -6,6 +6,7 @@ import {
 import Invitation from 'server/graphql/types/Invitation';
 import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import OrgApproval from 'server/graphql/types/OrgApproval';
 
 const ApproveToOrgPayload = new GraphQLObjectType({
@@ -13,22 +14,35 @@ const ApproveToOrgPayload = new GraphQLObjectType({
   fields: () => ({
     removedRequestNotifications: {
       type: new GraphQLList(NotifyRequestNewUser),
-      description: 'The notifications removed after approving an email to the organization',
+      description: 'If the viewer is an org leader, the notifications removed after approving to the organization',
       resolve: makeResolveNotificationForViewer('-', 'removedRequestNotifications')
     },
     removedOrgApprovals: {
       type: new GraphQLList(OrgApproval),
-      description: 'The org approvals that were removed in place of team members'
+      description: 'If the viegnwer is a team member, the org approvals that were removed in place of team members',
+      resolve: ({removedOrgApprovals, teamIdFilter}) => {
+        if (!teamIdFilter) return removedOrgApprovals;
+        return removedOrgApprovals.filter((approval) => approval.teamId === teamIdFilter);
+      }
     },
     newInvitations: {
       type: new GraphQLList(Invitation),
-      description: 'The list of team members added as a result of the approval',
-      resolve: resolveInvitations
+      description: 'If the viewer is a team member, the list of team members added as a result of the approval',
+      resolve: async (source, args, context) => {
+        const {teamIdFilter} = source;
+        const invitations = await resolveInvitations(source, args, context);
+        return teamIdFilter ? invitations.filter((invitation) => invitation.teamId === teamIdFilter) : invitations;
+      }
     },
     inviteeApprovedNotifications: {
       type: new GraphQLList(NotifyInviteeApproved),
-      description: 'The notifications to send out to the inviters',
+      description: 'If the viewer invited the invitee, the notifications to say they have been approved',
       resolve: makeResolveNotificationsForViewer('-', 'inviteeApprovedNotifications')
+    },
+    teamInviteNotifications: {
+      type: new GraphQLList(NotifyTeamInvite),
+      description: 'If the viewer is the invitee, the notifications to invite them to teams',
+      resolve: makeResolveNotificationsForViewer('-', 'teamInviteNotifications')
     }
   })
 });

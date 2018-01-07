@@ -115,7 +115,7 @@ const popTeamMemberReactivatedToast = (payload, dispatch) => {
 };
 
 const popOrgApprovalToast = (payload, dispatch) => {
-  const orgApprovalsSent = payload.getLinkedRecord('orgApprovalsSent');
+  const orgApprovalsSent = payload.getLinkedRecords('orgApprovalsSent');
   const emails = getInProxy(orgApprovalsSent, 'email');
   if (!emails) return;
   const [firstEmail] = emails;

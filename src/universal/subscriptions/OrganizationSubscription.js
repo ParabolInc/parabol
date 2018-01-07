@@ -28,7 +28,7 @@ const OrganizationSubscription = (environment, queryVariables, subParams) => {
     variables: {},
     updater: (store) => {
       const payload = store.getRootField('organizationSubscription');
-      const type = payload.getLinkedRecord('__typename');
+      const type = payload.getValue('__typename');
       const options = {dispatch, history};
       switch (type) {
         case 'AddOrgPayload':

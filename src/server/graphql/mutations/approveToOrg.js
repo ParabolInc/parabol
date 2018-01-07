@@ -3,7 +3,6 @@ import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import approveToOrg from 'server/safeMutations/approveToOrg';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import publishBatch from 'server/utils/publishBatch';
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, ORGANIZATION} from 'universal/utils/constants';
 
 
@@ -32,29 +31,43 @@ export default {
       removedRequestNotifications,
       removedOrgApprovals,
       newInvitations,
-      inviteeApprovedNotifications
+      inviteeApprovedNotifications,
+      teamInviteNotifications
     } = await approveToOrg(email, orgId, viewerId);
 
     const invitationIds = newInvitations.map(({id}) => id);
 
-    const data = {removedRequestNotifications, removedOrgApprovals, invitationIds, inviteeApprovedNotifications};
+    const data = {
+      removedRequestNotifications,
+      removedOrgApprovals,
+      invitationIds,
+      inviteeApprovedNotifications,
+      teamInviteNotifications
+    };
 
     // tell the other org leaders that the request has been closed
     publish(ORGANIZATION, orgId, ApproveToOrgPayload, data, subOptions);
 
-    // tell the teammembers that the org approval has been removed
-    const makeOrgPayload = (val) => ({removedOrgApprovals: val});
-    publishBatch(ORG_APPROVAL, 'teamId', ApproveToOrgPayload, removedOrgApprovals, subOptions, makeOrgPayload);
+    // tell the teammembers that the org approval has been replaced by an invitation
+    const teamIds = Array.from(new Set(removedOrgApprovals.map(({teamId}) => teamId)));
+    teamIds.forEach((teamId) => {
+      const teamData = {...data, teamIdFilter: teamId};
+      publish(ORG_APPROVAL, teamId, ApproveToOrgPayload, teamData, subOptions);
+      publish(INVITATION, teamId, ApproveToOrgPayload, teamData, subOptions);
+    });
 
-    // tell the teammembers that the org approval was replaced with an invitation
-    const makeInvitationPayload = (val) => ({invitationId: val.map(({id}) => id)});
-    publishBatch(INVITATION, 'teamId', ApproveToOrgPayload, newInvitations, subOptions, makeInvitationPayload);
+    // tell the inviter that their invitee got approved and sent an invitation
+    inviteeApprovedNotifications.forEach((notification) => {
+      const {userIds: [inviterUserId]} = notification;
+      publish(NOTIFICATION, inviterUserId, ApproveToOrgPayload, data, subOptions);
+    });
 
-    // tell the inviters that their invitee was approved
-    const channelGetter = (val) => val.userIds[0];
-    const makeNote = (val) => ({notificationId: val.map(({id}) => id)});
-    publishBatch(NOTIFICATION, channelGetter, ApproveToOrgPayload, inviteeApprovedNotifications, subOptions, makeNote);
-
+    // tell the invitee that they've been invited
+    if (teamInviteNotifications.length) {
+      const [teamInvite] = teamInviteNotifications;
+      const {userIds: [inviteeUserId]} = teamInvite;
+      publish(NOTIFICATION, inviteeUserId, ApproveToOrgPayload, data, subOptions);
+    }
     return data;
   }
 };

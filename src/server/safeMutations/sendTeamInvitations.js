@@ -24,7 +24,7 @@ const maybeAutoApproveToOrg = (invitees, inviter) => {
 };
 
 const sendTeamInvitations = async (invitees, inviter, inviteId) => {
-  if (invitees.length === 0) return {newInvitations: [], updatedInvitations: []};
+  if (invitees.length === 0) return {newInvitations: [], updatedInvitations: [], teamInviteNotifications: []};
   const r = getRethink();
   const now = new Date();
   const {orgId, inviterName, inviterUserId, teamId, teamName} = inviter;
