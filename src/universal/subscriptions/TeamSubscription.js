@@ -60,8 +60,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'AddTeamMutationPayload':
           addTeamTeamUpdater(payload, store, viewerId);
           break;
-        case 'ArchiveTeamMutationPayload':
-          archiveTeamTeamUpdater(payload, store, environment, dispatch);
+        case 'ArchiveTeamPayload':
+          archiveTeamTeamUpdater(payload, store, viewerId, options);
           break;
         case 'EndMeetingPayload':
           endMeetingTeamUpdater(payload, store);

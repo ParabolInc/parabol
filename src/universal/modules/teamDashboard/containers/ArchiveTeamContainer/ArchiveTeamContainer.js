@@ -13,7 +13,8 @@ class ArchiveTeamContainer extends Component {
     atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     team: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -30,11 +31,8 @@ class ArchiveTeamContainer extends Component {
   }
 
   archiveTeam = async () => {
-    const {atmosphere, dispatch, team: {teamId}, history} = this.props;
-    const onCompleted = () => {
-      history.push('/me');
-    };
-    ArchiveTeamMutation(atmosphere, teamId, dispatch, undefined, onCompleted);
+    const {atmosphere, dispatch, team: {teamId}, history, location} = this.props;
+    ArchiveTeamMutation(atmosphere, teamId, {dispatch, history, location});
   }
 
   render() {

@@ -1,7 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
+import {GraphQLList, GraphQLObjectType} from 'graphql';
+import {makeResolveNotificationsForViewer, resolveNotificationForViewer} from 'server/graphql/resolvers';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
 import Team from 'server/graphql/types/Team';
-import {getUserId} from 'server/utils/authorization';
+import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const ArchiveTeamPayload = new GraphQLObjectType({
   name: 'ArchiveTeamPayload',
@@ -12,10 +13,12 @@ const ArchiveTeamPayload = new GraphQLObjectType({
     notification: {
       type: NotifyTeamArchived,
       description: 'A notification explaining that the team was archived and removed from view',
-      resolve: ({teamArchivedNotifications}, args, {authToken}) => {
-        const viewerId = getUserId(authToken);
-        return teamArchivedNotifications.find((n) => n.userIds[0] === viewerId);
-      }
+      resolve: resolveNotificationForViewer
+    },
+    removedTeamNotifications: {
+      type: new GraphQLList(TeamNotification),
+      descriptions: 'All the notifications pertaining to the team that are no longer relevant',
+      resolve: makeResolveNotificationsForViewer('-', 'removedTeamNotifications')
     }
   })
 });

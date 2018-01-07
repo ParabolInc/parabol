@@ -9,14 +9,6 @@ import shortid from 'shortid';
 import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
-const publishAuthTokensWithoutTeam = (userDocs) => {
-  userDocs.forEach((user) => {
-    const {id, tms} = user;
-    auth0ManagementClient.users.updateAppMetadata({id}, {tms});
-    publish(NEW_AUTH_TOKEN, id, UPDATED, {tms});
-  });
-};
-
 export default {
   type: ArchiveTeamPayload,
   args: {
@@ -38,73 +30,53 @@ export default {
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', viewerId, {teamId});
-    const {teamResults: {notificationData, teamResult}, userDocs} = await r.table('Team')
-      .get(teamId)
-      .pluck('name', 'orgId')
-      .do((team) => ({
-        projectCount: r.table('Project').getAll(teamId, {index: 'teamId'}).count(),
-        team,
-        userIds: r.table('TeamMember')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({isNotRemoved: true})('userId')
-          .coerceTo('array')
-      }))
-      .do((doc) => ({
-        userDocs: r.table('User')
-          .getAll(r.args(doc('userIds')), {index: 'id'})
-          .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})('changes')('new_val')
-          .pluck('id', 'tms')
-          .default([]),
-        teamName: doc('team')('name'),
-        teamResults: r.branch(
-          r.and(doc('projectCount').eq(0), doc('userIds').count().eq(1)),
-          {
-            // Team has no projects nor addn'l TeamMembers, hard delete it:
-            teamResult: r.table('Team').get(teamId)
-              .delete({returnChanges: true})('changes')(0)('old_val').default(null),
-            teamMemberResult: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).delete()
-          },
-          {
-            notificationData: doc,
-            teamResult: r.table('Team').get(teamId)
-              .update({isArchived: true}, {returnChanges: true})('changes')(0)('new_val')
-              .default(null)
-          }
-        )
-      }));
+    const {team, users, removedTeamNotifications} = await r({
+      team: r.table('Team').get(teamId)
+        .update({isArchived: true}, {returnChanges: true})('changes')(0)('new_val')
+        .default(null),
+      users: r.table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isNotRemoved: true})('userId')
+        .coerceTo('array')
+        .do((userIds) => {
+          return r.table('User')
+            .getAll(r.args(userIds), {index: 'id'})
+            .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})('changes')('new_val')
+            .default([]);
+        }),
+      removedTeamNotifications: r.table('Notification')
+        // TODO index
+        .filter({teamId})
+        .delete({returnChanges: true})('changes')('new_val')
+        .default([])
+    });
 
-    if (!teamResult) {
+    if (!team) {
       throw new Error('Team was already archived');
     }
 
-    const team = {
-      ...teamResult,
-      isArchived: true
-    };
-
-    // tell the mutator, but don't give them a notification
-    publish(TEAM, viewerId, ArchiveTeamPayload, {team}, subOptions);
-
-    let notifications;
-    if (notificationData) {
-      const {team: {orgId}, userIds} = notificationData;
-      notifications = userIds
-        .filter((userId) => userId !== viewerId)
-        .map((notifiedUserId) => ({
-          id: shortid.generate(),
-          orgId,
-          startAt: now,
-          type: TEAM_ARCHIVED,
-          userIds: [notifiedUserId],
-          teamId
-        }));
+    const notifications = users
+      .map(({id}) => id)
+      .filter((userId) => userId !== viewerId)
+      .map((notifiedUserId) => ({
+        id: shortid.generate(),
+        startAt: now,
+        type: TEAM_ARCHIVED,
+        userIds: [notifiedUserId],
+        teamId
+      }));
+    if (notifications.length) {
       await r.table('Notification').insert(notifications);
     }
 
-    const data = {team, notifications};
+    const data = {team, notifications, removedTeamNotifications};
     publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions);
 
-    publishAuthTokensWithoutTeam(userDocs);
+    users.forEach((user) => {
+      const {id, tms} = user;
+      auth0ManagementClient.users.updateAppMetadata({id}, {tms});
+      publish(NEW_AUTH_TOKEN, id, UPDATED, {tms});
+    });
 
     return data;
   }
