@@ -1,4 +1,6 @@
 import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation';
+import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation';
 import {approveToOrgNotificationUpdater} from 'universal/mutations/ApproveToOrgMutation';
 import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation';
 import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation';
@@ -22,6 +24,8 @@ const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
       __typename
+      ...AddOrgMutation_notification
+      ...AddTeamMutation_notification
       ...ApproveToOrgMutation_notification
       ...CancelApprovalMutation_notification
       ...CancelTeamInviteMutation_notification
@@ -121,6 +125,12 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
       const payload = store.getRootField('notificationSubscription');
       const type = payload.getValue('__typename');
       switch (type) {
+        case 'AddOrgInviteePayload':
+          addOrgMutationNotificationUpdater(payload, store, viewerId, options);
+          break;
+        case 'AddTeamInviteePayload':
+          addTeamMutationNotificationUpdater(payload, store, viewerId, options);
+          break;
         case 'ApproveToOrgPayload':
           approveToOrgNotificationUpdater(payload, store, viewerId, options);
           break;

@@ -1,6 +1,5 @@
 import {commitMutation} from 'react-relay';
 import {showInfo, showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import handleAddInvitations from 'universal/mutations/handlers/handleAddInvitations';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
@@ -9,6 +8,7 @@ import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMemb
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
+import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast';
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
@@ -151,24 +151,6 @@ const popReactivatedNotificationToast = (reactivationNotification, {dispatch, en
       label: 'Great!',
       callback: () => {
         ClearNotificationMutation(environment, notificationId);
-      }
-    }
-  }));
-};
-
-const popTeamInviteNotificationToast = (teamInviteNotification, {dispatch, environment}) => {
-  const inviterName = getInProxy(teamInviteNotification, 'inviter', 'preferredName');
-  if (!inviterName) return;
-  const teamName = getInProxy(teamInviteNotification, 'team', 'name');
-  const notificationId = getInProxy(teamInviteNotification, 'id');
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'You’re invited!',
-    message: `${inviterName} would like you to join their team ${teamName}`,
-    action: {
-      label: 'Accept!',
-      callback: () => {
-        AcceptTeamInviteMutation(environment, notificationId, dispatch);
       }
     }
   }));

@@ -12,7 +12,6 @@ import Radio from 'universal/components/Radio/Radio';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import AddOrgMutation from 'universal/mutations/AddOrgMutation';
 import AddTeamMutation from 'universal/mutations/AddTeamMutation';
 import ui from 'universal/styles/ui';
@@ -65,15 +64,8 @@ class NewTeamForm extends Component {
       const handleError = (err) => {
         throw new SubmissionError(err._error);
       };
-      const handleCompleted = (res) => {
-        const {addOrg: {team: {id: teamId}}} = res;
-        dispatch(showSuccess({
-          title: 'Organization successfully created!',
-          message: `Here's your new team dashboard for ${teamName}`
-        }));
-        history.push(`/team/${teamId}`);
-      };
-      AddOrgMutation(atmosphere, newTeam, invitees, orgName, handleError, handleCompleted);
+      const variables = {newTeam, invitees, orgName};
+      AddOrgMutation(atmosphere, variables, {dispatch, history}, handleError);
     } else {
       const schema = makeAddTeamSchema();
       const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
@@ -84,15 +76,7 @@ class NewTeamForm extends Component {
         orgId
       };
 
-      const handleCompleted = (res) => {
-        const {addTeam: {team: {id: teamId}}} = res;
-        dispatch(showSuccess({
-          title: 'Team successfully created!',
-          message: `Here's your new team dashboard for ${teamName}`
-        }));
-        history.push(`/team/${teamId}`);
-      };
-      AddTeamMutation(atmosphere, newTeam, invitees, undefined, handleCompleted);
+      AddTeamMutation(atmosphere, {newTeam, invitees}, {dispatch, history});
     }
   };
 

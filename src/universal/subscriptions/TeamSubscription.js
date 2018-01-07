@@ -1,5 +1,6 @@
 import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
-import {addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation';
+import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation';
+import {addTeamMutationNotificationUpdater, addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation';
 import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation';
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation';
 import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation';
@@ -14,6 +15,7 @@ const subscription = graphql`
       __typename
       ...AcceptTeamInviteEmailMutation_team
       ...AcceptTeamInviteMutation_team
+      ...AddTeamMutation_team
       ...RemoveTeamMemberMutation_team
       ...AddTeamMutation_team
       ...ArchiveTeamMutation_team,
@@ -40,13 +42,20 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
     updater: (store) => {
       const payload = store.getRootField('teamSubscription');
       const type = payload.getValue('__typename');
+      const options = {store, environment, dispatch, history, location};
       switch (type) {
         case 'AcceptTeamInvitePayload':
         case 'AcceptTeamInviteEmailPayload':
           acceptTeamInviteTeamUpdater(payload, store, viewerId);
           break;
+        case 'AddOrgCreatorPayload':
+          addOrgMutationNotificationUpdater(payload, store, viewerId, options);
+          break;
+        case 'AddTeamCreatorPayload':
+          addTeamMutationNotificationUpdater(payload, store, viewerId, options);
+          break;
         case 'RemoveTeamMemberSelfPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, {dispatch, history, location});
+          removeTeamMemberTeamUpdater(payload, store, viewerId, options);
           break;
         case 'AddTeamMutationPayload':
           addTeamTeamUpdater(payload, store, viewerId);
@@ -67,7 +76,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
           break;
         case 'RequestFacilitatorPayload':
-          requestFacilitatorTeamUpdater(payload, {dispatch, environment});
+          requestFacilitatorTeamUpdater(payload, options);
           break;
         default:
           console.error('TeamSubscription case fail', type);

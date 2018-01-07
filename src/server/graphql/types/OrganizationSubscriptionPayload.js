@@ -1,5 +1,6 @@
 import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
-import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
+import AddOrgCreatorPayload from 'server/graphql/types/AddOrgCreatorPayload';
+import AddOrgInviteePayload from 'server/graphql/types/AddOrgInviteePayload';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAddedPayload';
 import SetOrgUserRoleAnnouncePayload from 'server/graphql/types/SetOrgUserRoleAnnouncePayload';
@@ -8,7 +9,8 @@ import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 
 const types = [
-  AddOrgPayload,
+  AddOrgCreatorPayload,
+  AddOrgInviteePayload,
   ApproveToOrgPayload,
   SetOrgUserRoleAddedPayload,
   SetOrgUserRoleRemovedPayload,

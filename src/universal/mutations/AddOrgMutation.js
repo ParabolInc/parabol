@@ -1,9 +1,13 @@
 import {commitMutation} from 'react-relay';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization';
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
+import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment AddOrgMutation_organization on AddOrgPayload {
+  fragment AddOrgMutation_organization on AddOrgCreatorPayload {
     organization {
       id
       name
@@ -20,30 +24,55 @@ graphql`
   }
 `;
 
-const mutation = graphql`
-  mutation AddOrgMutation($newTeam: NewTeamInput!, $invitees: [Invitee!], $orgName: String!) {
-    addOrg(newTeam: $newTeam, invitees: $invitees, orgName: $orgName) {
-      ...AddOrgMutation_organization @relay(mask: false)      
+graphql`
+  fragment AddOrgMutation_notification on AddOrgInviteePayload {
+    teamInviteNotification {
+      type
+      ...TeamInvite_notification @relay(mask: false)
     }
   }
 `;
 
-export const addOrgMutationOrganizationUpdater = (payload, store, viewerId) => {
+const mutation = graphql`
+  mutation AddOrgMutation($newTeam: NewTeamInput!, $invitees: [Invitee!], $orgName: String!) {
+    addOrg(newTeam: $newTeam, invitees: $invitees, orgName: $orgName) {
+      ...AddOrgMutation_organization @relay(mask: false)
+    }
+  }
+`;
+
+const popOrganizationCreatedToast = (payload, {dispatch, history}) => {
+  const teamId = getInProxy(payload, 'team', 'id');
+  const teamName = getInProxy(payload, 'team', 'name');
+  dispatch(showSuccess({
+    title: 'Organization successfully created!',
+    message: `Here's your new team dashboard for ${teamName}`
+  }));
+  history.push(`/team/${teamId}`);
+};
+
+export const addOrgMutationOrganizationUpdater = (payload, store, viewerId, options) => {
   const organization = payload.getLinkedRecord('organization');
   handleAddOrganization(organization, store, viewerId);
 
   const team = payload.getLinkedRecord('team');
   handleAddTeams(team, store, viewerId);
+  popOrganizationCreatedToast(payload, options);
 };
 
-const AddOrgMutation = (environment, newTeam, invitees, orgName, onError, onCompleted) => {
+export const addOrgMutationNotificationUpdater = (payload, store, viewerId, options) => {
+  const notification = payload.getLinkedRecord('teamInviteNotification');
+  handleAddNotifications(notification, store, viewerId);
+  popTeamInviteNotificationToast(notification, options);
+};
+const AddOrgMutation = (environment, variables, options, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {newTeam, invitees, orgName},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('addOrg');
-      addOrgMutationOrganizationUpdater(payload, store, viewerId);
+      addOrgMutationOrganizationUpdater(payload, store, viewerId, {...options, store, environment});
     },
     onCompleted,
     onError
