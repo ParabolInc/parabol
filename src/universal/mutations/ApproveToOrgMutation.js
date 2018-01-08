@@ -22,8 +22,8 @@ graphql`
 graphql`
   fragment ApproveToOrgMutation_orgApproval on ApproveToOrgPayload {
     removedOrgApprovals {
-      teamId
       id
+      teamId
     }
   }
 `;
@@ -91,8 +91,7 @@ export const approveToOrgOrganizationUpdater = (payload, store, viewerId) => {
 
 export const approveToOrgOrgApprovalUpdater = (payload, store) => {
   const removedOrgApprovals = payload.getLinkedRecords('removedOrgApprovals');
-  const orgApprovalIds = getInProxy(removedOrgApprovals, 'id');
-  handleRemoveOrgApprovals(orgApprovalIds, store);
+  handleRemoveOrgApprovals(removedOrgApprovals, store);
 };
 
 export const approveToOrgInvitationUpdater = (payload, store) => {

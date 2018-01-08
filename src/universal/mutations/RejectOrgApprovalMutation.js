@@ -9,6 +9,7 @@ graphql`
   fragment RejectOrgApprovalMutation_orgApproval on RejectOrgApprovalPayload {
     removedOrgApprovals {
       id
+      teamId
     }
   }
 `;
@@ -52,8 +53,7 @@ const popDeniedOrgApprovalToast = (payload, {dispatch, history}) => {
 
 export const rejectOrgApprovalOrgApprovalUpdater = (payload, store) => {
   const removedOrgApprovals = payload.getLinkedRecords('removedOrgApprovals');
-  const orgApprovalIds = getInProxy(removedOrgApprovals, 'id');
-  handleRemoveOrgApprovals(orgApprovalIds, store);
+  handleRemoveOrgApprovals(removedOrgApprovals, store);
 };
 
 export const rejectOrgApprovalNotificationUpdater = (payload, store, viewerId, options) => {

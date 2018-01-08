@@ -46,6 +46,7 @@ graphql`
     }
     orgApprovalsRemoved {
       id
+      teamId
     }
   }
 `;
@@ -192,8 +193,7 @@ export const inviteTeamMembersNotificationUpdater = (payload, store, viewerId, o
 
 export const inviteTeamMembesrOrgApprovalUpdater = (payload, store) => {
   const orgApprovalsRemoved = payload.getLinkedRecords('orgApprovalsRemoved');
-  const orgApprovalsIdsRemoved = getInProxy(orgApprovalsRemoved, 'id');
-  handleRemoveOrgApprovals(orgApprovalsIdsRemoved, store);
+  handleRemoveOrgApprovals(orgApprovalsRemoved, store);
 
   const orgApprovalsSent = payload.getLinkedRecords('orgApprovalsSent');
   handleAddOrgApprovals(orgApprovalsSent, store);

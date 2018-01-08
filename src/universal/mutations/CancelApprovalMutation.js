@@ -7,6 +7,7 @@ graphql`
   fragment CancelApprovalMutation_orgApproval on CancelApprovalPayload {
     orgApproval {
       id
+      teamId
     }
   }
 `;
@@ -29,8 +30,8 @@ const mutation = graphql`
 `;
 
 export const cancelApprovalOrgApprovalUpdater = (payload, store) => {
-  const orgApprovalId = getInProxy(payload, 'orgApproval', 'id');
-  handleRemoveOrgApprovals(orgApprovalId, store);
+  const orgApproval = payload.getLinkedRecord('orgApproval');
+  handleRemoveOrgApprovals(orgApproval, store);
 };
 
 export const cancelApprovalNotificationUpdater = (payload, store, viewerId) => {
@@ -49,7 +50,9 @@ const CancelApprovalMutation = (environment, orgApprovalId, teamId, onError, onC
       cancelApprovalOrgApprovalUpdater(payload, store);
     },
     optimisticUpdater: (store) => {
-      handleRemoveOrgApprovals(orgApprovalId, store);
+      const orgApproval = store.get(orgApprovalId)
+        .setValue(teamId, 'teamId');
+      handleRemoveOrgApprovals(orgApproval, store);
     },
     onCompleted,
     onError
