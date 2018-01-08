@@ -4,14 +4,16 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 
 const HelpTextMyRound = (props) => {
-  const {styles} = props;
+  const {styles, updateUserHasProjects} = props;
+  const helpText = updateUserHasProjects ? 'Quick updates only, please.' : 'Add cards to track your current work.';
   return (
-    <span className={css(styles.helpText)}>{'(Your turn to share. Add cards to track your current work.)'}</span>
+    <span className={css(styles.helpText)}>{`(Your turn to share. ${helpText})`}</span>
   );
 };
 
 HelpTextMyRound.propTypes = {
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  updateUserHasProjects: PropTypes.bool
 };
 
 const styleThunk = () => ({
