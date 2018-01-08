@@ -14,6 +14,10 @@ export const resolveInvitations = ({invitationIds, invitations}, args, {dataLoad
     dataLoader.get('invitations').loadMany(invitationIds) : invitations;
 };
 
+export const resolveMeeting = ({meeting, meetingId}, args, {dataLoader}) => {
+  return meetingId ? dataLoader.get('meetings').load(meetingId) : meeting;
+};
+
 export const resolveNotification = ({notificationId, notification}, args, {dataLoader}) => {
   return notificationId ? dataLoader.get('notifications').load(notificationId) : notification;
 };

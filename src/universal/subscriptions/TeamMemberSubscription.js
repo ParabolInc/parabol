@@ -7,6 +7,7 @@ const subscription = graphql`
     teamMemberSubscription {
       __typename
       ...AcceptTeamInviteMutation_teamMember
+      ...AcceptTeamInviteEmailMutation_teamMember
       ...RemoveTeamMemberMutation_teamMember
       ...InviteTeamMembersMutation_teamMember
       ...MeetingCheckInMutation_teamMember
@@ -34,6 +35,8 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamMemberUpdater(payload, store, dispatch);
+          break;
+        case 'MeetingCheckInPayload':
           break;
         default:
           console.error('TeamMemberSubscription case fail', type);

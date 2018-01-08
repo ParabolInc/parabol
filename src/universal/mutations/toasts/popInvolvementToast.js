@@ -4,8 +4,8 @@ import {MENTIONEE} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 const popInvolvementToast = (notification, {dispatch, location, history}) => {
+  if (!notification) return;
   const involvement = notification.getValue('involvement');
-  if (!involvement) return;
   const changeAuthorName = getInProxy(notification, 'changeAuthor', 'preferredName');
   const inMeeting = Boolean(matchPath(location.pathname, {
     path: '/meeting',

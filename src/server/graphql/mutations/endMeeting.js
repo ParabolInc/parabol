@@ -9,7 +9,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, PROJECT, SUMMARY, TEAM} from 'universal/utils/constants';
+import {DONE, LOBBY, PROJECT, TEAM} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
@@ -133,13 +133,9 @@ export default {
     endSlackMeeting(meetingId, teamId);
 
     const data = {
-      team: {
-        ...team,
-        facilitatorPhase: SUMMARY,
-        meetingPhase: SUMMARY,
-        meetingId
-      },
-      archivedProjects
+      team,
+      archivedProjects,
+      meetingId
     };
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
 

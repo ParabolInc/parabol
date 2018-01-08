@@ -125,6 +125,7 @@ export default class RethinkDataLoader {
   invitations = makeStandardLoader('Invitation');
   organizations = makeStandardLoader('Organization');
   orgApprovals = makeStandardLoader('OrgApproval');
+  meetings = makeStandardLoader('Meeting');
   notifications = makeStandardLoader('Notification');
   projects = makeStandardLoader('Project');
   teams = makeStandardLoader('Team');

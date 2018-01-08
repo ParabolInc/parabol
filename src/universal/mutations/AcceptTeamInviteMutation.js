@@ -7,7 +7,7 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment AcceptTeamInviteMutation_teamMember on AcceptTeamInvitePayload {
+  fragment AcceptTeamInviteMutation_teamMember on AcceptTeamInviteNotificationPayload {
     removedInvitation {
       id
     }

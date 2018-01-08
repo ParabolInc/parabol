@@ -1,11 +1,13 @@
 import {GraphQLObjectType} from 'graphql';
 import TeamMember from 'server/graphql/types/TeamMember';
+import {resolveTeamMember} from 'server/graphql/resolvers';
 
 const MeetingCheckInPayload = new GraphQLObjectType({
   name: 'MeetingCheckInPayload',
   fields: () => ({
     teamMember: {
-      type: TeamMember
+      type: TeamMember,
+      resolve: resolveTeamMember
     }
   })
 });

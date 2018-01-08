@@ -7,8 +7,16 @@ graphql`
   fragment EndMeetingMutation_team on EndMeetingPayload {
     team {
       id
+      activeFacilitator
       meetingId
+      meetingPhase
+      meetingPhaseItem
+      facilitatorPhase
+      facilitatorPhaseItem
       # TODO team members, too?
+    }
+    meeting {
+      id
     }
   }
 `;
@@ -32,21 +40,9 @@ const mutation = graphql`
   }
 `;
 
-const handleEndMeeting = (teamId, store) => {
-  const team = store.get(teamId);
-  if (!team) return;
-  team
-    .setValue(null, 'activeFacilitator')
-    .setValue(SUMMARY, 'facilitatorPhase')
-    .setValue(null, 'facilitatorPhaseItem')
-    .setValue(SUMMARY, 'meetingPhase')
-    .setValue(null, 'meetingPhaseItem')
-    .setValue(null, 'meetingId');
-};
-
-export const endMeetingTeamUpdater = (payload, store) => {
-  const teamId = getInProxy(payload, 'team', 'id');
-  handleEndMeeting(teamId, store);
+export const endMeetingTeamUpdater = (payload, {history}) => {
+  const meetingId = getInProxy(payload, 'meeting', 'id');
+  history.push(`/summary/${meetingId}`);
 };
 
 export const endMeetingProjectUpdater = (payload, store, viewerId) => {
@@ -61,14 +57,20 @@ const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) 
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('endMeeting');
-      endMeetingTeamUpdater(payload, store);
+      endMeetingTeamUpdater(payload, {history});
       endMeetingProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const team = store.get(teamId);
       const meetingId = team.getValue('meetingId');
+      team
+        .setValue(null, 'activeFacilitator')
+        .setValue(SUMMARY, 'facilitatorPhase')
+        .setValue(null, 'facilitatorPhaseItem')
+        .setValue(SUMMARY, 'meetingPhase')
+        .setValue(null, 'meetingPhaseItem')
+        .setValue(null, 'meetingId');
       history.push(`/summary/${meetingId}`);
-      handleEndMeeting(teamId, store);
     },
     onCompleted,
     onError

@@ -53,14 +53,14 @@ export default {
       .delete({returnChanges: true})('changes')('old_val')
       .default([]);
 
-    const data = {projectId, notifications: clearedNotifications};
+    const data = {project, notifications: clearedNotifications};
     clearedNotifications.forEach((notification) => {
       const {userIds: [notificationUserId]} = notification;
       publish(NOTIFICATION, notificationUserId, DeleteProjectPayload, data, subOptions);
     });
 
     const isPrivate = tags.includes('private');
-    subscribedUserIds.forEach(({userId}) => {
+    subscribedUserIds.forEach((userId) => {
       if (!isPrivate || userId === projectUserId) {
         publish(PROJECT, userId, DeleteProjectPayload, data, subOptions);
       }

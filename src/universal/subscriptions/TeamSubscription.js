@@ -64,7 +64,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           archiveTeamTeamUpdater(payload, store, viewerId, options);
           break;
         case 'EndMeetingPayload':
-          endMeetingTeamUpdater(payload, store);
+          endMeetingTeamUpdater(payload, options);
           break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamUpdater(payload, store, viewerId);
@@ -72,11 +72,17 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'KillMeetingPayload':
           killMeetingTeamUpdater();
           break;
+        case 'MeetingCheckInPayload':
+          break;
+        case 'MoveMeetingPayload':
+          break;
         case 'PromoteFacilitatorPayload':
           promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
           break;
         case 'RequestFacilitatorPayload':
           requestFacilitatorTeamUpdater(payload, options);
+          break;
+        case 'StartMeetingPayload':
           break;
         default:
           console.error('TeamSubscription case fail', type);
