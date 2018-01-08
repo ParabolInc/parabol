@@ -8,7 +8,7 @@ const subscription = graphql`
       __typename
       ...AcceptTeamInviteMutation_teamMember
       ...RemoveTeamMemberMutation_teamMember
-      ...InviteTeamMembersMutationAnnounce_teamMember
+      ...InviteTeamMembersMutation_teamMember
       ...MeetingCheckInMutation_teamMember
       ...PromoteToTeamLeadMutation_teamMember
     }
@@ -32,7 +32,7 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamMemberUpdater(payload, store);
           break;
-        case 'InviteTeamMembersAnnouncePayload':
+        case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamMemberUpdater(payload, store, dispatch);
           break;
         default:

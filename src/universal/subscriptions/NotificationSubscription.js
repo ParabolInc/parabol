@@ -8,14 +8,8 @@ import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNot
 import {createProjectNotificationUpdater} from 'universal/mutations/CreateProjectMutation';
 import {deleteProjectNotificationUpdater} from 'universal/mutations/DeleteProjectMutation';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
-import {
-  inviteTeamMembersInviteeNotificationUpdater,
-  inviteTeamMembersOrgLeaderNotificationUpdater
-} from 'universal/mutations/InviteTeamMembersMutation';
-import {
-  rejectOrgApprovalInviterNotificationUpdater,
-  rejectOrgApprovalLeaderNotificationUpdater
-} from 'universal/mutations/RejectOrgApprovalMutation';
+import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
+import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -32,10 +26,8 @@ const subscription = graphql`
       ...ClearNotificationMutation_notification
       ...CreateProjectMutation_notification
       ...DeleteProjectMutation_notification
-      ...InviteTeamMembersMutationInvitee_notification
-      ...InviteTeamMembersMutationOrgLeader_notification
-      ...RejectOrgApprovalMutationLeader_notification
-      ...RejectOrgApprovalMutationInviter_notification
+      ...InviteTeamMembersMutation_notification
+      ...RejectOrgApprovalMutation_notification
 
       # ConnectSocket/DisconnectSocket
       ... on User {
@@ -149,17 +141,11 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
         case 'DeleteProjectPayload':
           deleteProjectNotificationUpdater(payload, store, viewerId);
           break;
-        case 'InviteTeamMembersInviteePayload':
-          inviteTeamMembersInviteeNotificationUpdater(payload, store, viewerId, options);
+        case 'InviteTeamMembersPayload':
+          inviteTeamMembersNotificationUpdater(payload, store, viewerId, options);
           break;
-        case 'InviteTeamMembersOrgLeaderPayload':
-          inviteTeamMembersOrgLeaderNotificationUpdater(payload, store, viewerId, options);
-          break;
-        case 'RejectOrgApprovalInviterPayload':
-          rejectOrgApprovalInviterNotificationUpdater(payload, store, viewerId, options);
-          break;
-        case 'RejectOrgApprovalLeaderPayload':
-          rejectOrgApprovalLeaderNotificationUpdater(payload, store, viewerId);
+        case 'RejectOrgApprovalPayload':
+          rejectOrgApprovalNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'User':
           connectSocketUserUpdater(payload, store, viewerId);

@@ -34,7 +34,7 @@ export const cancelApprovalOrgApprovalUpdater = (payload, store) => {
 };
 
 export const cancelApprovalNotificationUpdater = (payload, store, viewerId) => {
-  const notificationId = getInProxy(payload, 'notification', 'id');
+  const notificationId = getInProxy(payload, 'removedRequestNotification', 'id');
   handleRemoveNotifications(notificationId, store, viewerId);
 };
 

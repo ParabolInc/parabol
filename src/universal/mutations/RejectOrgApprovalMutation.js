@@ -14,18 +14,13 @@ graphql`
 `;
 
 graphql`
-  fragment RejectOrgApprovalMutationLeader_notification on RejectOrgApprovalOrgLeaderPayload {
-    removedRequestNotifications {
-      id
-    }
-  }
-`;
-
-graphql`
-  fragment RejectOrgApprovalMutationInviter_notification on RejectOrgApprovalInviterPayload {
+  fragment RejectOrgApprovalMutation_notification on RejectOrgApprovalPayload {
     deniedNotification {
       type
       ...DenyNewUser_notification @relay(mask: false)
+    }
+    removedRequestNotifications {
+      id
     }
   }
 `;
@@ -34,7 +29,7 @@ const mutation = graphql`
   mutation RejectOrgApprovalMutation($notificationId: ID!, $reason: String!) {
     rejectOrgApproval(notificationId: $notificationId, reason: $reason) {
       ...RejectOrgApprovalMutation_orgApproval @relay(mask: false)
-      ...RejectOrgApprovalMutationLeader_notification @relay(mask: false)
+      ...RejectOrgApprovalMutation_notification @relay(mask: false)
     }
   }
 `;
@@ -61,16 +56,16 @@ export const rejectOrgApprovalOrgApprovalUpdater = (payload, store) => {
   handleRemoveOrgApprovals(orgApprovalIds, store);
 };
 
-export const rejectOrgApprovalLeaderNotificationUpdater = (payload, store, viewerId) => {
+export const rejectOrgApprovalNotificationUpdater = (payload, store, viewerId, options) => {
   const removedRequestNotifications = payload.getLinkedRecords('removedRequestNotifications');
   const notificationIds = getInProxy(removedRequestNotifications, 'id');
   handleRemoveNotifications(notificationIds, store, viewerId);
-};
 
-export const rejectOrgApprovalInviterNotificationUpdater = (payload, store, viewerId, options) => {
   const deniedNotification = payload.getLinkedRecords('deniedNotification');
   handleAddNotifications(deniedNotification, store, viewerId);
-  popDeniedOrgApprovalToast(payload, options);
+  if (options) {
+    popDeniedOrgApprovalToast(payload, options);
+  }
 };
 
 const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted) => {
@@ -81,7 +76,7 @@ const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted)
     updater: (store) => {
       const payload = store.getRootField('rejectOrgApproval');
       rejectOrgApprovalOrgApprovalUpdater(payload, store);
-      rejectOrgApprovalLeaderNotificationUpdater(payload, store, viewerId);
+      rejectOrgApprovalNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {notificationId} = variables;

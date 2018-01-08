@@ -4,7 +4,7 @@ import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeam
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
-import InviteTeamMembersInviteePayload from 'server/graphql/types/InviteTeamMembersInviteePayload';
+import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import KillMeetingPayload from 'server/graphql/types/KillMeetingPayload';
 import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
 import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPayload';
@@ -23,7 +23,7 @@ const types = [
   AddTeamPayload,
   ArchiveTeamPayload,
   EndMeetingPayload,
-  InviteTeamMembersInviteePayload,
+  InviteTeamMembersPayload,
   KillMeetingPayload,
   MoveMeetingPayload,
   PromoteFacilitatorPayload,

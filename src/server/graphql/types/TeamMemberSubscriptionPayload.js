@@ -1,7 +1,7 @@
 import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
-import InviteTeamMembersAnnouncePayload from 'server/graphql/types/InviteTeamMembersAnnoucePayload';
+import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import MeetingCheckInPayload from 'server/graphql/types/MeetingCheckInPayload';
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
 import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberExMemberPayload';
@@ -12,7 +12,7 @@ const types = [
   AcceptTeamInviteEmailPayload,
   RemoveTeamMemberOtherPayload,
   RemoveTeamMemberSelfPayload,
-  InviteTeamMembersAnnouncePayload,
+  InviteTeamMembersPayload,
   MeetingCheckInPayload,
   PromoteToTeamLeadPayload
 ];

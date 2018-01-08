@@ -9,7 +9,7 @@ const subscription = graphql`
       __typename
       ...ApproveToOrgMutation_orgApproval
       ...CancelApprovalMutation_orgApproval
-      ...InviteTeamMembersMutationAnnounce_orgApproval
+      ...InviteTeamMembersMutation_orgApproval
       ...RejectOrgApprovalMutation_orgApproval
     }
   }
@@ -30,7 +30,7 @@ const OrgApprovalSubscription = (environment, queryVariables) => {
         case 'CancelApprovalPayload':
           cancelApprovalOrgApprovalUpdater(payload, store);
           break;
-        case 'InviteTeamMembersAnnouncePayload':
+        case 'InviteTeamMembersPayload':
           inviteTeamMembesrOrgApprovalUpdater(payload, store);
           break;
         case 'RejectOrgApprovalPayload':

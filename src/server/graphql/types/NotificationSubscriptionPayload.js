@@ -7,11 +7,9 @@ import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayloa
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
-import InviteTeamMembersInviteePayload from 'server/graphql/types/InviteTeamMembersInviteePayload';
-import InviteTeamMembersOrgLeaderPayload from 'server/graphql/types/InviteTeamMembersOrgLeaderPayload';
+import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
-import RejectOrgApprovalInviterPayload from 'server/graphql/types/RejectOrgApprovalInviterPayload';
-import RejectOrgApprovalOrgLeaderPayload from 'server/graphql/types/RejectOrgApprovalOrgLeaderPayload';
+import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload';
 import User from 'server/graphql/types/User';
 
@@ -24,10 +22,8 @@ const types = [
   ClearNotificationPayload,
   CreateProjectPayload,
   DeleteProjectPayload,
-  InviteTeamMembersInviteePayload,
-  InviteTeamMembersOrgLeaderPayload,
-  RejectOrgApprovalInviterPayload,
-  RejectOrgApprovalOrgLeaderPayload,
+  InviteTeamMembersPayload,
+  RejectOrgApprovalPayload,
   StripeFailPaymentPayload,
   User,
   NotifyVersionInfo

@@ -20,7 +20,7 @@ const subscription = graphql`
       ...AddTeamMutation_team
       ...ArchiveTeamMutation_team,
       ...EndMeetingMutation_team
-      ...InviteTeamMembersMutationInvitee_team
+      ...InviteTeamMembersMutation_team
       ...KillMeetingMutation_team
       ...MoveMeetingMutation_team
       ...PromoteFacilitatorMutation_team
@@ -66,7 +66,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'EndMeetingPayload':
           endMeetingTeamUpdater(payload, store);
           break;
-        case 'InviteTeamMembersInviteePayload':
+        case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamUpdater(payload, store, viewerId);
           break;
         case 'KillMeetingPayload':
