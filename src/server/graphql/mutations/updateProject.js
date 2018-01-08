@@ -108,7 +108,7 @@ export default {
     const isPublic = !isPrivate || isPrivitized;
 
     // get notification diffs
-    const {notificationsToRemove, notificationsToAdd} = publishChangeNotifications(project, oldProject, viewerId, usersToIgnore);
+    const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(project, oldProject, viewerId, usersToIgnore);
     const data = {isPrivitized, projectId, notificationsToAdd, notificationsToRemove};
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === projectUserId) {

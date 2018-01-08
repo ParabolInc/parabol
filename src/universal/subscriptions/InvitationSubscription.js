@@ -26,7 +26,7 @@ const InvitationSubscription = (environment, queryVariables) => {
         case 'ApproveToOrgPayload':
           approveToOrgInvitationUpdater(payload, store);
           break;
-        case 'CancelTeamInvitePaylaod':
+        case 'CancelTeamInvitePayload':
           cancelTeamInviteInvitationUpdater(payload, store);
           break;
         case 'InviteTeamMembersPayload':

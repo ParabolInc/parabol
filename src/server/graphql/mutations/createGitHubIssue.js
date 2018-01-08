@@ -167,9 +167,11 @@ export default {
         },
         updatedAt: now
       });
-
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const data = {projectId};
-    publish(PROJECT, teamId, CreateGitHubIssuePayload, data, subOptions);
+    teamMembers.forEach(({userId}) => {
+      publish(PROJECT, userId, CreateGitHubIssuePayload, data, subOptions);
+    });
     return data;
   }
 };

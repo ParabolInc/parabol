@@ -15,10 +15,10 @@ const CancelTeamInvitePayload = new GraphQLObjectType({
     removedTeamInviteNotification: {
       type: NotifyTeamInvite,
       resolve: ({removedTeamInviteNotification}, args, {authToken}) => {
-        if (!removedTeamInviteNotification) return undefined;
+        if (!removedTeamInviteNotification) return null;
         const viewerId = getUserId(authToken);
         const notificationUserId = removedTeamInviteNotification.userIds[0];
-        return notificationUserId === viewerId ? removedTeamInviteNotification : undefined;
+        return notificationUserId === viewerId ? removedTeamInviteNotification : null;
       }
     }
   })

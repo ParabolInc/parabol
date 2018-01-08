@@ -16,7 +16,6 @@ const projectSubscription = {
     const channelName = `${PROJECT}.${viewerId}`;
     const filterFn = ({mutatorId}) => mutatorId !== socketId;
     const resolve = ({data}) => ({projectSubscription: data});
-
     return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve});
   }
 };

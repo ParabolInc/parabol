@@ -1,6 +1,7 @@
 import {commitMutation} from 'react-relay';
 import {SUMMARY} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 
 graphql`
   fragment EndMeetingMutation_team on EndMeetingPayload {
@@ -12,10 +13,21 @@ graphql`
   }
 `;
 
+graphql`
+  fragment EndMeetingMutation_project on EndMeetingPayload {
+    archivedProjects {
+      id
+      tags
+      teamId
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation EndMeetingMutation($teamId: ID!) {
     endMeeting(teamId: $teamId) {
       ...EndMeetingMutation_team @relay(mask: false)
+      ...EndMeetingMutation_project @relay(mask: false)
     }
   }
 `;
@@ -37,13 +49,20 @@ export const endMeetingTeamUpdater = (payload, store) => {
   handleEndMeeting(teamId, store);
 };
 
+export const endMeetingProjectUpdater = (payload, store, viewerId) => {
+  const archivedProjects = payload.getLinkedRecords('archivedProjects');
+  handleUpsertProjects(archivedProjects, store, viewerId);
+};
+
 const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('endMeeting');
       endMeetingTeamUpdater(payload, store);
+      endMeetingProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const team = store.get(teamId);

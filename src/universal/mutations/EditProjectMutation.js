@@ -36,7 +36,7 @@ const EditProjectMutation = (environment, projectId, isEditing, onCompleted, onE
     variables: {projectId, isEditing},
     updater: (store) => {
       const payload = store.getRootField('editProject');
-      editProjectProjectUpdater(payload, store, viewerId);
+      editProjectProjectUpdater(payload, store);
     },
     optimisticUpdater: (store) => {
       const payload = getOptimisticProjectEditor(store, viewerId, projectId, isEditing);

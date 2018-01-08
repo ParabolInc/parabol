@@ -44,12 +44,12 @@ const mutation = graphql`
 
 export const updateProjectProjectUpdater = (payload, store, viewerId, options) => {
   const project = payload.getLinkedRecord('project');
-  handleUpsertProjects(project);
+  handleUpsertProjects(project, store, viewerId);
 
   const addedNotification = payload.getLinkedRecord('addedNotification');
   handleAddNotifications(addedNotification, store, viewerId);
   if (options) {
-    popInvolvementToast(payload, options);
+    popInvolvementToast(addedNotification, options);
   }
 
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id');

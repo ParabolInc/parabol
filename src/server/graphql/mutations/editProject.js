@@ -36,8 +36,9 @@ export default {
     const isPrivate = tags.includes('private');
     const data = {projectId, editorId: viewerId, isEditing};
     teamMembers.forEach((teamMember) => {
-      if (!isPrivate || projectUserId === teamMember.userId) {
-        publish(PROJECT, teamId, EditProjectPayload, data, subOptions);
+      const {userId} = teamMember;
+      if (!isPrivate || projectUserId === userId) {
+        publish(PROJECT, userId, EditProjectPayload, data, subOptions);
       }
     });
     return data;

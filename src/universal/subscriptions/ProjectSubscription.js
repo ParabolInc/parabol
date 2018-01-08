@@ -3,6 +3,7 @@ import {deleteProjectProjectUpdater} from 'universal/mutations/DeleteProjectMuta
 import {editProjectProjectUpdater} from 'universal/mutations/EditProjectMutation';
 import {removeTeamMemberProjectsUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {updateProjectProjectUpdater} from 'universal/mutations/UpdateProjectMutation';
+import {endMeetingProjectUpdater} from 'universal/mutations/EndMeetingMutation';
 
 const subscription = graphql`
   subscription ProjectSubscription {
@@ -13,6 +14,7 @@ const subscription = graphql`
       ...CreateProjectMutation_project,
       ...DeleteProjectMutation_project,
       ...EditProjectMutation_project
+      ...EndMeetingMutation_project
       ...UpdateProjectMutation_project
     }
   }
@@ -38,6 +40,9 @@ const ProjectSubscription = (environment, queryVariables, {dispatch, history, lo
           break;
         case 'EditProjectPayload':
           editProjectProjectUpdater(payload, store);
+          break;
+        case 'EndMeetingPayload':
+          endMeetingProjectUpdater(payload, store, viewerId);
           break;
         case 'UpdateProjectPayload':
           updateProjectProjectUpdater(payload, store, viewerId, {dispatch, history, location});

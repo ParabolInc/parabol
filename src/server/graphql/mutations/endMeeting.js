@@ -9,7 +9,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, PROJECT, SUMMARY, TEAM, UPDATED} from 'universal/utils/constants';
+import {DONE, LOBBY, PROJECT, SUMMARY, TEAM} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
@@ -124,14 +124,7 @@ export default {
         .coerceTo('array')
     });
 
-    if (projectsToArchive.length) {
-      const archivedProjects = await archiveProjectsForDB(projectsToArchive);
-      archivedProjects.forEach((project) => {
-        const {id: projectId, tags, userId} = project;
-        const isPrivate = tags.includes('private');
-        publish(PROJECT, teamId, UPDATED, {projectId, isPrivate, wasPrivate: isPrivate, userId}, subOptions);
-      });
-    }
+    const archivedProjects = await archiveProjectsForDB(projectsToArchive);
     const {meetingNumber} = completedMeeting;
     const userIds = completedMeeting.invitees
       .filter((invitee) => invitee.present)
@@ -145,9 +138,15 @@ export default {
         facilitatorPhase: SUMMARY,
         meetingPhase: SUMMARY,
         meetingId
-      }
+      },
+      archivedProjects
     };
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
+
     publish(TEAM, teamId, EndMeetingPayload, data, subOptions);
+    teamMembers.forEach(({userId}) => {
+      publish(PROJECT, userId, EndMeetingPayload, data, subOptions);
+    });
     sendEmailSummary(completedMeeting);
 
     // send the truth to the meeting facilitator so we don't need to adjust the store in endMeetingMutation

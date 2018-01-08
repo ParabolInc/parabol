@@ -1,8 +1,5 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {
-  makeResolveNotificationForViewer, makeResolveNotificationsForViewer,
-  resolveInvitations
-} from 'server/graphql/resolvers';
+import {makeResolveNotificationsForViewer, resolveInvitations} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
 import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
@@ -15,7 +12,7 @@ const ApproveToOrgPayload = new GraphQLObjectType({
     removedRequestNotifications: {
       type: new GraphQLList(NotifyRequestNewUser),
       description: 'If the viewer is an org leader, the notifications removed after approving to the organization',
-      resolve: makeResolveNotificationForViewer('-', 'removedRequestNotifications')
+      resolve: makeResolveNotificationsForViewer('-', 'removedRequestNotifications')
     },
     removedOrgApprovals: {
       type: new GraphQLList(OrgApproval),

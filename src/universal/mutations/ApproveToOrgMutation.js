@@ -33,6 +33,7 @@ graphql`
     newInvitations {
       id
       email
+      teamId
       updatedAt
     }
   }

@@ -76,6 +76,7 @@ export default {
         .filter({
           isNotRemoved: true
         })
+        .coerceTo('array')
     });
     const usersToIgnore = getUsersToIgnore(area, teamMembers);
 

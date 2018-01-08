@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLObjectType} from 'graphql';
-import {resolveProject, resolveUser} from 'server/graphql/resolvers';
+import {resolveProject} from 'server/graphql/resolvers';
 import Project from 'server/graphql/types/Project';
 import User from 'server/graphql/types/User';
 
@@ -12,7 +12,9 @@ const EditProjectPayload = new GraphQLObjectType({
     },
     editor: {
       type: User,
-      resolve: resolveUser
+      resolve: ({editorId}, args, {dataLoader}) => {
+        return dataLoader.get('users').load(editorId);
+      }
     },
     isEditing: {
       type: GraphQLBoolean,

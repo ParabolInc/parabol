@@ -67,7 +67,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
           projectId: project.id,
           type: PROJECT_INVOLVES
         });
-      notificationsToAdd.concat(existingProjectNotifications);
+      notificationsToAdd.push(...existingProjectNotifications);
     }
   }
 

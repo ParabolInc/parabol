@@ -4,6 +4,7 @@ import addTagToProject from 'universal/utils/draftjs/addTagToProject';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
 const archiveProjectsForDB = async (projects) => {
+  if (!projects || projects.length === 0) return [];
   const r = getRethink();
   const projectsToArchive = projects.map((project) => {
     const contentState = convertFromRaw(JSON.parse(project.content));
