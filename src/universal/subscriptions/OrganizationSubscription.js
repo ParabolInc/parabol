@@ -11,9 +11,8 @@ const subscription = graphql`
       __typename
       ...AddOrgMutation_organization
       ...ApproveToOrgMutation_organization
-      ...SetOrgUserRoleMutationAdded_organiation
+      ...SetOrgUserRoleMutationAdded_organization
       ...SetOrgUserRoleMutationRemoved_organization
-      ...SetOrgUserRoleMutationAnnounced_organization
       ...UpdateOrgMutation_organization
       ...UpgradeToProMutation_organization
     }

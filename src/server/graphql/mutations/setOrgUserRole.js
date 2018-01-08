@@ -111,24 +111,24 @@ export default {
       return data;
     }
     if (role === null) {
-      const {oldPromotionId, removedNotificationIds} = await r({
-        oldPromotionId: r.table('Notification')
+      const {oldPromotion, removedNotifications} = await r({
+        oldPromotion: r.table('Notification')
           .getAll(userId, {index: 'userIds'})
           .filter({
             orgId,
             type: PROMOTE_TO_BILLING_LEADER
           })
-          .delete({returnChanges: true})('changes')(0)('old_val')('id').default([]),
-        removedNotificationIds: r.table('Notification')
+          .delete({returnChanges: true})('changes')(0)('old_val').default([]),
+        removedNotifications: r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
           .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
           .update((notification) => ({
             userIds: notification('userIds').filter((id) => id.ne(userId))
-          }), {returnChanges: true})('changes')('new_val')('id')
+          }), {returnChanges: true})('changes')('new_val')
           .default([])
       });
-      const notificationIdsRemoved = oldPromotionId.concat(removedNotificationIds);
-      const data = {orgId, userId, notificationIdsRemoved};
+      const notificationsRemoved = removedNotifications.concat(oldPromotion);
+      const data = {orgId, userId, notificationsRemoved};
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
       return data;
