@@ -10,11 +10,11 @@ const UpdateProjectPayload = new GraphQLObjectType({
       type: Project,
       resolve: resolveProject
     },
-    privitizedProjectId: {
+    privatizedProjectId: {
       type: GraphQLID,
       description: 'If a project was just turned private, this its ID, else null',
-      resolve: ({projectId, isPrivitized}) => {
-        return isPrivitized ? projectId : null;
+      resolve: ({projectId, isPrivatized}) => {
+        return isPrivatized ? projectId : null;
       }
     },
     addedNotification: {

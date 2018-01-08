@@ -7,20 +7,15 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
+import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
 
 graphql`
   fragment UpdateProjectMutation_project on UpdateProjectPayload {
     project {
-      content
-      sortOrder
-      status
-      tags
-      teamMemberId
-      updatedAt
-      userId
-      teamMember {
-        id
-        picture
+      # Entire frag needed in case it is deprivatized
+      ...CompleteProjectFrag @relay(mask:false)
+      editors {
+        userId
         preferredName
       }
     }
@@ -31,6 +26,7 @@ graphql`
     removedNotification {
       id
     }
+    privatizedProjectId
   }
 `;
 
@@ -54,6 +50,12 @@ export const updateProjectProjectUpdater = (payload, store, viewerId, options) =
 
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id');
   handleRemoveNotifications(removedNotificationId);
+
+  const privatizedProjectId = payload.getValue('privatizedProjectId');
+  const projectUserId = getInProxy(project, 'userId');
+  if (projectUserId !== viewerId && privatizedProjectId) {
+    handleRemoveProjects(privatizedProjectId, store, viewerId);
+  }
 };
 
 const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, onError) => {

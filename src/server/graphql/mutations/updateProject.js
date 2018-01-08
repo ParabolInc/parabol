@@ -104,12 +104,12 @@ export default {
     const {new_val: project, old_val: oldProject} = projectChanges;
     const isPrivate = project.tags.includes('private');
     const wasPrivate = oldProject.tags.includes('private');
-    const isPrivitized = isPrivate && !wasPrivate;
-    const isPublic = !isPrivate || isPrivitized;
+    const isPrivatized = isPrivate && !wasPrivate;
+    const isPublic = !isPrivate || isPrivatized;
 
     // get notification diffs
     const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(project, oldProject, viewerId, usersToIgnore);
-    const data = {isPrivitized, projectId, notificationsToAdd, notificationsToRemove};
+    const data = {isPrivatized, projectId, notificationsToAdd, notificationsToRemove};
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === projectUserId) {
         publish(PROJECT, userId, UpdateProjectPayload, data, subOptions);
