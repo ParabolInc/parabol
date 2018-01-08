@@ -59,7 +59,7 @@ export default {
     // Tell each invitee
     reactivations.forEach(({teamMemberId}) => {
       const {userId} = fromTeamMemberId(teamMemberId);
-      publish(TEAM, userId, InviteTeamMembersPayload, data, subOptions);
+      publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions);
     });
 
     inviteNotifications.forEach((notification) => {

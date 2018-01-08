@@ -22,7 +22,7 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
     reactivationNotification: {
       type: NotifyAddedToTeam,
       description: 'The notification sent to the invitee if they were previously on the team',
-      resolve: resolveNotificationForViewer
+      resolve: makeResolveNotificationForViewer('reactivationNotificationIds', '')
     },
     teamInviteNotification: {
       type: NotifyTeamInvite,

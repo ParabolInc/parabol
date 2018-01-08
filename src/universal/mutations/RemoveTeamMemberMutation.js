@@ -4,14 +4,13 @@ import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
-import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
 import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTeamMembers';
 import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment RemoveTeamMemberMutation_project on RemoveTeamMemberOtherPayload {
+  fragment RemoveTeamMemberMutation_project on RemoveTeamMemberPayload {
     updatedProjects {
       id
       tags
@@ -35,7 +34,7 @@ graphql`
 `;
 
 graphql`
-  fragment RemoveTeamMemberMutation_team on RemoveTeamMemberExMemberPayload {
+  fragment RemoveTeamMemberMutation_team on RemoveTeamMemberPayload {
     updatedProjects {
       id
     }
@@ -43,6 +42,7 @@ graphql`
       id
     }
     kickOutNotification {
+      id
       type
       ...KickedOut_notification @relay(mask: false)
     }
@@ -89,15 +89,8 @@ const popKickedOutNotification = (payload, {dispatch, environment, history, loca
 };
 
 export const removeTeamMemberProjectsUpdater = (payload, store, viewerId) => {
-  const type = payload.getValue('__typename');
   const projects = payload.getLinkedRecords('updatedProjects');
-  if (type === 'RemoveTeamMemberExMemberPayload') {
-    const projectIds = getInProxy(projects, 'id');
-    handleRemoveProjects(projectIds, store, viewerId);
-  } else if (type === 'RemoveTeamMemberOtherPayload') {
-    handleUpsertProjects(projects, store, viewerId);
-  }
-  console.error('removeTeamMemberProjectsUpdater unhandled type', type);
+  handleUpsertProjects(projects, store, viewerId);
 };
 
 export const removeTeamMemberTeamMemberUpdater = (payload, store) => {
@@ -106,13 +99,14 @@ export const removeTeamMemberTeamMemberUpdater = (payload, store) => {
 };
 
 export const removeTeamMemberTeamUpdater = (payload, store, viewerId, options) => {
-  const notificationIds = getInProxy(payload, 'removedNotifications', 'id');
+  const removedNotifications = payload.getLinkedRecords('removedNotifications');
+  const notificationIds = getInProxy(removedNotifications, 'id');
   handleRemoveNotifications(notificationIds, store, viewerId);
 
   const teamId = getInProxy(payload, 'team', 'id');
   handleRemoveTeams(teamId, store, viewerId);
 
-  const notification = payload.getLinkedRecord('notification');
+  const notification = payload.getLinkedRecord('kickOutNotification');
   handleAddNotifications(notification, store, viewerId);
   popKickedOutNotification(payload, options);
 };

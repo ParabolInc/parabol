@@ -41,10 +41,11 @@ export default {
 
     const projectIds = [...archivedProjectIds, ...reassignedProjectIds];
     const data = {teamId, teamMemberId, projectIds, notificationId, removedNotifications, userId};
-
     // messages to the rest of the team reporting the kick out
     publish(TEAM_MEMBER, teamId, RemoveTeamMemberPayload, data, subOptions);
     teamMembers.forEach(({teamMemberUserId}) => {
+      // don't send updated projects to the person being kicked out
+      if (teamMemberUserId === userId) return;
       publish(PROJECT, teamMemberUserId, RemoveTeamMemberPayload, data, subOptions);
     });
 

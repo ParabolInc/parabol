@@ -1,18 +1,19 @@
 import {GraphQLInterfaceType, GraphQLList} from 'graphql';
 import {
-  resolveOrganization, resolveProjects, resolveTeamMembers, resolveTeams, resolveTypeForViewer,
+  resolveOrganization,
+  resolveProjects,
+  resolveTeamMembers,
+  resolveTeams,
   resolveUser
 } from 'server/graphql/resolvers';
 import Organization from 'server/graphql/types/Organization';
 import Project from 'server/graphql/types/Project';
-import RemoveOrgUserOtherPayload from 'server/graphql/types/RemoveOrgUserOtherPayload';
-import RemoveOrgUserSelfPayload from 'server/graphql/types/RemoveOrgUserSelfPayload';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import User from 'server/graphql/types/User';
 
 
-export const removeOrgUserFields = {
+const RemoveOrgUserPayload = new GraphQLInterfaceType({
   organization: {
     type: Organization,
     resolve: resolveOrganization,
@@ -37,13 +38,11 @@ export const removeOrgUserFields = {
     type: User,
     description: 'The user removed from the organization',
     resolve: resolveUser
+  },
+  removedNotifications: {
+    type: new GraphQLList(Notification),
+    description: 'The notifications that are no longer relevant'
   }
-};
-
-const RemoveOrgUserPayload = new GraphQLInterfaceType({
-  name: 'RemoveOrgUserPayload',
-  fields: () => removeOrgUserFields,
-  resolveType: resolveTypeForViewer(RemoveOrgUserSelfPayload, RemoveOrgUserOtherPayload)
 });
 
 export default RemoveOrgUserPayload;

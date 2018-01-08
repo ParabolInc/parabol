@@ -16,14 +16,13 @@ const subscription = graphql`
       ...AcceptTeamInviteEmailMutation_team
       ...AcceptTeamInviteMutation_team
       ...AddTeamMutation_team
-      ...RemoveTeamMemberMutation_team
       ...AddTeamMutation_team
       ...ArchiveTeamMutation_team,
       ...EndMeetingMutation_team
-      ...InviteTeamMembersMutation_team
       ...KillMeetingMutation_team
       ...MoveMeetingMutation_team
       ...PromoteFacilitatorMutation_team
+      ...RemoveTeamMemberMutation_team
       ...RequestFacilitatorMutation_team
       ...StartMeetingMutation_team
       ...UpdateCheckInQuestionMutation_team
@@ -79,7 +78,10 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'PromoteFacilitatorPayload':
           promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
           break;
-        case 'RequestFacilitatorPayload':
+        case 'RemoveTeamMemberPayload':
+          removeTeamMemberTeamUpdater(payload, store, viewerId, options);
+          break;
+        case 'RequestFaciltatorPayload':
           requestFacilitatorTeamUpdater(payload, options);
           break;
         case 'StartMeetingPayload':

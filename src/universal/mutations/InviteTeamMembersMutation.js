@@ -36,6 +36,9 @@ graphql`
       type
       ...RequestNewUser_notification @relay(mask: false)
     }
+    team {
+      ...CompleteTeamFragWithMembers @relay(mask: false)
+    }
   }
 `;
 
@@ -47,14 +50,6 @@ graphql`
     orgApprovalsRemoved {
       id
       teamId
-    }
-  }
-`;
-
-graphql`
-  fragment InviteTeamMembersMutation_team on InviteTeamMembersPayload {
-    team {
-      ...CompleteTeamFragWithMembers @relay(mask: false)
     }
   }
 `;
@@ -94,14 +89,13 @@ const popInvitationToast = (payload, dispatch) => {
 };
 
 const popReactivationToast = (reactivatedTeamMembers, dispatch) => {
-  const emails = getInProxy(reactivatedTeamMembers, 'email');
-  if (!emails) return;
-  const isSingular = emails.length === 1;
-  const [firstEmail] = emails;
-  const emailStr = emails.join(', ');
+  const names = getInProxy(reactivatedTeamMembers, 'preferredName');
+  if (!names) return;
+  const isSingular = names.length === 1;
+  const nameStr = names.join(', ');
   const message = isSingular ?
-    `${firstEmail} used to be on this team, so they were automatically approved` :
-    `The following team members have been reinstated: ${emailStr}`;
+    `${nameStr} used to be on this team, so they were automatically approved` :
+    `The following team members have been reinstated: ${nameStr}`;
   dispatch(showSuccess({
     title: 'Back in it!',
     message
@@ -189,6 +183,9 @@ export const inviteTeamMembersNotificationUpdater = (payload, store, viewerId, o
   const requestNotification = payload.getLinkedRecord('requestNotification');
   handleAddNotifications(requestNotification, store, viewerId);
   popRequestNewUserNotificationToast(requestNotification, options);
+
+  const team = payload.getLinkedRecord('team');
+  handleAddTeams(team, store, viewerId);
 };
 
 export const inviteTeamMembesrOrgApprovalUpdater = (payload, store) => {

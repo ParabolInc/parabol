@@ -4,12 +4,10 @@ import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeam
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
-import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import KillMeetingPayload from 'server/graphql/types/KillMeetingPayload';
 import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
 import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPayload';
-import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberExMemberPayload';
-import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
+import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
 import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPayload';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
@@ -23,14 +21,12 @@ const types = [
   AddTeamPayload,
   ArchiveTeamPayload,
   EndMeetingPayload,
-  InviteTeamMembersPayload,
   KillMeetingPayload,
   MoveMeetingPayload,
   PromoteFacilitatorPayload,
   RequestFacilitatorPayload,
   StartMeetingPayload,
-  RemoveTeamMemberOtherPayload,
-  RemoveTeamMemberSelfPayload,
+  RemoveTeamMemberPayload,
   UpdateCheckInQuestionPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload

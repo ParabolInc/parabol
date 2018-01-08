@@ -3,10 +3,9 @@ import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayl
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
 import EditProjectPayload from 'server/graphql/types/EditProjectPayload';
-import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
-import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberExMemberPayload';
-import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
+import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
+import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
 
 const types = [
   CreateGitHubIssuePayload,
@@ -14,8 +13,7 @@ const types = [
   DeleteProjectPayload,
   EditProjectPayload,
   EndMeetingPayload,
-  RemoveTeamMemberOtherPayload,
-  RemoveTeamMemberSelfPayload,
+  RemoveTeamMemberPayload,
   UpdateProjectPayload
 ];
 

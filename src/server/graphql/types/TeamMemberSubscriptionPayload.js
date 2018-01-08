@@ -4,14 +4,12 @@ import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeam
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import MeetingCheckInPayload from 'server/graphql/types/MeetingCheckInPayload';
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
-import RemoveTeamMemberSelfPayload from 'server/graphql/types/RemoveTeamMemberExMemberPayload';
-import RemoveTeamMemberOtherPayload from 'server/graphql/types/RemoveTeamMemberOtherPayload';
+import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
 
 const types = [
   AcceptTeamInviteNotificationPayload,
   AcceptTeamInviteEmailPayload,
-  RemoveTeamMemberOtherPayload,
-  RemoveTeamMemberSelfPayload,
+  RemoveTeamMemberPayload,
   InviteTeamMembersPayload,
   MeetingCheckInPayload,
   PromoteToTeamLeadPayload
