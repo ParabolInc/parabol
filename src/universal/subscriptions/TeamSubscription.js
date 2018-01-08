@@ -53,6 +53,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'AddTeamCreatorPayload':
           addTeamMutationNotificationUpdater(payload, store, viewerId, options);
           break;
+        case 'CreateGitHubIssuePayload':
+          break;
         case 'RemoveTeamMemberSelfPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);
           break;

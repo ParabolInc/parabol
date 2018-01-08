@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDate from 'mockdate';
-import {__now} from 'server/__tests__/setup/mockTimes';
+import {__anHourAgo, __now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
@@ -22,7 +22,7 @@ describe('endMeeting', () => {
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {teamMember, user} = await mockDB.init()
-      .newMeeting(undefined, {inProgress: true});
+      .newMeeting({createdAt: new Date(__anHourAgo - 10000)}, {inProgress: true});
     const authToken = mockAuthToken(user[0]);
     const meetingId = mockDB.context.meeting.id;
     const teamId = mockDB.context.team.id;
@@ -43,7 +43,7 @@ describe('endMeeting', () => {
     expect(dataLoader.isShared()).toEqual(true);
   });
 
-  test('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
+  test.only('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
     // SETUP
     sendEmailPromise.default = jest.fn(() => true);
     const r = getRethink();
@@ -51,7 +51,7 @@ describe('endMeeting', () => {
     const mockDB = new MockDB();
     const {teamMember, user} = await mockDB.init()
       .newProject()
-      .newMeeting(undefined, {inProgress: true});
+      .newMeeting({createdAt: new Date(__anHourAgo - 10000)}, {inProgress: true});
     const authToken = mockAuthToken(user[0]);
     const meetingId = mockDB.context.meeting.id;
     const teamId = mockDB.context.team.id;
