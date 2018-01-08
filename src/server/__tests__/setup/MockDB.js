@@ -114,18 +114,19 @@ class MockDB {
 
   newInvitation(overrides = {}) {
     const invitee = newInvitee();
+    const table = this.db.invitation;
     return this.closeout('invitation', {
       id: shortid.generate(),
       // acceptedAt: null,
-      createdAt: new Date(__anHourAgo),
+      createdAt: new Date(__anHourAgo + table.length),
       email: invitee.email,
       // fullName: overrides.email || invitee.email,
       hashedToken: shortid.generate(),
       invitedBy: this.context.teamMember.id,
       inviteCount: 1,
       teamId: this.context.team.id,
-      tokenExpiration: new Date(__anHourAgo + INVITATION_LIFESPAN),
-      updatedAt: new Date(__anHourAgo),
+      tokenExpiration: new Date(__anHourAgo + table.length + INVITATION_LIFESPAN),
+      updatedAt: new Date(__anHourAgo + table.length),
       ...overrides
     });
   }
@@ -191,7 +192,8 @@ class MockDB {
       createdAt: inProgress ? new Date() : new Date(__anHourAgo),
       meetingNumber: this.db.meeting.filter((meeting) => meeting.teamId === this.context.team).length + 1,
       teamId,
-      teamName: this.context.team.name
+      teamName: this.context.team.name,
+      ...overrides
     };
     // 3 agenda items, #1 has 1 private project, #2 has 1 project, #3 has 1 of each
     const projects = [];

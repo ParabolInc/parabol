@@ -1,5 +1,4 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import {convertToRaw} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -9,45 +8,38 @@ import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import addTagToProject from 'universal/utils/draftjs/addTagToProject';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import DeleteProjectMutation from 'universal/mutations/DeleteProjectMutation';
+import {createFragmentContainer} from 'react-relay';
 
 const statusItems = labels.projectStatus.slugs.slice();
 
 class OutcomeCardStatusMenu extends Component {
   makeAddTagToProject = (tag) => () => {
-    const {area, outcome: {id: projectId}, editorState} = this.props;
+    const {area, atmosphere, project: {projectId}, editorState} = this.props;
     const contentState = editorState.getCurrentContent();
     const newContent = addTagToProject(contentState, tag);
     const rawContentStr = JSON.stringify(convertToRaw(newContent));
-    const options = {
-      ops: {},
-      variables: {
-        area,
-        updatedProject: {
-          id: projectId,
-          content: rawContentStr
-        }
-      }
+    const updatedProject = {
+      id: projectId,
+      content: rawContentStr
     };
-    cashay.mutate('updateProject', options);
+    UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
   deleteOutcome = () => {
-    const {onComplete, outcome: {id: projectId}} = this.props;
-    const options = {
-      variables: {
-        projectId
-      }
-    };
-    cashay.mutate('deleteProject', options);
+    const {atmosphere, onComplete, project: {projectId, teamId}} = this.props;
+    DeleteProjectMutation(atmosphere, projectId, teamId);
     if (onComplete) {
       onComplete();
     }
   };
 
   itemFactory = () => {
-    const {closePortal, isAgenda, isPrivate, removeContentTag, styles, outcome: {status: outcomeStatus}} = this.props;
+    const {closePortal, isAgenda, isPrivate, removeContentTag, styles, project: {projectStatus}} = this.props;
     const listItems = statusItems
-      .filter((status) => status !== outcomeStatus)
+      .filter((status) => status !== projectStatus)
       .map((status) => {
         const {color, icon, label} = labels.projectStatus[status];
         return (
@@ -98,21 +90,16 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   handleProjectUpdateFactory = (newStatus) => () => {
-    const {onComplete, outcome} = this.props;
-    const {id: projectId, status} = outcome;
-    if (newStatus === status) {
+    const {area, atmosphere, onComplete, project} = this.props;
+    const {projectId, projectStatus} = project;
+    if (newStatus === projectStatus) {
       return;
     }
-    const options = {
-      ops: {},
-      variables: {
-        updatedProject: {
-          id: projectId,
-          status: newStatus
-        }
-      }
+    const updatedProject = {
+      id: projectId,
+      status: newStatus
     };
-    cashay.mutate('updateProject', options);
+    UpdateProjectMutation(atmosphere, updatedProject, area);
     if (onComplete) {
       onComplete();
     }
@@ -129,10 +116,11 @@ class OutcomeCardStatusMenu extends Component {
 }
 
 OutcomeCardStatusMenu.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   area: PropTypes.string.isRequired,
   closePortal: PropTypes.func.isRequired,
   editorState: PropTypes.object,
-  outcome: PropTypes.object,
+  project: PropTypes.object,
   isAgenda: PropTypes.bool,
   isPrivate: PropTypes.bool,
   onComplete: PropTypes.func,
@@ -149,4 +137,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OutcomeCardStatusMenu);
+export default createFragmentContainer(
+  withAtmosphere(withStyles(styleThunk)(OutcomeCardStatusMenu)),
+  graphql`
+    fragment OutcomeCardStatusMenu_project on Project {
+      projectId: id
+      projectStatus: status
+      teamId
+    }`
+);

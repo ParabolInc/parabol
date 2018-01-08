@@ -1,8 +1,17 @@
 import {commitMutation} from 'react-relay';
 
+graphql`
+  fragment ResendTeamInviteMutation_invitation on ResendTeamInvitePayload {
+    invitation {
+      updatedAt
+    }
+  }
+`;
 const mutation = graphql`
   mutation ResendTeamInviteMutation($inviteId: ID!) {
-    resendTeamInvite(inviteId: $inviteId)
+    resendTeamInvite(inviteId: $inviteId) {
+     ...ResendTeamInviteMutation_invitation @relay(mask: false) 
+    }
   }
 `;
 
@@ -10,14 +19,10 @@ const ResendTeamInviteMutation = (environment, inviteId, onError, onCompleted) =
   return commitMutation(environment, {
     mutation,
     variables: {inviteId},
-    // updater: (store) => {
-    // const viewer = store.get(viewerId);
-    // const deletedId = store.getRootField('acceptTeamInvite').getValue('deletedId');
-    // clearNotificationUpdater(viewer, deletedId);
-    // },
-    // optimisticUpdater: (store) => {
-    // TODO add the new updatedAt or tokenExpiration to the list
-    // },
+    optimisticUpdater: (store) => {
+      const now = new Date();
+      store.get(inviteId).setValue(now.toJSON(), 'updatedAt');
+    },
     onCompleted,
     onError
   });

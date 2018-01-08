@@ -1,15 +1,15 @@
+import DynamicSerializer from 'dynamic-serializer';
 import MockDate from 'mockdate';
-import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
-import {__now} from 'server/__tests__/setup/mockTimes';
-import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
-import MockDB from 'server/__tests__/setup/MockDB';
 import MockPubSub from 'server/__mocks__/MockPubSub';
+import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
+import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
+import MockDB from 'server/__tests__/setup/MockDB';
+import {__now} from 'server/__tests__/setup/mockTimes';
+import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
+import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import DynamicSerializer from 'dynamic-serializer';
-import * as getPubSub from 'server/utils/getPubSub';
-import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -23,7 +23,6 @@ describe('removeTeamMember', () => {
     // SETUP
     const r = getRethink();
     const mockPubSub = new MockPubSub();
-    getPubSub.default = () => mockPubSub;
     const mockDB = new MockDB();
     const dynamicSerializer = new DynamicSerializer();
     await mockDB
@@ -33,14 +32,11 @@ describe('removeTeamMember', () => {
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     const userToBoot = mockDB.db.user[7];
     const authToken = mockAuthToken(mockDB.db.user[0]);
+    const dataLoader = makeDataLoader(authToken);
     const teamId = mockDB.db.team[0].id;
     // TEST
     const teamMemberId = mockDB.db.teamMember[7].id;
-    await removeTeamMember.resolve(
-      undefined,
-      {teamMemberId},
-      {authToken}
-    );
+    await removeTeamMember.resolve(undefined, {teamMemberId}, {authToken, dataLoader});
 
     const db = await fetchAndSerialize({
       teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('checkInOrder'),
@@ -75,13 +71,14 @@ describe('removeTeamMember', () => {
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     const authToken = mockAuthToken(mockDB.db.user[1]);
+    const dataLoader = makeDataLoader(authToken);
     // TEST
     const teamMemberId = mockDB.db.teamMember[7].id;
     await expectAsyncToThrow(
       removeTeamMember.resolve(
         undefined,
         {teamMemberId},
-        {authToken}
+        {authToken, dataLoader}
       )
     );
   });

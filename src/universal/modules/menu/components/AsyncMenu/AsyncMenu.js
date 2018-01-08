@@ -4,6 +4,7 @@ import React, {Component} from 'react';
 import portal from 'react-portal-hoc';
 import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
+import ErrorBoundary from 'universal/components/ErrorBoundary';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -41,28 +42,30 @@ class AsyncMenu extends Component {
     } = this.props;
     const menuStyles = css(styles.menuBlock, isClosing && styles.closing);
     return (
-      <div className={menuStyles} style={coords} ref={setModalRef}>
-        <div className={css(styles.menu)}>
-          <TransitionGroup appear style={{overflow: 'hidden'}}>
-            {Mod && !isClosing &&
-            <AnimatedFade>
-              <Mod
-                {...queryVars}
-                maxHeight={maxHeight}
-                maxWidth={maxWidth}
-                closePortal={closePortal}
-                updateModalCoords={updateModalCoords}
-              />
-            </AnimatedFade>
-            }
-            {!Mod && !isClosing &&
-            <AnimatedFade exit={false} unmountOnExit>
-              <LoadingComponent height={'5rem'} width={maxWidth} />
-            </AnimatedFade>
-            }
-          </TransitionGroup>
+      <ErrorBoundary>
+        <div className={menuStyles} style={coords} ref={setModalRef}>
+          <div className={css(styles.menu)}>
+            <TransitionGroup appear style={{overflow: 'hidden'}} component={null}>
+              {Mod && !isClosing &&
+              <AnimatedFade>
+                <Mod
+                  {...queryVars}
+                  maxHeight={maxHeight}
+                  maxWidth={maxWidth}
+                  closePortal={closePortal}
+                  updateModalCoords={updateModalCoords}
+                />
+              </AnimatedFade>
+              }
+              {!Mod && !isClosing &&
+              <AnimatedFade exit={false} unmountOnExit>
+                <LoadingComponent height={'5rem'} width={maxWidth} />
+              </AnimatedFade>
+              }
+            </TransitionGroup>
+          </div>
         </div>
-      </div>
+      </ErrorBoundary>
     );
   }
 }

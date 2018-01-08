@@ -1,5 +1,5 @@
 import {BILLING_LEADER} from 'universal/utils/constants';
-import {tierSupportsUpdateCheckInQuestion, qualifyingTiers} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
+import {qualifyingTiers, tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import getRethink from '../database/rethinkDriver';
 import {errorObj} from './utils';
 
@@ -18,9 +18,9 @@ export const getIsTeamLead = (teamMemberId) => {
 };
 
 export const requireAuth = (authToken) => {
-  const userId = getUserId(authToken);
-  if (userId) return userId;
-  throw errorObj({_error: 'Unauthorized. Must be logged in for this action.'});
+  if (!authToken) {
+    throw new Error('Unauthorized. Must be logged in for this action.');
+  }
 };
 
 /*
@@ -32,12 +32,10 @@ export const requireSU = (authToken) => {
   }
 };
 
-export const requireSUOrTeamMember = (authToken, teamId) => {
-  if (!isSuperUser(authToken)) {
-    const teams = authToken.tms || [];
-    if (!teams.includes(teamId)) {
-      throw errorObj({_error: `You do not have access to team ${teamId}`});
-    }
+export const requireTeamMember = (authToken, teamId) => {
+  const teams = authToken.tms || [];
+  if (!teams.includes(teamId)) {
+    throw errorObj({_error: `You do not have access to team ${teamId}`});
   }
 };
 
@@ -63,31 +61,7 @@ export const requireOrgLeaderOrTeamMember = async (authToken, teamId) => {
   }
 };
 
-export const requireSUOrSelf = (authToken, userId) => {
-  if (isSuperUser(authToken)) return undefined;
-  const authTokenUserId = getUserId(authToken);
-  if (authTokenUserId === userId) {
-    return userId;
-  }
-  throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
-};
-
-export const requireSUOrSelfOrLead = async (authToken, userId, teamId) => {
-  if (isSuperUser(authToken)) return undefined;
-  const authTokenUserId = getUserId(authToken);
-  if (authTokenUserId === userId) {
-    return 'self';
-  }
-  const teamMemberId = `${authTokenUserId}::${teamId}`;
-  const isTeamLead = await getIsTeamLead(teamMemberId);
-  if (isTeamLead) {
-    return 'lead';
-  }
-  throw errorObj({_error: 'Unauthorized. Only the team member or the leader can remove someone'});
-};
-
-export const requireSUOrLead = async (authToken, teamMemberId) => {
-  if (isSuperUser(authToken)) return undefined;
+export const requireTeamLead = async (teamMemberId) => {
   const r = getRethink();
   const teamMember = await r.table('TeamMember').get(teamMemberId);
   if (!teamMember || !teamMember.isLead) {
@@ -192,8 +166,8 @@ export const requireTeamCanUpdateCheckInQuestion = async (teamId) => {
   if (!tierSupportsUpdateCheckInQuestion(tier)) {
     throw errorObj({
       _error:
-        `Unauthorized. Team billing tier must be one of {${qualifyingTiers.join(', ')}} to update the Check-in question. ` +
-        `Actual tier is '${tier}'.`
+      `Unauthorized. Team billing tier must be one of {${qualifyingTiers.join(', ')}} to update the Check-in question. ` +
+      `Actual tier is '${tier}'.`
     });
   }
   return true;

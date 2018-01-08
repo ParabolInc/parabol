@@ -1,29 +1,31 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import plural from 'universal/utils/plural';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import appTheme from 'universal/styles/theme/appTheme';
+import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import plural from 'universal/utils/plural';
 
 const MeetingAgendaLastCall = (props) => {
   const {
-    agendaItemCount,
+    team: {agendaItems},
     hideMoveMeetingControls,
     gotoNext,
     facilitatorName,
     styles
   } = props;
-
+  const agendaItemCount = agendaItems.filter((item) => item.isComplete).length;
   const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL);
+
+  const hintName = hideMoveMeetingControls ? facilitatorName : 'you';
 
   return (
     <MeetingMain>
@@ -32,7 +34,7 @@ const MeetingAgendaLastCall = (props) => {
           <MeetingPhaseHeading>
             {agendaItemCount === 0 ?
               <span>{`No ${labelAgendaItems}?`}</span> :
-              <span>{`That wraps up the ${actionMeeting.agendaitems.name}!`}</span>
+              <span>{'Last Call:'}</span>
             }
           </MeetingPhaseHeading>
           {agendaItemCount === 0 ?
@@ -59,32 +61,35 @@ const MeetingAgendaLastCall = (props) => {
               scale="s5"
               colorPalette="black"
             >
-              {'We worked on '}
+              {'We’ve worked on '}
               <span className={css(styles.highlight)}>
                 {`${agendaItemCount} ${plural(agendaItemCount, AGENDA_ITEM_LABEL)}`}
               </span>
-              {'—need anything else?'}
+              {' so far—need anything else?'}
             </Type>
           }
 
           <AgendaShortcutHint />
 
           <div className={css(styles.controlBlock)}>
-            {!hideMoveMeetingControls ?
+            {!hideMoveMeetingControls &&
               <Button
+                aria-label="End Meeting"
+                buttonSize="large"
                 buttonStyle="solid"
                 colorPalette="cool"
                 depth={1}
                 isBlock
                 label="End Meeting"
                 onClick={gotoNext}
-                buttonSize="large"
                 textTransform="uppercase"
-              /> :
-              <MeetingFacilitationHint>
-                {'Waiting for'} <b>{facilitatorName}</b> {'to end the meeting'}
-              </MeetingFacilitationHint>
+              />
             }
+          </div>
+          <div className={css(styles.hintBlock)}>
+            <MeetingFacilitationHint>
+              {'Waiting for'} <b>{hintName}</b> {'to move on'}
+            </MeetingFacilitationHint>
           </div>
         </MeetingSection>
       </MeetingSection>
@@ -93,7 +98,7 @@ const MeetingAgendaLastCall = (props) => {
 };
 
 MeetingAgendaLastCall.propTypes = {
-  agendaItemCount: PropTypes.number,
+  team: PropTypes.object.isRequired,
   gotoNext: PropTypes.func,
   facilitatorName: PropTypes.string,
   hideMoveMeetingControls: PropTypes.bool,
@@ -107,7 +112,7 @@ const styleThunk = () => ({
 
   controlBlock: {
     margin: '0 auto',
-    paddingTop: '2.25rem',
+    padding: '2.25rem 0 1rem',
     width: '12rem'
   },
 
@@ -116,7 +121,20 @@ const styleThunk = () => ({
     borderRadius: '.25rem',
     marginTop: '2.5rem',
     padding: '.25rem 1rem'
+  },
+
+  hintBlock: {
+    textAlign: 'center',
+    width: '100%'
   }
 });
 
-export default withStyles(styleThunk)(MeetingAgendaLastCall);
+export default createFragmentContainer(
+  withStyles(styleThunk)(MeetingAgendaLastCall),
+  graphql`
+    fragment MeetingAgendaLastCall_team on Team {
+      agendaItems {
+        isComplete
+      }
+    }`
+);

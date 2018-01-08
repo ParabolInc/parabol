@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddGitHubRepoPayload from 'server/graphql/types/AddGitHubRepoPayload';
 import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 import shortid from 'shortid';
@@ -74,7 +74,7 @@ export default {
     const r = getRethink();
     const now = new Date();
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
     requireWebsocket(socket);
     const userId = getUserId(authToken);
 

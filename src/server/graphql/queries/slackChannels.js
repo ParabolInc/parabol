@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLList} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import SlackIntegration from 'server/graphql/types/SlackIntegration';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
 
 export default {
@@ -17,7 +17,7 @@ export default {
     const r = getRethink();
 
     // AUTH
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     return r.table(SLACK)

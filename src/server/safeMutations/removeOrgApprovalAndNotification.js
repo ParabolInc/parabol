@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import {REQUEST_NEW_USER} from 'universal/utils/constants';
 import {APPROVED, DENIED, PENDING} from 'server/utils/serverConstants';
+import {REQUEST_NEW_USER} from 'universal/utils/constants';
 
 const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
   const now = new Date();
@@ -8,8 +8,8 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
   const status = approvedBy ? APPROVED : DENIED;
   const emails = Array.isArray(maybeEmails) ? maybeEmails : [maybeEmails];
   const r = getRethink();
-  const {removedNotifications} = await r({
-    removedApproval: r.table('OrgApproval')
+  return r({
+    removedOrgApprovals: r.table('OrgApproval')
       .getAll(r.args(emails), {index: 'email'})
       .filter({orgId, status: PENDING})
       .update({
@@ -17,8 +17,9 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
         approvedBy,
         deniedBy,
         updatedAt: now
-      }),
-    removedNotifications: r.table('Notification')
+      }, {returnChanges: true})('changes')('new_val')
+      .default([]),
+    removedRequestNotifications: r.table('Notification')
       .getAll(orgId, {index: 'orgId'})
       .filter({
         type: REQUEST_NEW_USER
@@ -27,18 +28,9 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
         return r.expr(emails).contains(notification('inviteeEmail'));
       })
       // get the inviterName
-      .delete({returnChanges: true})('changes')
-      .map((change) => change('old_val'))
+      .delete({returnChanges: true})('changes')('old_val')
       .default([])
   });
-  const notificationsToClear = {};
-  removedNotifications.forEach((removedNotification) => {
-    removedNotification.userIds.forEach((userId) => {
-      notificationsToClear[userId] = notificationsToClear[userId] || [];
-      notificationsToClear[userId].push(removedNotification.id);
-    });
-  });
-  return notificationsToClear;
 };
 
 export default removeOrgApprovalAndNotification;

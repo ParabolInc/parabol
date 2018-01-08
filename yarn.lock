@@ -2421,6 +2421,10 @@ data-uri-to-buffer@1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-1.2.0.tgz#77163ea9c20d8641b4707e8f18abdf9a78f34835"
 
+dataloader@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/dataloader/-/dataloader-1.3.0.tgz#6fec5be4b30a712e4afd30b86b4334566b97673b"
+
 date-fns@^1.23.0:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
@@ -2717,9 +2721,9 @@ duplexer2@~0.0.2:
   dependencies:
     readable-stream "~1.1.9"
 
-dynamic-serializer@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/dynamic-serializer/-/dynamic-serializer-0.1.1.tgz#26803b9bf152cccb8deae873c7483834443c5856"
+dynamic-serializer@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/dynamic-serializer/-/dynamic-serializer-0.2.1.tgz#145b9455ac68b4554030529ff63a8732a2e262c2"
 
 ecc-jsbn@~0.1.1:
   version "0.1.1"
@@ -4084,6 +4088,10 @@ hoek@2.x.x:
 hoek@4.x.x:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.0.tgz#72d9d0754f7fe25ca2d01ad8f8f9a9449a89526d"
+
+hoist-non-react-statics@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz#aa448cf0986d55cc40773b17174b7dd066cb7cfb"
 
 hoist-non-react-statics@^2.1.0, hoist-non-react-statics@^2.2.1, hoist-non-react-statics@^2.3.0, hoist-non-react-statics@^2.3.1:
   version "2.3.1"
@@ -5563,6 +5571,10 @@ lodash.some@^4.4.0:
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
+
+lodash.throttle@^4.0.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
 
 lodash.toplainobject@^3.0.0:
   version "3.0.0"
@@ -7075,7 +7087,7 @@ quote-stream@~0.0.0:
     minimist "0.0.8"
     through2 "~0.4.1"
 
-raf@^3.3.2:
+raf@^3.2.0, raf@^3.3.2:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/raf/-/raf-3.4.0.tgz#a28876881b4bc2ca9117d4138163ddb80f781575"
   dependencies:
@@ -7178,11 +7190,25 @@ react-deep-force-update@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-2.1.1.tgz#8ea4263cd6455a050b37445b3f08fd839d86e909"
 
+react-display-name@^0.2.0:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/react-display-name/-/react-display-name-0.2.3.tgz#f50204d430c9ca819bc0bade0306e9175d8d1987"
+
 react-dnd-html5-backend@^2.4.1:
   version "2.5.4"
   resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-2.5.4.tgz#974ad083f67b12d56977a5b171f5ffeb29d78352"
   dependencies:
     lodash "^4.2.0"
+
+react-dnd-scrollzone@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-dnd-scrollzone/-/react-dnd-scrollzone-4.0.0.tgz#d707170c0cd3b7ab3d991dd6a8cc0b3712454139"
+  dependencies:
+    hoist-non-react-statics "^1.2.0"
+    lodash.throttle "^4.0.1"
+    prop-types "^15.5.9"
+    raf "^3.2.0"
+    react-display-name "^0.2.0"
 
 react-dnd@^2.4.0:
   version "2.5.4"
@@ -7338,9 +7364,9 @@ react-transition-group@^1.2.0:
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-react-transition-group@^2.2.0:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.2.1.tgz#e9fb677b79e6455fd391b03823afe84849df4a10"
+"react-transition-group@https://github.com/mattkrick/react-transition-group/tarball/a514cd964a9c67cf5ed122eeeaccc6e3ad4ec53b":
+  version "2.3.0-beta.0"
+  resolved "https://github.com/mattkrick/react-transition-group/tarball/a514cd964a9c67cf5ed122eeeaccc6e3ad4ec53b#0d80300170eeba0ee2c3a056d1076caaa82d192e"
   dependencies:
     chain-function "^1.0.0"
     classnames "^2.2.5"
@@ -7515,11 +7541,10 @@ redux-actions@^0.9.0:
     flux-standard-action "^0.6.0"
     reduce-reducers "^0.1.0"
 
-redux-form@^7.0.3:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-7.1.1.tgz#4d9ab1d9c03beb3a8b5f8e5d0f398cff4209081f"
+redux-form@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-7.2.0.tgz#4465d9bc863e40b1704695d672bea75fcf81db04"
   dependencies:
-    babel-jest "^21.2.0"
     deep-equal "^1.0.1"
     es6-error "^4.0.0"
     hoist-non-react-statics "^2.3.1"
@@ -8195,6 +8220,10 @@ shallow-copy@~0.0.1:
 shallowequal@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/shallowequal/-/shallowequal-1.0.2.tgz#1561dbdefb8c01408100319085764da3fcf83f8f"
+
+shared-dataloader@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/shared-dataloader/-/shared-dataloader-0.1.0.tgz#c914d14454e767a93e769c359a79cdca9cfbf013"
 
 shebang-command@^1.2.0:
   version "1.2.0"

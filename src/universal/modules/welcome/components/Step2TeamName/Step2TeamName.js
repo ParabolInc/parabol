@@ -1,14 +1,14 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import shortid from 'shortid';
 import InputField from 'universal/components/InputField/InputField';
 import Type from 'universal/components/Type/Type';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import WelcomeHeading from 'universal/modules/welcome/components/WelcomeHeading/WelcomeHeading';
 import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
 import {nextPage, setWelcomeTeam, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
+import CreateFirstTeamMutation from 'universal/mutations/CreateFirstTeamMutation';
 import {setAuthToken} from 'universal/redux/authDuck';
 import formError from 'universal/styles/helpers/formError';
 import withStyles from 'universal/styles/withStyles';
@@ -21,26 +21,21 @@ const validate = (values) => {
 };
 
 const Step2TeamName = (props) => {
-  const {error, dispatch, handleSubmit, preferredName, styles, submitting, teamName} = props;
+  const {atmosphere, error, dispatch, handleSubmit, preferredName, styles, submitting, teamName} = props;
   const onTeamNameSubmit = async (submissionData) => {
     const {data: {teamName: normalizedTeamName}} = step2Validation()(submissionData);
-    const teamId = shortid.generate();
-    const teamMemberId = shortid.generate();
-    dispatch(setWelcomeTeam({teamId, teamMemberId}));
-    const options = {
-      variables: {
-        newTeam: {
-          id: teamId,
-          name: normalizedTeamName
-        }
-      }
+    const onError = (err) => {
+      throw new SubmissionError(err);
     };
-    // createFirstTeam returns a new JWT with a new tms field
-    const {data: {createFirstTeam: newToken}, error: cashayError} = await cashay.mutate('createFirstTeam', options);
-    if (cashayError) throw new SubmissionError(cashayError);
-    dispatch(updateCompleted(2));
-    dispatch(nextPage());
-    dispatch(setAuthToken(newToken));
+    const onCompleted = (res) => {
+      const {createFirstTeam: {jwt: newToken, team: {id: teamId}, teamLead: {id: teamMemberId}}} = res;
+      dispatch(setWelcomeTeam({teamId, teamMemberId}));
+      dispatch(updateCompleted(2));
+      dispatch(nextPage());
+      dispatch(setAuthToken(newToken));
+    };
+    const newTeam = {name: normalizedTeamName};
+    CreateFirstTeamMutation(atmosphere, newTeam, onError, onCompleted);
   };
   return (
     <div style={{width: '100%'}}>
@@ -68,6 +63,7 @@ const Step2TeamName = (props) => {
 };
 
 Step2TeamName.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   error: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
@@ -102,6 +98,8 @@ const formOptions = {
   validate
 };
 
-export default reduxForm(formOptions)(
-  withStyles(styleThunk)(Step2TeamName)
+export default withAtmosphere(
+  reduxForm(formOptions)(
+    withStyles(styleThunk)(Step2TeamName)
+  )
 );

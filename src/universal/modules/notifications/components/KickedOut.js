@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
@@ -8,7 +9,6 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import {clearNotificationLabel} from '../helpers/constants';
 
 const KickedOut = (props) => {
@@ -21,11 +21,11 @@ const KickedOut = (props) => {
     onError,
     onCompleted
   } = props;
-  const {id, teamName} = notification;
-  const {id: dbNotificationId} = fromGlobalId(id);
+  const {notificationId, team} = notification;
+  const {teamName} = team;
   const acknowledge = () => {
     submitMutation();
-    ClearNotificationMutation(atmosphere, dbNotificationId, onError, onCompleted);
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
   };
   return (
     <Row>
@@ -60,10 +60,7 @@ KickedOut.propTypes = {
   styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
-  notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -75,4 +72,15 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(KickedOut);
+export default createFragmentContainer(
+  withStyles(styleThunk)(KickedOut),
+  graphql`
+    fragment KickedOut_notification on NotifyKickedOut {
+      notificationId: id
+      team {
+        id
+        teamName: name
+      }
+    }
+  `
+);

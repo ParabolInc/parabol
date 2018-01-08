@@ -1,0 +1,230 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`acceptTeamInviteEmail adds an invitee who was not previously in the org 1`] = `
+Object {
+  "invitation": Array [
+    Object {
+      "acceptedAt": 2017-01-01T08:00:00.000Z,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": "<<constant>>",
+      "hashedToken": "<<constant>>",
+      "id": "<<constant>>",
+      "inviteCount": 1,
+      "invitedBy": "<<constant>>",
+      "teamId": "<<constant>>",
+      "tokenExpiration": 1970-01-01T00:00:00.000Z,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+  "notification": Array [],
+  "teamMember": Object {
+    "checkInOrder": 4,
+    "email": "invitee@mockTeam+acceptTeamInviteEmail1.co",
+    "id": 3,
+    "isCheckedIn": null,
+    "isFacilitator": true,
+    "isLead": false,
+    "isNotRemoved": true,
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "inviteeGuy",
+    "teamId": 1,
+    "userId": 0,
+  },
+  "user": Object {
+    "cachedAt": 2017-01-01T07:00:00.000Z,
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "email": "invitee@mockTeam+acceptTeamInviteEmail1.co",
+    "emailVerified": false,
+    "id": 0,
+    "identities": Array [],
+    "inactive": false,
+    "lastLogin": 2017-01-01T07:00:00.000Z,
+    "lastSeenAt": 2017-01-01T07:00:00.000Z,
+    "name": "inviteeGuy",
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "inviteeGuy",
+    "tms": Array [
+      1,
+    ],
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userOrgs": Array [
+      Object {
+        "id": 2,
+        "role": null,
+      },
+    ],
+    "welcomeSentAt": 2017-01-01T07:00:00.000Z,
+  },
+}
+`;
+
+exports[`acceptTeamInviteEmail adds an invitee who was previously in the org 1`] = `
+Object {
+  "invitation": Array [
+    Object {
+      "acceptedAt": 2017-01-01T08:00:00.000Z,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": "<<constant>>",
+      "hashedToken": "$2a$10$HdSFfY82SEVkDLrU8We6Bu561wdfYAIKRvH4g3lqAfuUVfqV8k1RW",
+      "id": "<<constant>>",
+      "inviteCount": 1,
+      "inviteToken": "qQrg64bVC6xe9z",
+      "invitedBy": "<<constant>>",
+      "teamId": "<<constant>>",
+      "tokenExpiration": 1970-01-01T00:00:00.000Z,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+  "notification": Array [],
+  "teamMember": Object {
+    "checkInOrder": 6,
+    "email": "vision@avengers.org",
+    "id": 5,
+    "isCheckedIn": null,
+    "isFacilitator": true,
+    "isLead": false,
+    "isNotRemoved": true,
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "Vision",
+    "teamId": 2,
+    "userId": 0,
+  },
+  "user": Object {
+    "cachedAt": 2017-01-01T07:00:00.000Z,
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "email": "vision@avengers.org",
+    "emailVerified": false,
+    "id": 0,
+    "identities": Array [],
+    "inactive": false,
+    "lastLogin": 2017-01-01T07:00:00.000Z,
+    "lastSeenAt": 2017-01-01T07:00:00.000Z,
+    "name": "Jonas",
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "Vision",
+    "tms": Array [
+      1,
+      2,
+    ],
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userOrgs": Array [
+      Object {
+        "id": 3,
+        "role": null,
+      },
+      Object {
+        "id": 4,
+        "role": null,
+      },
+    ],
+    "welcomeSentAt": 2017-01-01T07:00:00.000Z,
+  },
+}
+`;
+
+exports[`acceptTeamInviteEmail adds an invitee who was previously in the org 2`] = `
+Object {
+  "invitationRemoved": Array [
+    Object {
+      "channelId": 2,
+      "message": Object {
+        "invitationRemoved": Object {
+          "invitation": Object {
+            "acceptedAt": 2017-01-01T08:00:00.000Z,
+            "createdAt": 2017-01-01T07:00:00.000Z,
+            "email": 8,
+            "hashedToken": 9,
+            "id": 7,
+            "inviteCount": 1,
+            "inviteToken": 10,
+            "invitedBy": 11,
+            "teamId": 2,
+            "tokenExpiration": 1970-01-01T00:00:00.000Z,
+            "updatedAt": 2017-01-01T08:00:00.000Z,
+          },
+        },
+        "operationId": 0,
+      },
+    },
+  ],
+  "newAuthToken": Array [
+    Object {
+      "channelId": 0,
+      "message": Object {
+        "newAuthToken": 12,
+      },
+    },
+  ],
+  "notificationsAdded": Array [
+    Object {
+      "channelId": 2,
+      "message": Object {
+        "notificationsAdded": Object {
+          "notifications": Array [
+            Object {
+              "preferredName": "Vision",
+              "teamId": 2,
+              "teamName": "Team America",
+              "type": "JOIN_TEAM",
+            },
+          ],
+        },
+      },
+    },
+  ],
+  "notificationsCleared": Array [
+    Object {
+      "channelId": 0,
+      "message": Object {
+        "notificationsCleared": Object {
+          "deletedIds": Array [
+            13,
+          ],
+        },
+      },
+    },
+  ],
+  "teamAdded": Array [
+    Object {
+      "channelId": 0,
+      "message": Object {
+        "mutatorId": undefined,
+        "operationId": 0,
+        "teamAdded": Object {
+          "notification": Object {
+            "startAt": 2017-01-01T08:00:00.000Z,
+            "teamId": 2,
+            "type": "ADD_TO_TEAM",
+          },
+          "teamId": 2,
+          "teamMemberId": 5,
+        },
+      },
+    },
+  ],
+  "teamMemberAdded": Array [
+    Object {
+      "channelId": 2,
+      "message": Object {
+        "mutatorId": undefined,
+        "operationId": 0,
+        "teamMemberAdded": Object {
+          "teamMember": Object {
+            "checkInOrder": 1,
+            "email": 8,
+            "id": 5,
+            "isCheckedIn": null,
+            "isFacilitator": true,
+            "isLead": false,
+            "isNotRemoved": true,
+            "picture": "https://placeimg.com/100/100/animals",
+            "preferredName": "Vision",
+            "teamId": 2,
+            "userId": 0,
+          },
+        },
+      },
+    },
+  ],
+}
+`;

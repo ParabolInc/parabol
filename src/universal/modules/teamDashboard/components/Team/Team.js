@@ -1,19 +1,16 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
-import {
-  DashContent,
-  DashHeader,
-  DashHeaderInfo,
-  DashMain
-} from 'universal/components/Dashboard';
+import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
+import {DashContent, DashHeader, DashHeaderInfo, DashMain} from 'universal/components/Dashboard';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
 import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
@@ -26,14 +23,16 @@ const Team = (props) => {
     isSettings,
     history,
     styles,
-    team,
-    teamMembers
+    team
   } = props;
-  const {id: teamId, name: teamName, isPaid} = team;
-  const hasActiveMeeting = Boolean(team && team.meetingId);
+  if (!team) return <LoadingView />;
+
+  const {teamId, teamName, isPaid, meetingId} = team;
+  const hasActiveMeeting = Boolean(meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
   initialValues.teamName = teamName;
-  const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
+  const DashHeaderInfoTitle = isSettings ?
+    <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
   const modalLayout = hasMeetingAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
   const goToMeetingLobby = () =>
     history.push(`/meeting/${teamId}/`);
@@ -60,16 +59,16 @@ const Team = (props) => {
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {!isSettings &&
-            <Button
-              buttonStyle="solid"
-              colorPalette="warm"
-              depth={1}
-              icon="users"
-              iconPlacement="left"
-              label="Meeting Lobby"
-              onClick={goToMeetingLobby}
-              buttonSize="small"
-            />
+          <Button
+            buttonStyle="solid"
+            colorPalette="warm"
+            depth={1}
+            icon="users"
+            iconPlacement="left"
+            label="Meeting Lobby"
+            onClick={goToMeetingLobby}
+            buttonSize="small"
+          />
           }
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
@@ -97,7 +96,7 @@ const Team = (props) => {
               onClick={goToTeamSettings}
             />
           }
-          <DashboardAvatars teamMembers={teamMembers} />
+          <DashboardAvatars team={team} />
         </div>
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">
@@ -113,8 +112,7 @@ Team.propTypes = {
   isSettings: PropTypes.bool.isRequired,
   history: PropTypes.object,
   styles: PropTypes.object,
-  team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired
+  team: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -124,4 +122,15 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(Team));
+export default createFragmentContainer(
+  withRouter(withStyles(styleThunk)(Team)),
+  graphql`
+    fragment Team_team on Team {
+      teamId: id
+      teamName: name
+      isPaid
+      meetingId
+      ...DashboardAvatars_team
+    }
+  `
+);

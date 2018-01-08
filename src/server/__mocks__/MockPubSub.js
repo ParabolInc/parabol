@@ -1,22 +1,78 @@
-import channelsToSerialize from 'server/__tests__/utils/channelsToSerialize';
+import dataFieldsToSerialize from 'server/__tests__/utils/dataFieldsToSerialize';
+import * as getPubSub from 'server/utils/getPubSub';
+
+const fieldsToSerialize = {
+  invitation: [
+    ...dataFieldsToSerialize
+  ],
+  newAuthToken: [
+    'channelId',
+    'message.data.tms'
+  ],
+  notification: [
+    ...dataFieldsToSerialize
+  ],
+  organization: [
+    ...dataFieldsToSerialize
+  ],
+  orgApproval: [
+    ...dataFieldsToSerialize
+  ],
+  project: [
+    ...dataFieldsToSerialize
+  ],
+  team: [
+    ...dataFieldsToSerialize
+  ],
+  teamMember: [
+    ...dataFieldsToSerialize
+  ]
+};
+
+const untestablePayloads = [
+  'message.data.removedRequestNotifications'
+];
+
+// const getPath = (str, obj) => str.split('.').reduce((o, i) => o[i], obj);
+const replacePath = (str, docArr, newVal) => {
+  docArr.forEach((obj) => {
+    const path = str.split('.');
+    let currentObj = obj;
+    for (let ii = 0; ii < path.length - 1; ii++) {
+      const next = path[ii];
+      currentObj = currentObj[next];
+      if (!currentObj) return;
+    }
+    const lastVal = path[path.length - 1];
+    if (Array.isArray(currentObj[lastVal])) {
+      currentObj[lastVal] = newVal;
+    }
+  });
+};
 
 export default class MockPubSub {
   constructor() {
+    getPubSub.default = () => this;
     this.db = {};
   }
 
   __serialize(dynamicSerializer) {
-    const channels = Object.keys(this.db);
+    const channels = Object.keys(this.db).sort();
     const snapshot = {};
     for (let i = 0; i < channels.length; i++) {
       const channel = channels[i];
       const doc = this.db[channel];
-      if (!channelsToSerialize[channel]) {
-        throw new Error(`BAD MOCK: No channelsToSerialize for DB table ${channel}`);
+      const channelFields = fieldsToSerialize[channel];
+      if (!channelFields) {
+        throw new Error(`BAD MOCK: No fieldsToSerialize for pubsub channel ${channel}`);
       }
-      snapshot[channel] = dynamicSerializer.toStatic(doc, channelsToSerialize[channel]);
-      // we don't care about the order, so make it repeatable
-      snapshot[channel].sort((a, b) => a.channelId < b.channelId ? 1 : -1);
+
+      // some payloads can't be tested because they are an array that can't be sorted
+      // for those, we can skip it here and use the arrayContaining test
+      untestablePayloads.forEach((untestable) => {
+        replacePath(untestable, doc, 'UNTESTED');
+      });
+      snapshot[channel] = dynamicSerializer.toStatic(doc, channelFields);
     }
     return snapshot;
   }

@@ -85,12 +85,11 @@ export default class UserSettingsContainer extends Component {
     untouch('preferredName');
   }
 
+  // eslint-disable-next-line class-methods-use-this
   updateProfile(preferredName, pictureUrl) {
-    const {userId} = this.props;
     const options = {
       variables: {
         updatedUser: {
-          id: userId,
           preferredName,
           picture: pictureUrl
         }

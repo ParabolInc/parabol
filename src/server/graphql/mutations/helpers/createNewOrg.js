@@ -12,5 +12,5 @@ export default async function createNewOrg(orgId, orgName, leaderUserId) {
     orgUsers: [{id: leaderUserId, role: BILLING_LEADER, inactive: false}],
     tier: PERSONAL,
     updatedAt: now
-  }, {returnChanges: true})('changes')(0)('new_val');
+  });
 }

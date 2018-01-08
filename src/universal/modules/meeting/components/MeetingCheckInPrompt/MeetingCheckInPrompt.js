@@ -1,78 +1,52 @@
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import editorDecorators from 'universal/components/ProjectEditor/decorators';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import MeetingCheckInGreeting from 'universal/modules/meeting/components/MeetingCheckInGreeting';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
-import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation';
 import CheckInQuestion from './CheckInQuestion';
 
-
-class MeetingCheckinPrompt extends Component {
-  state = {
-    editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.checkInQuestion)), editorDecorators)
-  };
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.checkInQuestion !== this.props.checkInQuestion) {
-      this.setState({
-        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(nextProps.checkInQuestion)), editorDecorators)
-      });
-    }
-  }
-
-  setEditorState = (editorState) => {
-    const {atmosphere, teamId} = this.props;
-    const wasFocused = this.state.editorState.getSelection().getHasFocus();
-    const isFocused = editorState.getSelection().getHasFocus();
-    if (wasFocused !== isFocused) {
-      if (!isFocused) {
-        const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
-        UpdateCheckInQuestionMutation(atmosphere, teamId, checkInQuestion);
-      }
-    }
-    this.setState({
-      editorState
-    });
-  }
-
-  render() {
-    const {
-      avatar,
-      canEdit,
-      currentName,
-      greeting
-    } = this.props;
-    const {editorState} = this.state;
-    const heading = (
-      <div>
-        <MeetingCheckInGreeting {...{currentName, greeting}} />
-        <CheckInQuestion editorState={editorState} canEdit={canEdit} setEditorState={this.setEditorState} />
-      </div>
-    );
-    return (
-      <MeetingPrompt
-        avatar={avatar}
-        avatarLarge
-        heading={heading}
+const MeetingCheckinPrompt = (props) => {
+  const {
+    isFacilitating,
+    localPhaseItem,
+    team
+  } = props;
+  const {teamMembers} = team;
+  const currentMember = teamMembers[localPhaseItem - 1];
+  const heading = (
+    <div>
+      <MeetingCheckInGreeting
+        currentName={currentMember.preferredName}
+        isFacilitating={isFacilitating}
+        team={team}
       />
-    );
-  }
-}
-
-MeetingCheckinPrompt.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  avatar: PropTypes.string.isRequired,
-  canEdit: PropTypes.bool.isRequired,
-  currentName: PropTypes.string.isRequired,
-  checkInQuestion: PropTypes.string.isRequired,
-  greeting: PropTypes.shape({
-    content: PropTypes.string.isRequired,
-    language: PropTypes.string.isRequired
-  }),
-  onSubmit: PropTypes.func,
-  teamId: PropTypes.string
+      <CheckInQuestion isFacilitating={isFacilitating} team={team} />
+    </div>
+  );
+  return (
+    <MeetingPrompt
+      avatar={currentMember.picture}
+      avatarLarge
+      heading={heading}
+    />
+  );
 };
 
-export default withAtmosphere(MeetingCheckinPrompt);
+MeetingCheckinPrompt.propTypes = {
+  isFacilitating: PropTypes.bool.isRequired,
+  localPhaseItem: PropTypes.number.isRequired,
+  team: PropTypes.object.isRequired
+};
+
+export default createFragmentContainer(
+  MeetingCheckinPrompt,
+  graphql`
+    fragment MeetingCheckInPrompt_team on Team {
+      teamMembers(sortBy: "checkInOrder") {
+        preferredName
+        picture
+      }
+      ...CheckInQuestion_team
+      ...MeetingCheckInGreeting_team
+    }`
+);

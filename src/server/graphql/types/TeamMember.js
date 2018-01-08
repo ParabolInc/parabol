@@ -1,18 +1,25 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
-import {globalIdField} from 'graphql-relay';
-import getRethink from 'server/database/rethinkDriver';
-import {Team} from '../models/Team/teamSchema';
+import {forwardConnectionArgs} from 'graphql-relay';
+import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
+import {resolveTeam} from 'server/graphql/resolvers';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember';
+import {ProjectConnection} from 'server/graphql/types/Project';
+import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
-import Project from 'server/graphql/types/Project';
+import {getUserId} from 'server/utils/authorization';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
-  description: 'A member of a team team',
+  description: 'A member of a team',
+  interfaces: () => [PossibleTeamMember],
   fields: () => ({
-    id: globalIdField('TeamMember', ({id}) => id),
-    // id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
+    id: {
+      type: GraphQLID,
+      description: 'An ID for the teamMember. userId::teamId'
+    },
     isNotRemoved: {
       type: GraphQLBoolean,
       description: 'true if the user is a part of the team, false if they no longer are'
@@ -41,9 +48,29 @@ const TeamMember = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The place in line for checkIn, regenerated every meeting'
     },
+    isConnected: {
+      type: GraphQLBoolean,
+      description: 'true if the user is connected',
+      resolve: async (source, args, {dataLoader}) => {
+        if (source.hasOwnProperty('isConnected')) {
+          return source.isConnected;
+        }
+        const {userId} = source;
+        const {connectedSockets} = await dataLoader.get('users').load(userId);
+        return Array.isArray(connectedSockets) && connectedSockets.length > 0;
+      }
+    },
     isCheckedIn: {
       type: GraphQLBoolean,
       description: 'true if present, false if absent, null before check-in'
+    },
+    isSelf: {
+      type: GraphQLBoolean,
+      description: 'true if this team member belongs to the user that queried it',
+      resolve: (source, args, {authToken}) => {
+        const userId = getUserId(authToken);
+        return source.userId === userId;
+      }
     },
     /* Foreign keys */
     teamId: {
@@ -58,31 +85,30 @@ const TeamMember = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team this team member belongs to',
-      resolve({teamId}) {
-        const r = getRethink();
-        return r.table('Team')
-          .get(teamId)
-          .run();
-      }
+      resolve: resolveTeam
     },
     user: {
       type: User,
       description: 'The user for the team member',
-      resolve(source) {
-        const r = getRethink();
-        return r.table('User')
-          .get(source.userId)
-          .run();
+      resolve({userId}, args, {dataLoader}) {
+        return dataLoader.get('users').load(userId);
       }
     },
     projects: {
-      type: Project,
+      type: ProjectConnection,
       description: 'Projects owned by the team member',
-      resolve(source) {
-        const r = getRethink();
-        return r.table('Project')
-          .getAll(source.id, {index: 'teamMemberId'})
-          .run();
+      args: {
+        ...forwardConnectionArgs,
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        }
+      },
+      resolve: async ({teamId, userId}, args, {dataLoader}) => {
+        const allProjects = await dataLoader.get('projectsByTeamId').load(teamId);
+        const projectsForUserId = allProjects.filter((project) => project.userId === userId);
+        const publicProjectsForUserId = projectsForUserId.filter((project) => !project.tags.includes('private'));
+        return connectionFromProjects(publicProjectsForUserId);
       }
     }
   })

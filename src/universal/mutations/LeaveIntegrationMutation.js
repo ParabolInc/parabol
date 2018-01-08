@@ -3,7 +3,6 @@ import {removeGitHubRepoUpdater} from 'universal/mutations/RemoveGitHubRepoMutat
 import {GITHUB} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
   mutation LeaveIntegrationMutation($globalId: ID!) {
@@ -25,8 +24,7 @@ export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
       const teamMembers = integration.getLinkedRecords('teamMembers');
       if (teamMembers) {
         const teamMemberId = `${userId}::${teamId}`;
-        const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
-        const newNodes = getArrayWithoutIds(teamMembers, globalTeamMemberId);
+        const newNodes = getArrayWithoutIds(teamMembers, teamMemberId);
         integration.setLinkedRecords(newNodes, 'teamMembers');
       }
       // FIXME https://github.com/facebook/relay/issues/1963

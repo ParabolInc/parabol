@@ -10,4 +10,4 @@ export default async function resolveSentEmails(sendEmailPromises, inviteesWithT
     arrayToFill.push(invitee);
   }
   return {inviteeErrors, inviteesToStore};
-};
+}

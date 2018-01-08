@@ -1,63 +1,13 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import {connect} from 'react-redux';
-import {cashay} from 'cashay';
-import getRefreshPeriod from 'universal/utils/getRefreshPeriod';
+import React, {Component} from 'react';
+import {createFragmentContainer} from 'react-relay';
 import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
-import getRelaySafeProjectId from 'universal/utils/getRelaySafeProjectId';
+import getRefreshPeriod from 'universal/utils/getRefreshPeriod';
 
-const editingStatusContainer = `
-query {
-  presence(teamId: $teamId) @live {
-    id
-    userId
-    editing
-    teamMember @cached(type: "TeamMember") {
-      id
-      preferredName
-    }
-  }
-}
-`;
-
-
-const mapStateToProps = (state, props) => {
-  const {outcomeId} = props;
-  const relaySafeProjectId = getRelaySafeProjectId(outcomeId);
-
-  const {presence: editors} = cashay.query(editingStatusContainer, {
-    op: 'editingStatusContainer',
-    variables: {
-      teamId: relaySafeProjectId.split('::')[0]
-    },
-    key: relaySafeProjectId,
-    filter: {
-      presence: (presence) => presence.editing === `Task::${relaySafeProjectId}`
-    },
-    resolveCached: {
-      teamMember: (source) => {
-        if (!source.editing) {
-          return undefined;
-        }
-        const [, teamId] = source.editing.split('::');
-        const {userId} = source;
-        return `${userId}::${teamId}`;
-      }
-    }
-  }).data;
-  return {
-    editors
-  };
-};
-
-@connect(mapStateToProps)
-export default class EditingStatusContainer extends Component {
+class EditingStatusContainer extends Component {
   static propTypes = {
     isEditing: PropTypes.bool,
-    editors: PropTypes.any,
-    outcomeId: PropTypes.string,
-    createdAt: PropTypes.instanceOf(Date),
-    updatedAt: PropTypes.instanceOf(Date)
+    project: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -83,7 +33,7 @@ export default class EditingStatusContainer extends Component {
 
   queueNextRender() {
     this.resetTimeout();
-    const {createdAt, updatedAt} = this.props;
+    const {project: {createdAt, updatedAt}} = this.props;
     const timestamp = this.state.timestampType === 'createdAt' ? createdAt : updatedAt;
     const timeTilRefresh = getRefreshPeriod(timestamp);
     this.refreshTimer = setTimeout(() => {
@@ -92,17 +42,29 @@ export default class EditingStatusContainer extends Component {
   }
 
   render() {
-    const {isEditing, editors, createdAt, updatedAt} = this.props;
+    const {isEditing, project} = this.props;
+    const {createdAt, updatedAt} = project;
+    const {timestampType} = this.state;
     this.queueNextRender();
-    const timestamp = this.state.timestampType === 'createdAt' ? createdAt : updatedAt;
+    const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt;
     return (
       <EditingStatus
         handleClick={this.toggleTimestamp}
         isEditing={isEditing}
-        editors={editors}
+        project={project}
         timestamp={timestamp}
-        timestampType={this.state.timestampType}
+        timestampType={timestampType}
       />
     );
   }
 }
+
+export default createFragmentContainer(
+  EditingStatusContainer,
+  graphql`
+    fragment EditingStatusContainer_project on Project {
+      createdAt
+      updatedAt
+      ...EditingStatus_project
+    }`
+);

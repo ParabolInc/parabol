@@ -2,7 +2,6 @@ import {commitMutation} from 'react-relay';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
 
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {
@@ -59,12 +58,11 @@ export const removeIntegrations = (viewer, teamId, service, deletedIntegrationId
 const getIntegrationIdsToRemove = (viewer, teamId, service) => {
   const {id: userId} = fromGlobalId(viewer.getDataID());
   const teamMemberId = `${userId}::${teamId}`;
-  const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
   if (service === GITHUB) {
     const repos = viewer.getLinkedRecords('githubRepos', {teamId}) || [];
     return repos.reduce((arr, repo) => {
       const teamMembers = repo.getLinkedRecords('teamMembers');
-      if (teamMembers.length === 1 && teamMembers[0].getValue('id') === globalTeamMemberId) {
+      if (teamMembers.length === 1 && teamMembers[0].getValue('id') === teamMemberId) {
         arr.push(repo.getDataID());
       }
       return arr;
@@ -79,10 +77,9 @@ export const removeUserFromIntegrations = (viewer, teamId, service, userId) => {
     const repos = viewer.getLinkedRecords('githubRepos', {teamId});
     if (!repos) return;
     const teamMemberId = `${userId}::${teamId}`;
-    const globalTeamMemberId = toGlobalId('TeamMember', teamMemberId);
     repos.forEach((repo) => {
       const teamMembers = repo.getLinkedRecords('teamMembers');
-      const removedTeamMemberIdx = teamMembers.findIndex((teamMember) => teamMember.getValue('id') === globalTeamMemberId);
+      const removedTeamMemberIdx = teamMembers.findIndex((teamMember) => teamMember.getValue('id') === teamMemberId);
       if (removedTeamMemberIdx !== -1) {
         const updatedTeamMembers = [...teamMembers.slice(0, removedTeamMemberIdx), ...teamMembers.slice(removedTeamMemberIdx + 1)];
         repo.setLinkedRecords(updatedTeamMembers, 'teamMembers');

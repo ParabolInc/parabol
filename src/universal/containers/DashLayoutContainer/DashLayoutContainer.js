@@ -1,109 +1,87 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import {createFragmentContainer} from 'react-relay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 import {setMeetingAlertState} from 'universal/modules/dashboard/ducks/dashDuck';
-import {TEAM} from 'universal/subscriptions/constants';
 
-const resolveActiveMeetings = (teams) => {
-  if (teams !== resolveActiveMeetings.teams) {
-    resolveActiveMeetings.teams = teams;
-    resolveActiveMeetings.cache = [];
-    for (let i = 0; i < teams.length; i++) {
-      const team = teams[i];
+const getActiveMeetings = (viewer) => {
+  const activeMeetings = [];
+  if (viewer) {
+    const {teams} = viewer;
+    teams.forEach((team) => {
       if (team.meetingId) {
-        resolveActiveMeetings.cache.push({
+        activeMeetings.push({
           link: `/meeting/${team.id}`,
           name: team.name
         });
       }
-    }
+    });
   }
-  return resolveActiveMeetings.cache;
+  return activeMeetings;
 };
 
-const dashNavListQuery = `
-query {
-  teams @cached(type: "[Team]") {
-    id
-    name
-    meetingId
-  }
-}
-`;
-
-const mapStateToProps = (state) => {
-  const userId = state.auth.obj.sub;
-  const {teams} = cashay.query(dashNavListQuery, {
-    op: 'dashLayoutContainer',
-    variables: {userId},
-    resolveCached: {
-      teams: () => () => true
-    },
-    sort: {
-      teams: (a, b) => a.name > b.name ? 1 : -1
-    }
-  }).data;
-  return {
-    activeMeetings: resolveActiveMeetings(teams),
-    tms: state.auth.obj.tms,
-    userId: state.auth.sub,
-    hasMeetingAlert: state.dash.hasMeetingAlert
-  };
-};
-
-const maybeSetDashAlert = (props) => {
-  const {
-    activeMeetings,
-    hasMeetingAlert,
-    dispatch
-  } = props;
+const maybeSetDashAlert = (activeMeetings, hasMeetingAlert, dispatch) => {
   const shouldHaveMeetingAlert = activeMeetings.length > 0;
   if (shouldHaveMeetingAlert !== hasMeetingAlert) {
     dispatch(setMeetingAlertState(shouldHaveMeetingAlert));
   }
 };
 
-const subToAllTeams = (tms) => {
-  for (let i = 0; i < tms.length; i++) {
-    const teamId = tms[i];
-    cashay.subscribe(TEAM, teamId);
-  }
+const mapStateToProps = (state) => {
+  return {
+    hasMeetingAlert: state.dash.hasMeetingAlert
+  };
 };
 
-@connect(mapStateToProps)
-export default class DashLayoutContainer extends Component {
+class DashLayoutContainer extends Component {
   static propTypes = {
-    activeMeetings: PropTypes.array,
     children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
-    tms: PropTypes.array
-    // userId: PropTypes.string
+    hasMeetingAlert: PropTypes.bool,
+    viewer: PropTypes.object
   };
 
-  componentWillMount() {
-    maybeSetDashAlert(this.props);
-  }
-
-  componentDidMount() {
-    const {tms} = this.props;
-    subToAllTeams(tms);
+  constructor(props) {
+    super(props);
+    const {dispatch, hasMeetingAlert, viewer} = props;
+    const activeMeetings = getActiveMeetings(viewer);
+    this.state = {activeMeetings};
+    maybeSetDashAlert(activeMeetings, hasMeetingAlert, dispatch);
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.tms !== nextProps.tms) {
-      subToAllTeams(nextProps.tms);
+    const {dispatch, hasMeetingAlert, viewer} = nextProps;
+    const {viewer: oldViewer} = this.props;
+    if (viewer !== oldViewer) {
+      const activeMeetings = getActiveMeetings(viewer);
+      maybeSetDashAlert(activeMeetings, hasMeetingAlert, dispatch);
+      this.setState({activeMeetings});
     }
-    maybeSetDashAlert(nextProps);
   }
 
   render() {
-    const {activeMeetings, children} = this.props;
+    const {activeMeetings} = this.state;
+    const {hasMeetingAlert, children, viewer} = this.props;
+    if (!viewer) return null;
     return (
-      <DashLayout activeMeetings={activeMeetings}>
+      <DashLayout activeMeetings={activeMeetings} hasMeetingAlert={hasMeetingAlert}>
         {children}
       </DashLayout>
     );
   }
 }
+
+export default createFragmentContainer(
+  connect(mapStateToProps)(DashLayoutContainer),
+  graphql`
+    fragment DashLayoutContainer_viewer on User {
+      teams {
+        id
+        meetingId
+        name
+      }
+    }
+  `
+);
+

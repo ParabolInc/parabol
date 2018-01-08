@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay';
 import {SLACK} from 'universal/utils/constants';
 import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount';
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 const mutation = graphql`
   mutation AddSlackChannelMutation($input: AddSlackChannelInput!) {
@@ -40,14 +41,14 @@ const AddSlackChannelMutation = (environment, payload, teamMemberId, onError, on
     },
     updater: (store) => {
       const slackIntegration = store.getRootField('addSlackChannel').getLinkedRecord('channel');
-      const [, teamId] = teamMemberId.split('::');
+      const {teamId} = fromTeamMemberId(teamMemberId);
       addSlackChannelUpdater(store, viewerId, teamId, slackIntegration);
     },
     optimisticUpdater: (store) => {
       const slackIntegration = store.create(`client:channel:${tempId++}`, SLACK)
         .setValue(channelId, 'channelId')
         .setValue(channelName, 'channelName');
-      const [, teamId] = teamMemberId.split('::');
+      const {teamId} = fromTeamMemberId(teamMemberId);
       addSlackChannelUpdater(store, viewerId, teamId, slackIntegration);
     },
     onCompleted,

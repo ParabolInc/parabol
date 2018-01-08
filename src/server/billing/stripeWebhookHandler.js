@@ -16,7 +16,11 @@ const eventLookup = {
       getVars: ({id: invoiceId}) => ({invoiceId}),
       query: `
         mutation StripeFailPayment($invoiceId: ID!) {
-          stripeFailPayment(invoiceId: $invoiceId)
+          stripeFailPayment(invoiceId: $invoiceId) {
+            organization {
+              id
+            }
+          }
         }
       `
     },
@@ -96,4 +100,4 @@ export default async function stripeWebhookHandler(req, res) {
   if (result.errors) {
     console.log('Stripe GraphQL Error:', result.errors);
   }
-};
+}

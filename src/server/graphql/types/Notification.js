@@ -1,38 +1,32 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
-import {globalIdField} from 'graphql-relay';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import NotificationEnum from 'server/graphql/types/NotificationEnum';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyDenial from 'server/graphql/types/NotifyDenial';
-import NotifyFacilitatorRequest from 'server/graphql/types/NotifyFacilitatorRequest';
-import NotifyInvitation from 'server/graphql/types/NotifyInvitation';
+import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected';
+import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
-import NotifyPayment from 'server/graphql/types/NotifyPayment';
-import NotifyPromotion from 'server/graphql/types/NotifyPromotion';
+import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected';
+import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
+import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLeader';
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
+import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
+import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 import {
-  ADD_TO_TEAM,
-  DENY_NEW_USER,
-  FACILITATOR_REQUEST,
-  INVITEE_APPROVED,
-  JOIN_TEAM,
-  KICKED_OUT,
-  PAYMENT_REJECTED,
-  PROJECT_INVOLVES,
-  PROMOTE_TO_BILLING_LEADER,
-  REJOIN_TEAM,
-  REQUEST_NEW_USER,
-  TEAM_ARCHIVED,
-  TEAM_INVITE
+  ADD_TO_TEAM, DENY_NEW_USER, FACILITATOR_DISCONNECTED, INVITEE_APPROVED, JOIN_TEAM, KICKED_OUT, PAYMENT_REJECTED,
+  PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_ARCHIVED, TEAM_INVITE, VERSION_INFO
 } from 'universal/utils/constants';
-import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
-import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
 
 export const notificationInterfaceFields = {
-  id: globalIdField('Notification', ({id}) => id),
+  id: {
+    type: GraphQLID,
+    description: 'A shortid for the notification'
+  },
   orgId: {
     type: GraphQLID,
     description: '*The unique organization ID for this notification. Can be blank for targeted notifications'
@@ -59,17 +53,18 @@ const Notification = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       [ADD_TO_TEAM]: NotifyAddedToTeam,
       [DENY_NEW_USER]: NotifyDenial,
-      [FACILITATOR_REQUEST]: NotifyFacilitatorRequest,
-      [INVITEE_APPROVED]: NotifyInvitation,
+      [FACILITATOR_DISCONNECTED]: NotifyFacilitatorDisconnected,
+      [INVITEE_APPROVED]: NotifyInviteeApproved,
       [JOIN_TEAM]: NotifyNewTeamMember,
       [KICKED_OUT]: NotifyKickedOut,
-      [PAYMENT_REJECTED]: NotifyPayment,
+      [PAYMENT_REJECTED]: NotifyPaymentRejected,
       [PROJECT_INVOLVES]: NotifyProjectInvolves,
       [REJOIN_TEAM]: NotifyNewTeamMember,
-      [REQUEST_NEW_USER]: NotifyInvitation,
-      [TEAM_INVITE]: NotifyInvitation,
-      [PROMOTE_TO_BILLING_LEADER]: NotifyPromotion,
-      [TEAM_ARCHIVED]: NotifyTeamArchived
+      [REQUEST_NEW_USER]: NotifyRequestNewUser,
+      [TEAM_INVITE]: NotifyTeamInvite,
+      [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
+      [TEAM_ARCHIVED]: NotifyTeamArchived,
+      [VERSION_INFO]: NotifyVersionInfo
     };
 
     return resolveTypeLookup[value.type];

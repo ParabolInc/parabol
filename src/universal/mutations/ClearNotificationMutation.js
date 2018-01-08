@@ -1,41 +1,39 @@
 import {commitMutation} from 'react-relay';
-import {ConnectionHandler} from 'relay-runtime';
-import toGlobalId from 'universal/utils/relay/toGlobalId';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
-const mutation = graphql`
-  mutation ClearNotificationMutation($dbNotificationId: ID!) {
-    clearNotification(dbNotificationId: $dbNotificationId) {
-      deletedId
+graphql`
+  fragment ClearNotificationMutation_notification on ClearNotificationPayload {
+    notification {
+      id
     }
   }
 `;
 
-export const clearNotificationUpdater = (viewer, deletedLocalIds) => {
-  const conn = ConnectionHandler.getConnection(
-    viewer,
-    'SocketRoute_notifications'
-  );
-  if (conn) {
-    const deletedGlobalIds = deletedLocalIds.map((id) => toGlobalId('Notification', id));
-    deletedGlobalIds.forEach((globalId) => {
-      ConnectionHandler.deleteNode(conn, globalId);
-    });
+const mutation = graphql`
+  mutation ClearNotificationMutation($notificationId: ID!) {
+    clearNotification(notificationId: $notificationId) {
+      ...ClearNotificationMutation_notification @relay(mask: false)
+    }
   }
+`;
+
+export const clearNotificationNotificationUpdater = (payload, store, viewerId) => {
+  const notificationId = getInProxy(payload, 'notification', 'id');
+  handleRemoveNotifications(notificationId, store, viewerId);
 };
 
-const ClearNotificationMutation = (environment, dbNotificationId, onError, onCompleted) => {
+const ClearNotificationMutation = (environment, notificationId, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {dbNotificationId},
+    variables: {notificationId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
-      const deletedId = store.getRootField('clearNotification').getValue('deletedId');
-      clearNotificationUpdater(viewer, [deletedId]);
+      const payload = store.getRootField('clearNotification');
+      clearNotificationNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      const viewer = store.get(viewerId);
-      clearNotificationUpdater(viewer, [dbNotificationId]);
+      handleRemoveNotifications(notificationId, store, viewerId);
     },
     onCompleted,
     onError

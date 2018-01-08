@@ -1,13 +1,12 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
-import completeEntity, {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity';
 import resolvers from 'universal/components/ProjectEditor/resolvers';
-import getAnchorLocation from './getAnchorLocation';
-import stringScore from 'string-score';
-import ui from 'universal/styles/ui';
-import PropTypes from 'prop-types';
-import getDraftCoords from 'universal/utils/getDraftCoords';
 import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
+import ui from 'universal/styles/ui';
+import completeEntity, {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity';
+import getDraftCoords from 'universal/utils/getDraftCoords';
+import getAnchorLocation from './getAnchorLocation';
 
 
 const originAnchor = {
@@ -21,6 +20,7 @@ const targetAnchor = {
 };
 
 const fetchEditorSuggestions = () => System.import('universal/components/EditorSuggestions/EditorSuggestions');
+const fetchSuggestMentionableUsers = () => System.import('universal/components/SuggestMentionableUsersRoot');
 
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
@@ -32,10 +32,21 @@ const withSuggestions = (ComposedComponent) => {
       handleTab: PropTypes.func,
       handleReturn: PropTypes.func,
       handleChange: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired
+      setEditorState: PropTypes.func.isRequired,
+      teamId: PropTypes.string.isRequired
     };
 
     state = {};
+
+    setSuggestions = (suggestions) => {
+      if (suggestions.length === 0) {
+        this.removeModal();
+      } else {
+        this.setState({
+          suggestions
+        });
+      }
+    };
 
     handleUpArrow = (e) => {
       const {handleUpArrow} = this.props;
@@ -60,7 +71,6 @@ const withSuggestions = (ComposedComponent) => {
         active: Math.min(active + 1, suggestions.length - 1)
       });
     };
-
 
     handleSelect = (idx) => (e) => {
       const {editorState, setEditorState} = this.props;
@@ -110,51 +120,36 @@ const withSuggestions = (ComposedComponent) => {
 
     checkForSuggestions = (word) => {
       const trigger = word[0];
-      const query = word.slice(1);
+      const triggerWord = word.slice(1);
       if (trigger === ':') {
-        this.makeSuggestions(query, 'emoji');
+        this.makeSuggestions(triggerWord, 'emoji');
         return true;
       } else if (trigger === '#') {
-        this.makeSuggestions(query, 'tag');
+        this.makeSuggestions(triggerWord, 'tag');
         return true;
       } else if (trigger === '@') {
-        this.makeSuggestions(query, 'mention');
+        this.setState({
+          active: 0,
+          triggerWord,
+          suggestions: null,
+          suggestionType: 'mention'
+        });
         return true;
       }
       return false;
     };
 
-    resolveMentions = async (query) => {
-      const {teamMembers} = this.props;
-      if (!query) {
-        return teamMembers.slice(0, 6);
-      }
-      return teamMembers.map((teamMember) => {
-        const score = stringScore(teamMember.preferredName, query);
-        return {
-          ...teamMember,
-          score
-        };
-      })
-        .sort((a, b) => a.score < b.score ? 1 : -1)
-        .slice(0, 6)
-        .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
-    };
-
     resolver = (resolveType) => {
-      if (resolveType !== 'mention') {
-        return resolvers[resolveType];
-      }
-      return this.resolveMentions;
+      return resolvers[resolveType];
     };
 
-    makeSuggestions = async (query, resolveType) => {
+    makeSuggestions = async (triggerWord, resolveType) => {
       // setState before promise so we can add a spinner to the component
       // this.setState({
       //  suggestionType: resolveType,
       // });
       const resolve = this.resolver(resolveType);
-      const suggestions = await resolve(query);
+      const suggestions = await resolve(triggerWord);
       if (suggestions.length > 0) {
         this.setState({
           active: 0,
@@ -193,13 +188,35 @@ const withSuggestions = (ComposedComponent) => {
     }
 
     renderModal = () => {
-      const {active, suggestions, suggestionType} = this.state;
-      const {editorRef, editorState, setEditorState} = this.props;
+      const {active, triggerWord, suggestions, suggestionType} = this.state;
+      const {editorRef, editorState, setEditorState, teamId} = this.props;
       const coords = getDraftCoords(editorRef);
       if (!coords) {
         setTimeout(() => {
           this.forceUpdate();
         });
+      }
+      if (suggestionType === 'mention') {
+        return (
+          <AsyncMenuContainer
+            marginFromOrigin={ui.draftModalMargin}
+            fetchMenu={fetchSuggestMentionableUsers}
+            maxWidth={500}
+            maxHeight={200}
+            originAnchor={originAnchor}
+            originCoords={coords}
+            queryVars={{
+              activeIdx: active,
+              handleSelect: this.handleSelect,
+              setSuggestions: this.setSuggestions,
+              suggestions,
+              triggerWord,
+              teamId
+            }}
+            targetAnchor={targetAnchor}
+            isOpen
+          />
+        );
       }
       return (
         <AsyncMenuContainer

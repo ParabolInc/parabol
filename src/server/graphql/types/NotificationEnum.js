@@ -2,6 +2,7 @@ import {GraphQLEnumType} from 'graphql';
 import {
   ADD_TO_TEAM,
   DENY_NEW_USER,
+  FACILITATOR_DISCONNECTED,
   FACILITATOR_REQUEST,
   INVITEE_APPROVED,
   JOIN_TEAM,
@@ -12,7 +13,8 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_INVITE,
+  VERSION_INFO
 } from 'universal/utils/constants';
 
 const NotificationEnum = new GraphQLEnumType({
@@ -21,6 +23,7 @@ const NotificationEnum = new GraphQLEnumType({
   values: {
     [ADD_TO_TEAM]: {},
     [DENY_NEW_USER]: {},
+    [FACILITATOR_DISCONNECTED]: {},
     [FACILITATOR_REQUEST]: {},
     [INVITEE_APPROVED]: {},
     [JOIN_TEAM]: {},
@@ -31,6 +34,7 @@ const NotificationEnum = new GraphQLEnumType({
     [REQUEST_NEW_USER]: {},
     [TEAM_INVITE]: {},
     [TEAM_ARCHIVED]: {},
+    [VERSION_INFO]: {},
     [PROMOTE_TO_BILLING_LEADER]: {}
   }
 });

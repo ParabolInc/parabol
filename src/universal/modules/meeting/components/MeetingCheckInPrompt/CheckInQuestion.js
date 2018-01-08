@@ -1,153 +1,85 @@
 import {css} from 'aphrodite-local-styles/no-important';
-import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
-import 'universal/components/ProjectEditor/Draft.css';
+import {createFragmentContainer} from 'react-relay';
+import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
-import withKeyboardShortcuts from 'universal/components/ProjectEditor/withKeyboardShortcuts';
-import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
+import editorDecorators from 'universal/components/ProjectEditor/decorators';
+import 'universal/components/ProjectEditor/Draft.css';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
-import appTheme from 'universal/styles/theme/appTheme';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
+import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import withStyles from 'universal/styles/withStyles';
-import {textTags} from 'universal/utils/constants';
-import entitizeText from 'universal/utils/draftjs/entitizeText';
+
 
 const iconStyle = {
+  color: ui.palette.dark,
+  display: 'block',
+  height: '1.5rem',
   fontSize: '1rem',
   verticalAlign: 'middle',
-  marginLeft: '0.5rem'
+  marginLeft: '0.5rem',
+  paddingTop: '.1875rem',
+  textAlign: 'center',
+  width: '1.25rem'
 };
 
 const buttonStyle = {
-  cursor: 'pointer'
+  color: ui.palette.dark,
+  display: 'block'
 };
 
 class CheckInQuestion extends Component {
   static propTypes = {
-    canEdit: PropTypes.bool,
-    editorState: PropTypes.object,
-    setEditorState: PropTypes.func,
-    handleBeforeInput: PropTypes.func,
-    handleChange: PropTypes.func,
-    handleUpArrow: PropTypes.func,
-    handleDownArrow: PropTypes.func,
-    handleKeyCommand: PropTypes.func,
-    handleTab: PropTypes.func,
-    handleReturn: PropTypes.func,
-    keyBindingFn: PropTypes.func,
-    styles: PropTypes.object
+    atmosphere: PropTypes.object.isRequired,
+    isFacilitating: PropTypes.bool.isRequired,
+    styles: PropTypes.object.isRequired,
+    team: PropTypes.object.isRequired
   };
 
-  blockStyleFn = (contentBlock) => {
-    const {styles} = this.props;
-    const type = contentBlock.getType();
-    if (type === 'blockquote') {
-      return css(styles.editorBlockquote);
-    } else if (type === 'code-block') {
-      return css(styles.codeBlock);
-    }
-    return undefined;
-  };
-
-  handleChange = (editorState) => {
-    const {setEditorState, handleChange} = this.props;
-    if (this.entityPasteStart) {
-      const {anchorOffset, anchorKey} = this.entityPasteStart;
-      const selectionState = editorState.getSelection().merge({
-        anchorOffset,
-        anchorKey
-      });
-      const contentState = entitizeText(editorState.getCurrentContent(), selectionState);
-      this.entityPasteStart = undefined;
-      if (contentState) {
-        setEditorState(EditorState.push(editorState, contentState, 'apply-entity'));
-        return;
-      }
-    }
-    if (editorState.getSelection().getHasFocus() && handleChange) {
-      handleChange(editorState);
-    }
-    setEditorState(editorState);
-  };
-
-  handleUpArrow = (e) => {
-    const {handleUpArrow} = this.props;
-    if (handleUpArrow) {
-      handleUpArrow(e);
-    }
-  };
-
-  handleDownArrow = (e) => {
-    const {handleDownArrow} = this.props;
-    if (handleDownArrow) {
-      handleDownArrow(e);
-    }
-  };
-
-  handleTab = (e) => {
-    const {handleTab} = this.props;
-    if (handleTab) {
-      handleTab(e);
-    }
-  };
-
-  handleReturn = (e) => {
-    const {handleReturn} = this.props;
-    if (handleReturn) {
-      return handleReturn(e);
-    }
-    if (e.shiftKey || !this.editorRef) {
-      return 'not-handled';
-    }
-    this.editorRef.blur();
-    return 'handled';
-  };
-
-  handleKeyCommand = (command) => {
-    const {handleKeyCommand} = this.props;
-    if (handleKeyCommand) {
-      return handleKeyCommand(command);
-    }
-    return undefined;
-  };
-
-  keyBindingFn = (e) => {
-    const {keyBindingFn} = this.props;
-    if (keyBindingFn) {
-      return keyBindingFn(e) || getDefaultKeyBinding(e);
-    }
-    return undefined;
-  };
-
-  handleBeforeInput = (char) => {
-    const {handleBeforeInput} = this.props;
-    if (handleBeforeInput) {
-      return handleBeforeInput(char);
-    }
-    return undefined;
+  constructor(props) {
+    super(props);
+    const {team: {checkInQuestion}} = props;
+    const contentState = convertFromRaw(JSON.parse(checkInQuestion));
+    this.state = {
+      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+    };
   }
 
-  handlePastedText = (text) => {
-    if (text) {
-      for (let i = 0; i < textTags.length; i++) {
-        const tag = textTags[i];
-        if (text.indexOf(tag) !== -1) {
-          const selection = this.props.editorState.getSelection();
-          this.entityPasteStart = {
-            anchorOffset: selection.getAnchorOffset(),
-            anchorKey: selection.getAnchorKey()
-          };
-        }
-      }
+  componentWillReceiveProps(nextProps) {
+    const {team: {checkInQuestion}} = nextProps;
+    const {team: {oldCheckInQuestion}} = this.props;
+    if (checkInQuestion !== oldCheckInQuestion) {
+      const contentState = convertFromRaw(JSON.parse(checkInQuestion));
+      this.setState({
+        editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+      });
     }
-    return 'not-handled';
+  }
+
+  getEditorState = () => this.state.editorState;
+
+  setEditorState = (editorState) => {
+    const wasFocused = this.state.editorState.getSelection().getHasFocus();
+    const isFocused = editorState.getSelection().getHasFocus();
+    if (wasFocused && !isFocused) {
+      const {atmosphere, team: {id: teamId}} = this.props;
+      const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
+      UpdateCheckInQuestionMutation(atmosphere, teamId, checkInQuestion);
+    }
+    this.setState({
+      editorState
+    });
   };
 
   selectAllQuestion = () => {
     this.editorRef.focus();
-    const {editorState, setEditorState} = this.props;
+    const {editorState} = this.state;
     const selection = editorState.getSelection();
     const contentState = editorState.getCurrentContent();
     const fullSelection = selection.merge({
@@ -157,14 +89,23 @@ class CheckInQuestion extends Component {
       focusOffset: contentState.getLastBlock().getLength()
     });
     const nextEditorState = EditorState.forceSelection(editorState, fullSelection);
-    setEditorState(nextEditorState);
+    this.setEditorState(nextEditorState);
   };
 
   render() {
-    const {editorState, canEdit, styles} = this.props;
+    const {isFacilitating, styles, team: {tier}} = this.props;
+    const {editorState} = this.state;
+    const canEdit = tierSupportsUpdateCheckInQuestion(tier);
     const isEditing = editorState.getSelection().getHasFocus();
+
+    const buttonIconStyle = {
+      ...iconStyle,
+      cursor: 'pointer',
+      visibility: isEditing ? 'hidden' : 'visible'
+    };
+
     const tip = canEdit
-      ? 'Tap to customize'
+      ? 'Tap to customize the Social Check-in question.'
       : 'Upgrade to a Pro Account to customize the Social Check-in question.';
 
     return (
@@ -173,35 +114,30 @@ class CheckInQuestion extends Component {
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
+        isOpen={(isFacilitating && !isEditing) ? undefined : false}
       >
         <div className={css(styles.root)}>
           <div className={css(styles.editor)}>
-            <Editor
-              blockStyleFn={this.blockStyleFn}
+            <EditorInputWrapper
               editorState={editorState}
-              handleBeforeInput={this.handleBeforeInput}
-              handleKeyCommand={this.handleKeyCommand}
-              handlePastedText={this.handlePastedText}
-              handleReturn={this.handleReturn}
-              keyBindingFn={this.keyBindingFn}
-              onChange={this.handleChange}
-              onDownArrow={this.handleDownArrow}
-              onEscape={this.handleEscape}
-              onTab={this.handleTab}
-              onUpArrow={this.handleUpArrow}
-              placeholder="e.g. How are you?"
+              setEditorState={this.setEditorState}
+              placehodler="e.g. How are you?"
               readOnly={!canEdit}
-              ref={(c) => {
+              setRef={(c) => {
                 this.editorRef = c;
               }}
             />
           </div>
-          {canEdit &&
-            <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
-              <FontAwesome name="pencil"style={{...iconStyle, ...buttonStyle, visibility: isEditing ? 'hidden' : 'visible'}} />
-            </PlainButton>
+          {isFacilitating &&
+            <div>
+              {canEdit ?
+                <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
+                  <FontAwesome name="cog" style={buttonIconStyle} />
+                </PlainButton> :
+                <FontAwesome name="cog" style={iconStyle} />
+              }
+            </div>
           }
-          {!canEdit && <FontAwesome name="pencil" style={iconStyle} />}
         </div>
       </Tooltip>
     );
@@ -210,6 +146,7 @@ class CheckInQuestion extends Component {
 
 const styleThunk = () => ({
   root: {
+    alignContent: 'center',
     display: 'flex',
     fontSize: '1.5rem',
     lineHeight: '1.25rem',
@@ -220,6 +157,7 @@ const styleThunk = () => ({
   editor: {
     minWidth: '20rem'
   },
+
   editorBlockquote: {
     fontStyle: 'italic',
     borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
@@ -238,10 +176,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withMarkdown(
-  withKeyboardShortcuts(
-    withStyles(styleThunk)(
-      CheckInQuestion
-    )
-  )
+export default createFragmentContainer(
+  withAtmosphere(withStyles(styleThunk)(CheckInQuestion)),
+  graphql`
+    fragment CheckInQuestion_team on Team {
+      id
+      checkInQuestion
+      tier
+    }`
 );

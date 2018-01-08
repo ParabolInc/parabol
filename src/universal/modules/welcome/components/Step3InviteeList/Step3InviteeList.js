@@ -60,7 +60,7 @@ const Step3InviteeList = (props) => {
             label="Looks Good!"
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
-              System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
+              System.import('universal/modules/teamDashboard/components/TeamRoot');
             }}
             buttonSize="large"
             type="submit"
@@ -74,7 +74,7 @@ const Step3InviteeList = (props) => {
       to={`/team/${teamId}`}
       className={css(styles.noThanks)}
       onMouseEnter={() => {
-        System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
+        System.import('universal/modules/teamDashboard/components/TeamRoot');
       }}
       onClick={() => {
         SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {inviteeCount: 0});

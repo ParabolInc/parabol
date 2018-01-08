@@ -12,7 +12,7 @@ const CheckInControls = (props) => {
   const {
     bindHotkey,
     checkInPressFactory,
-    nextMember,
+    nextMemberName,
     styles
   } = props;
 
@@ -45,13 +45,13 @@ const CheckInControls = (props) => {
       <div className={css(styles.control, styles.nextControl)} onClick={handleOnClickPresent}>
         <FontAwesome name="check-circle" style={nextIcon} />
         <span className={css(styles.label)}>
-          <u>{'H'}</u>{'ere – '}{nextMember ? `move to ${nextMember.preferredName}` : `move to ${nextPhaseName}`}
+          <u>{'H'}</u>{'ere – '}{nextMemberName ? `move to ${nextMemberName}` : `move to ${nextPhaseName}`}
         </span>
       </div>
       <div className={css(styles.control, styles.skipControl)} onClick={handleOnClickAbsent}>
         <FontAwesome name="minus-circle" style={skipIcon} />
         <span className={css(styles.label)}>
-          <u>{'N'}</u>{'ot here – '}{nextMember ? `skip to ${nextMember.preferredName}` : `skip to ${nextPhaseName}`}
+          <u>{'N'}</u>{'ot here – '}{nextMemberName ? `skip to ${nextMemberName}` : `skip to ${nextPhaseName}`}
         </span>
       </div>
     </div>
@@ -59,9 +59,9 @@ const CheckInControls = (props) => {
 };
 
 CheckInControls.propTypes = {
-  bindHotkey: PropTypes.func,
+  bindHotkey: PropTypes.func.isRequired,
   checkInPressFactory: PropTypes.func.isRequired,
-  nextMember: PropTypes.object,
+  nextMemberName: PropTypes.string,
   styles: PropTypes.object
 };
 

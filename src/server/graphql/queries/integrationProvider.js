@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import Provider from 'server/graphql/types/Provider';
-import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
 import IntegrationService from 'server/graphql/types/IntegrationService';
 
@@ -23,7 +23,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    requireSUOrTeamMember(authToken, teamId);
+    requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     return r.table('Provider')

@@ -1,25 +1,26 @@
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql';
-import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
-import {TeamInput} from 'server/graphql/models/Team/teamSchema';
 import addOrgValidation from 'server/graphql/mutations/helpers/addOrgValidation';
+import addTeamInvitees from 'server/graphql/mutations/helpers/addTeamInvitees';
 import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
+import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader';
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
-import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
-import {ensureUniqueId, getUserId} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import Invitee from 'server/graphql/types/Invitee';
+import NewTeamInput from 'server/graphql/types/NewTeamInput';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {getUserId} from 'server/utils/authorization';
+import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
-import {NEW_AUTH_TOKEN, ORGANIZATION_ADDED} from 'universal/utils/constants';
-import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
-import createTeamAndLeader from '../models/Team/createFirstTeam/createTeamAndLeader';
-import tmsSignToken from 'server/utils/tmsSignToken';
+import shortid from 'shortid';
+import {NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, UPDATED} from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   type: AddOrgPayload,
   description: 'Create a new team and add the first team member',
   args: {
     newTeam: {
-      type: new GraphQLNonNull(TeamInput),
+      type: new GraphQLNonNull(NewTeamInput),
       description: 'The new team object with exactly 1 team member'
     },
     invitees: {
@@ -30,38 +31,39 @@ export default {
       description: 'The name of the new team'
     }
   },
-  async resolve(source, args, {authToken, socketId}) {
+  async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
+
     // AUTH
-    const {orgId} = args.newTeam;
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
 
     // VALIDATION
     const {data: {invitees, newTeam, orgName}, errors} = addOrgValidation()(args);
-    const {id: teamId} = newTeam;
     handleSchemaErrors(errors);
-    // this isn't concurrent-safe, but it reduces the risk of conflicting writes
-    await Promise.all([
-      ensureUniqueId('Team', teamId),
-      ensureUniqueId('Organization', orgId)
-    ]);
 
     // RESOLUTION
-    const {newOrg} = await resolvePromiseObj({
-      newTeam: createTeamAndLeader(userId, newTeam, true),
-      newOrg: createNewOrg(orgId, orgName, userId)
-    });
+    const orgId = shortid.generate();
+    const teamId = shortid.generate();
+    await createNewOrg(orgId, orgName, viewerId);
+    await createTeamAndLeader(viewerId, {id: teamId, orgId, ...newTeam}, true);
 
-    if (invitees && invitees.length) {
-      await inviteTeamMembers(invitees, teamId, userId);
-    }
-    const newAuthToken = tmsSignToken({
-      ...authToken,
-      exp: undefined
-    }, authToken.tms.concat(teamId));
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
-    sendSegmentEvent('New Org', userId, {orgId, teamId});
-    const organizationAdded = {organization: newOrg};
-    getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId: socketId});
-    return organizationAdded;
+    const tms = authToken.tms.concat(teamId);
+    const inviteeCount = invitees ? invitees.length : 0;
+    sendSegmentEvent('New Org', viewerId, {orgId, teamId, inviteeCount});
+    publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
+    auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
+
+    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(invitees, teamId, viewerId);
+    const teamMemberId = toTeamMemberId(teamId, viewerId);
+    const data = {orgId, teamId, teamMemberId, invitationIds, teamInviteNotifications};
+    teamInviteNotifications.forEach((notification) => {
+      const {userIds: [inviteeUserId]} = notification;
+      publish(NOTIFICATION, inviteeUserId, AddOrgPayload, data, subOptions);
+    });
+    publish(ORGANIZATION, viewerId, AddOrgPayload, data, subOptions);
+
+
+    return data;
   }
 };

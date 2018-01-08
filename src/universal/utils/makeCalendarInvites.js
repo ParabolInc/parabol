@@ -1,5 +1,6 @@
 import ms from 'ms';
 import {MEETING_NAME} from 'universal/utils/constants';
+import ensureDate from 'universal/utils/ensureDate';
 
 // the ICS doesn't get the 'Add your conference' line because it doesn't accept line breaks. that's cool though because it isn't editable
 // eslint-disable-next-line max-len
@@ -33,13 +34,15 @@ const getStartTime = (createdAt) => {
   return `${start}/${end}`;
 };
 
-export const createGoogleCalendarInviteURL = (createdAt, meetingUrl, teamName) => {
+export const createGoogleCalendarInviteURL = (maybeCreatedAt, meetingUrl, teamName) => {
+  const createdAt = ensureDate(maybeCreatedAt);
   const text = `${MEETING_NAME} for ${teamName}`;
   // eslint-disable-next-line max-len
   return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} ${MEETING_NAME}`);
 };
 
-export const createICS = (createdAt, meetingUrl, teamName) => {
+export const createICS = (maybeCreatedAt, meetingUrl, teamName) => {
+  const createdAt = ensureDate(maybeCreatedAt);
   const [startTime, endTime] = getStartTime(createdAt).split('/');
   // it's ugly, but if you mess with the indention here, you eff up the world
   return `
@@ -65,7 +68,8 @@ END:VEVENT
 END:VCALENDAR`;
 };
 
-export const makeIcsUrl = (createdAt, meetingUrl, teamName) => {
+export const makeIcsUrl = (maybeCreatedAt, meetingUrl, teamName) => {
+  const createdAt = ensureDate(maybeCreatedAt);
   const baseUrl = meetingUrl.substr(0, meetingUrl.indexOf('/meeting'));
   return `${baseUrl}/email/createics?teamName=${teamName}&createdAt=${createdAt.getTime()}&meetingUrl=${meetingUrl}`;
 };

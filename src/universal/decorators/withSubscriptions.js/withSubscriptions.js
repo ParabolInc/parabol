@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import getDisplayName from 'universal/utils/getDisplayName';
 
-export default (subThunk, options = {}) => (ComposedComponent) => {
+export default (subscription, options = {}) => (ComposedComponent) => {
   class WithSubscriptions extends Component {
     static contextTypes = {
       atmosphere: PropTypes.object,
@@ -13,14 +13,17 @@ export default (subThunk, options = {}) => (ComposedComponent) => {
 
     componentDidMount() {
       const {unsubDelay, unsubKey} = options;
+      this._queryKey = unsubKey ? unsubKey(this.props) : WithSubscriptions.displayName;
       if (unsubDelay) {
         const {displayName, timeouts} = WithSubscriptions;
         const key = unsubKey ? unsubKey(this.props) : displayName;
         clearTimeout(timeouts[key]);
         delete timeouts[key];
       }
-      const {atmosphere, store} = this.context;
-      const maybeKeyArray = subThunk(this.props, atmosphere, store.dispatch);
+      const {atmosphere} = this.context;
+      const maybeKeyArray = subscription(atmosphere, null, this.props);
+      // TODO fixme when we use this
+      // atmosphere.registerQuery(this._queryKey, subscriptions, subParams, variables, this.releaseComponent);
       const keyArray = Array.isArray(maybeKeyArray) ? maybeKeyArray : [maybeKeyArray];
       keyArray.forEach((subKey) => atmosphere.safeSocketUnsubscribe(subKey));
     }

@@ -1,36 +1,94 @@
 import {commitMutation} from 'react-relay';
+import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
+import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers';
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
+import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
-const mutation = graphql`
-  mutation AcceptTeamInviteMutation($dbNotificationId: ID!) {
-    acceptTeamInviteNotification(dbNotificationId: $dbNotificationId) {
-      authToken
-      teamName
-      teamId
+graphql`
+  fragment AcceptTeamInviteMutation_teamMember on AcceptTeamInviteNotificationPayload {
+    removedInvitation {
+      id
+    }
+    teamMember {
+      ...CompleteTeamMemberFrag @relay(mask: false)
+    }
+    team {
+      name
     }
   }
 `;
 
-// export const clearNotificationUpdater = (viewer, deletedGlobalIds) => {
-//  const notifications = viewer.getLinkedRecords('notifications');
-//  if (notifications) {
-//    const newNodes = getArrayWithoutIds(notifications, deletedGlobalIds);
-//    viewer.setLinkedRecords(newNodes, 'notifications');
-//  }
-// };
+graphql`
+  fragment AcceptTeamInviteMutation_team on AcceptTeamInviteNotificationPayload {
+    team {
+      ...CompleteTeamFrag @relay(mask: false)
+    }
+    removedNotification {
+      id
+    }
+  }
+`;
 
-const AcceptTeamInviteMutation = (environment, dbNotificationId, onError, onCompleted) => {
-  // const {viewerId} = environment;
+const mutation = graphql`
+  mutation AcceptTeamInviteMutation($notificationId: ID!) {
+    acceptTeamInviteNotification(notificationId: $notificationId) {
+      ...AcceptTeamInviteMutation_team @relay(mask: false)
+    }
+  }
+`;
+
+const popWelcomeToast = (team, dispatch) => {
+  if (!team) return;
+  const teamName = team.getValue('name');
+  dispatch(showInfo({
+    autoDismiss: 10,
+    title: 'Congratulations!',
+    message: `You’ve been added to team ${teamName}`,
+    action: {label: 'Great!'}
+  }));
+};
+
+const popJoinedYourTeamToast = (payload, dispatch) => {
+  const teamName = getInProxy(payload, 'team', 'name');
+  const preferredName = getInProxy(payload, 'teamMember', 'preferredName');
+  dispatch(showInfo({
+    autoDismiss: 10,
+    title: 'Ahoy, a new crewmate!',
+    message: `${preferredName} just joined team ${teamName}`
+  }));
+};
+
+export const acceptTeamInviteTeamUpdater = (payload, store, viewerId, dispatch) => {
+  const team = payload.getLinkedRecord('team');
+  handleAddTeams(team, store, viewerId);
+
+  const notificationId = getInProxy(payload, 'removedNotification', 'id');
+  handleRemoveNotifications(notificationId, store, viewerId);
+
+  popWelcomeToast(team, dispatch);
+};
+
+export const acceptTeamInviteTeamMemberUpdater = (payload, store, viewerId, dispatch) => {
+  const teamMember = payload.getLinkedRecord('teamMember');
+  handleAddTeamMembers(teamMember, store);
+
+  const invitationId = getInProxy(payload, 'removedInvitation', 'id');
+  handleRemoveInvitations(invitationId, store, viewerId);
+
+  popJoinedYourTeamToast(payload, dispatch);
+};
+
+const AcceptTeamInviteMutation = (environment, notificationId, dispatch, onError, onCompleted) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {dbNotificationId},
-    // updater: (store) => {
-    // const viewer = store.get(viewerId);
-    // const deletedId = store.getRootField('acceptTeamInvite').getValue('deletedId');
-    // clearNotificationUpdater(viewer, deletedId);
-    // },
-    // optimisticUpdater: (store) => {
-    // TODO add the team to the sidebar when we move teams to relay
-    // },
+    variables: {notificationId},
+    updater: (store) => {
+      const payload = store.getRootField('acceptTeamInviteNotification');
+      acceptTeamInviteTeamUpdater(payload, store, viewerId, dispatch);
+    },
     onCompleted,
     onError
   });

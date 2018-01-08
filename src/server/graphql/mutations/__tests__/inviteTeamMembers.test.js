@@ -1,4 +1,5 @@
 import MockDate from 'mockdate';
+import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
@@ -13,10 +14,10 @@ describe('inviteTeamMembers', () => {
     const authToken = mockAuthToken({id: 1, tms: ['fakeTeam'], lastSeenAt: new Date()});
     const invitees = [];
     const teamId = 'realTeam';
-
+    const dataLoader = makeDataLoader(authToken);
     // VERIFY
     await expectAsyncToThrow(
-      inviteTeamMembers.resolve(undefined, {invitees, teamId}, {authToken}),
+      inviteTeamMembers.resolve(undefined, {invitees, teamId}, {authToken, dataLoader}),
       [teamId]
     );
   });

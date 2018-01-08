@@ -1,15 +1,15 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
+import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {phaseArray} from 'universal/utils/constants';
-import ui from 'universal/styles/ui';
 
 const AgendaListAndInput = (props) => {
   const {
-    agenda,
     agendaPhaseItem,
     canNavigate,
     context,
@@ -19,9 +19,9 @@ const AgendaListAndInput = (props) => {
     gotoAgendaItem,
     localPhase,
     localPhaseItem,
-    myTeamMember,
+    setAgendaInputRef,
     styles,
-    teamId
+    team
   } = props;
   const rootStyles = css(
     styles.root,
@@ -30,14 +30,12 @@ const AgendaListAndInput = (props) => {
   return (
     <div className={rootStyles}>
       <AgendaInput
-        agenda={agenda}
         context={context}
         disabled={disabled}
-        teamId={teamId}
-        myTeamMember={myTeamMember}
+        setAgendaInputRef={setAgendaInputRef}
+        team={team}
       />
       <AgendaList
-        agenda={agenda}
         agendaPhaseItem={agendaPhaseItem}
         canNavigate={canNavigate}
         context={context}
@@ -47,7 +45,7 @@ const AgendaListAndInput = (props) => {
         gotoAgendaItem={gotoAgendaItem}
         localPhase={localPhase}
         localPhaseItem={localPhaseItem}
-        teamId={teamId}
+        team={team}
       />
     </div>
   );
@@ -67,9 +65,9 @@ AgendaListAndInput.propTypes = {
   gotoAgendaItem: PropTypes.func,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
-  myTeamMember: PropTypes.object,
+  setAgendaInputRef: PropTypes.func,
   styles: PropTypes.object,
-  teamId: PropTypes.string
+  team: PropTypes.object.isRequired
 };
 
 const styleThunk = (theme, {context}) => ({
@@ -87,4 +85,18 @@ const styleThunk = (theme, {context}) => ({
   }
 });
 
-export default withStyles(styleThunk)(AgendaListAndInput);
+export default createFragmentContainer(
+  withStyles(styleThunk)(AgendaListAndInput),
+  graphql`
+    fragment AgendaListAndInput_team on Team {
+      agendaItems {
+        id
+        content
+        teamMember {
+          id
+        }
+      }
+      ...AgendaInputField_team
+      ...AgendaList_team
+    }`
+);
