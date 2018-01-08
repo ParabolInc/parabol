@@ -8,7 +8,7 @@
  */
 
 import type { WebDriver, WebElement } from 'selenium-webdriver';
-import type { Credentials } from './common';
+import type { Credentials, ProjectColumn } from './common';
 
 import { By, until, Key } from 'selenium-webdriver';
 import { BASE_URL, BASE_URL_REGEX, all, waitTimes } from './common';
@@ -153,6 +153,16 @@ export const goToTeamDashboard = (driver: WebDriver) => async (teamName: string)
   );
 };
 
+export const getIntoApp = (driver: WebDriver) => async (credentials: Credentials) => {
+  await goToHomepage(driver);
+  await openLoginModal(driver);
+  await login(driver)(credentials);
+};
+
+export const addProject = (driver: WebDriver) => async (projectColumn: ProjectColumn, projectText: string) => {
+  //
+};
+
 // Composite Actions
 
 export type AuthActions = {|
@@ -161,28 +171,32 @@ export type AuthActions = {|
   logout: () => Promise<void>,
   openLoginModal: () => Promise<void>,
   signUp: (credentials: Credentials) => Promise<void>,
+  getIntoApp: (credentials: Credentials) => Promise<void>
 |};
 
-export const createAuthActions = (driver: WebDriver) => ({
+export const createAuthActions = (driver: WebDriver): AuthActions => ({
   goToHomepage: goToHomepage(driver),
   login: login(driver),
   logout: logout(driver),
   openLoginModal: openLoginModal(driver),
-  signUp: signUp(driver)
+  signUp: signUp(driver),
+  getIntoApp: getIntoApp(driver)
 });
 
 export type OnboardingActions = {|
   onboard: (OnboardingArgs) => Promise<void>
 |};
 
-export const createOnboardingActions = (driver: WebDriver) => ({
+export const createOnboardingActions = (driver: WebDriver): OnboardingActions => ({
   onboard: onboard(driver)
 });
 
 export type DashboardActions = {|
-  goToTeamDashboard: (teamName: string) => Promise<void>
+  goToTeamDashboard: (teamName: string) => Promise<void>,
+  addProject: (projectColumn: ProjectColumn, projectText: string) => Promise<void>
 |};
 
-export const createDashboardActions = (driver: WebDriver) => ({
-  goToTeamDashboard: goToTeamDashboard(driver)
+export const createDashboardActions = (driver: WebDriver): DashboardActions => ({
+  goToTeamDashboard: goToTeamDashboard(driver),
+  addProject: addProject(driver)
 });

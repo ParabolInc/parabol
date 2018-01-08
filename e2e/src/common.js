@@ -11,6 +11,8 @@ export type Credentials = {|
   password: string
 |};
 
+export type ProjectColumn = 'future' | 'stuck' | 'active' | 'done';
+
 export const BASE_URL: string = global.E2E_APP_SERVER_URL;
 export const BASE_URL_REGEX: RegExp = BASE_URL.endsWith('/')
   ? new RegExp(`^${BASE_URL}?$`)

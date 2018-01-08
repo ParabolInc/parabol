@@ -73,10 +73,16 @@ describe('Team Dashboard', () => {
   });
 
   it('can navigate to the Team Dashboard', async () => {
-    await actions.goToHomepage();
-    await actions.openLoginModal();
-    await actions.login(credentials);
+    await actions.getIntoApp(credentials);
     await actions.goToTeamDashboard(teamName);
     await expectations.shouldBeOnTeamDashboard(teamName);
+  });
+
+  it('can create a project on the Team Dashboard', async () => {
+    const projectText = 'Here is a project!';
+    await actions.getIntoApp(credentials);
+    await actions.goToTeamDashboard(teamName);
+    await actions.addProject('future', projectText);
+    await expectations.projectExists(projectText);
   });
 });
