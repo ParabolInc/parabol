@@ -1,5 +1,5 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveNotificationForViewer} from 'server/graphql/resolvers';
+import {makeResolveNotificationsForViewer} from 'server/graphql/resolvers';
 import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import OrgApproval from 'server/graphql/types/OrgApproval';
@@ -16,10 +16,10 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
         return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds);
       }
     },
-    deniedNotification: {
-      type: NotifyDenial,
+    deniedNotifications: {
+      type: new GraphQLList(NotifyDenial),
       description: 'The notification going to the inviter saying their invitee has been denied',
-      resolve: resolveNotificationForViewer
+      resolve: makeResolveNotificationsForViewer('', 'deniedNotifications')
     },
     removedRequestNotifications: {
       type: new GraphQLList(NotifyRequestNewUser),

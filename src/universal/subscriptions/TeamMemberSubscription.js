@@ -30,13 +30,15 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
         case 'AcceptTeamInviteEmailPayload':
           acceptTeamInviteTeamMemberUpdater(payload, store, viewerId, dispatch);
           break;
-        case 'RemoveTeamMemberPayload':
-          removeTeamMemberTeamMemberUpdater(payload, store);
-          break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamMemberUpdater(payload, store, dispatch);
           break;
         case 'MeetingCheckInPayload':
+          break;
+        case 'PromoteToTeamLeadPayload':
+          break;
+        case 'RemoveTeamMemberPayload':
+          removeTeamMemberTeamMemberUpdater(payload, store);
           break;
         default:
           console.error('TeamMemberSubscription case fail', type);

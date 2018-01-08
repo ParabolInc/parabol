@@ -4,7 +4,7 @@ import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayl
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
-import {TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -49,7 +49,7 @@ export default {
     });
 
     const data = {oldTeamLeadId: myTeamMemberId, newTeamLeadId: teamMemberId};
-    publish(TEAM_MEMBER, teamId, UPDATED, data, subOptions);
+    publish(TEAM_MEMBER, teamId, PromoteToTeamLeadPayload, data, subOptions);
     return data;
   }
 };

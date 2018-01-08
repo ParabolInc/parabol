@@ -16,7 +16,7 @@ graphql`
 
 graphql`
   fragment RejectOrgApprovalMutation_notification on RejectOrgApprovalPayload {
-    deniedNotification {
+    deniedNotifications {
       type
       ...DenyNewUser_notification @relay(mask: false)
     }
@@ -36,12 +36,14 @@ const mutation = graphql`
 `;
 
 const popDeniedOrgApprovalToast = (payload, {dispatch, history}) => {
-  const inviteeEmail = getInProxy(payload, 'deniedNotification', 'inviteeEmail');
-  if (!inviteeEmail) return;
+  const notifications = payload.getLinkedRecords('deniedNotifications');
+  const inviteeEmails = getInProxy(notifications, 'inviteeEmail');
+  if (!inviteeEmails || inviteeEmails.length === 0) return;
+  const [email] = inviteeEmails;
   dispatch(showInfo({
     autoDismiss: 10,
     title: 'Oh no!',
-    message: `${inviteeEmail} was denied to join the team.`,
+    message: `${email} was denied to join the team.`,
     action: {
       label: 'Find out why',
       callback: () => {
@@ -61,8 +63,8 @@ export const rejectOrgApprovalNotificationUpdater = (payload, store, viewerId, o
   const notificationIds = getInProxy(removedRequestNotifications, 'id');
   handleRemoveNotifications(notificationIds, store, viewerId);
 
-  const deniedNotification = payload.getLinkedRecords('deniedNotification');
-  handleAddNotifications(deniedNotification, store, viewerId);
+  const deniedNotifications = payload.getLinkedRecords('deniedNotifications');
+  handleAddNotifications(deniedNotifications, store, viewerId);
   if (options) {
     popDeniedOrgApprovalToast(payload, options);
   }

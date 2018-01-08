@@ -64,8 +64,8 @@ export default {
     const data = {deniedNotifications, removedOrgApprovalIds, removedRequestNotifications};
 
     // publish the removed org approval to the team
-    removedOrgApprovals.forEach((removedOrgApproval) => {
-      const {teamId} = removedOrgApproval;
+    const teamIds = Array.from(new Set(removedOrgApprovals.map(({teamId}) => teamId)));
+    teamIds.forEach((teamId) => {
       const teamData = {...data, teamId};
       publish(ORG_APPROVAL, teamId, RejectOrgApprovalPayload, teamData, subOptions);
     });
