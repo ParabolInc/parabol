@@ -1,12 +1,11 @@
 import {commitMutation} from 'react-relay';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
+import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import toOrgMemberId from 'universal/utils/relay/toOrgMemberId';
-import handleRemoveOrganization from 'universal/mutations/handlers/handleRemoveOrganization';
-import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization';
 
 graphql`
   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {
@@ -89,8 +88,8 @@ export const setOrgUserRoleRemovedOrganizationUpdater = (payload, store, viewerI
     const notificationsRemoved = payload.getLinkedRecords('notificationsRemoved');
     const notificationIdsRemoved = getInProxy(notificationsRemoved, 'id');
     handleRemoveNotifications(notificationIdsRemoved, store, viewerId);
-    //const orgId = getInProxy(payload, 'organization', 'id');
-    //handleRemoveOrganization(orgId, store, viewerId);
+    // const orgId = getInProxy(payload, 'organization', 'id');
+    // handleRemoveOrganization(orgId, store, viewerId);
   }
 };
 

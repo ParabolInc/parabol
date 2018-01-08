@@ -61,7 +61,11 @@ export default {
     }));
     await r.table('Notification').insert(deniedNotifications);
     const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
-    const data = {deniedNotifications, removedOrgApprovalIds, removedRequestNotifications};
+    const data = {
+      deniedNotificationIds: deniedNotifications.map(({id}) => id),
+      removedOrgApprovalIds,
+      removedRequestNotifications
+    };
 
     // publish the removed org approval to the team
     const teamIds = Array.from(new Set(removedOrgApprovals.map(({teamId}) => teamId)));

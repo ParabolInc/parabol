@@ -1,4 +1,4 @@
-import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
@@ -29,4 +29,4 @@ const types = [
   NotifyVersionInfo
 ];
 
-export default new GraphQLSubscriptionType('NotificationSubscriptionPayload', types);
+export default graphQLSubscriptionType('NotificationSubscriptionPayload', types);

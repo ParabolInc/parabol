@@ -12,11 +12,11 @@ import getRethink from 'server/database/rethinkDriver';
 import hashInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/hashInviteTokenKey';
 import makeInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/makeInviteToken';
 import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
+import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {ADD_USER} from 'server/utils/serverConstants';
 import * as tmsSignToken from 'server/utils/tmsSignToken';
 import {TEAM_INVITE} from 'universal/utils/constants';
-import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -33,7 +33,7 @@ describe('acceptTeamInviteEmail', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const mockPubSub = new MockPubSub();
+    //const mockPubSub = new MockPubSub();
     const invitee = newInvitee('acceptTeamInviteEmail1');
     const inviteToken = makeInviteToken();
     const {id} = parseInviteToken(inviteToken);
@@ -64,7 +64,7 @@ describe('acceptTeamInviteEmail', () => {
         .coerceTo('array')
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
+    // expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
     expect(adjustUserCount.default).toHaveBeenCalledWith(inviteeUser.id, orgId, ADD_USER);
     expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms});
   });

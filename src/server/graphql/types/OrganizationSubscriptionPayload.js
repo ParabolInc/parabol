@@ -1,4 +1,4 @@
-import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAddedPayload';
@@ -15,4 +15,4 @@ const types = [
   UpgradeToProPayload
 ];
 
-export default new GraphQLSubscriptionType('OrganizationSubscriptionPayload', types);
+export default graphQLSubscriptionType('OrganizationSubscriptionPayload', types);

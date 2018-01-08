@@ -19,7 +19,7 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
     deniedNotifications: {
       type: new GraphQLList(NotifyDenial),
       description: 'The notification going to the inviter saying their invitee has been denied',
-      resolve: makeResolveNotificationsForViewer('', 'deniedNotifications')
+      resolve: makeResolveNotificationsForViewer('deniedNotificationIds')
     },
     removedRequestNotifications: {
       type: new GraphQLList(NotifyRequestNewUser),

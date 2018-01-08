@@ -1,4 +1,4 @@
-import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
 import AddAgendaItemPayload from 'server/graphql/types/AddAgendaItemPayload';
 import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
 import RemoveAgendaItemPayload from 'server/graphql/types/RemoveAgendaItemPayload';
@@ -11,4 +11,4 @@ const types = [
   MoveMeetingPayload
 ];
 
-export default new GraphQLSubscriptionType('AgendaItemSubscriptionPayload', types);
+export default graphQLSubscriptionType('AgendaItemSubscriptionPayload', types);

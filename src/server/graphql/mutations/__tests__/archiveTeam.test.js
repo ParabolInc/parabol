@@ -44,37 +44,4 @@ describe('ArchiveTeam', () => {
       .toBe(teamMember.length);
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
-
-  test('deletes a team when it has no projects or other team members', async () => {
-    // SETUP
-    const r = getRethink();
-    const dynamicSerializer = new DynamicSerializer();
-    const mockPubSub = new MockPubSub();
-    const mockDB = new MockDB();
-    const {user: [user], team: [updatedTeam]} = await mockDB
-      .newOrg({name: 'Sad Sacks, Inc.'})
-      .newTeam({name: 'The Lonely Ones'})
-      .newUser({name: 'Leader of One'})
-      .newTeamMember({isLead: true});
-    updatedTeam.isArchived = true;
-    const authToken = mockAuthToken(user);
-    const dataLoader = makeDataLoader(authToken);
-    auth0ManagementClient.__initMock(mockDB.db);
-    auth0ManagementClient.users.updateAppMetadata.mockReset();
-    tmsSignToken.default = jest.fn(() => 'FAKEENCODEDJWT');
-    // TEST
-    await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, dataLoader, socket});
-
-    // VERIFY
-    const db = await fetchAndSerialize({
-      notification: r.table('Notification').getAll(updatedTeam.orgId, {index: 'orgId'}).orderBy('startAt'),
-      team: r.table('Team').get(updatedTeam.id).default({}),
-      teamMember: r.table('TeamMember').getAll(updatedTeam.id, {index: 'teamId'}).default([]),
-      user: r.table('User').get(user.id)
-    }, dynamicSerializer);
-    expect(db).toMatchSnapshot();
-    expect(auth0ManagementClient.users.updateAppMetadata.mock.calls.length)
-      .toBe(1);
-    expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
-  });
 });

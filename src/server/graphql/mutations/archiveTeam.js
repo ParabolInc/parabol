@@ -45,7 +45,7 @@ export default {
             .default([]);
         }),
       removedTeamNotifications: r.table('Notification')
-        // TODO index
+      // TODO index
         .filter({teamId})
         .delete({returnChanges: true})('changes')('new_val')
         .default([])
@@ -69,7 +69,11 @@ export default {
       await r.table('Notification').insert(notifications);
     }
 
-    const data = {team, notifications, removedTeamNotifications};
+    const data = {
+      teamId,
+      notificationIds: notifications.map(({id}) => id),
+      removedTeamNotifications
+    };
     publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions);
 
     users.forEach((user) => {

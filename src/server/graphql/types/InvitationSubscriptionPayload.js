@@ -1,4 +1,4 @@
-import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
@@ -11,4 +11,4 @@ const types = [
   ResendTeamInvitePayload
 ];
 
-export default new GraphQLSubscriptionType('InvitationSubscriptionPayload', types);
+export default graphQLSubscriptionType('InvitationSubscriptionPayload', types);

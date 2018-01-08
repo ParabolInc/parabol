@@ -1,4 +1,4 @@
-import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
@@ -32,4 +32,4 @@ const types = [
   UpgradeToProPayload
 ];
 
-export default new GraphQLSubscriptionType('TeamSubscriptionPayload', types);
+export default graphQLSubscriptionType('TeamSubscriptionPayload', types);

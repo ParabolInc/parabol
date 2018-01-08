@@ -19,7 +19,7 @@ export default {
     // RESOLUTION
     const disconnectedUser = await r.table('User').get(userId)
       .update((user) => ({
-        connectedSockets: user('connectedSockets').difference([socketId])
+        connectedSockets: user('connectedSockets').default([]).difference([socketId])
       }), {returnChanges: true})('changes')(0)('new_val').default(null);
 
     if (!disconnectedUser) return false;

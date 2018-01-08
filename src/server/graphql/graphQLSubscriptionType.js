@@ -1,6 +1,6 @@
 import {GraphQLUnionType} from 'graphql';
 
-const GraphQLSubscriptionType = (name, types) => new GraphQLUnionType({
+const graphQLSubscriptionType = (name, types) => new GraphQLUnionType({
   name,
   types,
   resolveType: (data, context, info) => {
@@ -12,4 +12,4 @@ const GraphQLSubscriptionType = (name, types) => new GraphQLUnionType({
   }
 });
 
-export default GraphQLSubscriptionType;
+export default graphQLSubscriptionType;

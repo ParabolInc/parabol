@@ -41,8 +41,8 @@ export default {
       removedRequestNotifications,
       removedOrgApprovals,
       invitationIds,
-      inviteeApprovedNotifications,
-      teamInviteNotifications
+      inviteeApprovedNotificationIds: inviteeApprovedNotifications.map(({id}) => id),
+      teamInviteNotificationIds: teamInviteNotifications.map(({id}) => id)
     };
 
     // tell the other org leaders that the request has been closed

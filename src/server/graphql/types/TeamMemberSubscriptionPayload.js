@@ -1,4 +1,4 @@
-import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
@@ -15,4 +15,4 @@ const types = [
   PromoteToTeamLeadPayload
 ];
 
-export default new GraphQLSubscriptionType('TeanMemberSubscriptionPayload', types);
+export default graphQLSubscriptionType('TeanMemberSubscriptionPayload', types);

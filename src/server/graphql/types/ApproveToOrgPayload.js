@@ -34,12 +34,12 @@ const ApproveToOrgPayload = new GraphQLObjectType({
     inviteeApprovedNotifications: {
       type: new GraphQLList(NotifyInviteeApproved),
       description: 'If the viewer invited the invitee, the notifications to say they have been approved',
-      resolve: makeResolveNotificationsForViewer('-', 'inviteeApprovedNotifications')
+      resolve: makeResolveNotificationsForViewer('inviteeApprovedNotificationIds', '')
     },
     teamInviteNotifications: {
       type: new GraphQLList(NotifyTeamInvite),
       description: 'If the viewer is the invitee, the notifications to invite them to teams',
-      resolve: makeResolveNotificationsForViewer('-', 'teamInviteNotifications')
+      resolve: makeResolveNotificationsForViewer('teamInviteNotificationIds', '')
     }
   })
 });

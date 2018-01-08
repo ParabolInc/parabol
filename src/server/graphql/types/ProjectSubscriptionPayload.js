@@ -1,4 +1,4 @@
-import GraphQLSubscriptionType from 'server/graphql/GraphQLSubscriptionType';
+import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
 import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
 import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
@@ -17,5 +17,5 @@ const types = [
   UpdateProjectPayload
 ];
 
-export default new GraphQLSubscriptionType('ProjectSubscriptionPayload', types);
+export default graphQLSubscriptionType('ProjectSubscriptionPayload', types);
 

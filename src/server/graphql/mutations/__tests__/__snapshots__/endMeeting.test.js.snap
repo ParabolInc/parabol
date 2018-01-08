@@ -545,6 +545,7 @@ Object {
     ],
     "successExpression": "Great job",
     "successStatement": "Iteration is key!",
+    "summarySentAt": 2017-01-01T08:00:00.000Z,
     "teamId": 6,
     "teamName": "Team America",
   },

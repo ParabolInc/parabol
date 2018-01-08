@@ -96,7 +96,7 @@ export default {
 
     // RESOLUTION
     const viewerId = getUserId(authToken);
-    const {removedNotification, removedInvitationId: invitationId} = acceptTeamInvite(teamId, authToken, email);
+    const {removedNotification, removedInvitationId: invitationId} = await acceptTeamInvite(teamId, authToken, email);
     const oldTMS = authToken.tms || [];
     const tms = oldTMS.concat(teamId);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
