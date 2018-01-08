@@ -89,6 +89,10 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'StartMeetingPayload':
           break;
+        case 'UpdateCheckInQuestionPayload':
+          break;
+        case 'UpgradeToProPayload':
+          break;
         default:
           console.error('TeamSubscription case fail', type);
       }

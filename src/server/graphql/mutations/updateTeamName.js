@@ -5,7 +5,7 @@ import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
-import {TEAM, UPDATED} from 'universal/utils/constants';
+import {TEAM} from 'universal/utils/constants';
 import updateTeamNameValidation from './helpers/updateTeamNameValidation';
 
 
@@ -38,7 +38,7 @@ export default {
     await r.table('Team').get(teamId).update(dbUpdate);
 
     const data = {teamId};
-    publish(TEAM, teamId, UPDATED, data, subOptions);
+    publish(TEAM, teamId, UpdateTeamNamePayload, data, subOptions);
     return data;
   }
 };
