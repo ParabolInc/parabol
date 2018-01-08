@@ -63,7 +63,7 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
         const viewer = renderProps ? renderProps.viewer : null;
         return (
           <DashLayoutContainer viewer={viewer}>
-            <DashSidebar viewer={viewer} />
+            <DashSidebar viewer={viewer} location={location} />
             <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
             <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} extraProps={{notifications}} />
             <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />
