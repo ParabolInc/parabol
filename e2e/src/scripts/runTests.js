@@ -19,8 +19,7 @@ commander
   .version('1.0.0')
   .description('Runs end-to-end tests against the Parabol app')
   .option(
-    '-u',
-    '--url <url>',
+    '-u, --url <url>',
     'URL of the application under test.  If not provided, runs a prod-like server locally.'
   )
   .option('-i, --inspect', 'Run the test process under the node inspector')

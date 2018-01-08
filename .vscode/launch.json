@@ -7,10 +7,23 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Launch and debug e2e tests",
+      "program": "${workspaceFolder}/e2e/lib/scripts/runTests.js",
+      "args": [
+        "--inspect"
+      ],
+      "sourceMaps": true,
+      "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Debug e2e tests",
       "program": "${workspaceFolder}/e2e/lib/scripts/runTests.js",
       "args": [
         "--inspect",
+        "--url",
+        "http://localhost:3000"
       ],
       "sourceMaps": true,
       "port": 9229

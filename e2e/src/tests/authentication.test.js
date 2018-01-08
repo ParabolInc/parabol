@@ -1,9 +1,10 @@
 /**
  * Tests that users can sign in and sign out.
  *
- * eslint-env mocha
  * @flow
  */
+
+/* eslint-env mocha */
 
 import type { WebDriver } from 'selenium-webdriver';
 import type { AuthActions } from '../common';
