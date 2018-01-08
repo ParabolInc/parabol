@@ -1,34 +1,24 @@
 import {commitMutation} from 'react-relay';
+import handleUpdateAgendaItems from 'universal/mutations/handlers/handleUpdateAgendaItems';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 
-const mutation = graphql`
-  mutation UpdateAgendaItemMutation($updatedAgendaItem: UpdateAgendaItemInput!) {
-    updateAgendaItem(updatedAgendaItem: $updatedAgendaItem) {
-      agendaItem {
-        id
-        content
-        isComplete
-        sortOrder
-        teamId
-        teamMember {
-          id
-          picture
-          preferredName
-        }
-      }
+graphql`
+  fragment UpdateAgendaItemMutation_agendaItem on UpdateAgendaItemPayload {
+    agendaItem {
+      id
+      isComplete
+      sortOrder
     }
   }
 `;
 
-export const handleUpdateAgendaItem = (store, teamId) => {
-  const team = store.get(teamId);
-  const agendaItems = team.getLinkedRecords('agendaItems');
-  if (!agendaItems) return;
-  agendaItems.sort((a, b) => {
-    return a.getValue('sortOrder') > b.getValue('sortOrder') ? 1 : -1;
-  });
-  team.setLinkedRecords(agendaItems, 'agendaItems');
-};
+const mutation = graphql`
+  mutation UpdateAgendaItemMutation($updatedAgendaItem: UpdateAgendaItemInput!) {
+    updateAgendaItem(updatedAgendaItem: $updatedAgendaItem) {
+      ...UpdateAgendaItemMutation_agendaItem @relay(mask: false)
+    }
+  }
+`;
 
 const UpdateAgendaItemMutation = (environment, updatedAgendaItem, onError, onCompleted) => {
   const [teamId] = updatedAgendaItem.id.split('::');
@@ -36,13 +26,12 @@ const UpdateAgendaItemMutation = (environment, updatedAgendaItem, onError, onCom
     mutation,
     variables: {updatedAgendaItem},
     updater: (store) => {
-      handleUpdateAgendaItem(store, teamId);
+      handleUpdateAgendaItems(store, teamId);
     },
     optimisticUpdater: (store) => {
       const proxyAgendaItem = store.get(updatedAgendaItem.id);
-      if (!proxyAgendaItem) return;
       updateProxyRecord(proxyAgendaItem, updatedAgendaItem);
-      handleUpdateAgendaItem(store, teamId);
+      handleUpdateAgendaItems(store, teamId);
     },
     onCompleted,
     onError

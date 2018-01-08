@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
@@ -13,6 +14,7 @@ import withStyles from 'universal/styles/withStyles';
 const TeamInvite = (props) => {
   const {
     atmosphere,
+    dispatch,
     styles,
     notification,
     submitting,
@@ -20,11 +22,11 @@ const TeamInvite = (props) => {
     onError,
     onCompleted
   } = props;
-  const {notificationId, inviterName, team} = notification;
+  const {notificationId, inviter: {inviterName}, team} = notification;
   const {teamName} = team;
   const accept = () => {
     submitMutation();
-    AcceptTeamInviteMutation(atmosphere, notificationId, onError, onCompleted);
+    AcceptTeamInviteMutation(atmosphere, notificationId, dispatch, onError, onCompleted);
   };
 
   return (
@@ -58,6 +60,7 @@ const TeamInvite = (props) => {
 
 TeamInvite.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
@@ -71,15 +74,15 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withStyles(styleThunk)(TeamInvite),
+  connect()(withStyles(styleThunk)(TeamInvite)),
   graphql`
-    fragment TeamInvite_notification on Notification {
+    fragment TeamInvite_notification on NotifyTeamInvite {
       notificationId: id
-      ... on NotifyInvitation {
-        inviterName
-        team {
-          teamName: name
-        }
+      inviter {
+        inviterName: preferredName
+      }
+      team {
+        teamName: name
       }
     }`
 );

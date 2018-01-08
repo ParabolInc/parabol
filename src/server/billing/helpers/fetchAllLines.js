@@ -16,4 +16,4 @@ export default async function fetchAllLines(invoiceId, customerId) {
     if (!invoiceLines.has_more) break;
   }
   return stripeLineItems;
-};
+}

@@ -8,8 +8,6 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import SuggestMentionableUsers from 'universal/components/SuggestMentionableUsers';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
-import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -21,11 +19,6 @@ const query = graphql`
 `;
 
 
-const subscriptions = [
-  TeamMemberAddedSubscription,
-  TeamMemberUpdatedSubscription
-];
-
 const SuggestMentionableUsersRoot = (props) => {
   const {activeIdx, atmosphere, handleSelect, setSuggestions, suggestions, triggerWord, teamId} = props;
   return (
@@ -34,7 +27,6 @@ const SuggestMentionableUsersRoot = (props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear component={null}>

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -11,12 +12,14 @@ import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlac
 const OrgUserRow = (props) => {
   const {
     actions,
-    orgUser: {
-      email,
-      inactive,
-      isBillingLeader,
-      picture,
-      preferredName
+    orgMember: {
+      user: {
+        email,
+        inactive,
+        picture,
+        preferredName
+      },
+      isBillingLeader
     },
     styles
   } = props;
@@ -55,12 +58,7 @@ const OrgUserRow = (props) => {
 
 OrgUserRow.propTypes = {
   actions: PropTypes.any,
-  orgUser: PropTypes.shape({
-    email: PropTypes.string,
-    inactive: PropTypes.bool,
-    picture: PropTypes.string,
-    preferredName: PropTypes.string
-  }),
+  orgMember: PropTypes.object.isRequired,
   styles: PropTypes.object
 };
 
@@ -116,4 +114,17 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(OrgUserRow);
+export default createFragmentContainer(
+  withStyles(styleThunk)(OrgUserRow),
+  graphql`
+    fragment OrgUserRow_orgMember on OrganizationMember {
+      user {
+        email
+        inactive
+        picture
+        preferredName
+      }
+      isBillingLeader
+    }
+  `
+);

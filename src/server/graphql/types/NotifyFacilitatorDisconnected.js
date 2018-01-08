@@ -1,5 +1,7 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {resolveTeam} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
+import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 
 const NotifyFacilitatorDisconnected = new GraphQLObjectType({
@@ -14,10 +16,6 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
         return dataLoader.get('teamMembers').load(newFacilitatorId);
       }
     },
-    newFacilitatorId: {
-      type: GraphQLID,
-      description: 'The team member ID that is the new facilitator'
-    },
     oldFacilitator: {
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member that disconnected',
@@ -25,13 +23,10 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
         return dataLoader.get('teamMembers').load(oldFacilitatorId);
       }
     },
-    oldFacilitatorId: {
-      type: GraphQLID,
-      description: 'The team member ID that disconnected'
-    },
-    teamId: {
-      type: GraphQLID,
-      description: 'The teamId of the team running the meeting'
+    team: {
+      type: Team,
+      description: 'The team running the meeting',
+      resolve: resolveTeam
     },
     ...notificationInterfaceFields
   })

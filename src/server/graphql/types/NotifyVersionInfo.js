@@ -1,6 +1,5 @@
 import {GraphQLObjectType, GraphQLString} from 'graphql';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
 
 const NotifyVersionInfo = new GraphQLObjectType({
   name: 'NotifyVersionInfo',
@@ -8,9 +7,6 @@ const NotifyVersionInfo = new GraphQLObjectType({
   interfaces: () => [Notification],
   fields: () => ({
     ...notificationInterfaceFields,
-    type: {
-      type: NotificationEnum
-    },
     version: {
       type: GraphQLString,
       description: 'The version of the app the server is using'

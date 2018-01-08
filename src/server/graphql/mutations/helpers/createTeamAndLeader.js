@@ -42,4 +42,4 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
   return res;
-};
+}

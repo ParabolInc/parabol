@@ -2,13 +2,12 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
 import DashNavTeam from 'universal/components/Dashboard/DashNavTeam';
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 
 const DashNavList = (props) => {
-  const {styles, viewer} = props;
+  const {location, styles, viewer} = props;
   const {teams} = viewer || {};
   // const isLoading = !teams;
   const hasTeams = teams && teams.length > 0;
@@ -16,7 +15,7 @@ const DashNavList = (props) => {
     <div className={css(styles.root)}>
       {hasTeams ?
         <div>
-          {teams.map((team) => <DashNavTeam key={team.id} team={team} />)}
+          {teams.map((team) => <DashNavTeam key={team.id} location={location} team={team} />)}
         </div> :
         <div className={css(styles.emptyTeams)}>It appears you are not a member of any team!</div>
       }
@@ -25,6 +24,8 @@ const DashNavList = (props) => {
 };
 
 DashNavList.propTypes = {
+  // required to update highlighting
+  location: PropTypes.object.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object
 };
@@ -42,7 +43,7 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withRouter(withStyles(styleThunk)(DashNavList)),
+  withStyles(styleThunk)(DashNavList),
   graphql`
     fragment DashNavList_viewer on User {
       teams {

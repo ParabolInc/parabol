@@ -1,39 +1,57 @@
 import {commitMutation} from 'react-relay';
-import {clearNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
+import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
-const mutation = graphql`
-  mutation CancelTeamInviteMutation($inviteId: ID!) {
-    cancelTeamInvite(inviteId: $inviteId) {
-      invitation {
-        id
-      }
-      deletedNotificationId
+graphql`
+  fragment CancelTeamInviteMutation_invitation on CancelTeamInvitePayload {
+    invitation {
+      id
+      teamId
     }
   }
 `;
 
-export const handleRemoveInvitation = (store, teamId, invitationId) => {
-  const team = store.get(teamId);
-  safeRemoveNodeFromArray(invitationId, team, 'invitations');
+graphql`
+  fragment CancelTeamInviteMutation_notification on CancelTeamInvitePayload {
+    removedTeamInviteNotification {
+      id
+    }
+  }
+`;
+
+const mutation = graphql`
+  mutation CancelTeamInviteMutation($invitationId: ID!) {
+    cancelTeamInvite(invitationId: $invitationId) {
+      ...CancelTeamInviteMutation_invitation @relay(mask: false)
+      ...CancelTeamInviteMutation_notification @relay(mask: false)
+    }
+  }
+`;
+
+export const cancelTeamInviteInvitationUpdater = (payload, store) => {
+  const invitationId = getInProxy(payload, 'invitation', 'id');
+  const teamId = getInProxy(payload, 'invitation', 'teamId');
+  handleRemoveInvitations(invitationId, store, teamId);
 };
 
-const CancelTeamInviteMutation = (environment, inviteId, teamId, onError, onCompleted) => {
+export const cancelTeamInviteNotificationUpdater = (payload, store, viewerId) => {
+  const notificationId = getInProxy(payload, 'removedTeamInviteNotification', 'id');
+  handleRemoveNotifications(notificationId, store, viewerId);
+};
+
+const CancelTeamInviteMutation = (environment, invitationId, teamId, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {inviteId},
+    variables: {invitationId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
       const payload = store.getRootField('cancelTeamInvite');
-      const deletedNotificationId = payload.getValue('deletedNotificationId');
-      if (deletedNotificationId) {
-        clearNotificationUpdater(viewer, [deletedNotificationId]);
-      }
-      handleRemoveInvitation(store, teamId, inviteId);
+      cancelTeamInviteInvitationUpdater(payload, store, teamId);
+      cancelTeamInviteNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      handleRemoveInvitation(store, teamId, inviteId);
+      handleRemoveInvitations(invitationId, store, teamId);
     },
     onCompleted,
     onError

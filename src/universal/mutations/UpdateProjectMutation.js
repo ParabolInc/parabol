@@ -1,115 +1,60 @@
 import {commitMutation} from 'react-relay';
-import {ConnectionHandler} from 'relay-runtime';
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
-import getNodeById from 'universal/utils/relay/getNodeById';
-import {insertEdgeAfter} from 'universal/utils/relay/insertEdge';
-import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
+import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
+import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
+
+graphql`
+  fragment UpdateProjectMutation_project on UpdateProjectPayload {
+    project {
+      # Entire frag needed in case it is deprivatized
+      ...CompleteProjectFrag @relay(mask:false)
+      editors {
+        userId
+        preferredName
+      }
+    }
+    addedNotification {
+      type
+      ...ProjectInvolves_notification @relay(mask: false)
+    }
+    removedNotification {
+      id
+    }
+    privatizedProjectId
+  }
+`;
 
 const mutation = graphql`
   mutation UpdateProjectMutation($updatedProject: UpdateProjectInput!) {
     updateProject(updatedProject: $updatedProject) {
-      project {
-        id
-        content
-        createdAt
-        createdBy
-        integration {
-          service
-          nameWithOwner
-          issueNumber
-        }
-        sortOrder
-        status
-        tags
-        teamMemberId
-        updatedAt
-        userId
-        teamId
-        team {
-          id
-          name
-        }
-        teamMember {
-          id
-          picture
-          preferredName
-        }
-      }
+      ...UpdateProjectMutation_project @relay (mask: false)
     }
   }
 `;
 
-export const getUserDashConnection = (viewer) => ConnectionHandler.getConnection(
-  viewer,
-  'UserColumnsContainer_projects'
-);
+export const updateProjectProjectUpdater = (payload, store, viewerId, options) => {
+  const project = payload.getLinkedRecord('project');
+  handleUpsertProjects(project, store, viewerId);
 
-export const getTeamDashConnection = (viewer, teamId) => ConnectionHandler.getConnection(
-  viewer,
-  'TeamColumnsContainer_projects',
-  {teamId}
-);
+  const addedNotification = payload.getLinkedRecord('addedNotification');
+  handleAddNotifications(addedNotification, store, viewerId);
+  if (options) {
+    popInvolvementToast(addedNotification, options);
+  }
 
-export const getArchiveConnection = (viewer, teamId) => ConnectionHandler.getConnection(
-  viewer,
-  'TeamArchive_archivedProjects',
-  {teamId}
-);
+  const removedNotificationId = getInProxy(payload, 'removedNotification', 'id');
+  handleRemoveNotifications(removedNotificationId);
 
-// export const getMeetingUpdatesConnections = (store, teamId) => {
-//  const team = store.get(teamId);
-//  if (!team) return [];
-//  const teamMembers = team.getLinkedRecords('teamMembers', {sortBy: 'checkInOrder'});
-//  if (!teamMembers) return [];
-//  return teamMembers.map((teamMember) => {
-//    return ConnectionHandler.getConnection(
-//      teamMember,
-//      'MeetingUpdates_projects'
-//    );
-//  })
-// };
-
-export const handleProjectConnections = (store, viewerId, project) => {
-  if (!project) return;
-  // we currently have 3 connections, user, team, and team archive
-  const viewer = store.get(viewerId);
-  const teamId = project.getValue('teamId');
-  const projectId = project.getValue('id');
-  const tags = project.getValue('tags');
-  const isNowArchived = tags.includes('archived');
-  const archiveConn = getArchiveConnection(viewer, teamId);
-  const teamConn = getTeamDashConnection(viewer, teamId);
-  const userConn = getUserDashConnection(viewer);
-  const safePutNodeInConn = (conn) => {
-    if (conn && !getNodeById(projectId, conn)) {
-      const newEdge = ConnectionHandler.createEdge(
-        store,
-        conn,
-        project,
-        'ProjectEdge'
-      );
-      newEdge.setValue(project.getValue('updatedAt'), 'cursor');
-      insertEdgeAfter(conn, newEdge, 'updatedAt');
-    }
-  };
-
-  if (isNowArchived) {
-    safeRemoveNodeFromConn(projectId, teamConn);
-    safeRemoveNodeFromConn(projectId, userConn);
-    safePutNodeInConn(archiveConn);
-  } else {
-    safeRemoveNodeFromConn(projectId, archiveConn);
-    safePutNodeInConn(teamConn);
-    if (userConn) {
-      const ownedByViewer = project.getValue('userId') === viewerId;
-      if (ownedByViewer) {
-        safePutNodeInConn(userConn);
-      } else {
-        safeRemoveNodeFromConn(projectId, userConn);
-      }
-    }
+  const privatizedProjectId = payload.getValue('privatizedProjectId');
+  const projectUserId = getInProxy(project, 'userId');
+  if (projectUserId !== viewerId && privatizedProjectId) {
+    handleRemoveProjects(privatizedProjectId, store, viewerId);
   }
 };
 
@@ -124,8 +69,8 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
       updatedProject
     },
     updater: (store) => {
-      const project = store.getRootField('updateProject').getLinkedRecord('project');
-      handleProjectConnections(store, viewerId, project);
+      const payload = store.getRootField('updateProject');
+      updateProjectProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {id, content, userId} = updatedProject;
@@ -150,7 +95,7 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
         const nextTags = getTagsFromEntityMap(entityMap);
         project.setValue(nextTags, 'tags');
       }
-      handleProjectConnections(store, viewerId, project);
+      handleUpsertProjects(project, store, viewerId);
     },
     onCompleted,
     onError

@@ -1,11 +1,13 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLObjectType} from 'graphql';
+import {resolveProject} from 'server/graphql/resolvers';
 import Project from 'server/graphql/types/Project';
 
 const CreateGitHubIssuePayload = new GraphQLObjectType({
   name: 'CreateGitHubIssuePayload',
   fields: () => ({
     project: {
-      type: new GraphQLNonNull(Project)
+      type: Project,
+      resolve: resolveProject
     }
   })
 });

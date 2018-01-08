@@ -14,7 +14,7 @@ export default {
     'projects.teamMemberId',
     'teamId'
   ],
-  invitation: ['id', 'email', 'invitedBy', 'teamId'],
+  invitation: ['id', 'email', 'hashedToken', 'invitedBy', 'teamId'],
   invoice: ['id', 'lines.id', 'lines.details.id', 'lines.details.parentId', 'orgId'],
   invoiceItemHook: ['id', 'stripeSubscriptionId', 'userId'],
   notification: ['id', 'inviteeEmail', 'inviterUserId', 'orgId', 'requestorId', 'teamId', 'userIds'],

@@ -7,8 +7,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import Organizations from 'universal/modules/userDashboard/components/Organizations/Organizations';
-import OrganizationAddedSubscription from 'universal/subscriptions/OrganizationAddedSubscription';
-import {DEFAULT_TTL} from 'universal/utils/constants';
+import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
   query OrganizationsRootQuery {
@@ -17,12 +16,6 @@ const query = graphql`
     }
   }
 `;
-
-const cacheConfig = {ttl: DEFAULT_TTL};
-
-const subscriptions = [
-  OrganizationAddedSubscription
-];
 
 const OrganizationsRoot = (props) => {
   const {
@@ -34,7 +27,6 @@ const OrganizationsRoot = (props) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
-      subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear component={null}>

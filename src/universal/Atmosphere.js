@@ -1,4 +1,3 @@
-// @flow
 import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
@@ -126,7 +125,7 @@ export default class Atmosphere extends Environment {
     const {opId} = message;
     const {observer} = this.getSubscription(opId);
     if (observer.onCompleted) {
-      observer.onCompleted()
+      observer.onCompleted();
     }
   };
   handleGQLData = (message) => {
@@ -191,7 +190,7 @@ export default class Atmosphere extends Environment {
         this.unregisterQuery(queryKeys);
         delete this.subscriptions[opId];
       }
-    }
+    };
   };
 
   registerQuery = (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {

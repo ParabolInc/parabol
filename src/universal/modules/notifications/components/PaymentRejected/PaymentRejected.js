@@ -1,19 +1,19 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import Row from 'universal/components/Row/Row';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const PaymentRejected = (props) => {
   const {history, styles, notification} = props;
-  const {last4, brand, orgId} = notification;
+  const {organization: {orgId, creditCard: {last4, brand}}} = notification;
   const addBilling = () => {
     history.push(`/me/organizations/${orgId}`);
   };
@@ -91,12 +91,14 @@ export default createFragmentContainer(
     withStyles(styleThunk)(PaymentRejected)
   ),
   graphql`
-    fragment PaymentRejected_notification on Notification {
+    fragment PaymentRejected_notification on NotifyPaymentRejected {
       notificationId: id
-      ... on NotifyPayment {
-        last4
-        brand
-        orgId
+      organization {
+        orgId: id
+        creditCard {
+          last4
+          brand
+        }
       }
     }
   `

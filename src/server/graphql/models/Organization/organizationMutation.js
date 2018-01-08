@@ -1,13 +1,17 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
+import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
+import publish from 'server/utils/publish';
 import {REMOVE_USER} from 'server/utils/serverConstants';
 import {validateAvatarUpload} from 'server/utils/utils';
 import shortid from 'shortid';
+import {NEW_AUTH_TOKEN, UPDATED} from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   removeOrgUser: {
@@ -23,21 +27,35 @@ export default {
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken, socket}) {
+    async resolve(source, {orgId, userId}, {authToken}) {
       const r = getRethink();
       const now = new Date();
+      // const operationId = dataLoader.share();
+      // const subOptions = {mutatorId, operationId};
 
       // AUTH
-      requireWebsocket(socket);
       const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
       requireOrgLeader(userOrgDoc);
 
       // RESOLUTION
       const teamIds = await r.table('Team')
         .getAll(orgId, {index: 'orgId'})('id');
-      const teamMemberIds = teamIds.map((teamId) => `${userId}::${teamId}`);
-      await removeAllTeamMembers(teamMemberIds, {isKickout: true});
-      await r({
+      const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId));
+      await Promise.all(teamMemberIds.map((teamMemberId) => {
+        return removeTeamMember(teamMemberId, {isKickout: true});
+      }));
+
+      // const projectIds = perTeamRes.reduce((arr, res) => {
+      //  arr.push(...res.archivedProjectIds, ...res.reassignedProjectIds);
+      //  return arr;
+      // }, []);
+
+      // const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
+      //  arr.push(...res.removedNotifications);
+      //  return arr;
+      // }, []);
+
+      const {updatedUser} = await r({
         updatedOrg: r.table('Organization').get(orgId)
           .update((org) => ({
             orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
@@ -47,7 +65,8 @@ export default {
           .update((row) => ({
             userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
             updatedAt: now
-          })),
+          }), {returnChanges: true})('changes')(0)('new_val')
+          .default(null),
         // remove stale notifications
         // TODO I think this may be broken. see #1334
         removedNotifications: r.table('Notification')
@@ -76,7 +95,31 @@ export default {
       });
       // need to make sure the org doc is updated before adjusting this
       await adjustUserCount(userId, orgId, REMOVE_USER);
+
+      const {tms} = updatedUser;
+      publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
+      auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
+
+      // const data = {teamIds, teamMemberIds, projectIds, orgId, userId};
+
+      // Kick this guy out of the org
+      // TODO incorporate removedOrgNotifications
+      // TODO move this to Relay
       return true;
+      // publish(ORGANIZATION, userId, RemoveOrgUserPayload, data, subOptions);
+      //
+      // // tell the org members that 1 got kicked out
+      // publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions);
+      //
+      // perTeamRes.forEach((res) => {
+      //  const {teamId} = res;
+      //  // tel the team members that 1 got removed
+      //  publish(TEAM_MEMBER, teamId, RemoveOrgUserPayload, data, subOptions);
+      //
+      //  // tell the project teams that the projects changed
+      //  publish(PROJECT, teamId, RemoveOrgUserPayload, data, subOptions);
+      // });
+      // return {removedNotifications: removedTeamNotifications, projectIds, teamIds, teamMemberIds, orgId};
     }
   },
   createOrgPicturePutUrl: {

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -10,8 +11,10 @@ import ArchiveTeamMutation from 'universal/mutations/ArchiveTeamMutation';
 class ArchiveTeamContainer extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
     team: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -28,11 +31,8 @@ class ArchiveTeamContainer extends Component {
   }
 
   archiveTeam = async () => {
-    const {atmosphere, team: {teamId}, history} = this.props;
-    const onCompleted = () => {
-      history.push('/me');
-    };
-    ArchiveTeamMutation(atmosphere, teamId, undefined, onCompleted);
+    const {atmosphere, dispatch, team: {teamId}, history, location} = this.props;
+    ArchiveTeamMutation(atmosphere, teamId, {dispatch, history, location});
   }
 
   render() {
@@ -51,7 +51,7 @@ class ArchiveTeamContainer extends Component {
 }
 
 export default createFragmentContainer(
-  withAtmosphere(withRouter(ArchiveTeamContainer)),
+  connect()(withAtmosphere(withRouter(ArchiveTeamContainer))),
   graphql`
     fragment ArchiveTeamContainer_team on Team {
       teamId: id

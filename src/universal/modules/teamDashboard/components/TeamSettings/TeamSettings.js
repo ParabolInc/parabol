@@ -87,7 +87,7 @@ const TeamSettings = (props) => {
     const cancel = () => {
       if (submitting) return;
       submitMutation();
-      CancelApprovalMutation(atmosphere, orgApprovalId, teamId, onError, onCompleted);
+      CancelApprovalMutation(atmosphere, orgApprovalId, onError, onCompleted);
     };
     const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
     return (

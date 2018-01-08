@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
-import getRethink from 'server/database/rethinkDriver';
 import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
+import {resolveTeam} from 'server/graphql/resolvers';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
@@ -85,12 +85,7 @@ const TeamMember = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team this team member belongs to',
-      resolve({teamId}) {
-        const r = getRethink();
-        return r.table('Team')
-          .get(teamId)
-          .run();
-      }
+      resolve: resolveTeam
     },
     user: {
       type: User,

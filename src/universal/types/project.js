@@ -16,7 +16,7 @@ import {
   STUCK
 } from '../utils/constants';
 import getTypeFromEntityMap from '../utils/draftjs/getTypeFromEntityMap';
-import {getUserId} from './teamMember';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 export type ProjectID = string;
 
@@ -41,5 +41,6 @@ export type Project = {
 export const getMentions = (p: Project): UserID[] =>
   getTypeFromEntityMap('MENTION', p.content);
 
-export const getAssignee = (p: Project): UserID =>
-  getUserId(p.teamMemberId);
+export const getAssignee = (p: Project): UserID => {
+  return fromTeamMemberId(p.teamMemberId).userId;
+};

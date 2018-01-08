@@ -52,7 +52,6 @@ const TeamArchiveSqueezeRoot = ({atmosphere, orgId, projectsAvailableCount, team
 
 TeamArchiveSqueezeRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  isBillingLeader: PropTypes.bool,
   orgId: PropTypes.string.isRequired,
   projectsAvailableCount: PropTypes.number.isRequired,
   teamId: PropTypes.string.isRequired

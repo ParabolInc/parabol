@@ -1,9 +1,9 @@
 import getRethink from 'server/database/rethinkDriver';
 import emailTeamInvitations from 'server/safeMutations/emailTeamInvitations';
-import getPubSub from 'server/utils/getPubSub';
 import {APPROVED} from 'server/utils/serverConstants';
 import shortid from 'shortid';
-import {NOTIFICATIONS_ADDED, TEAM_INVITE} from 'universal/utils/constants';
+import {TEAM_INVITE} from 'universal/utils/constants';
+import promiseAllObj from 'universal/utils/promiseAllObj';
 
 const maybeAutoApproveToOrg = (invitees, inviter) => {
   const r = getRethink();
@@ -23,24 +23,14 @@ const maybeAutoApproveToOrg = (invitees, inviter) => {
   return r.table('OrgApproval').insert(approvals);
 };
 
-const publishTeamInvites = (invitations, {operationId}) => {
-  // do not filter out duplicates like we do for the DB insert!
-  // that way if someone resends an invite, the invitee will always get a toast
-  invitations.forEach((notification) => {
-    const userId = notification.userIds[0];
-    const notificationsAdded = {notifications: [notification]};
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId});
-  });
-};
-
-const sendTeamInvitations = async (invitees, inviter, inviteId, subOptions) => {
-  if (invitees.length === 0) return [];
+const sendTeamInvitations = async (invitees, inviter, inviteId) => {
+  if (invitees.length === 0) return {newInvitations: [], updatedInvitations: [], teamInviteNotifications: []};
   const r = getRethink();
   const now = new Date();
-  const {orgId, inviterName, teamId, teamName} = inviter;
+  const {orgId, inviterName, inviterUserId, teamId, teamName} = inviter;
   const inviteeUsers = invitees.filter((invitee) => Boolean(invitee.userId));
 
-  const invitations = inviteeUsers
+  const teamInviteNotifications = inviteeUsers
     .map((invitee) => ({
       id: shortid.generate(),
       type: TEAM_INVITE,
@@ -48,26 +38,29 @@ const sendTeamInvitations = async (invitees, inviter, inviteId, subOptions) => {
       orgId,
       userIds: [invitee.userId],
       inviteeEmail: invitee.email,
+      inviterUserId,
       inviterName,
       teamId,
       teamName
     }));
 
   const userIds = inviteeUsers.map(({userId}) => userId);
-  await Promise.all([
-    r.table('Notification')
+  const {upsertedInvitations} = await promiseAllObj({
+    newNotifications: r.table('Notification')
       .getAll(r.args(userIds), {index: 'userIds'})
       .filter({type: TEAM_INVITE, teamId})('userIds')(0).default([])
       .do((userIdsWithNote) => {
-        return r.expr(invitations).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
+        return r.expr(teamInviteNotifications).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
       })
       .do((newNotifications) => r.table('Notification').insert(newNotifications)),
-    emailTeamInvitations(invitees, inviter, inviteId, subOptions),
-    maybeAutoApproveToOrg(invitees, inviter)
-  ]);
+    upsertedInvitations: emailTeamInvitations(invitees, inviter, inviteId),
+    autoApprove: maybeAutoApproveToOrg(invitees, inviter)
+  });
 
-  publishTeamInvites(invitations, subOptions);
-  return undefined;
+  return {
+    ...upsertedInvitations,
+    teamInviteNotifications
+  };
 };
 
 export default sendTeamInvitations;

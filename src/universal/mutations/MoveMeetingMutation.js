@@ -1,18 +1,30 @@
 import {commitMutation} from 'react-relay';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
+graphql`
+  fragment MoveMeetingMutation_agendaItem on MoveMeetingPayload {
+    completedAgendaItem {
+      isComplete
+    }
+  }
+`;
+
+graphql`
+  fragment MoveMeetingMutation_team on MoveMeetingPayload {
+    team {
+      facilitatorPhase
+      facilitatorPhaseItem
+      meetingPhase
+      meetingPhaseItem
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation MoveMeetingMutation($teamId: ID!, $nextPhase: ActionMeetingPhaseEnum, $nextPhaseItem: Int, $force: Boolean) {
     moveMeeting(teamId: $teamId, nextPhase: $nextPhase, nextPhaseItem: $nextPhaseItem, force: $force) {
-      team {
-        facilitatorPhase
-        facilitatorPhaseItem
-        meetingPhase
-        meetingPhaseItem
-      }
-      completedAgendaItem {
-        isComplete
-      }
+      ...MoveMeetingMutation_agendaItem @relay(mask: false)
+      ...MoveMeetingMutation_team @relay(mask: false)
     }
   }
 `;
@@ -30,8 +42,6 @@ const MoveMeetingMutation = (environment, input, history, onError, onCompleted) 
       const currentMeetingPhaseItem = team.getValue('meetingPhaseItem');
       const nextPhaseInfo = actionMeeting[nextPhase];
       const meetingPhaseInfo = actionMeeting[currentMeetingPhase];
-      // console.log('next phase', nextPhase, nextPhaseItem)
-      // console.log('current Meeting phase', currentMeetingPhase, currentMeetingPhaseItem)
       if (nextPhase) {
         team.setValue(nextPhase, 'facilitatorPhase');
         if (nextPhaseInfo.index >= meetingPhaseInfo.index) {

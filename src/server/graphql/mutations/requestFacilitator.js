@@ -1,42 +1,39 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
+import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
-import {FACILITATOR_REQUEST, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
+import publish from 'server/utils/publish';
+import {TEAM} from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   name: 'RequestFacilitator',
   description: 'Request to become the facilitator in a meeting',
-  type: GraphQLBoolean,
+  type: RequestFacilitatorPayload,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (source, {teamId}, {authToken, dataLoader}) => {
+  resolve: async (source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) => {
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     requireTeamMember(authToken, teamId);
 
     // VALIDATION
-    const requestorId = `${userId}::${teamId}`;
+    const requestorId = toTeamMemberId(teamId, viewerId);
     const {activeFacilitator} = await dataLoader.get('teams').load(teamId);
     if (activeFacilitator === requestorId) {
-      // no UI for this
       throw new Error('You are already the facilitator');
     }
 
     // RESOLUTION
     const [currentFacilitatorUserId] = activeFacilitator.split('::');
-    const notificationsAdded = {
-      notifications: [{
-        requestorId,
-        type: FACILITATOR_REQUEST
-      }]
-    };
 
-    getPubSub().publish(`${NOTIFICATIONS_ADDED}.${currentFacilitatorUserId}`, {notificationsAdded, operationId});
-    return true;
+    const data = {requestorId};
+    publish(TEAM, currentFacilitatorUserId, RequestFacilitatorPayload, data, subOptions);
+    return data;
   }
 };

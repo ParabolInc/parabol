@@ -76,13 +76,11 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withStyles(styleThunk)(DenyNewUser),
   graphql`
-    fragment DenyNewUser_notification on Notification {
+    fragment DenyNewUser_notification on NotifyDenial {
       notificationId: id
-      ... on NotifyDenial {
-        deniedByName
-        inviteeEmail
-        reason
-      }
+      deniedByName
+      inviteeEmail
+      reason
     }
   `
 );

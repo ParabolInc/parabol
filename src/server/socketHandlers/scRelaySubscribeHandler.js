@@ -47,8 +47,9 @@ export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
       const iterableCb = (payload) => {
         const changedAuth = handleGraphQLResult(payload, socket);
         if (changedAuth) {
-          // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the clien
-          unsubscribeRelaySub(socket);
+          // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
+          // delay it to guarantee that no matter when this is published, it is the last message on the mutation
+          setTimeout(() => unsubscribeRelaySub(socket), 1000);
         } else {
           // we already sent a new authToken, no need to emit the gql response
           const message = {opId, payload};
@@ -63,7 +64,6 @@ export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
       // }, 5000)
       await forAwaitEach(asyncIterator, iterableCb);
       const resubIdx = socket.availableResubs.indexOf(opId);
-      console.log('resubIdx', opId, resubIdx, socket.availableResubs)
       if (resubIdx !== -1) {
         // reinitialize the subscription
         handleSubscribe();
@@ -73,6 +73,5 @@ export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
       }
     };
     handleSubscribe();
-
   };
 }

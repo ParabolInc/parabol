@@ -3,113 +3,46 @@ import getRethink from 'server/database/rethinkDriver';
 import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg';
 import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember';
 import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
 import {ADD_USER} from 'server/utils/serverConstants';
-import tmsSignToken from 'server/utils/tmsSignToken';
-import {
-  ADD_TO_TEAM,
-  INVITATION_REMOVED,
-  JOIN_TEAM,
-  NEW_AUTH_TOKEN,
-  NOTIFICATIONS_ADDED,
-  NOTIFICATIONS_CLEARED, TEAM_ADDED,
-  TEAM_MEMBER_ADDED
-} from 'universal/utils/constants';
 
-const publishRemovedInvitations = (expiredEmailInvitations, operationId) => {
-  expiredEmailInvitations.forEach((invitation) => {
-    const {teamId} = invitation;
-    const invitationRemoved = {invitation};
-    getPubSub().publish(`${INVITATION_REMOVED}.${teamId}`, {invitationRemoved, operationId});
-  });
-};
-
-const publishClearNotifications = (expireInviteNotificationIds, userId) => {
-  if (expireInviteNotificationIds.length > 0) {
-    const notificationsCleared = {deletedIds: expireInviteNotificationIds};
-    getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
-  }
-};
-
-const publishJoinTeamNotifications = (teamId, teamName, user) => {
-  const notificationsAdded = {
-    notifications: [{
-      type: JOIN_TEAM,
-      teamId,
-      teamName,
-      preferredName: user.preferredName || user.email
-    }]
-  };
-  getPubSub().publish(`${NOTIFICATIONS_ADDED}.${teamId}`, {notificationsAdded});
-};
-
-const acceptTeamInvite = async (teamId, authToken, email, subOptions = {}) => {
+const acceptTeamInvite = async (teamId, authToken, email) => {
   const r = getRethink();
   const now = new Date();
-  const {operationId} = subOptions;
   const userId = getUserId(authToken);
-  const {team: {orgId, name: teamName}, user} = await r({
-    team: r.table('Team').get(teamId).pluck('orgId', 'name'),
+  const {team: {orgId}, user} = await r({
+    team: r.table('Team').get(teamId),
     user: r.table('User').get(userId)
   });
   const userOrgs = user.userOrgs || [];
-  const userTeams = user.tms || [];
   const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
-  const tms = [...userTeams, teamId];
-  const {expiredEmailInvitations, expireInviteNotificationIds, teamMember} = await r({
+  const {removedInvitationId, removedNotification} = await r({
     // add the team to the user doc
     userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
     teamMember: insertNewTeamMember(userId, teamId),
     // find all possible emails linked to this person and mark them as accepted
-    expiredEmailInvitations: r.table('Invitation')
+    removedInvitationId: r.table('Invitation')
       .getAll(email, {index: 'email'})
+      .filter({teamId})
       .update({
         acceptedAt: now,
         // flag the token as expired so they cannot reuse the token
         tokenExpiration: new Date(0),
         updatedAt: now
-      }, {returnChanges: true})('changes')('new_val').default([]),
-    expireInviteNotificationIds: getTeamInviteNotifications(orgId, teamId, [email])
-      .delete({returnChanges: true})('changes')
-      .map((change) => change('old_val')('id'))
-      .default([])
+      }, {returnChanges: true})('changes')(0)('new_val')('id').default(null),
+    removedNotification: getTeamInviteNotifications(orgId, teamId, [email])
+      .delete({returnChanges: true})('changes')(0)('old_val')
+      .default(null)
   });
 
   if (!userInOrg) {
     await adjustUserCount(userId, orgId, ADD_USER);
   }
-  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
-  publishRemovedInvitations(expiredEmailInvitations, operationId);
-  publishClearNotifications(expireInviteNotificationIds, userId);
-  publishJoinTeamNotifications(teamId, teamName, user);
-
-  const teamMemberAdded = {teamMember};
-  getPubSub().publish(`${TEAM_MEMBER_ADDED}.${teamId}`, {teamMemberAdded, ...subOptions});
-
-  // Send the new team member a welcome & a new token
-  const newAuthToken = tmsSignToken(authToken, tms);
-  const addedToTeam = {
-    // no ID to rule out permanent notification. they already know, they are the ones who did it!
-    authToken: newAuthToken,
-    orgId,
-    startAt: now,
-    type: ADD_TO_TEAM,
-    teamName,
-    teamId
+  return {
+    removedNotification,
+    removedInvitationId
   };
-  //const teamAdded = {
-  //  team: {
-  //    id: teamId
-  //  },
-  //  notification: addedToTeam
-  //}
-  //getPubSub().publish(`${TEAM_ADDED}.${userId}`, {})
-  getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded: {notifications: [addedToTeam]}});
-  getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken});
-  return addedToTeam;
 };
 
 export default acceptTeamInvite;

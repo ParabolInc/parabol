@@ -2,8 +2,8 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_CLEARED, ORG_APPROVAL_REMOVED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import publish from 'server/utils/publish';
+import {NOTIFICATION, ORG_APPROVAL, REQUEST_NEW_USER} from 'universal/utils/constants';
 
 export default {
   type: CancelApprovalPayload,
@@ -17,21 +17,21 @@ export default {
   async resolve(source, {orgApprovalId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const orgApproval = await r.table('OrgApproval').get(orgApprovalId);
-    const {email, orgId, teamId} = orgApproval;
+    const orgApprovalDoc = await r.table('OrgApproval').get(orgApprovalId);
+    const {email, orgId, teamId} = orgApprovalDoc;
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const {removedApproval, removedNotification} = await r({
-      removedApproval: r.table('OrgApproval')
+    const {removedRequestNotification} = await r({
+      orgApproval: r.table('OrgApproval')
         .get(orgApprovalId)
         .update({
           isActive: false
-        }, {returnChanges: true})('changes')(0)('old_val')
-        .default(null),
-      removedNotification: r.table('Notification')
+        }),
+      removedRequestNotification: r.table('Notification')
         .getAll(orgId, {index: 'orgId'})
         .filter({
           type: REQUEST_NEW_USER,
@@ -41,16 +41,16 @@ export default {
         .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null)
     });
 
-    if (removedNotification) {
-      const notificationsCleared = {deletedIds: [removedNotification.id]};
-      removedNotification.userIds.forEach((userId) => {
-        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
+    const data = {orgApprovalId, removedRequestNotification};
+
+    if (removedRequestNotification) {
+      const {userIds} = removedRequestNotification;
+      userIds.forEach((userId) => {
+        publish(NOTIFICATION, userId, CancelApprovalPayload, data, subOptions);
       });
     }
 
-    const orgApprovalRemoved = {orgApproval: removedApproval};
-    getPubSub().publish(`${ORG_APPROVAL_REMOVED}.${teamId}`, {orgApprovalRemoved, mutatorId, operationId});
-
-    return orgApprovalRemoved;
+    publish(ORG_APPROVAL, teamId, CancelApprovalPayload, data, subOptions);
+    return data;
   }
 };

@@ -2,6 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
+import withRouter from 'react-router-dom/es/withRouter';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Row from 'universal/components/Row/Row';
@@ -9,9 +10,8 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
-import withRouter from 'react-router-dom/es/withRouter';
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants';
+import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
 const RequestNewUser = (props) => {
   const {
@@ -24,7 +24,7 @@ const RequestNewUser = (props) => {
     onCompleted,
     history
   } = props;
-  const {notificationId, inviterName, inviteeEmail, orgId, team} = notification;
+  const {notificationId, inviter: {inviterName}, inviteeEmail, orgId, team} = notification;
   const {teamName, teamId, tier} = team;
   const acceptInvite = () => {
     submitMutation();
@@ -102,18 +102,17 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withRouter(withStyles(styleThunk)(RequestNewUser)),
   graphql`
-    fragment RequestNewUser_notification on Notification {
+    fragment RequestNewUser_notification on NotifyRequestNewUser {
       notificationId: id
-      ... on NotifyInvitation {
-        inviterName
-        inviteeEmail
-        orgId
-        team {
-          teamId: id
-          teamName: name
-          tier
-        }
-        
+      inviter {
+        inviterName: preferredName
+      }
+      inviteeEmail
+      orgId
+      team {
+        teamId: id
+        teamName: name
+        tier
       }
     }
   `

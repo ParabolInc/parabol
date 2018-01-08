@@ -9,18 +9,14 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingContainer from 'universal/modules/meeting/containers/MeetingContainer/MeetingContainer';
-import AgendaItemAddedSubscription from 'universal/subscriptions/AgendaItemAddedSubscription';
-import AgendaItemRemovedSubscription from 'universal/subscriptions/AgendaItemRemovedSubscription';
-import AgendaItemUpdatedSubscription from 'universal/subscriptions/AgendaItemUpdatedSubscription';
-import MeetingUpdatedSubscription from 'universal/subscriptions/MeetingUpdatedSubscription';
-import ProjectCreatedSubscription from 'universal/subscriptions/ProjectCreatedSubscription';
-import ProjectDeletedSubscription from 'universal/subscriptions/ProjectDeletedSubscription';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
-import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
-import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
+import AgendaItemSubscription from 'universal/subscriptions/AgendaItemSubscription';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
-import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
-import NotificationsClearedSubscription from 'universal/subscriptions/NotificationsClearedSubscription';
+import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
+import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
+import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
+import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
+import TeamSubscription from 'universal/subscriptions/TeamSubscription';
+import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
   query MeetingRootQuery($teamId: ID!) {
@@ -31,25 +27,20 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  AgendaItemAddedSubscription,
-  AgendaItemUpdatedSubscription,
-  AgendaItemRemovedSubscription,
-  MeetingUpdatedSubscription,
-  ProjectUpdatedSubscription,
-  ProjectCreatedSubscription,
-  ProjectDeletedSubscription,
-  TeamMemberAddedSubscription,
-  TeamMemberUpdatedSubscription,
+  AgendaItemSubscription,
   NewAuthTokenSubscription,
-  NotificationsAddedSubscription,
-  NotificationsClearedSubscription
+  NotificationSubscription,
+  OrganizationSubscription,
+  ProjectSubscription,
+  TeamMemberSubscription,
+  TeamSubscription
 ];
 
 const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
   const {params: {localPhase, localPhaseItem, teamId}} = match;
   return (
     <QueryRenderer
-      cacheConfig={{ttl: 30000}}
+      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{teamId}}

@@ -4,8 +4,6 @@ import {withRouter} from 'react-router-dom';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamContainer from 'universal/modules/teamDashboard/containers/Team/TeamContainer';
-import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
-import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -16,11 +14,6 @@ const query = graphql`
   }
 `;
 
-const subscriptions = [
-  TeamMemberAddedSubscription,
-  TeamMemberUpdatedSubscription
-];
-
 const TeamRoot = ({atmosphere, location, match}) => {
   const {params: {teamId}} = match;
   return (
@@ -29,7 +22,6 @@ const TeamRoot = ({atmosphere, location, match}) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      subscriptions={subscriptions}
       render={({props: renderProps}) => {
         return (
           <TeamContainer viewer={renderProps && renderProps.viewer} location={location} match={match} />

@@ -3,10 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import AddAgendaItemPayload from 'server/graphql/types/AddAgendaItemPayload';
 import CreateAgendaItemInput from 'server/graphql/types/CreateAgendaItemInput';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {AGENDA_ITEM_ADDED} from 'universal/utils/constants';
+import {AGENDA_ITEM} from 'universal/utils/constants';
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema';
 
 export default {
@@ -18,9 +18,10 @@ export default {
       description: 'The new task including an id, teamMemberId, and content'
     }
   },
-  async resolve(source, {newAgendaItem}, {authToken, dataLoader, socketId}) {
+  async resolve(source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const {teamId} = newAgendaItem;
@@ -33,18 +34,19 @@ export default {
 
     // RESOLUTION
     const now = new Date();
-    const agendaItem = await r.table('AgendaItem').insert({
-      id: `${teamId}::${shortid.generate()}`,
+    const agendaItemId = `${teamId}::${shortid.generate()}`;
+    await r.table('AgendaItem').insert({
+      id: agendaItemId,
       ...validNewAgendaItem,
       createdAt: now,
       updatedAt: now,
       isActive: true,
       isComplete: false,
       teamId
-    }, {returnChanges: true})('changes')(0)('new_val');
+    });
 
-    const agendaItemAdded = {agendaItem};
-    getPubSub().publish(`${AGENDA_ITEM_ADDED}.${teamId}`, {agendaItemAdded, operationId, mutatorId: socketId});
-    return agendaItemAdded;
+    const data = {agendaItemId};
+    publish(AGENDA_ITEM, teamId, AddAgendaItemPayload, data, subOptions);
+    return data;
   }
 };

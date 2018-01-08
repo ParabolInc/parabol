@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import DefaultRemovalPayload from 'server/graphql/types/DefaultRemovalPayload';
+import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
-import {NOTIFICATIONS_CLEARED} from 'universal/utils/constants';
+import publish from 'server/utils/publish';
+import {NOTIFICATION} from 'universal/utils/constants';
 
 export default {
-  type: DefaultRemovalPayload,
+  type: ClearNotificationPayload,
   description: 'Remove a notification by ID',
   args: {
     notificationId: {
@@ -14,8 +14,10 @@ export default {
       description: 'The id of the notification to remove'
     }
   },
-  async resolve(source, {notificationId}, {authToken, socket}) {
+  async resolve(source, {notificationId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const userId = getUserId(authToken);
@@ -23,12 +25,12 @@ export default {
     requireNotificationOwner(userId, notification);
 
     // RESOLUTION
-    await r.table('Notification').get(notificationId).delete();
+    await r.table('Notification')
+      .get(notificationId)
+      .delete();
 
-    const notificationsCleared = {
-      deletedIds: [notificationId]
-    };
-    getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, mutatorId: socket.id});
-    return {deletedId: notificationId};
+    const data = {notification};
+    publish(NOTIFICATION, userId, ClearNotificationPayload, data, subOptions);
+    return data;
   }
 };

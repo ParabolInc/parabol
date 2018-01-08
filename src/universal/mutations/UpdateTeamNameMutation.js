@@ -1,11 +1,17 @@
 import {commitMutation} from 'react-relay';
 
+graphql`
+  fragment UpdateTeamNameMutation_team on UpdateTeamNamePayload {
+    team {
+      name
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation UpdateTeamNameMutation($updatedTeam: UpdatedTeamInput!) {
     updateTeamName(updatedTeam: $updatedTeam) {
-      team {
-        name
-      }
+      ...UpdateTeamNameMutation_team @relay(mask:false)
     }
   }
 `;

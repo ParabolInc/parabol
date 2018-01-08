@@ -2,100 +2,19 @@
 
 exports[`ArchiveTeam archives a team 1`] = `
 Object {
-  "notification": Array [
-    Object {
-      "id": 0,
-      "orgId": 8,
-      "startAt": 2017-01-01T08:00:00.000Z,
-      "teamName": "Team America",
-      "type": "TEAM_ARCHIVED",
-      "userIds": Array [
-        9,
-      ],
-    },
-    Object {
-      "id": 1,
-      "orgId": 8,
-      "startAt": 2017-01-01T08:00:00.000Z,
-      "teamName": "Team America",
-      "type": "TEAM_ARCHIVED",
-      "userIds": Array [
-        10,
-      ],
-    },
-    Object {
-      "id": 2,
-      "orgId": 8,
-      "startAt": 2017-01-01T08:00:00.000Z,
-      "teamName": "Team America",
-      "type": "TEAM_ARCHIVED",
-      "userIds": Array [
-        11,
-      ],
-    },
-    Object {
-      "id": 3,
-      "orgId": 8,
-      "startAt": 2017-01-01T08:00:00.000Z,
-      "teamName": "Team America",
-      "type": "TEAM_ARCHIVED",
-      "userIds": Array [
-        12,
-      ],
-    },
-    Object {
-      "id": 4,
-      "orgId": 8,
-      "startAt": 2017-01-01T08:00:00.000Z,
-      "teamName": "Team America",
-      "type": "TEAM_ARCHIVED",
-      "userIds": Array [
-        13,
-      ],
-    },
-    Object {
-      "id": 5,
-      "orgId": 8,
-      "startAt": 2017-01-01T08:00:00.000Z,
-      "teamName": "Team America",
-      "type": "TEAM_ARCHIVED",
-      "userIds": Array [
-        14,
-      ],
-    },
-    Object {
-      "id": 6,
-      "orgId": 8,
-      "startAt": 2017-01-01T08:00:00.000Z,
-      "teamName": "Team America",
-      "type": "TEAM_ARCHIVED",
-      "userIds": Array [
-        15,
-      ],
-    },
-    Object {
-      "id": 7,
-      "orgId": 8,
-      "startAt": 2017-01-01T08:00:00.000Z,
-      "teamName": "Team America",
-      "type": "TEAM_ARCHIVED",
-      "userIds": Array [
-        16,
-      ],
-    },
-  ],
+  "notification": Array [],
   "team": Object {
     "activeFacilitator": null,
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
-    "id": 17,
+    "id": 0,
     "isArchived": true,
     "isPaid": true,
     "meetingId": null,
     "meetingPhase": "lobby",
     "meetingPhaseItem": null,
     "name": "Team America",
-    "orgId": 8,
+    "orgId": 1,
     "tier": "personal",
   },
 }
@@ -105,299 +24,98 @@ exports[`ArchiveTeam archives a team 2`] = `
 Object {
   "newAuthToken": Array [
     Object {
-      "channelId": 9,
+      "channelId": 2,
       "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 10,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 11,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 12,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 13,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 14,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 15,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-    Object {
-      "channelId": 16,
-      "message": Object {
-        "newAuthToken": 18,
-      },
-    },
-  ],
-  "notificationsAdded": Array [
-    Object {
-      "channelId": 9,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 0,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                9,
-              ],
-            },
-          ],
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
         },
       },
     },
-    Object {
-      "channelId": 10,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 1,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                10,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 11,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 2,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                11,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 12,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 3,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                12,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 13,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 4,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                13,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 14,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 5,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                14,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 15,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 6,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                15,
-              ],
-            },
-          ],
-        },
-      },
-    },
-    Object {
-      "channelId": 16,
-      "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 7,
-              "orgId": 8,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamName": "Team America",
-              "type": "TEAM_ARCHIVED",
-              "userIds": Array [
-                16,
-              ],
-            },
-          ],
-        },
-      },
-    },
-  ],
-  "teamUpdated": Array [
-    Object {
-      "channelId": 17,
-      "message": Object {
-        "mutatorId": undefined,
-        "operationId": 0,
-        "teamUpdated": Object {
-          "team": Object {
-            "activeFacilitator": null,
-            "facilitatorPhase": "lobby",
-            "facilitatorPhaseItem": null,
-            "id": 17,
-            "isArchived": true,
-            "isPaid": true,
-            "meetingId": null,
-            "meetingPhase": "lobby",
-            "meetingPhaseItem": null,
-            "name": "Team America",
-            "orgId": 8,
-            "tier": "personal",
-          },
-        },
-      },
-    },
-  ],
-}
-`;
-
-exports[`ArchiveTeam deletes a team when it has no projects or other team members 1`] = `
-Object {
-  "notification": Array [],
-  "team": Object {},
-  "teamMember": Array [],
-  "user": Object {
-    "cachedAt": 2017-01-01T07:00:00.000Z,
-    "createdAt": 2017-01-01T07:00:00.000Z,
-    "email": "Leader of One@example.com",
-    "emailVerified": false,
-    "id": 0,
-    "identities": Array [],
-    "inactive": false,
-    "lastLogin": 2017-01-01T07:00:00.000Z,
-    "lastSeenAt": 2017-01-01T07:00:00.000Z,
-    "name": "Leader of One",
-    "picture": "https://placeimg.com/100/100/animals",
-    "preferredName": "Leader of One",
-    "tms": Array [],
-    "updatedAt": 2017-01-01T07:00:00.000Z,
-    "userOrgs": Array [
-      Object {
-        "id": 1,
-        "role": null,
-      },
-    ],
-    "welcomeSentAt": 2017-01-01T07:00:00.000Z,
-  },
-}
-`;
-
-exports[`ArchiveTeam deletes a team when it has no projects or other team members 2`] = `
-Object {
-  "newAuthToken": Array [
-    Object {
-      "channelId": 0,
-      "message": Object {
-        "newAuthToken": 2,
-      },
-    },
-  ],
-  "teamUpdated": Array [
     Object {
       "channelId": 3,
       "message": Object {
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
+        },
+      },
+    },
+    Object {
+      "channelId": 4,
+      "message": Object {
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
+        },
+      },
+    },
+    Object {
+      "channelId": 5,
+      "message": Object {
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
+        },
+      },
+    },
+    Object {
+      "channelId": 6,
+      "message": Object {
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
+        },
+      },
+    },
+    Object {
+      "channelId": 7,
+      "message": Object {
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
+        },
+      },
+    },
+    Object {
+      "channelId": 8,
+      "message": Object {
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
+        },
+      },
+    },
+    Object {
+      "channelId": 9,
+      "message": Object {
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
+        },
+      },
+    },
+  ],
+  "team": Array [
+    Object {
+      "channelId": 0,
+      "message": Object {
+        "data": Object {
+          "notificationIds": Array [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+          ],
+          "removedTeamNotifications": Array [],
+          "teamId": 0,
+          "type": "ArchiveTeamPayload",
+        },
         "mutatorId": undefined,
         "operationId": 0,
-        "teamUpdated": Object {
-          "team": Object {
-            "activeFacilitator": null,
-            "facilitatorPhase": "lobby",
-            "facilitatorPhaseItem": null,
-            "id": 3,
-            "isArchived": true,
-            "isPaid": true,
-            "meetingId": null,
-            "meetingPhase": "lobby",
-            "meetingPhaseItem": null,
-            "name": "The Lonely Ones",
-            "orgId": 4,
-            "tier": "personal",
-          },
-        },
       },
     },
   ],

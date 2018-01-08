@@ -3,17 +3,17 @@ import getRethink from 'server/database/rethinkDriver';
 import getEndMeetingSortOrders from 'server/graphql/mutations/helpers/endMeeting/getEndMeetingSortOrders';
 import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEmailSummary';
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
-import UpdateMeetingPayload from 'server/graphql/types/UpdateMeetingPayload';
+import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
 import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, MEETING_UPDATED, PROJECT_UPDATED, SUMMARY, TEAM_UPDATED} from 'universal/utils/constants';
+import {DONE, LOBBY, PROJECT, TEAM} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
-  type: UpdateMeetingPayload,
+  type: EndMeetingPayload,
   description: 'Finish a meeting and go to the summary',
   args: {
     teamId: {
@@ -24,6 +24,7 @@ export default {
   async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     requireTeamMember(authToken, teamId);
@@ -32,7 +33,6 @@ export default {
       .getAll(teamId, {index: 'teamId'})
       .orderBy(r.desc('createdAt'))
       .nth(0)
-      .pluck('id', 'endedAt')
       .default({endedAt: r.now()});
     if (meeting.endedAt) {
       throw errorObj({_error: 'Meeting already ended!'});
@@ -41,47 +41,47 @@ export default {
     // RESOLUTION
     const now = new Date();
     const {id: meetingId} = meeting;
-    const completedMeeting = await r.table('AgendaItem')
-    // get all agenda items
+    const completedMeeting = await r.table('Project')
       .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true})
-      .map((doc) => doc('id'))
+      .filter((project) => r.and(
+        project('createdAt').ge(meeting.createdAt),
+        project('tags').contains('private').not()
+      ))
+      .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
+      .orderBy('createdAt')
+      .pluck('id', 'content', 'status', 'tags', 'teamMemberId')
       .coerceTo('array')
-      .do((agendaItemIds) => {
-        return r.table('Project')
-          .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-          .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
-          .orderBy('createdAt')
-          .pluck('id', 'content', 'status', 'tags', 'teamMemberId')
-          .coerceTo('array')
-          .default([])
-          .do((projects) => {
-            return r.table('Meeting').get(meetingId)
-              .update({
-                agendaItemsCompleted: agendaItemIds.count().default(0),
-                endedAt: now,
-                facilitator: `${authToken.sub}::${teamId}`,
-                successExpression: makeSuccessExpression(),
-                successStatement: makeSuccessStatement(),
-                invitees: r.table('TeamMember')
-                  .getAll(teamId, {index: 'teamId'})
-                  .filter({isNotRemoved: true})
-                  .orderBy('preferredName')
-                  .coerceTo('array')
-                  .map((teamMember) => ({
-                    id: teamMember('id'),
-                    picture: teamMember('picture'),
-                    preferredName: teamMember('preferredName'),
-                    present: teamMember('isCheckedIn').not().not()
-                      .default(false),
-                    projects: projects.filter({teamMemberId: teamMember('id')})
-                  })),
-                projects
-              }, {
-                nonAtomic: true,
-                returnChanges: true
-              })('changes')(0)('new_val');
-          });
+      .default([])
+      .do((projects) => {
+        return r.table('Meeting').get(meetingId)
+          .update({
+            agendaItemsCompleted: r.table('AgendaItem')
+              .getAll(teamId, {index: 'teamId'})
+              .filter({isActive: true})
+              .count()
+              .default(0),
+            endedAt: now,
+            facilitator: `${authToken.sub}::${teamId}`,
+            successExpression: makeSuccessExpression(),
+            successStatement: makeSuccessStatement(),
+            invitees: r.table('TeamMember')
+              .getAll(teamId, {index: 'teamId'})
+              .filter({isNotRemoved: true})
+              .orderBy('preferredName')
+              .coerceTo('array')
+              .map((teamMember) => ({
+                id: teamMember('id'),
+                picture: teamMember('picture'),
+                preferredName: teamMember('preferredName'),
+                present: teamMember('isCheckedIn').not().not()
+                  .default(false),
+                projects: projects.filter({teamMemberId: teamMember('id')})
+              })),
+            projects
+          }, {
+            nonAtomic: true,
+            returnChanges: true
+          })('changes')(0)('new_val');
       });
     const updatedProjects = await getEndMeetingSortOrders(completedMeeting);
     const {projectsToArchive, team} = await r({
@@ -123,15 +123,7 @@ export default {
         .coerceTo('array')
     });
 
-    if (projectsToArchive.length) {
-      const archivedProjects = await archiveProjectsForDB(projectsToArchive);
-      archivedProjects.forEach((project) => {
-        const projectUpdated = {project};
-        // since this is from the meeting, we don't need to remove it from the user dash
-        // because we are guaranteed they have a sub going for the team dash
-        getPubSub().publish(`${PROJECT_UPDATED}.${teamId}`, {projectUpdated, mutatorId, operationId});
-      });
-    }
+    const archivedProjects = await archiveProjectsForDB(projectsToArchive);
     const {meetingNumber} = completedMeeting;
     const userIds = completedMeeting.invitees
       .filter((invitee) => invitee.present)
@@ -139,20 +131,19 @@ export default {
     sendSegmentEvent('Meeting Completed', userIds, {teamId, meetingNumber});
     endSlackMeeting(meetingId, teamId);
 
-    const summaryMeeting = {
-      ...team,
-      facilitatorPhase: SUMMARY,
-      meetingPhase: SUMMARY,
+    const data = {
+      team,
+      archivedProjects,
       meetingId
     };
-    const meetingUpdated = {team: summaryMeeting};
-    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated: meetingUpdated, mutatorId, operationId});
-    getPubSub().publish(`${MEETING_UPDATED}.${teamId}`, {meetingUpdated, mutatorId, operationId});
-    sendEmailSummary(completedMeeting);
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
 
-    // send the truth to the meeting facilitator so we don't need to adjust the store in endMeetingMutation
-    return {team};
+    publish(TEAM, teamId, EndMeetingPayload, data, subOptions);
+    teamMembers.forEach(({userId}) => {
+      publish(PROJECT, userId, EndMeetingPayload, data, subOptions);
+    });
+    await sendEmailSummary(completedMeeting);
 
-    // TODO maybe update team members via pubsub?
+    return data;
   }
 };
