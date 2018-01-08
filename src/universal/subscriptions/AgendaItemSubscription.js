@@ -32,6 +32,8 @@ const AgendaItemSubscription = (environment, queryVariables) => {
         case 'UpdateAgendaItemPayload':
           handleUpdateAgendaItems(store, teamId);
           break;
+        case 'MoveMeetingPayload':
+          break;
         default:
           console.error('AgendaItemSubscription case fail', type);
       }
