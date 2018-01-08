@@ -907,7 +907,7 @@ declare class webdriver$WebElement {
     locator: webdriver$By | Function
   ): webdriver$Promise<webdriver$WebElement[]>;
   click(): webdriver$Promise<void>;
-  sendKeys(var_args: any): webdriver$Promise<void>;
+  sendKeys(...var_args: any[]): webdriver$Promise<void>;
   getTagName(): webdriver$Promise<string>;
   getCssValue(cssStyleProperty: string): webdriver$Promise<string>;
   getAttribute(attributeName: string): webdriver$Promise<string>;

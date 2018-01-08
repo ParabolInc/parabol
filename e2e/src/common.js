@@ -3,7 +3,7 @@
  *
  * @flow
  */
-import type { WebDriver } from 'selenium-webdriver';
+import type { WebDriver, WebElement } from 'selenium-webdriver';
 
 import { By, until, Key } from 'selenium-webdriver';
 import shortid from 'shortid';
@@ -156,7 +156,7 @@ export const createOnboardingActions = (driver: WebDriver): OnboardingActions =>
       waitTimes.short,
       'Preferred Name input must be present in order to enter preferred name'
     );
-    const preferredNameInput = await driver.findElement(preferredNameLocator);
+    const preferredNameInput: WebElement = await driver.findElement(preferredNameLocator);
     await preferredNameInput.clear();
     await preferredNameInput.sendKeys(preferredName, Key.ENTER);
 
@@ -166,7 +166,7 @@ export const createOnboardingActions = (driver: WebDriver): OnboardingActions =>
       waitTimes.short,
       'Entering preferred name did not lead to team configuration step'
     );
-    const teamNameInput = await driver.findElement(teamNameLocator);
+    const teamNameInput: WebElement = await driver.findElement(teamNameLocator);
     await teamNameInput.sendKeys(teamName, Key.ENTER);
 
     const teamInviteesLocator = By.name('inviteesRaw');
@@ -175,7 +175,7 @@ export const createOnboardingActions = (driver: WebDriver): OnboardingActions =>
       waitTimes.short,
       'Entering team name did not lead to team invitation step'
     );
-    const teamInviteesInput = await driver.findElement(teamInviteesLocator);
+    const teamInviteesInput: WebElement = await driver.findElement(teamInviteesLocator);
     if (inviteeEmails) {
       await teamInviteesInput.sendKeys(
         inviteeEmails.join(', '),
