@@ -26,15 +26,15 @@ const mutation = graphql`
 `;
 
 const popFacilitatorDisconnectedToast = (payload, viewerId, dispatch) => {
-  const oldFacilitatorName = getInProxy(payload, 'oldFacilitator', 'preferredName');
+  const disconnectedFacilitatorName = getInProxy(payload, 'disconnectedFacilitator', 'preferredName');
   // Don't toast changes, only disconnects
-  if (!oldFacilitatorName) return;
+  if (!disconnectedFacilitatorName) return;
 
   const newFacilitatorName = getInProxy(payload, 'newFacilitator', 'preferredName');
   const newFacilitatorUserId = getInProxy(payload, 'newFacilitator', 'userId');
   const facilitatorIntro = viewerId === newFacilitatorUserId ? 'You are' : `${newFacilitatorName} is`;
   dispatch(showInfo({
-    title: `${oldFacilitatorName} Disconnected!`,
+    title: `${disconnectedFacilitatorName} Disconnected!`,
     message: `${facilitatorIntro} the new facilitator`
   }));
 };
@@ -44,13 +44,14 @@ export const promoteFacilitatorTeamUpdater = (payload, viewerId, dispatch) => {
 };
 
 const PromoteFacilitatorMutation = (environment, variables, dispatch, onError, onCompleted) => {
+  const {viewerId} = environment;
   const {facilitatorId} = variables;
   return commitMutation(environment, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('promoteFacilitator');
-      promoteFacilitatorTeamUpdater(payload, dispatch);
+      promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
     },
     optimisticUpdater: (store) => {
       const [, teamId] = facilitatorId.split('::');

@@ -1,7 +1,6 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
 import {
   makeResolveNotificationsForViewer,
-  resolveNotificationForViewer,
   resolveProjects,
   resolveTeam,
   resolveTeamMember,

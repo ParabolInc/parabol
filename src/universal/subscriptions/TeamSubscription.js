@@ -56,6 +56,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'RemoveTeamMemberSelfPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);
           break;
+        case 'RequestFacilitatorPayload':
+          requestFacilitatorTeamUpdater(payload, options);
+          break;
         case 'AddTeamMutationPayload':
           addTeamTeamUpdater(payload, store, viewerId);
           break;

@@ -8,6 +8,7 @@ import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTe
 import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
 
 graphql`
   fragment RemoveTeamMemberMutation_project on RemoveTeamMemberPayload {
@@ -49,6 +50,9 @@ graphql`
     team {
       id
     }
+    teamMember {
+      userId
+    }
   }
 `;
 
@@ -74,7 +78,7 @@ const popKickedOutNotification = (payload, {dispatch, environment, history, loca
     action: {
       label: 'OK',
       callback: () => {
-        const notificationId = payload.getValue('id');
+        const notificationId = kickOutNotification.getValue('id');
         ClearNotificationMutation(environment, notificationId);
       }
     }
@@ -99,6 +103,8 @@ export const removeTeamMemberTeamMemberUpdater = (payload, store) => {
 };
 
 export const removeTeamMemberTeamUpdater = (payload, store, viewerId, options) => {
+  const removedUserId = getInProxy(payload, 'teamMember', 'userId');
+  if (removedUserId !== viewerId) return;
   const removedNotifications = payload.getLinkedRecords('removedNotifications');
   const notificationIds = getInProxy(removedNotifications, 'id');
   handleRemoveNotifications(notificationIds, store, viewerId);
@@ -109,6 +115,10 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId, options) =
   const notification = payload.getLinkedRecord('kickOutNotification');
   handleAddNotifications(notification, store, viewerId);
   popKickedOutNotification(payload, options);
+
+  const removedProjects = payload.getLinkedRecords('updatedProjects');
+  const projectIds = getInProxy(removedProjects, 'id');
+  handleRemoveProjects(projectIds, store, viewerId);
 };
 
 export const removeTeamMemberUpdater = (payload, store, viewerId, options) => {

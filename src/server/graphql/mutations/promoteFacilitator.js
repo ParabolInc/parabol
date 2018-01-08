@@ -38,7 +38,7 @@ export default {
       activeFacilitator: facilitatorId
     });
 
-    const data = {teamId, disconnectedFacilitatorId, facilitatorId};
+    const data = {teamId, disconnectedFacilitatorId, newFacilitatorId: facilitatorId};
     publish(TEAM, teamId, PromoteFacilitatorPayload, data, subOptions);
     return data;
   }

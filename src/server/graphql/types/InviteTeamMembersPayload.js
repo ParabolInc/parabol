@@ -1,12 +1,12 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {makeResolveNotificationForViewer, resolveNotificationForViewer, resolveTeam} from 'server/graphql/resolvers';
-import Team from 'server/graphql/types/Team';
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
-import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
-import TeamMember from 'server/graphql/types/TeamMember';
+import {makeResolveNotificationForViewer, resolveTeam} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
+import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import OrgApproval from 'server/graphql/types/OrgApproval';
+import Team from 'server/graphql/types/Team';
+import TeamMember from 'server/graphql/types/TeamMember';
 
 
 const InviteTeamMembersPayload = new GraphQLObjectType({

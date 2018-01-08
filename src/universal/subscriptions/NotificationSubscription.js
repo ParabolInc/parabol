@@ -33,6 +33,7 @@ const subscription = graphql`
       ... on User {
         id
         isConnected
+        tms
       }
 
       # App Version Updater
@@ -51,13 +52,12 @@ const subscription = graphql`
   }
 `;
 
-const connectSocketUserUpdater = (payload, store, viewerId) => {
+const connectSocketUserUpdater = (payload, store) => {
   const isConnected = payload.getValue('isConnected');
   const userId = payload.getValue('id');
-  const viewer = store.get(viewerId);
-  const teams = viewer.getLinkedRecords('teams');
-  if (!teams) return;
-  const teamMemberIds = teams.map((team) => toTeamMemberId(team.getValue('id'), userId));
+  const teamIds = payload.getValue('tms');
+  if (!teamIds) return;
+  const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId));
   teamMemberIds.forEach((teamMemberId) => {
     const teamMember = store.get(teamMemberId);
     if (!teamMember) return;
@@ -148,7 +148,7 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           rejectOrgApprovalNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'User':
-          connectSocketUserUpdater(payload, store, viewerId);
+          connectSocketUserUpdater(payload, store);
           break;
         case 'NotifyVersionInfo':
           popUpgradeAppToast(payload, options);

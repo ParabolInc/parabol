@@ -6,7 +6,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {AGENDA_ITEMS, CHECKIN, TEAM} from 'universal/utils/constants';
+import {AGENDA_ITEM, AGENDA_ITEMS, CHECKIN, TEAM} from 'universal/utils/constants';
 
 export default {
   type: MoveMeetingPayload,
@@ -125,7 +125,7 @@ export default {
     });
 
     const data = {teamId, agendaItemId: completedAgendaItem.id};
-    publish(AGENDA_ITEMS, teamId, MoveMeetingPayload, data, subOptions);
+    publish(AGENDA_ITEM, teamId, MoveMeetingPayload, data, subOptions);
     publish(TEAM, teamId, MoveMeetingPayload, data, subOptions);
     return data;
   }
