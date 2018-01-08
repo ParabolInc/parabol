@@ -7,13 +7,14 @@
 /* eslint-env mocha */
 
 import type { WebDriver } from 'selenium-webdriver';
-import type { AuthActions } from '../common';
+import type { AuthActions } from '../actions';
 
 import expect from 'expect';
 import { By, until } from 'selenium-webdriver';
 
-import { createAuthActions, BASE_URL_REGEX, generateCredentials, waitTimes } from '../common';
-import newBrowserSession from '../lib';
+import { createAuthActions } from '../actions';
+import { BASE_URL_REGEX, generateCredentials, waitTimes } from '../common';
+import getDriver from '../lib';
 
 type Expectations = {
   shouldSeeLoginWarning: (warningRegex: RegExp) => Promise<void>,
@@ -55,23 +56,22 @@ const createExpectations = (driver: WebDriver): Expectations => ({
 });
 
 describe('Authentication', () => {
+  let driver: WebDriver;
   let actions: AuthActions;
   let expectations: Expectations;
-  let quit: () => Promise<void>;
   // We'll use a little cache to save user credentials between tests.
   // Note that mocha runs tests serially, which is important for this type of
   // stateful testing.
   const cache = new Map();
 
   beforeEach(async () => {
-    const session = await newBrowserSession('chrome', createAuthActions, createExpectations);
-    actions = session.actions;
-    expectations = session.expectations;
-    quit = session.quit;
+    driver = await getDriver('chrome');
+    actions = createAuthActions(driver);
+    expectations = createExpectations(driver);
   });
 
   afterEach(() => {
-    return quit();
+    return driver.quit();
   });
 
   it('shows an error when the incorrect credentials are provided', async () => {

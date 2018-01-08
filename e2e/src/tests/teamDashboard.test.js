@@ -7,62 +7,43 @@
 /* eslint-env mocha */
 
 import type { WebDriver } from 'selenium-webdriver';
-import type { AuthActions, Credentials, OnboardingActions } from '../common';
-import type { BrowserSession } from '../lib';
+import type { AuthActions, DashboardActions, OnboardingActions } from '../actions';
+import type { Credentials } from '../common';
 
-import { By, until } from 'selenium-webdriver';
+import expect from 'expect';
 
-import newBrowserSession from '../lib';
-import { createAuthActions, createOnboardingActions, generateCredentials, waitTimes } from '../common';
+import getDriver from '../lib';
+import { generateCredentials } from '../common';
+
+import {
+  createAuthActions,
+  createDashboardActions,
+  createOnboardingActions
+} from '../actions';
 
 type Actions = {
   ...AuthActions,
-  ...OnboardingActions,
-
-  goToTeamDashboard(teamName: string): Promise<void>
-};
-type Expectations = {
-  shouldBeOnTeamDashboard: (teamName: string) => Promise<void>
+  ...DashboardActions,
+  ...OnboardingActions
 };
 
 const createActions = (driver: WebDriver): Actions => ({
   ...createAuthActions(driver),
   ...createOnboardingActions(driver),
-
-  async goToTeamDashboard(teamName) {
-    await driver.wait(
-      until.urlMatches(/(\/me$|\/team\/)/),
-      waitTimes.short,
-      'Must be on the dashboard to find a link to the specific team dashboard'
-    );
-    await driver.wait(
-      until.elementLocated(By.tagName('nav')),
-      waitTimes.short,
-      'Must have loaded the <nav> element to find a particualr team dashboard link'
-    );
-    await driver
-      .findElement(By.css(`[title="${teamName}"]`))
-      .then((navLink) => navLink.click());
-    return driver.wait(
-      until.titleContains(teamName),
-      waitTimes.long,
-      'Page title does not match the expected team name'
-    );
-  }
+  ...createDashboardActions(driver)
 });
 
-const createExpectations = (driver: WebDriver): Expectations => ({
-  shouldBeOnTeamDashboard(teamName) {
-    return driver.wait(
-      until.titleContains(teamName),
-      waitTimes.long,
-      `Not on the team dashboard for team "${teamName}"`
-    );
+const createExpectations = (driver: WebDriver) => ({
+  async shouldBeOnTeamDashboard(teamName) {
+    const title = await driver.getTitle();
+    expect(title).toContain(teamName);
   }
 });
 
 describe('Team Dashboard', () => {
-  let session: BrowserSession<Actions, Expectations>;
+  let driver: WebDriver;
+  let actions;
+  let expectations;
   let credentials: Credentials;
   let preferredName: string;
   let teamName: string;
@@ -72,27 +53,30 @@ describe('Team Dashboard', () => {
     credentials = generateCredentials();
     preferredName = 'Team Dashboard Test User';
     teamName = 'Team Dashboard Test Team';
-    const onboardingSession = await newBrowserSession('chrome', createActions, createExpectations);
-    await onboardingSession.actions.goToHomepage();
-    await onboardingSession.actions.openLoginModal();
-    await onboardingSession.actions.signUp(credentials);
-    await onboardingSession.actions.onboard({ preferredName, teamName });
-    return onboardingSession.quit();
+    const onboardingDriver = await getDriver('chrome');
+    const bootstrapActions = createActions(onboardingDriver);
+    await bootstrapActions.goToHomepage();
+    await bootstrapActions.openLoginModal();
+    await bootstrapActions.signUp(credentials);
+    await bootstrapActions.onboard({ preferredName, teamName });
+    return onboardingDriver.quit();
   });
 
   beforeEach(async () => {
-    session = await newBrowserSession('chrome', createActions, createExpectations);
+    driver = await getDriver('chrome');
+    actions = createActions(driver);
+    expectations = createExpectations(driver);
   });
 
   afterEach(() => {
-    return session.quit();
+    return driver.quit();
   });
 
   it('can navigate to the Team Dashboard', async () => {
-    await session.actions.goToHomepage();
-    await session.actions.openLoginModal();
-    await session.actions.login(credentials);
-    await session.actions.goToTeamDashboard(teamName);
-    await session.expectations.shouldBeOnTeamDashboard(teamName);
+    await actions.goToHomepage();
+    await actions.openLoginModal();
+    await actions.login(credentials);
+    await actions.goToTeamDashboard(teamName);
+    await expectations.shouldBeOnTeamDashboard(teamName);
   });
 });
