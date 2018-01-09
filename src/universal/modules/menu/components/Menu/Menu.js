@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Children, cloneElement } from 'react';
+import React, { Children, cloneElement, Component } from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -9,75 +9,84 @@ import portal from 'react-portal-hoc';
 import Spinner from '../../../spinner/components/Spinner/Spinner';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-const Menu = (props) => {
-  const {
-    children,
-    closePortal,
-    coords,
-    isLoaded,
-    itemFactory,
-    label,
-    menuWidth,
-    styles
-  } = props;
-  const menuBlockStyle = {
-    width: menuWidth,
-    ...coords
+class Menu extends Component {
+  static defaultProps = {
+    menuOrientation: 'left',
+    verticalAlign: 'middle'
   };
-  const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
-  return (
-    <div className={css(styles.menuBlock)} style={menuBlockStyle}>
-      <div className={css(styles.menu)}>
-        {label && <div className={css(styles.label)}>{label}</div>}
-        {kids}
-        <ReactCSSTransitionGroup
-          transitionName={{
-            appear: css(styles.spinnerAppear),
-            appearActive: css(styles.spinnerAppearActive)
-          }}
-          transitionAppear
-          transitionEnter={false}
-          transitionLeave={false}
-          transitionAppearTimeout={300}
-        >
-          {
-            kids.length === 0 && !isLoaded &&
-            <div key="spinner" className={css(styles.spinner)}>
-              <Spinner fillColor="cool" width={40} />
-            </div>
-          }
-        </ReactCSSTransitionGroup>
+
+  static propTypes = {
+    children: PropTypes.any,
+    closePortal: PropTypes.func,
+    coords: PropTypes.object,
+    focusOnMount: PropTypes.bool,
+    isLoaded: PropTypes.bool,
+    itemFactory: PropTypes.func,
+    label: PropTypes.string,
+    menuOrientation: PropTypes.oneOf([
+      'left',
+      'right'
+    ]),
+    maxHeight: PropTypes.string,
+    menuWidth: PropTypes.string,
+    styles: PropTypes.object,
+    toggle: PropTypes.any,
+    verticalAlign: PropTypes.oneOf([
+      'middle',
+      'top'
+    ]),
+    zIndex: PropTypes.string
+  };
+
+  componentDidMount() {
+    if (this.props.focusOnMount && this.menuEl) {
+      this.menuEl.focus();
+    }
+  }
+
+  render() {
+    const {
+      children,
+      closePortal,
+      coords,
+      isLoaded,
+      itemFactory,
+      label,
+      menuWidth,
+      styles
+    } = this.props;
+    const menuBlockStyle = {
+      width: menuWidth,
+      ...coords
+    };
+    const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
+    return (
+      <div className={css(styles.menuBlock)} style={menuBlockStyle}>
+        <div role="menu" className={css(styles.menu)} tabIndex="-1" ref={(menuEl) => { this.menuEl = menuEl; }}>
+          {label && <div className={css(styles.label)}>{label}</div>}
+          {kids}
+          <ReactCSSTransitionGroup
+            transitionName={{
+              appear: css(styles.spinnerAppear),
+              appearActive: css(styles.spinnerAppearActive)
+            }}
+            transitionAppear
+            transitionEnter={false}
+            transitionLeave={false}
+            transitionAppearTimeout={300}
+          >
+            {
+              kids.length === 0 && !isLoaded &&
+              <div key="spinner" className={css(styles.spinner)}>
+                <Spinner fillColor="cool" width={40} />
+              </div>
+            }
+          </ReactCSSTransitionGroup>
+        </div>
       </div>
-    </div>
-  );
-};
-
-Menu.defaultProps = {
-  menuOrientation: 'left',
-  verticalAlign: 'middle'
-};
-
-Menu.propTypes = {
-  children: PropTypes.any,
-  closePortal: PropTypes.func,
-  coords: PropTypes.object,
-  isLoaded: PropTypes.bool,
-  itemFactory: PropTypes.func,
-  label: PropTypes.string,
-  menuOrientation: PropTypes.oneOf([
-    'left',
-    'right'
-  ]),
-  maxHeight: PropTypes.string,
-  menuWidth: PropTypes.string,
-  styles: PropTypes.object,
-  toggle: PropTypes.any,
-  verticalAlign: PropTypes.oneOf([
-    'middle',
-    'top'
-  ]),
-  zIndex: PropTypes.string
-};
+    );
+  }
+}
 
 const styleThunk = (theme, {maxHeight}) => ({
   menuBlock: {

@@ -38,6 +38,7 @@ export default class MenuContainer extends Component {
   render() {
     const {originAnchor, targetAnchor, toggle} = this.props;
     const smartToggle = React.cloneElement(toggle, {
+      'aria-haspopup': true,
       onClick: (e) => {
         // always set coords, otherwise we'd have to intercept all calls to closePortal to keep coords at null & window resize events
         // figure out where to put the menu
@@ -60,6 +61,7 @@ export default class MenuContainer extends Component {
     return (
       <Menu
         {...this.props}
+        focusOnMount
         coords={this.state.coords}
         toggle={smartToggle}
       />
