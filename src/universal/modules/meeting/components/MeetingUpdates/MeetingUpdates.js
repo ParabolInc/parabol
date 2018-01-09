@@ -9,6 +9,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import withStyles from 'universal/styles/withStyles';
 import {MEETING} from 'universal/utils/constants';
+import getProjectById from 'universal/utils/getProjectById';
 
 class MeetingUpdates extends Component {
   state = {projects: {}};
@@ -41,7 +42,7 @@ class MeetingUpdates extends Component {
       localPhaseItem,
       showMoveMeetingControls,
       styles,
-      viewer: {team: {teamMembers}}
+      viewer: {team: {teamMembers}, projects: allProjects}
     } = this.props;
     const {projects} = this.state;
     const self = teamMembers.find((m) => m.isSelf);
@@ -70,6 +71,7 @@ class MeetingUpdates extends Component {
           <div className={css(styles.body)}>
             <ProjectColumns
               alignColumns="center"
+              getProjectById={getProjectById(allProjects)}
               isMyMeetingSection={isMyMeetingSection}
               myTeamMemberId={myTeamMemberId}
               projects={projects}
