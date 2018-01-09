@@ -20,7 +20,6 @@ const MenuItem = (props) => {
     styles,
     title
   } = props;
-  const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
     if (closePortal) {
       closePortal();
@@ -56,15 +55,21 @@ const MenuItem = (props) => {
       src={avatar}
     />);
   return (
-    <PlainButton role="menuitem" extraStyles={styles.button} title={titleStr} onClick={handleClick}>
+    <div>
       {hr === 'before' && <hr className={css(styles.hr)} />}
-      <div className={rootStyles}>
+      <PlainButton
+        role="menuitem"
+        tabIndex="-1"
+        title={titleStr}
+        extraStyles={{...styles.root, ...(isActive && styles.active)}}
+        onClick={handleClick}
+      >
         {avatar && makeAvatar()}
         {!avatar && icon && makeIcon()}
         {labelEl}
-      </div>
+      </PlainButton>
       {hr === 'after' && <hr className={css(styles.hr)} />}
-    </PlainButton>
+    </div>
   );
 };
 
@@ -103,6 +108,7 @@ const styleThunk = () => ({
     cursor: 'pointer',
     display: 'flex',
     transition: `background-color ${ui.transition[0]}`,
+    width: '100%',
 
     ':hover': {
       ...hoverFocusStyles
@@ -123,10 +129,6 @@ const styleThunk = () => ({
     ':focus': {
       ...activeHoverFocusStyles
     }
-  },
-
-  button: {
-    width: '100%'
   },
 
   label: {

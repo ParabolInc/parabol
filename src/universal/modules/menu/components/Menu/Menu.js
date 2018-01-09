@@ -1,4 +1,6 @@
-import PropTypes from 'prop-types';
+// @flow
+import type {Node} from 'react';
+
 import React, { Children, cloneElement, Component } from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -9,40 +11,95 @@ import portal from 'react-portal-hoc';
 import Spinner from '../../../spinner/components/Spinner/Spinner';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-class Menu extends Component {
+type Props = {
+  children?: Node,
+  closePortal: () => void,
+  coords: Object,
+  focusOnMount?: boolean,
+  isLoaded: boolean,
+  itemFactory: () => Node[],
+  label: string,
+  menuOrientation: 'left' | 'right',
+  maxHeight: string,
+  menuWidth: string,
+  styles: Object,
+  toggle: any,
+  verticalAlign: 'middle' | 'top',
+  zIndex: string
+};
+
+class Menu extends Component<Props> {
   static defaultProps = {
     menuOrientation: 'left',
     verticalAlign: 'middle'
   };
 
-  static propTypes = {
-    children: PropTypes.any,
-    closePortal: PropTypes.func,
-    coords: PropTypes.object,
-    focusOnMount: PropTypes.bool,
-    isLoaded: PropTypes.bool,
-    itemFactory: PropTypes.func,
-    label: PropTypes.string,
-    menuOrientation: PropTypes.oneOf([
-      'left',
-      'right'
-    ]),
-    maxHeight: PropTypes.string,
-    menuWidth: PropTypes.string,
-    styles: PropTypes.object,
-    toggle: PropTypes.any,
-    verticalAlign: PropTypes.oneOf([
-      'middle',
-      'top'
-    ]),
-    zIndex: PropTypes.string
-  };
-
   componentDidMount() {
     if (this.props.focusOnMount && this.menuEl) {
+      this.previouslyFocusedEl = document.activeElement;
       this.menuEl.focus();
     }
   }
+
+  menuEl: ?HTMLElement;
+  previouslyFocusedEl: ?HTMLElement;
+
+  focusItem = (indexDifference) => {
+    if (!this.menuEl) {
+      return;
+    }
+    const menuItemEls = Array.from(this.menuEl.querySelectorAll('[role="menuitem"]'));
+    if (!menuItemEls.length) {
+      return;
+    }
+    const currentFocusIndex = menuItemEls.findIndex((itemEl) => itemEl === document.activeElement);
+    const nextFocusIndex = currentFocusIndex + indexDifference;
+    if (currentFocusIndex < 0) {
+      menuItemEls[0].focus();
+      return;
+    }
+    if (nextFocusIndex >= 0 && nextFocusIndex < menuItemEls.length) {
+      menuItemEls[nextFocusIndex].focus();
+    }
+  };
+
+  focusNextItem = () => {
+    this.focusItem(1);
+  };
+
+  focusPreviousItem = () => {
+    this.focusItem(-1);
+  };
+
+  saveMenuEl = (menuEl) => {
+    this.menuEl = menuEl;
+  };
+
+  restorePreviousFocus = () => {
+    if (this.previouslyFocusedEl) {
+      this.previouslyFocusedEl.focus();
+    }
+  };
+
+  handleKeyDown = (event) => {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.focusNextItem();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.focusPreviousItem();
+        break;
+      case 'Tab':
+      case 'Escape':
+        this.props.closePortal();
+        this.restorePreviousFocus();
+        break;
+      default:
+        break;
+    }
+  };
 
   render() {
     const {
@@ -62,7 +119,13 @@ class Menu extends Component {
     const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
     return (
       <div className={css(styles.menuBlock)} style={menuBlockStyle}>
-        <div role="menu" className={css(styles.menu)} tabIndex="-1" ref={(menuEl) => { this.menuEl = menuEl; }}>
+        <div
+          className={css(styles.menu)}
+          role="menu"
+          tabIndex="-1"
+          onKeyDown={this.handleKeyDown}
+          ref={this.saveMenuEl}
+        >
           {label && <div className={css(styles.label)}>{label}</div>}
           {kids}
           <ReactCSSTransitionGroup
