@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import {TEAM_DASH} from 'universal/utils/constants';
+import getProjectById from 'universal/utils/getProjectById';
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props;
@@ -30,9 +31,7 @@ class TeamColumnsContainer extends Component {
   }
 
   getProjectById = (projectId) =>
-    this.props.viewer.projects.edges
-      .map(({ node }) => node)
-      .find(({ id }) => projectId === id);
+    getProjectById(this.props.viewer.projects, projectId);
 
   filterByTeamMember(props) {
     const {teamMemberFilterId, viewer: {projects, team: {teamMembers}}} = props;
