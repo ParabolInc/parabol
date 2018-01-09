@@ -26,9 +26,6 @@ class MeetingUpdates extends Component {
     }
   }
 
-  getProjectById = (projectId) =>
-    getProjectById(this.props.viewer.projects, projectId);
-
   filterProjects(props) {
     const {localPhaseItem, setUpdateUserHasProjects, viewer: {projects, team: {teamMembers}}} = props;
     const currentTeamMember = teamMembers[localPhaseItem - 1];
@@ -45,7 +42,7 @@ class MeetingUpdates extends Component {
       localPhaseItem,
       showMoveMeetingControls,
       styles,
-      viewer: {team: {teamMembers}}
+      viewer: {team: {teamMembers}, projects: allProjects}
     } = this.props;
     const {projects} = this.state;
     const self = teamMembers.find((m) => m.isSelf);
@@ -74,7 +71,7 @@ class MeetingUpdates extends Component {
           <div className={css(styles.body)}>
             <ProjectColumns
               alignColumns="center"
-              getProjectById={this.getProjectById}
+              getProjectById={getProjectById(allProjects)}
               isMyMeetingSection={isMyMeetingSection}
               myTeamMemberId={myTeamMemberId}
               projects={projects}

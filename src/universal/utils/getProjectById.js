@@ -10,7 +10,7 @@ type PaginatedProjectsArray = {
   edges: Array<{ node: Project }>
 };
 
-const getProjectById = (projects: PaginatedProjectsArray, projectId: ProjectID) =>
+const getProjectById = (projects: PaginatedProjectsArray) => (projectId: ProjectID): ?Project =>
   projects.edges
     .map(({ node }) => node)
     .find(({ id }) => projectId === id);
