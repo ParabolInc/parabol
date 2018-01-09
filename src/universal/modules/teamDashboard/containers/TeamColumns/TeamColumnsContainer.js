@@ -30,9 +30,6 @@ class TeamColumnsContainer extends Component {
     }
   }
 
-  getProjectById = (projectId) =>
-    getProjectById(this.props.viewer.projects, projectId);
-
   filterByTeamMember(props) {
     const {teamMemberFilterId, viewer: {projects, team: {teamMembers}}} = props;
     const edges = teamMemberFilterId ?
@@ -56,11 +53,11 @@ class TeamColumnsContainer extends Component {
   }
 
   render() {
-    const {myTeamMemberId, teamMemberFilterId} = this.props;
+    const {myTeamMemberId, teamMemberFilterId, viewer: { projects: allProjects }} = this.props;
     const {projects} = this.state;
     return (
       <ProjectColumns
-        getProjectById={this.getProjectById}
+        getProjectById={getProjectById(allProjects)}
         myTeamMemberId={myTeamMemberId}
         projects={projects}
         teamMemberFilterId={teamMemberFilterId}
