@@ -4,14 +4,22 @@ import React from 'react';
 
 import withStyles from 'universal/styles/withStyles';
 
-const PlainButton = ({styles, ...props}) => (
-  <button className={css(styles.root)} {...props}>
+const PlainButton = ({styles, extraStyles, ...props}) => (
+  <button
+    className={
+      extraStyles
+        ? css(styles.root, extraStyles)
+        : css(styles.root)
+    }
+    {...props}
+  >
     {props.children}
   </button>
 );
 
 PlainButton.propTypes = {
   children: PropTypes.node,
+  extraStyles: PropTypes.object,
   styles: PropTypes.object.isRequired
 };
 

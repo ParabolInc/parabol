@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
@@ -55,15 +56,15 @@ const MenuItem = (props) => {
       src={avatar}
     />);
   return (
-    <div title={titleStr}>
+    <PlainButton role="menuitem" extraStyles={styles.button} title={titleStr} onClick={handleClick}>
       {hr === 'before' && <hr className={css(styles.hr)} />}
-      <div className={rootStyles} onClick={handleClick}>
+      <div className={rootStyles}>
         {avatar && makeAvatar()}
         {!avatar && icon && makeIcon()}
         {labelEl}
       </div>
       {hr === 'after' && <hr className={css(styles.hr)} />}
-    </div>
+    </PlainButton>
   );
 };
 
@@ -122,6 +123,10 @@ const styleThunk = () => ({
     ':focus': {
       ...activeHoverFocusStyles
     }
+  },
+
+  button: {
+    width: '100%'
   },
 
   label: {

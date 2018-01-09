@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
+// @flow
 import React from 'react';
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
@@ -12,26 +13,7 @@ const iconStyle = {
   paddingTop: '1px'
 };
 
-const AddProjectButton = (props) => {
-  const {styles, toggleLabel, onClick} = props;
-  return (
-    <FontAwesome
-      className={css(styles.addIcon)}
-      name="plus-square-o"
-      onClick={onClick}
-      style={iconStyle}
-      title={`Add a Project set to ${toggleLabel}`}
-    />
-  );
-};
-
-AddProjectButton.propTypes = {
-  styles: PropTypes.object,
-  toggleLabel: PropTypes.string,
-  onClick: PropTypes.func
-};
-
-const styleThunk = () => ({
+const _styles = {
   addIcon: {
     ':hover': {
       cursor: 'pointer',
@@ -42,6 +24,32 @@ const styleThunk = () => ({
       opacity: '.5'
     }
   }
-});
+};
+
+type Props = {
+  'aria-haspopup'?: bool | string,
+  label: string,
+  onClick: () => void,
+  styles: typeof _styles,
+};
+
+const AddProjectButton = (props: Props) => {
+  const {styles, label, onClick} = props;
+  return (
+    <PlainButton
+      onClick={onClick}
+      title={`Add a Project to "${label}"`}
+      aria-haspopup={props['aria-haspopup']}
+    >
+      <FontAwesome
+        className={css(styles.addIcon)}
+        name="plus-square-o"
+        style={iconStyle}
+      />
+    </PlainButton>
+  );
+};
+
+const styleThunk = () => _styles;
 
 export default withStyles(styleThunk)(AddProjectButton);
