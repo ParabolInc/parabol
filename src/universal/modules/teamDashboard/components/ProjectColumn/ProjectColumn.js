@@ -171,9 +171,10 @@ class ProjectColumn extends Component {
       label: team.name,
       handleClick: () => {
         const newProject = {
+          sortOrder,
           status,
-          teamMemberId: `${userId}::${team.id}`,
-          sortOrder
+          teamId: team.id,
+          userId
         };
         CreateProjectMutation(atmosphere, newProject);
       }
