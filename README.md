@@ -207,6 +207,7 @@ Authored and maintained by [Parabol](http://parabol.co).
 * [jordanh](https://github.com/jordanh)
 * [ackernaut](https://github.com/ackernaut)
 * [mattkrick](https://github.com/mattkrick)
+* [dan-f](https://github.com/dan-f)
 
 ### License
 
