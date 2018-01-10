@@ -1,5 +1,6 @@
 // @flow
 import type {Project} from 'universal/types/project';
+import type {CreateProjectMutationVariables} from 'universal/mutations/CreateProjectMutation';
 
 import {css} from 'aphrodite-local-styles/no-important';
 import React, {Component} from 'react';
@@ -69,15 +70,18 @@ class MeetingAgendaCards extends Component<Props> {
     const sortOrder = sortOrderBetween(
       maybeLastProject, null, null, false
     );
-    const newProject = {
-      content,
-      status: ACTIVE,
-      sortOrder,
-      agendaId,
-      userId,
-      teamId
+    const gqlArgs = {
+      newProject: {
+        content,
+        status: ACTIVE,
+        sortOrder,
+        agendaId,
+        userId,
+        teamId
+      },
+      area: MEETING
     };
-    CreateProjectMutation(atmosphere, newProject, MEETING);
+    CreateProjectMutation(atmosphere, gqlArgs);
   }
 
   render() {

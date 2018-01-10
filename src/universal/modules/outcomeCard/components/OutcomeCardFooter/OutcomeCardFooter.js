@@ -60,7 +60,7 @@ class OutcomeCardFooter extends Component {
       id: projectId,
       content: nextContent
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateProjectMutation(atmosphere, {updatedProject, area});
   };
 
   render() {
@@ -326,7 +326,7 @@ export default createFragmentContainer(
       integration {
         service
       }
-      
+
       tags
       team {
         teamId: id

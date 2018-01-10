@@ -1,4 +1,16 @@
-import {commitMutation} from 'react-relay';
+// @flow
+import type {
+  Environment,
+  RecordProxy,
+  RecordSourceSelectorProxy
+} from 'relay-runtime';
+import type {
+  CreateProjectMutationResponse,
+  CreateProjectMutationVariables
+} from './__generated__/CreateProjectMutation.graphql';
+import type {UserID} from 'universal/types/user';
+
+import {commitMutation, graphql} from 'react-relay';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleEditProject from 'universal/mutations/handlers/handleEditProject';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
@@ -9,6 +21,7 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 import getOptimisticProjectEditor from 'universal/utils/relay/getOptimisticProjectEditor';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
+export type {CreateProjectMutationVariables};
 
 graphql`
   fragment CreateProjectMutation_project on CreateProjectPayload {
@@ -51,7 +64,12 @@ const mutation = graphql`
   }
 `;
 
-export const createProjectProjectUpdater = (payload, store, viewerId, isEditing) => {
+export const createProjectProjectUpdater = (
+  payload: RecordProxy,
+  store: RecordSourceSelectorProxy,
+  viewerId: UserID,
+  isEditing: boolean
+) => {
   const project = payload.getLinkedRecord('project');
   if (!project) return;
   const projectId = project.getValue('id');
@@ -61,7 +79,12 @@ export const createProjectProjectUpdater = (payload, store, viewerId, isEditing)
   handleUpsertProjects(project, store, viewerId);
 };
 
-export const createProjectNotificationUpdater = (payload, store, viewerId, options) => {
+export const createProjectNotificationUpdater = (
+  payload: RecordProxy,
+  store: RecordSourceSelectorProxy,
+  viewerId: UserID,
+  options: Object // TODO: document this type
+) => {
   const notification = payload.getLinkedRecord('involvementNotification');
   if (!notification) return;
   handleAddNotifications(notification, store, viewerId);
@@ -72,7 +95,12 @@ export const createProjectNotificationUpdater = (payload, store, viewerId, optio
   }
 };
 
-const CreateProjectMutation = (environment, newProject, area, onError, onCompleted) => {
+const CreateProjectMutation = (
+  environment: Environment,
+  {newProject, area}: CreateProjectMutationVariables,
+  onError: ?(error: Error) => void,
+  onCompleted: ?(response: CreateProjectMutationResponse, errors: ?Array<Error>) => void
+) => {
   const {viewerId} = environment;
   const isEditing = !newProject.content;
   return commitMutation(environment, {
