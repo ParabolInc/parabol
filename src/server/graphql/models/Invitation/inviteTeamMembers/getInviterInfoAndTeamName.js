@@ -10,6 +10,7 @@ export default function getInviterInfoAndTeamName(teamId, userId) {
   return r.table('User').get(userId)
     .pluck('id', 'email', 'picture', 'preferredName')
     .merge((doc) => ({
+      inviterUserId: doc('id'),
       inviterAvatar: doc('picture'),
       inviterEmail: doc('email'),
       inviterName: doc('preferredName'),

@@ -10,4 +10,4 @@ export default async function softenDurability() {
   await Promise.all(promises);
   console.log('Table durability set to "soft"');
   process.exit();
-};
+}

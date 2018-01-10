@@ -1,17 +1,14 @@
+import getRethink from 'server/database/rethinkDriver';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
-import getPubSub from 'server/utils/getPubSub';
-import publishNotifications from 'server/utils/publishNotifications';
 import {APPROVED, PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
-import {INVITEE_APPROVED, NOTIFICATIONS_CLEARED, REQUEST_NEW_USER} from 'universal/utils/constants';
-import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues';
-import getRethink from 'server/database/rethinkDriver';
+import {INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
-const approveToOrg = async (email, orgId, userId, mutatorId) => {
+const approveToOrg = async (email, orgId, userId) => {
   const r = getRethink();
   const now = new Date();
   // get all notifications for this email to join this org
-  const notifications = await r.table('Notification')
+  const removedNotifications = await r.table('Notification')
     .getAll(userId, {index: 'userIds'})
     .filter({
       orgId,
@@ -20,18 +17,16 @@ const approveToOrg = async (email, orgId, userId, mutatorId) => {
     })
     .delete({returnChanges: true})('changes')('old_val')
     .default([]);
-  if (notifications.length === 0) {
-    throw new Error('Notification not found!');
+  if (removedNotifications.length === 0) {
+    throw new Error('Notification not found!', email, orgId, userId);
   }
   // RESOLUTION
   // send 1 team invite per notification
-
-  const deletedIds = notifications.map(({id}) => id);
-  const inviterUserIds = Array.from(notifications.reduce((userIds, notification) => {
+  const inviterUserIds = Array.from(removedNotifications.reduce((userIds, notification) => {
     return userIds.add(notification.inviterUserId);
   }, new Set()));
 
-  const teamIds = notifications.map(({teamId}) => teamId);
+  const teamIds = removedNotifications.map(({teamId}) => teamId);
   const {inviterUsers, teams} = await r({
     inviterUsers: r.table('User')
       .getAll(r.args(inviterUserIds), {index: 'id'})
@@ -42,10 +37,11 @@ const approveToOrg = async (email, orgId, userId, mutatorId) => {
       .pluck('id', 'name')
       .coerceTo('array')
   });
-  const inviters = notifications.map((notification) => {
+  const inviters = removedNotifications.map((notification) => {
     const inviterUser = inviterUsers.find(({id}) => id === notification.inviterUserId);
     const team = teams.find(({id}) => id === notification.teamId);
     return {
+      inviterUserId: inviterUser.id,
       inviterAvatar: inviterUser.picture,
       inviterEmail: inviterUser.email,
       inviterName: inviterUser.preferredName,
@@ -69,43 +65,46 @@ const approveToOrg = async (email, orgId, userId, mutatorId) => {
       teamName
     };
   });
-  const inviteeApprovedNotificationsByUserId = {};
-  inviteeApprovedNotifications.forEach((notification) => {
-    const inviterUserId = notification.userIds[0];
-    inviteeApprovedNotificationsByUserId[inviterUserId] = inviteeApprovedNotificationsByUserId[inviterUserId] || [];
-    inviteeApprovedNotificationsByUserId[inviterUserId].push(notification);
-  });
+
   // tell the inviters that their friend was approved
   // send the invitee a series of team invites
-  const {inviteeUser} = await r({
+  const {inviteeUser, removedOrgApprovals} = await r({
     insertInviteeApproved: r.table('Notification').insert(inviteeApprovedNotifications),
-    approveToOrg: r.table('OrgApproval')
+    removedOrgApprovals: r.table('OrgApproval')
       .getAll(email, {index: 'email'})
       .filter({orgId, status: PENDING, isActive: true})
       .update({
         status: APPROVED,
         approvedBy: userId,
         updatedAt: now
-      }),
+      }, {returnChanges: true})('changes')('new_val')
+      .default([]),
     inviteeUser: r.table('User').getAll(email, {index: 'email'}).nth(0).default(null)
   });
 
   const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
 
-  const teamInvitesToAdd = await Promise.all(inviters.map((inviter) => {
+  const sentTeamInvitations = await Promise.all(inviters.map((inviter) => {
     return sendTeamInvitations(invitees, inviter);
   }));
 
-  // TEAM_INVITEs + INVITEE_APPROVEDs
-  const notificationsToAdd = mergeObjectsWithArrValues(...teamInvitesToAdd, inviteeApprovedNotificationsByUserId);
-  publishNotifications({notificationsToAdd});
+  const newInvitations = sentTeamInvitations.reduce((arr, upserts) => {
+    arr.push(...upserts.newInvitations);
+    return arr;
+  }, []);
 
-  // keep this separate so we can include the mutatorId
-  const notificationsCleared = {deletedIds};
-  notifications[0].userIds.forEach((notifiedUserId) => {
-    getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${notifiedUserId}`, {notificationsCleared, mutatorId});
-  });
-  return notificationsCleared;
+  const teamInviteNotifications = sentTeamInvitations.reduce((arr, upserts) => {
+    arr.push(...upserts.teamInviteNotifications);
+    return arr;
+  }, []);
+
+  return {
+    removedRequestNotifications: removedNotifications,
+    removedOrgApprovals,
+    newInvitations,
+    inviteeApprovedNotifications,
+    teamInviteNotifications
+  };
 };
 
 export default approveToOrg;

@@ -7,8 +7,10 @@ const generateMeetingRoute = (_nextPhaseItem, _nextPhase, props) => {
   let nextPhaseItem = _nextPhaseItem;
   let nextPhaseInfo = actionMeeting[nextPhase];
 
-  const {isFacilitating, team} = props;
-  const {meetingPhase} = team;
+  const {myTeamMemberId, viewer} = props;
+  const {team} = viewer;
+  const {activeFacilitator, meetingPhase} = team;
+  const isFacilitating = myTeamMemberId === activeFacilitator;
   const meetingPhaseInfo = actionMeeting[meetingPhase];
   const maxIndex = isFacilitating ? meetingPhaseInfo.index + 1 : meetingPhaseInfo.index;
   if (nextPhaseInfo.index > maxIndex) return undefined;
@@ -24,10 +26,8 @@ const generateMeetingRoute = (_nextPhaseItem, _nextPhase, props) => {
       nextPhaseItem = undefined;
     }
     if (nextPhaseInfo.items) {
-      const {arrayName, countName} = nextPhaseInfo.items;
-      const count = props[countName];
-      const arr = props[arrayName];
-      if (count === null || arr.length < count) return undefined;
+      const {arrayName} = nextPhaseInfo.items;
+      const arr = team[arrayName];
       if (arr.length === 0 || nextPhaseItem > arr.length) {
         // if there are no agenda items or they want to go to agenda item 3 of 2, goto next
         nextPhase = nextPhaseInfo.next;

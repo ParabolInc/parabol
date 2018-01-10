@@ -26,7 +26,7 @@ const TeamArchiveSqueezeRoot = ({atmosphere, orgId, projectsAvailableCount, team
       variables={{teamId, first: 40}}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear style={{overflow: 'hidden'}}>
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">
@@ -52,7 +52,6 @@ const TeamArchiveSqueezeRoot = ({atmosphere, orgId, projectsAvailableCount, team
 
 TeamArchiveSqueezeRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  isBillingLeader: PropTypes.bool,
   orgId: PropTypes.string.isRequired,
   projectsAvailableCount: PropTypes.number.isRequired,
   teamId: PropTypes.string.isRequired

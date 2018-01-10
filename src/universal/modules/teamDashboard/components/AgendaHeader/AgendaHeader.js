@@ -1,15 +1,20 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import {DashSectionHeading} from 'universal/components/Dashboard';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import ToggleAgendaListMutation from 'universal/mutations/ToggleAgendaListMutation';
 import ui from 'universal/styles/ui';
-import {cashay} from 'cashay';
+import withStyles from 'universal/styles/withStyles';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const AgendaHeader = (props) => {
-  const {hideAgenda, styles, teamId} = props;
+  const {atmosphere, hideAgenda, styles, submitMutation, submitting, onError, onCompleted, teamId} = props;
   const toggleHide = () => {
-    cashay.mutate('toggleAgendaList', {variables: {teamId}});
+    if (!submitting) {
+      submitMutation();
+      ToggleAgendaListMutation(atmosphere, teamId, onError, onCompleted);
+    }
   };
   const label = `Agenda Queue${hideAgenda ? '...' : ''}`;
   return (
@@ -20,9 +25,14 @@ const AgendaHeader = (props) => {
 };
 
 AgendaHeader.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   hideAgenda: PropTypes.bool,
   styles: PropTypes.object,
-  teamId: PropTypes.string
+  teamId: PropTypes.string,
+  submitting: PropTypes.bool,
+  submitMutation: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({
@@ -35,4 +45,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(AgendaHeader);
+export default withMutationProps(withAtmosphere(withStyles(styleThunk)(AgendaHeader)));

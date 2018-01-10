@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`rejectOrgApproval rejects the invitee from all teams that wanted them 1`] = `
+Object {
+  "notification": Array [],
+  "orgApproval": Array [
+    Object {
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "deniedBy": 1,
+      "email": 2,
+      "id": 0,
+      "isActive": true,
+      "orgId": 3,
+      "status": "DENIED",
+      "teamId": 4,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`rejectOrgApproval rejects the invitee from all teams that wanted them 2`] = `
+Object {
+  "notification": Array [
+    Object {
+      "channelId": 1,
+      "message": Object {
+        "data": Object {
+          "deniedNotificationIds": Array [
+            11,
+          ],
+          "removedOrgApprovalIds": Array [
+            12,
+          ],
+          "removedRequestNotifications": "UNTESTED",
+          "type": "RejectOrgApprovalPayload",
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 5,
+      "message": Object {
+        "data": Object {
+          "deniedNotificationIds": Array [
+            11,
+          ],
+          "removedOrgApprovalIds": Array [
+            12,
+          ],
+          "removedRequestNotifications": "UNTESTED",
+          "type": "RejectOrgApprovalPayload",
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 5,
+      "message": Object {
+        "data": Object {
+          "deniedNotificationIds": Array [
+            11,
+          ],
+          "removedOrgApprovalIds": Array [
+            12,
+          ],
+          "removedRequestNotifications": "UNTESTED",
+          "type": "RejectOrgApprovalPayload",
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+  ],
+  "orgApproval": Array [
+    Object {
+      "channelId": 4,
+      "message": Object {
+        "data": Object {
+          "deniedNotificationIds": Array [
+            11,
+          ],
+          "removedOrgApprovalIds": Array [
+            12,
+          ],
+          "removedRequestNotifications": "UNTESTED",
+          "teamId": 4,
+          "type": "RejectOrgApprovalPayload",
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+  ],
+}
+`;

@@ -11,8 +11,7 @@ export default {
   [CHECKIN]: {
     index: 1,
     items: {
-      countName: 'teamMemberCount',
-      arrayName: 'members'
+      arrayName: 'teamMembers'
     },
     name: 'Social Check-In',
     next: UPDATES,
@@ -22,8 +21,7 @@ export default {
   [UPDATES]: {
     index: 2,
     items: {
-      countName: 'teamMemberCount',
-      arrayName: 'members'
+      arrayName: 'teamMembers'
     },
     name: 'Solo Updates',
     next: FIRST_CALL,
@@ -40,8 +38,7 @@ export default {
   [AGENDA_ITEMS]: {
     index: 4,
     items: {
-      countName: 'agendaCount',
-      arrayName: 'agenda'
+      arrayName: 'agendaItems'
     },
     name: 'Team Agenda',
     next: LAST_CALL,

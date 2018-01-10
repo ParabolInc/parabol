@@ -1,9 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import {Team} from 'server/graphql/models/Team/teamSchema';
+import Team from 'server/graphql/types/Team';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
+import Project from 'server/graphql/types/Project';
 import ProjectInvolvementType from 'server/graphql/types/ProjectInvolvementType';
-import RelayProject from 'server/graphql/types/RelayProject';
 import TeamMember from 'server/graphql/types/TeamMember';
 
 const NotifyProjectInvolves = new GraphQLObjectType({
@@ -21,12 +20,10 @@ const NotifyProjectInvolves = new GraphQLObjectType({
       description: 'The projectId that now involves the userId'
     },
     project: {
-      type: RelayProject,
+      type: Project,
       description: 'The project that now involves the userId',
-      resolve: ({projectId}) => {
-        // FIXME after merging in the dataloader PR
-        const r = getRethink();
-        return r.table('Project').get(projectId).run();
+      resolve: ({projectId}, args, {dataLoader}) => {
+        return dataLoader.get('projects').load(projectId);
       }
     },
     changeAuthorId: {
@@ -36,31 +33,18 @@ const NotifyProjectInvolves = new GraphQLObjectType({
     changeAuthor: {
       type: TeamMember,
       description: 'The TeamMember of the person that made the change',
-      resolve: ({changeAuthorId}) => {
-        // FIXME after merging in the dataloader PR
-        const r = getRethink();
-        return r.table('TeamMember').get(changeAuthorId).run();
+      resolve: ({changeAuthorId}, args, {dataLoader}) => {
+        return dataLoader.get('teamMembers').load(changeAuthorId);
       }
     },
-    // inviterName: {
-    //  type: new GraphQLNonNull(GraphQLString),
-    //  description: 'The name of the person that invited them onto the team'
-    // },
-    // teamName: {
-    //  type: new GraphQLNonNull(GraphQLString),
-    //  description: 'The name of the team the user is joining'
-    // },
     teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The teamId the user is joining'
+      type: new GraphQLNonNull(GraphQLID)
     },
     team: {
       type: Team,
       description: 'The team the project is on',
-      resolve: ({teamId}) => {
-        // FIXME after merging in the dataloader PR
-        const r = getRethink();
-        return r.table('Team').get(teamId).run();
+      resolve: ({teamId}, args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId);
       }
     }
   })

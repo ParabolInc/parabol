@@ -24,7 +24,7 @@ const InvoiceRoot = ({atmosphere, match: {params: {invoiceId}}}) => {
       variables={{invoiceId}}
       render={({error, props: queryProps}) => {
         return (
-          <TransitionGroup appear style={{overflow: 'hidden'}}>
+          <TransitionGroup appear component={null}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {queryProps && <AnimatedFade key="1">
               <Invoice viewer={queryProps.viewer} />

@@ -1,18 +1,19 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import Row from 'universal/components/Row/Row';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const PaymentRejected = (props) => {
   const {history, styles, notification} = props;
-  const {last4, brand, orgId} = notification;
+  const {organization: {orgId, creditCard: {last4, brand}}} = notification;
   const addBilling = () => {
     history.push(`/me/organizations/${orgId}`);
   };
@@ -43,11 +44,7 @@ const PaymentRejected = (props) => {
 PaymentRejected.propTypes = {
   history: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  notification: PropTypes.shape({
-    brand: PropTypes.string.isRequired,
-    last4: PropTypes.string.isRequired,
-    orgId: PropTypes.string.isRequired
-  })
+  notification: PropTypes.object.isRequired
 };
 
 const avatarPlaceholderSize = '2.75rem';
@@ -89,6 +86,20 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(PaymentRejected)
+export default createFragmentContainer(
+  withRouter(
+    withStyles(styleThunk)(PaymentRejected)
+  ),
+  graphql`
+    fragment PaymentRejected_notification on NotifyPaymentRejected {
+      notificationId: id
+      organization {
+        orgId: id
+        creditCard {
+          last4
+          brand
+        }
+      }
+    }
+  `
 );

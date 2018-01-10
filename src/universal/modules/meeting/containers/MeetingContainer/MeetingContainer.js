@@ -1,4 +1,3 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
 import React, {Component} from 'react';
@@ -6,149 +5,55 @@ import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
 import {connect} from 'react-redux';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {createFragmentContainer} from 'react-relay';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
+import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
 import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
 import MeetingCheckIn from 'universal/modules/meeting/components/MeetingCheckIn/MeetingCheckIn';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingMainHeader from 'universal/modules/meeting/components/MeetingMainHeader/MeetingMainHeader';
+import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
 import MeetingUpdatesPrompt from 'universal/modules/meeting/components/MeetingUpdatesPrompt/MeetingUpdatesPrompt';
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
-import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import electFacilitatorIfNone from 'universal/modules/meeting/helpers/electFacilitatorIfNone';
 import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeetingRoute';
-import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
-import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
+import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
+import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
+import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
+import UpdateAgendaItemMutation from 'universal/mutations/UpdateAgendaItemMutation';
 import {
-  AGENDA_ITEMS,
-  CHECKIN,
-  FIRST_CALL,
-  LAST_CALL,
-  LOBBY,
-  phaseArray,
-  SORT_STEP,
+  AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, SORT_STEP,
   UPDATES
 } from 'universal/utils/constants';
-import MeetingUpdatesContainer from '../MeetingUpdates/MeetingUpdatesContainer';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
-const meetingContainerQuery = `
-query{
-  team @live {
-    checkInGreeting {
-      content,
-      language
-    },
-    checkInQuestion,
-    id,
-    name,
-    meetingId,
-    activeFacilitator,
-    facilitatorPhase,
-    facilitatorPhaseItem,
-    meetingPhase,
-    meetingPhaseItem,
-    tier
-  }
-  teamMemberCount(teamId: $teamId)
-  teamMembers(teamId: $teamId) @live {
-    id
-    preferredName
-    picture
-    checkInOrder
-    isCheckedIn
-    isFacilitator,
-    isLead,
-    presence(teamId: $teamId) @live {
-      id
-      userId
-    },
-  }
-  agendaCount(teamId: $teamId)
-  agenda(teamId: $teamId) @live {
-    id
-    content
-    isComplete
-    sortOrder
-    teamMemberId
-  }
-}`;
-
-const perMeetingQueries = `
-query{
-  teamMemberCount(teamId: $teamId)
-  agendaCount(teamId: $teamId)
-}`;
-
-const mutationHandlers = {
-  updateAgendaItem: handleAgendaSort
-};
-
-const handleHotkey = (gotoFunc) => () => {
-  if (document.activeElement === document.body) gotoFunc();
-};
-
-const mapStateToProps = (state, props) => {
-  const {match: {params: {localPhase, localPhaseItem, teamId}}} = props;
-  const {sub: userId} = state.auth.obj;
-  const queryResult = cashay.query(meetingContainerQuery, {
-    op: 'meetingContainerQuery',
-    key: teamId,
-    mutationHandlers,
-    variables: {teamId},
-    sort: {
-      agenda: (a, b) => a.sortOrder - b.sortOrder,
-      teamMembers: (a, b) => a.checkInOrder - b.checkInOrder
-    },
-    resolveChannelKey: {
-      team: () => teamId,
-      presence: () => teamId
-    }
-  });
-  const {agenda, agendaCount, team, teamMemberCount} = queryResult.data;
-  const myTeamMemberId = `${userId}::${teamId}`;
-  return {
-    agenda,
-    agendaCount,
-    isFacilitating: myTeamMemberId === team.activeFacilitator,
-    localPhaseItem: localPhaseItem && Number(localPhaseItem),
-    localPhase,
-    members: resolveMeetingMembers(queryResult.data, userId),
-    team,
-    teamId,
-    teamMemberCount
-  };
+const handleHotkey = (gotoFunc, submitting) => () => {
+  if (!submitting && document.activeElement === document.body) gotoFunc();
 };
 
 let infiniteloopCounter = 0;
 let infiniteLoopTimer = Date.now();
 let infiniteTrigger = false;
 
-@socketWithPresence
-@connect(mapStateToProps)
-@dragDropContext(HTML5Backend)
-@withHotkey
-@withAtmosphere
-export default class MeetingContainer extends Component {
+class MeetingContainer extends Component {
   static propTypes = {
-    agenda: PropTypes.array.isRequired,
-    agendaCount: PropTypes.number,
+    atmosphere: PropTypes.object.isRequired,
     bindHotkey: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
-    isFacilitating: PropTypes.bool,
     localPhase: PropTypes.string,
     localPhaseItem: PropTypes.number,
-    members: PropTypes.array,
     match: PropTypes.shape({
       params: PropTypes.shape({
         localPhase: PropTypes.string,
@@ -156,40 +61,49 @@ export default class MeetingContainer extends Component {
         teamId: PropTypes.string.isRequired
       })
     }),
+    myTeamMemberId: PropTypes.string.isRequired,
     history: PropTypes.object,
-    team: PropTypes.object.isRequired,
+    viewer: PropTypes.shape({
+      team: PropTypes.object.isRequired
+    }).isRequired,
     teamId: PropTypes.string.isRequired,
-    teamMemberCount: PropTypes.number
+    userId: PropTypes.string.isRequired,
+    error: PropTypes.any,
+    submitting: PropTypes.bool,
+    submitMutation: PropTypes.func.isRequired,
+    onCompleted: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired
   };
 
-  componentWillMount() {
-    const {bindHotkey, teamId} = this.props;
-    handleRedirects({}, this.props);
-    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext));
-    bindHotkey('left', handleHotkey(this.gotoPrev));
-    bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
-  }
+  state = {updateUserHasProjects: null};
 
-  componentDidMount() {
-    const {agendaCount, teamId} = this.props;
-    // if we have stale count data (from a previous meeting) freshen it up!
-    if (agendaCount !== null) {
-      cashay.query(perMeetingQueries, {
-        op: 'meetingContainerMountQuery',
-        key: teamId,
-        mutationHandlers,
-        variables: {teamId},
-        forceFetch: true
-      });
-    }
+  componentWillMount() {
+    const {
+      atmosphere,
+      bindHotkey,
+      history,
+      teamId,
+      submitting
+    } = this.props;
+    this.unsafeRoute = !handleRedirects({}, this.props);
+    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
+    bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
+    bindHotkey('i c a n t h a c k i t', () => KillMeetingMutation(atmosphere, teamId, history));
+    this.electionTimer = setInterval(() => {
+      this.electFacilitatorIfNone();
+    }, 5000);
   }
 
   componentWillReceiveProps(nextProps) {
-    electFacilitatorIfNone(nextProps, this.props.members);
+    const {viewer: {team}, localPhase, localPhaseItem, myTeamMemberId} = nextProps;
+    const {activeFacilitator, id: teamId, facilitatorPhase, facilitatorPhaseItem} = team;
+    const {viewer: {team: oldTeam}} = this.props;
+    const {activeFacilitator: oldFacilitator} = oldTeam;
     // if promoted to facilitator, ensure the facilitator is where you are
-    const {isFacilitating, team: {id: teamId, facilitatorPhase, facilitatorPhaseItem}, localPhase, localPhaseItem} = nextProps;
     // check activeFacilitator to make sure the meeting has started & we've got all the data
-    if (this.props.team.activeFacilitator && !this.props.isFacilitating && isFacilitating) {
+    const wasFacilitating = myTeamMemberId === oldFacilitator;
+    const isFacilitating = myTeamMemberId === activeFacilitator;
+    if (isFacilitating && !wasFacilitating) {
       const variables = {teamId};
       if (facilitatorPhase !== localPhase) {
         variables.nextPhase = localPhase;
@@ -198,20 +112,23 @@ export default class MeetingContainer extends Component {
         variables.nextPhaseItem = localPhaseItem;
       }
       if (Object.keys(variables).length > 1) {
-        cashay.mutate('moveMeeting', {variables});
+        const {atmosphere, history, onError, onCompleted, submitMutation} = nextProps;
+        submitMutation();
+        MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
       }
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    const safeRoute = handleRedirects(this.props, nextProps);
-    if (safeRoute) {
+    this.unsafeRoute = !handleRedirects(this.props, nextProps);
+    if (!this.unsafeRoute) {
       return true;
     }
-    const {dispatch, isFacilitating, team: {id: teamId}} = this.props;
     // if we call history.push
-    if (safeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
+    if (this.unsafeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
+        const {dispatch, teamId, myTeamMemberId, viewer: {team: {activeFacilitator}}} = this.props;
+        const isFacilitating = myTeamMemberId === activeFacilitator;
         // if we're changing locations 10 times in a second, it's probably infinite
         if (isFacilitating) {
           const variables = {
@@ -221,7 +138,9 @@ export default class MeetingContainer extends Component {
             force: true
           };
           if (!infiniteTrigger) {
-            cashay.mutate('moveMeeting', {variables});
+            const {atmosphere, history, onError, onCompleted, submitMutation} = nextProps;
+            submitMutation();
+            MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
             infiniteTrigger = true;
           }
         }
@@ -241,41 +160,75 @@ export default class MeetingContainer extends Component {
     return false;
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.electionTimer);
+  }
+
+  setAgendaInputRef = (c) => {
+    this.agendaInputRef = c;
+  };
+
+  setUpdateUserHasProjects = (updateUserHasProjects) => {
+    if (updateUserHasProjects !== this.state.updateUserHasProjects) {
+      this.setState({updateUserHasProjects});
+    }
+  };
+
+  electFacilitatorIfNone() {
+    const {atmosphere, dispatch, viewer: {team: {activeFacilitator, teamMembers}}} = this.props;
+    if (!activeFacilitator) return;
+
+    const facilitator = teamMembers.find((m) => m.id === activeFacilitator);
+    if (!facilitator.isConnected && !facilitator.isSelf) {
+      const onlineMembers = teamMembers.filter((m) => m.isConnected || m.isSelf);
+      const callingMember = onlineMembers[0];
+      const nextFacilitator = onlineMembers.find((m) => m.isFacilitator) || callingMember;
+      if (callingMember.isSelf) {
+        PromoteFacilitatorMutation(atmosphere, {
+          facilitatorId: nextFacilitator.id,
+          disconnectedFacilitatorId: facilitator.id
+        }, dispatch);
+      }
+    }
+  }
+
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
     // if we try to go backwards on a place that doesn't have items
     if (!maybeNextPhaseItem && !maybeNextPhase) return;
     const {
-      isFacilitating,
       history,
       localPhase,
-      team,
+      myTeamMemberId,
+      viewer: {team},
       teamId
     } = this.props;
-    const {meetingPhase} = team;
+    const {activeFacilitator, meetingPhase} = team;
+    const isFacilitating = myTeamMemberId === activeFacilitator;
     const meetingPhaseInfo = actionMeeting[meetingPhase];
     const safeRoute = generateMeetingRoute(maybeNextPhaseItem, maybeNextPhase || localPhase, this.props);
     if (!safeRoute) return;
     const {nextPhase, nextPhaseItem} = safeRoute;
     const nextPhaseInfo = actionMeeting[nextPhase];
 
-    if (nextPhaseInfo.index <= meetingPhaseInfo.index) {
-      const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
-      history.push(pushURL);
-    }
-
     if (isFacilitating) {
-      const variables = {teamId};
+      const {atmosphere, localPhaseItem, onError, onCompleted, submitMutation} = this.props;
       if (!nextPhaseInfo.next) {
-        cashay.mutate('endMeeting', {variables: {teamId}});
-      } else {
+        EndMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
+      } else if (nextPhase !== localPhase || nextPhaseItem !== localPhaseItem) {
+        const variables = {teamId};
         if (nextPhase !== localPhase) {
           variables.nextPhase = nextPhase;
         }
         if (nextPhaseItem) {
           variables.nextPhaseItem = nextPhaseItem;
         }
-        cashay.mutate('moveMeeting', {variables});
+        if (Object.keys(variables).length === 1) return;
+        submitMutation();
+        MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted);
       }
+    } else if (nextPhaseInfo.index <= meetingPhaseInfo.index) {
+      const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
+      history.push(pushURL);
     }
   };
 
@@ -294,165 +247,210 @@ export default class MeetingContainer extends Component {
   };
 
   gotoAgendaItem = (idx) => async () => {
-    const {agenda, team: {id: teamId, facilitatorPhase}, isFacilitating} = this.props;
+    const {atmosphere, viewer: {team: {activeFacilitator, agendaItems, facilitatorPhase}}, myTeamMemberId} = this.props;
+    const isFacilitating = activeFacilitator === myTeamMemberId;
     const facilitatorPhaseInfo = actionMeeting[facilitatorPhase];
     const agendaPhaseInfo = actionMeeting[AGENDA_ITEMS];
-    const firstIncompleteIdx = agenda.findIndex((a) => a.isComplete === false);
+    const firstIncompleteIdx = agendaItems.findIndex((a) => a.isComplete === false);
     const nextItemIdx = firstIncompleteIdx + (facilitatorPhase === AGENDA_ITEMS ? 1 : 0);
     const shouldResort = facilitatorPhaseInfo.index >= agendaPhaseInfo.index && idx > nextItemIdx && firstIncompleteIdx > -1;
     if (isFacilitating && shouldResort) {
       // resort
-      const desiredItem = agenda[idx];
-      const nextItem = agenda[nextItemIdx];
-      const prevItem = agenda[nextItemIdx - 1];
-      const options = {
-        ops: {
-          agendaListAndInputContainer: teamId
-        },
-        variables: {
-          updatedAgendaItem: {
-            id: desiredItem.id,
-            sortOrder: prevItem ? (prevItem.sortOrder + nextItem.sortOrder) / 2 : nextItem.sortOrder - SORT_STEP
-          }
-        }
+      const desiredItem = agendaItems[idx];
+      const nextItem = agendaItems[nextItemIdx];
+      const prevItem = agendaItems[nextItemIdx - 1];
+      const updatedAgendaItem = {
+        id: desiredItem.id,
+        sortOrder: prevItem ? (prevItem.sortOrder + nextItem.sortOrder) / 2 : nextItem.sortOrder - SORT_STEP
       };
-      await cashay.mutate('updateAgendaItem', options);
-      this.gotoItem(nextItemIdx + 1, AGENDA_ITEMS);
+      const onCompleted = () => {
+        this.gotoItem(nextItemIdx + 1, AGENDA_ITEMS);
+      };
+      UpdateAgendaItemMutation(atmosphere, updatedAgendaItem, undefined, onCompleted);
     } else {
       this.gotoItem(idx + 1, AGENDA_ITEMS);
     }
   };
 
+  rejoinFacilitator = () => {
+    const {history, teamId, viewer: {team: {facilitatorPhase, facilitatorPhaseItem}}} = this.props;
+    const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+    history.push(pushURL);
+  };
+
   render() {
+    if (this.unsafeRoute) return <div />;
+
     const {
-      agenda,
-      isFacilitating,
       localPhase,
       localPhaseItem,
-      members,
-      team,
-      teamId,
-      history
+      myTeamMemberId,
+      viewer
     } = this.props;
+    const {team} = viewer;
     const {
+      activeFacilitator,
+      agendaItems,
       facilitatorPhase,
       facilitatorPhaseItem,
       meetingPhase,
-      meetingPhaseItem,
-      name: teamName
+      teamName,
+      teamMembers
     } = team;
-
-    // if we have a team.name, we have an initial subscription success to the team object
-    if (!teamName ||
-      members.length === 0
-      || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
-      return <LoadingView />;
-    }
+    const isFacilitating = activeFacilitator === myTeamMemberId;
 
     const inSync = isFacilitating || facilitatorPhase === localPhase &&
       // FIXME remove || when changing to relay. right now it's a null & an undefined
       (facilitatorPhaseItem === localPhaseItem || !facilitatorPhaseItem && !localPhaseItem);
-    const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
-      agenda.findIndex((a) => a.isComplete === false) + 1 : 0;
-    const rejoinFacilitator = () => {
-      const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-      history.push(pushURL);
-    };
 
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
-    const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, members, agenda);
+    const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, teamMembers, agendaItems);
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
     const showMoveMeetingControls = isFacilitating || isBehindMeeting;
-
-    const phaseStateProps = { // DRY
-      facilitatorPhaseItem,
-      localPhaseItem,
-      members,
-      onFacilitatorPhase: facilitatorPhase === localPhase,
-      team
-    };
+    const facilitatorName = getFacilitatorName(activeFacilitator, teamMembers);
 
     return (
       <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
         <Sidebar
-          agendaPhaseItem={agendaPhaseItem}
-          facilitatorPhase={facilitatorPhase}
-          facilitatorPhaseItem={facilitatorPhaseItem}
           gotoItem={this.gotoItem}
           gotoAgendaItem={this.gotoAgendaItem}
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           isFacilitating={isFacilitating}
-          meetingPhase={meetingPhase}
-          meetingPhaseItem={meetingPhaseItem}
-          teamName={teamName}
-          teamId={teamId}
+          setAgendaInputRef={this.setAgendaInputRef}
+          team={team}
         />
         <MeetingMain hasBoxShadow>
           <MeetingMainHeader>
             <MeetingAvatarGroup
-              avatars={members}
               gotoItem={this.gotoItem}
               gotoNext={this.gotoNext}
               isFacilitating={isFacilitating}
               localPhase={localPhase}
-              {...phaseStateProps}
+              localPhaseItem={localPhaseItem}
+              team={team}
             />
             {localPhase === UPDATES &&
             <MeetingUpdatesPrompt
+              agendaInputRef={this.agendaInputRef}
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
-              members={members}
+              updateUserHasProjects={this.state.updateUserHasProjects}
+              team={team}
             />
             }
           </MeetingMainHeader>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
+          {localPhase === LOBBY && <MeetingLobby team={team} />}
           {localPhase === CHECKIN &&
           <MeetingCheckIn
+            facilitatorName={facilitatorName}
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
+            isFacilitating={isFacilitating}
+            localPhaseItem={localPhaseItem}
             showMoveMeetingControls={showMoveMeetingControls}
-            {...phaseStateProps}
+            team={team}
           />
           }
           {localPhase === UPDATES &&
-          <MeetingUpdatesContainer
+          <MeetingUpdates
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
+            localPhaseItem={localPhaseItem}
+            setUpdateUserHasProjects={this.setUpdateUserHasProjects}
             showMoveMeetingControls={showMoveMeetingControls}
-            {...phaseStateProps}
+            viewer={viewer}
           />
           }
           {localPhase === FIRST_CALL &&
           <MeetingAgendaFirstCall
-            {...phaseStateProps}
+            facilitatorName={facilitatorName}
             gotoNext={this.gotoNext}
             hideMoveMeetingControls={hideMoveMeetingControls}
           />
           }
           {localPhase === AGENDA_ITEMS &&
           <MeetingAgendaItems
-            agendaItem={agenda[localPhaseItem - 1]}
-            isLast={localPhaseItem === agenda.length}
+            facilitatorName={facilitatorName}
             gotoNext={this.gotoNext}
-            localPhaseItem={localPhaseItem}
-            members={members}
-            team={team}
             hideMoveMeetingControls={hideMoveMeetingControls}
+            localPhaseItem={localPhaseItem}
+            viewer={viewer}
           />
           }
           {localPhase === LAST_CALL &&
-          <MeetingAgendaLastCallContainer
-            {...phaseStateProps}
+          <MeetingAgendaLastCall
+            facilitatorName={facilitatorName}
             gotoNext={this.gotoNext}
             hideMoveMeetingControls={hideMoveMeetingControls}
+            team={team}
           />
           }
           {!inSync &&
-          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
+          <RejoinFacilitatorButton onClickHandler={this.rejoinFacilitator} />
           }
         </MeetingMain>
       </MeetingLayout>
     );
   }
 }
+
+export default createFragmentContainer(
+  connect()(
+    socketWithPresence(
+      dragDropContext(HTML5Backend)(
+        withHotkey(
+          withAtmosphere(
+            withMutationProps(
+              MeetingContainer
+            )
+          )
+        )
+      )
+    )
+  ),
+  graphql`
+    fragment MeetingContainer_viewer on User {
+      team(teamId: $teamId) {
+        agendaItems {
+          id
+          isComplete
+        }
+        checkInGreeting {
+          content
+          language
+        }
+        checkInQuestion
+        id
+        teamName: name
+        meetingId
+        activeFacilitator
+        facilitatorPhase
+        facilitatorPhaseItem
+        meetingPhase
+        meetingPhaseItem
+        tier
+        teamMembers(sortBy: "checkInOrder") {
+          id
+          preferredName
+          picture
+          checkInOrder
+          isCheckedIn
+          isConnected
+          isFacilitator
+          isLead
+          isSelf
+          userId
+        }
+        ...MeetingAgendaLastCall_team
+        ...MeetingLobby_team
+        ...MeetingAvatarGroup_team
+        ...MeetingUpdatesPrompt_team
+        ...MeetingCheckIn_team
+        ...Sidebar_team
+      }
+      ...MeetingUpdates_viewer
+      ...MeetingAgendaItems_viewer
+    }
+  `
+);

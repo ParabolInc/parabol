@@ -1,14 +1,15 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import CreditCard from 'server/graphql/types/CreditCard';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import OrgUser from 'server/graphql/types/OrgUser';
+import {OrganizationMemberConnection} from 'server/graphql/types/OrganizationMember';
 import OrgUserCount from 'server/graphql/types/OrgUserCount';
 import TierEnum from 'server/graphql/types/TierEnum';
 import User from 'server/graphql/types/User';
-import {BILLING_LEADER} from 'universal/utils/constants';
 import {getUserId} from 'server/utils/authorization';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 
 const Organization = new GraphQLObjectType({
@@ -77,41 +78,49 @@ const Organization = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the organization was last updated'
     },
-    orgUsers: {
-      type: new GraphQLList(OrgUser),
-      description: 'The users that belong to this org',
-      resolve(source, args, {authToken}) {
-        const {orgUsers} = source;
-        if (orgUsers && Array.isArray(orgUsers)) {
-          const userId = getUserId(authToken);
-          const myOrgUser = orgUsers.find((user) => user.id === userId);
-          if (myOrgUser && myOrgUser.role === BILLING_LEADER) {
-            return orgUsers;
+    orgMembers: {
+      args: {
+        ...forwardConnectionArgs
+      },
+      type: OrganizationMemberConnection,
+      async resolve({id: orgId, orgUsers}, {first}, {dataLoader}) {
+        if (!Array.isArray(orgUsers)) return null;
+
+        // RESOLUTION
+        const limitedOrgUsers = orgUsers.slice(0, first);
+
+        const userIds = limitedOrgUsers.map(({id}) => id);
+        const users = await dataLoader.get('users').loadMany(userIds);
+        users.sort((a, b) => a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1);
+        const edges = users.map((user) => ({
+          cursor: user.preferredName.toLowerCase(),
+          node: {
+            userId: user.id,
+            orgId
           }
-        }
-        return null;
+        }));
+
+        const firstEdge = edges[0];
+        return {
+          edges,
+          pageInfo: {
+            endCursor: firstEdge && edges[edges.length - 1].cursor,
+            hasNextPage: false
+          }
+        };
       }
     },
     orgUserCount: {
       type: OrgUserCount,
       description: 'The count of active & inactive users',
       resolve: async (source) => {
-        const {orgUserCount, id} = source;
-        const r = getRethink();
-        if (orgUserCount) return orgUserCount;
-        return r.table('Organization').get(id)
-          .do((org) => {
-            return org('orgUsers')
-              .filter({inactive: true})
-              .count()
-              .default(0)
-              .do((inactiveUserCount) => {
-                return {
-                  activeUserCount: org('orgUsers').count().sub(inactiveUserCount),
-                  inactiveUserCount
-                };
-              });
-          });
+        const {orgUsers} = source;
+        if (!Array.isArray(orgUsers)) throw new Error('No orgUsers supplied!');
+        const inactiveUserCount = orgUsers.filter((orgUser) => orgUser.inactive).length;
+        return {
+          inactiveUserCount,
+          activeUserCount: orgUsers.length - inactiveUserCount
+        };
       }
     },
     /* GraphQL Sugar */

@@ -3,6 +3,7 @@ import emailTeamInvitations from 'server/safeMutations/emailTeamInvitations';
 import {APPROVED} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {TEAM_INVITE} from 'universal/utils/constants';
+import promiseAllObj from 'universal/utils/promiseAllObj';
 
 const maybeAutoApproveToOrg = (invitees, inviter) => {
   const r = getRethink();
@@ -23,13 +24,13 @@ const maybeAutoApproveToOrg = (invitees, inviter) => {
 };
 
 const sendTeamInvitations = async (invitees, inviter, inviteId) => {
-  if (invitees.length === 0) return [];
+  if (invitees.length === 0) return {newInvitations: [], updatedInvitations: [], teamInviteNotifications: []};
   const r = getRethink();
   const now = new Date();
-  const {orgId, inviterName, teamId, teamName} = inviter;
+  const {orgId, inviterName, inviterUserId, teamId, teamName} = inviter;
   const inviteeUsers = invitees.filter((invitee) => Boolean(invitee.userId));
 
-  const invitations = inviteeUsers
+  const teamInviteNotifications = inviteeUsers
     .map((invitee) => ({
       id: shortid.generate(),
       type: TEAM_INVITE,
@@ -37,30 +38,29 @@ const sendTeamInvitations = async (invitees, inviter, inviteId) => {
       orgId,
       userIds: [invitee.userId],
       inviteeEmail: invitee.email,
+      inviterUserId,
       inviterName,
       teamId,
       teamName
     }));
 
   const userIds = inviteeUsers.map(({userId}) => userId);
-  await Promise.all([
-    r.table('Notification')
+  const {upsertedInvitations} = await promiseAllObj({
+    newNotifications: r.table('Notification')
       .getAll(r.args(userIds), {index: 'userIds'})
-      .filter({type: TEAM_INVITE, orgId})('userIds')(0).default([])
+      .filter({type: TEAM_INVITE, teamId})('userIds')(0).default([])
       .do((userIdsWithNote) => {
-        return r.expr(invitations).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
+        return r.expr(teamInviteNotifications).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
       })
       .do((newNotifications) => r.table('Notification').insert(newNotifications)),
-    emailTeamInvitations(invitees, inviter, inviteId),
-    maybeAutoApproveToOrg(invitees, inviter)
-  ]);
-
-  // do not filter out duplicates! that way if someone resends an invite, the invitee will always get a toast
-  const notificationsToAdd = {};
-  invitations.forEach((notification) => {
-    notificationsToAdd[notification.userIds[0]] = [notification];
+    upsertedInvitations: emailTeamInvitations(invitees, inviter, inviteId),
+    autoApprove: maybeAutoApproveToOrg(invitees, inviter)
   });
-  return notificationsToAdd;
+
+  return {
+    ...upsertedInvitations,
+    teamInviteNotifications
+  };
 };
 
 export default sendTeamInvitations;

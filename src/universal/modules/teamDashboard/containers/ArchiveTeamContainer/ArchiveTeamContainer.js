@@ -1,16 +1,21 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam';
+import ArchiveTeamMutation from 'universal/mutations/ArchiveTeamMutation';
 
-@withRouter
-export default class ArchiveTeamContainer extends Component {
+
+class ArchiveTeamContainer extends Component {
   static propTypes = {
-    teamId: PropTypes.string.isRequired,
-    teamName: PropTypes.string.isRequired,
-    history: PropTypes.object.isRequired
-  }
+    atmosphere: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    team: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired
+  };
 
   constructor(props) {
     super(props);
@@ -25,18 +30,13 @@ export default class ArchiveTeamContainer extends Component {
     this.setState({showConfirmationField: false});
   }
 
-  archiveTeam = () => {
-    return new Promise((resolve) => {
-      const {teamId, history} = this.props;
-      const variables = {teamId};
-      cashay.mutate('archiveTeam', {variables});
-      history.push('/me');
-      resolve();
-    });
+  archiveTeam = async () => {
+    const {atmosphere, dispatch, team: {teamId}, history, location} = this.props;
+    ArchiveTeamMutation(atmosphere, teamId, {dispatch, history, location});
   }
 
   render() {
-    const {teamName} = this.props;
+    const {team: {teamName}} = this.props;
     const {showConfirmationField} = this.state;
     return (
       <ArchiveTeam
@@ -49,3 +49,13 @@ export default class ArchiveTeamContainer extends Component {
     );
   }
 }
+
+export default createFragmentContainer(
+  connect()(withAtmosphere(withRouter(ArchiveTeamContainer))),
+  graphql`
+    fragment ArchiveTeamContainer_team on Team {
+      teamId: id
+      teamName: name
+    }
+  `
+);

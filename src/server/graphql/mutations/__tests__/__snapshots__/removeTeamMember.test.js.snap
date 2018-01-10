@@ -152,34 +152,182 @@ Object {
     Object {
       "channelId": 24,
       "message": Object {
-        "newAuthToken": 28,
+        "data": Object {
+          "tms": Array [],
+          "type": "updated",
+        },
       },
     },
   ],
-  "notificationsAdded": Array [
+  "project": Array [
+    Object {
+      "channelId": 28,
+      "message": Object {
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
+          ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 28,
+      "message": Object {
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
+          ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 28,
+      "message": Object {
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
+          ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 28,
+      "message": Object {
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
+          ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 28,
+      "message": Object {
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
+          ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 28,
+      "message": Object {
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
+          ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+    Object {
+      "channelId": 28,
+      "message": Object {
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
+          ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+  ],
+  "team": Array [
     Object {
       "channelId": 24,
       "message": Object {
-        "notificationsAdded": Object {
-          "notifications": Array [
-            Object {
-              "id": 29,
-              "isKickout": true,
-              "orgId": 26,
-              "startAt": 2017-01-01T08:00:00.000Z,
-              "teamId": 16,
-              "teamName": "Team America",
-              "type": "KICKED_OUT",
-              "userIds": Array [
-                24,
-              ],
-            },
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
           ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
         },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+  ],
+  "teamMember": Array [
+    Object {
+      "channelId": 16,
+      "message": Object {
+        "data": Object {
+          "notificationId": 29,
+          "projectIds": Array [
+            37,
+          ],
+          "removedNotifications": Array [],
+          "teamId": 16,
+          "teamMemberId": 7,
+          "type": "RemoveTeamMemberPayload",
+          "userId": 24,
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
       },
     },
   ],
 }
 `;
 
-exports[`removeTeamMember throw if the caller is not self or team lead 1`] = `"{\\"_error\\":\\"Unauthorized. Only the team member or the leader can remove someone\\"}"`;
+exports[`removeTeamMember throw if the caller is not self or team lead 1`] = `"{\\"_error\\":\\"Unauthorized. Only the team leader promote someone to lead\\"}"`;

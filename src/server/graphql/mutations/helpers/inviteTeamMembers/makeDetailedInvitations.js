@@ -16,6 +16,7 @@ const makeDetailedInvitations = (teamMembers, emailArr = [], users = [], orgAppr
       isUser: Boolean(userDoc),
       isOrgMember: userDoc && Boolean(userDoc.userOrgs.find((userDocOrg) => userDocOrg.id === orgId)),
       isNewTeamMember: !teamMemberDoc,
+      teamMemberId: teamMemberDoc && teamMemberDoc.id,
       userId: userDoc && userDoc.id,
       preferredName: userDoc && userDoc.preferredName,
       isApproved: Boolean(approvedOrgApprovals.find((approval) => approval.email === email)) || isBillingLeader || false

@@ -1,8 +1,10 @@
+import convertToRichText from 'server/__tests__/setup/convertToRichText';
+import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
-import {PERSONAL, PRO, ENTERPRISE} from 'universal/utils/constants';
+import getRethink from 'server/database/rethinkDriver';
+import {ENTERPRISE, PERSONAL, PRO} from 'universal/utils/constants';
 import updateTeamCheckInQuestion from '../updateTeamCheckInQuestion';
-import convertToRichText from 'server/__tests__/setup/convertToRichText';
 
 console.error = jest.fn();
 
@@ -16,13 +18,14 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
       .newUser({name: 'non-team-member'})
       .newTeam({tier: PRO});
     const authToken = mockAuthToken(user);
+    const dataLoader = makeDataLoader(authToken);
 
     // TEST
     try {
       await updateTeamCheckInQuestion.resolve(
         undefined,
         {teamId: team.id, checkInQuestion: 'New check-in question'},
-        {authToken}
+        {authToken, dataLoader}
       );
     } catch (error) {
       expect(error.message).toMatch('You do not have access to team');
@@ -39,13 +42,13 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
       .newUser({name: 'personal-user'});
     await db.newTeamMember({teamId: team.id, userId: user.id});
     const authToken = mockAuthToken(user);
-
+    const dataLoader = makeDataLoader(authToken);
     // TEST
     try {
       await updateTeamCheckInQuestion.resolve(
         undefined,
         {teamId: team.id, checkInQuestion: 'New check-in question'},
-        {authToken}
+        {authToken, dataLoader}
       );
     } catch (error) {
       expect(error.message).toMatch('Unauthorized');
@@ -53,8 +56,8 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
   });
 
   it('allows team members of paid teams to edit the check-in question', async () => {
-    expect.assertions(1);
-
+    expect.assertions(2);
+    const r = getRethink();
     // SETUP
     const db = new MockDB();
     const {user: [user], team: [team]} = await db
@@ -62,14 +65,17 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
       .newUser({name: 'enterprise-user'});
     await db.newTeamMember({teamId: team.id, userId: user.id});
     const authToken = mockAuthToken(user);
+    const dataLoader = makeDataLoader(authToken);
     const checkInQuestion = convertToRichText('New check-in question');
 
     // TEST
-    const {team: updatedTeam} = await updateTeamCheckInQuestion.resolve(
+    const {teamId} = await updateTeamCheckInQuestion.resolve(
       undefined,
       {teamId: team.id, checkInQuestion},
-      {authToken}
+      {authToken, dataLoader}
     );
+    const updatedTeam = await r.table('Team').get(teamId);
     expect(updatedTeam.checkInQuestion).toEqual(checkInQuestion);
+    expect(dataLoader.isShared()).toEqual(true);
   });
 });

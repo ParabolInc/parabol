@@ -1,10 +1,11 @@
-import {GraphQLID, GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
+import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
-import getPubSub from 'server/utils/getPubSub';
-import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {SLACK} from 'universal/utils/constants';
 import insertSlackChannel from 'server/safeMutations/insertSlackChannel';
+import {requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import getPubSub from 'server/utils/getPubSub';
+import {SLACK} from 'universal/utils/constants';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 // TODO get rid of input and only request teamId not teamMemberId
 const AddSlackChannelInput = new GraphQLInputObjectType({
@@ -33,9 +34,9 @@ export default {
     const r = getRethink();
 
     // AUTH
-    const [userId, teamId] = teamMemberId.split('::');
-    requireSUOrSelf(authToken, userId);
-    requireSUOrTeamMember(authToken, teamId);
+    // TODO replace teamMemberId with teamId, no need for the userId here?
+    const {teamId} = fromTeamMemberId(teamMemberId);
+    requireTeamMember(authToken, teamId);
     requireWebsocket(socket);
 
     // VALIDATION

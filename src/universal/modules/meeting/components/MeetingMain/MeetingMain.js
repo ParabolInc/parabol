@@ -1,7 +1,8 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ErrorBoundary from 'universal/components/ErrorBoundary';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 
 const MeetingMain = (props) => {
   const {children, hasBoxShadow, styles} = props;
@@ -10,9 +11,11 @@ const MeetingMain = (props) => {
     hasBoxShadow && styles.hasBoxShadow
   );
   return (
-    <div className={rootStyles}>
-      {children}
-    </div>
+    <ErrorBoundary>
+      <div className={rootStyles}>
+        {children}
+      </div>
+    </ErrorBoundary>
   );
 };
 

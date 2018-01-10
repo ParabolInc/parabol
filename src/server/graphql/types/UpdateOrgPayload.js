@@ -1,4 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
+import {resolveOrganization} from 'server/graphql/resolvers';
 import Organization from 'server/graphql/types/Organization';
 
 const UpdateOrgPayload = new GraphQLObjectType({
@@ -6,7 +7,8 @@ const UpdateOrgPayload = new GraphQLObjectType({
   fields: () => ({
     organization: {
       type: Organization,
-      description: 'The updated org'
+      description: 'The updated org',
+      resolve: resolveOrganization
     }
   })
 });

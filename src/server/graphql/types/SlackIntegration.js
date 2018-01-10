@@ -1,12 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {globalIdField} from 'graphql-relay';
-import {nodeInterface} from 'server/graphql/models/Node/nodeQuery';
 import {SLACK} from 'universal/utils/constants';
 
 const SlackIntegration = new GraphQLObjectType({
   name: SLACK,
   description: 'An integration that sends start/end meeting messages to a specified slack channel',
-  interfaces: () => [nodeInterface],
   fields: () => ({
     // shortid
     id: globalIdField(SLACK, ({id}) => id),

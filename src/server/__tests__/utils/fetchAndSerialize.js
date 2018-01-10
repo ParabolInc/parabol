@@ -1,5 +1,6 @@
 import fieldsToSerialize from 'server/__tests__/utils/fieldsToSerialize';
 
+const unsortables = new Set(['invitation']);
 export default async function fetchAndSerialize(promiseObj, dynamicSerializer) {
   const keys = Object.keys(promiseObj);
   const values = Object.values(promiseObj);
@@ -11,7 +12,7 @@ export default async function fetchAndSerialize(promiseObj, dynamicSerializer) {
     if (!fieldsToSerialize[key]) {
       throw new Error(`BAD MOCK: No fieldsToSerialize for DB table ${key}`);
     }
-    snapshot[key] = dynamicSerializer.toStatic(doc, fieldsToSerialize[key]);
+    snapshot[key] = dynamicSerializer.toStatic(doc, fieldsToSerialize[key], {constant: unsortables.has(key)});
   }
   return snapshot;
 }

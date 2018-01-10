@@ -1,21 +1,20 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import FontAwesome from 'react-fontawesome';
+import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ib from 'universal/styles/helpers/ib';
 import {
-  DashSectionControl,
-  DashSectionControls,
-  DashSectionHeader,
+  DashSectionControl, DashSectionControls, DashSectionHeader,
   DashSectionHeading
 } from 'universal/components/Dashboard';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
-import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
 import {Menu, MenuItem} from 'universal/modules/menu';
+import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
+import ib from 'universal/styles/helpers/ib';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 const iconStyle = {
   ...ib,
@@ -40,7 +39,8 @@ const targetAnchor = {
 };
 
 const TeamProjectsHeader = (props) => {
-  const {dispatch, styles, teamId, teamMemberFilterId, teamMemberFilterName, teamMembers} = props;
+  const {dispatch, styles, teamMemberFilterId, teamMemberFilterName, team} = props;
+  const {teamId, teamMembers} = team;
   const toggle = <DashFilterToggle label={teamMemberFilterName} />;
 
   const itemFactory = () => {
@@ -73,11 +73,12 @@ const TeamProjectsHeader = (props) => {
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>
           <div className={css(styles.filterRow)}>
-            <b style={inlineBlock}>Show Projects for</b><span style={inlineBlock}>:</span>
+            <b style={inlineBlock}>{'Show Projects for'}</b><span style={inlineBlock}>:</span>
             {' '}
             <Menu
               itemFactory={itemFactory}
               label="Filter by:"
+              maxHeight={ui.dashMenuHeight}
               toggle={toggle}
               originAnchor={originAnchor}
               targetAnchor={targetAnchor}
@@ -93,10 +94,9 @@ TeamProjectsHeader.propTypes = {
   children: PropTypes.any,
   dispatch: PropTypes.func.isRequired,
   styles: PropTypes.object,
-  teamId: PropTypes.string,
+  team: PropTypes.object.isRequired,
   teamMemberFilterId: PropTypes.string,
-  teamMemberFilterName: PropTypes.string,
-  teamMembers: PropTypes.array.isRequired
+  teamMemberFilterName: PropTypes.string
 };
 
 const styleThunk = () => ({
@@ -130,4 +130,15 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(TeamProjectsHeader);
+export default createFragmentContainer(
+  withStyles(styleThunk)(TeamProjectsHeader),
+  graphql`
+    fragment TeamProjectsHeader_team on Team {
+      teamId: id
+      teamMembers(sortBy: "preferredName") {
+        id
+        preferredName
+      }
+    }
+  `
+);

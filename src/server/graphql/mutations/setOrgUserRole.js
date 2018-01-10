@@ -1,20 +1,14 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload';
 import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
-import {
-  BILLING_LEADER,
-  billingLeaderTypes,
-  NOTIFICATIONS_ADDED,
-  NOTIFICATIONS_CLEARED,
-  ORGANIZATION_ADDED,
-  PROMOTE_TO_BILLING_LEADER
-} from 'universal/utils/constants';
+import {BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
-  type: GraphQLBoolean,
+  type: SetOrgUserRolePayload,
   description: 'Set the role of a user',
   args: {
     orgId: {
@@ -30,10 +24,11 @@ export default {
       description: 'the user’s new role'
     }
   },
-  async resolve(source, {orgId, userId, role}, {authToken, socketId}) {
+  async resolve(source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
-
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
     // AUTH
     const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
     requireOrgLeader(userOrgDoc);
@@ -50,12 +45,12 @@ export default {
         })
         .count();
       if (leaderCount === 1) {
-        throw errorObj({_error: 'You’re the last leader, you can’t give that up'});
+        throw new Error('You’re the last leader, you can’t give that up');
       }
     }
 
     // RESOLUTION
-    const {organization} = await r({
+    const {organizationChanges} = await r({
       userOrgsUpdate: r.table('User').get(userId)
         .update((user) => ({
           userOrgs: user('userOrgs').map((userOrg) => {
@@ -69,7 +64,7 @@ export default {
           }),
           updatedAt: now
         })),
-      organization: r.table('Organization').get(orgId)
+      organizationChanges: r.table('Organization').get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').map((orgUser) => {
             return r.branch(
@@ -81,21 +76,26 @@ export default {
             );
           }),
           updatedAt: now
-        }), {returnChanges: true})('changes')(0)('new_val').default(null)
+        }), {returnChanges: true})('changes')(0)
     });
+    const {old_val: oldOrg, new_val: organization} = organizationChanges;
+    const oldUser = oldOrg.orgUsers.find((orgUser) => orgUser.id === userId);
+    const newUser = organization.orgUsers.find((orgUser) => orgUser.id === userId);
+    if (oldUser.role === newUser.role) {
+      return null;
+    }
     if (role === BILLING_LEADER) {
-      // add a notification
+      const promotionNotificationId = shortid.generate();
       const promotionNotification = {
-        id: shortid.generate(),
+        id: promotionNotificationId,
         type: PROMOTE_TO_BILLING_LEADER,
         startAt: now,
         orgId,
-        userIds: [userId],
-        groupName: organization.name
+        userIds: [userId]
       };
-      const {existingNotifications} = await r({
+      const {existingNotificationIds} = await r({
         insert: r.table('Notification').insert(promotionNotification),
-        existingNotifications: r.table('Notification')
+        existingNotificationIds: r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
           .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
           .update((notification) => ({
@@ -103,35 +103,36 @@ export default {
           }), {returnChanges: true})('changes')('new_val')
           .default([])
       });
-      const notificationsAdded = {notifications: existingNotifications.concat(promotionNotification)};
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
-
+      const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId);
       // add the org to the list of owned orgs
-      const organizationAdded = {organization};
-      getPubSub().publish(`${ORGANIZATION_ADDED}.${userId}`, {organizationAdded, mutatorId: socketId});
-    } else if (role === null) {
-      const {oldPromotionId, removedNotificationIds} = await r({
-        oldPromotionId: r.table('Notification')
+      const data = {orgId, userId, notificationIdsAdded};
+      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
+      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
+      return data;
+    }
+    if (role === null) {
+      const {oldPromotion, removedNotifications} = await r({
+        oldPromotion: r.table('Notification')
           .getAll(userId, {index: 'userIds'})
           .filter({
             orgId,
             type: PROMOTE_TO_BILLING_LEADER
           })
-          .delete({returnChanges: true})('changes')(0)('old_val')('id').default(null),
-        removedNotificationIds: r.table('Notification')
+          .delete({returnChanges: true})('changes')(0)('old_val').default([]),
+        removedNotifications: r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
           .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
           .update((notification) => ({
             userIds: notification('userIds').filter((id) => id.ne(userId))
-          }), {returnChanges: true})('changes')('new_val')('id')
+          }), {returnChanges: true})('changes')('new_val')
           .default([])
       });
-      const deletedIds = oldPromotionId ? removedNotificationIds.concat(oldPromotionId) : removedNotificationIds;
-      if (deletedIds.length > 0) {
-        const notificationsCleared = {deletedIds};
-        getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
-      }
+      const notificationsRemoved = removedNotifications.concat(oldPromotion);
+      const data = {orgId, userId, notificationsRemoved};
+      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
+      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
+      return data;
     }
-    return true;
+    return null;
   }
 };

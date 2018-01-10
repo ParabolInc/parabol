@@ -1,13 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import getPubSub from 'server/utils/getPubSub';
 import shortid from 'shortid';
-import {
-  ASSIGNEE,
-  MENTIONEE,
-  NOTIFICATIONS_ADDED,
-  NOTIFICATIONS_CLEARED,
-  PROJECT_INVOLVES
-} from 'universal/utils/constants';
+import {ASSIGNEE, MENTIONEE, PROJECT_INVOLVES} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
 const publishChangeNotifications = async (project, oldProject, changeUserId, usersToIgnore) => {
@@ -21,7 +14,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
   const oldMentions = wasPrivate ? [] : getTypeFromEntityMap('MENTION', oldEntityMap);
   const mentions = isPrivate ? [] : getTypeFromEntityMap('MENTION', entityMap);
   // intersect the mentions to get the ones to add and remove
-  const notificationsToRemove = oldMentions
+  const userIdsToRemove = oldMentions
     .filter((userId) => !mentions.includes(userId));
   const notificationsToAdd = mentions
     .filter((userId) =>
@@ -59,7 +52,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
         teamId: project.teamId
       });
     }
-    notificationsToRemove.push(oldProject.userId);
+    userIdsToRemove.push(oldProject.userId);
   }
 
   // if we updated the project content, push a new one with an updated project
@@ -74,39 +67,23 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
           projectId: project.id,
           type: PROJECT_INVOLVES
         });
-      existingProjectNotifications.forEach((notification) => {
-        const notificationsAdded = {notifications: [notification]};
-        const userId = notification.userIds[0];
-        getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
-      });
+      notificationsToAdd.push(...existingProjectNotifications);
     }
   }
 
-  // update changes in the db & push to the pubsub
-  if (notificationsToRemove.length) {
-    const clearedNotifications = await r.table('Notification')
-      .getAll(r.args(notificationsToRemove), {index: 'userIds'})
+  // update changes in the db
+  const {notificationsToRemove} = await r({
+    notificationsToRemove: userIdsToRemove.length === 0 ? [] : r.table('Notification')
+      .getAll(r.args(userIdsToRemove), {index: 'userIds'})
       .filter({
         projectId: oldProject.id,
         type: PROJECT_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
       .pluck('id', 'userIds')
-      .default([]);
-    clearedNotifications.forEach((notification) => {
-      const notificationsCleared = {deletedIds: [notification.id]};
-      const userId = notification.userIds[0];
-      getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared});
-    });
-  }
-  if (notificationsToAdd.length) {
-    await r.table('Notification').insert(notificationsToAdd);
-    notificationsToAdd.forEach((notification) => {
-      const notificationsAdded = {notifications: [notification]};
-      const userId = notification.userIds[0];
-      getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded});
-    });
-  }
+      .default([]),
+    insertedNotifications: notificationsToAdd.length === 0 ? [] : r.table('Notification').insert(notificationsToAdd)
+  });
   return {notificationsToRemove, notificationsToAdd};
 };
 

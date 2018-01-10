@@ -4,7 +4,8 @@
   "repository": "https://github.com/ParabolInc/action",
   "scripts": {
     "dokku": {
-      "predeploy": "npm run db:migrate"
+      "predeploy": "npm run db:migrate",
+      "postdeploy": "npm run postdeploy"
     }
   }
 }

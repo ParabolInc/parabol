@@ -1,9 +1,11 @@
 import {convertFromRaw} from 'draft-js';
 import {stateToMarkdown} from 'draft-js-export-markdown';
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import {GITHUB} from 'universal/utils/constants';
+import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import publish from 'server/utils/publish';
+import {GITHUB, PROJECT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 
 // const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
@@ -42,7 +44,7 @@ const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner) => {
 
 export default {
   name: 'CreateGitHubIssue',
-  type: GraphQLBoolean,
+  type: CreateGitHubIssuePayload,
   args: {
     projectId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -53,17 +55,18 @@ export default {
       description: 'The owner/repo string'
     }
   },
-  resolve: async (source, {nameWithOwner, projectId}, {authToken, socket}) => {
+  resolve: async (source, {nameWithOwner, projectId}, {authToken, dataLoader, socketId: mutatorId}) => {
     const r = getRethink();
     const now = new Date();
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const [teamId] = projectId.split('::');
-    requireSUOrTeamMember(authToken, teamId);
-    requireWebsocket(socket);
+    requireTeamMember(authToken, teamId);
 
     // VALIDATION
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     const project = await r.table('Project').get(projectId);
     if (!project) {
       throw new Error('That project no longer exists');
@@ -102,7 +105,7 @@ export default {
       throw new Error('This repo does not have an admin! Please re-integrate the repo');
     }
 
-    const creatorProvider = providers.find((provider) => provider.userId === userId);
+    const creatorProvider = providers.find((provider) => provider.userId === viewerId);
 
     if (!rawContentStr) {
       throw new Error('You must add some text before submitting a project to github');
@@ -119,7 +122,7 @@ export default {
     const contentState = convertFromRaw(rawContent);
     let body = stateToMarkdown(contentState);
     if (!creatorProvider) {
-      const creatorName = await r.table('User').get(userId)('preferredName');
+      const creatorName = await r.table('User').get(viewerId)('preferredName');
       body = `${body}\n\n_Added by ${creatorName}_`;
     }
     const payload = {
@@ -164,7 +167,11 @@ export default {
         },
         updatedAt: now
       });
-
-    return true;
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
+    const data = {projectId};
+    teamMembers.forEach(({userId}) => {
+      publish(PROJECT, userId, CreateGitHubIssuePayload, data, subOptions);
+    });
+    return data;
   }
 };

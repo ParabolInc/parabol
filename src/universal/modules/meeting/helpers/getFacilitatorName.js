@@ -1,4 +1,4 @@
-export default function getFacilitatorName(team, members) {
-  const facilitator = members.find((member) => member.id === team.activeFacilitator);
+export default function getFacilitatorName(activeFacilitator, teamMembers) {
+  const facilitator = teamMembers.find((member) => member.id === activeFacilitator);
   return facilitator ? facilitator.preferredName : 'Facilitator';
 }

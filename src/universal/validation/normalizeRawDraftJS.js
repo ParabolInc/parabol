@@ -1,6 +1,5 @@
-import {ContentState, convertToRaw} from 'draft-js';
+import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 
-const makeEmptyStr = () => JSON.stringify(convertToRaw(ContentState.createFromText('')));
 const normalizeRawDraftJS = (str) => {
   let parsedContent;
   try {

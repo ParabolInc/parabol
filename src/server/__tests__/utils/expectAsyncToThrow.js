@@ -6,4 +6,4 @@ export default async function expectAsyncToThrow(promise, idLookup = []) {
     idLookup.forEach((key, idx) => { e.message = e.message.replace(key, idx); });
     expect(() => { throw e; }).toThrowErrorMatchingSnapshot();
   }
-};
+}

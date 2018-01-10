@@ -68,9 +68,9 @@ const patoHop = {
 
 const cbTiming = 'cubic-bezier(.37, 1.13, .58, 1.13)';
 
-const styleThunk = () => ({
+const styleThunk = (theme, minHeight) => ({
   root: {
-    minHeight: '100vh',
+    minHeight: minHeight || '100vh',
     padding: '3rem 0',
     textAlign: 'center',
     width: '100%'

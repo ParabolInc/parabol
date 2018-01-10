@@ -1,32 +1,30 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {createFragmentContainer} from 'react-relay';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {MenuItem} from 'universal/modules/menu';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 const OutcomeCardAssignMenu = (props) => {
   const {
+    atmosphere,
     area,
     closePortal,
-    projectId,
-    ownerId,
-    teamMembers
+    project: {projectId, teamMember: {ownerId}},
+    viewer: {team: {teamMembers}}
   } = props;
 
   const handleProjectUpdate = (newOwner) => {
     if (newOwner === ownerId) {
       return;
     }
-    const options = {
-      ops: {},
-      variables: {
-        area,
-        updatedProject: {
-          id: projectId,
-          teamMemberId: newOwner
-        }
-      }
+    const {userId} = fromTeamMemberId(newOwner);
+    const updatedProject = {
+      id: projectId,
+      userId
     };
-    cashay.mutate('updateProject', options);
+    UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
   const itemFactory = () => {
@@ -55,27 +53,29 @@ const OutcomeCardAssignMenu = (props) => {
 
 OutcomeCardAssignMenu.propTypes = {
   area: PropTypes.string.isRequired,
+  atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
-  projectId: PropTypes.string.isRequired,
-  ownerId: PropTypes.string.isRequired,
-  teamMembers: PropTypes.array.isRequired
+  project: PropTypes.object.isRequired,
+  viewer: PropTypes.object.isRequired
 };
 
-// const styleThunk = () => ({
-//  //root: {
-//  //  alignItems: 'center',
-//  //  color: appTheme.palette.dark,
-//  //  display: 'flex',
-//  //  height: '1.5rem',
-//  //  fontSize: '13px'
-//  //},
-//
-//  //teamName: {
-//    //color: appThe/me.palette.dark,
-//    //display: 'inline-block',
-//    //fontWeight: 700,
-//    //marginLeft: '.5rem'
-//  //}
-// });
-
-export default OutcomeCardAssignMenu;
+export default createFragmentContainer(
+  withAtmosphere(OutcomeCardAssignMenu),
+  graphql`
+    fragment OutcomeCardAssignMenu_viewer on User {
+      team(teamId: $teamId) {
+        teamMembers(sortBy: "preferredName") {
+          id
+          picture
+          preferredName
+        }
+      }
+    }
+    fragment OutcomeCardAssignMenu_project on Project {
+      projectId: id
+      teamMember {
+        ownerId: id
+      }
+    }
+  `
+);

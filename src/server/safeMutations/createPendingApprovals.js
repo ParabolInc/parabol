@@ -1,10 +1,11 @@
 import getRethink from 'server/database/rethinkDriver';
+import {PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
-import {PENDING} from 'server/utils/serverConstants';
 
-export default async function createPendingApprovals(outOfOrgEmails, {orgId, teamId, teamName, userId} = {}) {
-  if (outOfOrgEmails.length === 0) return [];
+export default async function createPendingApprovals(outOfOrgEmails, inviteSender) {
+  if (outOfOrgEmails.length === 0) return {requestNotifications: [], orgApprovalIds: []};
+  const {orgId, teamId, userId} = inviteSender || {};
   const r = getRethink();
   const now = new Date();
   // add a notification to the Billing Leaders
@@ -16,17 +17,15 @@ export default async function createPendingApprovals(outOfOrgEmails, {orgId, tea
       .coerceTo('array'),
     inviter: r.table('User').get(userId).pluck('preferredName', 'id')
   });
-  const notifications = outOfOrgEmails.map((inviteeEmail) => ({
+  const requestNotifications = outOfOrgEmails.map((inviteeEmail) => ({
     id: shortid.generate(),
     type: REQUEST_NEW_USER,
     startAt: now,
     orgId,
     userIds,
     inviterUserId: inviter.id,
-    inviterName: inviter.preferredName,
     inviteeEmail,
-    teamId,
-    teamName
+    teamId
   }));
 
   const pendingApprovals = outOfOrgEmails.map((inviteeEmail) => ({
@@ -39,17 +38,16 @@ export default async function createPendingApprovals(outOfOrgEmails, {orgId, tea
     teamId,
     updatedAt: now
   }));
+
   // send a new notification to each Billing Leader concerning each out-of-org invitee
   await r({
-    notifications: r.table('Notification').insert(notifications),
+    requestNotifications: r.table('Notification').insert(requestNotifications),
     approvals: r.table('OrgApproval').insert(pendingApprovals)
   });
-  const pendingApprovalNotifications = {};
-  notifications.forEach((notification) => {
-    notification.userIds.forEach((notifiedUserId) => {
-      pendingApprovalNotifications[notifiedUserId] = pendingApprovalNotifications[notifiedUserId] || [];
-      pendingApprovalNotifications[notifiedUserId].push(notification);
-    });
-  });
-  return pendingApprovalNotifications;
+
+  return {
+    requestNotifications,
+    orgApprovalIds: pendingApprovals.map(({id}) => id),
+    billingLeaderUserIds: userIds
+  };
 }

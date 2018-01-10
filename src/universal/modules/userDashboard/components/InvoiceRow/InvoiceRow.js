@@ -12,13 +12,12 @@ import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router-dom';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
 import {PAID, PENDING, UPCOMING} from 'universal/utils/constants';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
 
 const InvoiceRow = (props) => {
   const {
     hasCard,
     invoice: {
-      id,
+      id: invoiceId,
       amountDue,
       endAt,
       paidAt,
@@ -26,7 +25,6 @@ const InvoiceRow = (props) => {
     },
     styles
   } = props;
-  const {id: invoiceId} = fromGlobalId(id);
   const isEstimate = status === UPCOMING;
   const invoiceAvatarStyles = css(
     styles.invoiceAvatar,
