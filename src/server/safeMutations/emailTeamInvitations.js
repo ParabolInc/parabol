@@ -4,28 +4,9 @@ import makeInvitationsForDB from 'server/graphql/mutations/helpers/inviteTeamMem
 import makeInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/makeInviteToken';
 import resolveSentEmails from 'server/graphql/mutations/helpers/inviteTeamMembers/resolveSentEmails';
 import getPendingInvitations from 'server/safeQueries/getPendingInvitations';
-import getPubSub from 'server/utils/getPubSub';
-import {INVITATION_ADDED, INVITATION_UPDATED} from 'universal/utils/constants';
 
-
-const publishNewInvitations = (newInvitations, {operationId}) => {
-  newInvitations.forEach((invitation) => {
-    const {teamId} = invitation;
-    const invitationAdded = {invitation};
-    getPubSub().publish(`${INVITATION_ADDED}.${teamId}`, {invitationAdded, operationId});
-  });
-};
-
-const publishUpdatedInvitations = (updatedInvitations, {operationId}) => {
-  updatedInvitations.forEach((invitation) => {
-    const {teamId} = invitation;
-    const invitationUpdated = {invitation};
-    getPubSub().publish(`${INVITATION_UPDATED}.${teamId}`, {invitationUpdated, operationId});
-  });
-};
-
-export default async function emailTeamInvitations(invitees, inviter, inviteId, subOptions) {
-  if (invitees.length === 0) return undefined;
+export default async function emailTeamInvitations(invitees, inviter, inviteId) {
+  if (invitees.length === 0) return {newInvitations: [], updatedInvitations: []};
   const {teamId, userId: inviterUserId} = inviter;
   const r = getRethink();
   const now = new Date();
@@ -52,7 +33,5 @@ export default async function emailTeamInvitations(invitees, inviter, inviteId, 
   const newInvitationDocs = invitationsForDB.filter((invite) => !currentInviteEmails.includes(invite.email));
   const newInvitations = await r.table('Invitation')
     .insert(newInvitationDocs, {returnChanges: true})('changes')('new_val').default([]);
-  publishNewInvitations(newInvitations, subOptions);
-  publishUpdatedInvitations(updatedInvitations, subOptions);
   return {newInvitations, updatedInvitations};
-};
+}

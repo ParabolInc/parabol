@@ -8,8 +8,6 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
-import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
-import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -21,11 +19,6 @@ const query = graphql`
 `;
 
 
-const subscriptions = [
-  TeamMemberAddedSubscription,
-  TeamMemberUpdatedSubscription
-];
-
 const OutcomeCardAssignMenuRoot = (props) => {
   const {area, atmosphere, closePortal, project, teamId} = props;
   return (
@@ -34,7 +27,6 @@ const OutcomeCardAssignMenuRoot = (props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear component={null}>

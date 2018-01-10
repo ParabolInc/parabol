@@ -1,31 +1,38 @@
 import {commitMutation} from 'react-relay';
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
+import handleRemoveAgendaItems from 'universal/mutations/handlers/handleRemoveAgendaItems';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
-const mutation = graphql`
-  mutation RemoveAgendaItemMutation($id: ID!) {
-    removeAgendaItem(id: $id) {
-      agendaItem {
-        id
-      }
+graphql`
+  fragment RemoveAgendaItemMutation_agendaItem on RemoveAgendaItemPayload {
+    agendaItem {
+      id
     }
   }
 `;
 
-export const handleRemoveAgendaItem = (store, teamId, nodeId) => {
-  const team = store.get(teamId);
-  safeRemoveNodeFromArray(nodeId, team, 'agendaItems');
+const mutation = graphql`
+  mutation RemoveAgendaItemMutation($agendaItemId: ID!) {
+    removeAgendaItem(agendaItemId: $agendaItemId) {
+      ...RemoveAgendaItemMutation_agendaItem @relay(mask: false)
+    }
+  }
+`;
+
+export const removeAgendaItemUpdater = (payload, store) => {
+  const agendaItemId = getInProxy(payload, 'agendaItem', 'id');
+  handleRemoveAgendaItems(agendaItemId, store);
 };
 
-const RemoveAgendaItemMutation = (environment, agendaId, onError, onCompleted) => {
-  const [teamId] = agendaId.split('::');
+const RemoveAgendaItemMutation = (environment, agendaItemId, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
-    variables: {id: agendaId},
+    variables: {agendaItemId},
     updater: (store) => {
-      handleRemoveAgendaItem(store, teamId, agendaId);
+      const payload = store.getRootField('removeAgendaItem');
+      removeAgendaItemUpdater(payload, store);
     },
     optimisticUpdater: (store) => {
-      handleRemoveAgendaItem(store, teamId, agendaId);
+      handleRemoveAgendaItems(agendaItemId, store);
     },
     onCompleted,
     onError

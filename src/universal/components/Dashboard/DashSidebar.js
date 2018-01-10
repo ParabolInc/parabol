@@ -1,27 +1,28 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import DashNavList from 'universal/components/DashNavList/DashNavList';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
-import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
-import DashNavItem from './DashNavItem';
-import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
-import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
+import {createFragmentContainer} from 'react-relay';
 import {NavLink} from 'react-router-dom';
+import tinycolor from 'tinycolor2';
+import DashNavList from 'universal/components/DashNavList/DashNavList';
+import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
+import appTheme from 'universal/styles/theme/appTheme';
+import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import DashNavItem from './DashNavItem';
 
 const DashSidebar = (props) => {
-  const {styles, viewer} = props;
+  const {location, styles, viewer} = props;
   return (
     <div className={css(styles.root)}>
       <StandardHubContainer viewer={viewer} />
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem
+            location={location}
             href="/me"
             label="My Dashboard"
           />
@@ -29,8 +30,13 @@ const DashSidebar = (props) => {
         <div className={css(styles.navLabel, styles.navLabelForList)}>
           My Teams
         </div>
-        <DashNavList viewer={viewer} />
-        <NavLink className={css(styles.addTeam)} activeClassName={css(styles.addTeamDisabled)} title="Add New Team" to="/newteam/1">
+        <DashNavList location={location} viewer={viewer} />
+        <NavLink
+          className={css(styles.addTeam)}
+          activeClassName={css(styles.addTeamDisabled)}
+          title="Add New Team"
+          to="/newteam/1"
+        >
           <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
           </div>
@@ -49,6 +55,8 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
+  // required to update highlighting
+  location: PropTypes.object.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object
 };
@@ -151,6 +159,6 @@ export default createFragmentContainer(
     fragment DashSidebar_viewer on User {
       ...StandardHub_viewer
       ...DashNavList_viewer
-    }  
+    }
   `
 );

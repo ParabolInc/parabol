@@ -192,7 +192,8 @@ class MockDB {
       createdAt: inProgress ? new Date() : new Date(__anHourAgo),
       meetingNumber: this.db.meeting.filter((meeting) => meeting.teamId === this.context.team).length + 1,
       teamId,
-      teamName: this.context.team.name
+      teamName: this.context.team.name,
+      ...overrides
     };
     // 3 agenda items, #1 has 1 private project, #2 has 1 project, #3 has 1 of each
     const projects = [];

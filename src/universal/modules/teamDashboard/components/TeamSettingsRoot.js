@@ -6,13 +6,8 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';
-import InvitationAddedSubscription from 'universal/subscriptions/InvitationAddedSubscription';
-import InvitationRemovedSubscription from 'universal/subscriptions/InvitationRemovedSubscription';
-import InvitationUpdatedSubscription from 'universal/subscriptions/InvitationUpdatedSubscription';
-import OrgApprovalAddedSubscription from 'universal/subscriptions/OrgApprovalAddedSubscription';
-import OrgApprovalRemovedSubscription from 'universal/subscriptions/OrgApprovalRemovedSubscription';
-import TeamMemberAddedSubscription from 'universal/subscriptions/TeamMemberAddedSubscription';
-import TeamMemberUpdatedSubscription from 'universal/subscriptions/TeamMemberUpdatedSubscription';
+import InvitationSubscription from 'universal/subscriptions/InvitationSubscription';
+import OrgApprovalSubscription from 'universal/subscriptions/OrgApprovalSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 
 const query = graphql`
@@ -24,13 +19,8 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  InvitationAddedSubscription,
-  InvitationRemovedSubscription,
-  InvitationUpdatedSubscription,
-  OrgApprovalRemovedSubscription,
-  OrgApprovalAddedSubscription,
-  TeamMemberAddedSubscription,
-  TeamMemberUpdatedSubscription
+  InvitationSubscription,
+  OrgApprovalSubscription
 ];
 
 const TeamSettingsRoot = ({atmosphere, teamId}) => {

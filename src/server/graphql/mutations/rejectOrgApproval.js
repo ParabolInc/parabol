@@ -4,16 +4,10 @@ import rejectOrgApprovalValidation from 'server/graphql/mutations/helpers/reject
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATIONS_ADDED} from 'universal/utils/constants';
-
-const publishDenialNotification = (denialNotification, {operationId}) => {
-  const userId = denialNotification.userIds[0];
-  const notificationsAdded = {notifications: [denialNotification]};
-  getPubSub().publish(`${NOTIFICATIONS_ADDED}.${userId}`, {notificationsAdded, operationId});
-};
+import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL} from 'universal/utils/constants';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -27,23 +21,21 @@ export default {
       type: GraphQLString
     }
   },
-  async resolve(source, args, {authToken, dataLoader, socketId}) {
+  async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
-    const subOptions = {operationId, mutatorId: socketId};
+    const subOptions = {operationId, mutatorId};
 
     // AUTH
     const {notificationId} = args;
-    const userId = getUserId(authToken);
-    const rejectionNotification = await r.table('Notification').get(notificationId)
-      .pluck('orgId', 'inviterUserId', 'inviteeEmail')
-      .default(null);
+    const viewerId = getUserId(authToken);
+    const rejectionNotification = await r.table('Notification').get(notificationId);
     if (!rejectionNotification) {
       throw errorObj({reason: `Notification ${notificationId} no longer exists!`});
     }
-    const {orgId, inviterUserId, inviteeEmail} = rejectionNotification;
-    const userOrgDoc = await getUserOrgDoc(userId, orgId);
+    const {orgId, inviteeEmail} = rejectionNotification;
+    const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
     requireOrgLeader(userOrgDoc);
 
     // VALIDATION
@@ -51,8 +43,13 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const deniedByName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
-    const denialNotification = {
+    const deniedByName = await r.table('User').get(viewerId)('preferredName').default('A Billing Leader');
+
+    // TODO include mutatorId in publishes once we're completely on Relay
+    const {removedOrgApprovals, removedRequestNotifications} =
+      await removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: viewerId});
+
+    const deniedNotifications = removedRequestNotifications.map(({inviterUserId}) => ({
       id: shortid.generate(),
       type: DENY_NEW_USER,
       startAt: now,
@@ -61,18 +58,30 @@ export default {
       reason,
       deniedByName,
       inviteeEmail
+    }));
+    await r.table('Notification').insert(deniedNotifications);
+    const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
+    const data = {
+      deniedNotificationIds: deniedNotifications.map(({id}) => id),
+      removedOrgApprovalIds,
+      removedRequestNotifications
     };
 
-    // TODO include mutatorId in publishes once we're completely on Relay
-    const [{removedApprovals, removedNotifications}] = await Promise.all([
-      removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: userId}, subOptions),
-      r.table('Notification').insert(denialNotification)
-    ]);
-    publishDenialNotification(denialNotification, subOptions);
+    // publish the removed org approval to the team
+    const teamIds = Array.from(new Set(removedOrgApprovals.map(({teamId}) => teamId)));
+    teamIds.forEach((teamId) => {
+      const teamData = {...data, teamId};
+      publish(ORG_APPROVAL, teamId, RejectOrgApprovalPayload, teamData, subOptions);
+    });
 
-    return {
-      notifications: removedNotifications.filter((notification) => notification.userIds.includes(userId)),
-      orgApprovals: removedApprovals
-    };
+    // publish all notifications
+    removedRequestNotifications.concat(deniedNotifications).forEach((notification) => {
+      const {userIds} = notification;
+      userIds.forEach((userId) => {
+        publish(NOTIFICATION, userId, RejectOrgApprovalPayload, data, subOptions);
+      });
+    });
+
+    return data;
   }
 };

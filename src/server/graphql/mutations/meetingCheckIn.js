@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import MeetingCheckInPayload from 'server/graphql/types/MeetingCheckInPayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
-import getPubSub from 'server/utils/getPubSub';
-import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
+import publish from 'server/utils/publish';
+import {TEAM_MEMBER} from 'universal/utils/constants';
 
 export default {
-  type: UpdateTeamMemberPayload,
+  type: MeetingCheckInPayload,
   description: 'Check a member in as present or absent',
   args: {
     teamMemberId: {
@@ -18,21 +18,22 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve(source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId}) {
+  async resolve(source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // teamMemberId is of format 'userId::teamId'
     const [, teamId] = teamMemberId.split('::');
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const teamMember = await r.table('TeamMember')
+    await r.table('TeamMember')
       .get(teamMemberId)
-      .update({isCheckedIn}, {returnChanges: true})('changes')(0)('new_val');
+      .update({isCheckedIn});
 
-    const teamMemberUpdated = {teamMember};
-    getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated, mutatorId: socketId, operationId});
-    return teamMemberUpdated;
+    const data = {teamMemberId};
+    publish(TEAM_MEMBER, teamId, MeetingCheckInPayload, data, subOptions);
+    return data;
   }
 };

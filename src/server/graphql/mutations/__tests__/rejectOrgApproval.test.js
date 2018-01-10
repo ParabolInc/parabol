@@ -7,7 +7,6 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import newInvitee from 'server/__tests__/utils/newInvitee';
-import serializeGraphQLType from 'server/__tests__/utils/serializeGraphQLType';
 import getRethink from 'server/database/rethinkDriver';
 import rejectOrgApproval from 'server/graphql/mutations/rejectOrgApproval';
 import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
@@ -34,7 +33,7 @@ describe('rejectOrgApproval', () => {
     const dataLoader = makeDataLoader(authToken);
     const teamId = mockDB.context.team.id;
     // TEST
-    const res = await rejectOrgApproval.resolve(undefined, {notificationId, reason}, {authToken, dataLoader});
+    await rejectOrgApproval.resolve(undefined, {notificationId, reason}, {authToken, dataLoader});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -44,6 +43,5 @@ describe('rejectOrgApproval', () => {
 
     expect(db).toMatchSnapshot();
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
-    expect(serializeGraphQLType(res, 'RejectOrgApprovalPayload', dynamicSerializer)).toMatchSnapshot();
   });
 });

@@ -3,6 +3,7 @@ import scRelaySubscribeHandler from 'server/socketHandlers/scRelaySubscribeHandl
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants';
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
+import {GQL_EXEC, GQL_START, GQL_STOP} from 'universal/utils/constants';
 import isObject from 'universal/utils/isObject';
 import scGraphQLHandler from './scGraphQLHandler';
 
@@ -18,6 +19,8 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
 export default function scConnectionHandler(exchange, sharedDataLoader) {
   return async function connectionHandler(socket) {
     const now = new Date();
+    socket.subs = {};
+    socket.availableResubs = [];
     // socket.on('message', message => {
     //   if (message === '#2') return;
     //   console.log('SOCKET SAYS:', message);
@@ -34,15 +37,11 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
         }
       }
     });
-    socket.on('graphql', graphQLHandler);
-    socket.on('gqlSub', relaySubscribeHandler);
-    socket.on('gqlUnsub', (opId) => {
+    socket.on(GQL_EXEC, graphQLHandler);
+    socket.on(GQL_START, relaySubscribeHandler);
+    socket.on(GQL_STOP, (opId) => {
       const subscriptionContext = socket.subs[opId];
-      if (!subscriptionContext) {
-        // the we must be trying to subscribe to something that caught an error
-        // (happens for unauthed resubs like ex-teams)
-        return;
-      }
+      if (!subscriptionContext) return;
       const {asyncIterator} = subscriptionContext;
       asyncIterator.return();
       delete socket.subs[opId];
@@ -51,7 +50,9 @@ export default function scConnectionHandler(exchange, sharedDataLoader) {
       graphQLHandler({
         query: `
         mutation DisconnectSocket {
-          disconnectSocket
+          disconnectSocket {
+            id
+          }
         }
       `
       });

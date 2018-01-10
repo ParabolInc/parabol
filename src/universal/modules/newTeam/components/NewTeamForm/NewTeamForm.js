@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import shortid from 'shortid';
 import Button from 'universal/components/Button/Button';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import InputField from 'universal/components/InputField/InputField';
@@ -13,7 +12,6 @@ import Radio from 'universal/components/Radio/Radio';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import AddOrgMutation from 'universal/mutations/AddOrgMutation';
 import AddTeamMutation from 'universal/mutations/AddTeamMutation';
 import ui from 'universal/styles/ui';
@@ -52,7 +50,6 @@ const mapStateToProps = (state) => {
 class NewTeamForm extends Component {
   onSubmit = async (submittedData) => {
     const {atmosphere, dispatch, isNewOrganization, history} = this.props;
-    const newTeamId = shortid.generate();
     if (isNewOrganization) {
       const schema = addOrgSchema();
       const {data: {teamName, inviteesRaw, orgName}, errors} = schema(submittedData);
@@ -62,21 +59,13 @@ class NewTeamForm extends Component {
       const parsedInvitees = parseEmailAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
       const newTeam = {
-        id: newTeamId,
-        name: teamName,
-        orgId: shortid.generate()
+        name: teamName
       };
       const handleError = (err) => {
         throw new SubmissionError(err._error);
       };
-      const handleCompleted = () => {
-        dispatch(showSuccess({
-          title: 'Organization successfully created!',
-          message: `Here's your new team dashboard for ${teamName}`
-        }));
-        history.push(`/team/${newTeamId}`);
-      };
-      AddOrgMutation(atmosphere, newTeam, invitees, orgName, handleError, handleCompleted);
+      const variables = {newTeam, invitees, orgName};
+      AddOrgMutation(atmosphere, variables, {dispatch, history}, handleError);
     } else {
       const schema = makeAddTeamSchema();
       const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
@@ -87,15 +76,7 @@ class NewTeamForm extends Component {
         orgId
       };
 
-      const handleCompleted = (res) => {
-        const {addTeam: {team: {id: teamId}}} = res;
-        dispatch(showSuccess({
-          title: 'Team successfully created!',
-          message: `Here's your new team dashboard for ${teamName}`
-        }));
-        history.push(`/team/${teamId}`);
-      };
-      AddTeamMutation(atmosphere, newTeam, invitees, undefined, handleCompleted);
+      AddTeamMutation(atmosphere, {newTeam, invitees}, {dispatch, history});
     }
   };
 

@@ -66,6 +66,9 @@ module.exports = {
       WARN,
       140
     ],
+    "no-unused-expressions": [ERROR, {
+      "allowTaggedTemplates": true
+    }],
     "object-curly-spacing": OFF,
     "react/forbid-prop-types": OFF,
     "react/jsx-filename-extension": OFF,
@@ -98,6 +101,7 @@ module.exports = {
     "__CLIENT__": true,
     "__WEBPACK__": true,
     "socket": true,
-    "graphql": true
+    "graphql": true,
+    "System": true
   }
-}
+};

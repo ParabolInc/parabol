@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import UpdateTeamMemberPayload from 'server/graphql/types/UpdateTeamMemberPayload';
+import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
-import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
+import {TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
-  type: UpdateTeamMemberPayload,
+  type: PromoteToTeamLeadPayload,
   description: 'Promote another team member to be the leader',
   args: {
     teamMemberId: {
@@ -19,6 +19,8 @@ export default {
   },
   async resolve(source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const myUserId = getUserId(authToken);
@@ -33,27 +35,21 @@ export default {
     }
 
     // RESOLUTION
-    const {promotee, teamLead} = await r({
+    await r({
       teamLead: r.table('TeamMember')
         .get(myTeamMemberId)
         .update({
           isLead: false
-        }, {returnChanges: true})('changes')(0)('new_val').default(null),
+        }),
       promotee: r.table('TeamMember')
         .get(teamMemberId)
         .update({
           isLead: true
-        }, {returnChanges: true})('changes')(0)('new_val').default(null)
+        })
     });
 
-    if (!promotee || !teamLead) {
-      throw new Error('Could not promote');
-    }
-    const operationId = dataLoader.share();
-    const teamMemberUpdated = {teamMember: promotee};
-    const leaderUpdated = {teamMember: teamLead};
-    getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated, operationId, mutatorId});
-    getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated: leaderUpdated, operationId, mutatorId});
-    return teamMemberUpdated;
+    const data = {oldTeamLeadId: myTeamMemberId, newTeamLeadId: teamMemberId};
+    publish(TEAM_MEMBER, teamId, PromoteToTeamLeadPayload, data, subOptions);
+    return data;
   }
 };

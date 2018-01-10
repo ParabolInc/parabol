@@ -7,8 +7,6 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamArchive from 'universal/modules/teamDashboard/components/TeamArchive/TeamArchive';
-import ProjectUpdatedSubscription from 'universal/subscriptions/ProjectUpdatedSubscription';
-
 
 const query = graphql`
   query TeamArchiveRootQuery($teamId: ID!, $first: Int!, $after: DateTime) {
@@ -18,10 +16,6 @@ const query = graphql`
   }
 `;
 
-const subscriptions = [
-  ProjectUpdatedSubscription
-];
-
 const TeamArchiveRoot = ({atmosphere, match, team}) => {
   const {params: {teamId}} = match;
   const {userId} = atmosphere;
@@ -30,7 +24,6 @@ const TeamArchiveRoot = ({atmosphere, match, team}) => {
       environment={atmosphere}
       query={query}
       variables={{teamId, first: 40}}
-      subscriptions={subscriptions}
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear component={null}>

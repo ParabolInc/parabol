@@ -2,6 +2,7 @@ import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
+import {GQL_COMPLETE, GQL_DATA, GQL_ERROR, GQL_EXEC, GQL_START, GQL_STOP} from 'universal/utils/constants';
 import tryParse from 'universal/utils/tryParse';
 
 const makeErrorObj = (errors) => {
@@ -38,8 +39,8 @@ export default class Atmosphere extends Environment {
     };
 
     this.opIdIndex = 1;
-    this.subLookup = {};
     this.querySubscriptions = [];
+    this.subscriptions = {};
   }
 
   use = (networkName) => {
@@ -77,7 +78,7 @@ export default class Atmosphere extends Environment {
 
   fetchWS = async (operation, variables) => {
     return new Promise((resolve, reject) => {
-      this.socket.emit('graphql', {query: operation.text, variables}, (_, response) => {
+      this.socket.emit(GQL_EXEC, {query: operation.text, variables}, (_, response) => {
         const {errors} = response;
         if (errors) {
           const errorObj = makeErrorObj(errors);
@@ -102,14 +103,46 @@ export default class Atmosphere extends Environment {
 
   setSocket = (socket) => {
     this.opIdIndex = 1;
-    this.subLookup = {};
     this.querySubscriptions = [];
+    this.subscriptions = {};
     this.socket = socket;
     this.setNet('socket');
+    this.socket.on(GQL_DATA, this.handleGQLData);
+    this.socket.on(GQL_ERROR, this.handleGQLError);
+    this.socket.on(GQL_COMPLETE, this.handleGQLComplete);
+  };
+
+  getSubscription(opId) {
+    const subscription = this.subscriptions[opId];
+    // In the future, it might be nice to store this in a queue that we can retry in a few ms
+    if (!subscription) {
+      throw new Error(`No subscription set up for opId ${opId}`);
+    }
+    return subscription;
+  }
+
+  handleGQLComplete = (message) => {
+    const {opId} = message;
+    const {observer} = this.getSubscription(opId);
+    if (observer.onCompleted) {
+      observer.onCompleted();
+    }
+  };
+  handleGQLData = (message) => {
+    const {opId, payload} = message;
+    const {observer} = this.getSubscription(opId);
+    observer.onNext(payload);
+  };
+  handleGQLError = (message) => {
+    const {opId, payload} = message;
+    const {errors} = payload;
+    const {observer} = this.getSubscription(opId);
+    const errorObj = makeErrorObj(errors);
+    observer.onError(errorObj);
   };
 
   emitSubscribe = (query, variables, opId) => {
-    this.socket.emit('gqlSub', {
+    this.socket.emit(GQL_START, {
       query,
       variables,
       opId
@@ -120,32 +153,12 @@ export default class Atmosphere extends Environment {
     const {name, text} = operation;
     const subKey = Atmosphere.getKey(name, variables);
     const opId = this.opIdIndex++;
-    this.subLookup[subKey] = opId;
-    const socketChannel = `gqlData.${opId}`;
-    const dispose = () => this.handleSubscriptionError(subKey);
-    this.socket.on(socketChannel, (gqlResponse) => {
-      if (gqlResponse) {
-        const {errors} = gqlResponse;
-        if (errors) {
-          const errorObj = makeErrorObj(errors);
-          observer.onError(errorObj);
-          // this.handleSubscriptionError(subKey);
-        } else {
-          observer.onNext(gqlResponse);
-        }
-      } else {
-        // resubscribe if we were kicked out. we probably got a new token, so try it again with the fresh one
-        this.emitSubscribe(text, variables, opId);
-
-        // this will call dispose
-        // if (observer.onCompleted) {
-        //  observer.onCompleted();
-        // }
-      }
-    });
+    this.subscriptions[opId] = {
+      observer,
+      subKey
+    };
     this.emitSubscribe(text, variables, opId);
-    // currently we don't use this disposable, but Relay does in the subscription observable.onError
-    return {dispose};
+    return this.makeDisposable(opId);
   };
 
   /*
@@ -160,21 +173,24 @@ export default class Atmosphere extends Environment {
   * Subscription 3 does because no other component depends on it.
   * Subscription 4 does not because it is a k > 1 nearest neighbor
   */
-  handleSubscriptionError = (subKeyWithError) => {
-    // get every query that is powered by this subscription
-    const associatedQueries = this.querySubscriptions.filter(({subKey}) => subKey === subKeyWithError);
-
-    // these queries are no longer supported, so drop them
-    associatedQueries.forEach(({component}) => {
-      const {dispose} = component;
-      if (dispose) {
-        dispose();
+  makeDisposable = (opId) => {
+    return {
+      dispose: () => {
+        const {subKey: subKeyToRemove} = this.getSubscription(opId);
+        // get every query that is powered by this subscription
+        const associatedQueries = this.querySubscriptions.filter(({subKey}) => subKey === subKeyToRemove);
+        // these queries are no longer supported, so drop them
+        associatedQueries.forEach(({component}) => {
+          const {dispose} = component;
+          if (dispose) {
+            dispose();
+          }
+        });
+        const queryKeys = associatedQueries.map(({queryKey}) => queryKey);
+        this.unregisterQuery(queryKeys);
+        delete this.subscriptions[opId];
       }
-    });
-
-    const queryKeys = associatedQueries.map(({queryKey}) => queryKey);
-
-    this.unregisterQuery(queryKeys);
+    };
   };
 
   registerQuery = (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {
@@ -197,6 +213,15 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.push(...newQuerySubs);
   };
 
+  findOpId(subKey) {
+    const opIds = Object.keys(this.subscriptions);
+    for (let ii = 0; ii < opIds.length; ii++) {
+      const opId = opIds[ii];
+      if (this.subscriptions[opId].subKey === subKey) return opId;
+    }
+    return undefined;
+  }
+
   unregisterQuery = (maybeQueryKeys) => {
     const queryKeys = Array.isArray(maybeQueryKeys) ? maybeQueryKeys : [maybeQueryKeys];
 
@@ -210,9 +235,9 @@ export default class Atmosphere extends Environment {
       // for each peerSubKey, see if there exists a query that is not affected.
       const unaffectedQuery = this.querySubscriptions.find((qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey));
       if (!unaffectedQuery) {
-        const opId = this.subLookup[subKey];
-        this.socket.off(`gqlData.${opId}`);
-        this.socket.emit('gqlUnsub', opId);
+        const opId = this.findOpId(subKey);
+        if (opId === undefined) return;
+        this.socket.emit(GQL_STOP, opId);
       }
     });
 

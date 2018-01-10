@@ -3,10 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput';
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
+import {ORGANIZATION} from 'universal/utils/constants';
 import updateOrgValidation from './helpers/updateOrgValidation';
-import {ORGANIZATION_UPDATED} from 'universal/utils/constants';
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),
@@ -17,9 +17,11 @@ export default {
       description: 'the updated org including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedOrg}, {authToken, socketId}) {
+  async resolve(source, {updatedOrg}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     const userId = getUserId(authToken);
@@ -36,11 +38,12 @@ export default {
       ...org,
       updatedAt: now
     };
-    const organization = await r.table('Organization')
+    await r.table('Organization')
       .get(orgId)
-      .update(dbUpdate, {returnChanges: true})('changes')(0)('new_val');
-    const organizationUpdated = {organization};
-    getPubSub().publish(`${ORGANIZATION_UPDATED}.${orgId}`, {organizationUpdated, mutatorId: socketId});
-    return organizationUpdated;
+      .update(dbUpdate);
+
+    const data = {orgId};
+    publish(ORGANIZATION, orgId, UpdateOrgPayload, data, subOptions);
+    return data;
   }
 };

@@ -1,21 +1,22 @@
 import getRethink from 'server/database/rethinkDriver';
-import makeReactivationNotifications from 'server/safeMutations/helpers/makeReactivationNotifications';
+import publish from 'server/utils/publish';
 import shortid from 'shortid';
-import {ADD_TO_TEAM, NEW_AUTH_TOKEN, TEAM_MEMBER_ADDED} from 'universal/utils/constants';
-import getPubSub from 'server/utils/getPubSub';
-import tmsSignToken from 'server/utils/tmsSignToken';
+import {ADD_TO_TEAM, NEW_AUTH_TOKEN, UPDATED} from 'universal/utils/constants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
-const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, teamMembers, subOptions = {}) => {
+const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter) => {
   if (invitees.length === 0) return [];
   const {orgId, teamId, teamName} = inviter;
   const r = getRethink();
   const now = new Date();
   const userIds = invitees.map(({userId}) => userId);
-  const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
-  const {reactivatedTeamMembers, reactivatedUsers} = await r({
+  const teamMemberIds = invitees
+    .map(({teamMemberId}) => teamMemberId)
+    .filter(Boolean);
+  const {reactivatedUsers} = await r({
     reactivatedTeamMembers: r.table('TeamMember')
       .getAll(r.args(teamMemberIds), {index: 'id'})
-      .update({isNotRemoved: true}, {returnChanges: true})('changes')('new_val'),
+      .update({isNotRemoved: true}),
     reactivatedUsers: r.table('User')
       .getAll(r.args(userIds))
       .update((user) => {
@@ -34,16 +35,15 @@ const reactivateTeamMembersAndMakeNotifications = async (invitees, inviter, team
     teamName
   }));
   await r.table('Notification').insert(notifications);
-  reactivatedTeamMembers.forEach((teamMember) => {
-    const teamMemberAdded = {teamMember};
-    getPubSub().publish(`${TEAM_MEMBER_ADDED}.${teamId}`, {teamMemberAdded, ...subOptions});
+  reactivatedUsers.forEach(({id: userId, tms}) => {
+    publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
   });
 
-  const reactivationNotifications = makeReactivationNotifications(notifications, reactivatedUsers, teamMembers, inviter);
-  reactivatedUsers.forEach(({id: userId, tms}) => {
-    getPubSub().publish(`${NEW_AUTH_TOKEN}.${userId}`, {newAuthToken: tmsSignToken({sub: userId}, tms)});
-  });
-  return reactivationNotifications;
+  return notifications.map((notification, idx) => ({
+    notificationId: notification.id,
+    teamMemberId: toTeamMemberId(teamId, notification.userIds[0]),
+    preferredName: reactivatedUsers[idx].preferredName
+  }));
 };
 
 export default reactivateTeamMembersAndMakeNotifications;

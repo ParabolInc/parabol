@@ -52,7 +52,6 @@ export default {
         })
     });
 
-    // TODO make a CC_CHANGED subscription and update the CC object in it
     return {creditCard};
   }
 };

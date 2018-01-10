@@ -1,4 +1,18 @@
 const fieldsToSerialize = {
+  ApproveToOrgPayload: [
+    'invitationIds',
+    'removedOrgApprovals.approvedBy',
+    'removedOrgApprovals.email',
+    'removedOrgApprovals.id',
+    'removedOrgApprovals.orgId',
+    'removedOrgApprovals.teamId',
+    'removedRequestNotifications.id',
+    'removedRequestNotifications.inviteeEmail',
+    'removedRequestNotifications.inviterUserId',
+    'removedRequestNotifications.orgId',
+    'removedRequestNotifications.teamId',
+    'removedRequestNotifications.userIds'
+  ],
   NotificationsClearedPayload: [
     'deletedIds'
   ],

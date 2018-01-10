@@ -1,16 +1,16 @@
 import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdatedTeamInput from 'server/graphql/types/UpdatedTeamInput';
-import UpdateTeamPayload from 'server/graphql/types/UpdateTeamPayload';
+import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
 import {requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
-import {TEAM_UPDATED} from 'universal/utils/constants';
+import {TEAM} from 'universal/utils/constants';
 import updateTeamNameValidation from './helpers/updateTeamNameValidation';
 
 
 export default {
-  type: UpdateTeamPayload,
+  type: UpdateTeamNamePayload,
   args: {
     updatedTeam: {
       type: new GraphQLNonNull(UpdatedTeamInput),
@@ -21,6 +21,7 @@ export default {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
 
     // AUTH
     requireTeamMember(authToken, updatedTeam.id);
@@ -34,14 +35,10 @@ export default {
       name,
       updatedAt: now
     };
-    const team = await r.table('Team').get(teamId).update(dbUpdate, {returnChanges: true})('changes')(0)('new_val')
-      .default(null);
+    await r.table('Team').get(teamId).update(dbUpdate);
 
-    if (!team) {
-      throw new Error('Update already called!');
-    }
-    const teamUpdated = {team};
-    getPubSub().publish(`${TEAM_UPDATED}.${teamId}`, {teamUpdated, mutatorId, operationId});
-    return teamUpdated;
+    const data = {teamId};
+    publish(TEAM, teamId, UpdateTeamNamePayload, data, subOptions);
+    return data;
   }
 };

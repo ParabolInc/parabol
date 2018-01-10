@@ -3,10 +3,9 @@ import getRethink from 'server/database/rethinkDriver';
 import sendAppVersion from 'server/graphql/mutations/helpers/sendAppVersion';
 import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {UNPAUSE_USER} from 'server/utils/serverConstants';
-import {TEAM_MEMBER_UPDATED} from 'universal/utils/constants';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {NOTIFICATION} from 'universal/utils/constants';
 
 
 export default {
@@ -43,21 +42,19 @@ export default {
     }
 
     if (connectedSockets.length === 1) {
-      // Tell everyone this user is now online
       const operationId = dataLoader.share();
-      const teamMemberIds = tms.map((teamId) => toTeamMemberId(teamId, userId));
-      const teamMembers = await dataLoader.get('teamMembers').loadMany(teamMemberIds);
-      teamMembers.forEach((teamMember) => {
-        const teamMemberUpdated = {
-          teamMember: {
-            ...teamMember,
-            isConnected: true
-          }
-        };
-        const {teamId} = teamMember;
-        getPubSub().publish(`${TEAM_MEMBER_UPDATED}.${teamId}`, {teamMemberUpdated, operationId, mutatorId: socketId});
+      const subOptions = {mutatorId: socketId, operationId};
+      const listeningUserIds = await r.table('TeamMember')
+        .getAll(r.args(tms), {index: 'teamId'})
+        .filter({isNotRemoved: true})('userId')
+        .distinct();
+
+      // Tell everyone this user is now online
+      listeningUserIds.forEach((onlineUserId) => {
+        publish(NOTIFICATION, onlineUserId, User, user, subOptions);
       });
     }
+    // TODO just send this to the socketId, not all users
     sendAppVersion(userId);
     return user;
   }

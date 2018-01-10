@@ -21,7 +21,7 @@ const TeamArchived = (props) => {
     onError,
     onCompleted
   } = props;
-  const {notificationId, teamName} = notification;
+  const {notificationId, team: {teamName}} = notification;
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
@@ -73,10 +73,10 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withStyles(styleThunk)(TeamArchived),
   graphql`
-    fragment TeamArchived_notification on Notification {
+    fragment TeamArchived_notification on NotifyTeamArchived {
       notificationId: id
-      ... on NotifyTeamArchived {
-        teamName
+      team {
+        teamName: name
       }
     }
   `

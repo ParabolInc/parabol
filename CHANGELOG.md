@@ -4,6 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.24.0
+### Added
+- DataLoader to backend
+- GraphQL mutation-based subscriptions
+- Persisted presence
+
+### Fixed
+- Copy edits throughout meeting
+- Scrolling card drag-n-drop
+- Various notification bugs and inivtation logic
+
+# Removed
+- Dependencies on Cashay for all but user/org
+
 ## v0.23.0
 ### Added
 - Notifications when someone assigns/mentions you a task

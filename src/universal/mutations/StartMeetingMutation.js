@@ -3,24 +3,30 @@ import {CHECKIN} from 'universal/utils/constants';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
+graphql`
+  fragment StartMeetingMutation_team on StartMeetingPayload {
+    team {
+      checkInGreeting {
+        content
+        language
+      }
+      checkInQuestion
+      id
+      name
+      meetingId
+      activeFacilitator
+      facilitatorPhase
+      facilitatorPhaseItem
+      meetingPhase
+      meetingPhaseItem
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation StartMeetingMutation($teamId: ID!) {
     startMeeting(teamId: $teamId) {
-      team {
-        checkInGreeting {
-          content
-          language
-        }
-        checkInQuestion
-        id
-        name
-        meetingId
-        activeFacilitator
-        facilitatorPhase
-        facilitatorPhaseItem
-        meetingPhase
-        meetingPhaseItem
-      }
+      ...StartMeetingMutation_team @relay(mask: false)
     }
   }
 `;
@@ -34,7 +40,7 @@ const StartMeetingMutation = (environment, teamId, history, onError, onCompleted
       const activeFacilitator = `${userId}::${teamId}`;
       const optimisticCheckInGreeting = {
         content: 'Hello',
-        langnage: ''
+        language: ''
       };
 
       const checkInGreeting = createProxyRecord(store, 'MeetingGreeting', optimisticCheckInGreeting);

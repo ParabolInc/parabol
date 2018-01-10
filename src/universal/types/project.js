@@ -16,11 +16,13 @@ import {
   STUCK
 } from '../utils/constants';
 import getTypeFromEntityMap from '../utils/draftjs/getTypeFromEntityMap';
-import {getUserId} from './teamMember';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 export type ProjectID = string;
 
 type Tag = 'archived' | 'private';
+
+export type Status = ACTIVE | DONE | FUTURE | STUCK;
 
 export type Project = {
   content: EntityMap,
@@ -28,11 +30,7 @@ export type Project = {
   createdBy: UserID,
   id: ProjectID,
   sortOrder: number,
-  status:
-    | ACTIVE
-    | DONE
-    | FUTURE
-    | STUCK,
+  status: Status,
   tags: Tag[],
   teamId: TeamID,
   teamMemberId: TeamMemberID,
@@ -43,5 +41,6 @@ export type Project = {
 export const getMentions = (p: Project): UserID[] =>
   getTypeFromEntityMap('MENTION', p.content);
 
-export const getAssignee = (p: Project): UserID =>
-  getUserId(p.teamMemberId);
+export const getAssignee = (p: Project): UserID => {
+  return fromTeamMemberId(p.teamMemberId).userId;
+};

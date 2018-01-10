@@ -1,7 +1,6 @@
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
 import cashaySchema from 'cashay!../server/utils/getCashaySchema.js'; // eslint-disable-line
-import Atmosphere from 'universal/Atmosphere';
 import React from 'react';
 import {render} from 'react-dom';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
@@ -21,13 +20,10 @@ const initialState = {};
     httpTransport: new ActionHTTPTransport(persistedToken)
   });
 
-  // Relay store
-  const atmosphere = new Atmosphere();
-
   if (__PRODUCTION__) {
     StyleSheet.rehydrate(window.__APHRODITE__);
     render(
-      <Root atmosphere={atmosphere} store={store} />,
+      <Root store={store} />,
       document.getElementById('root')
     );
   } else {
@@ -35,7 +31,7 @@ const initialState = {};
     const {AppContainer} = require('react-hot-loader'); // eslint-disable-line import/no-extraneous-dependencies
     render(
       <AppContainer>
-        <Root atmosphere={atmosphere} store={store} />
+        <Root store={store} />
       </AppContainer>,
       document.getElementById('root')
     );
@@ -46,7 +42,7 @@ const initialState = {};
         const Root = require('./Root').default;
         render(
           <AppContainer>
-            <Root atmosphere={atmosphere} store={store} />
+            <Root store={store} />
           </AppContainer>,
           document.getElementById('root')
         );

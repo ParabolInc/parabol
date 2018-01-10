@@ -7,12 +7,13 @@ import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLa
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import TeamAddedSubscription from 'universal/subscriptions/TeamAddedSubscription';
-import TeamUpdatedSubscription from 'universal/subscriptions/TeamUpdatedSubscription';
+import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
+import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
+import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
+import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
-import NotificationsAddedSubscription from 'universal/subscriptions/NotificationsAddedSubscription';
-import NotificationsClearedSubscription from 'universal/subscriptions/NotificationsClearedSubscription';
+import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 
 const query = graphql`
   query DashboardWrapperQuery {
@@ -40,10 +41,11 @@ const newTeam = () => System.import('universal/modules/newTeam/containers/NewTea
 
 const subscriptions = [
   NewAuthTokenSubscription,
-  NotificationsAddedSubscription,
-  NotificationsClearedSubscription,
-  TeamAddedSubscription,
-  TeamUpdatedSubscription
+  NotificationSubscription,
+  ProjectSubscription,
+  TeamSubscription,
+  TeamMemberSubscription,
+  OrganizationSubscription
 ];
 
 const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
@@ -61,7 +63,7 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
         const viewer = renderProps ? renderProps.viewer : null;
         return (
           <DashLayoutContainer viewer={viewer}>
-            <DashSidebar viewer={viewer} />
+            <DashSidebar viewer={viewer} location={location} />
             <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
             <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} extraProps={{notifications}} />
             <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />

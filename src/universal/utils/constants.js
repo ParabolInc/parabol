@@ -74,8 +74,6 @@ export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 export const DENY_NEW_USER = 'DENY_NEW_USER';
 // Sent to meeting participants when the facilitator disconnects
 export const FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED';
-// Sent to the meeting facilitator by someone who wants to lead
-export const FACILITATOR_REQUEST = 'FACILITATOR_REQUEST';
 // Sent when a billing leader approves an invitee to the org
 export const INVITEE_APPROVED = 'INVITEE_APPROVED';
 // sent to the rest of the team when someone has just joined
@@ -184,36 +182,46 @@ export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
 export const REACTIVATED = 'REACTIVATED';
 
 /* Relay Subscription Channels */
-export const INVITATION_ADDED = 'invitationAdded';
-export const INVITATION_REMOVED = 'invitationRemoved';
-export const INVITATION_UPDATED = 'invitationUpdated';
-export const MEETING_UPDATED = 'meetingUpdated';
+export const INVITATION = 'invitation';
 export const NEW_AUTH_TOKEN = 'newAuthToken';
-export const NOTIFICATIONS_ADDED = 'notificationsAdded';
-export const NOTIFICATIONS_CLEARED = 'notificationsCleared';
-export const ORGANIZATION_ADDED = 'organizationAdded';
-export const ORGANIZATION_UPDATED = 'organizationUpdated';
-export const ORG_APPROVAL_ADDED = 'orgApprovalAdded';
-export const ORG_APPROVAL_REMOVED = 'orgApprovalRemoved';
-export const PROJECT_UPDATED = 'projectUpdated';
-export const PROJECT_CREATED = 'projectCreated';
-export const PROJECT_DELETED = 'projectDeleted';
-export const TEAM_ADDED = 'teamAdded';
-export const TEAM_UPDATED = 'teamUpdated';
-export const TEAM_REMOVED = 'teamRemoved';
-export const TEAM_MEMBERS_INVITED = 'teamMembersInvited';
-export const TEAM_MEMBER_ADDED = 'teamMemberAdded';
-export const TEAM_MEMBER_REMOVED = 'teamMemberRemoved';
-export const TEAM_MEMBER_UPDATED = 'teamMemberUpdated';
-export const AGENDA_ITEM_ADDED = 'agendaItemAdded';
-export const AGENDA_ITEM_UPDATED = 'agendaItemUpdated';
-export const AGENDA_ITEM_REMOVED = 'agendaItemRemoved';
+export const NOTIFICATION = 'notification';
+export const ORGANIZATION = 'organization';
+export const ORG_APPROVAL = 'orgApproval';
+// export const PROJECT = 'project'; // TODO refactor so it doesn't conflict with DnD
+// export const MEETING = 'meeting'; // conflicts with area
+// export const AGENDA_ITEM = 'agendaItem'; // conflict
+export const TEAM = 'team';
+export const TEAM_MEMBER = 'teamMember';
+
+/*
+ * WebSocket Events
+ * loosely based off of: https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md
+ */
+/* CLIENT-TO-SERVER */
+// subscribe
+export const GQL_START = 'GQL_START';
+// unsubscribe
+export const GQL_STOP = 'GQL_STOP';
+// execute query or mutation
+export const GQL_EXEC = 'GQL_EXEC';
+/* SERVER-TO-CLIENT */
+// error starting subscription
+export const GQL_ERROR = 'GQL_ERROR';
+// unsubscribed
+export const GQL_COMPLETE = 'GQL_COMPLETE';
+// published message
+export const GQL_DATA = 'GQL_DATA';
 
 /* Relay Subscription Event Types */
-export const ADD = 'add';
-export const UPDATE = 'update';
-export const DELETE = 'delete';
-export const REPLACE = 'replace';
+export const ADDED = 'added';
+export const UPDATED = 'updated';
+export const REMOVED = 'removed';
+// used just for projects
+export const EDITED = 'edited';
+// used just for meetings
+export const MOVED = 'moved';
+export const FACILITATOR_CHANGED = 'facilitatorChanged';
+
 
 /* Parabol Payment level */
 export const PERSONAL = 'personal';

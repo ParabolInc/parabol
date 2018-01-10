@@ -203,25 +203,23 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withRouter(withStyles(styleThunk)(ProjectInvolves)),
   graphql`
-    fragment ProjectInvolves_notification on Notification {
+    fragment ProjectInvolves_notification on NotifyProjectInvolves {
       notificationId: id
-      ... on NotifyProjectInvolves {
-        changeAuthor {
-          changeAuthName: preferredName
-        }
-        involvement
-        team {
-          teamId: id
-          teamName: name
-        }
-        project {
-          content
-          status
-          tags
-          teamMember {
-            picture
-            preferredName
-          }
+      changeAuthor {
+        changeAuthorName: preferredName
+      }
+      involvement
+      team {
+        teamId: id
+        teamName: name
+      }
+      project {
+        content
+        status
+        tags
+        teamMember {
+          picture
+          preferredName
         }
       }
     }

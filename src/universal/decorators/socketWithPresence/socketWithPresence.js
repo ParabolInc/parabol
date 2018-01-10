@@ -13,7 +13,10 @@ export default (ComposedComponent) => {
     AuthEngine,
     socketCluster,
     onConnect: (options, hocOptions, socket) => {
-      props.atmosphere.setSocket(socket);
+      // not worth investigating since socket cluster will be gone soon
+      if (!props.atmosphere.socket) {
+        props.atmosphere.setSocket(socket);
+      }
     },
     onDisconnect: () => {
       cashay.create({priorityTransport: null});

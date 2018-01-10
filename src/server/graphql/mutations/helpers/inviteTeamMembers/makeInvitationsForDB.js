@@ -25,4 +25,4 @@ export default async function makeInvitationsForDB(invitees, teamId, userId) {
       updatedAt: now
     };
   });
-};
+}

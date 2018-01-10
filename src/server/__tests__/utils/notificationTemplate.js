@@ -44,7 +44,7 @@ export default function notificationTemplate(template) {
   if (type === PROMOTE_TO_BILLING_LEADER) {
     return {
       type,
-      groupName: this.context.organization.name
+      organization: this.context.organization
     };
   }
   if (type === REQUEST_NEW_USER) {
@@ -52,7 +52,6 @@ export default function notificationTemplate(template) {
     return {
       type,
       inviterUserId: inviter.id,
-      inviterName: inviter.preferredName,
       inviteeEmail: template.email || newInvitee().email,
       teamId: this.context.team.id,
       teamName: this.context.team.name,

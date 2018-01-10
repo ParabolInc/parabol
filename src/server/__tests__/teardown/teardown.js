@@ -18,4 +18,4 @@ export default async function teardown(results) {
   }
   await new Promise((res) => setTimeout(() => res(), 50));
   process.exit();
-};
+}

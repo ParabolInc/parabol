@@ -1,22 +1,17 @@
 import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
+import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore';
 import AreaEnum from 'server/graphql/types/AreaEnum';
-import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import CreateProjectInput from 'server/graphql/types/CreateProjectInput';
+import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {
-  ASSIGNEE,
-  MEETING,
-  MENTIONEE,
-  NOTIFICATIONS_ADDED,
-  PROJECT_CREATED,
-  PROJECT_INVOLVES
-} from 'universal/utils/constants';
+import {ASSIGNEE, MENTIONEE, NOTIFICATION, PROJECT, PROJECT_INVOLVES} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 
 export default {
@@ -32,15 +27,14 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newProject, area}, {authToken, dataLoader, socketId}) {
+  async resolve(source, {newProject, area}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const now = new Date();
-
+    const subOptions = {operationId, mutatorId};
     // AUTH
-    const myUserId = getUserId(authToken);
-
     // VALIDATION
+    const viewerId = getUserId(authToken);
     const schema = makeProjectSchema();
     const {errors, data: validNewProject} = schema({content: 1, ...newProject});
     handleSchemaErrors(errors);
@@ -48,19 +42,21 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
+    const teamMemberId = toTeamMemberId(teamId, userId);
+    const projectId = `${teamId}::${shortid.generate()}`;
     const {entityMap} = JSON.parse(content);
+    const tags = getTagsFromEntityMap(entityMap);
     const project = {
-      ...validNewProject,
-      id: `${teamId}::${shortid.generate()}`,
+      id: projectId,
       agendaId: validNewProject.agendaId,
       content: validNewProject.content,
       createdAt: now,
-      createdBy: myUserId,
+      createdBy: viewerId,
       sortOrder: validNewProject.sortOrder,
       status: validNewProject.status,
-      tags: getTagsFromEntityMap(entityMap),
+      tags,
       teamId,
-      teamMemberId: `${userId}::${teamId}`,
+      teamMemberId,
       updatedAt: now,
       userId
     };
@@ -72,24 +68,21 @@ export default {
       teamMemberId: project.teamMemberId,
       updatedAt: project.updatedAt
     };
-    const {usersToIgnore} = await r({
+    const {teamMembers} = await r({
       project: r.table('Project').insert(project),
       history: r.table('ProjectHistory').insert(history),
-      usersToIgnore: area === MEETING ? await r.table('TeamMember')
+      teamMembers: r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
-          isCheckedIn: true
-        })('userId')
-        .coerceTo('array') : []
+          isNotRemoved: true
+        })
+        .coerceTo('array')
     });
-    const projectCreated = {project};
-
-    getPubSub().publish(`${PROJECT_CREATED}.${teamId}`, {projectCreated, operationId, mutatorId: socketId});
-    getPubSub().publish(`${PROJECT_CREATED}.${userId}`, {projectCreated, operationId, mutatorId: socketId});
+    const usersToIgnore = getUsersToIgnore(area, teamMembers);
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
-    const changeAuthorId = `${myUserId}::${teamId}`;
+    const changeAuthorId = toTeamMemberId(teamId, viewerId);
     const notificationsToAdd = [];
     if (changeAuthorId !== project.teamMemberId && !usersToIgnore.includes(project.userId)) {
       notificationsToAdd.push({
@@ -105,7 +98,7 @@ export default {
     }
 
     getTypeFromEntityMap('MENTION', entityMap)
-      .filter((mention) => mention !== myUserId && mention !== project.userId && !usersToIgnore.includes(mention))
+      .filter((mention) => mention !== viewerId && mention !== project.userId && !usersToIgnore.includes(mention))
       .forEach((mentioneeUserId) => {
         notificationsToAdd.push({
           id: shortid.generate(),
@@ -118,14 +111,22 @@ export default {
           teamId
         });
       });
+    const data = {projectId, notifications: notificationsToAdd};
+
     if (notificationsToAdd.length) {
       await r.table('Notification').insert(notificationsToAdd);
       notificationsToAdd.forEach((notification) => {
-        const notificationsAdded = {notifications: [notification]};
-        const notificationUserId = notification.userIds[0];
-        getPubSub().publish(`${NOTIFICATIONS_ADDED}.${notificationUserId}`, {notificationsAdded});
+        const {userIds: [notificationUserId]} = notification;
+        publish(NOTIFICATION, notificationUserId, CreateProjectPayload, data, subOptions);
       });
     }
-    return projectCreated;
+
+    const isPrivate = tags.includes('private');
+    teamMembers.forEach((teamMember) => {
+      if (!isPrivate || teamMember.userId === userId) {
+        publish(PROJECT, teamMember.userId, CreateProjectPayload, data, subOptions);
+      }
+    });
+    return data;
   }
 };

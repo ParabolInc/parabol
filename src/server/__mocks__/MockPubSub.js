@@ -1,67 +1,54 @@
+import dataFieldsToSerialize from 'server/__tests__/utils/dataFieldsToSerialize';
 import * as getPubSub from 'server/utils/getPubSub';
 
 const fieldsToSerialize = {
-  invitationAdded: [
-    'channelId',
-    'message.invitationAdded.invitation.id',
-    'message.invitationAdded.invitation.email',
-    'message.invitationAdded.invitation.hashedToken',
-    'message.invitationAdded.invitation.id',
-    'message.invitationAdded.invitation.invitedBy',
-    'message.invitationAdded.invitation.teamId'
+  invitation: [
+    ...dataFieldsToSerialize
   ],
   newAuthToken: [
     'channelId',
-    'message.newAuthToken'
+    'message.data.tms'
   ],
-  notificationsAdded: [
-    'channelId',
-    'message.notificationsAdded.notifications.id',
-    'message.notificationsAdded.notifications.orgId',
-    'message.notificationsAdded.notifications.teamId',
-    'message.notificationsAdded.notifications.userIds',
-    'message.notificationsAdded.notifications.inviteeEmail'
+  notification: [
+    ...dataFieldsToSerialize
   ],
-  notificationsCleared: [
-    'channelId',
-    'message.notificationsCleared.deletedIds'
+  organization: [
+    ...dataFieldsToSerialize
   ],
-  orgApprovalRemoved: [
-    'channelId',
-    'message.orgApprovalRemoved.orgApproval.approvedBy',
-    'message.orgApprovalRemoved.orgApproval.deniedBy',
-    'message.orgApprovalRemoved.orgApproval.email',
-    'message.orgApprovalRemoved.orgApproval.id',
-    'message.orgApprovalRemoved.orgApproval.orgId',
-    'message.orgApprovalRemoved.orgApproval.teamId'
+  orgApproval: [
+    ...dataFieldsToSerialize
   ],
-  teamUpdated: [
-    'channelId',
-    'message.teamUpdated.team.id',
-    'message.teamUpdated.team.orgId'
+  project: [
+    ...dataFieldsToSerialize
   ],
-  teamMemberAdded: [
-    'channelId',
-    'message.teamMemberAdded.teamMember.id',
-    'message.teamMemberAdded.teamMember.teamId',
-    'message.teamMemberAdded.teamMember.userId'
+  team: [
+    ...dataFieldsToSerialize
+  ],
+  teamMember: [
+    ...dataFieldsToSerialize
   ]
 };
 
-const fieldsToSort = {
-  notificationsAdded: [
-    'message.notificationsAdded.notifications.0.teamName',
-    'message.notificationsAdded.notifications.0.type'
-  ],
-  orgApprovalRemoved: [
-    'message.orgApprovalRemoved.orgApproval.createdAt'
-  ]
+const untestablePayloads = [
+  'message.data.removedRequestNotifications'
+];
+
+// const getPath = (str, obj) => str.split('.').reduce((o, i) => o[i], obj);
+const replacePath = (str, docArr, newVal) => {
+  docArr.forEach((obj) => {
+    const path = str.split('.');
+    let currentObj = obj;
+    for (let ii = 0; ii < path.length - 1; ii++) {
+      const next = path[ii];
+      currentObj = currentObj[next];
+      if (!currentObj) return;
+    }
+    const lastVal = path[path.length - 1];
+    if (Array.isArray(currentObj[lastVal])) {
+      currentObj[lastVal] = newVal;
+    }
+  });
 };
-
-const unsortables = new Set(['invitationAdded']);
-
-
-const getPath = (str, obj) => str.split('.').reduce((o, i) => o[i], obj);
 
 export default class MockPubSub {
   constructor() {
@@ -79,20 +66,13 @@ export default class MockPubSub {
       if (!channelFields) {
         throw new Error(`BAD MOCK: No fieldsToSerialize for pubsub channel ${channel}`);
       }
-      snapshot[channel] = dynamicSerializer.toStatic(doc, channelFields, {constant: unsortables.has(channel)});
-      // we don't care about the order, so make it repeatable
-      const customSorts = fieldsToSort[channel] || [];
-      const sortFields = customSorts.concat('channelId');
-      snapshot[channel].sort((a, b) => {
-        for (let ii = 0; ii < sortFields.length; ii++) {
-          const sortField = sortFields[ii];
-          const aVal = getPath(sortField, a);
-          const bVal = getPath(sortField, b);
-          if (aVal === bVal) continue;
-          return aVal > bVal;
-        }
-        return 0;
+
+      // some payloads can't be tested because they are an array that can't be sorted
+      // for those, we can skip it here and use the arrayContaining test
+      untestablePayloads.forEach((untestable) => {
+        replacePath(untestable, doc, 'UNTESTED');
       });
+      snapshot[channel] = dynamicSerializer.toStatic(doc, channelFields);
     }
     return snapshot;
   }

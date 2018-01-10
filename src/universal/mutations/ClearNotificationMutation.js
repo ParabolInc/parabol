@@ -1,24 +1,26 @@
 import {commitMutation} from 'react-relay';
-import {ConnectionHandler} from 'relay-runtime';
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
-const mutation = graphql`
-  mutation ClearNotificationMutation($notificationId: ID!) {
-    clearNotification(notificationId: $notificationId) {
-      deletedId
+graphql`
+  fragment ClearNotificationMutation_notification on ClearNotificationPayload {
+    notification {
+      id
     }
   }
 `;
 
-export const clearNotificationUpdater = (viewer, deletedIds) => {
-  const conn = ConnectionHandler.getConnection(
-    viewer,
-    'DashboardWrapper_notifications'
-  );
-  if (conn) {
-    deletedIds.forEach((deletedId) => {
-      ConnectionHandler.deleteNode(conn, deletedId);
-    });
+const mutation = graphql`
+  mutation ClearNotificationMutation($notificationId: ID!) {
+    clearNotification(notificationId: $notificationId) {
+      ...ClearNotificationMutation_notification @relay(mask: false)
+    }
   }
+`;
+
+export const clearNotificationNotificationUpdater = (payload, store, viewerId) => {
+  const notificationId = getInProxy(payload, 'notification', 'id');
+  handleRemoveNotifications(notificationId, store, viewerId);
 };
 
 const ClearNotificationMutation = (environment, notificationId, onError, onCompleted) => {
@@ -27,13 +29,11 @@ const ClearNotificationMutation = (environment, notificationId, onError, onCompl
     mutation,
     variables: {notificationId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
-      const deletedId = store.getRootField('clearNotification').getValue('deletedId');
-      clearNotificationUpdater(viewer, [deletedId]);
+      const payload = store.getRootField('clearNotification');
+      clearNotificationNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      const viewer = store.get(viewerId);
-      clearNotificationUpdater(viewer, [notificationId]);
+      handleRemoveNotifications(notificationId, store, viewerId);
     },
     onCompleted,
     onError

@@ -2,17 +2,23 @@ import {commitMutation} from 'react-relay';
 import {GITHUB} from 'universal/utils/constants';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
+graphql`
+  fragment CreateGitHubIssueMutation_project on CreateGitHubIssuePayload {
+    project {
+      integration {
+        issueNumber
+        service
+        nameWithOwner
+      }
+      updatedAt
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation CreateGitHubIssueMutation($nameWithOwner: String!, $projectId: ID!) {
     createGitHubIssue(nameWithOwner: $nameWithOwner, projectId: $projectId) {
-      project {
-        integration {
-          issueNumber
-          service
-          nameWithOwner
-        }
-        updatedAt
-      }
+      ...CreateGitHubIssueMutation_project @relay(mask: false)
     }
   }
 `;

@@ -17,4 +17,4 @@ export default async function sendAssetToS3(asset, assetPutUrl) {
   parser.href = putUrl;
   const {protocol, host, pathname} = parser;
   return `${protocol}//${host}${pathname}`;
-};
+}
