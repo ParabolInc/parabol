@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.24.1
+### Fixed
+- Unresponsive filtered add project button #1634
+
 ## v0.24.0
 ### Added
 - DataLoader to backend
