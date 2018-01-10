@@ -13,7 +13,6 @@ import withScrolling from 'react-dnd-scrollzone';
 import FontAwesome from 'react-fontawesome';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
-import Atmosphere from 'universal/atmosphere';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
 import Badge from 'universal/components/Badge/Badge';
 import DraggableProject from 'universal/containers/ProjectCard/DraggableProject';
