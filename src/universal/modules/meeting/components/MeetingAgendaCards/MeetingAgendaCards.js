@@ -1,6 +1,5 @@
 // @flow
 import type {Project} from 'universal/types/project';
-import type {CreateProjectMutationVariables} from 'universal/mutations/CreateProjectMutation';
 
 import {css} from 'aphrodite-local-styles/no-important';
 import React, {Component} from 'react';

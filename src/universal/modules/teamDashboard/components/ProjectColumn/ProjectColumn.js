@@ -145,7 +145,7 @@ const handleAddProjectFactory = (
 
 type Props = {
   area: Area,
-  atmosphere: typeof Atmosphere,
+  atmosphere: Environment,
   dispatch: (action: any) => any, // TODO: need to enumerate action types
   firstColumn: boolean,
   getProjectById: (projectId: ProjectID) => ?Project,
