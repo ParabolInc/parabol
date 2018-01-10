@@ -1,36 +1,17 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
+import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
-import getPubSub from 'server/utils/getPubSub';
+import publish from 'server/utils/publish';
 import {REMOVE_USER} from 'server/utils/serverConstants';
-import {NOTIFICATIONS_CLEARED, ORG_APPROVAL_REMOVED, ORGANIZATION_UPDATED} from 'universal/utils/constants';
+import {
+  NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, PROJECT, TEAM, TEAM_MEMBER,
+  UPDATED
+} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-
-const publishInactivatedApprovals = (inactivatedOrgApprovals, subOptions) => {
-  inactivatedOrgApprovals.forEach((orgApproval) => {
-    const {teamId} = orgApproval;
-    const orgApprovalRemoved = {orgApproval};
-    getPubSub().publish(`${ORG_APPROVAL_REMOVED}.${teamId}`, {orgApprovalRemoved, ...subOptions});
-  });
-};
-
-const publishRemovedNotifications = (removedNotifications, userId, subOptions) => {
-  const deletedIds = removedNotifications.map(({id}) => id);
-  const notificationsCleared = {deletedIds};
-  getPubSub().publish(`${NOTIFICATIONS_CLEARED}.${userId}`, {notificationsCleared, ...subOptions});
-};
-
-const publishOrgUpdates = (organization, removedOrgUser, subOptions) => {
-  const {id: orgId} = organization;
-  const organizationUpdated = {
-    organization,
-    removedOrgUser
-  };
-  getPubSub().publish(`${ORGANIZATION_UPDATED}.${orgId}`, {organizationUpdated, ...subOptions});
-};
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -50,6 +31,7 @@ const removeOrgUser = {
     const now = new Date();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
+
     // AUTH
     const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
     requireOrgLeader(userOrgDoc);
@@ -58,19 +40,34 @@ const removeOrgUser = {
     const teamIds = await r.table('Team')
       .getAll(orgId, {index: 'orgId'})('id');
     const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId));
-    const teamMembersRemoved = await removeAllTeamMembers(teamMemberIds, {isKickout: true}, subOptions);
-    const {updatedOrg, updatedUser, inactivatedOrgApprovals, removedNotifications: {notifications}} = await r({
+    const perTeamRes = await Promise.all(teamMemberIds.map((teamMemberId) => {
+      return removeTeamMember(teamMemberId, {isKickout: true});
+    }));
+
+    const projectIds = perTeamRes.reduce((arr, res) => {
+      arr.push(...res.archivedProjectIds, ...res.reassignedProjectIds);
+      return arr;
+    }, []);
+
+    const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
+      arr.push(...res.removedNotifications);
+      return arr;
+    }, []);
+
+    const {removedOrgNotifications, updatedUser} = await r({
       updatedOrg: r.table('Organization').get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
           updatedAt: now
-        }), {returnChanges: true})('changes')(0)('new_val').default(null),
+        })),
       updatedUser: r.table('User').get(userId)
         .update((row) => ({
           userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
           updatedAt: now
-        }), {returnChanges: true})('changes')(0)('new_val').default(null),
-      removedNotifications: r.table('Notification')
+        }), {returnChanges: true})('changes')(0)('new_val')
+        .default(null),
+      // remove stale notifications
+      removedOrgNotifications: r.table('Notification')
         .getAll(userId, {index: 'userIds'})
         .filter({orgId})
         .update((notification) => ({
@@ -86,26 +83,40 @@ const removeOrgUser = {
               .delete()
           };
         }),
-      inactivatedOrgApprovals: r.table('User').get(userId)('email')
+      inactivatedApprovals: r.table('User').get(userId)('email')
         .do((email) => {
           return r.table('OrgApproval')
             .getAll(email, {index: 'email'})
             .filter({orgId})
             .update({
               isActive: false
-            }, {returnChanges: true})('changes')('new_val').default([]);
+            });
         })
     });
-    publishRemovedNotifications(notifications, userId, subOptions);
-    publishInactivatedApprovals(inactivatedOrgApprovals, subOptions);
-    publishOrgUpdates(updatedOrg, updatedUser, subOptions);
+
     // need to make sure the org doc is updated before adjusting this
     await adjustUserCount(userId, orgId, REMOVE_USER);
-    return {
-      organization: updatedOrg,
-      inactivatedOrgApprovals,
-      teamMembersRemoved
-    };
+
+    const {tms} = updatedUser;
+    publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
+    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
+
+    const data = {orgId, teamIds, teamMemberIds, projectIds, removedTeamNotifications, removedOrgNotifications, userId};
+
+    publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions);
+    publish(NOTIFICATION, userId, RemoveOrgUserPayload, data, subOptions);
+    teamIds.forEach((teamId) => {
+      const teamData = {...data, teamFilterId: teamId};
+      publish(TEAM, teamId, RemoveOrgUserPayload, teamData, subOptions);
+      publish(TEAM_MEMBER, teamId, RemoveOrgUserPayload, teamData, subOptions);
+    });
+
+    const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds);
+    remainingTeamMembers.forEach((teamMember) => {
+      if (teamMemberIds.includes(teamMember.id)) return;
+      publish(PROJECT, teamMember.userId, RemoveOrgUserPayload, data, subOptions);
+    });
+    return data;
   }
 };
 

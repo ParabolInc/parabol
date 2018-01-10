@@ -112,3 +112,9 @@ export const resolveIfViewer = (ifViewerField, defaultValue) => (source, args, {
 export const resolveTypeForViewer = (selfPayload, otherPayload) => ({userId}, {authToken}) => {
   return userId === getUserId(authToken) ? selfPayload : otherPayload;
 };
+
+export const resolveFilterByTeam = (resolver, getTeamId) => async (source, args, context) => {
+  const {teamIdFilter} = source;
+  const resolvedArray = await resolver(source, args, context);
+  return teamIdFilter ? resolvedArray.filter((obj) => getTeamId(obj) === teamIdFilter) : resolvedArray;
+};
