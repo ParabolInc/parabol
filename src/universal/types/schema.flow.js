@@ -1,22 +1,22 @@
 /* @flow */
 
-declare type GraphQLResponseRoot = {
+export type GraphQLResponseRoot = {
   data?: Query | Mutation;
   errors?: Array<GraphQLResponseError>;
 }
 
-declare type GraphQLResponseError = {
+export type GraphQLResponseError = {
   message: string;            // Required for all errors
   locations?: Array<GraphQLResponseErrorLocation>;
   [propName: string]: any;    // 7.2.2 says 'GraphQL servers may provide additional entries to error'
 }
 
-declare type GraphQLResponseErrorLocation = {
+export type GraphQLResponseErrorLocation = {
   line: number;
   column: number;
 }
 
-declare type Query = {
+export type Query = {
   viewer: ?User;
   orgDetails: ?Organization;
   teamMemberCount: ?number;
@@ -29,7 +29,7 @@ declare type Query = {
 /**
   The user account profile
 */
-declare type User = {
+export type User = {
   /** The userId provided by auth0 */
   id: ?string;
   /** Array of identifier + ip pairs */
@@ -111,14 +111,14 @@ declare type User = {
 /**
   Identifier and IP address blocked
 */
-declare type BlockedUserType = {
+export type BlockedUserType = {
   /** The identifier (usually email) of blocked user */
   identifier: ?string;
   /** The IP address of the blocked user */
   id: ?string;
 }
 
-declare type AuthIdentityType = {
+export type AuthIdentityType = {
   /** The connection name.
       This field is not itself updateable
       but is needed when updating email, email_verified, username or password. */
@@ -134,7 +134,7 @@ declare type AuthIdentityType = {
 /**
   A team
 */
-declare type Team = {
+export type Team = {
   /** A shortid for the team */
   id: ?string;
   /** The datetime the team was created */
@@ -184,7 +184,7 @@ declare type Team = {
   isArchived: ?boolean;
 }
 
-declare type MeetingGreeting = {
+export type MeetingGreeting = {
   /** The foreign-language greeting */
   content: ?string;
   /** The source language for the greeting */
@@ -194,12 +194,12 @@ declare type MeetingGreeting = {
 /**
   The phases of an action meeting
 */
-declare type ActionMeetingPhaseEnum = "lobby" | "checkin" | "updates" | "firstcall" | "agendaitems" | "lastcall" | "summary";
+export type ActionMeetingPhaseEnum = "lobby" | "checkin" | "updates" | "firstcall" | "agendaitems" | "lastcall" | "summary";
 
 /**
   An invitation to become a team member
 */
-declare type Invitation = {
+export type Invitation = {
   /** The unique invitation Id */
   id: string;
   /** The datetime the invitation was accepted */
@@ -224,17 +224,17 @@ declare type Invitation = {
   updatedAt: ?any;
 }
 
-declare type PossibleTeamMember = Invitation | OrgApproval | TeamMember;
+export type PossibleTeamMember = Invitation | OrgApproval | TeamMember;
 
 /**
   The pay tier of the team
 */
-declare type TierEnum = "personal" | "pro" | "enterprise";
+export type TierEnum = "personal" | "pro" | "enterprise";
 
 /**
   The state of approving an email address to join a team and org
 */
-declare type OrgApproval = {
+export type OrgApproval = {
   /** The unique approval ID */
   id: string;
   /** The userId of the billing leader that approved the invitee */
@@ -259,12 +259,12 @@ declare type OrgApproval = {
 /**
   The approval status for a user joining the org
 */
-declare type OrgApprovalStatusEnum = "APPROVED" | "PENDING" | "DENIED";
+export type OrgApprovalStatusEnum = "APPROVED" | "PENDING" | "DENIED";
 
 /**
   An organization
 */
-declare type Organization = {
+export type Organization = {
   /** The unique organization ID */
   id: string;
   /** The datetime the organization was created */
@@ -301,7 +301,7 @@ declare type Organization = {
 /**
   A credit card
 */
-declare type CreditCard = {
+export type CreditCard = {
   /** The brand of the credit card, as provided by skype */
   brand: ?string;
   /** The MM/YY string of the expiration date */
@@ -313,7 +313,7 @@ declare type CreditCard = {
 /**
   A connection to a list of items.
 */
-declare type OrganizationMemberConnection = {
+export type OrganizationMemberConnection = {
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** A list of edges. */
@@ -323,7 +323,7 @@ declare type OrganizationMemberConnection = {
 /**
   Information about pagination in a connection.
 */
-declare type PageInfo = {
+export type PageInfo = {
   /** When paginating forwards, are there more items? */
   hasNextPage: boolean;
   /** When paginating backwards, are there more items? */
@@ -337,21 +337,21 @@ declare type PageInfo = {
 /**
   An edge in a connection.
 */
-declare type OrganizationMemberEdge = {
+export type OrganizationMemberEdge = {
   /** The item at the end of the edge */
   node: ?OrganizationMember;
   /** A cursor for use in pagination */
   cursor: string;
 }
 
-declare type OrganizationMember = {
+export type OrganizationMember = {
   id: ?string;
   organization: ?Organization;
   user: ?User;
   isBillingLeader: ?boolean;
 }
 
-declare type OrgUserCount = {
+export type OrgUserCount = {
   /** The number of orgUsers who have an inactive flag */
   inactiveUserCount: ?number;
   /** The number of orgUsers who do not have an inactive flag */
@@ -361,7 +361,7 @@ declare type OrgUserCount = {
 /**
   A request placeholder that will likely turn into 1 or more tasks
 */
-declare type AgendaItem = {
+export type AgendaItem = {
   /** The unique agenda item id teamId::shortid */
   id: string;
   /** The body of the agenda item */
@@ -387,7 +387,7 @@ declare type AgendaItem = {
 /**
   A member of a team
 */
-declare type TeamMember = {
+export type TeamMember = {
   /** An ID for the teamMember. userId::teamId */
   id: ?string;
   /** true if the user is a part of the team, false if they no longer are */
@@ -427,7 +427,7 @@ declare type TeamMember = {
 /**
   A connection to a list of items.
 */
-declare type ProjectConnection = {
+export type ProjectConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor;
   /** A list of edges. */
@@ -437,7 +437,7 @@ declare type ProjectConnection = {
 /**
   Information about pagination in a connection.
 */
-declare type PageInfoDateCursor = {
+export type PageInfoDateCursor = {
   /** When paginating forwards, are there more items? */
   hasNextPage: boolean;
   /** When paginating backwards, are there more items? */
@@ -451,7 +451,7 @@ declare type PageInfoDateCursor = {
 /**
   An edge in a connection.
 */
-declare type ProjectEdge = {
+export type ProjectEdge = {
   /** The item at the end of the edge */
   node: ?Project;
   cursor: ?any;
@@ -460,7 +460,7 @@ declare type ProjectEdge = {
 /**
   A long-term project shared across the team, assigned to a single user 
 */
-declare type Project = {
+export type Project = {
   /** A shortid for the project teamId::shortid */
   id: ?string;
   /** the agenda item that created this project, if any */
@@ -494,7 +494,7 @@ declare type Project = {
   userId: ?string;
 }
 
-declare type ProjectEditorDetails = {
+export type ProjectEditorDetails = {
   /** The userId of the person editing the project */
   userId: string;
   /** The name of the userId editing the project */
@@ -504,29 +504,29 @@ declare type ProjectEditorDetails = {
 /**
   The details associated with a project integrated with GitHub
 */
-declare type GitHubProject = {
+export type GitHubProject = {
   integrationId: string;
   service: IntegrationService;
   nameWithOwner: ?string;
   issueNumber: ?number;
 }
 
-declare type ProjectIntegration = GitHubProject;
+export type ProjectIntegration = GitHubProject;
 
 /**
   The list of services for integrations
 */
-declare type IntegrationService = "GitHubIntegration" | "SlackIntegration";
+export type IntegrationService = "GitHubIntegration" | "SlackIntegration";
 
 /**
   The status of the project
 */
-declare type ProjectStatusEnum = "active" | "stuck" | "done" | "future";
+export type ProjectStatusEnum = "active" | "stuck" | "done" | "future";
 
 /**
   The user/org M:F join, denormalized on the user/org tables
 */
-declare type UserOrg = {
+export type UserOrg = {
   /** The orgId */
   id: ?string;
   /** role of the user in the org */
@@ -536,12 +536,12 @@ declare type UserOrg = {
 /**
   The role of the org user
 */
-declare type OrgUserRole = "billingLeader";
+export type OrgUserRole = "billingLeader";
 
 /**
   An integration that connects github issues & PRs to Parabol projects
 */
-declare type GitHubIntegration = {
+export type GitHubIntegration = {
   /** The ID of an object */
   id: string;
   /** The parabol userId of the admin for this repo (usually the creator) */
@@ -565,7 +565,7 @@ declare type GitHubIntegration = {
 /**
   A token for a user to be used on 1 or more teams
 */
-declare type Provider = {
+export type Provider = {
   /** The ID of an object */
   id: string;
   /** The access token to the service */
@@ -591,7 +591,7 @@ declare type Provider = {
 /**
   A connection to a list of items.
 */
-declare type InvoiceConnection = {
+export type InvoiceConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor;
   /** A list of edges. */
@@ -601,7 +601,7 @@ declare type InvoiceConnection = {
 /**
   An edge in a connection.
 */
-declare type InvoiceEdge = {
+export type InvoiceEdge = {
   /** The item at the end of the edge */
   node: ?Invoice;
   cursor: ?any;
@@ -610,7 +610,7 @@ declare type InvoiceEdge = {
 /**
   A monthly billing invoice for an organization
 */
-declare type Invoice = {
+export type Invoice = {
   /** A shortid for the invoice */
   id: ?string;
   /** The amount the card will be charged (total + startingBalance with a min value of 0) */
@@ -650,7 +650,7 @@ declare type Invoice = {
 /**
   A single line item charge on the invoice
 */
-declare type InvoiceLineItem = {
+export type InvoiceLineItem = {
   /** The unique line item id */
   id: string;
   /** The amount for the line item (in USD) */
@@ -668,7 +668,7 @@ declare type InvoiceLineItem = {
 /**
   The per-user-action line item details,
 */
-declare type InvoiceLineItemDetails = {
+export type InvoiceLineItemDetails = {
   /** The unique detailed line item id */
   id: string;
   /** The amount for the line item (in USD) */
@@ -686,12 +686,12 @@ declare type InvoiceLineItemDetails = {
 /**
   A big picture line item
 */
-declare type InvoiceLineItemEnum = "ADDED_USERS" | "INACTIVITY_ADJUSTMENTS" | "OTHER_ADJUSTMENTS" | "REMOVED_USERS";
+export type InvoiceLineItemEnum = "ADDED_USERS" | "INACTIVITY_ADJUSTMENTS" | "OTHER_ADJUSTMENTS" | "REMOVED_USERS";
 
 /**
   A single line item for the charges for next month
 */
-declare type InvoiceChargeNextMonth = {
+export type InvoiceChargeNextMonth = {
   /** The amount for the line item (in USD) */
   amount: number;
   /** The datetime the next period will end */
@@ -705,12 +705,12 @@ declare type InvoiceChargeNextMonth = {
 /**
   The payment status of the invoice
 */
-declare type InvoiceStatusEnum = "PENDING" | "PAID" | "FAILED" | "UPCOMING";
+export type InvoiceStatusEnum = "PENDING" | "PAID" | "FAILED" | "UPCOMING";
 
 /**
   A team meeting history for all previous meetings
 */
-declare type Meeting = {
+export type Meeting = {
   /** The unique meeting id. shortid. */
   id: string;
   /** The number of agenda items completed during the meeting */
@@ -745,7 +745,7 @@ declare type Meeting = {
 /**
   The user invited to the meeting
 */
-declare type MeetingInvitee = {
+export type MeetingInvitee = {
   /** The teamMemberId of the user invited to the meeting */
   id: ?string;
   /** true if the invitee was present in the meeting */
@@ -763,7 +763,7 @@ declare type MeetingInvitee = {
 /**
   The project that was created in a meeting
 */
-declare type MeetingProject = {
+export type MeetingProject = {
   /** The unique action id, meetingId::projectId */
   id: string;
   /** The stringified Draft-js raw description of the action created during the meeting */
@@ -779,7 +779,7 @@ declare type MeetingProject = {
 /**
   A connection to a list of items.
 */
-declare type NotificationConnection = {
+export type NotificationConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor;
   /** A list of edges. */
@@ -789,23 +789,23 @@ declare type NotificationConnection = {
 /**
   An edge in a connection.
 */
-declare type NotificationEdge = {
+export type NotificationEdge = {
   /** The item at the end of the edge */
   node: ?Notification;
   cursor: ?any;
 }
 
-declare type Notification = NotifyTeamInvite | NotifyRequestNewUser | NotifyInviteeApproved | NotifyTeamArchived | NotifyProjectInvolves | NotifyAddedToTeam | NotifyDenial | NotifyKickedOut | NotifyPaymentRejected | NotifyVersionInfo | NotifyPromoteToOrgLeader;
+export type Notification = NotifyTeamInvite | NotifyRequestNewUser | NotifyInviteeApproved | NotifyTeamArchived | NotifyProjectInvolves | NotifyAddedToTeam | NotifyDenial | NotifyKickedOut | NotifyPaymentRejected | NotifyVersionInfo | NotifyPromoteToOrgLeader;
 
 /**
   The kind of notification
 */
-declare type NotificationEnum = "ADD_TO_TEAM" | "DENY_NEW_USER" | "FACILITATOR_DISCONNECTED" | "undefined" | "INVITEE_APPROVED" | "JOIN_TEAM" | "KICKED_OUT" | "PAYMENT_REJECTED" | "PROJECT_INVOLVES" | "REJOIN_TEAM" | "REQUEST_NEW_USER" | "TEAM_INVITE" | "TEAM_ARCHIVED" | "VERSION_INFO" | "PROMOTE_TO_BILLING_LEADER";
+export type NotificationEnum = "ADD_TO_TEAM" | "DENY_NEW_USER" | "FACILITATOR_DISCONNECTED" | "undefined" | "INVITEE_APPROVED" | "JOIN_TEAM" | "KICKED_OUT" | "PAYMENT_REJECTED" | "PROJECT_INVOLVES" | "REJOIN_TEAM" | "REQUEST_NEW_USER" | "TEAM_INVITE" | "TEAM_ARCHIVED" | "VERSION_INFO" | "PROMOTE_TO_BILLING_LEADER";
 
 /**
   A token for a user to be used on 1 or more teams
 */
-declare type ProviderMap = {
+export type ProviderMap = {
   /** The ID of an object */
   id: string;
   teamId: ?string;
@@ -818,7 +818,7 @@ declare type ProviderMap = {
 /**
   All the details about a particular provider
 */
-declare type ProviderRow = {
+export type ProviderRow = {
   /** The ID of an object */
   id: string;
   /** The access token attached to the userId. null if user does not have a token for the provider */
@@ -837,7 +837,7 @@ declare type ProviderRow = {
 /**
   An integration that sends start/end meeting messages to a specified slack channel
 */
-declare type SlackIntegration = {
+export type SlackIntegration = {
   /** The ID of an object */
   id: string;
   /** the id of the channel provided by the service, if available. Useful for fetching from their API */
@@ -852,7 +852,7 @@ declare type SlackIntegration = {
   teamId: string;
 }
 
-declare type Mutation = {
+export type Mutation = {
   /** Remove a user from an org */
   removeOrgUser: ?boolean;
   /** Create a PUT URL on the CDN for an organization’s profile picture */
@@ -982,7 +982,7 @@ declare type Mutation = {
   upgradeToPro: ?UpgradeToProPayload;
 }
 
-declare type UpdateUserProfileInput = {
+export type UpdateUserProfileInput = {
   /** The unique userId */
   id: ?string;
   /** A link to the user’s profile image. */
@@ -991,7 +991,7 @@ declare type UpdateUserProfileInput = {
   preferredName: ?string;
 }
 
-declare type AcceptTeamInviteEmailPayload = {
+export type AcceptTeamInviteEmailPayload = {
   /** Thea team that the invitee will be joining */
   team: ?Team;
   /** The new team member on the team */
@@ -1007,12 +1007,12 @@ declare type AcceptTeamInviteEmailPayload = {
   error: ?AcceptTeamInviteError;
 }
 
-declare type AcceptTeamInvitePayload = AcceptTeamInviteEmailPayload | AcceptTeamInviteNotificationPayload;
+export type AcceptTeamInvitePayload = AcceptTeamInviteEmailPayload | AcceptTeamInviteNotificationPayload;
 
 /**
   A notification sent to a user that was invited to a new team
 */
-declare type NotifyTeamInvite = {
+export type NotifyTeamInvite = {
   /** The user that triggered the invitation */
   inviter: ?User;
   team: ?Team;
@@ -1027,16 +1027,16 @@ declare type NotifyTeamInvite = {
   userIds: ?Array<string>;
 }
 
-declare type TeamNotification = NotifyTeamInvite | NotifyRequestNewUser | NotifyInviteeApproved | NotifyProjectInvolves | NotifyAddedToTeam | NotifyDenial;
+export type TeamNotification = NotifyTeamInvite | NotifyRequestNewUser | NotifyInviteeApproved | NotifyProjectInvolves | NotifyAddedToTeam | NotifyDenial;
 
-declare type AcceptTeamInviteError = {
+export type AcceptTeamInviteError = {
   /** The title of the error */
   title: ?string;
   /** The full error */
   message: ?string;
 }
 
-declare type AcceptTeamInviteNotificationPayload = {
+export type AcceptTeamInviteNotificationPayload = {
   /** Thea team that the invitee will be joining */
   team: ?Team;
   /** The new team member on the team */
@@ -1048,7 +1048,7 @@ declare type AcceptTeamInviteNotificationPayload = {
   user: ?User;
 }
 
-declare type CreateAgendaItemInput = {
+export type CreateAgendaItemInput = {
   /** The content of the agenda item */
   content: string;
   teamId: string;
@@ -1058,15 +1058,15 @@ declare type CreateAgendaItemInput = {
   sortOrder: ?number;
 }
 
-declare type AddAgendaItemPayload = {
+export type AddAgendaItemPayload = {
   agendaItem: ?AgendaItem;
 }
 
-declare type AddGitHubRepoPayload = {
+export type AddGitHubRepoPayload = {
   repo: GitHubIntegration;
 }
 
-declare type NewTeamInput = {
+export type NewTeamInput = {
   /** The name of the team */
   name: ?string;
   /** The unique orginization ID that pays for the team */
@@ -1076,7 +1076,7 @@ declare type NewTeamInput = {
 /**
   The email and task of an invited team member
 */
-declare type Invitee = {
+export type Invitee = {
   /** The email address of the invitee */
   email: any;
   /** The name derived from an RFC5322 email string */
@@ -1085,7 +1085,7 @@ declare type Invitee = {
   task: ?string;
 }
 
-declare type AddOrgPayload = {
+export type AddOrgPayload = {
   organization: ?Organization;
   team: ?Team;
   /** The teamMember that just created the new team, if this is a creation */
@@ -1095,18 +1095,18 @@ declare type AddOrgPayload = {
   teamInviteNotification: ?NotifyTeamInvite;
 }
 
-declare type AddSlackChannelInput = {
+export type AddSlackChannelInput = {
   /** The id of the teamMember calling it. */
   teamMemberId: string;
   /** the slack channel that wants our messages */
   slackChannelId: string;
 }
 
-declare type AddSlackChannelPayload = {
+export type AddSlackChannelPayload = {
   channel: SlackIntegration;
 }
 
-declare type AddTeamPayload = {
+export type AddTeamPayload = {
   team: ?Team;
   /** The teamMember that just created the new team, if this is a creation */
   teamMember: ?TeamMember;
@@ -1115,7 +1115,7 @@ declare type AddTeamPayload = {
   teamInviteNotification: ?NotifyTeamInvite;
 }
 
-declare type ApproveToOrgPayload = {
+export type ApproveToOrgPayload = {
   /** If the viewer is an org leader, the notifications removed after approving to the organization */
   removedRequestNotifications: ?Array<NotifyRequestNewUser>;
   /** If the viegnwer is a team member, the org approvals that were removed in place of team members */
@@ -1131,7 +1131,7 @@ declare type ApproveToOrgPayload = {
 /**
   A notification sent to a user concerning an invitation (request, joined)
 */
-declare type NotifyRequestNewUser = {
+export type NotifyRequestNewUser = {
   /** The userId of the person that invited the email */
   inviterUserId: string;
   /** The email of the person being invited */
@@ -1154,12 +1154,12 @@ declare type NotifyRequestNewUser = {
   userIds: ?Array<string>;
 }
 
-declare type OrganizationNotification = NotifyRequestNewUser | NotifyPaymentRejected | NotifyPromoteToOrgLeader;
+export type OrganizationNotification = NotifyRequestNewUser | NotifyPaymentRejected | NotifyPromoteToOrgLeader;
 
 /**
   A notification sent to a user when the person they invited got approved by the org leader
 */
-declare type NotifyInviteeApproved = {
+export type NotifyInviteeApproved = {
   /** The email of the person being invited */
   inviteeEmail: string;
   /** The user that triggered the invitation */
@@ -1176,7 +1176,7 @@ declare type NotifyInviteeApproved = {
   userIds: ?Array<string>;
 }
 
-declare type ArchiveTeamPayload = {
+export type ArchiveTeamPayload = {
   team: ?Team;
   /** A notification explaining that the team was archived and removed from view */
   notification: ?NotifyTeamArchived;
@@ -1186,7 +1186,7 @@ declare type ArchiveTeamPayload = {
 /**
   A notification alerting the user that a team they were on is now archived
 */
-declare type NotifyTeamArchived = {
+export type NotifyTeamArchived = {
   team: ?Team;
   /** A shortid for the notification */
   id: ?string;
@@ -1199,38 +1199,38 @@ declare type NotifyTeamArchived = {
   userIds: ?Array<string>;
 }
 
-declare type TeamRemovedNotification = NotifyTeamArchived | NotifyKickedOut;
+export type TeamRemovedNotification = NotifyTeamArchived | NotifyKickedOut;
 
-declare type CancelApprovalPayload = {
+export type CancelApprovalPayload = {
   /** The inactivated org approval */
   orgApproval: ?OrgApproval;
   /** The notification requesting org approval to the org leader */
   removedRequestNotification: ?NotifyRequestNewUser;
 }
 
-declare type CancelTeamInvitePayload = {
+export type CancelTeamInvitePayload = {
   /** The cancelled invitation */
   invitation: ?Invitation;
   removedTeamInviteNotification: ?NotifyTeamInvite;
 }
 
-declare type ClearNotificationPayload = {
+export type ClearNotificationPayload = {
   /** The deleted notifcation */
   notification: ?Notification;
 }
 
-declare type CreateFirstTeamPayload = {
+export type CreateFirstTeamPayload = {
   team: ?Team;
   teamLead: ?TeamMember;
   /** The new JWT after adding the team */
   jwt: ?string;
 }
 
-declare type CreateGitHubIssuePayload = {
+export type CreateGitHubIssuePayload = {
   project: ?Project;
 }
 
-declare type CreateProjectInput = {
+export type CreateProjectInput = {
   /** foreign key for AgendaItem */
   agendaId: ?string;
   content: ?string;
@@ -1245,9 +1245,9 @@ declare type CreateProjectInput = {
 /**
   The part of the site that is calling the mutation
 */
-declare type AreaEnum = "meeting" | "teamDash" | "userDash";
+export type AreaEnum = "meeting" | "teamDash" | "userDash";
 
-declare type CreateProjectPayload = {
+export type CreateProjectPayload = {
   project: ?Project;
   involvementNotification: ?NotifyProjectInvolves;
 }
@@ -1255,7 +1255,7 @@ declare type CreateProjectPayload = {
 /**
   A notification sent to someone who was just added to a team
 */
-declare type NotifyProjectInvolves = {
+export type NotifyProjectInvolves = {
   /** A shortid for the notification */
   id: ?string;
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
@@ -1283,23 +1283,23 @@ declare type NotifyProjectInvolves = {
 /**
   How a user is involved with a project (listed in hierarchical order)
 */
-declare type ProjectInvolvementType = "ASSIGNEE" | "MENTIONEE";
+export type ProjectInvolvementType = "ASSIGNEE" | "MENTIONEE";
 
-declare type DeleteProjectPayload = {
+export type DeleteProjectPayload = {
   /** The project that was deleted */
   project: ?Project;
   /** The notification stating that the viewer was mentioned or assigned */
   involvementNotification: ?NotifyProjectInvolves;
 }
 
-declare type EditProjectPayload = {
+export type EditProjectPayload = {
   project: ?Project;
   editor: ?User;
   /** true if the editor is editing, false if they stopped editing */
   isEditing: ?boolean;
 }
 
-declare type EndMeetingPayload = {
+export type EndMeetingPayload = {
   team: ?Team;
   /** The list of projects that were archived during the meeting */
   archivedProjects: ?Array<Project>;
@@ -1309,7 +1309,7 @@ declare type EndMeetingPayload = {
 /**
   A list of all the possible outcomes when trying to invite a team member
 */
-declare type InviteTeamMembersPayload = {
+export type InviteTeamMembersPayload = {
   /** The team the inviter is inviting the invitee to */
   team: ?Team;
   /** The notification sent to the invitee if they were previously on the team */
@@ -1333,7 +1333,7 @@ declare type InviteTeamMembersPayload = {
 /**
   A notification sent to someone who was just added to a team
 */
-declare type NotifyAddedToTeam = {
+export type NotifyAddedToTeam = {
   /** A shortid for the notification */
   id: ?string;
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
@@ -1353,17 +1353,17 @@ declare type NotifyAddedToTeam = {
   teamId: string;
 }
 
-declare type JoinIntegrationPayload = {
+export type JoinIntegrationPayload = {
   /** The globalId of the integration with a removed member */
   globalId: string;
   teamMember: TeamMember;
 }
 
-declare type KillMeetingPayload = {
+export type KillMeetingPayload = {
   team: ?Team;
 }
 
-declare type LeaveIntegrationPayload = {
+export type LeaveIntegrationPayload = {
   /** The globalId of the integration with a removed member */
   globalId: string;
   /** The global userId of the viewer that left. if null, remove the entire integration */
@@ -1372,17 +1372,17 @@ declare type LeaveIntegrationPayload = {
   archivedProjectIds: ?Array<string>;
 }
 
-declare type MeetingCheckInPayload = {
+export type MeetingCheckInPayload = {
   teamMember: ?TeamMember;
 }
 
-declare type MoveMeetingPayload = {
+export type MoveMeetingPayload = {
   team: ?Team;
   /** The agendaItem completed, if any */
   completedAgendaItem: ?AgendaItem;
 }
 
-declare type PromoteFacilitatorPayload = {
+export type PromoteFacilitatorPayload = {
   /** Thea team currently running a meeting */
   team: ?Team;
   /** The new meeting facilitator */
@@ -1391,12 +1391,12 @@ declare type PromoteFacilitatorPayload = {
   disconnectedFacilitator: ?TeamMember;
 }
 
-declare type PromoteToTeamLeadPayload = {
+export type PromoteToTeamLeadPayload = {
   oldTeamLead: ?TeamMember;
   newTeamLead: ?TeamMember;
 }
 
-declare type RejectOrgApprovalPayload = {
+export type RejectOrgApprovalPayload = {
   /** The list of org approvals to remove. There may be multiple if many inviters requested the same email */
   removedOrgApprovals: ?Array<OrgApproval>;
   /** The notification going to the inviter saying their invitee has been denied */
@@ -1408,7 +1408,7 @@ declare type RejectOrgApprovalPayload = {
 /**
   A notification alerting the user that their request was denied by the org billing leader
 */
-declare type NotifyDenial = {
+export type NotifyDenial = {
   /** The reason, supplied by the org leader, that the request has been denied */
   reason: string;
   /** The name of the billing leader that denied the request */
@@ -1426,11 +1426,11 @@ declare type NotifyDenial = {
   userIds: ?Array<string>;
 }
 
-declare type RemoveAgendaItemPayload = {
+export type RemoveAgendaItemPayload = {
   agendaItem: ?AgendaItem;
 }
 
-declare type RemoveProviderPayload = {
+export type RemoveProviderPayload = {
   providerRow: ProviderRow;
   /** The globalIds of the removed integrations */
   deletedIntegrationIds: Array<string>;
@@ -1439,16 +1439,16 @@ declare type RemoveProviderPayload = {
   archivedProjectIds: ?Array<string>;
 }
 
-declare type RemoveSlackChannelPayload = {
+export type RemoveSlackChannelPayload = {
   deletedId: string;
 }
 
-declare type RemoveGitHubRepoPayload = {
+export type RemoveGitHubRepoPayload = {
   deletedId: string;
   archivedProjectIds: ?Array<string>;
 }
 
-declare type RemoveTeamMemberPayload = {
+export type RemoveTeamMemberPayload = {
   /** The team member removed */
   teamMember: ?TeamMember;
   /** The team the team member was removed from */
@@ -1466,7 +1466,7 @@ declare type RemoveTeamMemberPayload = {
 /**
   A notification sent to someone who was just kicked off a team
 */
-declare type NotifyKickedOut = {
+export type NotifyKickedOut = {
   /** A shortid for the notification */
   id: ?string;
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
@@ -1486,29 +1486,29 @@ declare type NotifyKickedOut = {
   team: ?Team;
 }
 
-declare type RequestFacilitatorPayload = {
+export type RequestFacilitatorPayload = {
   /** The team member that wants to be the facilitator */
   requestor: ?TeamMember;
 }
 
-declare type ResendTeamInvitePayload = {
+export type ResendTeamInvitePayload = {
   invitation: ?Invitation;
 }
 
-declare type SegmentEventTrackOptions = {
+export type SegmentEventTrackOptions = {
   teamId: ?string;
   orgId: ?string;
   /** Used during the welcome wizard step 3 */
   inviteeCount: ?number;
 }
 
-declare type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload;
+export type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload;
 
-declare type StartMeetingPayload = {
+export type StartMeetingPayload = {
   team: ?Team;
 }
 
-declare type StripeFailPaymentPayload = {
+export type StripeFailPaymentPayload = {
   organization: ?Organization;
   /** The notification to billing leaders stating the payment was rejected */
   notification: ?NotifyPaymentRejected;
@@ -1517,7 +1517,7 @@ declare type StripeFailPaymentPayload = {
 /**
   A notification sent to a user when their payment has been rejected
 */
-declare type NotifyPaymentRejected = {
+export type NotifyPaymentRejected = {
   organization: ?Organization;
   /** A shortid for the notification */
   id: ?string;
@@ -1530,7 +1530,7 @@ declare type NotifyPaymentRejected = {
   userIds: ?Array<string>;
 }
 
-declare type UpdateAgendaItemInput = {
+export type UpdateAgendaItemInput = {
   /** The unique agenda item ID, composed of a teamId::shortid */
   id: string;
   /** The content of the agenda item */
@@ -1543,16 +1543,16 @@ declare type UpdateAgendaItemInput = {
   sortOrder: ?number;
 }
 
-declare type UpdateAgendaItemPayload = {
+export type UpdateAgendaItemPayload = {
   agendaItem: ?AgendaItem;
 }
 
-declare type UpdateCreditCardPayload = {
+export type UpdateCreditCardPayload = {
   /** the credit card details that got updated */
   creditCard: ?CreditCard;
 }
 
-declare type UpdateOrgInput = {
+export type UpdateOrgInput = {
   /** The unique action ID */
   id: ?string;
   /** The name of the org */
@@ -1561,16 +1561,16 @@ declare type UpdateOrgInput = {
   picture: ?any;
 }
 
-declare type UpdateOrgPayload = {
+export type UpdateOrgPayload = {
   /** The updated org */
   organization: ?Organization;
 }
 
-declare type UpdateCheckInQuestionPayload = {
+export type UpdateCheckInQuestionPayload = {
   team: ?Team;
 }
 
-declare type UpdateProjectInput = {
+export type UpdateProjectInput = {
   /** The project id */
   id: ?string;
   content: ?string;
@@ -1580,7 +1580,7 @@ declare type UpdateProjectInput = {
   userId: ?string;
 }
 
-declare type UpdateProjectPayload = {
+export type UpdateProjectPayload = {
   project: ?Project;
   /** If a project was just turned private, this its ID, else null */
   privatizedProjectId: ?string;
@@ -1588,7 +1588,7 @@ declare type UpdateProjectPayload = {
   removedNotification: ?NotifyProjectInvolves;
 }
 
-declare type UpdatedTeamInput = {
+export type UpdatedTeamInput = {
   id: ?string;
   /** The name of the team */
   name: ?string;
@@ -1596,18 +1596,18 @@ declare type UpdatedTeamInput = {
   picture: ?any;
 }
 
-declare type UpdateTeamNamePayload = {
+export type UpdateTeamNamePayload = {
   team: ?Team;
 }
 
-declare type UpgradeToProPayload = {
+export type UpgradeToProPayload = {
   /** The new Pro Org */
   organization: ?Organization;
   /** The updated teams under the org */
   teams: ?Array<Team>;
 }
 
-declare type Subscription = {
+export type Subscription = {
   agendaItemSubscription: AgendaItemSubscriptionPayload;
   githubMemberRemoved: GitHubMemberRemovedPayload;
   githubRepoAdded: AddGitHubRepoPayload;
@@ -1629,20 +1629,20 @@ declare type Subscription = {
   upcomingInvoice: ?Invoice;
 }
 
-declare type AgendaItemSubscriptionPayload = AddAgendaItemPayload | RemoveAgendaItemPayload | UpdateAgendaItemPayload | MoveMeetingPayload;
+export type AgendaItemSubscriptionPayload = AddAgendaItemPayload | RemoveAgendaItemPayload | UpdateAgendaItemPayload | MoveMeetingPayload;
 
-declare type GitHubMemberRemovedPayload = {
+export type GitHubMemberRemovedPayload = {
   leaveIntegration: ?Array<LeaveIntegrationPayload>;
 }
 
-declare type InvitationSubscriptionPayload = ApproveToOrgPayload | CancelTeamInvitePayload | InviteTeamMembersPayload | ResendTeamInvitePayload;
+export type InvitationSubscriptionPayload = ApproveToOrgPayload | CancelTeamInvitePayload | InviteTeamMembersPayload | ResendTeamInvitePayload;
 
-declare type NotificationSubscriptionPayload = AddOrgPayload | AddTeamPayload | ApproveToOrgPayload | CancelApprovalPayload | CancelTeamInvitePayload | ClearNotificationPayload | CreateProjectPayload | DeleteProjectPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload | StripeFailPaymentPayload | User | NotifyVersionInfo;
+export type NotificationSubscriptionPayload = AddOrgPayload | AddTeamPayload | ApproveToOrgPayload | CancelApprovalPayload | CancelTeamInvitePayload | ClearNotificationPayload | CreateProjectPayload | DeleteProjectPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload | StripeFailPaymentPayload | User | NotifyVersionInfo;
 
 /**
   A notification with the app version sent upon connection
 */
-declare type NotifyVersionInfo = {
+export type NotifyVersionInfo = {
   /** A shortid for the notification */
   id: ?string;
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
@@ -1656,27 +1656,27 @@ declare type NotifyVersionInfo = {
   version: ?string;
 }
 
-declare type OrgApprovalSubscriptionPayload = ApproveToOrgPayload | CancelApprovalPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload;
+export type OrgApprovalSubscriptionPayload = ApproveToOrgPayload | CancelApprovalPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload;
 
-declare type OrganizationSubscriptionPayload = AddOrgPayload | ApproveToOrgPayload | SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload | UpdateOrgPayload | UpgradeToProPayload;
+export type OrganizationSubscriptionPayload = AddOrgPayload | ApproveToOrgPayload | SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload | UpdateOrgPayload | UpgradeToProPayload;
 
-declare type SetOrgUserRoleAddedPayload = {
+export type SetOrgUserRoleAddedPayload = {
   organization: ?Organization;
   updatedOrgMember: ?OrganizationMember;
   /** If promoted, notify them and give them all other admin notifications */
   notificationsAdded: ?Array<OrganizationNotification>;
 }
 
-declare type SetOrgUserRoleRemovedPayload = {
+export type SetOrgUserRoleRemovedPayload = {
   organization: ?Organization;
   updatedOrgMember: ?OrganizationMember;
   /** If demoted, notify them and remove all other admin notifications */
   notificationsRemoved: ?Array<OrganizationNotification>;
 }
 
-declare type ProjectSubscriptionPayload = CreateGitHubIssuePayload | CreateProjectPayload | DeleteProjectPayload | EditProjectPayload | EndMeetingPayload | RemoveTeamMemberPayload | UpdateProjectPayload;
+export type ProjectSubscriptionPayload = CreateGitHubIssuePayload | CreateProjectPayload | DeleteProjectPayload | EditProjectPayload | EndMeetingPayload | RemoveTeamMemberPayload | UpdateProjectPayload;
 
-declare type AddProviderPayload = {
+export type AddProviderPayload = {
   providerRow: ProviderRow;
   provider: ?Provider;
   /** All the integrationIds that the provider has successfully joined */
@@ -1684,14 +1684,14 @@ declare type AddProviderPayload = {
   teamMember: ?TeamMember;
 }
 
-declare type TeamSubscriptionPayload = AcceptTeamInviteEmailPayload | AcceptTeamInviteNotificationPayload | AddTeamPayload | ArchiveTeamPayload | EndMeetingPayload | KillMeetingPayload | MoveMeetingPayload | PromoteFacilitatorPayload | RequestFacilitatorPayload | StartMeetingPayload | RemoveTeamMemberPayload | UpdateCheckInQuestionPayload | UpdateTeamNamePayload | UpgradeToProPayload;
+export type TeamSubscriptionPayload = AcceptTeamInviteEmailPayload | AcceptTeamInviteNotificationPayload | AddTeamPayload | ArchiveTeamPayload | EndMeetingPayload | KillMeetingPayload | MoveMeetingPayload | PromoteFacilitatorPayload | RequestFacilitatorPayload | StartMeetingPayload | RemoveTeamMemberPayload | UpdateCheckInQuestionPayload | UpdateTeamNamePayload | UpgradeToProPayload;
 
-declare type TeanMemberSubscriptionPayload = AcceptTeamInviteNotificationPayload | AcceptTeamInviteEmailPayload | RemoveTeamMemberPayload | InviteTeamMembersPayload | MeetingCheckInPayload | PromoteToTeamLeadPayload;
+export type TeanMemberSubscriptionPayload = AcceptTeamInviteNotificationPayload | AcceptTeamInviteEmailPayload | RemoveTeamMemberPayload | InviteTeamMembersPayload | MeetingCheckInPayload | PromoteToTeamLeadPayload;
 
 /**
   A notification alerting the user that they have been promoted (to team or org leader)
 */
-declare type NotifyPromoteToOrgLeader = {
+export type NotifyPromoteToOrgLeader = {
   organization: ?Organization;
   /** A shortid for the notification */
   id: ?string;
