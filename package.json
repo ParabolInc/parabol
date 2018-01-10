@@ -49,7 +49,8 @@
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
     "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.graphql --watch",
     "update-schema": "node ./src/server/utils/updateSchema.babel.js",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags",
+    "flowgen": "gql2flow -o ./src/universal/types/schema.flow.js ./build/schema.json"
   },
   "pre-commit": [],
   "devDependencies": {
@@ -148,6 +149,7 @@
     "express-jwt": "5.3.0",
     "fbjs": "^0.8.14",
     "fetch-ponyfill": "^4.1.0",
+    "gql2flow": "^0.4.5",
     "graphiql": "^0.11.2",
     "graphql": "^0.11.7",
     "graphql-redis-subscriptions": "^1.2.0",
