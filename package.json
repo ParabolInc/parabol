@@ -44,7 +44,7 @@
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",
-    "lint": "yarn flow && eslint 'src/**/*.js' 'webpack/*.js'",
+    "lint": "eslint 'src/**/*.js' 'webpack/*.js'",
     "lint:fix": "eslint --fix 'src/**/*.js' 'webpack/*.js' ",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
     "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.graphql --watch",
