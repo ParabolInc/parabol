@@ -2,7 +2,7 @@
 import type { Node } from 'react';
 
 type Props<T> = {
-  when: () => T,
+  when: () => T | T,
   switchOnVal?: T => Node,
   render?: () => Node,
   otherwise?: () => Node
@@ -15,7 +15,7 @@ type Props<T> = {
  *
  * 1) Show something based on a condition, otherwise show nothing.
  *   <Flag
- *     when={weCanReleaseNewUI}
+ *     when={weCanReleaseNewUI} // `weCanReleaseNewUI` can be a value or a thunk
  *     render={() => NewUI}
  *   />
  *
@@ -40,7 +40,7 @@ type Props<T> = {
  */
 const Flag = <T>(props: Props<T>) => {
   const { when, switchOnVal, render, otherwise } = props;
-  const val = when();
+  const val = typeof when === 'function' ? when() : when;
   if (switchOnVal && !(render || otherwise)) {
     return switchOnVal(val);
   }
