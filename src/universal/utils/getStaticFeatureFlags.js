@@ -1,7 +1,4 @@
 // @flow
-import type { Map } from 'immutable';
-
-import { fromJS } from 'immutable';
 import getDotEnv from './dotenv';
 import filterObj from './filterObj';
 import mapObj from './mapObj';
@@ -16,6 +13,8 @@ const removeFeaturePrefixAndJsonParseValues = (featureKey: string, featureVal: a
 ];
 
 /**
+ * TODO: need to make this work on client, too
+ *
  * Returns the set of "static" (e.g. static per deployment) feature flags.
  * These types of feature flags are useful for short-lived, global toggles.
  * They are made available to the application via environment variables.
@@ -30,11 +29,11 @@ const removeFeaturePrefixAndJsonParseValues = (featureKey: string, featureVal: a
  *
  * Returns the current feature flag configuration as an Immutable.js Map<String, any>.
  */
-const getStaticFeatureFlags = (): Map<string, any> => {
+const getStaticFeatureFlags = (): FeatureFlags => {
   getDotEnv();
   const justFeatures = filterObj(envVarIsFeatureFlag, process.env);
-  const renamedFeatures = mapObj(removeFeaturePrefixAndJsonParseValues, justFeatures);
-  return fromJS(renamedFeatures);
+  const parsedFeatures = mapObj(removeFeaturePrefixAndJsonParseValues, justFeatures);
+  return parsedFeatures;
 };
 
 export default getStaticFeatureFlags;
