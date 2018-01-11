@@ -132,7 +132,7 @@ const handleAddProjectFactory = (
   userId: UserID,
   sortOrder: number
 ) => () => {
-  const gqlArgs = {
+  const variables = {
     newProject: {
       status,
       teamId,
@@ -140,7 +140,7 @@ const handleAddProjectFactory = (
       sortOrder
     }
   };
-  CreateProjectMutation(atmosphere, gqlArgs);
+  CreateProjectMutation(atmosphere, variables);
 };
 
 type Props = {
@@ -240,14 +240,14 @@ class ProjectColumn extends Component<Props> {
     // the front or back of the list, this will be `undefined`.
     const boundingProject = projects[targetIndex + (before ? -1 : 1)];
     const sortOrder = sortOrderBetween(targetProject, boundingProject, draggedProject, before);
-    const gqlArgs: UpdateProjectMutationVariables = {
+    const variables: UpdateProjectMutationVariables = {
       updatedProject: {id: draggedProject.id, sortOrder},
       area
     };
     if (draggedProject.status !== targetProject.status) {
-      gqlArgs.updatedProject.status = targetProject.status;
+      variables.updatedProject.status = targetProject.status;
     }
-    UpdateProjectMutation(atmosphere, gqlArgs);
+    UpdateProjectMutation(atmosphere, variables);
   };
 
   makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
@@ -259,7 +259,7 @@ class ProjectColumn extends Component<Props> {
     return teams.map((team) => ({
       label: team.name,
       handleClick: () => {
-        const gqlArgs = {
+        const variables = {
           newProject: {
             sortOrder,
             status,
@@ -267,7 +267,7 @@ class ProjectColumn extends Component<Props> {
             userId
           }
         };
-        CreateProjectMutation(atmosphere, gqlArgs);
+        CreateProjectMutation(atmosphere, variables);
       }
     }));
   };

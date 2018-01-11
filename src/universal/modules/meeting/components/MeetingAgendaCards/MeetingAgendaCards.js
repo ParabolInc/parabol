@@ -69,7 +69,7 @@ class MeetingAgendaCards extends Component<Props> {
     const sortOrder = sortOrderBetween(
       maybeLastProject, null, null, false
     );
-    const gqlArgs = {
+    const variables = {
       newProject: {
         content,
         status: ACTIVE,
@@ -80,7 +80,7 @@ class MeetingAgendaCards extends Component<Props> {
       },
       area: MEETING
     };
-    CreateProjectMutation(atmosphere, gqlArgs);
+    CreateProjectMutation(atmosphere, variables);
   }
 
   render() {

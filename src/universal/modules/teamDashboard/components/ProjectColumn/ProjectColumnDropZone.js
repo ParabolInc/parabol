@@ -53,7 +53,7 @@ const spec = {
 
     const sortOrder = sortOrderBetween(lastProject, null, draggedProject, false);
 
-    const gqlArgs: UpdateProjectMutationVariables = {
+    const variables: UpdateProjectMutationVariables = {
       updatedProject: {
         id: draggedProject.id,
         sortOrder
@@ -61,9 +61,9 @@ const spec = {
       area
     };
     if (draggedProject.status !== status) {
-      gqlArgs.updatedProject.status = status;
+      variables.updatedProject.status = status;
     }
-    UpdateProjectMutation(atmosphere, gqlArgs);
+    UpdateProjectMutation(atmosphere, variables);
   }
 };
 
