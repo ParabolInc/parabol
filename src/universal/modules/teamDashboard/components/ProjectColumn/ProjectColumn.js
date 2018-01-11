@@ -2,7 +2,7 @@
 import type {Environment} from 'relay-runtime';
 import type {UpdateProjectMutationVariables} from 'universal/mutations/UpdateProjectMutation';
 import type {Project, ProjectID, Status} from 'universal/types/project';
-import type {Area} from 'universal/types/area';
+import type {AreaEnum} from 'universal/types/schema.flow';
 import type {Team, TeamID} from 'universal/types/team';
 import type {UserID} from 'universal/types/user';
 import type {History} from 'react-router';
@@ -144,7 +144,7 @@ const handleAddProjectFactory = (
 };
 
 type Props = {
-  area: Area,
+  area: AreaEnum,
   atmosphere: Environment,
   dispatch: (action: any) => any, // TODO: need to enumerate action types
   firstColumn: boolean,

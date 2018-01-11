@@ -1,8 +1,8 @@
 // @flow
 import type {Node} from 'react';
 import type {UpdateProjectMutationVariables} from 'universal/mutations/UpdateProjectMutation';
-import type {Area} from 'universal/types/area';
-import type {Project, ProjectID, Status} from 'universal/types/project';
+import type {AreaEnum, Project, ProjectStatusEnum} from 'universal/types/schema.flow';
+import type {ProjectID} from 'universal/types/project';
 
 import React from 'react';
 import {DropTarget} from 'react-dnd';
@@ -14,11 +14,11 @@ import {PROJECT} from 'universal/utils/constants';
 
 type Props = {
   connectDropTarget: (node: Node) => Node,
-  area: Area,
+  area: AreaEnum,
   atmosphere: Object, // TODO: atmosphere needs a type definition
   getProjectById: (ProjectID) => ?Project,
   lastProject: ?Project, // the last project in a column; may be undefined if the column is empty
-  status: Status
+  status: ProjectStatusEnum
 };
 
 // Represents the trailing space at the end of a column.  Acts as a drop target
