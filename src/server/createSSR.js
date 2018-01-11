@@ -3,6 +3,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {applyMiddleware, createStore} from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import makeSegmentSnippet from '@segment/snippet';
+import dehydrate from 'server/utils/dehydrate';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 import makeReducer from 'universal/redux/makeReducer';
 import printStyles from 'universal/styles/theme/printStyles';
@@ -26,8 +27,6 @@ const clientIds = {
   stripe: process.env.STRIPE_PUBLISHABLE_KEY
 };
 
-const clientKeyLoader = `window.__ACTION__ = ${JSON.stringify(clientIds)}`;
-
 let cachedPage;
 export default function createSSR(req, res) {
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
@@ -36,7 +35,7 @@ export default function createSSR(req, res) {
     if (!cachedPage) {
       // eslint-disable-next-line global-require
       const assets = require('../../build/assets.json');
-      const htmlString = renderToStaticMarkup(<Html store={store} assets={assets} clientKeyLoader={clientKeyLoader} />);
+      const htmlString = renderToStaticMarkup(<Html store={store} assets={assets} clientIds={clientIds} />);
       cachedPage = `<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`);
     }
     res.send(cachedPage);
@@ -65,7 +64,7 @@ export default function createSSR(req, res) {
       <div id="root"></div>
       <script src="/static/vendors.dll.js"></script>
       <script src="/static/app.js"></script>
-      <script>${clientKeyLoader}</script>
+      <script>${dehydrate('__ACTION__', clientIds)}</script>
       ${segmentSnippet}
     </body>
     </html>
