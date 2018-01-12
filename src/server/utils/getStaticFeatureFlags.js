@@ -15,8 +15,6 @@ const removeFeaturePrefixAndJsonParseValues = (featureKey: string, featureVal: a
 ];
 
 /**
- * TODO: need to make this work on client, too
- *
  * Returns the set of "static" (e.g. static per deployment) feature flags.
  * These types of feature flags are useful for short-lived, global toggles.
  * They are made available to the application via environment variables.
