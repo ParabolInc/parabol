@@ -44,7 +44,7 @@ const removeOrgUser = {
     const teamIds = await r.table('Team')
       .getAll(orgId, {index: 'orgId'})('id');
     const teamMemberIds = await r.table('TeamMember')
-      .getAll(r.args(teamIds))
+      .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({userId, isNotRemoved: true})('id');
 
     const perTeamRes = await Promise.all(teamMemberIds.map((teamMemberId) => {
@@ -62,11 +62,11 @@ const removeOrgUser = {
     }, []);
 
     const kickOutNotificationIds = perTeamRes.reduce((arr, res) => {
-      arr.push(...res.notificationId);
+      arr.push(res.notificationId);
       return arr;
     }, []);
 
-    const {removedOrgNotifications, updatedUser} = await r({
+    const {allRemovedOrgNotifications, updatedUser} = await r({
       updatedOrg: r.table('Organization').get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
@@ -79,7 +79,7 @@ const removeOrgUser = {
         }), {returnChanges: true})('changes')(0)('new_val')
         .default(null),
       // remove stale notifications
-      removedOrgNotifications: r.table('Notification')
+      allRemovedOrgNotifications: r.table('Notification')
         .getAll(userId, {index: 'userIds'})
         .filter({orgId})
         .update((notification) => ({
@@ -120,7 +120,7 @@ const removeOrgUser = {
       teamMemberIds,
       projectIds,
       removedTeamNotifications,
-      removedOrgNotifications,
+      removedOrgNotifications: allRemovedOrgNotifications.notifications,
       userId
     };
 

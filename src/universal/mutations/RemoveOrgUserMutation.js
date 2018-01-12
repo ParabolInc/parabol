@@ -88,7 +88,7 @@ const popKickedOutToast = (payload, {dispatch, history, location}) => {
   const orgName = getInProxy(organization, 'name');
   if (!orgName) return;
   const notifications = payload.getLinkedRecords('kickOutNotifications');
-  const teamIds = getInProxy(notifications, 'teamId');
+  const teamIds = getInProxy(notifications, 'team', 'id');
   if (!teamIds) return;
   dispatch(showWarning({
     autoDismiss: 10,
@@ -131,7 +131,7 @@ export const removeOrgUserNotificationUpdater = (payload, store, viewerId, optio
 };
 
 export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
-  const removedUserId = getInProxy(payload, 'removedOrgMember', 'user', 'id');
+  const removedUserId = getInProxy(payload, 'user', 'id');
   if (removedUserId === viewerId) {
     const teams = payload.getLinkedRecords('teams');
     const teamIds = getInProxy(teams, 'id');
@@ -140,7 +140,7 @@ export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
 };
 
 export const removeOrgUserTeamMemberUpdater = (payload, store, viewerId) => {
-  const removedUserId = getInProxy(payload, 'removedOrgMember', 'user', 'id');
+  const removedUserId = getInProxy(payload, 'user', 'id');
   if (removedUserId === viewerId) {
     const teamMembers = payload.getLinkedRecords('teamMembers');
     const teamMemberIds = getInProxy(teamMembers, 'id');
@@ -149,7 +149,7 @@ export const removeOrgUserTeamMemberUpdater = (payload, store, viewerId) => {
 };
 
 export const removeOrgUserProjectUpdater = (payload, store, viewerId) => {
-  const removedUserId = getInProxy(payload, 'removedOrgMember', 'user', 'id');
+  const removedUserId = getInProxy(payload, 'user', 'id');
   if (removedUserId === viewerId) {
     const projects = payload.getLinkedRecords('updatedProjects');
     const projectIds = getInProxy(projects, 'id');

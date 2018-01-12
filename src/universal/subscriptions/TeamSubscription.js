@@ -85,7 +85,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'PromoteFacilitatorPayload':
           promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
           break;
-        case 'RemoveOrgUserPaylaod':
+        case 'RemoveOrgUserPayload':
           removeOrgUserTeamUpdater(payload, store, viewerId);
           break;
         case 'RemoveTeamMemberPayload':
