@@ -8,10 +8,14 @@ import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {REMOVE_USER} from 'server/utils/serverConstants';
 import {
-  NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, PROJECT, TEAM, TEAM_MEMBER,
+  NEW_AUTH_TOKEN,
+  NOTIFICATION,
+  ORGANIZATION,
+  PROJECT,
+  TEAM,
+  TEAM_MEMBER,
   UPDATED
 } from 'universal/utils/constants';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -39,7 +43,10 @@ const removeOrgUser = {
     // RESOLUTION
     const teamIds = await r.table('Team')
       .getAll(orgId, {index: 'orgId'})('id');
-    const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId));
+    const teamMemberIds = await r.table('TeamMember')
+      .getAll(r.args(teamIds))
+      .filter({userId, isNotRemoved: true})('id');
+
     const perTeamRes = await Promise.all(teamMemberIds.map((teamMemberId) => {
       return removeTeamMember(teamMemberId, {isKickout: true});
     }));
@@ -51,6 +58,11 @@ const removeOrgUser = {
 
     const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
       arr.push(...res.removedNotifications);
+      return arr;
+    }, []);
+
+    const kickOutNotificationIds = perTeamRes.reduce((arr, res) => {
+      arr.push(...res.notificationId);
       return arr;
     }, []);
 
@@ -101,7 +113,16 @@ const removeOrgUser = {
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
-    const data = {orgId, teamIds, teamMemberIds, projectIds, removedTeamNotifications, removedOrgNotifications, userId};
+    const data = {
+      orgId,
+      kickOutNotificationIds,
+      teamIds,
+      teamMemberIds,
+      projectIds,
+      removedTeamNotifications,
+      removedOrgNotifications,
+      userId
+    };
 
     publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions);
     publish(NOTIFICATION, userId, RemoveOrgUserPayload, data, subOptions);

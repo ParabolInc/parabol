@@ -1,11 +1,13 @@
 import {commitMutation} from 'react-relay';
+import {matchPath} from 'react-router-dom';
+import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrganization from 'universal/mutations/handlers/handleRemoveOrganization';
 import handleRemoveOrgMembers from 'universal/mutations/handlers/handleRemoveOrgMembers';
-import getInProxy from 'universal/utils/relay/getInProxy';
-import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
-import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTeamMembers';
 import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
+import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTeamMembers';
+import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -25,6 +27,14 @@ graphql`
     }
     removedOrgNotifications {
       id
+    }
+    organization {
+      name
+    }
+    kickOutNotifications {
+      id
+      type
+      ...KickedOut_notification @relay(mask: false)
     }
   }
 `;
@@ -73,8 +83,34 @@ const mutation = graphql`
   }
 `;
 
+const popKickedOutToast = (payload, {dispatch, history, location}) => {
+  const organization = payload.getLinkedRecord('organization');
+  const orgName = getInProxy(organization, 'name');
+  if (!orgName) return;
+  const notifications = payload.getLinkedRecords('kickOutNotifications');
+  const teamIds = getInProxy(notifications, 'teamId');
+  if (!teamIds) return;
+  dispatch(showWarning({
+    autoDismiss: 10,
+    title: 'So long!',
+    message: `You have been removed from ${orgName} and all its teams`
+  }));
+
+  const {pathname} = location;
+  for (let ii = 0; ii < teamIds.length; ii++) {
+    const teamId = teamIds[ii];
+    const onExTeamRoute = Boolean(matchPath(pathname, {
+      path: `(/team/${teamId}|/meeting/${teamId})`
+    }));
+    if (onExTeamRoute) {
+      history.push('/me');
+      return;
+    }
+  }
+};
+
 export const removeOrgUserOrganizationUpdater = (payload, store, viewerId) => {
-  const removedUserId = getInProxy(payload, 'removedOrgMember', 'user', 'id');
+  const removedUserId = getInProxy(payload, 'user', 'id');
   const orgId = getInProxy(payload, 'organization', 'id');
   if (removedUserId === viewerId) {
     handleRemoveOrganization(orgId, store, viewerId);
@@ -83,7 +119,7 @@ export const removeOrgUserOrganizationUpdater = (payload, store, viewerId) => {
   }
 };
 
-export const removeOrgUserNotificationUpdater = (payload, store, viewerId) => {
+export const removeOrgUserNotificationUpdater = (payload, store, viewerId, options) => {
   const removedTeamNotifications = payload.getLinkedRecords('removedTeamNotifications');
   const teamNotificationIds = getInProxy(removedTeamNotifications, 'id');
   handleRemoveNotifications(teamNotificationIds, store, viewerId);
@@ -91,6 +127,7 @@ export const removeOrgUserNotificationUpdater = (payload, store, viewerId) => {
   const removedOrgNotifications = payload.getLinkedRecords('removedOrgNotifications');
   const orgNotificationIds = getInProxy(removedOrgNotifications, 'id');
   handleRemoveNotifications(orgNotificationIds, store, viewerId);
+  popKickedOutToast(payload, options);
 };
 
 export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {

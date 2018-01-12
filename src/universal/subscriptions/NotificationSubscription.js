@@ -156,7 +156,7 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           popUpgradeAppToast(payload, options);
           break;
         case 'RemoveOrgUserPayload':
-          removeOrgUserNotificationUpdater(payload, store, viewerId);
+          removeOrgUserNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'StripeFailPaymentPayload':
           stripeFailPaymentNotificationUpdater(payload, store, viewerId, options);

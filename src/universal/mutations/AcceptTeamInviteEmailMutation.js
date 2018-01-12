@@ -8,9 +8,6 @@ import {setAuthToken} from 'universal/redux/authDuck';
 // Must fragment on concrete types due to relay bug
 graphql`
   fragment AcceptTeamInviteEmailMutation_teamMember on AcceptTeamInviteEmailPayload {
-    removedInvitation {
-      id
-    }
     teamMember {
       ...CompleteTeamMemberFrag @relay(mask: false)
     }
@@ -19,6 +16,15 @@ graphql`
     }
   }
 `;
+
+graphql`
+  fragment AcceptTeamInviteEmailMutation_invitation on AcceptTeamInviteEmailPayload {
+    removedInvitation {
+      id
+    }
+  }
+`;
+
 
 graphql`
   fragment AcceptTeamInviteEmailMutation_team on AcceptTeamInviteEmailPayload {

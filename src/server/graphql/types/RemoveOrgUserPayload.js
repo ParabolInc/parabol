@@ -15,6 +15,7 @@ import TeamMember from 'server/graphql/types/TeamMember';
 import User from 'server/graphql/types/User';
 import OrganizationMember from 'server/graphql/types/OrganizationMember';
 import Notification from 'server/graphql/types/Notification';
+import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 
 const RemoveOrgUserPayload = new GraphQLObjectType({
   name: 'RemoveOrgUserPayload',
@@ -56,6 +57,11 @@ const RemoveOrgUserPayload = new GraphQLObjectType({
       type: new GraphQLList(Notification),
       description: 'The notifications that are no longer relevant to the removed org user',
       resolve: makeResolveNotificationsForViewer('', 'removedOrgNotifications')
+    },
+    kickOutNotifications: {
+      type: new GraphQLList(NotifyKickedOut),
+      description: 'The notifications for each team the user was kicked out of',
+      resolve: makeResolveNotificationsForViewer('kickOutNotificationIds', '')
     },
     removedOrgMember: {
       type: OrganizationMember,
