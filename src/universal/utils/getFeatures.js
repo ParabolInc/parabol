@@ -1,6 +1,6 @@
 // @flow
 
-export type FeatureDecisions = {|
+export type Features = {|
   // e.g.
   newProjectColumns: boolean
 |};
@@ -12,9 +12,9 @@ export type FeatureDecisions = {|
  *   - provides an opportunity to take several flags and application state into account
  *   - lends itself well to removing feature flags over time
  */
-export const getFeatureDecisions = (featureFlags: Object): FeatureDecisions => ({
+export const getFeatures = (featureFlags: Object): Features => ({
   // e.g.
   newProjectColumns: Boolean(featureFlags.newUi)
 });
 
-export default getFeatureDecisions;
+export default getFeatures;

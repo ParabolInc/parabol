@@ -3,7 +3,7 @@
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 
-import features from '../features';
+import featureFields from '../features';
 
 // $FlowFixMe: keep rethinkdbdash quiet
 console.error = jest.fn();
@@ -14,11 +14,11 @@ describe('features query', () => {
 
     // given
     const authToken = null;
-    const featureDecisions = { newProjectColumns: true };
+    const features = { newProjectColumns: true };
 
     // when/then
     expect(
-      features.features.resolve(null, null, { authToken, featureDecisions })
+      featureFields.features.resolve(null, null, { authToken, features })
     ).rejects.toThrow('Unauthenticated');
   });
 
@@ -33,11 +33,11 @@ describe('features query', () => {
     await Promise.all(
       [true, false].map(async (newProjectColumns) => {
         // when
-        const featureDecisions = { newProjectColumns };
-        const response = await features.features.resolve(null, null, { authToken, featureDecisions });
+        const features = { newProjectColumns };
+        const response = await featureFields.features.resolve(null, null, { authToken, features });
 
         // then
-        expect(response).toEqual(featureDecisions);
+        expect(response).toEqual(features);
       })
     );
   });
