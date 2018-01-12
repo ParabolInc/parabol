@@ -1,9 +1,8 @@
 // @flow
+import type { FeatureDecisions } from 'universal/utils/getFeatureDecisions';
+
 import { GraphQLObjectType } from 'graphql';
 import { GraphQLBoolean } from 'graphql/type/scalars';
-
-import getStaticFeatureFlags from 'server/utils/getStaticFeatureFlags';
-import getFeatureDecisions from 'universal/utils/getFeatureDecisions';
 
 const Features = new GraphQLObjectType({
   name: 'Features',
@@ -18,11 +17,15 @@ export default {
     type: Features,
     description: 'All the feature flags and their associated values',
     args: {},
-    resolve: async (source: any, args: any, { authToken }: { authToken: ?string }) => {
+    resolve: async (
+      source: any,
+      args: any,
+      { authToken, featureDecisions }: { authToken: ?string, featureDecisions: FeatureDecisions }
+    ) => {
       if (!authToken) {
         throw new Error('Unauthenticated');
       }
-      return getFeatureDecisions(getStaticFeatureFlags());
+      return featureDecisions;
     }
   }
 };

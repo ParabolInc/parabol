@@ -92,7 +92,7 @@
     "file-loader": "^0.11.2",
     "flow-bin": "^0.59.0",
     "glob": "^7.1.2",
-    "jest": "^21.2.1",
+    "jest": "^22.0.0",
     "jest-junit-reporter": "^1.0.1",
     "jsdom": "^11.1.0",
     "json-loader": "^0.5.7",

@@ -1,5 +1,7 @@
 import {graphql} from 'graphql';
+import getStaticFeatureFlags from 'server/utils/getStaticFeatureFlags';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
+import getFeatureDecisions from 'universal/utils/getFeatureDecisions';
 import IntranetSchema from './intranetSchema';
 import Schema from './rootSchema';
 
@@ -7,7 +9,8 @@ export default (exchange, sharedDataLoader) => async (req, res) => {
   const {query, variables} = req.body;
   const authToken = req.user || {};
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken));
-  const context = {authToken, exchange, dataLoader};
+  const featureDecisions = getFeatureDecisions(getStaticFeatureFlags());
+  const context = {authToken, exchange, dataLoader, featureDecisions};
   const result = await graphql(Schema, query, {}, context, variables);
   dataLoader.dispose();
   if (result.errors) {
