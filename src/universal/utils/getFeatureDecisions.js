@@ -2,7 +2,7 @@
 
 type FeatureDecisions = {|
   // e.g.
-  showTheHomepage: boolean
+  newProjectColumns: boolean
 |};
 
 /**
@@ -14,7 +14,7 @@ type FeatureDecisions = {|
  */
 export const getFeatureDecisions = (features: Object): FeatureDecisions => ({
   // e.g.
-  showTheHomepage: features.SHOW_HOMEPAGE
+  newProjectColumns: features.newUi
 });
 
 export default getFeatureDecisions;

@@ -3,12 +3,13 @@ import { GraphQLObjectType } from 'graphql';
 import { GraphQLBoolean } from 'graphql/type/scalars';
 
 import getStaticFeatureFlags from 'server/utils/getStaticFeatureFlags';
+import getFeatureDecisions from 'universal/utils/getFeatureDecisions';
 
 const Features = new GraphQLObjectType({
   name: 'Features',
   description: 'The application feature flags',
   fields: {
-    newOnboarding: { type: GraphQLBoolean }
+    newProjectColumns: { type: GraphQLBoolean }
   }
 });
 
@@ -21,7 +22,7 @@ export default {
       if (!authToken) {
         throw new Error('Unauthenticated');
       }
-      return getStaticFeatureFlags();
+      return getFeatureDecisions(getStaticFeatureFlags());
     }
   }
 };
