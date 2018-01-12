@@ -1,14 +1,16 @@
 // @flow
-import getDotEnv from './dotenv';
-import filterObj from './filterObj';
-import mapObj from './mapObj';
+import camelCase from 'camel-case';
+
+import getDotEnv from 'universal/utils/dotenv';
+import filterObj from 'universal/utils/filterObj';
+import mapObj from 'universal/utils/mapObj';
 
 const featurePrefix = 'FLAG_';
 
 const envVarIsFeatureFlag = (envVarName: string): boolean => envVarName.startsWith(featurePrefix);
 
 const removeFeaturePrefixAndJsonParseValues = (featureKey: string, featureVal: any): [string, any] => [
-  featureKey.split(featurePrefix)[1],
+  camelCase(featureKey.split(featurePrefix)[1]),
   JSON.parse(featureVal)
 ];
 
@@ -29,7 +31,7 @@ const removeFeaturePrefixAndJsonParseValues = (featureKey: string, featureVal: a
  *
  * Returns the current feature flag configuration as an Immutable.js Map<String, any>.
  */
-const getStaticFeatureFlags = (): FeatureFlags => {
+const getStaticFeatureFlags = (): Object => {
   getDotEnv();
   const justFeatures = filterObj(envVarIsFeatureFlag, process.env);
   const parsedFeatures = mapObj(removeFeaturePrefixAndJsonParseValues, justFeatures);

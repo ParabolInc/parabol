@@ -129,6 +129,7 @@
     "bcrypt": "^1.0.2",
     "body-parser": "1.17.2",
     "bull": "^2.2.5",
+    "camel-case": "^3.0.0",
     "cashay": "^0.24.0",
     "cheerio": "^0.22.0",
     "compression": "^1.7.0",
