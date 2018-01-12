@@ -14,7 +14,7 @@ const types = [
   InviteTeamMembersPayload,
   MeetingCheckInPayload,
   PromoteToTeamLeadPayload,
-  RemoveOrgUserPayload,
+  RemoveOrgUserPayload
 ];
 
 export default graphQLSubscriptionType('TeanMemberSubscriptionPayload', types);

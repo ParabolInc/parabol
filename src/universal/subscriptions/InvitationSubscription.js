@@ -19,7 +19,6 @@ const subscription = graphql`
 
 const InvitationSubscription = (environment, queryVariables) => {
   const {teamId} = queryVariables;
-  const {viewerId} = environment;
   return {
     subscription,
     variables: {teamId},

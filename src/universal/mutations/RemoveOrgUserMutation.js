@@ -1,6 +1,7 @@
 import {commitMutation} from 'react-relay';
 import {matchPath} from 'react-router-dom';
 import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrganization from 'universal/mutations/handlers/handleRemoveOrganization';
 import handleRemoveOrgMembers from 'universal/mutations/handlers/handleRemoveOrgMembers';
@@ -127,6 +128,10 @@ export const removeOrgUserNotificationUpdater = (payload, store, viewerId, optio
   const removedOrgNotifications = payload.getLinkedRecords('removedOrgNotifications');
   const orgNotificationIds = getInProxy(removedOrgNotifications, 'id');
   handleRemoveNotifications(orgNotificationIds, store, viewerId);
+
+  const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications');
+  handleAddNotifications(kickOutNotifications, payload, viewerId);
+
   popKickedOutToast(payload, options);
 };
 
