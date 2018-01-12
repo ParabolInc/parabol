@@ -39,8 +39,8 @@ const UserDashMain = (props) => {
             <UserProjectsHeaderContainer teams={teams} viewer={viewer} />
             <Flag
               when={features.newProjectColumns}
-              render={() => <div>what a pretty ui!!</div>}
-              otherwise={() => <UserColumnsContainer teams={teams} viewer={viewer} />}
+              render={<div>what a pretty ui!!</div>}
+              otherwise={<UserColumnsContainer teams={teams} viewer={viewer} />}
             />
           </div>
         </div>

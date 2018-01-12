@@ -4,9 +4,14 @@ import type { Node } from 'react';
 type Props<T> = {
   when: () => T | T,
   switchOnVal?: T => Node,
-  render?: () => Node,
+  render?: Node | () => Node,
   otherwise?: () => Node
 };
+
+const getNode = (maybeNodeThunk: Node | () => Node): Node =>
+  typeof maybeNodeThunk === 'function'
+    ? maybeNodeThunk()
+    : maybeNodeThunk;
 
 /**
  * Conditionally renders components based on a `when` function.
@@ -46,9 +51,9 @@ const Flag = <T>(props: Props<T>) => {
   }
   if (render) {
     if (val) {
-      return render();
+      return getNode(render);
     }
-    return otherwise ? otherwise() : null;
+    return otherwise ? getNode(otherwise) : null;
   }
   throw new Error('Must provide one of: `switchOnVal`, `render`, or both (`render` and `otherwise`)');
 };
