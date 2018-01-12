@@ -13,6 +13,7 @@ import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOr
 import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {removeOrgUserNotificationUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -27,6 +28,7 @@ const subscription = graphql`
       ...CreateProjectMutation_notification
       ...DeleteProjectMutation_notification
       ...InviteTeamMembersMutation_notification
+      ...RemoveOrgUserMutation_notification
       ...RejectOrgApprovalMutation_notification
 
       # ConnectSocket/DisconnectSocket
@@ -152,6 +154,9 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           break;
         case 'NotifyVersionInfo':
           popUpgradeAppToast(payload, options);
+          break;
+        case 'RemoveOrgUserPayload':
+          removeOrgUserNotificationUpdater(payload, store, viewerId);
           break;
         case 'StripeFailPaymentPayload':
           stripeFailPaymentNotificationUpdater(payload, store, viewerId, options);

@@ -5,6 +5,7 @@ import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayl
 import MeetingCheckInPayload from 'server/graphql/types/MeetingCheckInPayload';
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
 import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
+import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 
 const types = [
   AcceptTeamInviteNotificationPayload,
@@ -12,7 +13,8 @@ const types = [
   RemoveTeamMemberPayload,
   InviteTeamMembersPayload,
   MeetingCheckInPayload,
-  PromoteToTeamLeadPayload
+  PromoteToTeamLeadPayload,
+  RemoveOrgUserPayload,
 ];
 
 export default graphQLSubscriptionType('TeanMemberSubscriptionPayload', types);

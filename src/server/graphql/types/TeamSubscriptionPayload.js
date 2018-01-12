@@ -13,6 +13,7 @@ import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
+import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 
 
 const types = [
@@ -26,6 +27,7 @@ const types = [
   PromoteFacilitatorPayload,
   RequestFacilitatorPayload,
   StartMeetingPayload,
+  RemoveOrgUserPayload,
   RemoveTeamMemberPayload,
   UpdateCheckInQuestionPayload,
   UpdateTeamNamePayload,

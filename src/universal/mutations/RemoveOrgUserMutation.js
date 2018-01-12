@@ -1,11 +1,11 @@
 import {commitMutation} from 'react-relay';
-import {ConnectionHandler} from 'relay-runtime';
-import {handleRemoveOrgApproval} from 'universal/mutations/CancelApprovalMutation';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrganization from 'universal/mutations/handlers/handleRemoveOrganization';
 import handleRemoveOrgMembers from 'universal/mutations/handlers/handleRemoveOrgMembers';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
+import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTeamMembers';
+import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -52,9 +52,12 @@ graphql`
 `;
 
 graphql`
-  fragment RemoveOrgUserMutation_projects on RemoveOrgUserPayload {
+  fragment RemoveOrgUserMutation_project on RemoveOrgUserPayload {
     updatedProjects {
       ...CompleteProjectFrag @relay(mask: false)
+    }
+    user {
+      id
     }
   }
 `;
@@ -102,22 +105,29 @@ export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
 export const removeOrgUserTeamMemberUpdater = (payload, store, viewerId) => {
   const removedUserId = getInProxy(payload, 'removedOrgMember', 'user', 'id');
   if (removedUserId === viewerId) {
-    const teams = payload.getLinkedRecords('teams');
-    const teamIds = getInProxy(teams, 'id');
-    handleRemoveTeams(teamIds, store, viewerId)
+    const teamMembers = payload.getLinkedRecords('teamMembers');
+    const teamMemberIds = getInProxy(teamMembers, 'id');
+    handleRemoveTeamMembers(teamMemberIds, store);
   }
 };
-//export const handleRemoveOrgUserPayload = (payload, store, viewerId, options) => {
 
-//};
-const
-RemoveOrgUserMutation = (environment, orgId, userId, onError, onCompleted) => {
+export const removeOrgUserProjectUpdater = (payload, store, viewerId) => {
+  const removedUserId = getInProxy(payload, 'removedOrgMember', 'user', 'id');
+  if (removedUserId === viewerId) {
+    const projects = payload.getLinkedRecords('updatedProjects');
+    const projectIds = getInProxy(projects, 'id');
+    handleRemoveProjects(projectIds, store, viewerId);
+  }
+};
+
+const RemoveOrgUserMutation = (environment, orgId, userId, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables: {orgId, userId},
     updater: (store) => {
-
+      const payload = store.getRootField('removeOrgUser');
+      removeOrgUserOrganizationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       handleRemoveOrganization(orgId, store, viewerId);
