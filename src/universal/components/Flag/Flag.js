@@ -21,14 +21,14 @@ const getNode = (maybeNodeThunk: Node | () => Node): Node =>
  * 1) Show something based on a condition, otherwise show nothing.
  *   <Flag
  *     when={weCanReleaseNewUI} // `weCanReleaseNewUI` can be a value or a thunk
- *     render={() => NewUI}
+ *     render={NewUI}
  *   />
  *
  * 2) Show something based on a condition, otherwise show something else.
  *   <Flag
  *     when={weCanReleaseNewUI}
- *     render={() => <NewUI />}
- *     otherwise={() => <OldUI />}
+ *     render={<NewUI />}
+ *     otherwise={<OldUI />}
  *   />
  *
  * 3) Show something as a function of the value returned by the `when` function.
@@ -36,9 +36,9 @@ const getNode = (maybeNodeThunk: Node | () => Node): Node =>
  *     when={getUserCohort}
  *     onVal={(cohort) => {
  *       switch (cohort) {
- *         case 'group_a': return () => <OneNewFeature />
- *         case 'group_b': return () => <AnotherNewFeature />
- *         default:        return () => <TheCurrentFeature />
+ *         case 'group_a': return <OneNewFeature />
+ *         case 'group_b': return <AnotherNewFeature />
+ *         default:        return <TheCurrentFeature />
  *       }
  *     }}
  *   />
