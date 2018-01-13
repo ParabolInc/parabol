@@ -1,6 +1,4 @@
 import {GraphQLObjectType} from 'graphql';
-import teamMember from './models/TeamMember/teamMemberQuery';
-import user from './models/User/userQuery';
 import User from 'server/graphql/types/User';
 
 export default new GraphQLObjectType({
@@ -11,8 +9,6 @@ export default new GraphQLObjectType({
       resolve: (source, args, {authToken}) => ({
         id: authToken.sub
       })
-    },
-    ...teamMember,
-    ...user
+    }
   })
 });
