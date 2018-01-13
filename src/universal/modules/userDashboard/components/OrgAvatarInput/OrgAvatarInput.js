@@ -16,18 +16,19 @@ const validate = (values) => {
 };
 
 const uploadPicture = async (atmosphere, orgId, pictureFile) => {
-  return new Promise((resolve, reject) => {
-    const variables = {
-      contentType: pictureFile.type,
-      contentLength: pictureFile.size,
-      orgId
-    };
-    const onError = (err) => {
-      reject(err);
-    };
-    const onCompleted = (res) => {
+  const variables = {
+    contentType: pictureFile.type,
+    contentLength: pictureFile.size,
+    orgId
+  };
+  const onError = (err) => {
+    throw new Error(err);
+  };
+
+  return new Promise((resolve) => {
+    const onCompleted = async (res) => {
       const {createOrgPicturePutUrl: {url}} = res;
-      const pathname = sendAssetToS3(pictureFile, url);
+      const pathname = await sendAssetToS3(pictureFile, url);
       resolve(pathname);
     };
     CreateOrgPicturePutUrlMutation(atmosphere, variables, onError, onCompleted);
@@ -56,8 +57,6 @@ const OrgAvatarInput = (props) => {
         raven.captureException(e);
       }
     }
-    // no work to do
-    return undefined;
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

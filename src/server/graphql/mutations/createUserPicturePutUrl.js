@@ -1,12 +1,12 @@
 import {GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import CreateUserPicturePutUrlPayload from 'server/graphql/types/CreateUserPicturePutUrlPayload';
 import {getUserId, requireAuth} from 'server/utils/authorization';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
 import {validateAvatarUpload} from 'server/utils/utils';
 import shortid from 'shortid';
 
 const createUserPicturePutUrl = {
-  type: GraphQLURLType,
+  type: CreateUserPicturePutUrlPayload,
   description: 'Create a PUT URL on the CDN for the currently authenticated user’s profile picture',
   args: {
     contentType: {
@@ -18,7 +18,7 @@ const createUserPicturePutUrl = {
       description: 'user-supplied file size'
     }
   },
-  resolve(source, {contentType, contentLength}, {authToken}) {
+  resolve: async (source, {contentType, contentLength}, {authToken}) => {
     // AUTH
     requireAuth(authToken);
     const userId = getUserId(authToken);
@@ -28,7 +28,8 @@ const createUserPicturePutUrl = {
 
     // RESOLUTION
     const partialPath = `User/${userId}/picture/${shortid.generate()}.${ext}`;
-    return getS3PutUrl(contentType, contentLength, partialPath);
+    const url = await getS3PutUrl(contentType, contentLength, partialPath);
+    return {url};
   }
 };
 
