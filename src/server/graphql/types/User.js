@@ -7,17 +7,12 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import connectionDefinitions from 'server/graphql/connectionDefinitions';
-// import archivedProjects from 'server/graphql/queries/archivedProjects';
 import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
 import githubRepos from 'server/graphql/queries/githubRepos';
 import integrationProvider from 'server/graphql/queries/integrationProvider';
 import invoiceDetails from 'server/graphql/queries/invoiceDetails';
 import invoices from 'server/graphql/queries/invoices';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
-// import notifications from 'server/graphql/queries/notifications';
-// import organization from 'server/graphql/queries/organization';
 import providerMap from 'server/graphql/queries/providerMap';
 import slackChannels from 'server/graphql/queries/slackChannels';
 import AuthIdentityType from 'server/graphql/types/AuthIdentityType';
@@ -30,7 +25,13 @@ import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
 import {getUserId, requireAuth, requireTeamMember} from 'server/utils/authorization';
-// import organizations from 'server/graphql/queries/organizations';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import notifications from 'server/graphql/queries/notifications';
+import organization from 'server/graphql/queries/organization';
+import organizations from 'server/graphql/queries/organizations';
+import projects from 'server/graphql/queries/projects';
+import team from 'server/graphql/queries/team';
+import archivedProjects from 'server/graphql/queries/archivedProjects';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -119,45 +120,6 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
     },
-    tms: {
-      type: new GraphQLList(GraphQLID),
-      description: 'all the teams the user is a part of that the viewer can see',
-      resolve: ({id: userId, tms}, args, {authToken}) => {
-        const viewerId = getUserId(authToken);
-        return (viewerId === userId) ? tms : tms.filter((teamId) => authToken.tms.includes(teamId));
-      }
-    },
-    teams: {
-      type: new GraphQLList(Team),
-      description: 'all the teams the user is on. Returns empty if the user is not the viewer.',
-      resolve: async (source, args, {authToken, dataLoader}) => {
-        const userId = getUserId(authToken);
-        if (userId !== source.id) {
-          return [];
-        }
-        const teams = await dataLoader.get('teams').loadMany(authToken.tms);
-        teams.sort((a, b) => a.name > b.name ? 1 : -1);
-        return teams;
-      }
-    },
-    teamMember: {
-      type: TeamMember,
-      description: 'The team member associated with this user',
-      args: {
-        teamId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The team the user is on'
-        }
-      },
-      resolve: (source, {teamId}, {authToken, dataLoader}) => {
-        const userId = getUserId(authToken);
-        if (!authToken.tms.includes(teamId)) {
-          throw new Error('User is not a part of that team');
-        }
-        const teamMemberId = `${userId}::${teamId}`;
-        return dataLoader.get('teamMembers').load(teamMemberId);
-      }
-    },
     userOrgs: {
       type: new GraphQLList(UserOrg),
       description: 'the orgs and roles for this user on each',
@@ -170,18 +132,7 @@ const User = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime that we sent them a welcome email'
     },
-    /* GraphQL Sugar */
-    // memberships: {
-    //  type: new GraphQLList(TeamMember),
-    //  description: 'The memberships to different teams that the user has',
-    //  resolve({id}) {
-    //    const r = getRethink();
-    //    return r.table('TeamMember')
-    //      .getAll(id, {index: 'userId'})
-    //      .run();
-    //  }
-    // },
-    archivedProjects: require('../queries/archivedProjects').default,
+    archivedProjects,
     archivedProjectsCount,
     githubRepos,
     integrationProvider,
@@ -196,10 +147,9 @@ const User = new GraphQLObjectType({
           description: 'The meeting ID'
         }
       },
-      async resolve(source, {meetingId}, {authToken}) {
-        const r = getRethink();
+      async resolve(source, {meetingId}, {authToken, dataLoader}) {
         requireAuth(authToken);
-        const meeting = await r.table('Meeting').get(meetingId);
+        const meeting = await dataLoader.get('meetings').load(meetingId);
         if (!meeting) {
           throw new Error('Meeting ID not found');
         }
@@ -207,25 +157,47 @@ const User = new GraphQLObjectType({
         return meeting;
       }
     },
-    notifications: require('../queries/notifications').default,
+    notifications,
     providerMap,
     slackChannels,
-    organization: require('../queries/organization').default,
-    organizations: require('../queries/organizations').default,
-    projects: require('../queries/projects').default,
-    team: require('../queries/team').default,
-    // hack until we can move to ES6 immutable bindings
-    jwt: {
-      type: GraphQLID,
-      description: 'a refreshed JWT'
+    organization,
+    organizations,
+    projects,
+    team,
+    teams: {
+      type: new GraphQLList(Team),
+      description: 'all the teams the user is on that the viewer can see.',
+      resolve: async ({id: userId}, args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken);
+        let teamIds;
+        if (viewerId === userId) {
+          teamIds = authToken.tms;
+        } else {
+          const user = await dataLoader.get('users').load(userId);
+          teamIds = user.tms.filter((teamId) => authToken.tms.includes(teamId));
+        }
+        const teams = await dataLoader.get('teams').loadMany(teamIds);
+        teams.sort((a, b) => a.name > b.name ? 1 : -1);
+        return teams;
+      }
+    },
+    teamMember: {
+      type: TeamMember,
+      description: 'The team member associated with this user',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The team the user is on'
+        }
+      },
+      resolve: (source, {teamId}, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken);
+        requireTeamMember(authToken, teamId);
+        const teamMemberId = toTeamMemberId(teamId, viewerId);
+        return dataLoader.get('teamMembers').load(teamMemberId);
+      }
     }
   })
 });
 
-const {connectionType, edgeType} = connectionDefinitions({
-  nodeType: User
-});
-
-export const UserConnection = connectionType;
-export const UserEdge = edgeType;
 export default User;
