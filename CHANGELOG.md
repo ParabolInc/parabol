@@ -4,11 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.24.1
+## v0.24.1 2018-Jan-10
 ### Fixed
 - Unresponsive filtered add project button #1634
 
-## v0.24.0
+## v0.24.0 2018-Jan-08
 ### Added
 - DataLoader to backend
 - GraphQL mutation-based subscriptions
@@ -22,27 +22,27 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 # Removed
 - Dependencies on Cashay for all but user/org
 
-## v0.23.0
+## v0.23.0 2017-Nov-17
 ### Added
 - Notifications when someone assigns/mentions you a task
 - Create projects from your own meeting updates phase
 - Send daily re-engagement emails when users have notifications in their Parabol inbox
 ### Fixed
 - Security bug #17
-- Homogenized notifications layout 
+- Homogenized notifications layout
 
 ### Fixed
 - #1455 Database migration removing billing info from personal Organizations
 
-## v0.22.2
+## v0.22.2 2017-Nov-08
 ### Fixed
 - #1455 Database migration removing billing info from personal Organizations
 
-## v0.22.1
+## v0.22.1 2017-Oct-26
 ### Fixed
 - #1445 Regression where team archive was not viewable
 
-## v0.22.0
+## v0.22.0 2017-Sep-23
 ### Added
 - Tooltip component
 - Freemium UI implemented
@@ -64,15 +64,15 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
   - Stripe webhook handlers change DB state through GraphQL
 
 
-## v0.21.2 - 23-Oct-2017
+## v0.21.2 - 2017-Oct-23
 ### Fixed
 - #1438 Fixed uncommon TypeError in SocketRoute component
 
-## v0.21.1 - 09-Oct-2017
+## v0.21.1 - 2017-Oct-09
 ### Fixed
 - #1373 Regression with null aud field on the JWT
 
-## v0.21.0 - 23-Sep-2017
+## v0.21.0 - 2017-Sep-23
 ### Added
 - When a user already belongs to Parabol, invitations arrive as notifications,
   not emails
@@ -108,7 +108,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
   `npm run build:theme` and `npm run build:deps`; eliminates race condition
   during build
 
-## v0.20.9 - 02-Sep-2017
+## v0.20.9 - 2017-Sep-02
 ### Added
 - Upgrade to Node.js v8.4.0
 ### Fixed
@@ -116,15 +116,15 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #1317 TypeError: Cannot read property 'getIn' of undefined
    - Fixed by private fork of draft-js
 
-## v0.20.8 - 31-Aug-2017
+## v0.20.8 - 2017-Aug-31
 ### Fixed
 - #1312 getLength on truncateCard
 
-## v0.20.7 - 25-Aug-2017
+## v0.20.7 - 2017-Aug-25
 ### Fixed
 - #1303 Link Changer modal broke & caused an infinite loop
 
-## v0.20.6 - 24-Aug-2017
+## v0.20.6 - 2017-Aug-24
 ### Fixed
 - #1177 ensure that `teamId` and `orgId` are populated on most page load events
 - #1179 no footer icons when menu is open
@@ -143,35 +143,35 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #1298 failure on first github provider created
 - #1299 bad rejoin facilitator logic
 
-## v0.20.5 - 16-Aug-2017
+## v0.20.5 - 2017-Aug-16
 ### Removed
 - Snyk (for now)
 
-## v0.20.4 - 16-Aug-2017
+## v0.20.4 - 2017-Aug-16
 ### Fixed
 - #1260 missing team names
 - Upgraded to webpack 3, GraphQL 0.10.5, and much more
 
-## v0.20.3 - 14-Aug-2017
+## v0.20.3 - 2017-Aug-14
 ### Fixed
 - #1242 anyone can assign any team member
 - #1252 fix several are editing bug
 - #1253 regression on clicking card menus
 
-## v0.20.2 - 14-Aug-2017
+## v0.20.2 - 2017-Aug-14
 ### Added
 - add an adminUserId to every github integration
 ### Fixed
 - #1239 Octocat styling regression
 
 
-## v0.20.1 - 14-Aug-2017
+## v0.20.1 - 2017-Aug-14
 ### Fixed
 - #1243 facilitator tethering issue
 - #1246 be safe with createFromContent
 
 
-## v0.20.0 - 11-Aug-2017
+## v0.20.0 - 2017-Aug-11
 ### Added
 - Basic Slack integration:
    - Add integration in Team Settings to Slack channels of your choice
@@ -193,13 +193,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #551 timestamp toggle
 
 
-## v0.19.2 - 29-Jun-2017
+## v0.19.2 - 2017-Jun-29
 ### Fixed
 - #1131 broken new team validation accepts blank name on client
 - #1132 handle shouldValidate and handleSubmit on new team form
 
 
-## v0.19.1 - 26-Jun-2017
+## v0.19.1 - 2017-Jun-26
 ### Fixed
 - #914 improbable welcome wizard race condition
 - #1047 refactor routing components to stop unnecessary rerenders
@@ -208,7 +208,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #1117 meeting summary cards not rendering to HTML
 
 
-## v0.19.0 - 22-Jun-2017
+## v0.19.0 - 2017-Jun-22
 ### Added
 - Fancy new [draftjs](https://draftjs.org/)-based editor for
   Project cards
@@ -217,7 +217,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #1085 Migrations on deploy broken (regeneratorRuntime not found)
 
 
-## v0.18.3 - 14-Jun-2017
+## v0.18.3 - 2017-Jun-14
 ### Added
 - #1070 Create segment event when meeting is automatically ended
 
@@ -225,7 +225,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #1074 endOldMeetings: meeting already ended
 
 
-## v0.18.2 - 02-Jun-2017
+## v0.18.2 - 2017-Jun-02
 ### Added
 - Enhanced design of beta integrations configuration panel, starting with Slack
 
@@ -233,7 +233,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Various dependency updates fixing potential security vulnerabilities
 
 
-## v0.18.1 - 18-May-2017
+## v0.18.1 - 2017-May-18
 ### Added
 - Removed references to "Action" as product name, now we're just going
   what people call us, "Parabol"
@@ -257,7 +257,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #994 DnD agenda items in team dash
 
 
-## v0.18.0 - 04-May-2017
+## v0.18.0 - 2017-May-04
 ### Added
 - Tags (#archive, #private)
 - Calendar invites on first meeting Email Summary
@@ -275,7 +275,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - redux-form from projects
 
 
-## v0.17.6 - 25-Apr-2017
+## v0.17.6 - 2017-Apr-25
 ### Added
 - Hello lang tooltips, we'll now tell you which language is saying
   hello to you during check-in round
@@ -288,7 +288,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - CircleCI `circle.yml` ssh key management regression fixed
 
 
-## v0.17.5 - 17-Apr-2017
+## v0.17.5 - 2017-Apr-17
 ### Fixed
 - typo in segment 'Meeting Completed' event
 - fixes #350 and fixes #380 easter eggs
@@ -301,7 +301,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - fixes #890 update voice of success copy
 
 
-## v0.17.4 - 07-Apr-2017
+## v0.17.4 - 2017-Apr-07
 ### Added
 - Team dash header changes: (hot lobby button! Team settings! and more!)
 - New rallies!
@@ -315,7 +315,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Avatar group, dates
 
 
-## v0.17.3 - 05-Apr-2017
+## v0.17.3 - 2017-Apr-05
 ### Added
 - Action meeting layout and check-in UI/UX changes:
    - #717 Simplified meeting check-in process
@@ -324,7 +324,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - New counters on project columns
 
 
-## v0.17.2 - 04-Apr-2017
+## v0.17.2 - 2017-Apr-04
 ### Added
 - #555 can now archive teams
   - N.B. teams can't yet be unarchived, so be careful :)
@@ -335,12 +335,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #868, #879 agendas items not marked as complete
 
 
-## v0.17.1 - 29-Mar-2017
+## v0.17.1 - 2017-Mar-29
 ### Fixed
 - #859 infinite redirect loop when deleting the last phaseItem
 
 
-## v0.17.0 - 27-Mar-2017
+## v0.17.0 - 2017-Mar-27
 ### Added
 - Start of many copy edits (watch for more changes in future versions),
   including #716 meeting lobby updates
@@ -351,7 +351,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #857 mystery notification
 
 
-## v0.16.12 - 22-Mar-2017
+## v0.16.12 - 2017-Mar-22
 ### Added
 - #344 meeting agenda list now reflects location of Facilitator and participants
 - #837 added `Facilitator` badge and styling added to meeting Facilitator
@@ -360,12 +360,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Better fix for #850 r.createdAt.getTime is not a function
 
 
-## v0.16.11 - 22-Mar-2017
+## v0.16.11 - 2017-Mar-22
 ### Fixed
 - Hotfix #850 r.createdAt.getTime is not a function
 
 
-## v0.16.10 - 22-Mar-2017
+## v0.16.10 - 2017-Mar-22
 ### Added
 - Clearer direction to meeting participants when they want to skip ahead
   of the meeting facilitator (#806, #392)
@@ -381,7 +381,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #848 eager-load error validation error for stripCard
 
 
-## v0.16.9 - 20-Mar-2017
+## v0.16.9 - 2017-Mar-20
 ### Added
 - #404 add automated error reporting if meeting state gets stuck
 - #762 spinner component
@@ -408,19 +408,19 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #824 Editing/cursor bug workaround, root cause still unknown
 
 
-## v0.16.8 - 14-Mar-2017
+## v0.16.8 - 2017-Mar-14
 ### Fixed
 - #811 Rejoin facilitator button cursor is pointer
 - fix orgName update
 - Dependency bumps & linting
 
 
-## v0.16.7 - 13-Mar-2017
+## v0.16.7 - 2017-Mar-13
 ### Fixed
 - #808 hey I want to pay!
 
 
-## v0.16.5 - 11-Mar-2017
+## v0.16.5 - 2017-Mar-11
 ### Added
 - Awesome spinner component
 - Billing unit tests
@@ -470,7 +470,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #757 add new team, always shows orgs as "Loading..."
 
 
-## v0.16.0 - 25-Feb-2017
+## v0.16.0 - 2017-Feb-25
 ### Added
 - Organizations: teams can be tied together into organizations
 - User trials & billing: hey look! A business model!
@@ -510,7 +510,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #725 acceptInvitation race condition
 
 
-## v0.15.3 - 11-Feb-2017
+## v0.15.3 - 2017-Feb-11
 ### Added
 - OutcomeCard components (Projects, Action) now re-render their last-updated
   time on a smart timer
@@ -519,32 +519,32 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
   sending this event
 
 
-## v0.15.2 - 01-Feb-2017
+## v0.15.2 - 2017-Feb-01
 ### Fixed
 - Incremented `package.json` version to match tag – oops!
 
 
-## v0.15.1 - 31-Jan-2017
+## v0.15.1 - 2017-Jan-31
 ### Added
 - `(<TAB> saves)` string to OutcomeCard components when editing
 - `npm run test:xunit` command for CircleCI 2.0
 
 
-## v0.15.0 - 30-Jan-2017
+## v0.15.0 - 2017-Jan-30
 ### Added
 - When version is upgraded, we now emit a toast asking the user to upgrade
   their client version
 - Markdown support added to Action and Project cards
 
 
-## v0.14.2 - 29-Jan-2017
+## v0.14.2 - 2017-Jan-29
 ### Fixes
 - #646 the first-time message meeting completion message was not displaying
 - #659 auth0 profile picture meta-information now updated when user changes
   profile image
 
 
-## v0.14.1 - 16-Jan-2017
+## v0.14.1 - 2017-Jan-16
 ### Added
 - Adopted CircleCI 2.0 beta. See [circle.yml](circle.yml). Now deploys
   securely to `staging` and `production` servers directly from CI servers.
@@ -562,7 +562,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Fixes CircleCI caching issues building native bcrypt modules.
 
 
-## v0.14.0 - 09-Jan-2017
+## v0.14.0 - 2017-Jan-09
 ### Added
 - Implements #595; upload of user avatar images to S3
   - Works by securely signing S3 PutObject URL
@@ -570,7 +570,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - `npm run build:deploy` and `npm run build:min` commands
 
 
-## v0.13.6 - 20-Dec-2016
+## v0.13.6 - 2016-Dec-20
 ### Added
 - User impersonation, login as a user with knowing their credentials on route
   `/admin/impersonate/:userid`
@@ -578,19 +578,19 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Added segment.io event on 'New Team' creation
 
 
-## v0.13.5 - 12-Dec-2016
+## v0.13.5 - 2016-Dec-12
 ### Fixed
 - #556 archived cards no longer let you change the owner
 - #557 blur agenda item input after submit
 - #559 participants stopped following the leader after meeting "Last Call"
 
 
-## v0.13.4 - 08-Dec-2016
+## v0.13.4 - 2016-Dec-08
 ### Fixed
 - #564 Fix email validation
 
 
-## v0.13.3 - 05-Dec-2016
+## v0.13.3 - 2016-Dec-05
 ### Added
 - Validations system (see: `src/universal/validations/legitify.js`)
   - Added client and server validations for all mutations
@@ -602,7 +602,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #549 welcome wizard step 3: removing email calls submit
 
 
-## v0.13.2 - 27-Nov-2016
+## v0.13.2 - 2016-Nov-27
 ### Added
 - 'Player joined' message when teammate accepts invitation
 
@@ -610,7 +610,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #543 unable to end action meeting
 
 
-## v0.13.1 - 25-Nov-2016
+## v0.13.1 - 2016-Nov-25
 ### Added
 - Can now filter by team member on team dashboard Views
 - Updated FontAwesome to v4.7.0
@@ -621,7 +621,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #536 Cashay warning while proceeding through check-in round
 
 
-## v0.13.0 - 22-Nov-2016
+## v0.13.0 - 2016-Nov-22
 We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 ### Added
 - Drag-and-drop everywhere: My Dashboard (actions, projects),
@@ -633,12 +633,12 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #517 Server exception encountered when generating meeting summary
 
 
-## v0.12.1 - 15-Nov-2016
+## v0.12.1 - 2016-Nov-15
 ### Fixed
 - #518 Removed team member does not redirect away while on team dashboard
 
 
-## v0.12.0 - 15-Nov-2016
+## v0.12.0 - 2016-Nov-15
 ### Added
 - Added Team Settings implementation
   - Can now rename teams
@@ -652,7 +652,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #512 Grant facilitation permission to every team member
 
 
-## v0.11.0 - 05-Nov-2016
+## v0.11.0 - 2016-Nov-05
 ### Added
 - Added S3 deployment to `npm run build:client-min` and application
 
@@ -666,7 +666,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
    - LastCall pulls success expression from array
 
 
-## v0.10.0 - 02-Nov-2016
+## v0.10.0 - 2016-Nov-02
 ### Added
 - #458 Added ability to create and invite new teams
 - #466 Can now press escape to blur agenda list input
@@ -682,7 +682,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Updated email link copy to summary
 
 
-## v0.9.6 - 29-Oct-2016
+## v0.9.6 - 2016-Oct-29
 ### Added
 - Automatic election of new facilitator when old facilitator disconnects
 - Refactor of socket management; added container decorator to maintain
@@ -695,14 +695,14 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Fixed short urls
 
 
-## v0.9.5 - 25-Oct-2016
+## v0.9.5 - 2016-Oct-25
 ### Fixed
 - #433 server crashing on localhost
 - #440 sentry.io bug on `id` field
 - #445 summary rendering “0” when there aren’t members without new outcomes
 
 
-## v0.9.4 - 24-Oct-2016
+## v0.9.4 - 2016-Oct-24
 ### Fixed
 - #428 makeAppLink
 - #429 race to meeting summary and lobby
@@ -710,7 +710,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #431 killMeeting
 
 
-## v0.9.3 - 24-Oct-2016
+## v0.9.3 - 2016-Oct-24
 ### Added
 - New meeting summary web view and email
 - Segment.io adoption funnel and usage tracking:
@@ -724,7 +724,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #413 fixes build minification
 
 
-## v0.8.1 - 19-Oct-2016
+## v0.8.1 - 2016-Oct-19
 ### Added
 - Sentry.io automated error reporting for server and client
 
@@ -739,12 +739,12 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #400 Doesn't submit twice when using Enter to submit outcome changes
 
 
-## v0.8.0 - 18-Oct-2016
+## v0.8.0 - 2016-Oct-18
 ### Added
 - End of meeting summary
 
 
-## v0.7.5 - 15-Oct-2016
+## v0.7.5 - 2016-Oct-15
 ### Added
 - Temporarily wired meeting last call button to endMeeting mutation to enable
   more user testing
@@ -757,7 +757,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Re-added actions subscription channel, was still being used by user dashboard
 
 
-## v0.7.4 - 12-Oct-2016
+## v0.7.4 - 2016-Oct-12
 ### Added
 - #333 Distribute auth0 clientId and domain via SSR, allows configurability
   of differing auth0 domains
@@ -778,12 +778,12 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - #373 Read-only team name outline/focus
 
 
-## v0.7.1 - 05-Oct-2016
+## v0.7.1 - 2016-Oct-05
 ### Fixed
 - Fixed: #322, #323, #334, #335, #336
 
 
-## v0.7.0 - 04-Oct-2016
+## v0.7.0 - 2016-Oct-04
 ### Added
 - Now using [aphrodite](https://github.com/khan/aphrodite) for styling
 - Me dashboard now has buttons to add new outcomes for Actions and Projects
@@ -797,12 +797,12 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
   #307, #313
 
 
-## v0.6.3 - 28-Sep-2016
+## v0.6.3 - 2016-Sep-28
 ### Fixed
 - Agenda processing order fix for issue #294
 
 
-## v0.6.2 - 27-Sep-2016
+## v0.6.2 - 2016-Sep-27
 ### Added
 - Processing of agenda items during meeting into new projects and actions
 
@@ -811,7 +811,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Editors multiplayer field regression
 
 
-## v0.6.1 - 23-Sep-2016
+## v0.6.1 - 2016-Sep-23
 ### Added
 - Now supports removal of agenda items
 - Stubbed in meeting last call for agenda items
@@ -836,7 +836,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Merged #267 autofocus fix
 
 
-## v0.5.3 - 30-Aug-2016
+## v0.5.3 - 2016-Aug-30
 ### Added
 - Project updates section
 - Rally easter eggs
@@ -855,7 +855,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - Refactored dashboard components into many clearer containers
 
 
-## v0.4.1 - 16-Aug-2016
+## v0.4.1 - 2016-Aug-16
 ### Added
 - Added partial `/me` dashboard implementation
 - Wired up project status and ownership assignment on dashboards
@@ -872,7 +872,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 - onBlur handler for project cards (`OutcomeCardTextAreaField` component)
 
 
-## v0.4.0 - 13-Aug-2016
+## v0.4.0 - 2016-Aug-13
 ### Added
 - User invitations
    - _Note:_ invites only process currently for new users
@@ -903,7 +903,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
   database and start again.
 
 
-## v0.3.0 - 04-July-2016
+## v0.3.0 - 2016-Jul-04
 ### Added
 - `rethink-migrate` back to project
 - CircleCI
