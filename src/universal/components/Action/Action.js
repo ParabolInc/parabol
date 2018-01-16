@@ -2,6 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
+import SocketHealthMonitor from 'client/containers/SocketHealthMonitor/SocketHealthMonitor';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
@@ -22,6 +23,7 @@ const Action = (props) => {
   return (
     <div className={css(styles.app)}>
       <Toast />
+      <SocketHealthMonitor />
       <Switch>
         <Route exact path="/" component={LandingContainer} />
         <AsyncRoute isAbstract isPrivate path="(/me|/meeting|/newteam|/team)" mod={socketRoute} />
