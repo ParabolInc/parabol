@@ -1,20 +1,16 @@
-import React, { Component } from 'react';
-import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
-import {connect} from 'react-redux';
-import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import {
-  ACTIVITY_WELCOME,
-  clearActivity
-} from 'universal/modules/userDashboard/ducks/settingsDuck';
-import {reduxForm, initialize} from 'redux-form';
-import {cashay} from 'cashay';
-import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
-import shouldValidate from 'universal/validation/shouldValidate';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {createFragmentContainer} from 'react-relay';
+import {initialize, reduxForm, SubmissionError} from 'redux-form';
 import withReducer from 'universal/decorators/withReducer/withReducer';
-import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
+import userSettingsReducer, {ACTIVITY_WELCOME, clearActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation';
+import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
+import shouldValidate from 'universal/validation/shouldValidate';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -23,13 +19,9 @@ const updateSuccess = {
 };
 
 const mapStateToProps = (state) => {
-  const userId = state.auth.obj.sub;
-  const user = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data.user;
   return {
     activity: state.userDashboardSettings.activity,
-    nextPage: state.userDashboardSettings.nextPage,
-    user,
-    userId: state.auth.obj.sub
+    nextPage: state.userDashboardSettings.nextPage
   };
 };
 
@@ -38,23 +30,15 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
-@withReducer({userDashboardSettings: userSettingsReducer})
-@reduxForm({form: 'userSettings', shouldValidate, validate})
-@connect(mapStateToProps)
-export default class UserSettingsContainer extends Component {
+class UserSettingsContainer extends Component {
   static propTypes = {
     activity: PropTypes.string,
+    atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func,
     nextPage: PropTypes.string,
-    user: PropTypes.shape({
-      email: PropTypes.string,
-      id: PropTypes.string,
-      picture: PropTypes.string,
-      preferredName: PropTypes.string
-    }),
     history: PropTypes.object,
     untouch: PropTypes.func,
-    userId: PropTypes.string
+    viewer: PropTypes.object.isRequired
   };
 
   componentWillMount() {
@@ -62,44 +46,36 @@ export default class UserSettingsContainer extends Component {
   }
 
   onSubmit = (submissionData) => {
-    const {user} = this.props;
+    const {atmosphere, viewer} = this.props;
     const {preferredName} = submissionData;
-    if (preferredName !== user.preferredName) {
-      this.updateProfile(preferredName)
-        .then(this.onSubmitComplete())
-        .catch((e) => raven.captureException(e));
+    if (preferredName !== viewer.preferredName) {
+      const onError = (err) => {
+        raven.captureException(err);
+        throw new SubmissionError(err);
+      };
+      return new Promise((resolve) => {
+        const onCompleted = () => {
+          const {activity, dispatch, nextPage, untouch, history} = this.props;
+          dispatch(showSuccess(updateSuccess));
+          if (activity === ACTIVITY_WELCOME) {
+            dispatch(clearActivity());
+          }
+          if (nextPage) {
+            history.push(nextPage);
+          }
+          untouch('preferredName');
+          resolve();
+        };
+        const updatedUser = {preferredName};
+        UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted);
+      });
     }
 
     return undefined; // no work to do
   };
 
-  onSubmitComplete() {
-    const {activity, dispatch, nextPage, untouch, history} = this.props;
-    dispatch(showSuccess(updateSuccess));
-    if (activity === ACTIVITY_WELCOME) {
-      dispatch(clearActivity());
-    }
-    if (nextPage) {
-      history.push(nextPage);
-    }
-    untouch('preferredName');
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  updateProfile(preferredName, pictureUrl) {
-    const options = {
-      variables: {
-        updatedUser: {
-          preferredName,
-          picture: pictureUrl
-        }
-      }
-    };
-    return cashay.mutate('updateUserProfile', options);
-  }
-
   initializeForm() {
-    const {dispatch, user: {preferredName}} = this.props;
+    const {dispatch, viewer: {preferredName}} = this.props;
     return dispatch(initialize('userSettings', {preferredName}));
   }
 
@@ -112,4 +88,20 @@ export default class UserSettingsContainer extends Component {
     );
   }
 }
+
+export default createFragmentContainer(
+  withReducer({userDashboardSettings: userSettingsReducer})(
+    reduxForm({form: 'userSettings', shouldValidate, validate})(
+      connect(mapStateToProps)(
+        UserSettingsContainer
+      )
+    )
+  ),
+  graphql`
+    fragment UserSettingsContainer_viewer on User {
+      preferredName
+      ...UserSettings_viewer
+    }
+  `
+);
 

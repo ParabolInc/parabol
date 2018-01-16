@@ -2,17 +2,18 @@ import {GraphQLNonNull, GraphQLString} from 'graphql';
 import {verify} from 'jsonwebtoken';
 import getRethink from 'server/database/rethinkDriver';
 import sendEmail from 'server/email/sendEmail';
-import User from 'server/graphql/types/User';
+import LoginPayload from 'server/graphql/types/LoginPayload';
 import {
   auth0AuthenticationClient as auth0Client,
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
+import {getUserId} from 'server/utils/authorization';
 import segmentIo from 'server/utils/segmentIo';
 
 const updateUserWithAuthToken = {
-  type: User,
-  description: 'Given an auth0 auth token, return basic user profile info',
+  type: LoginPayload,
+  description: 'Log in, or sign up if it is a new user',
   args: {
     // even though the token comes with the bearer, we include it here we use it like an arg since the gatekeeper
     // decodes it into an object
@@ -21,18 +22,20 @@ const updateUserWithAuthToken = {
       description: 'The ID Token from auth0, a base64 JWT'
     }
   },
-  async resolve(source, {auth0Token}) {
+  async resolve(source, {auth0Token, dataLoader}) {
     const r = getRethink();
     const now = new Date();
 
     // VALIDATION
     const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0ClientId});
+    const viewerId = getUserId(authToken);
 
     // RESOLUTION
     if (authToken.tms) {
-      const user = await r.table('User').get(authToken.sub);
+      const user = await dataLoader.get('users').load(viewerId);
+      // LOGIN
       if (user) {
-        return user;
+        return {userId: viewerId};
       }
       // should never reach this line in production. that means our DB !== auth0 DB
     }
@@ -75,7 +78,7 @@ const updateUserWithAuthToken = {
     });
     // don't await
     setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
-    return newUser;
+    return {userId: viewerId};
   }
 };
 

@@ -13,6 +13,9 @@ const mutation = graphql`
         preferredName
       }
       jwt
+      user {
+        ...UserAnalyticsFrag @relay(mask: false)
+      }
     }
   }
 `;

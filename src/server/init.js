@@ -1,5 +1,6 @@
 const path = require('path');
 const resolve = require('resolve'); // eslint-disable-line import/no-extraneous-dependencies
+require('babel-polyfill');
 
 // eslint-disable-next-line
 module.exports.run = function() {

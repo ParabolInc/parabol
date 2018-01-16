@@ -6,7 +6,6 @@ import {reduxSocket} from 'redux-socket-cluster';
 import socketCluster from 'socketcluster-client';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AuthEngine from 'universal/redux/AuthEngine';
-import parseChannel from 'universal/utils/parseChannel';
 
 export default (ComposedComponent) => {
   const reduxSocketOptions = (props) => ({

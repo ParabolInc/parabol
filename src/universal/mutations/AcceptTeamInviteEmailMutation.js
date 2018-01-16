@@ -39,6 +39,9 @@ graphql`
       title
       message
     }
+    user {
+      ...UserAnalyticsFrag @relay(mask: false)
+    }
 
   }
 `;
@@ -68,13 +71,13 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
     },
     onError,
     onCompleted: (data) => {
-      const {acceptTeamInviteEmail: {error, team, authToken}} = data;
+      const {acceptTeamInviteEmail: {error, team, authToken, user}} = data;
       if (error) {
         history.push('/signout');
       } else {
         const {id: teamId} = team;
         const {tms} = jwtDecode(authToken);
-        dispatch(setAuthToken(authToken));
+        dispatch(setAuthToken(authToken, user));
         if (tms.length <= 1) {
           dispatch(setWelcomeActivity(`/team/${teamId}`));
           history.push('/me/settings');

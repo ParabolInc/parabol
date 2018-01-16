@@ -6,7 +6,7 @@ import {createFragmentContainer} from 'react-relay';
 import {NavLink} from 'react-router-dom';
 import tinycolor from 'tinycolor2';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
-import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
+import StandardHub from 'universal/components/StandardHub/StandardHub';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import appTheme from 'universal/styles/theme/appTheme';
 import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
@@ -18,7 +18,7 @@ const DashSidebar = (props) => {
   const {location, styles, viewer} = props;
   return (
     <div className={css(styles.root)}>
-      <StandardHubContainer viewer={viewer} />
+      <StandardHub viewer={viewer} />
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem

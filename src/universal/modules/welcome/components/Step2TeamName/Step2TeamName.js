@@ -28,11 +28,11 @@ const Step2TeamName = (props) => {
       throw new SubmissionError(err);
     };
     const onCompleted = (res) => {
-      const {createFirstTeam: {jwt: newToken, team: {id: teamId}, teamLead: {id: teamMemberId}}} = res;
+      const {createFirstTeam: {jwt: newToken, team: {id: teamId}, teamLead: {id: teamMemberId}, user}} = res;
       dispatch(setWelcomeTeam({teamId, teamMemberId}));
       dispatch(updateCompleted(2));
       dispatch(nextPage());
-      dispatch(setAuthToken(newToken));
+      dispatch(setAuthToken(newToken, user));
     };
     const newTeam = {name: normalizedTeamName};
     CreateFirstTeamMutation(atmosphere, newTeam, onError, onCompleted);

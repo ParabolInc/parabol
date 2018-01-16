@@ -62,7 +62,7 @@ import createOrgPicturePutUrl from 'server/graphql/mutations/createOrgPicturePut
 import addFeatureFlag from 'server/graphql/mutations/addFeatureFlag';
 import createImposterToken from 'server/graphql/mutations/createImposterToken';
 import createUserPicturePutUrl from 'server/graphql/mutations/createUserPicturePutUrl';
-import updateUserWithAuthToken from 'server/graphql/mutations/updateUserWithAuthToken';
+import login from 'server/graphql/mutations/login';
 import updateUserProfile from 'server/graphql/mutations/updateUserProfile';
 
 export default new GraphQLObjectType({
@@ -131,7 +131,7 @@ export default new GraphQLObjectType({
     updateProject,
     updateTeamName,
     updateUserProfile,
-    updateUserWithAuthToken,
+    login,
     upgradeToPro
   })
 });

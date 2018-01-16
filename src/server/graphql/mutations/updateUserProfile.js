@@ -1,22 +1,27 @@
 import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput';
-import User from 'server/graphql/types/User';
+import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
 import {getUserId, requireAuth} from 'server/utils/authorization';
 import segmentIo from 'server/utils/segmentIo';
-import {handleSchemaErrors, updatedOrOriginal} from 'server/utils/utils';
+import {handleSchemaErrors} from 'server/utils/utils';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
+import publish from 'server/utils/publish';
+import {NOTIFICATION, TEAM_MEMBER} from 'universal/utils/constants';
 
 const updateUserProfile = {
-  type: User,
+  type: UpdateUserProfilePayload,
   args: {
     updatedUser: {
       type: new GraphQLNonNull(UpdateUserProfileInput),
       description: 'The input object containing the user profile fields that can be changed'
     }
   },
-  async resolve(source, {updatedUser}, {authToken}) {
+  async resolve(source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
+    const now = new Date();
+    const operationId = dataLoader.share();
+    const subOptions = {operationId, mutatorId};
 
     // AUTH
     requireAuth(authToken);
@@ -28,15 +33,20 @@ const updateUserProfile = {
     handleSchemaErrors(errors);
 
     // RESOLUTION
+    const updates = {
+      ...validUpdatedUser,
+      updatedAt: now
+    };
     // propagate denormalized changes to TeamMember
-    const dbProfileChanges = await r.table('TeamMember')
-      .getAll(userId, {index: 'userId'})
-      .update(validUpdatedUser)
-      .do(() => {
-        return r.table('User')
-          .get(userId)
-          .update(validUpdatedUser, {returnChanges: 'always'});
-      });
+    const {user, teamMembers} = await r({
+      teamMembers: r.table('TeamMember')
+        .getAll(userId, {index: 'userId'})
+        .update(updates, {returnChanges: true})('changes')('new_val'),
+      user: r.table('User')
+        .get(userId)
+        .update(updates, {returnChanges: true})('changes')(0)('new_val')
+        .default(null)
+    });
     //
     // If we ever want to delete the previous profile images:
     //
@@ -47,17 +57,23 @@ const updateUserProfile = {
     //   .catch(console.warn.bind(console));
     // }
     //
-    const dbProfile = updatedOrOriginal(dbProfileChanges);
     segmentIo.identify({
-      userId: dbProfile.id,
+      userId: user.id,
       traits: {
-        avatar: dbProfile.picture,
-        createdAt: dbProfile.createdAt,
-        email: dbProfile.email,
-        name: dbProfile.preferredName
+        avatar: user.picture,
+        createdAt: user.createdAt,
+        email: user.email,
+        name: user.preferredName
       }
     });
-    return dbProfile;
+    const teamMemberIds = teamMembers.map(({id}) => id);
+    const teamIds = teamMembers.map(({teamId}) => teamId);
+    const data = {userId, teamMemberIds};
+    teamIds.forEach((teamId) => {
+      publish(TEAM_MEMBER, teamId, UpdateUserProfilePayload, data, subOptions);
+    });
+    publish(NOTIFICATION, userId, UpdateUserProfilePayload, data, subOptions);
+    return data;
   }
 };
 

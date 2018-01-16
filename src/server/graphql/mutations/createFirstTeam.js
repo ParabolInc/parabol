@@ -27,11 +27,11 @@ export default {
 
     // AUTH
     requireAuth(authToken);
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
 
     // VALIDATION
     const user = await r.table('User')
-      .get(userId)
+      .get(viewerId)
       .pluck('id', 'preferredName', 'userOrgs');
 
     if (user.userOrgs && user.userOrgs.length > 0) {
@@ -47,16 +47,18 @@ export default {
     const teamId = shortid.generate();
     const validNewTeam = {id: teamId, orgId, name};
     const orgName = `${user.preferredName}’s Org`;
-    await createNewOrg(orgId, orgName, userId);
+    await createNewOrg(orgId, orgName, viewerId);
     const {newTeamUpdatedUser: {team, teamLead, tms}} = await resolvePromiseObj({
-      newTeamUpdatedUser: createTeamAndLeader(userId, validNewTeam, true),
-      seedTeam: addSeedProjects(userId, teamId)
+      newTeamUpdatedUser: createTeamAndLeader(viewerId, validNewTeam, true),
+      seedTeam: addSeedProjects(viewerId, teamId)
     });
-    sendSegmentEvent('Welcome Step2 Completed', userId, {teamId});
+    sendSegmentEvent('Welcome Step2 Completed', viewerId, {teamId});
+
     return {
       team,
       teamLead,
-      jwt: tmsSignToken(authToken, tms)
+      jwt: tmsSignToken(authToken, tms),
+      userId: viewerId
     };
   }
 };
