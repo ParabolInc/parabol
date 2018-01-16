@@ -56,7 +56,7 @@ const WebSocketHealthMonitor = (props: Props) => {
     handleError(
       {
         title: 'Network Authentication Error',
-        message: "We weren't able to create a live connection to our server. " + 'Make sure you are logged in to a secure network.'
+        message: "We weren't able to create a live connection to our server. Make sure you are logged in to a secure network."
       },
       'WebSocket authentication error',
       authError
@@ -74,7 +74,7 @@ const mapStateToProps = (state) => {
   return { authState: null, authError: null, socketState: null, error: null };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = <A>(dispatch: Dispatch<A>) => ({
   showError: (opts: ToastOpts) => dispatch(showError(opts))
 });
 
