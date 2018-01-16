@@ -74,7 +74,7 @@ const mapStateToProps = (state) => {
   return { authState: null, authError: null, socketState: null, error: null };
 };
 
-const mapDispatchToProps = <A>(dispatch: Dispatch<A>) => ({
+const mapDispatchToProps = <A: { type: string }>(dispatch: Dispatch<A>) => ({
   showError: (opts: ToastOpts) => dispatch(showError(opts))
 });
 
