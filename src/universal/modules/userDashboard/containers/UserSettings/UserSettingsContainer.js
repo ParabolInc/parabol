@@ -11,6 +11,7 @@ import userSettingsReducer, {ACTIVITY_WELCOME, clearActivity} from 'universal/mo
 import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -90,10 +91,12 @@ class UserSettingsContainer extends Component {
 }
 
 export default createFragmentContainer(
-  withReducer({userDashboardSettings: userSettingsReducer})(
-    reduxForm({form: 'userSettings', shouldValidate, validate})(
-      connect(mapStateToProps)(
-        UserSettingsContainer
+  withAtmosphere(
+    withReducer({userDashboardSettings: userSettingsReducer})(
+      reduxForm({form: 'userSettings', shouldValidate, validate})(
+        connect(mapStateToProps)(
+          UserSettingsContainer
+        )
       )
     )
   ),

@@ -41,7 +41,8 @@ const updateUserProfile = {
     const {user, teamMembers} = await r({
       teamMembers: r.table('TeamMember')
         .getAll(userId, {index: 'userId'})
-        .update(updates, {returnChanges: true})('changes')('new_val'),
+        .update(updates, {returnChanges: true})('changes')('new_val')
+        .default([]),
       user: r.table('User')
         .get(userId)
         .update(updates, {returnChanges: true})('changes')(0)('new_val')

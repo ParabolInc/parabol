@@ -11,7 +11,7 @@ import {
 import {getUserId} from 'server/utils/authorization';
 import segmentIo from 'server/utils/segmentIo';
 
-const updateUserWithAuthToken = {
+const login = {
   type: LoginPayload,
   description: 'Log in, or sign up if it is a new user',
   args: {
@@ -22,7 +22,7 @@ const updateUserWithAuthToken = {
       description: 'The ID Token from auth0, a base64 JWT'
     }
   },
-  async resolve(source, {auth0Token, dataLoader}) {
+  async resolve(source, {auth0Token}, {dataLoader}) {
     const r = getRethink();
     const now = new Date();
 
@@ -82,4 +82,4 @@ const updateUserWithAuthToken = {
   }
 };
 
-export default updateUserWithAuthToken;
+export default login;

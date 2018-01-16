@@ -10,7 +10,7 @@ import Welcome from 'universal/modules/welcome/containers/Welcome/Welcome';
 const query = graphql`
   query WelcomeRootQuery {
     viewer {
-      ...Welcome_viewer
+      ...WelcomeContainer_viewer
     }
   }
 `;

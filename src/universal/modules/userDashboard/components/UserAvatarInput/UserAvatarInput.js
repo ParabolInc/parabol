@@ -22,7 +22,7 @@ const uploadPicture = async (atmosphere, pictureFile) => {
   };
 
   const onError = (err) => {
-    throw new Error(err);
+    throw new Error(JSON.stringify(err));
   };
 
   return new Promise((resolve) => {

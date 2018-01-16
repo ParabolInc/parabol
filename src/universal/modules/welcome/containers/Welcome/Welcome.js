@@ -37,12 +37,13 @@ const WelcomeContainer = (props) => {
     <Welcome
       invitees={invitees}
       inviteesRaw={inviteesRaw}
-      preferredName={preferredName || viewer.preferredName}
+      preferredName={preferredName}
       teamName={teamName}
       tms={tms}
       welcome={welcome}
       progressDotClickFactory={progressDotClickFactory}
       title="Welcome"
+      viewer={viewer}
     />
   );
 };
@@ -70,8 +71,9 @@ export default createFragmentContainer(
     )
   ),
   graphql`
-    fragment Welcome_viewer on User {
+    fragment WelcomeContainer_viewer on User {
       preferredName
+      ...Welcome_viewer
     }
   `
 );

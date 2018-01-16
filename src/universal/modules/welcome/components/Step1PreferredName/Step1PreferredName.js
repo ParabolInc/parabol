@@ -1,6 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {createFragmentContainer} from 'react-relay';
 import {Field, initialize, reduxForm, SubmissionError} from 'redux-form';
 import InputField from 'universal/components/InputField/InputField';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -31,12 +32,12 @@ class Step1PreferredName extends Component {
     onSubmit: PropTypes.func,
     styles: PropTypes.object,
     submitting: PropTypes.bool,
-    user: PropTypes.object.isRequired,
+    viewer: PropTypes.object.isRequired,
     completed: PropTypes.number
   };
 
   componentWillMount() {
-    const {atmosphere, dispatch, user: {preferredName}} = this.props;
+    const {atmosphere, dispatch, viewer: {preferredName}} = this.props;
     SendClientSegmentEventMutation(atmosphere, 'Welcome Step1 Reached');
     if (preferredName) {
       dispatch(initialize('welcomeWizard', {preferredName}));
@@ -44,8 +45,8 @@ class Step1PreferredName extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {dispatch, user: {preferredName}} = nextProps;
-    if (preferredName && !this.props.user.preferredName) {
+    const {dispatch, viewer: {preferredName}} = nextProps;
+    if (preferredName && !this.props.viewer.preferredName) {
       dispatch(initialize('welcomeWizard', {preferredName}));
     }
   }
@@ -113,8 +114,15 @@ const reduxFormOptions = {
   validate
 };
 
-export default withAtmosphere(
-  withStyles(styleThunk)(
-    reduxForm(reduxFormOptions)(Step1PreferredName)
-  )
+export default createFragmentContainer(
+  withAtmosphere(
+    withStyles(styleThunk)(
+      reduxForm(reduxFormOptions)(Step1PreferredName)
+    )
+  ),
+  graphql`
+    fragment Step1PreferredName_viewer on User {
+      preferredName
+    }
+  `
 );

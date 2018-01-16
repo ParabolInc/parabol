@@ -1,17 +1,18 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
+import FontAwesome from 'react-fontawesome';
+import {createFragmentContainer} from 'react-relay';
+import {Link} from 'react-router-dom';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import ProgressDots from 'universal/modules/welcome/components/ProgressDots/ProgressDots';
+import Step1PreferredName from 'universal/modules/welcome/components/Step1PreferredName/Step1PreferredName';
+import Step2TeamName from 'universal/modules/welcome/components/Step2TeamName/Step2TeamName';
+import Step3InviteTeam from 'universal/modules/welcome/components/Step3InviteTeam/Step3InviteTeam';
 import WelcomeContent from 'universal/modules/welcome/components/WelcomeContent/WelcomeContent';
 import WelcomeHeader from 'universal/modules/welcome/components/WelcomeHeader/WelcomeHeader';
 import WelcomeLayout from 'universal/modules/welcome/components/WelcomeLayout/WelcomeLayout';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {Link} from 'react-router-dom';
-import FontAwesome from 'react-fontawesome';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import Step1PreferredName from 'universal/modules/welcome/components/Step1PreferredName/Step1PreferredName';
-import Step2TeamName from 'universal/modules/welcome/components/Step2TeamName/Step2TeamName';
-import Step3InviteTeam from 'universal/modules/welcome/components/Step3InviteTeam/Step3InviteTeam';
 
 const Welcome = (props) => {
   const {progressDotClickFactory, styles, title, welcome: {page, completed}} = props;
@@ -66,4 +67,11 @@ const styleThunk = () => ({
     alignSelf: 'flex-end'
   }
 });
-export default withStyles(styleThunk)(Welcome);
+export default createFragmentContainer(
+  withStyles(styleThunk)(Welcome),
+  graphql`
+    fragment Welcome_viewer on User {
+      ...Step1PreferredName_viewer
+    }
+  `
+);
