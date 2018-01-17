@@ -26,11 +26,8 @@ import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
 import {getUserId, requireAuth, requireTeamMember} from 'server/utils/authorization';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-import notifications from 'server/graphql/queries/notifications';
 import organization from 'server/graphql/queries/organization';
-import organizations from 'server/graphql/queries/organizations';
 import projects from 'server/graphql/queries/projects';
-import team from 'server/graphql/queries/team';
 import archivedProjects from 'server/graphql/queries/archivedProjects';
 
 const User = new GraphQLObjectType({
@@ -157,13 +154,13 @@ const User = new GraphQLObjectType({
         return meeting;
       }
     },
-    notifications,
+    notifications: require('../queries/notifications').default,
     providerMap,
     slackChannels,
     organization,
-    organizations,
+    organizations: require('../queries/organizations').default,
     projects,
-    team,
+    team: require('../queries/team').default,
     teams: {
       type: new GraphQLList(Team),
       description: 'all the teams the user is on that the viewer can see.',
@@ -195,6 +192,14 @@ const User = new GraphQLObjectType({
         requireTeamMember(authToken, teamId);
         const teamMemberId = toTeamMemberId(teamId, viewerId);
         return dataLoader.get('teamMembers').load(teamMemberId);
+      }
+    },
+    tms: {
+      type: new GraphQLList(GraphQLID),
+      description: 'all the teams the user is a part of that the viewer can see',
+      resolve: (source, args, {authToken}) => {
+        const viewerId = getUserId(authToken);
+        return (viewerId === source.id) ? source.tms : source.tms.filter((teamId) => authToken.tms.includes(teamId));
       }
     }
   })

@@ -14,7 +14,7 @@ import User from 'server/graphql/types/User';
 export const acceptTeamInviteFields = {
   team: {
     type: Team,
-    description: 'Thea team that the invitee will be joining',
+    description: 'The team that the invitee will be joining',
     resolve: resolveTeam
   },
   teamMember: {
