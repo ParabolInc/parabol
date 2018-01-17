@@ -12,13 +12,12 @@ import {
   DashMain
 } from 'universal/components/Dashboard';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
-import Flag from 'universal/components/Flag/Flag';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import makeDateString from 'universal/utils/makeDateString';
 import {createFragmentContainer} from 'react-relay';
 
 const UserDashMain = (props) => {
-  const {features, styles, viewer} = props;
+  const {styles, viewer} = props;
   const {teams} = viewer;
   return (
     <DashMain>
@@ -37,11 +36,7 @@ const UserDashMain = (props) => {
         <div className={css(styles.root)}>
           <div className={css(styles.projectsLayout)}>
             <UserProjectsHeaderContainer teams={teams} viewer={viewer} />
-            <Flag
-              when={features.newProjectColumns}
-              render={<div>what a pretty ui!!</div>}
-              otherwise={<UserColumnsContainer teams={teams} viewer={viewer} />}
-            />
+            <UserColumnsContainer teams={teams} viewer={viewer} />
           </div>
         </div>
       </DashContent>
@@ -52,8 +47,7 @@ const UserDashMain = (props) => {
 UserDashMain.propTypes = {
   styles: PropTypes.object,
   teams: PropTypes.array,
-  viewer: PropTypes.object,
-  features: PropTypes.object
+  viewer: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -94,10 +88,6 @@ export default createFragmentContainer(
         name
         meetingId
       }
-    }
-
-    fragment UserDashMain_features on Features {
-      newProjectColumns
     }
   `
 );

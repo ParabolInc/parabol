@@ -15,9 +15,6 @@ const query = graphql`
     viewer {
       ...UserDashMain_viewer
     }
-    features {
-      ...UserDashMain_features
-    }
   }
 `;
 
@@ -33,7 +30,7 @@ const UserDashRoot = ({atmosphere}) => {
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">
-              <UserDashMain viewer={renderProps.viewer} features={renderProps.features} />
+              <UserDashMain viewer={renderProps.viewer} />
             </AnimatedFade>
             }
             {!renderProps && !error &&
