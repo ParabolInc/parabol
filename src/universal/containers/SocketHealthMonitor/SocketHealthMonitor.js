@@ -103,7 +103,7 @@ class WebSocketHealthMonitor extends Component<Props> {
       showSuccess({
         autoDismiss: 5,
         title: "You're back online!",
-        message: "You were offline for a bit, but we've reconnected you. Yay!"
+        message: "You were offline for a bit, but we've reconnected you."
       });
     }
   }
