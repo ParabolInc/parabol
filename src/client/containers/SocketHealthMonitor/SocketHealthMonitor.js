@@ -1,15 +1,17 @@
 /**
- * Watches the active WebSocket connection by way of redux-socket-cluster,
- * reporting to both the user and reporting tools when things break.
+ * Reports to both the user and reporting tools when their socket connection gets
+ * disconnected / reconnected.
+ *
+ * Watches the active WebSocket connection by way of redux-socket-cluster.
  *
  * @flow
  */
 import raven from 'raven-js';
-import React from 'react';
+import { Component } from 'react';
 import type { Dispatch } from 'redux';
 
 import { connect } from 'react-redux';
-import { showError } from 'universal/modules/toast/ducks/toastDuck';
+import { showError, showSuccess, hide } from 'universal/modules/toast/ducks/toastDuck';
 
 type ToastOpts = {
   autoDismiss?: ?number,
@@ -18,64 +20,124 @@ type ToastOpts = {
 };
 
 type Props = {
-  authState: ?string,
-  authError: ?Error,
-  socketState: ?string,
-  error: ?Error,
-  showError: (opts: ToastOpts) => void
+  socketData: ?{
+    authState: string,
+    error: ?string,
+    authError: ?boolean,
+    socketState: string
+  },
+  errorToastId: ?number,
+  showError: (opts: ToastOpts) => void,
+  showSuccess: (opts: ToastOpts) => void,
+  hideError: (errorToastId: number) => void
 };
 
-const WebSocketHealthMonitor = (props: Props) => {
-  const { authState, authError, socketState, error, showError } = props; // eslint-disable-line no-shadow
+class WebSocketHealthMonitor extends Component<Props> {
+  componentDidMount() {
+    this.maybeReportErrors();
+    this.keepToastFresh();
+  }
 
-  // Toasts the user and sends an error to Sentry
-  const handleError = (toastOpts: ToastOpts, ravenBreadcrumbMessage: string, error: Error): void => { // eslint-disable-line no-shadow
-    showError({ ...toastOpts, autoDismiss: null });
+  componentDidUpdate() {
+    this.maybeReportErrors();
+    this.keepToastFresh();
+  }
+
+  activeSocketError() {
+    const { socketData } = this.props;
+    return socketData ? socketData.error || socketData.authError : null;
+  }
+
+  hasErrors() {
+    const { socketData } = this.props;
+    return Boolean(socketData && (socketData.error || socketData.authError));
+  }
+
+  isConnected() {
+    const { socketData } = this.props;
+    if (!socketData) {
+      return false;
+    }
+    const { authState, socketState } = socketData;
+    return authState === 'authenticated' && socketState === 'open';
+  }
+
+  maybeReportErrors() {
+    if (!this.hasErrors()) {
+      return;
+    }
+    if (!this.props.socketData) {
+      return;
+    }
+    const { authState, error, authError, socketState } = this.props.socketData;
+    const theError = error || authError;
+    const isAuthError = theError === authError;
     raven.captureBreadcrumb({
-      message: ravenBreadcrumbMessage,
-      data: { authState, socketState },
       category: 'network',
-      level: 'error'
+      level: 'error',
+      message: isAuthError ? 'WebSocket authentication error' : 'WebSocket error',
+      data: { authState, socketState }
     });
-    raven.captureException(error);
-  };
+    raven.captureException(theError);
+  }
 
-  if (error) {
-    handleError(
-      {
+  // Shows a toast if there's a new socket error, and hides it when we're reconnected
+  keepToastFresh() {
+    const { socketData, errorToastId, showError, showSuccess, hideError } = this.props; // eslint-disable-line no-shadow
+    if (!socketData) {
+      return;
+    }
+    if (this.hasErrors() && !errorToastId) {
+      const isAuthError = this.activeSocketError() === socketData.authError;
+      showError({
+        autoDismiss: 0,
+        __isWebSocketError__: true,
         title: 'Network Error',
-        message:
-          "We weren't able to create a live connection to our server. " +
-          'You may need to upgrade your browser, or your network administrator may need to enable WebSockets.'
-      },
-      'WebSocket error',
-      error
-    );
+        message: isAuthError
+          ? "We weren't able to create a live connection to our server. Make sure you are logged in to a secure network."
+          : "We weren't able to create a live connection to our server. " +
+            'You may need to upgrade your browser, or your network administrator may need to enable WebSockets.'
+      });
+    } else if (!this.hasErrors() && this.isConnected() && errorToastId) {
+      hideError(errorToastId);
+      showSuccess({
+        autoDismiss: 5,
+        title: "You're back online!",
+        message: "You were offline for a bit, but we've reconnected you. Yay!"
+      });
+    }
   }
-  if (authError) {
-    handleError(
-      {
-        title: 'Network Authentication Error',
-        message: "We weren't able to create a live connection to our server. Make sure you are logged in to a secure network."
-      },
-      'WebSocket authentication error',
-      authError
-    );
+
+  render() {
+    return null;
   }
-  return <div />;
-};
+}
 
 const mapStateToProps = (state) => {
-  const { socket } = state;
+  const { socket, toasts } = state;
+
+  const errorToast = toasts.find((toast) => toast.__isWebSocketError__);
+  const errorToastId = errorToast ? errorToast.nid : null;
+
   if (socket) {
-    const { authState, authError, socketState, error } = socket;
-    return { authState, authError, socketState, error };
+    return {
+      socketData: {
+        authState: socket.authState,
+        socketState: socket.socketState,
+        error: socket.error,
+        authError: socket.authError
+      },
+      errorToastId
+    };
   }
-  return { authState: null, authError: null, socketState: null, error: null };
+
+  return { socketData: null, errorToastId };
 };
 
 const mapDispatchToProps = <A: { type: string }>(dispatch: Dispatch<A>) => ({
-  showError: (opts: ToastOpts) => dispatch(showError(opts))
+  showError: (opts: ToastOpts) => dispatch(showError(opts)),
+  showSuccess: (opts: ToastOpts) => dispatch(showSuccess(opts)),
+  hideError: (errorToastId: number) => dispatch(hide(errorToastId))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WebSocketHealthMonitor);

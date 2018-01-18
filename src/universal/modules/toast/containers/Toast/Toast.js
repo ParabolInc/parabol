@@ -1,9 +1,10 @@
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import ToastSystem from 'react-notification-system';
 import appTheme from 'universal/styles/theme/appTheme';
-import {hide} from 'universal/modules/toast/ducks/toastDuck';
+import { hide } from 'universal/modules/toast/ducks/toastDuck';
 
 const mapStateToProps = (state) => ({
   toasts: state.toasts
@@ -18,42 +19,47 @@ export default class Toast extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      maxNid: 0
-    };
     this.el = null;
   }
 
+  state = {
+    toastToNotification: Immutable.Map() // toast IDs (number) -> 'react-notification-system' IDs (number)
+  };
+
   componentWillReceiveProps(nextProps) {
-    const {dispatch, toasts} = nextProps;
-    const {maxNid} = this.state;
+    const { toasts: currToasts } = this.props;
+    const { dispatch, toasts: nextToasts } = nextProps;
+    const { toastToNotification } = this.state;
 
-    toasts
-      .filter((notification) => notification.nid > maxNid)
-      .forEach((notification) => {
+    const nextToastNids = Immutable.Set(nextToasts.map(({ nid }) => nid));
+    const addedToasts = nextToasts.filter(({ nid }) => !toastToNotification.has(nid));
+    const removedToasts = currToasts.filter(({ nid }) => !nextToastNids.has(nid));
+
+    // Show any new notifications
+    const addedToastToNotifications = addedToasts.reduce(
+      (acc, toast) => acc.set(
+        toast.nid,
         this.system().addNotification({
-          ...notification,
+          ...toast,
           onRemove: () => {
-            dispatch(hide(notification.nid));
+            dispatch(hide(toast.nid));
           }
-        });
-        if (notification.nid > maxNid) {
-          this.setState({maxNid: maxNid + 1});
-        }
-      });
-  }
+        }).uid
+      ),
+      Immutable.Map()
+    );
 
-  shouldComponentUpdate(nextProps) {
-    const {toasts} = nextProps;
+    // Hide any old notifications
+    removedToasts.forEach(({ nid }) => {
+      this.system().removeNotification(toastToNotification.get(nid));
+    });
 
-    if (toasts.length > 0) {
-      const {maxNid} = this.state;
-      const nextNid = Math.max(...toasts.map((n) => n.nid));
-
-      return nextNid > maxNid;
-    }
-
-    return false;
+    // remove old, add new toast -> notification mappings
+    this.setState(({
+      toastToNotification: toastToNotification
+        .removeAll(removedToasts.map(({ nid }) => nid))
+        .merge(addedToastToNotifications)
+    }));
   }
 
   system() {
