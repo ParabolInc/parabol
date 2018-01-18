@@ -1,7 +1,6 @@
 import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
-import releaseFlags from 'universal/releaseFlags';
 
 export default function wsGraphQLHandler(exchange, socket, sharedDataLoader) {
   return async function graphQLHandler(body, cb) {
@@ -14,8 +13,7 @@ export default function wsGraphQLHandler(exchange, socket, sharedDataLoader) {
       exchange,
       socket,
       socketId: socket.id,
-      dataLoader,
-      releaseFlags
+      dataLoader
     };
     // response = {errors, data}
     const result = await graphql(Schema, query, {}, context, variables);
