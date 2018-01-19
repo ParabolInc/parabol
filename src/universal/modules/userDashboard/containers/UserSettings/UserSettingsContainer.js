@@ -3,7 +3,7 @@ import raven from 'raven-js';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
-import {initialize, reduxForm, SubmissionError} from 'redux-form';
+import {initialize, reduxForm} from 'redux-form';
 import withReducer from 'universal/decorators/withReducer/withReducer';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
@@ -46,33 +46,30 @@ class UserSettingsContainer extends Component {
     this.initializeForm();
   }
 
-  onSubmit = (submissionData) => {
+  onSubmit = async (submissionData) => {
     const {atmosphere, viewer} = this.props;
     const {preferredName} = submissionData;
-    if (preferredName !== viewer.preferredName) {
+    if (preferredName === viewer.preferredName) return undefined;
+    return new Promise((resolve, reject) => {
       const onError = (err) => {
         raven.captureException(err);
-        throw new SubmissionError(err);
+        reject(err);
       };
-      return new Promise((resolve) => {
-        const onCompleted = () => {
-          const {activity, dispatch, nextPage, untouch, history} = this.props;
-          dispatch(showSuccess(updateSuccess));
-          if (activity === ACTIVITY_WELCOME) {
-            dispatch(clearActivity());
-          }
-          if (nextPage) {
-            history.push(nextPage);
-          }
-          untouch('preferredName');
-          resolve();
-        };
-        const updatedUser = {preferredName};
-        UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted);
-      });
-    }
-
-    return undefined; // no work to do
+      const onCompleted = () => {
+        const {activity, dispatch, nextPage, untouch, history} = this.props;
+        dispatch(showSuccess(updateSuccess));
+        if (activity === ACTIVITY_WELCOME) {
+          dispatch(clearActivity());
+        }
+        if (nextPage) {
+          history.push(nextPage);
+        }
+        untouch('preferredName');
+        resolve();
+      };
+      const updatedUser = {preferredName};
+      UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted);
+    });
   };
 
   initializeForm() {
