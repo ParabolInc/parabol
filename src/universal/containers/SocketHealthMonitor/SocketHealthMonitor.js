@@ -14,7 +14,7 @@ import { connect } from 'react-redux';
 import { showError, showSuccess, hide } from 'universal/modules/toast/ducks/toastDuck';
 
 type ToastOpts = {
-  autoDismiss?: ?number,
+  autoDismiss?: number,
   title: string,
   message: string
 };
@@ -35,12 +35,12 @@ type Props = {
 class WebSocketHealthMonitor extends Component<Props> {
   componentDidMount() {
     this.maybeReportErrors();
-    this.keepToastFresh();
+    this.maybePopToast();
   }
 
   componentDidUpdate() {
     this.maybeReportErrors();
-    this.keepToastFresh();
+    this.maybePopToast();
   }
 
   activeSocketError() {
@@ -81,8 +81,8 @@ class WebSocketHealthMonitor extends Component<Props> {
     raven.captureException(theError);
   }
 
-  // Shows a toast if there's a new socket error, and hides it when we're reconnected
-  keepToastFresh() {
+  // Shows a toast if there's a new socket error, and hides it (with a "reconnected" toast) when we're reconnected
+  maybePopToast() {
     const { socketData, errorToastId, showError, showSuccess, hideError } = this.props; // eslint-disable-line no-shadow
     if (!socketData) {
       return;

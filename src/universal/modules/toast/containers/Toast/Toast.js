@@ -1,10 +1,10 @@
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import ToastSystem from 'react-notification-system';
 import appTheme from 'universal/styles/theme/appTheme';
-import { hide } from 'universal/modules/toast/ducks/toastDuck';
+import {hide} from 'universal/modules/toast/ducks/toastDuck';
 
 const mapStateToProps = (state) => ({
   toasts: state.toasts
@@ -27,13 +27,13 @@ export default class Toast extends React.Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    const { toasts: currToasts } = this.props;
+    const { toasts: currentToasts } = this.props;
     const { dispatch, toasts: nextToasts } = nextProps;
     const { toastToNotification } = this.state;
 
     const nextToastNids = Immutable.Set(nextToasts.map(({ nid }) => nid));
     const addedToasts = nextToasts.filter(({ nid }) => !toastToNotification.has(nid));
-    const removedToasts = currToasts.filter(({ nid }) => !nextToastNids.has(nid));
+    const removedToasts = currentToasts.filter(({ nid }) => !nextToastNids.has(nid));
 
     // Show any new notifications
     const addedToastToNotifications = addedToasts.reduce(
