@@ -1,4 +1,4 @@
-import  count  from '../count'
+import count from '../count';
 
 describe('count', () => {
   it('counts from 0 by default', () => {
