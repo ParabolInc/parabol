@@ -1,4 +1,3 @@
-import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
@@ -20,46 +19,38 @@ export default class Toast extends React.Component {
   constructor(props) {
     super(props);
     this.el = null;
+    // Maintains a mapping between toast IDs (number) -> 'react-notification-system' IDs (number)
+    this.toastToNotification = new Map();
   }
-
-  state = {
-    toastToNotification: Immutable.Map() // toast IDs (number) -> 'react-notification-system' IDs (number)
-  };
 
   componentWillReceiveProps(nextProps) {
     const { toasts: currentToasts } = this.props;
     const { dispatch, toasts: nextToasts } = nextProps;
-    const { toastToNotification } = this.state;
 
-    const nextToastNids = Immutable.Set(nextToasts.map(({ nid }) => nid));
-    const addedToasts = nextToasts.filter(({ nid }) => !toastToNotification.has(nid));
+    const nextToastNids = new Set(nextToasts.map(({ nid }) => nid));
+    const addedToasts = nextToasts.filter(({ nid }) => !this.toastToNotification.has(nid));
     const removedToasts = currentToasts.filter(({ nid }) => !nextToastNids.has(nid));
 
     // Show any new notifications
-    const addedToastToNotifications = addedToasts.reduce(
-      (acc, toast) => acc.set(
-        toast.nid,
-        this.system().addNotification({
+    const newToastToNotification = new Map(
+      addedToasts.map((toast) => {
+        const notification = this.system().addNotification({
           ...toast,
           onRemove: () => {
             dispatch(hide(toast.nid));
           }
-        }).uid
-      ),
-      Immutable.Map()
+        });
+        return [toast.nid, notification.uid];
+      })
     );
 
     // Hide any old notifications
     removedToasts.forEach(({ nid }) => {
-      this.system().removeNotification(toastToNotification.get(nid));
+      this.system().removeNotification(this.toastToNotification.get(nid));
     });
 
     // remove old, add new toast -> notification mappings
-    this.setState(({
-      toastToNotification: toastToNotification
-        .removeAll(removedToasts.map(({ nid }) => nid))
-        .merge(addedToastToNotifications)
-    }));
+    this.toastToNotification = newToastToNotification;
   }
 
   system() {
