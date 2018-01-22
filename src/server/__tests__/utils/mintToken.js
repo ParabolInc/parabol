@@ -20,8 +20,7 @@ export const mintTokenUnsigned = (userId, fields) => {
 };
 
 export const mintTokenSigned = (userId, fields) => {
-  const secret = new Buffer(clientSecret, 'base64');
-  return sign(mintTokenUnsigned(userId, fields), secret);
+  return sign(mintTokenUnsigned(userId, fields), clientSecret);
 };
 
 export default mintTokenUnsigned;

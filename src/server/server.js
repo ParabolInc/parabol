@@ -6,7 +6,7 @@ import {JWT_LIFESPAN} from './utils/serverConstants';
 // const numCpus = os.cpus().length;
 export const options = {
   authDefaultExpiry: JWT_LIFESPAN,
-  authKey: new Buffer(secretKey, 'base64'),
+  authKey: secretKey,
   logLevel: 1,
   // socket engine written in C++? don't mind if i do!
   wsEngine: 'uws',

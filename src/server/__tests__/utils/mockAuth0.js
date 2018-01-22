@@ -8,7 +8,7 @@ import {
 
 export function mockAuth0AuthenticationClientTokensGetInfo(teamMembers) {
   auth0AuthenticationClient.tokens.getInfo = jest.fn((auth0Token) => {
-    const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'));
+    const authToken = verify(auth0Token, auth0ClientSecret);
     const match = teamMembers.find((teamMember) =>
       teamMember.id === authToken.sub);
     if (match) {
