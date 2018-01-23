@@ -40,6 +40,7 @@ const AddProjectButton = (props: Props) => {
       onClick={onClick}
       title={`Add a Project to "${label}"`}
       aria-haspopup={props['aria-haspopup']}
+      extraStyles={styles.addIcon}
     >
       <FontAwesome
         className={css(styles.addIcon)}

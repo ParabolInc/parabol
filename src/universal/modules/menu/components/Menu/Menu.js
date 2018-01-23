@@ -23,7 +23,7 @@ type Props = {
   maxHeight: string,
   menuWidth: string,
   styles: Object,
-  toggle: any,
+  toggle: Node,
   verticalAlign: 'middle' | 'top',
   zIndex: string
 };

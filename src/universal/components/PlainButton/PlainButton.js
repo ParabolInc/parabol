@@ -8,7 +8,7 @@ const PlainButton = ({styles, extraStyles, ...props}) => (
   <button
     className={
       extraStyles
-        ? css(styles.root, extraStyles)
+        ? css(styles.root, ...(Array.isArray(extraStyles) ? extraStyles : [extraStyles]))
         : css(styles.root)
     }
     {...props}
