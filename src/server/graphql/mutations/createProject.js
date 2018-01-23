@@ -56,7 +56,7 @@ export default {
       status: validNewProject.status,
       tags,
       teamId,
-      teamMemberId,
+      assigneeId: teamMemberId,
       updatedAt: now,
       userId
     };
@@ -65,7 +65,7 @@ export default {
       content: project.content,
       projectId: project.id,
       status: project.status,
-      teamMemberId: project.teamMemberId,
+      assigneeId: project.assigneeId,
       updatedAt: project.updatedAt
     };
     const {teamMembers} = await r({
@@ -84,7 +84,7 @@ export default {
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
     const changeAuthorId = toTeamMemberId(teamId, viewerId);
     const notificationsToAdd = [];
-    if (changeAuthorId !== project.teamMemberId && !usersToIgnore.includes(project.userId)) {
+    if (changeAuthorId !== project.assigneeId && !usersToIgnore.includes(project.userId)) {
       notificationsToAdd.push({
         id: shortid.generate(),
         startAt: now,

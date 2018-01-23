@@ -128,6 +128,7 @@ export default class RethinkDataLoader {
   meetings = makeStandardLoader('Meeting');
   notifications = makeStandardLoader('Notification');
   projects = makeStandardLoader('Project');
+  softTeamMembers = makeStandardLoader('SoftTeamMember');
   teams = makeStandardLoader('Team');
   teamMembers = makeStandardLoader('TeamMember');
   users = makeStandardLoader('User');

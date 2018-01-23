@@ -10,11 +10,12 @@ import {ProjectConnection} from 'server/graphql/types/Project';
 import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
+import Assignee from 'server/graphql/types/Assignee';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
   description: 'A member of a team',
-  interfaces: () => [PossibleTeamMember],
+  interfaces: () => [PossibleTeamMember, Assignee],
   fields: () => ({
     id: {
       type: GraphQLID,

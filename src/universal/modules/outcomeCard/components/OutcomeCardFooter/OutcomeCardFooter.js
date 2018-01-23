@@ -15,6 +15,7 @@ import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesFor
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
+import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
@@ -76,7 +77,7 @@ class OutcomeCardFooter extends Component {
       toggleMenuState
     } = this.props;
     const showTeam = area === USER_DASH;
-    const {projectId, owner, integration, tags, team} = project;
+    const {projectId, assignee, integration, tags, team} = project;
     const {teamId, teamName} = team;
     const {service} = integration || {};
     const isArchived = isProjectArchived(tags);
@@ -95,20 +96,23 @@ class OutcomeCardFooter extends Component {
         (<button
           className={css(styles.avatarButton)}
           tabIndex={service && '-1'}
-          title={`Assigned to ${owner.preferredName}`}
+          title={`Assigned to ${assignee.preferredName}`}
           type="button"
         >
           <div className={avatarStyles}>
-            <img
-              alt={owner.preferredName}
-              className={css(styles.avatarImg)}
-              src={owner.picture}
-              // hack because aphrodite loads styles on next tick, which causes the cell height adjuster to bork >:-(
-              style={{height, width: height}}
-            />
+            {assignee.picture ?
+              <img
+                alt={assignee.preferredName}
+                className={css(styles.avatarImg)}
+                src={assignee.picture}
+                // hack because aphrodite loads styles on next tick, which causes the cell height adjuster to bork >:-(
+                style={{height, width: height}}
+              /> :
+              <AvatarPlaceholder/>
+            }
           </div>
           <div className={css(styles.avatarLabel)}>
-            {owner.preferredName}
+            {assignee.preferredName}
           </div>
         </button>)
     );
@@ -319,7 +323,7 @@ export default createFragmentContainer(
     fragment OutcomeCardFooter_project on Project {
       projectId: id
       content
-      owner: teamMember {
+      assignee {
         picture
         preferredName
       }

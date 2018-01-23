@@ -16,7 +16,7 @@ import {createFragmentContainer} from 'react-relay';
 const importantProjectProps = [
   'content',
   'status',
-  'teamMember',
+  'assignee',
   'sortOrder',
   'integration'
 ];
@@ -151,7 +151,7 @@ export default createFragmentContainer(
       }
       status
       sortOrder
-      teamMember {
+      assignee {
         id
       }
       ...NullableProject_project

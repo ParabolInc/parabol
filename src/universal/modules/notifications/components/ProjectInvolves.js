@@ -84,7 +84,7 @@ class ProjectInvolves extends Component {
     } = this.props;
     const {team, project, involvement, changeAuthor: {changeAuthorName}} = notification;
     const {teamName} = team;
-    const {status, tags, teamMember} = project;
+    const {status, tags, assignee} = project;
     const action = involvementWord[involvement];
     const projectStyles = css(
       styles.projectListView,
@@ -94,7 +94,7 @@ class ProjectInvolves extends Component {
     return (
       <Row compact>
         <div className={css(styles.icon)}>
-          <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size="small" />
+          <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size="small"/>
         </div>
         <div className={css(styles.message)}>
           <div className={css(styles.messageText)}>
@@ -117,11 +117,11 @@ class ProjectInvolves extends Component {
               readOnly
               editorState={editorState}
             />
-            {teamMember &&
+            {assignee &&
             <div className={css(styles.owner)}>
-              <img alt="Avatar" className={css(styles.ownerAvatar)} src={teamMember.picture} />
+              <img alt="Avatar" className={css(styles.ownerAvatar)} src={assignee.picture}/>
               <div className={css(styles.ownerName)}>
-                {teamMember.preferredName}
+                {assignee.preferredName}
               </div>
             </div>
             }
@@ -217,9 +217,11 @@ export default createFragmentContainer(
         content
         status
         tags
-        teamMember {
-          picture
-          preferredName
+        assignee {
+          ...on TeamMember {
+            picture
+            preferredName
+          }
         }
       }
     }

@@ -12,7 +12,7 @@ const OutcomeCardAssignMenu = (props) => {
     atmosphere,
     area,
     closePortal,
-    project: {projectId, teamMember: {ownerId}},
+    project: {projectId, assignee: {ownerId}},
     viewer: {team: {teamMembers}}
   } = props;
 
@@ -76,7 +76,7 @@ export default createFragmentContainer(
     }
     fragment OutcomeCardAssignMenu_project on Project {
       projectId: id
-      teamMember {
+      assignee {
         ownerId: id
       }
     }

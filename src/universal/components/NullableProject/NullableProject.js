@@ -51,7 +51,7 @@ class NullableProject extends Component {
         project={project}
         myUserId={myUserId}
       /> :
-      <NullCard preferredName={preferredName} />;
+      <NullCard preferredName={preferredName}/>;
   }
 }
 
@@ -62,8 +62,10 @@ export default createFragmentContainer(
       content
       createdBy
       status
-      teamMember {
-        preferredName
+      assignee {
+        ... on TeamMember {
+          preferredName
+        }
       }
       ...OutcomeCardContainer_project
     }`
