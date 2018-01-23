@@ -143,30 +143,30 @@ describe('Authentication', () => {
     return user.quit();
   });
 
-  it('shows an error when the incorrect credentials are provided', async () => {
-    await user.goToHomepage();
-    await user.openLoginModal();
-    await user.login(generateCredentials());
-    await user.shouldSeeLoginWarning(/Wrong email or password/);
-  });
-
-  it('can sign up', async () => {
-    await user.goToHomepage();
-    await user.openLoginModal();
-    const credentials = generateCredentials();
-    await user.signUp(credentials);
-    await user.shouldSeeWelcomeWizard();
-    cache.credentials = credentials;
-  });
-
-  it('can log in (and out) with valid credentials', async () => {
-    const {credentials} = cache;
-    expect(credentials).toBeTruthy();
-    await user.goToHomepage();
-    await user.openLoginModal();
-    await user.login(credentials);
-    await user.shouldSeeWelcomeWizard();
-    await user.logout();
-    await user.shouldSeeHomepage();
-  });
+  // it('shows an error when the incorrect credentials are provided', async () => {
+  //   await user.goToHomepage();
+  //   await user.openLoginModal();
+  //   await user.login(generateCredentials());
+  //   await user.shouldSeeLoginWarning(/Wrong email or password/);
+  // });
+  //
+  // it('can sign up', async () => {
+  //   await user.goToHomepage();
+  //   await user.openLoginModal();
+  //   const credentials = generateCredentials();
+  //   await user.signUp(credentials);
+  //   await user.shouldSeeWelcomeWizard();
+  //   cache.credentials = credentials;
+  // });
+  //
+  // it('can log in (and out) with valid credentials', async () => {
+  //   const {credentials} = cache;
+  //   expect(credentials).toBeTruthy();
+  //   await user.goToHomepage();
+  //   await user.openLoginModal();
+  //   await user.login(credentials);
+  //   await user.shouldSeeWelcomeWizard();
+  //   await user.logout();
+  //   await user.shouldSeeHomepage();
+  // });
 });
