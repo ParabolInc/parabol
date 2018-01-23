@@ -13,6 +13,7 @@ import shortid from 'shortid';
 import {PROJECT} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -45,10 +46,17 @@ export default {
     const schema = makeProjectSchema();
     const {errors, data: validUpdatedProject} = schema(updatedProject);
     handleSchemaErrors(errors);
+    const {agendaId, content, status, assigneeId, isSoftProject, sortOrder} = validUpdatedProject;
+    if (assigneeId) {
+      const table = isSoftProject ? 'SoftTeamMember' : 'TeamMember';
+      const res = r.table(table).get(assigneeId);
+      if (!res) {
+        throw new Error('AssigneeId not found', assigneeId);
+      }
+    }
 
     // RESOLUTION
-    const {agendaId, content, status, userId: projectUserId, sortOrder} = validUpdatedProject;
-
+    const projectUserId = isSoftProject ? undefined : fromTeamMemberId(assigneeId);
     const newProject = {
       agendaId,
       content,
@@ -56,7 +64,8 @@ export default {
       userId: projectUserId,
       tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
       teamId,
-      teamMemberId: projectUserId ? `${projectUserId}::${teamId}` : undefined,
+      isSoftProject,
+      assigneeId,
       sortOrder
     };
 
@@ -68,7 +77,8 @@ export default {
         content,
         projectId,
         status,
-        teamMemberId: newProject.teamMemberId,
+        assigneeId: newProject.assigneeId,
+        isSoftProject,
         updatedAt: now,
         tags: newProject.tags
       };

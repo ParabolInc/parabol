@@ -21,10 +21,12 @@ graphql`
       id
       name
     }
-    teamMember {
+    assignee {
       id
-      picture
       preferredName
+      ... on TeamMember {
+        picture
+      }
     }
   }
 `;

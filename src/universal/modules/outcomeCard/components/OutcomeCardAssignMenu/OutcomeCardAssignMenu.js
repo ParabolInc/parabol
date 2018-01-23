@@ -5,6 +5,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {MenuItem} from 'universal/modules/menu';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
 
 const OutcomeCardAssignMenu = (props) => {
   const {
@@ -22,6 +23,8 @@ const OutcomeCardAssignMenu = (props) => {
     const {userId} = fromTeamMemberId(newOwner);
     const updatedProject = {
       id: projectId,
+      assigneeId: newOwner,
+      isSoftProject: getIsSoftTeamMember(newOwner),
       userId
     };
     UpdateProjectMutation(atmosphere, updatedProject, area);
