@@ -25,7 +25,7 @@ class OutcomeCardStatusMenu extends Component {
       id: projectId,
       content: rawContentStr
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateProjectMutation(atmosphere, {updatedProject, area});
   };
 
   deleteOutcome = () => {
@@ -99,7 +99,7 @@ class OutcomeCardStatusMenu extends Component {
       id: projectId,
       status: newStatus
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateProjectMutation(atmosphere, {updatedProject, area});
     if (onComplete) {
       onComplete();
     }

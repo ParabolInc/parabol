@@ -1,5 +1,7 @@
 // @flow
 import type {Node} from 'react';
+import type {UpdateProjectMutationVariables} from 'universal/mutations/UpdateProjectMutation';
+import type {Area} from 'universal/types/area';
 import type {Project, ProjectID, Status} from 'universal/types/project';
 
 import React from 'react';
@@ -12,17 +14,11 @@ import {PROJECT} from 'universal/utils/constants';
 
 type Props = {
   connectDropTarget: (node: Node) => Node,
-  area: string,
+  area: Area,
   atmosphere: Object, // TODO: atmosphere needs a type definition
-  getProjectById: (ProjectID) => Project,
+  getProjectById: (ProjectID) => ?Project,
   lastProject: ?Project, // the last project in a column; may be undefined if the column is empty
   status: Status
-};
-
-type UpdateProjectMutationArgs = {
-  id: ProjectID,
-  sortOrder: number,
-  status?: Status
 };
 
 // Represents the trailing space at the end of a column.  Acts as a drop target
@@ -45,6 +41,9 @@ const spec = {
     const draggedProjectId = monitor.getItem().projectId;
     const draggedProject = getProjectById(draggedProjectId);
 
+    if (!draggedProject) {
+      return;
+    }
     if (!monitor.isOver({shallow: true})) {
       return;
     }
@@ -54,14 +53,17 @@ const spec = {
 
     const sortOrder = sortOrderBetween(lastProject, null, draggedProject, false);
 
-    const updatedProject: UpdateProjectMutationArgs = {
-      id: draggedProject.id,
-      sortOrder
+    const variables: UpdateProjectMutationVariables = {
+      updatedProject: {
+        id: draggedProject.id,
+        sortOrder
+      },
+      area
     };
     if (draggedProject.status !== status) {
-      updatedProject.status = status;
+      variables.updatedProject.status = status;
     }
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateProjectMutation(atmosphere, variables);
   }
 };
 

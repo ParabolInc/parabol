@@ -1,5 +1,13 @@
+// @flow
+import type {Environment} from 'relay-runtime';
+import type {UpdateProjectMutationVariables} from 'universal/mutations/UpdateProjectMutation';
+import type {Project, ProjectID, Status} from 'universal/types/project';
+import type {Area} from 'universal/types/area';
+import type {Team, TeamID} from 'universal/types/team';
+import type {UserID} from 'universal/types/user';
+import type {History} from 'react-router';
+
 import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import withScrolling from 'react-dnd-scrollzone';
 import FontAwesome from 'react-fontawesome';
@@ -47,34 +55,112 @@ const badgeColor = {
   future: 'mid'
 };
 
-const handleAddProjectFactory = (atmosphere, status, teamId, userId, sortOrder) => () => {
-  const newProject = {
-    status,
-    teamId,
-    userId,
-    sortOrder
-  };
-  CreateProjectMutation(atmosphere, newProject);
+const _styles = {
+  column: {
+    borderLeft: `2px dashed ${ui.dashBorderColor}`,
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    overflow: 'auto',
+    position: 'relative',
+    width: '25%'
+  },
+
+  columnFirst: {
+    borderLeft: 0
+  },
+
+  columnLast: {
+    // keeping this around, we may need it (TA)
+  },
+
+  columnHeader: {
+    color: appTheme.palette.dark,
+    display: 'flex !important',
+    lineHeight: '1.5rem',
+    padding: '.5rem 1rem',
+    position: 'relative'
+  },
+
+  columnBody: {
+    flex: 1,
+    position: 'relative'
+  },
+
+  columnInner: {
+    ...overflowTouch,
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    padding: '0 1rem',
+    position: 'absolute',
+    width: '100%'
+  },
+
+  statusLabelBlock: {
+    alignItems: 'center',
+    display: 'flex',
+    flex: 1,
+    fontSize: appTheme.typography.s3
+  },
+
+  statusIcon: {
+    fontSize: '14px',
+    marginRight: '.25rem',
+    paddingTop: 1,
+    textAlign: 'center',
+    verticalAlign: 'middle'
+  },
+
+  statusLabel: {
+    fontWeight: 700,
+    paddingTop: 2,
+    textTransform: 'uppercase'
+  },
+
+  statusBadge: {
+    marginLeft: '.5rem'
+  },
+
+  ...projectStatusStyles('color')
 };
 
-class ProjectColumn extends Component {
-  static propTypes = {
-    area: PropTypes.string,
-    atmosphere: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    firstColumn: PropTypes.bool,
-    getProjectById: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
-    isMyMeetingSection: PropTypes.bool,
-    lastColumn: PropTypes.bool,
-    myTeamMemberId: PropTypes.string,
-    projects: PropTypes.array.isRequired,
-    status: PropTypes.string,
-    styles: PropTypes.object,
-    teamMemberFilterId: PropTypes.string,
-    teams: PropTypes.array
+const handleAddProjectFactory = (
+  atmosphere: Environment,
+  status: Status,
+  teamId: TeamID,
+  userId: UserID,
+  sortOrder: number
+) => () => {
+  const variables = {
+    newProject: {
+      status,
+      teamId,
+      userId,
+      sortOrder
+    }
   };
+  CreateProjectMutation(atmosphere, variables);
+};
 
+type Props = {
+  area: Area,
+  atmosphere: Environment,
+  dispatch: (action: any) => any, // TODO: need to enumerate action types
+  firstColumn: boolean,
+  getProjectById: (projectId: ProjectID) => ?Project,
+  history: History,
+  isMyMeetingSection: boolean,
+  lastColumn: boolean,
+  myTeamMemberId: string,
+  projects: Project[],
+  status: Status,
+  styles: typeof _styles,
+  teamMemberFilterId: string,
+  teams: Team[]
+};
+
+class ProjectColumn extends Component<Props> {
   makeAddProject = () => {
     const {
       area,
@@ -143,7 +229,7 @@ class ProjectColumn extends Component {
    * `before` - whether the dragged project is being inserted before (true) or
    * after (false) the target project.
    */
-  insertProject = (draggedProject, targetProject, before) => {
+  insertProject = (draggedProject: Project, targetProject: Project, before: boolean) => {
     if (this.projectIsInPlace(draggedProject, targetProject, before)) {
       return;
     }
@@ -154,11 +240,14 @@ class ProjectColumn extends Component {
     // the front or back of the list, this will be `undefined`.
     const boundingProject = projects[targetIndex + (before ? -1 : 1)];
     const sortOrder = sortOrderBetween(targetProject, boundingProject, draggedProject, before);
-    const updatedProject = {id: draggedProject.id, sortOrder};
+    const variables: UpdateProjectMutationVariables = {
+      updatedProject: {id: draggedProject.id, sortOrder},
+      area
+    };
     if (draggedProject.status !== targetProject.status) {
-      updatedProject.status = targetProject.status;
+      variables.updatedProject.status = targetProject.status;
     }
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateProjectMutation(atmosphere, variables);
   };
 
   makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
@@ -170,13 +259,15 @@ class ProjectColumn extends Component {
     return teams.map((team) => ({
       label: team.name,
       handleClick: () => {
-        const newProject = {
-          sortOrder,
-          status,
-          teamId: team.id,
-          userId
+        const variables = {
+          newProject: {
+            sortOrder,
+            status,
+            teamId: team.id,
+            userId
+          }
         };
-        CreateProjectMutation(atmosphere, newProject);
+        CreateProjectMutation(atmosphere, variables);
       }
     }));
   };
@@ -242,75 +333,7 @@ class ProjectColumn extends Component {
   }
 }
 
-const styleThunk = () => ({
-  column: {
-    borderLeft: `2px dashed ${ui.dashBorderColor}`,
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    overflow: 'auto',
-    position: 'relative',
-    width: '25%'
-  },
-
-  columnFirst: {
-    borderLeft: 0
-  },
-
-  columnLast: {
-    // keeping this around, we may need it (TA)
-  },
-
-  columnHeader: {
-    color: appTheme.palette.dark,
-    display: 'flex !important',
-    lineHeight: '1.5rem',
-    padding: '.5rem 1rem',
-    position: 'relative'
-  },
-
-  columnBody: {
-    flex: 1,
-    position: 'relative'
-  },
-
-  columnInner: {
-    ...overflowTouch,
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    padding: '0 1rem',
-    position: 'absolute',
-    width: '100%'
-  },
-
-  statusLabelBlock: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: 1,
-    fontSize: appTheme.typography.s3
-  },
-
-  statusIcon: {
-    fontSize: '14px',
-    marginRight: '.25rem',
-    paddingTop: 1,
-    textAlign: 'center',
-    verticalAlign: 'middle'
-  },
-
-  statusLabel: {
-    fontWeight: 700,
-    paddingTop: 2,
-    textTransform: 'uppercase'
-  },
-
-  statusBadge: {
-    marginLeft: '.5rem'
-  },
-
-  ...projectStatusStyles('color')
-});
+const styleThunk = () => _styles;
 
 export default connect()(
   withAtmosphere(

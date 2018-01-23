@@ -110,7 +110,7 @@ class OutcomeCardContainer extends Component {
           id: projectId,
           content: JSON.stringify(convertToRaw(contentState))
         };
-        UpdateProjectMutation(atmosphere, updatedProject, area);
+        UpdateProjectMutation(atmosphere, {updatedProject, area});
         this.updateTimer = undefined;
       }, 15);
     }

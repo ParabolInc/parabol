@@ -1,4 +1,16 @@
-import {commitMutation} from 'react-relay';
+// @flow
+import type {
+  Environment,
+  RecordProxy,
+  RecordSourceSelectorProxy
+} from 'relay-runtime';
+import type {
+  UpdateProjectMutationResponse,
+  UpdateProjectMutationVariables
+} from './__generated__/UpdateProjectMutation.graphql';
+import type {UserID} from 'universal/types/user';
+
+import {commitMutation, graphql} from 'react-relay';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
@@ -8,6 +20,8 @@ import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
+
+export type {UpdateProjectMutationVariables};
 
 graphql`
   fragment UpdateProjectMutation_project on UpdateProjectPayload {
@@ -31,14 +45,19 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation UpdateProjectMutation($updatedProject: UpdateProjectInput!) {
-    updateProject(updatedProject: $updatedProject) {
+  mutation UpdateProjectMutation($updatedProject: UpdateProjectInput!, $area: AreaEnum) {
+    updateProject(updatedProject: $updatedProject, area: $area) {
       ...UpdateProjectMutation_project @relay (mask: false)
     }
   }
 `;
 
-export const updateProjectProjectUpdater = (payload, store, viewerId, options) => {
+export const updateProjectProjectUpdater = (
+  payload: RecordProxy,
+  store: RecordSourceSelectorProxy,
+  viewerId: UserID,
+  options?: Object // TODO: document this type
+) => {
   const project = payload.getLinkedRecord('project');
   handleUpsertProjects(project, store, viewerId);
 
@@ -58,7 +77,12 @@ export const updateProjectProjectUpdater = (payload, store, viewerId, options) =
   }
 };
 
-const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, onError) => {
+const UpdateProjectMutation = (
+  environment: Environment,
+  {updatedProject, area}: UpdateProjectMutationVariables,
+  onCompleted: ?(response: UpdateProjectMutationResponse, errors: ?Array<Error>) => void,
+  onError: ?(error: Error) => void
+) => {
   const {viewerId} = environment;
   // use this as a temporary fix until we get rid of cashay because otherwise relay will roll back the change
   // which means we'll have 2 items, then 1, then 2, then 1. i prefer 2, then 1.

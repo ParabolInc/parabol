@@ -24,7 +24,7 @@ const OutcomeCardAssignMenu = (props) => {
       id: projectId,
       userId
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateProjectMutation(atmosphere, {updatedProject, area});
   };
 
   const itemFactory = () => {
