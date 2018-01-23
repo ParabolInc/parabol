@@ -5,10 +5,10 @@
 /* eslint-env mocha */
 
 import expect from 'expect';
-import { By, until } from 'selenium-webdriver';
+import {By, until} from 'selenium-webdriver';
 import shortid from 'shortid';
 
-import { all, newUserSession, waitTimes } from '../lib';
+import {all, newUserSession, waitTimes} from '../lib';
 
 const BASE_URL = global.E2E_APP_SERVER_URL;
 const BASE_URL_REGEX = BASE_URL.endsWith('/')
@@ -43,7 +43,7 @@ const actions = {
     );
   },
 
-  login: (driver) => async ({ email, password }) => {
+  login: (driver) => async ({email, password}) => {
     await driver
       .findElement(By.id('a0-signin_easy_email'))
       .sendKeys(email);
@@ -55,7 +55,7 @@ const actions = {
       .click();
   },
 
-  signUp: (driver) => async ({ email, password }) => {
+  signUp: (driver) => async ({email, password}) => {
     await driver
       .findElement(By.css('.a0-sign-up'))
       .click();
@@ -127,44 +127,46 @@ describe('Authentication', () => {
   // Note that mocha runs tests serially, which is important for type of
   // stateful testing.
   let cache;
-  const resetCache = () => { cache = {}; };
+  const resetCache = () => {
+    cache = {};
+  };
 
   before(resetCache);
 
   after(resetCache);
 
   beforeEach(async () => {
-    user = await newUserSession({ browser: 'chrome', behaviors });
+    user = await newUserSession({browser: 'chrome', behaviors});
   });
 
   afterEach(async () => {
     return user.quit();
   });
 
-  //it('shows an error when the incorrect credentials are provided', async () => {
-  //  await user.goToHomepage();
-  //  await user.openLoginModal();
-  //  await user.login(generateCredentials());
-  //  await user.shouldSeeLoginWarning(/Wrong email or password/);
-  //});
-  //
-  //it('can sign up', async () => {
-  //  await user.goToHomepage();
-  //  await user.openLoginModal();
-  //  const credentials = generateCredentials();
-  //  await user.signUp(credentials);
-  //  await user.shouldSeeWelcomeWizard();
-  //  cache.credentials = credentials;
-  //});
-  //
-  //it('can log in (and out) with valid credentials', async () => {
-  //  const { credentials } = cache;
-  //  expect(credentials).toBeTruthy();
-  //  await user.goToHomepage();
-  //  await user.openLoginModal();
-  //  await user.login(credentials);
-  //  await user.shouldSeeWelcomeWizard();
-  //  await user.logout();
-  //  await user.shouldSeeHomepage();
-  //});
+  it('shows an error when the incorrect credentials are provided', async () => {
+    await user.goToHomepage();
+    await user.openLoginModal();
+    await user.login(generateCredentials());
+    await user.shouldSeeLoginWarning(/Wrong email or password/);
+  });
+
+  it('can sign up', async () => {
+    await user.goToHomepage();
+    await user.openLoginModal();
+    const credentials = generateCredentials();
+    await user.signUp(credentials);
+    await user.shouldSeeWelcomeWizard();
+    cache.credentials = credentials;
+  });
+
+  it('can log in (and out) with valid credentials', async () => {
+    const {credentials} = cache;
+    expect(credentials).toBeTruthy();
+    await user.goToHomepage();
+    await user.openLoginModal();
+    await user.login(credentials);
+    await user.shouldSeeWelcomeWizard();
+    await user.logout();
+    await user.shouldSeeHomepage();
+  });
 });
