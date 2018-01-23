@@ -154,7 +154,7 @@
     "graphql-redis-subscriptions": "^1.2.0",
     "graphql-relay": "^0.5.2",
     "ignore-loader": "^0.1.2",
-    "immutable": "^3.8.1",
+    "immutable": "^4.0.0-rc.9",
     "ioredis": "^3.1.4",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "^7.4.2",

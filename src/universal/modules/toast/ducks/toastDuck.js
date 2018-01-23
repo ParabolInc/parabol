@@ -1,3 +1,5 @@
+import count from 'universal/utils/count';
+
 const TOAST_SHOW = 'notifications/TOAST_SHOW';
 const TOAST_HIDE = 'notifications/TOAST_HIDE';
 
@@ -20,15 +22,16 @@ export default function reducer(state = initialState, action = {type: ''}) {
   }
 }
 
-let nid = 0;
+const ids = count(1);
+
 export function show(opts, level = SUCCESS) {
   return {
     type: TOAST_SHOW,
     payload: {
-      ...opts,
       autoDismiss: 10,
+      ...opts,
       level,
-      nid: ++nid
+      nid: ids.next().value
     }
   };
 }
