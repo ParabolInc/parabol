@@ -30,9 +30,14 @@ const actions = {
   goToHomepage: (driver) => () => driver.get(BASE_URL),
 
   openLoginModal: (driver) => async () => {
+    const loginButtonSeletor = 'button[title="Log In"]';
     await driver
-      .findElement(By.css('button[title="Log In"]'))
+      .wait(until.elementLocated(By.css(loginButtonSeletor)));
+    console.log('waited for login button');
+    await driver
+      .findElement(By.css(loginButtonSeletor))
       .click();
+    console.log('clicked login button');
     const modalContainerSelector = '#a0-onestep';
     const loginSignupToggleSelector = '.a0-sign-up';
     await all(
@@ -143,30 +148,33 @@ describe('Authentication', () => {
     return user.quit();
   });
 
-  // it('shows an error when the incorrect credentials are provided', async () => {
-  //   await user.goToHomepage();
-  //   await user.openLoginModal();
-  //   await user.login(generateCredentials());
-  //   await user.shouldSeeLoginWarning(/Wrong email or password/);
-  // });
-  //
-  // it('can sign up', async () => {
-  //   await user.goToHomepage();
-  //   await user.openLoginModal();
-  //   const credentials = generateCredentials();
-  //   await user.signUp(credentials);
-  //   await user.shouldSeeWelcomeWizard();
-  //   cache.credentials = credentials;
-  // });
-  //
-  // it('can log in (and out) with valid credentials', async () => {
-  //   const {credentials} = cache;
-  //   expect(credentials).toBeTruthy();
-  //   await user.goToHomepage();
-  //   await user.openLoginModal();
-  //   await user.login(credentials);
-  //   await user.shouldSeeWelcomeWizard();
-  //   await user.logout();
-  //   await user.shouldSeeHomepage();
-  // });
+  it('shows an error when the incorrect credentials are provided', async () => {
+    console.log('going to home page', BASE_URL)
+    await user.goToHomepage();
+    console.log('opening login modal')
+    await user.openLoginModal();
+    console.log('open login modal complete, generating creds')
+    await user.login(generateCredentials());
+    await user.shouldSeeLoginWarning(/Wrong email or password/);
+  });
+
+  it('can sign up', async () => {
+    await user.goToHomepage();
+    await user.openLoginModal();
+    const credentials = generateCredentials();
+    await user.signUp(credentials);
+    await user.shouldSeeWelcomeWizard();
+    cache.credentials = credentials;
+  });
+
+  it('can log in (and out) with valid credentials', async () => {
+    const {credentials} = cache;
+    expect(credentials).toBeTruthy();
+    await user.goToHomepage();
+    await user.openLoginModal();
+    await user.login(credentials);
+    await user.shouldSeeWelcomeWizard();
+    await user.logout();
+    await user.shouldSeeHomepage();
+  });
 });
