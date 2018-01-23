@@ -33,11 +33,9 @@ const actions = {
     const loginButtonSeletor = 'button[title="Log In"]';
     await driver
       .wait(until.elementLocated(By.css(loginButtonSeletor)));
-    console.log('waited for login button');
     await driver
       .findElement(By.css(loginButtonSeletor))
       .click();
-    console.log('clicked login button');
     const modalContainerSelector = '#a0-onestep';
     const loginSignupToggleSelector = '.a0-sign-up';
     await all(
@@ -149,11 +147,8 @@ describe('Authentication', () => {
   });
 
   it('shows an error when the incorrect credentials are provided', async () => {
-    console.log('going to home page', BASE_URL)
     await user.goToHomepage();
-    console.log('opening login modal')
     await user.openLoginModal();
-    console.log('open login modal complete, generating creds')
     await user.login(generateCredentials());
     await user.shouldSeeLoginWarning(/Wrong email or password/);
   });
