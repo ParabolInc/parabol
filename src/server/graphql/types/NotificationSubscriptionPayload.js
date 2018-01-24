@@ -12,6 +12,8 @@ import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload';
 import User from 'server/graphql/types/User';
+import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
+import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
 
 const types = [
   AddOrgPayload,
@@ -24,8 +26,10 @@ const types = [
   DeleteProjectPayload,
   InviteTeamMembersPayload,
   RejectOrgApprovalPayload,
+  RemoveOrgUserPayload,
   StripeFailPaymentPayload,
   User,
+  UpdateUserProfilePayload,
   NotifyVersionInfo
 ];
 

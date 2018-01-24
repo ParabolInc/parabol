@@ -60,8 +60,6 @@ export const updateProjectProjectUpdater = (payload, store, viewerId, options) =
 
 const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, onError) => {
   const {viewerId} = environment;
-  // use this as a temporary fix until we get rid of cashay because otherwise relay will roll back the change
-  // which means we'll have 2 items, then 1, then 2, then 1. i prefer 2, then 1.
   return commitMutation(environment, {
     mutation,
     variables: {

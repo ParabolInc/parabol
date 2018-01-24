@@ -4,6 +4,7 @@ import {
   setOrgUserRoleAddedOrganizationUpdater,
   setOrgUserRoleRemovedOrganizationUpdater
 } from 'universal/mutations/SetOrgUserRoleMutation';
+import {removeOrgUserOrganizationUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 
 const subscription = graphql`
   subscription OrganizationSubscription {
@@ -15,6 +16,7 @@ const subscription = graphql`
       ...SetOrgUserRoleMutationRemoved_organization
       ...UpdateOrgMutation_organization
       ...UpgradeToProMutation_organization
+      ...RemoveOrgUserMutation_organization
     }
   }
 `;
@@ -41,6 +43,9 @@ const OrganizationSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'SetOrgUserRoleRemovedPayload':
           setOrgUserRoleRemovedOrganizationUpdater(payload, store, viewerId);
+          break;
+        case 'RemoveOrgUserPayload':
+          removeOrgUserOrganizationUpdater(payload, store, viewerId);
           break;
         default:
           console.error('OrganizationSubscription case fail', type);

@@ -19,9 +19,20 @@
 - **RethinkDB version:** `rethinkdb --version`
 - **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
 
+### Acceptance Criteria (optional)
+Users can:
+   - Do this
+   - Do that
+   - Cannot do that
 
 ## Issue - Enhancement
 
 [Describe why the feature is AWESOME and would make Action SUPER AWESOME, remove section if issue is a bug]
+
+### Acceptance Criteria (optional)
+Users can:
+   - Do this
+   - Do that
+   - Cannot do that
 
 - **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))

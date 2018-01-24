@@ -1,10 +1,10 @@
-import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
 import React from 'react';
 import {Field, reduxForm} from 'redux-form';
 import FileInput from 'universal/components/FileInput/FileInput';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import CreateOrgPicturePutUrlMutation from 'universal/mutations/CreateOrgPicturePutUrlMutation';
 import UpdateOrgMutation from 'universal/mutations/UpdateOrgMutation';
 import sendAssetToS3 from 'universal/utils/sendAssetToS3';
 import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
@@ -15,19 +15,24 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
-const uploadPicture = async (orgId, pictureFile) => {
-  const {data, error} = await cashay.mutate('createOrgPicturePutUrl', {
-    variables: {
-      contentType: pictureFile.type,
-      contentLength: pictureFile.size,
-      orgId
-    }
+const uploadPicture = async (atmosphere, orgId, pictureFile) => {
+  const variables = {
+    contentType: pictureFile.type,
+    contentLength: pictureFile.size,
+    orgId
+  };
+
+  return new Promise((resolve, reject) => {
+    const onError = (err) => {
+      reject(JSON.stringify(err));
+    };
+    const onCompleted = async (res) => {
+      const {createOrgPicturePutUrl: {url}} = res;
+      const pathname = await sendAssetToS3(pictureFile, url);
+      resolve(pathname);
+    };
+    CreateOrgPicturePutUrlMutation(atmosphere, variables, onError, onCompleted);
   });
-  if (error) {
-    throw new Error(error._error);
-  }
-  const {createOrgPicturePutUrl: putUrl} = data;
-  return sendAssetToS3(pictureFile, putUrl);
 };
 
 const OrgAvatarInput = (props) => {
@@ -45,15 +50,13 @@ const OrgAvatarInput = (props) => {
     const {pictureFile} = submissionData;
     if (pictureFile && pictureFile.name) {
       // upload new picture to CDN, then update the user profile:
-      const pictureUrl = await uploadPicture(orgId, pictureFile);
+      const pictureUrl = await uploadPicture(atmosphere, orgId, pictureFile);
       try {
         await updateOrg(pictureUrl);
       } catch (e) {
         raven.captureException(e);
       }
     }
-    // no work to do
-    return undefined;
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

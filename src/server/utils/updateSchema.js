@@ -12,7 +12,7 @@ const jsonPath = path.join(buildDir, 'schema.json');
   if (!fs.existsSync(buildDir)) {
     fs.mkdirSync(buildDir);
   }
-  fs.writeFileSync(schemaPath, printSchema(schema));
+  fs.writeFileSync(schemaPath, printSchema(schema, {commentDescriptions: true}));
   // use json for IDE plugins
   fs.writeFileSync(jsonPath, JSON.stringify(result, null, 2));
   console.log('Schema updated!');

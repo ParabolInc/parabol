@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {showError} from 'universal/modules/toast/ducks/toastDuck';
-import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
-import {cashay} from 'cashay';
 import {connect} from 'react-redux';
-import {setNextUrl} from 'universal/redux/authDuck';
 import {Redirect} from 'react-router-dom';
+import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import {setNextUrl} from 'universal/redux/authDuck';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -21,8 +19,7 @@ const mapStateToProps = (state) => {
   const {sub: userId, rol: tokenRole} = state.auth.obj;
   return {
     userId,
-    tokenRole,
-    user: cashay.query(getAuthQueryString, getAuthedOptions(userId)).data.user
+    tokenRole
   };
 };
 
@@ -35,7 +32,6 @@ export default (role, {
   @connect(mapStateToProps)
   class RequiredAuthAndRole extends Component {
     static propTypes = {
-      user: PropTypes.object.isRequired,
       dispatch: PropTypes.func.isRequired,
       history: PropTypes.object.isRequired,
       location: PropTypes.object.isRequired,
@@ -50,13 +46,6 @@ export default (role, {
     componentWillMount() {
       this.handleAuthChange(this.props);
     }
-
-    // componentWillReceiveProps(nextProps) {
-    //   const {userId} = this.props;
-    //   if (userId !== nextProps.userId) {
-    //     this.handleAuthChange(nextProps);
-    //   }
-    // }
 
     handleAuthChange(props) { // eslint-disable-line
       const {userId, tokenRole, dispatch, location: {pathname}} = props;
@@ -87,5 +76,6 @@ export default (role, {
       return <ComposedComponent {...this.props} />;
     }
   }
+
   return RequiredAuthAndRole;
 };

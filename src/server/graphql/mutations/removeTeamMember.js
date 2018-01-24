@@ -32,7 +32,7 @@ export default {
 
     // RESOLUTION
     const isKickout = !isSelf;
-    const res = await removeTeamMember(teamMemberId, {isKickout});
+    const res = await removeTeamMember(teamMemberId, {isKickout}, subOptions);
     const {user, removedNotifications, notificationId, archivedProjectIds, reassignedProjectIds} = res;
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const {tms} = user;

@@ -1,6 +1,4 @@
 import {GraphQLObjectType} from 'graphql';
-import organization from 'server/graphql/models/Organization/organizationMutation';
-import user from 'server/graphql/models/User/userMutation';
 import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
 import addAgendaItem from 'server/graphql/mutations/addAgendaItem';
@@ -59,19 +57,21 @@ import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg';
 import addTeam from 'server/graphql/mutations/addTeam';
 import updateTeamName from 'server/graphql/mutations/updateTeamName';
 import createFirstTeam from 'server/graphql/mutations/createFirstTeam';
-
-const rootFields = Object.assign({},
-  organization,
-  user
-);
+import removeOrgUser from 'server/graphql/mutations/removeOrgUser';
+import createOrgPicturePutUrl from 'server/graphql/mutations/createOrgPicturePutUrl';
+import addFeatureFlag from 'server/graphql/mutations/addFeatureFlag';
+import createImposterToken from 'server/graphql/mutations/createImposterToken';
+import createUserPicturePutUrl from 'server/graphql/mutations/createUserPicturePutUrl';
+import login from 'server/graphql/mutations/login';
+import updateUserProfile from 'server/graphql/mutations/updateUserProfile';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-    ...rootFields,
     acceptTeamInviteEmail,
     acceptTeamInviteNotification,
     addAgendaItem,
+    addFeatureFlag,
     addGitHubRepo,
     addOrg,
     addProvider,
@@ -83,9 +83,12 @@ export default new GraphQLObjectType({
     cancelTeamInvite,
     clearNotification,
     connectSocket,
+    createImposterToken,
     createFirstTeam,
     createGitHubIssue,
+    createOrgPicturePutUrl,
     createProject,
+    createUserPicturePutUrl,
     deleteProject,
     disconnectSocket,
     editProject,
@@ -108,6 +111,7 @@ export default new GraphQLObjectType({
     removeProvider,
     removeSlackChannel,
     removeGitHubRepo,
+    removeOrgUser,
     removeTeamMember,
     requestFacilitator,
     resendTeamInvite,
@@ -126,6 +130,8 @@ export default new GraphQLObjectType({
     updateCheckInQuestion,
     updateProject,
     updateTeamName,
+    updateUserProfile,
+    login,
     upgradeToPro
   })
 });

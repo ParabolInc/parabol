@@ -1,7 +1,4 @@
 import {EventTypes} from 'redux-segment';
-import {cashay} from 'cashay';
-import {DEFAULT_AUTH_REDUCER_NAME} from './authDuck';
-import {getAuthQueryString, getAuthedOptions} from './getAuthedUser';
 
 /**
  * Sometimes, we just want to track events in segment.
@@ -9,7 +6,8 @@ import {getAuthQueryString, getAuthedOptions} from './getAuthedUser';
 
 const SEGMENT_EVENT = '@@segment/EVENT';
 
-const defaultProfile = {
+// we need this because segmentEventPage does not always have access to the full traits
+let traits = {
   avatar: null,
   createdAt: null,
   email: null,
@@ -17,61 +15,51 @@ const defaultProfile = {
   name: null
 };
 
-export function selectSegmentTraits(state, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
-  const userId = state[authReducer].obj.sub;
-  if (!userId) {
-    return defaultProfile;
-  }
-  const {user} = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data;
+export function selectSegmentTraits(user) {
   const createdAt = new Date(user.createdAt);
-
-  return ({
+  traits = {
     avatar: user.picture,
     createdAt: isNaN(createdAt) ? null : createdAt,
     email: user.email,
     id: user.id,
     name: user.preferredName
-  });
+  };
+  return traits;
 }
 
-export function segmentEventIdentify(authReducer = DEFAULT_AUTH_REDUCER_NAME) {
-  return (dispatch, getState) => {
-    const traits = selectSegmentTraits(getState(), authReducer);
-    dispatch({
-      type: SEGMENT_EVENT,
-      meta: {
-        analytics: {
-          eventType: EventTypes.identify,
-          eventPayload: {
-            userId: traits.id,
-            traits
-          }
+export function segmentEventIdentify(user) {
+  // mutative!
+  selectSegmentTraits(user);
+  return {
+    type: SEGMENT_EVENT,
+    meta: {
+      analytics: {
+        eventType: EventTypes.identify,
+        eventPayload: {
+          userId: traits.id,
+          traits
         }
       }
-    });
+    }
   };
 }
 
-export function segmentEventPage(name, category, properties, options, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
-  return (dispatch, getState) => {
-    const traits = selectSegmentTraits(getState(), authReducer);
-    const propertiesOut = Object.assign({}, {traits}, properties);
-    const optionsOut = Object.assign({}, {context: {traits}}, options);
-
-    dispatch({
-      type: SEGMENT_EVENT,
-      meta: {
-        analytics: {
-          eventType: EventTypes.page,
-          eventPayload: {
-            name,
-            category,
-            properties: propertiesOut,
-            options: optionsOut
-          }
+export function segmentEventPage(name, category, properties, options) {
+  const propertiesOut = Object.assign({}, {traits}, properties);
+  const optionsOut = Object.assign({}, {context: {traits}}, options);
+  return {
+    type: SEGMENT_EVENT,
+    meta: {
+      analytics: {
+        eventType: EventTypes.page,
+        eventPayload: {
+          name,
+          category,
+          properties: propertiesOut,
+          options: optionsOut
         }
       }
-    });
+    }
   };
 }
 

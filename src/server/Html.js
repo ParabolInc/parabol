@@ -4,6 +4,7 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
+import dehydrate from 'server/utils/dehydrate';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 import {StaticRouter} from 'react-router';
 import AtmosphereProvider from '../universal/components/AtmosphereProvider/AtmosphereProvider';
@@ -16,7 +17,7 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 });
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, assets, clientKeyLoader}) {
+export default function Html({store, assets, clientIds}) {
   // const ActionContainer = require('../../build/prerender');
   const {default: ActionContainer, Atmosphere, StyleSheetServer} = require('../../build/prerender');
   const {manifest, app, vendor} = assets;
@@ -42,7 +43,8 @@ export default function Html({store, assets, clientKeyLoader}) {
       return '<div>Error during render!</div>';
     }
   });
-  const dehydratedStyles = `window.__APHRODITE__ = ${JSON.stringify(css.renderedClassNames)}`;
+  const dehydratedStyles = dehydrate('__APHRODITE__', css.renderedClassNames);
+  const dehydratedClientIds = dehydrate('__ACTION__', clientIds);
   const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
   return (
     <html>
@@ -55,7 +57,7 @@ export default function Html({store, assets, clientKeyLoader}) {
       <body>
         <div id="root" dangerouslySetInnerHTML={{__html: html}} />
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}} />
-        <script dangerouslySetInnerHTML={{__html: clientKeyLoader}} />
+        <script dangerouslySetInnerHTML={{__html: dehydratedClientIds}} />
         <script dangerouslySetInnerHTML={{__html: manifest.text}} />
         <script src={`${webpackPublicPath}${vendor.js}`} />
         <script src={`${webpackPublicPath}${app.js}`} />
@@ -65,7 +67,7 @@ export default function Html({store, assets, clientKeyLoader}) {
 }
 
 Html.propTypes = {
-  clientKeyLoader: PropTypes.string.isRequired,
+  clientIds: PropTypes.string.isRequired,
   store: PropTypes.object.isRequired,
   assets: PropTypes.object
 };

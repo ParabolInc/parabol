@@ -5,10 +5,12 @@ import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAdded
 import SetOrgUserRoleRemovedPayload from 'server/graphql/types/SetOrgUserRoleRemovedPayload';
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
+import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 
 const types = [
   AddOrgPayload,
   ApproveToOrgPayload,
+  RemoveOrgUserPayload,
   SetOrgUserRoleAddedPayload,
   SetOrgUserRoleRemovedPayload,
   UpdateOrgPayload,

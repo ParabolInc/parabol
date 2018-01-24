@@ -37,7 +37,7 @@ const Project = new GraphQLObjectType({
       }
     },
     integration: {
-      // TODO replace this with ProjectIntegration when we remove cashay. it doens't handle intefaces well
+      // TODO replace this with ProjectIntegration
       type: GitHubProject
     },
     sortOrder: {

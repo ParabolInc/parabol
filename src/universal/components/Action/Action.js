@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
+import SocketHealthMonitor from 'universal/containers/SocketHealthMonitor/SocketHealthMonitor';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
@@ -10,7 +11,7 @@ import withStyles from 'universal/styles/withStyles';
 const socketRoute = () => System.import('universal/components/SocketRoute/SocketRoute');
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
 const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
-const welcome = () => System.import('universal/modules/welcome/containers/Welcome/Welcome');
+const welcome = () => System.import('universal/modules/welcome/components/WelcomeRoot');
 const graphql = () => System.import('universal/modules/admin/containers/Graphql/GraphqlContainer');
 const impersonate = () => System.import('universal/modules/admin/containers/Impersonate/ImpersonateContainer');
 const invitation = () => System.import('universal/modules/invitation/containers/Invitation/InvitationContainer');
@@ -22,6 +23,7 @@ const Action = (props) => {
   return (
     <div className={css(styles.app)}>
       <Toast />
+      <SocketHealthMonitor />
       <Switch>
         <Route exact path="/" component={LandingContainer} />
         <AsyncRoute isAbstract isPrivate path="(/me|/meeting|/newteam|/team)" mod={socketRoute} />
