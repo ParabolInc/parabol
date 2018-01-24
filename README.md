@@ -4,22 +4,18 @@
 [![CircleCI](https://circleci.com/gh/ParabolInc/action.svg?style=svg)](https://circleci.com/gh/ParabolInc/action)
 [![codecov](https://codecov.io/gh/ParabolInc/action/branch/master/graph/badge.svg)](https://codecov.io/gh/ParabolInc/action)
 
-## New Beta!
-
-[Sign up for Parabol Beta](http://www.parabol.co/beta) & be first in line to try it out!
-
 ## Overview
 
-An open-source SaaS application for operating Agile business teams.
+[Parabol](https://www.parabol.co) is a free open-source SaaS application for
+operating a distributed organization.
 
-![Action Screencap Image](./docs/images/20161121_Action_Snapshot.gif)
-by [Parabol, Inc](http://parabol.co)
+**We're [hiring](https://www.parabol.co/join)!**
 
-Curious what this is all about? Each week we publish a distillation of our
-progress, philosophy, and more in
+![Action Screencap Image](./docs/images/20180116_Action_Snapshot.gif)
+
+Curious to learn where this all came from? Each week we publish a distillation
+of our progress, philosophy, and more in
 [Parabol Focus](https://focus.parabol.co/).
-
-Live beta product: http://action.parabol.co/
 
 ### Quick Links
 
@@ -35,20 +31,20 @@ Live beta product: http://action.parabol.co/
 Action is a Node.js application based upon the
 [Meatier](https://github.com/mattkrick/meatier) stack:
 
-| Concern            | Solution                                                  |
-|--------------------|-----------------------------------------------------------|
-| Server             | [Node 8.5](https://nodejs.org/)                           |
-| Server Framework   | [Express](http://expressjs.com/)                          |
-| Database           | [RethinkDB](https://www.rethinkdb.com/)                   |
-| Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)          |
-| Sockets            | [socketcluster](http://socketcluster.io/)                 |
-| Client State       | [Redux](http://redux.js.org/)                             |
-| Client Data Cache  | [Cashay](https://github.com/mattkrick/cashay)             |
-| Front-end Views    | [React](https://facebook.github.io/react/)                |
-| Styling            | [aphrodite](https://github.com/khan/aphrodite)            |
-| Unit Testing       | [jest](https://facebook.github.io/jest)                   |
+| Concern            | Solution                                                |
+|--------------------|---------------------------------------------------------|
+| Server             | [Node 8.5](https://nodejs.org/)                         |
+| Server Framework   | [Express](http://expressjs.com/)                        |
+| Database           | [RethinkDB](https://www.rethinkdb.com/)                 |
+| Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)        |
+| Sockets            | [socketcluster](http://socketcluster.io/)               |
+| Client State       | [Redux](http://redux.js.org/)                           |
+| Client Data Cache  | [Relay](https://facebook.github.io/relay/)              |
+| Front-end Views    | [React](https://facebook.github.io/react/)              |
+| Styling            | [aphrodite](https://github.com/khan/aphrodite)          |
+| Unit Testing       | [jest](https://facebook.github.io/jest)                 |
 
-Action is programmed in ECMAscript ES6/7 (including async/await).
+Action is coded using ECMAscript ES6/7 (including async/await).
 Transpilation is provided by [babel](https://github.com/babel/babel).
 
 ## Setup
@@ -207,10 +203,11 @@ Authored and maintained by [Parabol](http://parabol.co).
 * [jordanh](https://github.com/jordanh)
 * [ackernaut](https://github.com/ackernaut)
 * [mattkrick](https://github.com/mattkrick)
+* [dan-f](https://github.com/dan-f)
 
 ### License
 
-Copyright 2016 Parabol, Inc.
+Copyright 2016, 2017, 2018 Parabol, Inc.
 
 Action is dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
 Version 3.0 while holding, at its sole discretion, the right to create

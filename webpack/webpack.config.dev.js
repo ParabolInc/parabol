@@ -3,6 +3,7 @@ import webpack from 'webpack';
 import getDotenv from '../src/universal/utils/dotenv';
 import npmPackage from '../package.json';
 import vendors from '../dll/vendors.json';
+import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin';
 
 // import UnusedFilesWebpackPlugin from "unused-files-webpack-plugin";
 
@@ -60,6 +61,7 @@ export default {
       __SLACK_CLIENT_ID__: JSON.stringify(process.env.SLACK_CLIENT_ID),
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
+    releaseFlagsDefinePlugin,
     new webpack.DllReferencePlugin({
       context: root,
       manifest: vendors
