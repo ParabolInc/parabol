@@ -1,25 +1,50 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 
 import withStyles from 'universal/styles/withStyles';
 
-const PlainButton = ({styles, extraStyles, ...props}) => (
-  <button
-    className={
-      extraStyles
-        ? css(styles.root, ...(Array.isArray(extraStyles) ? extraStyles : [extraStyles]))
-        : css(styles.root)
+class PlainButton extends Component {
+  componentDidMount() {
+    this.focus();
+  }
+
+  componentDidUpdate() {
+    this.focus();
+  }
+
+  focus = () => {
+    if (this.el && this.props.isActive) {
+      this.el.focus();
     }
-    {...props}
-  >
-    {props.children}
-  </button>
-);
+  }
+
+  render() {
+    const {styles, extraStyles, ...props} = this.props;
+    const justButtonProps = { ...props };
+    delete justButtonProps.isActive;
+    return (
+      <button
+        className={
+          extraStyles
+            ? css(styles.root, ...(Array.isArray(extraStyles) ? extraStyles : [extraStyles]))
+            : css(styles.root)
+        }
+        ref={(el) => { this.el = el; }}
+        {...justButtonProps}
+      >
+        {props.children}
+      </button>
+    );
+  }
+}
+
+
 
 PlainButton.propTypes = {
   children: PropTypes.node,
-  extraStyles: PropTypes.object,
+  extraStyles: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  isActive: PropTypes.bool,
   styles: PropTypes.object.isRequired
 };
 

@@ -26,10 +26,14 @@ type MenuState = {
   isOpen: boolean
 };
 
-type MenuItemProps = { children: Node };
+type MenuItemProps = {
+  children: Node,
+  isActive?: boolean
+};
 
 type MenuItemButtonProps = {
   closeMenu: () => void,
+  isActive?: boolean,
   onClick?: () => any,
   children: Node,
   menuWidth?: number,
@@ -105,29 +109,48 @@ export const MenuLabel = withStyles(styleThunk)(
   )
 );
 
-export const MenuItem = (props: MenuItemProps) => (
-  <div role="menuitem" tabIndex="-1">
-    {props.children}
-  </div>
-);
+class MenuItem extends Component<MenuItemProps> {
+  el: ?HTMLElement;
+
+  componentDidMount() {
+    if (this.el && this.props.isActive) {
+      this.el.focus();
+    }
+  }
+
+  render() {
+    const { props } = this;
+    <div role="menuitem" tabIndex="-1" ref={(el) => { this.el = el; }}>
+      {props.children}
+    </div>
+  }
+}
 
 export const MenuItemButton = withStyles(styleThunk)(
-  (props: MenuItemButtonProps) => (
-    <PlainButton
-      {...props}
-      onClick={() => {
-        props.closeMenu();
-        if (props.onClick) {
-          props.onClick();
-        }
-      }}
-      role="menuitem"
-      tabIndex="-1"
-      extraStyles={[props.styles.menuItem, props.styles.menuButton]}
-    >
-      {props.children}
-    </PlainButton>
-  )
+  class MenuItemButton extends Component<MenuItemButtonProps> {
+    render() {
+      const { props } = this;
+      const { closeMenu } = props;
+      const plainButtonProps = { ...props };
+      delete plainButtonProps.closeMenu;
+      return (
+        <PlainButton
+          {...plainButtonProps}
+          onClick={() => {
+            props.closeMenu();
+            if (props.onClick) {
+              props.onClick();
+            }
+          }}
+          role="menuitem"
+          tabIndex="-1"
+          extraStyles={[props.styles.menuItem, props.styles.menuButton]}
+        >
+          {props.children}
+        </PlainButton>
+      );
+    }
+  }
 );
 
 class Menu extends Component<MenuProps, MenuState> {
@@ -139,8 +162,8 @@ class Menu extends Component<MenuProps, MenuState> {
     document.addEventListener('mousedown', this.handleClickOutside);
   }
 
-  componentDidUpdate() {
-    if (this.state.isOpen) {
+  componentDidUpdate(prevProps, prevState) {
+    if (!prevState.isOpen && this.state.isOpen) {
       this.focusMenu();
     }
   }
@@ -154,7 +177,11 @@ class Menu extends Component<MenuProps, MenuState> {
   previouslyFocusedEl: ?HTMLElement;
 
   focusMenu = () => {
-    if (this.menuEl) {
+    // Don't focus the menu when a child has already claimed focus.  This case
+    // occurrs with "active" children.
+    const hasActiveChild = Children.toArray(this.props.children)
+      .find((childElement) => childElement.props.isActive)
+    if (this.menuEl && !hasActiveChild) {
       this.menuEl.focus();
     }
   };
