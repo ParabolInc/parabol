@@ -6,6 +6,7 @@ import getDotenv from '../src/universal/utils/dotenv';
 import {getS3BasePath} from './utils/getS3BasePath';
 import getWebpackPublicPath from '../src/server/utils/getWebpackPublicPath';
 import npmPackage from '../package.json';
+import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin';
 
 // Import .env and expand variables:
 getDotenv();
@@ -103,7 +104,8 @@ export default {
       __GITHUB_CLIENT_ID__: JSON.stringify(process.env.GITHUB_CLIENT_ID),
       __SLACK_CLIENT_ID__: JSON.stringify(process.env.SLACK_CLIENT_ID),
       'process.env.NODE_ENV': JSON.stringify('production')
-    })
+    }),
+    releaseFlagsDefinePlugin
   ],
   module: {
     loaders: [
