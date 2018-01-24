@@ -65,8 +65,7 @@ const styleThunk = (_, props: MenuProps) => ({
     maxHeight: '10rem',
     outline: 0,
     overflowY: 'auto',
-    paddingBottom: ui.menuGutterVertical,
-    paddingTop: ui.menuGutterVertical,
+    paddingTop: '.25rem',
     position: 'absolute',
     right: 0,
     textAlign: 'left',
@@ -136,6 +135,8 @@ class Menu extends Component<MenuProps, MenuState> {
 
   componentDidMount() {
     this.previouslyFocusedEl = document.activeElement;
+    // Hide the menu when the user clicks out of us
+    document.addEventListener('mousedown', this.handleClickOutside);
   }
 
   componentDidUpdate() {
@@ -144,7 +145,12 @@ class Menu extends Component<MenuProps, MenuState> {
     }
   }
 
-  menuEl: ?HTMLElement = null;
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
+  containerEl: ?HTMLElement;
+  menuEl: ?HTMLElement;
   previouslyFocusedEl: ?HTMLElement;
 
   focusMenu = () => {
@@ -178,6 +184,16 @@ class Menu extends Component<MenuProps, MenuState> {
 
   focusPreviousItem = () => {
     this.focusItem(-1);
+  };
+
+  handleClickOutside = (event: Event) => {
+    const { target } = event;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+    if (this.containerEl && !this.containerEl.contains(target)) {
+      this.close();
+    }
   };
 
   handleMenuKeyDown = (event: KeyboardEvent) => {
@@ -228,7 +244,10 @@ class Menu extends Component<MenuProps, MenuState> {
     });
     const childrenWithCloseProp = Children.map(children, (child) => cloneElement(child, { closeMenu: this.close }));
     return (
-      <div className={css(styles.menuContainer)}>
+      <div
+        className={css(styles.menuContainer)}
+        ref={(el) => { this.containerEl = el; }}
+      >
         {a11yToggle}
         {isOpen && (
           <div
