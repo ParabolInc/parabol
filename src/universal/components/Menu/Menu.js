@@ -18,6 +18,8 @@ import withStyles from 'universal/styles/withStyles';
 // TYPES
 type MenuProps = {
   children: Node,
+  maxHeight?: number,
+  menuWidth?: number,
   styles: Object,
   toggle: Element<*>
 };
@@ -36,7 +38,6 @@ type MenuItemButtonProps = {
   isActive?: boolean,
   onClick?: () => any,
   children: Node,
-  menuWidth?: number,
   styles: Object
 };
 
@@ -66,7 +67,7 @@ const styleThunk = (_, props: MenuProps) => ({
     backgroundColor: ui.menuBackgroundColor,
     borderRadius: ui.menuBorderRadius,
     boxShadow: ui.menuBoxShadow,
-    maxHeight: '10rem',
+    maxHeight: props.maxHeight || '10rem',
     outline: 0,
     overflowY: 'auto',
     paddingTop: '.25rem',
