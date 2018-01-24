@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql';
 import agendaItemSubscription from 'server/graphql/subscriptions/agendaItemSubscription';
-import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemoved';
 import githubRepoAdded from 'server/graphql/subscriptions/githubRepoAdded';
 import githubRepoRemoved from 'server/graphql/subscriptions/githubRepoRemoved';
+import githubMemberRemoved from 'server/graphql/subscriptions/githubMemberRemoved';
 import integrationJoined from 'server/graphql/subscriptions/integrationJoined';
 import integrationLeft from 'server/graphql/subscriptions/integrationLeft';
 import invitationSubscription from 'server/graphql/subscriptions/invitationSubscription';
@@ -17,11 +17,7 @@ import slackChannelAdded from 'server/graphql/subscriptions/slackChannelAdded';
 import slackChannelRemoved from 'server/graphql/subscriptions/slackChannelRemoved';
 import teamMemberSubscription from 'server/graphql/subscriptions/teamMemberSubscription';
 import teamSubscription from 'server/graphql/subscriptions/teamSubscription';
-import invoice from './models/Invoice/invoiceSubscription';
-
-const rootFields = Object.assign({},
-  invoice
-);
+// import invoice from './models/Invoice/invoiceSubscription';
 
 export default new GraphQLObjectType({
   name: 'Subscription',
@@ -43,7 +39,6 @@ export default new GraphQLObjectType({
     providerAdded,
     providerRemoved,
     teamSubscription,
-    teamMemberSubscription,
-    ...rootFields
+    teamMemberSubscription
   })
 });

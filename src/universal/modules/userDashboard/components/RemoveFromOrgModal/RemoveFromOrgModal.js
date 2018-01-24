@@ -1,16 +1,30 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {DashModal} from 'universal/components/Dashboard';
-import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
-import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
+import Button from 'universal/components/Button/Button';
+import {DashModal} from 'universal/components/Dashboard';
+import Type from 'universal/components/Type/Type';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const RemoveFromOrgModal = (props) => {
-  const {closeAfter, closePortal, isClosing, orgId, preferredName, userId} = props;
+  const {
+    atmosphere,
+    closeAfter,
+    closePortal,
+    isClosing,
+    onError,
+    onCompleted,
+    submitting,
+    submitMutation,
+    orgId,
+    preferredName,
+    userId
+  } = props;
   const handleClick = () => {
-    const variables = {orgId, userId};
-    cashay.mutate('removeOrgUser', {variables});
+    submitMutation();
+    RemoveOrgUserMutation(atmosphere, orgId, userId, onError, onCompleted);
   };
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
@@ -31,18 +45,25 @@ const RemoveFromOrgModal = (props) => {
         label={`Remove ${preferredName}`}
         onClick={handleClick}
         buttonSize="large"
+        waiting={submitting}
       />
     </DashModal>
   );
 };
 
 RemoveFromOrgModal.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   closeAfter: PropTypes.any,
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
   orgId: PropTypes.string.isRequired,
   preferredName: PropTypes.string.isRequired,
-  userId: PropTypes.string.isRequired
+  userId: PropTypes.string.isRequired,
+  error: PropTypes.any,
+  submitting: PropTypes.bool,
+  submitMutation: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired
 };
 
-export default portal({escToClose: true, closeAfter: 100})(RemoveFromOrgModal);
+export default withAtmosphere(withMutationProps(portal({escToClose: true, closeAfter: 100})(RemoveFromOrgModal)));

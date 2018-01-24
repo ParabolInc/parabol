@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
-import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
+import parseInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/parseInviteToken';
+import validateInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamMembers/validateInviteTokenKey';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';

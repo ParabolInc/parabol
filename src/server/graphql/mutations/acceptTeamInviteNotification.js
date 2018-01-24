@@ -5,7 +5,7 @@ import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {NEW_AUTH_TOKEN, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {INVITATION, NEW_AUTH_TOKEN, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
@@ -44,10 +44,13 @@ export default {
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
 
+    // remove the old invitation
+    publish(INVITATION, teamId, AcceptTeamInviteNotificationPayload, data, subOptions);
+
     // Tell the new team member about the team, welcome them, and remove their outstanding invitation notifications
     publish(TEAM, viewerId, AcceptTeamInviteNotificationPayload, data, subOptions);
 
-    // Tell the rest of the team about the new team member, toast the event, and remove their old invitations
+    // Tell the rest of the team about the new team member, toast the event
     publish(TEAM_MEMBER, teamId, AcceptTeamInviteNotificationPayload, data, subOptions);
 
     return data;

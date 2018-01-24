@@ -10,7 +10,7 @@ import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
 import * as sendEmailPromise from 'server/email/sendEmail';
-import * as hashInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/hashInviteTokenKey';
+import * as hashInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamMembers/hashInviteTokenKey';
 import approveToOrg from 'server/graphql/mutations/approveToOrg';
 import {REQUEST_NEW_USER} from 'universal/utils/constants';
 

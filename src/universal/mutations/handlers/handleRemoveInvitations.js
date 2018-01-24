@@ -1,9 +1,10 @@
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
 
-const handleRemoveInvitation = (invitationId, store, teamId) => {
-  const invitation = store.get(invitationId);
+const handleRemoveInvitation = (invitation, store) => {
   if (!invitation) return;
+  const teamId = invitation.getValue('teamId');
+  const invitationId = invitation.getValue('id');
   const team = store.get(teamId);
   safeRemoveNodeFromArray(invitationId, team, 'invitations');
 };
