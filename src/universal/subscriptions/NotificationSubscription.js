@@ -30,6 +30,7 @@ const subscription = graphql`
       ...InviteTeamMembersMutation_notification
       ...RemoveOrgUserMutation_notification
       ...RejectOrgApprovalMutation_notification
+      ...UpdateUserProfileMutation_notification
 
       # ConnectSocket/DisconnectSocket
       ... on User {
@@ -160,6 +161,8 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           break;
         case 'StripeFailPaymentPayload':
           stripeFailPaymentNotificationUpdater(payload, store, viewerId, options);
+          break;
+        case 'UpdateUserProfilePayload':
           break;
         default:
           console.error('NotificationSubscription case fail', type);

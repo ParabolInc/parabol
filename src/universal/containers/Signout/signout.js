@@ -1,4 +1,3 @@
-import {cashay} from 'cashay';
 import {resetAtmosphere} from 'universal/components/AtmosphereProvider/AtmosphereProvider';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
@@ -23,7 +22,6 @@ const signout = (atmosphere, dispatch, history) => {
   if (reloadPendingState !== APP_UPGRADE_PENDING_RELOAD) {
     dispatch(showSuccess(signoutSuccess));
   }
-  cashay.clear();
   resetAtmosphere();
 };
 

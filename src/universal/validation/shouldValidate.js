@@ -1,7 +1,7 @@
 
 /*
  * The default redux-form shouldValidate function always validates on
- * the initial render. In our Cashay app, the initial render is probably
+ * the initial render. In our app, the initial render is probably
  * a terrible time to do validation as the fields we want to validate
  * are probably empty.
  */

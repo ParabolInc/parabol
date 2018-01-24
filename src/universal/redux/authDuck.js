@@ -1,8 +1,5 @@
-import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
-import {selectSegmentTraits} from 'universal/redux/segmentActions';
 import raven from 'raven-js';
-import ActionHTTPTransport from '../utils/ActionHTTPTransport';
 import {segmentEventIdentify, segmentEventReset} from 'universal/redux/segmentActions';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
@@ -65,8 +62,8 @@ export default function reducer(state = initialState, action = {type: ''}) {
   }
 }
 
-export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME) {
-  return (dispatch, getState) => {
+export function setAuthToken(authToken, user) {
+  return (dispatch) => {
     if (!authToken) {
       throw new Error('setAuthToken action created with undefined authToken');
     }
@@ -77,16 +74,15 @@ export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME)
       throw new Error(`unable to decode jwt: ${e}`);
     }
 
-    cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
-    if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
+    // user is not present if triggered by the SocketAuthEngine, which isn't an event we care about
+    if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__ && user) {
       /*
        * Sentry error reporting meta-information. Raven object is set via SSR.
        * See server/Html.js for how this is initialized
        */
-      const profile = selectSegmentTraits(getState(), reducerName);
       raven.setUserContext({
         id: obj.sub,
-        email: profile.email
+        email: user.email
       });
     }
     dispatch({
@@ -96,7 +92,9 @@ export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME)
         token: authToken
       }
     });
-    dispatch(segmentEventIdentify(reducerName));
+    if (user) {
+      dispatch(segmentEventIdentify(user));
+    }
   };
 }
 
@@ -109,7 +107,7 @@ export function removeAuthToken() {
        */
       raven.setUserContext({});
     }
-    dispatch({ type: REMOVE_AUTH_TOKEN });
+    dispatch({type: REMOVE_AUTH_TOKEN});
     dispatch(segmentEventReset());
   };
 }
@@ -118,13 +116,13 @@ export function setNextUrl(nextUrl) {
   return (dispatch) => {
     dispatch({
       type: SET_NEXT_URL,
-      payload: { nextUrl }
+      payload: {nextUrl}
     });
   };
 }
 
 export function unsetNextUrl() {
   return (dispatch) => {
-    dispatch({ type: UNSET_NEXT_URL });
+    dispatch({type: UNSET_NEXT_URL});
   };
 }

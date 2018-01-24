@@ -6,7 +6,7 @@ export default class AuthEngine {
     this.reducerName = reducerName;
   }
   saveToken(name, token, options, callback) {
-    this.store.dispatch(setAuthToken(token, this.reducerName));
+    this.store.dispatch(setAuthToken(token));
     if (callback) callback(null, token);
   }
 

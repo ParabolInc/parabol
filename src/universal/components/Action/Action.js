@@ -11,7 +11,7 @@ import withStyles from 'universal/styles/withStyles';
 const socketRoute = () => System.import('universal/components/SocketRoute/SocketRoute');
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
 const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
-const welcome = () => System.import('universal/modules/welcome/containers/Welcome/Welcome');
+const welcome = () => System.import('universal/modules/welcome/components/WelcomeRoot');
 const graphql = () => System.import('universal/modules/admin/containers/Graphql/GraphqlContainer');
 const impersonate = () => System.import('universal/modules/admin/containers/Impersonate/ImpersonateContainer');
 const invitation = () => System.import('universal/modules/invitation/containers/Invitation/InvitationContainer');

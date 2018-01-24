@@ -1,25 +1,12 @@
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
-import {cashay} from 'cashay';
-import cashaySchema from 'cashay!../server/utils/getCashaySchema.js'; // eslint-disable-line
 import React from 'react';
 import {render} from 'react-dom';
-import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
 
-// const {routing} = window.__INITIAL_STATE__;
 const initialState = {};
-
 (async () => {
   const store = await makeStore(initialState);
-  // Create the Cashay singleton:
-  const persistedToken = store.getState().auth.token;
-  cashay.create({
-    store,
-    schema: cashaySchema,
-    httpTransport: new ActionHTTPTransport(persistedToken)
-  });
-
   if (__PRODUCTION__) {
     StyleSheet.rehydrate(window.__APHRODITE__);
     render(

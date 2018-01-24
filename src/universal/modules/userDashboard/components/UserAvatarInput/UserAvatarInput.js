@@ -1,58 +1,58 @@
-import React from 'react';
-import {reduxForm, Field} from 'redux-form';
-import {cashay} from 'cashay';
-import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
-import shouldValidate from 'universal/validation/shouldValidate';
-import sendAssetToS3 from 'universal/utils/sendAssetToS3';
-import FileInput from 'universal/components/FileInput/FileInput';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
+import React from 'react';
+import {Field, reduxForm, SubmissionError} from 'redux-form';
+import FileInput from 'universal/components/FileInput/FileInput';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import CreateUserPicturePutUrlMutation from 'universal/mutations/CreateUserPicturePutUrlMutation';
+import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation';
+import sendAssetToS3 from 'universal/utils/sendAssetToS3';
+import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
+import shouldValidate from 'universal/validation/shouldValidate';
 
 const validate = (values) => {
   const schema = makeAvatarSchema();
   return schema(values).errors;
 };
 
-const uploadPicture = async (pictureFile) => {
-  const {data, error} = await cashay.mutate('createUserPicturePutUrl', {
-    variables: {
-      contentType: pictureFile.type,
-      contentLength: pictureFile.size
-    }
+const uploadPicture = async (atmosphere, pictureFile) => {
+  const variables = {
+    contentType: pictureFile.type,
+    contentLength: pictureFile.size
+  };
+
+  return new Promise((resolve, reject) => {
+    const onError = (err) => {
+      reject(JSON.stringify(err));
+    };
+    const onCompleted = async (res) => {
+      const {createUserPicturePutUrl: {url}} = res;
+      const pathname = await sendAssetToS3(pictureFile, url);
+      resolve(pathname);
+    };
+    CreateUserPicturePutUrlMutation(atmosphere, variables, onError, onCompleted);
   });
-  if (error) {
-    throw new Error(error._error);
-  }
-  const {createUserPicturePutUrl: putUrl} = data;
-  return sendAssetToS3(pictureFile, putUrl);
 };
 
 const UserAvatarInput = (props) => {
-  const {handleSubmit, userId} = props;
-
-  const updateUser = (id, pictureUrl) => {
-    const options = {
-      variables: {
-        updatedUser: {
-          picture: pictureUrl
-        }
-      }
-    };
-    return cashay.mutate('updateUserProfile', options);
-  };
-
+  const {atmosphere, handleSubmit} = props;
   const onSubmit = async (submissionData) => {
     const {pictureFile} = submissionData;
     if (pictureFile && pictureFile.name) {
       // upload new picture to CDN, then update the user profile:
-      const pictureUrl = await uploadPicture(pictureFile);
-      try {
-        await updateUser(userId, pictureUrl);
-      } catch (e) {
-        raven.captureException(e);
-      }
+      const pictureUrl = await uploadPicture(atmosphere, pictureFile);
+      const updatedUser = {picture: pictureUrl};
+      const onError = (err) => {
+        raven.captureException(err);
+        throw new SubmissionError(err);
+      };
+      return new Promise((resolve) => {
+        const onCompleted = () => {
+          resolve();
+        };
+        UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted);
+      });
     }
-    // no work to do
     return undefined;
   };
   return (
@@ -68,10 +68,11 @@ const UserAvatarInput = (props) => {
 };
 
 UserAvatarInput.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func,
   userId: PropTypes.string
 };
 
 export default reduxForm({form: 'userAvatar', shouldValidate, validate})(
-  UserAvatarInput
+  withAtmosphere(UserAvatarInput)
 );

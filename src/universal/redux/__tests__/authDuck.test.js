@@ -26,7 +26,8 @@ test('initial state', () => {
 
 test('can setAuthToken w/token decode', () => {
   global.__PRODUCTION__ = true;
-  store.dispatch(setAuthToken(testToken));
+  const user = {id: testTokenData.sub, email: 'a@a.co'};
+  store.dispatch(setAuthToken(testToken, user));
   expect(raven.setUserContext).toBeCalledWith({id: testTokenData.sub, email: 'a@a.co'});
   expect(segmentActions.segmentEventIdentify).toBeCalled();
   expect(store.getState()).toMatchSnapshot();

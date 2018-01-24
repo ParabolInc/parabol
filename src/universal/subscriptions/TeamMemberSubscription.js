@@ -14,6 +14,7 @@ const subscription = graphql`
       ...PromoteToTeamLeadMutation_teamMember
       ...RemoveOrgUserMutation_teamMember
       ...RemoveTeamMemberMutation_teamMember
+      ...UpdateUserProfileMutation_teamMember
     }
   }
 `;
@@ -44,6 +45,8 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamMemberUpdater(payload, store);
+          break;
+        case 'UpdateUserProfilePayload':
           break;
         default:
           console.error('TeamMemberSubscription case fail', type);

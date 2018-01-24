@@ -3,6 +3,7 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import stripe from 'server/billing/stripe';
 import stripeWebhookHandler from 'server/billing/stripeWebhookHandler';
+import SharedDataLoader from 'shared-dataloader';
 import getRethink from 'server/database/rethinkDriver';
 import invoicePaymentSucceededEvent from 'server/graphql/mutations/__tests__/mockStripeEvents/invoicePaymentSucceededEvent';
 import shortid from 'shortid';
@@ -30,7 +31,8 @@ describe('stripeSucceedPayment', () => {
     await stripe.invoices.create({customer: org.stripeId, id: invoiceId, subscription});
 
     // TEST
-    await stripeWebhookHandler(req, res);
+    const sharedDataLoader = new SharedDataLoader({ttl: 1000, onShare: '_share'});
+    await stripeWebhookHandler(sharedDataLoader)(req, res);
 
     // VERIFY
     expect(res.sendStatus).toBeCalledWith(200);
