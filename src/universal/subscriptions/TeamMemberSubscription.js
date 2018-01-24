@@ -2,6 +2,7 @@ import {acceptTeamInviteTeamMemberUpdater} from 'universal/mutations/AcceptTeamI
 import {inviteTeamMembersTeamMemberUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {removeOrgUserTeamMemberUpdater} from 'universal/mutations/RemoveOrgUserMutation';
+import {cancelApprovalTeamMemberUpdater} from 'universal/mutations/CancelApprovalMutation';
 
 const subscription = graphql`
   subscription TeamMemberSubscription {
@@ -9,6 +10,7 @@ const subscription = graphql`
       __typename
       ...AcceptTeamInviteMutation_teamMember
       ...AcceptTeamInviteEmailMutation_teamMember
+      ...CancelApprovalMutation_teamMember
       ...InviteTeamMembersMutation_teamMember
       ...MeetingCheckInMutation_teamMember
       ...PromoteToTeamLeadMutation_teamMember
@@ -32,6 +34,9 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
         case 'AcceptTeamInviteNotificationPayload':
         case 'AcceptTeamInviteEmailPayload':
           acceptTeamInviteTeamMemberUpdater(payload, store, viewerId, dispatch);
+          break;
+        case 'CancelApprovalPayload':
+          cancelApprovalTeamMemberUpdater(payload, store);
           break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamMemberUpdater(payload, store, dispatch);

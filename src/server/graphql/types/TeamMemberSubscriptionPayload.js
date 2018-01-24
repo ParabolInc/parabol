@@ -7,10 +7,12 @@ import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayl
 import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
+import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 
 const types = [
   AcceptTeamInviteNotificationPayload,
   AcceptTeamInviteEmailPayload,
+  CancelApprovalPayload,
   RemoveTeamMemberPayload,
   InviteTeamMembersPayload,
   MeetingCheckInPayload,

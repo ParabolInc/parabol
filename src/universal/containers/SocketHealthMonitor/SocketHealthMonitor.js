@@ -7,11 +7,11 @@
  * @flow
  */
 import raven from 'raven-js';
-import { Component } from 'react';
-import type { Dispatch } from 'redux';
+import {Component} from 'react';
+import type {Dispatch} from 'redux';
 
-import { connect } from 'react-redux';
-import { showError, showSuccess, hide } from 'universal/modules/toast/ducks/toastDuck';
+import {connect} from 'react-redux';
+import {hide, showError, showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 
 type ToastOpts = {
   autoDismiss?: number,

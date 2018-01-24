@@ -1,7 +1,4 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLString} from 'graphql';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import Invitation from 'server/graphql/types/Invitation';
-import OrgApproval from 'server/graphql/types/OrgApproval';
 import TeamMember from 'server/graphql/types/TeamMember';
 import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
@@ -14,6 +11,10 @@ export const assigneeInterfaceFields = {
   preferredName: {
     type: GraphQLString,
     description: 'The name of the assignee'
+  },
+  teamId: {
+    type: GraphQLID,
+    description: 'foreign key to Team table'
   }
 };
 

@@ -5,7 +5,11 @@ exports.up = async (r) => {
     // noop
   }
   try {
-    await r.table('SoftTeamMember').indexCreate('email');
+    await Promise.all([
+      r.table('SoftTeamMember').indexCreate('email'),
+      r.table('TeamMember').indexDrop('teamMemberId'),
+      r.table('TeamMember').indexCreate('assigneeId')
+    ]);
   } catch (e) {
     // noop
   }
@@ -31,7 +35,7 @@ exports.up = async (r) => {
   } catch (e) {
     // noop
   }
-}
+};
 
 exports.down = async (r) => {
   try {

@@ -77,6 +77,17 @@ export const resolveProjects = async ({projectIds}, args, {authToken, dataLoader
   return isViewer ? projects : nullIfEmpty(projects.filter((p) => !p.tags.includes('private')));
 };
 
+export const resolveSoftTeamMember = async ({softTeamMemberId, softTeamMember}, args, {authToken, dataLoader}) => {
+  const teamMember = softTeamMemberId ? await dataLoader.get('softTeamMembers').load(softTeamMemberId) : softTeamMember;
+  return authToken.tms.includes(teamMember.teamId) ? teamMember : undefined;
+};
+
+export const resolveSoftTeamMembers = async ({softTeamMemberIds, softTeamMembers}, args, {authToken, dataLoader}) => {
+  const {tms} = authToken;
+  const teamMembers = softTeamMemberIds ? await dataLoader.get('softTeamMembers').loadMany(softTeamMemberIds) : softTeamMembers;
+  return teamMembers.filter((teamMember) => tms.includes(teamMember.teamId));
+};
+
 export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
   return teamId ? dataLoader.get('teams').load(teamId) : team;
 };

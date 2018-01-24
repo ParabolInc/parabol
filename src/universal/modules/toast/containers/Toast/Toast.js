@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import ToastSystem from 'react-notification-system';
 import appTheme from 'universal/styles/theme/appTheme';
-import { hide } from 'universal/modules/toast/ducks/toastDuck';
+import {hide} from 'universal/modules/toast/ducks/toastDuck';
 
 const mapStateToProps = (state) => ({
   toasts: state.toasts
@@ -46,7 +46,7 @@ export default class Toast extends React.Component {
     });
     this.toastToNotification.set(toast.nid, notification.uid);
     return toast;
-  }
+  };
 
   removeToast = (toast) => {
     const notification = this.toastToNotification.get(toast.nid);
@@ -56,7 +56,7 @@ export default class Toast extends React.Component {
     this.system().removeNotification(notification);
     this.toastToNotification.delete(toast.nid);
     return toast;
-  }
+  };
 
   system() {
     return this.el;

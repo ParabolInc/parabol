@@ -15,11 +15,13 @@ graphql`
     updatedProjects {
       id
       tags
-      teamMemberId
-      teamMember {
+      assigneeId
+      assignee {
         id
         preferredName
-        picture
+        ... on TeamMember {
+          picture
+        }
       }
       userId
     }

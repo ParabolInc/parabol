@@ -7,8 +7,10 @@ import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
 import UpdateProjectPayload from 'server/graphql/types/UpdateProjectPayload';
 import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
+import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 
 const types = [
+  CancelApprovalPayload,
   CreateGitHubIssuePayload,
   CreateProjectPayload,
   DeleteProjectPayload,
