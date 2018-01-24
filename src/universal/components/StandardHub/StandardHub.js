@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import {NavLink} from 'react-router-dom';
+import {NavLink, withRouter} from 'react-router-dom';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Badge from 'universal/components/Badge/Badge';
 import {Menu, MenuItem} from 'universal/modules/menu';
@@ -26,15 +26,13 @@ const targetAnchor = {
 
 const StandardHub = (props) => {
   const {
-    email,
-    picture,
-    preferredName,
     history,
     styles,
     viewer
   } = props;
   const notifications = viewer && viewer.notifications && viewer.notifications.edges;
   const notificationsCount = notifications ? notifications.length : 0;
+  const {picture = '', preferredName = '', email = ''} = viewer || {};
   const goToSettings = () =>
     history.push('/me/settings');
 
@@ -110,10 +108,7 @@ const StandardHub = (props) => {
 };
 
 StandardHub.propTypes = {
-  email: PropTypes.string,
   notificationsCount: PropTypes.number,
-  picture: PropTypes.string,
-  preferredName: PropTypes.string,
   history: PropTypes.object,
   styles: PropTypes.object,
   viewer: PropTypes.object
@@ -212,9 +207,12 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withStyles(styleThunk)(StandardHub),
+  withRouter(withStyles(styleThunk)(StandardHub)),
   graphql`
     fragment StandardHub_viewer on User {
+      email
+      picture
+      preferredName
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
         edges {
           node {

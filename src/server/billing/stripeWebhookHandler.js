@@ -1,6 +1,7 @@
 import schema from 'server/graphql/rootSchema';
 import {graphql} from 'graphql';
 import stripe from 'server/billing/stripe';
+import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 
 const eventLookup = {
   invoice: {
@@ -75,7 +76,7 @@ const verifyBody = (req) => {
   }
 };
 
-export default async function stripeWebhookHandler(req, res) {
+const stripeWebhookHandler = (sharedDataLoader) => async (req, res) => {
   res.sendStatus(200);
 
   const verifiedBody = verifyBody(req);
@@ -95,9 +96,12 @@ export default async function stripeWebhookHandler(req, res) {
 
   const {getVars, query} = actionHandler;
   const variables = getVars(payload);
-  const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET};
+  const dataLoader = sharedDataLoader.add(new RethinkDataLoader());
+  const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET, dataLoader};
   const result = await graphql(schema, query, {}, context, variables);
   if (result.errors) {
     console.log('Stripe GraphQL Error:', result.errors);
   }
-}
+};
+
+export default stripeWebhookHandler;

@@ -33,7 +33,7 @@ const createOrgPicturePutUrl = {
 
     // RESOLUTION
     const partialPath = `Organization/${orgId}/picture/${shortid.generate()}.${ext}`;
-    const url = getS3PutUrl(contentType, contentLength, partialPath);
+    const url = await getS3PutUrl(contentType, contentLength, partialPath);
     return {url};
   }
 };

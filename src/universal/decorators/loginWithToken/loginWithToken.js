@@ -1,17 +1,13 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {unsetNextUrl} from 'universal/redux/authDuck';
-import {getAuthedOptions, getAuthQueryString} from '../../redux/getAuthedUser';
-import {cashay} from 'cashay';
 
 const mapStateToProps = (state) => {
   const {auth} = state;
   return {
-    auth,
-    // query required because we need a query before a mutation
-    user: __CLIENT__ ? cashay.query(getAuthQueryString, getAuthedOptions(auth.obj.sub)).data.user : {}
+    auth
   };
 };
 
@@ -45,6 +41,7 @@ export default (ComposedComponent) => {
     componentWillMount() {
       handleAuthChange(this.props);
     }
+
     componentWillReceiveProps(nextProps) {
       const {auth: {obj: {sub: prevSub}}} = this.props;
       const {auth: {obj: {sub: nextSub}}} = nextProps;
@@ -57,5 +54,6 @@ export default (ComposedComponent) => {
       return <ComposedComponent {...this.props} />;
     }
   }
+
   return LoginWithToken;
 };

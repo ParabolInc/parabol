@@ -1,21 +1,22 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Button from 'universal/components/Button/Button';
-import InputField from 'universal/components/InputField/InputField';
-import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
-import Panel from 'universal/components/Panel/Panel';
+import {createFragmentContainer} from 'react-relay';
 import {Field} from 'redux-form';
-import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
-import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import Button from 'universal/components/Button/Button';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
+import InputField from 'universal/components/InputField/InputField';
+import Panel from 'universal/components/Panel/Panel';
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -29,7 +30,7 @@ const renderActivity = (activity) => {
 };
 
 const UserSettings = (props) => {
-  const {activity, handleSubmit, onSubmit, styles, user: {id: userId, picture}} = props;
+  const {activity, handleSubmit, onSubmit, styles, viewer: {userId, picture}} = props;
   const pictureOrDefault = picture || defaultUserAvatar;
   const toggle = <EditableAvatar picture={pictureOrDefault} size={96} />;
   const controlSize = 'medium';
@@ -94,14 +95,9 @@ UserSettings.propTypes = {
   handleSubmit: PropTypes.func,
   nextPage: PropTypes.string, // from settingsDuck
   onSubmit: PropTypes.func,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    id: PropTypes.string,
-    picture: PropTypes.string,
-    preferredName: PropTypes.string
-  }),
   userId: PropTypes.string,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  viewer: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({
@@ -148,4 +144,13 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserSettings);
+export default createFragmentContainer(
+  withStyles(styleThunk)(UserSettings),
+  graphql`
+    fragment UserSettings_viewer on User {
+      userId: id
+      preferredName
+      picture
+    }
+  `
+);

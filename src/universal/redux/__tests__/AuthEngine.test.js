@@ -31,7 +31,6 @@ test('saveToken saves token', (done) => {
   const cb = (err, token) => {
     expect(err).toBe(null);
     expect(token).toBe(testToken);
-    expect(segmentActions.segmentEventIdentify).toBeCalled();
     done();
   };
 
@@ -56,7 +55,6 @@ test('loadToken callsback with token', (done) => {
   const cb = (err, token) => {
     expect(err).toBe(null);
     expect(token).toBe(testToken);
-    expect(segmentActions.segmentEventIdentify).toBeCalled();
     done();
   };
 

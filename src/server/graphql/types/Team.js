@@ -22,6 +22,7 @@ import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
 import {requireTeamMember} from 'server/utils/authorization';
 import {PENDING} from 'server/utils/serverConstants';
+import {resolveOrganization} from 'server/graphql/resolvers';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -124,12 +125,8 @@ const Team = new GraphQLObjectType({
     },
     organization: {
       type: Organization,
-      resolve: ({orgId}) => {
-        const r = getRethink();
-        return r.table('Organization').get(orgId).run();
-      }
+      resolve: resolveOrganization
     },
-    /* GraphQL sugar */
     agendaItems: {
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',

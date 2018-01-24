@@ -9,6 +9,7 @@ import shortid from 'shortid';
 import {PRO} from 'universal/utils/constants';
 import MockRes from 'server/__mocks__/MockRes';
 import MockReq from 'server/__mocks__/MockReq';
+import SharedDataLoader from 'shared-dataloader';
 
 console.error = jest.fn();
 
@@ -31,7 +32,8 @@ describe('stripeFailPayment', () => {
     await stripe.invoices.create({customer: org.stripeId, id: invoiceId, subscription});
     stripe.__db.invoices[invoiceId].paid = false;
     // TEST
-    await stripeWebhookHandler(req, res);
+    const sharedDataLoader = new SharedDataLoader({ttl: 1000, onShare: '_share'});
+    await stripeWebhookHandler(sharedDataLoader)(req, res);
 
     // VERIFY
     expect(res.sendStatus).toBeCalledWith(200);

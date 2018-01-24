@@ -9,6 +9,7 @@ import shortid from 'shortid';
 import {PRO} from 'universal/utils/constants';
 import MockRes from 'server/__mocks__/MockRes';
 import MockReq from 'server/__mocks__/MockReq';
+import SharedDataLoader from 'shared-dataloader';
 
 console.error = jest.fn();
 
@@ -24,12 +25,13 @@ describe('stripeCreateInvoice', () => {
     const {organization} = await mockDB
       .init({plan: PRO});
     const org = organization[0];
+    const sharedDataLoader = new SharedDataLoader({ttl: 1000, onShare: '_share'});
     stripe.__setMockData(org);
     const subscription = stripe.__db.subscriptions[org.stripeSubscriptionId];
     await stripe.invoices.create({customer: org.stripeId, id: invoiceId, subscription});
 
     // TEST
-    await stripeWebhookHandler(req, res);
+    await stripeWebhookHandler(sharedDataLoader)(req, res);
 
     // VERIFY
     expect(res.sendStatus).toBeCalledWith(200);

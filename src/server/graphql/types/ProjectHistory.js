@@ -33,7 +33,7 @@ export const ChangeModule = new GraphQLEnumType({
 //   new: {type: ProjectStatus, description: 'The status as it was in post-meeting'},
 // });
 
-export const ProjectHistory = new GraphQLObjectType({
+const ProjectHistory = new GraphQLObjectType({
   name: 'ProjectHistory',
   description: 'An up-to-date history of every change to content, ownership, and status for every project.',
   fields: () => ({
@@ -71,3 +71,5 @@ export const ProjectHistory = new GraphQLObjectType({
     }
   })
 });
+
+export default ProjectHistory;

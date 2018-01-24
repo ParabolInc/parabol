@@ -8,7 +8,7 @@ import {DashContent, DashHeader, DashHeaderInfo, DashMain} from 'universal/compo
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
-import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';
+import UnpaidTeamModalRoot from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
@@ -49,11 +49,10 @@ const Team = (props) => {
         teamName={teamName}
         key={`${teamId}MeetingModal`}
       />
-      <UnpaidTeamModalContainer
+      <UnpaidTeamModalRoot
         isOpen={!isPaid}
         teamId={teamId}
         modalLayout={modalLayout}
-        teamName={teamName}
         key={`${teamId}UnpaidModal`}
       />
       <DashHeader hasOverlay={hasOverlay}>
