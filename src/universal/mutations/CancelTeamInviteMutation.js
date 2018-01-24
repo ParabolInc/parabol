@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay';
 import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
 graphql`
   fragment CancelTeamInviteMutation_invitation on CancelTeamInvitePayload {
@@ -30,9 +31,8 @@ const mutation = graphql`
 `;
 
 export const cancelTeamInviteInvitationUpdater = (payload, store) => {
-  const invitationId = getInProxy(payload, 'invitation', 'id');
-  const teamId = getInProxy(payload, 'invitation', 'teamId');
-  handleRemoveInvitations(invitationId, store, teamId);
+  const invitation = payload.getLinkedRecord('invitation');
+  handleRemoveInvitations(invitation, store);
 };
 
 export const cancelTeamInviteNotificationUpdater = (payload, store, viewerId) => {
@@ -47,11 +47,12 @@ const CancelTeamInviteMutation = (environment, invitationId, teamId, onError, on
     variables: {invitationId},
     updater: (store) => {
       const payload = store.getRootField('cancelTeamInvite');
-      cancelTeamInviteInvitationUpdater(payload, store, teamId);
+      cancelTeamInviteInvitationUpdater(payload, store);
       cancelTeamInviteNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      handleRemoveInvitations(invitationId, store, teamId);
+      const invitationProxy = createProxyRecord(store, 'Invitation', {id: invitationId, teamId});
+      handleRemoveInvitations(invitationProxy, store);
     },
     onCompleted,
     onError

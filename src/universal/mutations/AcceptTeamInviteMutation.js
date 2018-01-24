@@ -7,10 +7,16 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment AcceptTeamInviteMutation_teamMember on AcceptTeamInviteNotificationPayload {
+  fragment AcceptTeamInviteMutation_invitation on AcceptTeamInviteNotificationPayload {
     removedInvitation {
       id
-    }
+      teamId
+    } 
+  }
+`;
+
+graphql`
+  fragment AcceptTeamInviteMutation_teamMember on AcceptTeamInviteNotificationPayload {
     teamMember {
       ...CompleteTeamMemberFrag @relay(mask: false)
     }
@@ -53,6 +59,7 @@ const popWelcomeToast = (team, dispatch) => {
 const popJoinedYourTeamToast = (payload, dispatch) => {
   const teamName = getInProxy(payload, 'team', 'name');
   const preferredName = getInProxy(payload, 'teamMember', 'preferredName');
+  if (!preferredName) return;
   dispatch(showInfo({
     autoDismiss: 10,
     title: 'Ahoy, a new crewmate!',
@@ -74,10 +81,12 @@ export const acceptTeamInviteTeamMemberUpdater = (payload, store, viewerId, disp
   const teamMember = payload.getLinkedRecord('teamMember');
   handleAddTeamMembers(teamMember, store);
 
-  const invitationId = getInProxy(payload, 'removedInvitation', 'id');
-  handleRemoveInvitations(invitationId, store, viewerId);
-
   popJoinedYourTeamToast(payload, dispatch);
+};
+
+export const acceptTeamInviteInvitationUpdater = (payload, store) => {
+  const invitation = payload.getLinkedRecord('removedInvitation');
+  handleRemoveInvitations(invitation, store);
 };
 
 const AcceptTeamInviteMutation = (environment, notificationId, dispatch, onError, onCompleted) => {

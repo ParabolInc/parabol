@@ -1,5 +1,4 @@
 import {GraphQLObjectType} from 'graphql';
-import organization from 'server/graphql/models/Organization/organizationMutation';
 import user from 'server/graphql/models/User/userMutation';
 import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
 import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
@@ -59,9 +58,10 @@ import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg';
 import addTeam from 'server/graphql/mutations/addTeam';
 import updateTeamName from 'server/graphql/mutations/updateTeamName';
 import createFirstTeam from 'server/graphql/mutations/createFirstTeam';
+import removeOrgUser from 'server/graphql/mutations/removeOrgUser';
+import createOrgPicturePutUrl from 'server/graphql/mutations/createOrgPicturePutUrl';
 
 const rootFields = Object.assign({},
-  organization,
   user
 );
 
@@ -85,6 +85,7 @@ export default new GraphQLObjectType({
     connectSocket,
     createFirstTeam,
     createGitHubIssue,
+    createOrgPicturePutUrl,
     createProject,
     deleteProject,
     disconnectSocket,
@@ -108,6 +109,7 @@ export default new GraphQLObjectType({
     removeProvider,
     removeSlackChannel,
     removeGitHubRepo,
+    removeOrgUser,
     removeTeamMember,
     requestFacilitator,
     resendTeamInvite,

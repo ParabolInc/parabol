@@ -1,16 +1,29 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {DashModal} from 'universal/components/Dashboard';
-import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
-import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
+import Button from 'universal/components/Button/Button';
+import {DashModal} from 'universal/components/Dashboard';
+import Type from 'universal/components/Type/Type';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const LeaveOrgModal = (props) => {
-  const {closeAfter, closePortal, isClosing, orgId, userId} = props;
+  const {
+    atmosphere,
+    closeAfter,
+    closePortal,
+    isClosing,
+    submitting,
+    submitMutation,
+    onCompleted,
+    onError,
+    orgId,
+    userId
+  } = props;
   const handleClick = () => {
-    const variables = {orgId, userId};
-    cashay.mutate('removeOrgUser', {variables});
+    submitMutation();
+    RemoveOrgUserMutation(atmosphere, orgId, userId, onError, onCompleted);
   };
   const undoStr = 'To undo it, you’ll have to ask another Billing Leader to re-add you';
   return (
@@ -30,18 +43,25 @@ const LeaveOrgModal = (props) => {
         label={'Leave the organization'}
         onClick={handleClick}
         buttonSize="large"
+        waiting={submitting}
       />
     </DashModal>
   );
 };
 
 LeaveOrgModal.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
-  userId: PropTypes.string.isRequired
+  userId: PropTypes.string.isRequired,
+  error: PropTypes.any,
+  submitting: PropTypes.bool,
+  submitMutation: PropTypes.func.isRequired,
+  onCompleted: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired
 };
 
-export default portal({escToClose: true, closeAfter: 100})(LeaveOrgModal);
+export default withAtmosphere(withMutationProps(portal({escToClose: true, closeAfter: 100})(LeaveOrgModal)));

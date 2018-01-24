@@ -1,8 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
-import createEmailPromises from 'server/graphql/models/Invitation/inviteTeamMembers/createEmailPromises';
-import makeInvitationsForDB from 'server/graphql/models/Invitation/inviteTeamMembers/makeInvitationsForDB';
-import makeInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/makeInviteToken';
-import resolveSentEmails from 'server/graphql/models/Invitation/inviteTeamMembers/resolveSentEmails';
+import createEmailPromises from 'server/graphql/mutations/helpers/inviteTeamMembers/createEmailPromises';
+import makeInvitationsForDB from 'server/graphql/mutations/helpers/inviteTeamMembers/makeInvitationsForDB';
+import makeInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/makeInviteToken';
+import resolveSentEmails from 'server/graphql/mutations/helpers/inviteTeamMembers/resolveSentEmails';
 import getPendingInvitations from 'server/safeQueries/getPendingInvitations';
 
 export default async function emailTeamInvitations(invitees, inviter, inviteId) {
