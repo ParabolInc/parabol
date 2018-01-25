@@ -48,6 +48,10 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
       stats: {
         chunks: false,
         colors: true
+      },
+      watchOptions: {
+        poll: true,
+        aggregateTimeout: 300
       }
     }));
     app.use(require('webpack-hot-middleware')(compiler)); // eslint-disable-line import/no-extraneous-dependencies

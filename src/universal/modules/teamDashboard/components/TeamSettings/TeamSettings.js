@@ -1,6 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
@@ -42,75 +42,27 @@ const targetAnchor = {
   horizontal: 'left'
 };
 
-const TeamSettings = (props) => {
-  const {
-    atmosphere,
-    dispatch,
-    styles,
-    submitMutation,
-    submitting,
-    onCompleted,
-    onError,
-    viewer: {team}
-  } = props;
-  const {invitations, orgApprovals, teamName, teamMembers, teamId} = team;
-  const myTeamMember = teamMembers.find((m) => m.isSelf);
-  const {isLead: viewerIsLead, teamMemberId: myTeamMemberId} = myTeamMember;
-  const invitationRowActions = (invitationId) => {
-    const resend = () => {
-      submitMutation();
-      const onResendCompleted = () => {
-        dispatch(showSuccess({
-          title: 'Invitation sent!',
-          message: 'We sent your friend a nice little reminder'
-        }));
-        onCompleted();
-      };
-      ResendTeamInviteMutation(atmosphere, invitationId, onError, onResendCompleted);
-    };
-    const cancel = () => {
-      submitMutation();
-      CancelTeamInviteMutation(atmosphere, invitationId, teamId, onError, onCompleted);
-    };
-    return (
-      <div className={css(styles.actionLinkBlock)}>
-        <div className={css(styles.actionLink)} onClick={resend}>
-          Resend Invitation
-        </div>
-        <div className={css(styles.actionLink)} onClick={cancel}>
-          Cancel Invitation
-        </div>
-      </div>
-    );
+class TeamSettings extends Component {
+  static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    styles: PropTypes.object,
+    viewer: PropTypes.object.isRequired,
+    error: PropTypes.any,
+    submitting: PropTypes.bool,
+    submitMutation: PropTypes.func.isRequired,
+    onCompleted: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired
   };
-  const orgApprovalRowActions = (orgApprovalId) => {
-    const cancel = () => {
-      if (submitting) return;
-      submitMutation();
-      CancelApprovalMutation(atmosphere, orgApprovalId, onError, onCompleted);
-    };
-    const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
-    return (
-      <div className={css(styles.actionLinkBlock)}>
-        <div className={css(styles.actionLink)} onClick={cancel}>
-          {'Cancel Pending Approval'}
-        </div>
-        <span>
-          <Tooltip
-            maxHeight={40}
-            maxWidth={500}
-            originAnchor={originAnchor}
-            targetAnchor={targetAnchor}
-            tip={tip}
-          >
-            <FontAwesome name="question-circle" style={tooltipIconStyle} />
-          </Tooltip>
-        </span>
-      </div>
-    );
-  };
-  const teamMemberRowActions = (teamMember) => {
+  teamMemberRowActions = (teamMember) => {
+    const {
+      styles,
+      viewer: {team}
+    } = this.props;
+    const {teamMembers} = team;
+    const viewerTeamMember = teamMembers.find((m) => m.isSelf);
     const {teamMemberId, preferredName} = teamMember;
+    const {isLead: viewerIsLead, teamMemberId: myTeamMemberId} = viewerTeamMember;
     return (
       <div className={css(styles.actionLinkBlock)}>
         {viewerIsLead && myTeamMemberId !== teamMemberId &&
@@ -140,74 +92,147 @@ const TeamSettings = (props) => {
       </div>
     );
   };
+  orgApprovalRowActions = (orgApprovalId) => {
+    const {
+      atmosphere,
+      styles,
+      submitMutation,
+      submitting,
+      onCompleted,
+      onError
+    } = this.props;
 
-  return (
-    <div className={css(styles.root)}>
-      <Helmet title={`${teamName} Settings | Parabol`} />
-      <div className={css(styles.panels)}>
-        <Panel label="Manage Team">
-          <div className={css(styles.panelBorder)}>
-            <InviteUser
-              dispatch={dispatch}
-              team={team}
-            />
-            {teamMembers.map((teamMember) => {
-              const {teamMemberId} = teamMember;
-              return (
-                <UserRow
-                  key={`teamMemberKey${teamMemberId}`}
-                  actions={teamMemberRowActions(teamMember)}
-                  possibleTeamMember={teamMember}
-                />
-              );
-            })
-            }
-            {invitations.map((invitation) => {
-              const {invitationId} = invitation;
-              return (
-                <UserRow
-                  key={`invitationKey${invitationId}`}
-                  actions={invitationRowActions(invitationId)}
-                  possibleTeamMember={invitation}
-                />
-              );
-            })
-            }
-            {orgApprovals.map((orgApproval) => {
-              const {orgApprovalId} = orgApproval;
-              return (
-                <UserRow
-                  key={`approval${orgApprovalId}`}
-                  actions={orgApprovalRowActions(orgApprovalId)}
-                  possibleTeamMember={orgApproval}
-                />
-              );
-            })}
-          </div>
-        </Panel>
-        {viewerIsLead &&
-        <Panel label="Danger Zone">
-          <div className={css(styles.panelRow)}>
-            <ArchiveTeamContainer team={team} />
-          </div>
-        </Panel>
-        }
+    const cancel = () => {
+      if (submitting) return;
+      submitMutation();
+      CancelApprovalMutation(atmosphere, orgApprovalId, onError, onCompleted);
+    };
+    const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
+    return (
+      <div className={css(styles.actionLinkBlock)}>
+        <div className={css(styles.actionLink)} onClick={cancel}>
+          {'Cancel Pending Approval'}
+        </div>
+        <span>
+          <Tooltip
+            maxHeight={40}
+            maxWidth={500}
+            originAnchor={originAnchor}
+            targetAnchor={targetAnchor}
+            tip={tip}
+          >
+            <FontAwesome name="question-circle" style={tooltipIconStyle} />
+          </Tooltip>
+        </span>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-TeamSettings.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  styles: PropTypes.object,
-  viewer: PropTypes.object.isRequired,
-  error: PropTypes.any,
-  submitting: PropTypes.bool,
-  submitMutation: PropTypes.func.isRequired,
-  onCompleted: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired
-};
+  invitationRowActions(invitationId) {
+    const {
+      atmosphere,
+      dispatch,
+      styles,
+      submitMutation,
+      onCompleted,
+      onError,
+      viewer: {team: {teamId}}
+    } = this.props;
+
+    const resend = () => {
+      submitMutation();
+      const onResendCompleted = () => {
+        dispatch(showSuccess({
+          title: 'Invitation sent!',
+          message: 'We sent your friend a nice little reminder'
+        }));
+        onCompleted();
+      };
+      ResendTeamInviteMutation(atmosphere, invitationId, onError, onResendCompleted);
+    };
+    const cancel = () => {
+      submitMutation();
+      CancelTeamInviteMutation(atmosphere, invitationId, teamId, onError, onCompleted);
+    };
+    return (
+      <div className={css(styles.actionLinkBlock)}>
+        <div className={css(styles.actionLink)} onClick={resend}>
+          Resend Invitation
+        </div>
+        <div className={css(styles.actionLink)} onClick={cancel}>
+          Cancel Invitation
+        </div>
+      </div>
+    );
+  }
+
+  render() {
+    const {
+      dispatch,
+      styles,
+      viewer: {team}
+    } = this.props;
+    const {invitations, orgApprovals, teamName, teamMembers} = team;
+    const viewerTeamMember = teamMembers.find((m) => m.isSelf);
+    // if kicked out, the component might reload before the redirect occurs
+    if (!viewerTeamMember) return null;
+    const {isLead: viewerIsLead} = viewerTeamMember;
+    return (
+      <div className={css(styles.root)}>
+        <Helmet title={`${teamName} Settings | Parabol`} />
+        <div className={css(styles.panels)}>
+          <Panel label="Manage Team">
+            <div className={css(styles.panelBorder)}>
+              <InviteUser
+                dispatch={dispatch}
+                team={team}
+              />
+              {teamMembers.map((teamMember) => {
+                const {teamMemberId} = teamMember;
+                return (
+                  <UserRow
+                    key={`teamMemberKey${teamMemberId}`}
+                    actions={this.teamMemberRowActions(teamMember)}
+                    possibleTeamMember={teamMember}
+                  />
+                );
+              })
+              }
+              {invitations.map((invitation) => {
+                const {invitationId} = invitation;
+                return (
+                  <UserRow
+                    key={`invitationKey${invitationId}`}
+                    actions={this.invitationRowActions(invitationId)}
+                    possibleTeamMember={invitation}
+                  />
+                );
+              })
+              }
+              {orgApprovals.map((orgApproval) => {
+                const {orgApprovalId} = orgApproval;
+                return (
+                  <UserRow
+                    key={`approval${orgApprovalId}`}
+                    actions={this.orgApprovalRowActions(orgApprovalId)}
+                    possibleTeamMember={orgApproval}
+                  />
+                );
+              })}
+            </div>
+          </Panel>
+          {viewerIsLead &&
+          <Panel label="Danger Zone">
+            <div className={css(styles.panelRow)}>
+              <ArchiveTeamContainer team={team} />
+            </div>
+          </Panel>
+          }
+        </div>
+      </div>
+    );
+  }
+}
 
 const styleThunk = () => ({
   root: {
