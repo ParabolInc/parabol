@@ -5,6 +5,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {NOTIFICATION, ORG_APPROVAL, PROJECT, REQUEST_NEW_USER, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
+import removeSoftTeamMember from 'server/graphql/mutations/helpers/removeSoftTeamMember';
 
 export default {
   type: CancelApprovalPayload,
@@ -40,20 +41,7 @@ export default {
           inviteeEmail: email
         })
         .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null),
-      softUpdates: r.table('SoftTeamMember')
-        .getAll(email, {index: 'email'})
-        .filter({teamId})
-        .update({isActive: false}, {returnChanges: true})('changes')(0)('new_val')('id')
-        .default(null)
-        .do((softTeamMemberId) => {
-          return r({
-            softTeamMemberId,
-            softProjectsToArchive: r.table('Project')
-              .getAll(softTeamMemberId, {index: 'assigneeId'})
-              .default([])
-              .coerceTo('array')
-          });
-        })
+      softUpdates: removeSoftTeamMember(email, teamId)
     });
 
     const {softProjectsToArchive, softTeamMemberId} = softUpdates;

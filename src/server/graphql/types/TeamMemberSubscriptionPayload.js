@@ -9,11 +9,13 @@ import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
+import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 
 const types = [
   AcceptTeamInviteNotificationPayload,
   AcceptTeamInviteEmailPayload,
   CancelApprovalPayload,
+  CancelTeamInvitePayload,
   RemoveTeamMemberPayload,
   InviteTeamMembersPayload,
   MeetingCheckInPayload,

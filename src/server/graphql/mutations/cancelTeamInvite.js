@@ -3,7 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NOTIFICATION, TEAM_INVITE} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATION, PROJECT, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
+import removeSoftTeamMember from 'server/graphql/mutations/helpers/removeSoftTeamMember';
+import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
+import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 
 export default {
   name: 'CancelTeamInvite',
@@ -29,7 +32,7 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const {removedTeamInviteNotification} = await r({
+    const {removedTeamInviteNotification, softUpdates} = await r({
       invitation: r.table('Invitation').get(invitationId).update({
         // set expiration to epoch
         tokenExpiration: new Date(0),
@@ -53,9 +56,27 @@ export default {
             })
             .delete({returnChanges: true})('changes')(0)('old_val')
             .default(null);
-        })
+        }),
+      softUpdates: removeSoftTeamMember(email, teamId)
     });
-    const data = {invitationId, removedTeamInviteNotification};
+
+    const {softProjectsToArchive, softTeamMemberId} = softUpdates;
+    const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive);
+    const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
+
+    const data = {invitationId, removedTeamInviteNotification, archivedSoftProjectIds, softTeamMemberId};
+
+    if (archivedSoftProjectIds.length > 0) {
+      const teamMemberUserIds = await r.table('TeamMember')
+        .getAll(teamId, {index: 'temId'})
+        .filter({isNotRemoved: true})('userId')
+        .default([]);
+      teamMemberUserIds.forEach((userId) => {
+        publish(PROJECT, userId, CancelApprovalPayload, data, subOptions);
+      });
+    }
+
+    publish(TEAM_MEMBER, teamId, CancelTeamInvitePayload, data, subOptions);
     publish(INVITATION, teamId, CancelTeamInvitePayload, data, subOptions);
     if (removedTeamInviteNotification) {
       const {userIds: [userId]} = removedTeamInviteNotification;

@@ -1,5 +1,9 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {makeResolveNotificationsForViewer, resolveSoftTeamMembers} from 'server/graphql/resolvers';
+import {
+  makeResolveNotificationsForViewer,
+  resolveArchivedSoftProjects,
+  resolveSoftTeamMembers
+} from 'server/graphql/resolvers';
 import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import OrgApproval from 'server/graphql/types/OrgApproval';
@@ -40,11 +44,7 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
     archivedSoftProjects: {
       type: new GraphQLList(Project),
       description: 'The projects that belonged to the soft team member',
-      resolve: async ({archivedSoftProjectIds}, args, {authToken, dataLoader}) => {
-        const {tms} = authToken;
-        const softProjects = await dataLoader.get('projects').loadMany(archivedSoftProjectIds);
-        return softProjects.filter(({teamId}) => tms.includes(teamId));
-      }
+      resolve: resolveArchivedSoftProjects
     }
   })
 });

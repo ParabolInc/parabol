@@ -129,3 +129,9 @@ export const resolveFilterByTeam = (resolver, getTeamId) => async (source, args,
   const resolvedArray = await resolver(source, args, context);
   return teamIdFilter ? resolvedArray.filter((obj) => getTeamId(obj) === teamIdFilter) : resolvedArray;
 };
+
+export const resolveArchivedSoftProjects = async ({archivedSoftProjectIds}, args, {authToken, dataLoader}) => {
+  const {tms} = authToken;
+  const softProjects = await dataLoader.get('projects').loadMany(archivedSoftProjectIds);
+  return softProjects.filter(({teamId}) => tms.includes(teamId));
+};

@@ -7,6 +7,7 @@ import {endMeetingProjectUpdater} from 'universal/mutations/EndMeetingMutation';
 import {removeOrgUserProjectUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 import {cancelApprovalProjectUpdater} from 'universal/mutations/CancelApprovalMutation';
 import {rejectOrgApprovalProjectUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
+import {cancelTeamInviteProjectUpdater} from 'universal/mutations/CancelTeamInviteMutation';
 
 const subscription = graphql`
   subscription ProjectSubscription {
@@ -14,6 +15,7 @@ const subscription = graphql`
       __typename
       ...RemoveTeamMemberMutation_project
       ...CancelApprovalMutation_project
+      ...CancelTeamInviteMutation_project
       ...CreateGitHubIssueMutation_project,
       ...CreateProjectMutation_project,
       ...DeleteProjectMutation_project,
@@ -40,6 +42,9 @@ const ProjectSubscription = (environment, queryVariables, {dispatch, history, lo
           break;
         case 'CancelApprovalPayload':
           cancelApprovalProjectUpdater(payload, store, viewerId);
+          break;
+        case 'CancelTeamInvitePayload':
+          cancelTeamInviteProjectUpdater(payload, store, viewerId);
           break;
         case 'CreateProjectPayload':
           createProjectProjectUpdater(payload, store, viewerId, false);
