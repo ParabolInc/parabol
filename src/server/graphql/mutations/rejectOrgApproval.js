@@ -7,7 +7,7 @@ import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authoriza
 import publish from 'server/utils/publish';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL} from 'universal/utils/constants';
+import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, PROJECT, TEAM_MEMBER} from 'universal/utils/constants';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -46,7 +46,7 @@ export default {
     const deniedByName = await r.table('User').get(viewerId)('preferredName').default('A Billing Leader');
 
     // TODO include mutatorId in publishes once we're completely on Relay
-    const {removedOrgApprovals, removedRequestNotifications} =
+    const {removedOrgApprovals, removedRequestNotifications, softTeamMemberIds, archivedSoftProjectIds} =
       await removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: viewerId});
 
     const deniedNotifications = removedRequestNotifications.map(({inviterUserId}) => ({
@@ -64,16 +64,28 @@ export default {
     const data = {
       deniedNotificationIds: deniedNotifications.map(({id}) => id),
       removedOrgApprovalIds,
-      removedRequestNotifications
+      removedRequestNotifications,
+      softTeamMemberIds,
+      archivedSoftProjectIds
     };
 
-    // publish the removed org approval to the team
     const teamIds = Array.from(new Set(removedOrgApprovals.map(({teamId}) => teamId)));
     teamIds.forEach((teamId) => {
       const teamData = {...data, teamId};
       publish(ORG_APPROVAL, teamId, RejectOrgApprovalPayload, teamData, subOptions);
+      publish(TEAM_MEMBER, teamId, RejectOrgApprovalPayload, teamData, subOptions);
     });
 
+    // publish the archived soft projects
+    if (archivedSoftProjectIds.length > 0) {
+      const userIdsOnTeams = await r.table('TeamMember')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isNotRemoved: true})('userId')
+        .distinct();
+      userIdsOnTeams.forEach((userId) => {
+        publish(PROJECT, userId, RejectOrgApprovalPayload, data, subOptions)
+      })
+    }
     // publish all notifications
     removedRequestNotifications.concat(deniedNotifications).forEach((notification) => {
       const {userIds} = notification;

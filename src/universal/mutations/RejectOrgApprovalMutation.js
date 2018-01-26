@@ -4,6 +4,8 @@ import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifi
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 
 graphql`
   fragment RejectOrgApprovalMutation_orgApproval on RejectOrgApprovalPayload {
@@ -26,6 +28,25 @@ graphql`
   }
 `;
 
+graphql`
+  fragment RejectOrgApprovalMutation_teamMember on RejectOrgApprovalPayload {
+    removedSoftTeamMembers {
+      id
+      teamId
+    }
+  }
+`;
+
+graphql`
+  fragment RejectOrgApprovalMutation_project on RejectOrgApprovalPayload {
+    archivedSoftProjects {
+      id
+      content
+      tags
+      teamId
+    }
+  }
+`;
 const mutation = graphql`
   mutation RejectOrgApprovalMutation($notificationId: ID!, $reason: String!) {
     rejectOrgApproval(notificationId: $notificationId, reason: $reason) {
@@ -70,6 +91,16 @@ export const rejectOrgApprovalNotificationUpdater = (payload, store, viewerId, o
   }
 };
 
+export const rejectOrgApprovalTeamMemberUpdater = (payload, store) => {
+  const removedSoftTeamMembers = payload.getLinkedRecords('removedSoftTeamMembers');
+  handleRemoveSoftTeamMembers(removedSoftTeamMembers, store);
+};
+
+export const rejectOrgApprovalProjectUpdater = (payload, store, viewerId) => {
+  const archivedSoftProjects = payload.getLinkedRecords('archivedSoftProjects');
+  handleUpsertProjects(archivedSoftProjects, store, viewerId);
+};
+
 const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
@@ -79,6 +110,8 @@ const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted)
       const payload = store.getRootField('rejectOrgApproval');
       rejectOrgApprovalOrgApprovalUpdater(payload, store);
       rejectOrgApprovalNotificationUpdater(payload, store, viewerId);
+      rejectOrgApprovalTeamMemberUpdater(payload, store);
+      rejectOrgApprovalProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {notificationId} = variables;
