@@ -8,7 +8,7 @@ const handleRemoveSoftTeamMember = (softTeamMember, store) => {
   if (!softTeamMemberProxy) return;
   const teamId = softTeamMember.getValue('teamId');
   const team = store.get(teamId);
-  safeRemoveNodeFromArray(softTeamMemberId, team, 'assignees', {storageKeyArgs: {sortBy: 'preferredName'}});
+  safeRemoveNodeFromArray(softTeamMemberId, team, 'softTeamMembers');
 };
 
 const handleRemoveSoftTeamMembers = pluralizeHandler(handleRemoveSoftTeamMember);

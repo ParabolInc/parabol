@@ -95,6 +95,16 @@ export default class RethinkDataLoader {
       primeStandardLoader(this.projects, projects);
       return userIds.map(() => projects);
     }, this.dataloaderOptions);
+    this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink();
+      const softTeamMembers = await r.table('SoftTeamMember')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.softTeamMembers, softTeamMembers);
+      return teamIds.map((teamId) => {
+        return softTeamMembers.filter((softTeamMember) => softTeamMember.teamId === teamId);
+      });
+    }, this.dataloaderOptions);
     this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
       const teamMembers = await r.table('TeamMember')

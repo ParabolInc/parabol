@@ -23,6 +23,7 @@ import TierEnum from 'server/graphql/types/TierEnum';
 import {requireTeamMember} from 'server/utils/authorization';
 import {PENDING} from 'server/utils/serverConstants';
 import {resolveOrganization} from 'server/graphql/resolvers';
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -150,6 +151,15 @@ const Team = new GraphQLObjectType({
         requireTeamMember(authToken, teamId);
         const projects = await dataLoader.get('projectsByTeamId').load(teamId);
         return connectionFromProjects(projects);
+      }
+    },
+    softTeamMembers: {
+      type: new GraphQLList(SoftTeamMember),
+      description: 'All the soft team members actively associated with the team',
+      async resolve({id: teamId}, {dataLoader}) {
+        const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId);
+        softTeamMembers.sort((a, b) => a.preferredName > b.preferredName ? 1 : -1);
+        return softTeamMembers;
       }
     },
     teamMembers: {

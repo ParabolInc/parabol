@@ -62,11 +62,14 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
     newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter)
   });
 
+  const {newSoftTeamMembers: inviteeSoftTeamMemers} = teamInvites;
+  const {newSoftTeamMembers: approvalSoftTeamMemers} = newPendingApprovals;
   return {
     ...newPendingApprovals,
     ...removedApprovalsAndNotifications,
     ...teamInvites,
-    reactivations
+    reactivations,
+    newSoftTeamMembers: inviteeSoftTeamMemers.concat(approvalSoftTeamMemers)
   };
 };
 

@@ -37,6 +37,7 @@ export default {
       removedRequestNotifications,
       requestNotifications,
       newInvitations,
+      newSoftTeamMembers,
       teamInviteNotifications: inviteNotifications
     } = await inviteTeamMembers(invitees, teamId, viewerId, subOptions);
     const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId);
@@ -53,7 +54,8 @@ export default {
       removedRequestNotifications,
       requestNotifications,
       invitationIds,
-      inviteNotifications
+      inviteNotifications,
+      softTeamMemberIds: newSoftTeamMembers.map(({id}) => id)
     };
 
     // Tell each invitee
@@ -81,7 +83,7 @@ export default {
     if (invitationIds.length) {
       publish(INVITATION, teamId, InviteTeamMembersPayload, data, subOptions);
     }
-    if (reactivatedTeamMemberIds.length) {
+    if (reactivatedTeamMemberIds.length || newSoftTeamMembers.length) {
       publish(TEAM_MEMBER, teamId, InviteTeamMembersPayload, data, subOptions);
     }
     return data;

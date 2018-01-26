@@ -4,6 +4,7 @@ import {APPROVED} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {TEAM_INVITE} from 'universal/utils/constants';
 import promiseAllObj from 'universal/utils/promiseAllObj';
+import makeNewSoftTeamMembers from 'server/graphql/mutations/helpers/makeNewSoftTeamMembers';
 
 const maybeAutoApproveToOrg = (invitees, inviter) => {
   const r = getRethink();
@@ -57,8 +58,12 @@ const sendTeamInvitations = async (invitees, inviter, inviteId) => {
     autoApprove: maybeAutoApproveToOrg(invitees, inviter)
   });
 
+  const inviteeEmails = invitees.map(({email}) => email);
+  const newSoftTeamMembers = await makeNewSoftTeamMembers(inviteeEmails, teamId);
+
   return {
     ...upsertedInvitations,
+    newSoftTeamMembers,
     teamInviteNotifications
   };
 };

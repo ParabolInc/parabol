@@ -7,6 +7,7 @@ exports.up = async (r) => {
   try {
     await Promise.all([
       r.table('SoftTeamMember').indexCreate('email'),
+      r.table('SoftTeamMember').indexCreate('teamId'),
       r.table('TeamMember').indexDrop('teamMemberId'),
       r.table('TeamMember').indexCreate('assigneeId')
     ]);

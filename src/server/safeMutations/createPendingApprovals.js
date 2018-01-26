@@ -2,6 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
+import makeNewSoftTeamMembers from 'server/graphql/mutations/helpers/makeNewSoftTeamMembers';
 
 export default async function createPendingApprovals(outOfOrgEmails, inviteSender) {
   if (outOfOrgEmails.length === 0) return {requestNotifications: [], orgApprovalIds: []};
@@ -45,8 +46,11 @@ export default async function createPendingApprovals(outOfOrgEmails, inviteSende
     approvals: r.table('OrgApproval').insert(pendingApprovals)
   });
 
+  const newSoftTeamMembers = await makeNewSoftTeamMembers(outOfOrgEmails, teamId);
+
   return {
     requestNotifications,
+    newSoftTeamMembers,
     orgApprovalIds: pendingApprovals.map(({id}) => id),
     billingLeaderUserIds: userIds
   };

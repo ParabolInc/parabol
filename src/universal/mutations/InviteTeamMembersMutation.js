@@ -10,6 +10,7 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import handleAddSoftTeamMembers from 'universal/mutations/handlers/handleAddSoftTeamMembers';
 
 graphql`
   fragment InviteTeamMembersMutation_invitation on InviteTeamMembersPayload {
@@ -61,6 +62,12 @@ graphql`
     }
     team {
       name
+    }
+    newSoftTeamMembers {
+      id
+      email
+      preferredName
+      teamId
     }
   }
 `;
@@ -204,6 +211,8 @@ export const inviteTeamMembersTeamUpdater = (payload, store, viewerId) => {
 export const inviteTeamMembersTeamMemberUpdater = (payload, store, dispatch, isMutator) => {
   const reactivatedTeamMembers = payload.getLinkedRecords('reactivatedTeamMembers');
   handleAddTeamMembers(reactivatedTeamMembers, store);
+  const newSoftTeamMembers = payload.getLinkedRecords('newSoftTeamMembers');
+  handleAddSoftTeamMembers(newSoftTeamMembers, store);
   if (isMutator) {
     popReactivationToast(reactivatedTeamMembers, dispatch);
   } else {
