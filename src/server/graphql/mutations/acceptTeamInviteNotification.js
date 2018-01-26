@@ -5,7 +5,7 @@ import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NEW_AUTH_TOKEN, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {INVITATION, NEW_AUTH_TOKEN, PROJECT, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
@@ -29,15 +29,32 @@ export default {
 
     // RESOLUTION
     const {inviteeEmail, teamId} = notification;
-    const {removedNotification, removedInvitationId: invitationId} = await acceptTeamInvite(teamId, authToken, inviteeEmail);
+    const {
+      hardenedProjects,
+      removedNotification,
+      removedInvitationId: invitationId,
+      removedSoftTeamMember
+    } = await acceptTeamInvite(teamId, authToken, inviteeEmail);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
     const data = {
+      userId: viewerId,
       teamId,
       teamMemberId,
       removedNotification,
       invitationId,
-      userId: viewerId
+      softTeamMemberId: removedSoftTeamMember.id,
+      projectIds: hardenedProjects.map(({id}) => id)
     };
+
+    if (hardenedProjects.length > 0) {
+      const userIdsForTeam = await r.table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isNotRemoved: true})('userId')
+        .default([]);
+      userIdsForTeam.forEach((userId) => {
+        publish(PROJECT, userId, AcceptTeamInviteNotificationPayload, data, subOptions);
+      });
+    }
 
     // Send the new team member a welcome & a new token
     const tms = authToken.tms.concat(teamId);

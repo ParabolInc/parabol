@@ -9,11 +9,13 @@ import {cancelApprovalProjectUpdater} from 'universal/mutations/CancelApprovalMu
 import {rejectOrgApprovalProjectUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
 import {cancelTeamInviteProjectUpdater} from 'universal/mutations/CancelTeamInviteMutation';
 import {inviteTeamMembersProjectUpdater} from 'universal/mutations/InviteTeamMembersMutation';
+import {acceptTeamInviteProjectUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
 
 const subscription = graphql`
   subscription ProjectSubscription {
     projectSubscription {
       __typename
+      ...AcceptTeamInviteMutation_project
       ...RemoveTeamMemberMutation_project
       ...CancelApprovalMutation_project
       ...CancelTeamInviteMutation_project
@@ -39,6 +41,10 @@ const ProjectSubscription = (environment, queryVariables, {dispatch, history, lo
       const payload = store.getRootField('projectSubscription');
       const type = payload.getValue('__typename');
       switch (type) {
+        case 'AcceptTeamInviteNotificationPayload':
+        case 'AcceptTeamInviteEmailPayload':
+          acceptTeamInviteProjectUpdater(payload, store, viewerId);
+          break;
         case 'RemoveTeamMemberOtherPayload':
           removeTeamMemberProjectsUpdater(payload, store, viewerId);
           break;

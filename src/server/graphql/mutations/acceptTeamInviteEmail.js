@@ -9,7 +9,7 @@ import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import {NEW_AUTH_TOKEN, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, PROJECT, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
@@ -96,7 +96,12 @@ export default {
 
     // RESOLUTION
     const viewerId = getUserId(authToken);
-    const {removedNotification, removedInvitationId: invitationId} = await acceptTeamInvite(teamId, authToken, email);
+    const {
+      hardenedProjects,
+      removedNotification,
+      removedInvitationId: invitationId,
+      removedSoftTeamMember
+    } = await acceptTeamInvite(teamId, authToken, email);
     const oldTMS = authToken.tms || [];
     const tms = oldTMS.concat(teamId);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
@@ -107,9 +112,20 @@ export default {
       teamId,
       teamMemberId,
       removedNotification,
-      invitationId
+      invitationId,
+      softTeamMemberId: removedSoftTeamMember.id,
+      projectIds: hardenedProjects.map(({id}) => id)
     };
 
+    if (hardenedProjects.length > 0) {
+      const userIdsForTeam = await r.table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isNotRemoved: true})('userId')
+        .default([]);
+      userIdsForTeam.forEach((userId) => {
+        publish(PROJECT, userId, AcceptTeamInviteEmailPayload, data, subOptions);
+      });
+    }
     // Send the new team member a welcome & a new token
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});

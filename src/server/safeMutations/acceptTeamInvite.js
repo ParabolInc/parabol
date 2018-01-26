@@ -5,6 +5,7 @@ import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember';
 import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
 import {getUserId} from 'server/utils/authorization';
 import {ADD_USER} from 'server/utils/serverConstants';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const acceptTeamInvite = async (teamId, authToken, email) => {
   const r = getRethink();
@@ -16,7 +17,7 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
   });
   const userOrgs = user.userOrgs || [];
   const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
-  const {removedInvitationId, removedNotification} = await r({
+  const {removedInvitationId, removedNotification, removedSoftTeamMember} = await r({
     // add the team to the user doc
     userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
     teamMember: insertNewTeamMember(userId, teamId),
@@ -32,8 +33,18 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
       }, {returnChanges: true})('changes')(0)('new_val')('id').default(null),
     removedNotification: getTeamInviteNotifications(orgId, teamId, [email])
       .delete({returnChanges: true})('changes')(0)('old_val')
+      .default(null),
+    removedSoftTeamMember: r.table('SoftTeamMember')
+      .getAll(email, {index: 'email'})
+      .filter({teamId})
+      .update({isActive: false}, {returnChanges: true})('changes')('0')('new_val')
       .default(null)
   });
+  const teamMemberId = toTeamMemberId(teamId, userId);
+
+  const hardenedProjects = await r.table('Project')
+    .getAll(removedSoftTeamMember, {index: 'assigneeId'})
+    .update({assigneeId: teamMemberId}, {returnChanges: true})('changes')('new_val');
 
   if (!userInOrg) {
     await adjustUserCount(userId, orgId, ADD_USER);
@@ -41,7 +52,9 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
 
   return {
     removedNotification,
-    removedInvitationId
+    removedInvitationId,
+    removedSoftTeamMember,
+    hardenedProjects
   };
 };
 

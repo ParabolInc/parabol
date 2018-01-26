@@ -14,6 +14,10 @@ graphql`
     team {
       name
     }
+    removedSoftTeamMember {
+      id
+      teamId
+    }
   }
 `;
 
@@ -25,6 +29,13 @@ graphql`
   }
 `;
 
+graphql`
+  fragment AcceptTeamInviteMutation_project on AcceptTeamInviteEmailPayload {
+    hardenedProjects {
+      ...CompleteProjectFrag @relay(mask: false)
+    }
+  }
+`;
 
 graphql`
   fragment AcceptTeamInviteEmailMutation_team on AcceptTeamInviteEmailPayload {
