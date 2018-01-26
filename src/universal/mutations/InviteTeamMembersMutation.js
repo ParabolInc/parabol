@@ -11,6 +11,7 @@ import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveO
 import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleAddSoftTeamMembers from 'universal/mutations/handlers/handleAddSoftTeamMembers';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 
 graphql`
   fragment InviteTeamMembersMutation_invitation on InviteTeamMembersPayload {
@@ -72,6 +73,17 @@ graphql`
   }
 `;
 
+graphql`
+  fragment InviteTeamMembersMutation_project on InviteTeamMembersPayload {
+    unarchivedSoftProjects {
+      id
+      content
+      tags
+      teamId
+    }
+  }
+`;
+
 
 const mutation = graphql`
   mutation InviteTeamMembersMutation($teamId: ID!, $invitees: [Invitee!]!) {
@@ -80,9 +92,15 @@ const mutation = graphql`
       ...InviteTeamMembersMutation_notification @relay(mask:false)
       ...InviteTeamMembersMutation_orgApproval @relay(mask: false)
       ...InviteTeamMembersMutation_teamMember @relay(mask: false)
+      ...InviteTeamMembersMutation_project @relay(mask: false)
     }
   }
 `;
+
+export const inviteTeamMembersProjectUpdater = (payload, store, viewerId) => {
+  const unarchivedSoftProjects = payload.getLinkedRecords('unarchivedSoftProjects');
+  handleUpsertProjects(unarchivedSoftProjects, store, viewerId);
+};
 
 const popInvitationToast = (payload, dispatch) => {
   const invitationsSent = payload.getLinkedRecords('invitationsSent');

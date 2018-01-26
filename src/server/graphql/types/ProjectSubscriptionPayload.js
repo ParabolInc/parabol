@@ -10,6 +10,7 @@ import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
+import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 
 const types = [
   CancelApprovalPayload,
@@ -19,6 +20,7 @@ const types = [
   DeleteProjectPayload,
   EditProjectPayload,
   EndMeetingPayload,
+  InviteTeamMembersPayload,
   RejectOrgApprovalPayload,
   RemoveOrgUserPayload,
   RemoveTeamMemberPayload,

@@ -4,8 +4,9 @@ import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayl
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NOTIFICATION, ORG_APPROVAL, TEAM_MEMBER} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATION, ORG_APPROVAL, PROJECT, TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import getRethink from 'server/database/rethinkDriver';
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -22,6 +23,7 @@ export default {
     }
   },
   async resolve(source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = getRethink();
     const operationId = dataLoader.share();
     // AUTH
     await requireOrgLeaderOrTeamMember(authToken, teamId);
@@ -38,12 +40,15 @@ export default {
       requestNotifications,
       newInvitations,
       newSoftTeamMembers,
-      teamInviteNotifications: inviteNotifications
+      teamInviteNotifications: inviteNotifications,
+      unarchivedSoftProjects
     } = await inviteTeamMembers(invitees, teamId, viewerId, subOptions);
     const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId);
     const reactivationNotificationIds = reactivations.map(({notificationId}) => notificationId);
     const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
     const invitationIds = newInvitations.map(({id}) => id);
+    const unarchivedSoftProjectIds = unarchivedSoftProjects.map(({id}) => id);
+    const softTeamMemberIds = newSoftTeamMembers.map(({id}) => id);
 
     const data = {
       orgApprovalIds,
@@ -55,7 +60,8 @@ export default {
       requestNotifications,
       invitationIds,
       inviteNotifications,
-      softTeamMemberIds: newSoftTeamMembers.map(({id}) => id)
+      softTeamMemberIds,
+      projectIds: unarchivedSoftProjectIds
     };
 
     // Tell each invitee
@@ -86,6 +92,17 @@ export default {
     if (reactivatedTeamMemberIds.length || newSoftTeamMembers.length) {
       publish(TEAM_MEMBER, teamId, InviteTeamMembersPayload, data, subOptions);
     }
+
+    if (unarchivedSoftProjects.length > 0) {
+      const teamIds = Array.from(new Set(unarchivedSoftProjects.map((p) => p.teamId)));
+      const userIdsOnTeam = await r.table('TeamMember')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isNotRemoved: true})('userId');
+      userIdsOnTeam.forEach((userId) => {
+        publish(PROJECT, userId, InviteTeamMembersPayload, data, subOptions);
+      });
+    }
+
     return data;
   }
 };

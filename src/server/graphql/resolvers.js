@@ -74,7 +74,8 @@ export const resolveProjects = async ({projectIds}, args, {authToken, dataLoader
   const projects = await dataLoader.get('projects').loadMany(projectIds);
   const {userId} = projects[0];
   const isViewer = userId === getUserId(authToken);
-  return isViewer ? projects : nullIfEmpty(projects.filter((p) => !p.tags.includes('private')));
+  const teamProjects = projects.filter(({teamId}) => authToken.tms.includes(teamId));
+  return isViewer ? teamProjects : nullIfEmpty(teamProjects.filter((p) => !p.tags.includes('private')));
 };
 
 export const resolveSoftTeamMember = async ({softTeamMemberId, softTeamMember}, args, {authToken, dataLoader}) => {

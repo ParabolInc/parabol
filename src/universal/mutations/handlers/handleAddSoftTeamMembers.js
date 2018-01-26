@@ -6,9 +6,8 @@ const handleAddSoftTeamMember = (softTeamMember, store) => {
   if (!softTeamMember) return;
   const teamId = getInProxy(softTeamMember, 'teamId');
   const team = store.get(teamId);
-  addNodeToArray(softTeamMember, team, 'softTeamMembers', 'preferredName'
+  addNodeToArray(softTeamMember, team, 'softTeamMembers', 'preferredName');
 };
-)
-}
+
 const handleAddSoftTeamMembers = pluralizeHandler(handleAddSoftTeamMember);
 export default handleAddSoftTeamMembers;
