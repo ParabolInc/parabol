@@ -130,7 +130,6 @@
     "body-parser": "1.17.2",
     "bull": "^2.2.5",
     "camel-case": "^3.0.0",
-    "cashay": "^0.24.0",
     "cheerio": "^0.22.0",
     "compression": "^1.7.0",
     "cors": "^2.8.4",
@@ -215,7 +214,7 @@
     "webpack-s3-plugin": "^0.9.2"
   },
   "engines": {
-    "node": "^8.5.0",
+    "node": "^8.0.0 || ^9.4.0",
     "yarn": "^1.0.1"
   },
   "jest": {

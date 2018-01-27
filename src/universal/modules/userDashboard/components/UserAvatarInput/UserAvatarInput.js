@@ -21,11 +21,10 @@ const uploadPicture = async (atmosphere, pictureFile) => {
     contentLength: pictureFile.size
   };
 
-  const onError = (err) => {
-    throw new Error(JSON.stringify(err));
-  };
-
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    const onError = (err) => {
+      reject(JSON.stringify(err));
+    };
     const onCompleted = async (res) => {
       const {createUserPicturePutUrl: {url}} = res;
       const pathname = await sendAssetToS3(pictureFile, url);
