@@ -52,6 +52,7 @@ export default {
       content: validNewProject.content,
       createdAt: now,
       createdBy: viewerId,
+      isSoftProject: false,
       sortOrder: validNewProject.sortOrder,
       status: validNewProject.status,
       tags,

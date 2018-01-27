@@ -13,7 +13,6 @@ graphql`
     sortOrder
     status
     tags
-    teamMemberId
     updatedAt
     userId
     teamId

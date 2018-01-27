@@ -35,7 +35,9 @@ graphql`
         status
         tags
         assignee {
-          picture
+          ...on TeamMember {
+            picture
+          }
           preferredName
         }
       }

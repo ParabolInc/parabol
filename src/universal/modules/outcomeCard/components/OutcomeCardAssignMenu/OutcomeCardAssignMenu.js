@@ -6,6 +6,7 @@ import {MenuItem} from 'universal/modules/menu';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
+import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftTeamMember';
 
 const OutcomeCardAssignMenu = (props) => {
   const {
@@ -13,7 +14,7 @@ const OutcomeCardAssignMenu = (props) => {
     area,
     closePortal,
     project: {projectId, assignee: {ownerId}},
-    viewer: {team: {teamMembers}}
+    viewer: {team: {softTeamMembers, teamMembers}}
   } = props;
 
   const handleProjectUpdate = (newOwner) => {
@@ -30,26 +31,24 @@ const OutcomeCardAssignMenu = (props) => {
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
 
-  const itemFactory = () => {
-    return teamMembers
-      .filter((teamMember) => teamMember.id !== ownerId)
-      .map((teamMember) => {
-        return (
-          <MenuItem
-            key={teamMember.id}
-            avatar={teamMember.picture}
-            isActive={ownerId === teamMember.id}
-            label={teamMember.preferredName}
-            onClick={() => handleProjectUpdate(teamMember.id)}
-            closePortal={closePortal}
-          />
-        );
-      });
-  };
-
   return (
     <div>
-      {itemFactory()}
+      {teamMembers
+        .filter((teamMember) => teamMember.id !== ownerId)
+        .concat(softTeamMembers)
+        .map((teamMember) => {
+          return (
+            <MenuItem
+              key={teamMember.id}
+              avatar={teamMember.picture}
+              isActive={ownerId === teamMember.id}
+              label={teamMember.preferredName}
+              onClick={() => handleProjectUpdate(teamMember.id)}
+              closePortal={closePortal}
+            />
+          );
+        })}
+      <AddSoftTeamMember />
     </div>
   );
 };
@@ -70,6 +69,10 @@ export default createFragmentContainer(
         teamMembers(sortBy: "preferredName") {
           id
           picture
+          preferredName
+        }
+        softTeamMembers {
+          id
           preferredName
         }
       }

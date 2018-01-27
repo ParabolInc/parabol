@@ -38,7 +38,7 @@ class NullableProject extends Component {
   render() {
     const {area, handleAddProject, hasDragStyles, isAgenda, myUserId, project, isDragging} = this.props;
     const {contentState} = this.state;
-    const {createdBy, teamMember: {preferredName}} = project;
+    const {createdBy, assignee: {preferredName}} = project;
     const showOutcome = contentState.hasText() || createdBy === myUserId;
     return showOutcome ?
       <OutcomeCardContainer

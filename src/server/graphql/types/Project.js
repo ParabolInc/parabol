@@ -1,5 +1,10 @@
 import {
-  GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType,
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
   GraphQLString
 } from 'graphql';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
@@ -9,7 +14,6 @@ import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 import ProjectEditorDetails from 'server/graphql/types/ProjectEditorDetails';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 import Team from 'server/graphql/types/Team';
-import TeamMember from 'server/graphql/types/TeamMember';
 import Assignee from 'server/graphql/types/Assignee';
 
 const Project = new GraphQLObjectType({

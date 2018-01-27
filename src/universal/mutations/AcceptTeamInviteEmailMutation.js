@@ -30,7 +30,7 @@ graphql`
 `;
 
 graphql`
-  fragment AcceptTeamInviteMutation_project on AcceptTeamInviteEmailPayload {
+  fragment AcceptTeamInviteEmailMutation_project on AcceptTeamInviteEmailPayload {
     hardenedProjects {
       ...CompleteProjectFrag @relay(mask: false)
     }

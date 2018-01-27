@@ -29,7 +29,7 @@ class MeetingUpdates extends Component {
   filterProjects(props) {
     const {localPhaseItem, setUpdateUserHasProjects, viewer: {projects, team: {teamMembers}}} = props;
     const currentTeamMember = teamMembers[localPhaseItem - 1];
-    const edges = projects.edges.filter(({node}) => node.teamMember.id === currentTeamMember.id);
+    const edges = projects.edges.filter(({node}) => node.assignee.id === currentTeamMember.id);
     this.setState({
       projects: {edges}
     });
@@ -128,7 +128,7 @@ export default createFragmentContainer(
             id
             status
             sortOrder
-            teamMember {
+            assignee {
               id
             }
             ...DraggableProject_project

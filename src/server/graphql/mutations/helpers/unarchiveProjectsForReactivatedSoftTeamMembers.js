@@ -1,5 +1,6 @@
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
 import getRethink from 'server/database/rethinkDriver';
+import ms from 'ms';
 
 const UNARCHIVE_PROJECT_THRESHOLD = ms('60d');
 

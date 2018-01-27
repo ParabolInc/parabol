@@ -324,7 +324,9 @@ export default createFragmentContainer(
       projectId: id
       content
       assignee {
-        picture
+        ...on TeamMember {
+          picture
+        }
         preferredName
       }
       integration {

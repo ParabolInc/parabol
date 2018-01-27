@@ -13,6 +13,7 @@ export default function makeProjectSchema() {
     // status may be empty eg unarchive card
       .test((str) => str && !columnArray.includes(str) && 'That isn’t a status!'),
     teamId: id,
+    userId: id,
     sortOrder: (value) => value.float(),
     assigneeId: id,
     isSoftProject: (value) => value.boolean()

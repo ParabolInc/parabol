@@ -21,7 +21,7 @@ export const assigneeInterfaceFields = {
 const Assignee = new GraphQLInterfaceType({
   name: 'Assignee',
   fields: () => assigneeInterfaceFields,
-  resolveType: (value) => getIsSoftTeamMember(value.assigneeId) ? SoftTeamMember : TeamMember
+  resolveType: (value) => getIsSoftTeamMember(value.id) ? SoftTeamMember : TeamMember
 });
 
 export default Assignee;
