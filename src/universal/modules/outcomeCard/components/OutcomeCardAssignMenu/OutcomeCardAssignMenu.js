@@ -4,9 +4,8 @@ import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {MenuItem} from 'universal/modules/menu';
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
 import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftTeamMember';
+import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 
 const OutcomeCardAssignMenu = (props) => {
   const {
@@ -14,19 +13,16 @@ const OutcomeCardAssignMenu = (props) => {
     area,
     closePortal,
     project: {projectId, assignee: {ownerId}},
-    viewer: {team: {teamId, softTeamMembers, teamMembers}}
+    viewer: {team}
   } = props;
-
+  const {softTeamMembers, teamMembers} = team;
   const handleProjectUpdate = (newOwner) => {
     if (newOwner === ownerId) {
       return;
     }
-    const {userId} = fromTeamMemberId(newOwner);
     const updatedProject = {
       id: projectId,
-      assigneeId: newOwner,
-      isSoftProject: getIsSoftTeamMember(newOwner),
-      userId
+      assigneeId: newOwner
     };
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
@@ -40,7 +36,7 @@ const OutcomeCardAssignMenu = (props) => {
           return (
             <MenuItem
               key={teamMember.id}
-              avatar={teamMember.picture}
+              avatar={teamMember.picture || avatarUser}
               isActive={ownerId === teamMember.id}
               label={teamMember.preferredName}
               onClick={() => handleProjectUpdate(teamMember.id)}
@@ -48,7 +44,7 @@ const OutcomeCardAssignMenu = (props) => {
             />
           );
         })}
-      <AddSoftTeamMember teamId={teamId} />
+      <AddSoftTeamMember area={area} closePortal={closePortal} projectId={projectId} team={team} />
     </div>
   );
 };
@@ -76,6 +72,7 @@ export default createFragmentContainer(
           id
           preferredName
         }
+        ...AddSoftTeamMember_team
       }
     }
     fragment OutcomeCardAssignMenu_project on Project {

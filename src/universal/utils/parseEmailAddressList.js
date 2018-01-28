@@ -2,7 +2,6 @@ import emailAddresses from 'email-addresses';
 
 const parseEmailAddressList = (rawStr = '') => {
   // this breaks RFC5322 standards, but people are not standard :-(
-  window.raw = rawStr;
   const commaDelimStr = rawStr
     // replace line breaks & semi colons with commas
     .replace(/(?:\r\n|\r|\n|;)/g, ',')

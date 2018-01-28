@@ -15,7 +15,6 @@ export default function makeProjectSchema() {
     teamId: id,
     userId: id,
     sortOrder: (value) => value.float(),
-    assigneeId: id,
-    isSoftProject: (value) => value.boolean()
+    assigneeId: id
   });
 }

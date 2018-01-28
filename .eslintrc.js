@@ -22,6 +22,7 @@ module.exports = {
       "always"
     ],
     "babel/generator-star-spacing": OFF,
+    "babel/object-curly-spacing": ["error", "never"],
     "global-require": OFF,
     "import/default": OFF,
     "import/extensions": [
@@ -69,7 +70,6 @@ module.exports = {
     "no-unused-expressions": [ERROR, {
       "allowTaggedTemplates": true
     }],
-    "object-curly-spacing": ["error", "never"],
     "react/forbid-prop-types": OFF,
     "react/jsx-filename-extension": OFF,
     "react/jsx-space-before-closing": OFF,

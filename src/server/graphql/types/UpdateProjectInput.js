@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql';
+import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 
 const UpdateProjectInput = new GraphQLInputObjectType({
@@ -11,9 +11,6 @@ const UpdateProjectInput = new GraphQLInputObjectType({
     content: {type: GraphQLString},
     sortOrder: {type: GraphQLFloat},
     status: {type: ProjectStatusEnum},
-    isSoftProject: {
-      type: GraphQLBoolean
-    },
     assigneeId: {
       type: GraphQLID,
       description: 'The teamMemberId or softTeamMemberId'

@@ -3,52 +3,115 @@ import React, {Component} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import {textOverflow} from 'universal/styles/helpers';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {connect} from 'react-redux';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import {emailRegex} from 'universal/validation/regex';
+import legitify from 'universal/validation/legitify';
+import {createFragmentContainer} from 'react-relay';
+import ErrorMessageInMenu from 'universal/components/ErrorMessageInMenu';
 
-const iconStyle = {
-  color: 'inherit',
-  fontSize: ui.iconSize,
-  lineHeight: 'inherit',
-  marginLeft: ui.menuGutterHorizontal,
-  marginRight: ui.menuGutterInner,
-  textAlign: 'center',
-  width: '1.25rem'
+const makeValidationSchema = (allAssignees) => {
+  return legitify({
+    inviteeEmail: (value) => value
+      .trim()
+      .required('You should enter an email here')
+      .matches(emailRegex, 'That doesn’t look like an email address')
+      .test((inviteeEmail) => {
+        const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
+        console.log('alreadyInList', alreadyInList, allAssignees, inviteeEmail);
+        return alreadyInList && 'That person is already in the list';
+      })
+  });
+};
+
+const validateEmailAddress = (inviteeEmail, assignees, onError) => {
+  const schema = makeValidationSchema(assignees);
+  const {errors} = schema({inviteeEmail});
+  if (Object.keys(errors).length) {
+    onError(errors.inviteeEmail);
+    return false;
+  }
+  return true;
 };
 
 class AddSoftTeamMember extends Component {
   static propTypes = {
+    area: PropTypes.string.isRequired,
     atmosphere: PropTypes.object.isRequired,
+    dirty: PropTypes.bool.isRequired,
+    setDirty: PropTypes.func.isRequired,
+    closePortal: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
-    teamId: PropTypes.string.isRequired,
+    projectId: PropTypes.string.isRequired,
     error: PropTypes.any,
     submitting: PropTypes.bool,
     submitMutation: PropTypes.func.isRequired,
     onCompleted: PropTypes.func.isRequired,
-    onError: PropTypes.func.isRequired
+    onError: PropTypes.func.isRequired,
+    styles: PropTypes.object.isRequired,
+    team: PropTypes.object.isRequired
   };
 
   state = {inviteeEmail: ''};
 
   onChange = (e) => {
-    this.setState({inviteeEmail: e.target.value});
+    const {dirty, error, onCompleted, onError, team} = this.props;
+    const inviteeEmail = e.target.value;
+    this.setState({inviteeEmail});
+    if (dirty) {
+      const assignees = team.teamMembers.concat(team.softTeamMembers);
+      const isValid = validateEmailAddress(inviteeEmail, assignees, onError);
+      if (isValid && error) {
+        onCompleted();
+      }
+    }
   };
 
   onSubmit = (e) => {
     e.preventDefault();
-    console.log('onSub');
     const {inviteeEmail} = this.state;
-    const {atmosphere, teamId, dispatch, submitting, submitMutation, onCompleted, onError} = this.props;
+    const {
+      area,
+      atmosphere,
+      closePortal,
+      setDirty,
+      dispatch,
+      projectId,
+      submitting,
+      submitMutation,
+      onCompleted,
+      onError,
+      team
+    } = this.props;
     if (submitting) return;
 
     // validate
+    setDirty();
+    const {teamMembers, softTeamMembers, teamId} = team;
+    const assignees = teamMembers.concat(softTeamMembers);
+    const isValid = validateEmailAddress(inviteeEmail, assignees, onError);
+    if (!isValid) return;
+
+    closePortal();
     const invitees = [{email: inviteeEmail}];
     submitMutation();
-    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, onCompleted);
+    const handleCompleted = (res) => {
+      onCompleted();
+      const {inviteTeamMembers: {newSoftTeamMembers, reactivatedTeamMembers}} = res;
+      const newSoftTeamMemberId = newSoftTeamMembers && newSoftTeamMembers[0].id;
+      const reactivatedTeamMemberId = reactivatedTeamMembers && reactivatedTeamMembers[0].id;
+      submitMutation();
+      const updatedProject = {
+        id: projectId,
+        assigneeId: newSoftTeamMemberId || reactivatedTeamMemberId
+      };
+      UpdateProjectMutation(atmosphere, updatedProject, area, onCompleted, onError);
+    };
+    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, handleCompleted);
   };
 
   onClick = () => {
@@ -62,43 +125,24 @@ class AddSoftTeamMember extends Component {
       styles
     } = this.props;
     const rootStyles = css(styles.root);
-
     return (
       <div title="New Team Member">
         <div className={rootStyles} onClick={this.onClick}>
           <img alt="New Team Member" className={css(styles.avatar)} src={avatarUser} />
           <form onSubmit={this.onSubmit}>
             <input
-              ref={(c) => {
-                this.inputRef = c;
-              }}
+              ref={(c) => { this.inputRef = c; }}
               placeholder="NewTeamMember@yourco.co"
               onChange={this.onChange}
               value={inviteeEmail}
             />
           </form>
         </div>
-        {error && <div>error</div>}
+        {error && <ErrorMessageInMenu error={error} />}
       </div>
     );
   }
 }
-
-AddSoftTeamMember.propTypes = {
-  avatar: PropTypes.string,
-  closePortal: PropTypes.func,
-  hr: PropTypes.oneOf([
-    'before',
-    'after'
-  ]),
-  icon: PropTypes.string,
-  iconColor: PropTypes.string,
-  isActive: PropTypes.bool,
-  label: PropTypes.any,
-  onClick: PropTypes.func,
-  styles: PropTypes.object,
-  title: PropTypes.string
-};
 
 const hoverFocusStyles = {
   backgroundColor: ui.menuItemBackgroundColorHover,
@@ -106,12 +150,15 @@ const hoverFocusStyles = {
   outline: 0
 };
 
-const activeHoverFocusStyles = {
-  backgroundColor: ui.menuItemBackgroundColorActive
-};
-
-
 const styleThunk = () => ({
+  avatar: {
+    borderRadius: '100%',
+    height: '1.5rem',
+    marginLeft: ui.menuGutterHorizontal,
+    marginRight: ui.menuGutterInner,
+    width: '1.5rem'
+  },
+
   root: {
     alignItems: 'center',
     backgroundColor: ui.menuBackgroundColor,
@@ -126,48 +173,20 @@ const styleThunk = () => ({
     ':focus': {
       ...hoverFocusStyles
     }
-  },
-
-  active: {
-    backgroundColor: ui.menuItemBackgroundColorActive,
-    color: ui.menuItemColorHoverActive,
-    cursor: 'default',
-
-    ':hover': {
-      ...activeHoverFocusStyles
-    },
-    ':focus': {
-      ...activeHoverFocusStyles
-    }
-  },
-
-  label: {
-    ...textOverflow,
-    fontSize: ui.menuItemFontSize,
-    lineHeight: ui.menuItemHeight,
-    padding: `0 ${ui.menuGutterHorizontal}`
-  },
-
-  labelWithIcon: {
-    paddingLeft: 0
-  },
-
-  hr: {
-    backgroundColor: ui.menuBorderColor,
-    border: 'none',
-    height: '1px',
-    marginBottom: ui.menuGutterVertical,
-    marginTop: ui.menuGutterVertical,
-    padding: 0
-  },
-
-  avatar: {
-    borderRadius: '100%',
-    height: '1.5rem',
-    marginLeft: ui.menuGutterHorizontal,
-    marginRight: ui.menuGutterInner,
-    width: '1.5rem'
   }
 });
 
-export default withMutationProps(connect()(withAtmosphere(withStyles(styleThunk)(AddSoftTeamMember))));
+export default createFragmentContainer(
+  withMutationProps(connect()(withAtmosphere(withStyles(styleThunk)(AddSoftTeamMember)))),
+  graphql`
+    fragment AddSoftTeamMember_team on Team {
+      teamId: id
+      teamMembers(sortBy: "preferredName") {
+        email
+      }
+      softTeamMembers {
+        email
+      }
+    }
+  `
+);

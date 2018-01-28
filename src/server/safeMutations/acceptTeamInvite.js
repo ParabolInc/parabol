@@ -44,7 +44,8 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
 
   const hardenedProjects = await r.table('Project')
     .getAll(removedSoftTeamMember, {index: 'assigneeId'})
-    .update({assigneeId: teamMemberId}, {returnChanges: true})('changes')('new_val');
+    .update({assigneeId: teamMemberId}, {returnChanges: true})('changes')('new_val')
+    .default([]);
 
   if (!userInOrg) {
     await adjustUserCount(userId, orgId, ADD_USER);

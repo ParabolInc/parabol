@@ -70,7 +70,7 @@ export default {
     if (assigneeId) {
       const isSoftProject = getIsSoftTeamMember(assigneeId);
       newProject.isSoftProject = isSoftProject;
-      newProject.userId = isSoftProject ? null : fromTeamMemberId(assigneeId);
+      newProject.userId = isSoftProject ? null : fromTeamMemberId(assigneeId).userId;
       if (assigneeId === false) {
         newProject.userId = null;
       }

@@ -86,6 +86,7 @@ export const resolveSoftTeamMember = async ({softTeamMemberId, softTeamMember}, 
 export const resolveSoftTeamMembers = async ({softTeamMemberIds, softTeamMembers}, args, {authToken, dataLoader}) => {
   const {tms} = authToken;
   const teamMembers = softTeamMemberIds ? await dataLoader.get('softTeamMembers').loadMany(softTeamMemberIds) : softTeamMembers;
+  if (!teamMembers || teamMembers.length === 0) return null;
   return teamMembers.filter((teamMember) => tms.includes(teamMember.teamId));
 };
 

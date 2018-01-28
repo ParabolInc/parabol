@@ -65,7 +65,7 @@ export default (userId, teamId) => {
           content: change('new_val')('content'),
           projectId: change('new_val')('id'),
           status: change('new_val')('status'),
-          assigneeId: change('new_val')('teamMemberId'),
+          assigneeId: change('new_val')('assigneeId'),
           updatedAt: change('new_val')('updatedAt')
         }))
       );

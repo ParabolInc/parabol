@@ -86,7 +86,7 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
         if (assignee) {
           project.setLinkedRecord(assignee, 'assignee');
           if (assignee.getValue('__typename') === 'TeamMember') {
-            const userId = fromTeamMemberId(assigneeId);
+            const {userId} = fromTeamMemberId(assigneeId);
             project.setValue(userId, 'userId');
           }
         }
