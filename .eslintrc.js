@@ -70,6 +70,7 @@ module.exports = {
     "no-unused-expressions": [ERROR, {
       "allowTaggedTemplates": true
     }],
+    "object-curly-spacing": OFF,
     "react/forbid-prop-types": OFF,
     "react/jsx-filename-extension": OFF,
     "react/jsx-space-before-closing": OFF,
@@ -81,6 +82,7 @@ module.exports = {
     "import",
     "jest",
     "react",
+    "babel"
   ],
   "parser": "babel-eslint",
   "settings": {

@@ -7,10 +7,10 @@ export default (ComposedComponent) => {
   return class WithMutationProps extends Component {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`;
 
-    setDirty = () => {
-      if (this._mounted && !this.state.dirty) {
-        this.setState({dirty: true});
-      }
+    state = {
+      submitting: false,
+      error: undefined,
+      dirty: false
     };
 
     componentWillMount() {
@@ -39,14 +39,11 @@ export default (ComposedComponent) => {
       }
     };
 
-    constructor(props) {
-      super(props);
-      this.state = {
-        submitting: false,
-        error: undefined,
-        dirty: false
-      };
-    }
+    setDirty = () => {
+      if (this._mounted && !this.state.dirty) {
+        this.setState({dirty: true});
+      }
+    };
 
     submitMutation = () => {
       if (this._mounted) {
