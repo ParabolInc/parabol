@@ -12,6 +12,7 @@ import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamIn
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleAddSoftTeamMembers from 'universal/mutations/handlers/handleAddSoftTeamMembers';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
 graphql`
   fragment InviteTeamMembersMutation_invitation on InviteTeamMembersPayload {
@@ -238,10 +239,10 @@ export const inviteTeamMembersTeamMemberUpdater = (payload, store, dispatch, isM
   }
 };
 
-const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onError, onCompleted) => {
+const InviteTeamMembersMutation = (environment, variables, dispatch, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
-    variables: {invitees, teamId},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('inviteTeamMembers');
       inviteTeamMembersInvitationUpdater(payload, store);
@@ -249,6 +250,27 @@ const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onEr
       inviteTeamMembesrOrgApprovalUpdater(payload, store);
       popOrgApprovalToast(payload, dispatch);
       inviteTeamMembersTeamMemberUpdater(payload, store, dispatch, true);
+    },
+    optimisticUpdater: (store) => {
+      // add the invitees as soft team members
+      const {invitees, teamId} = variables;
+      const team = store.get(teamId);
+      if (!team) return;
+      const softTeamMembers = team.getLinkedRecords('softTeamMembers') || [];
+      const now = new Date().toJSON();
+      const newSoftTeamMembers = invitees.map(({email}) => {
+        const softTeamMember = createProxyRecord(store, 'SoftTeamMember', {
+          email,
+          preferredName: email.split('@')[0],
+          createdAt: now,
+          isActive: true,
+          teamId
+        });
+        softTeamMember.setLinkedRecord(team, 'team');
+        return softTeamMember;
+      });
+      const nextSoftTeamMembers = softTeamMembers.concat(newSoftTeamMembers);
+      team.setLinkedRecords(nextSoftTeamMembers, 'softTeamMembers');
     },
     onCompleted,
     onError

@@ -156,7 +156,7 @@ const Team = new GraphQLObjectType({
     softTeamMembers: {
       type: new GraphQLList(SoftTeamMember),
       description: 'All the soft team members actively associated with the team',
-      async resolve({id: teamId}, {dataLoader}) {
+      async resolve({id: teamId}, args, {dataLoader}) {
         const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId);
         softTeamMembers.sort((a, b) => a.preferredName > b.preferredName ? 1 : -1);
         return softTeamMembers;

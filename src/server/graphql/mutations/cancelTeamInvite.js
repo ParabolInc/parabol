@@ -4,9 +4,10 @@ import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayloa
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, PROJECT, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
-import removeSoftTeamMember from 'server/graphql/mutations/helpers/removeSoftTeamMember';
+import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
-import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
+import getProjectsByAssigneeId from 'server/safeQueries/getProjectsByAssigneeIds';
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
 export default {
   name: 'CancelTeamInvite',
@@ -32,7 +33,7 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const {removedTeamInviteNotification, softUpdates} = await r({
+    const {removedTeamInviteNotification} = await r({
       invitation: r.table('Invitation').get(invitationId).update({
         // set expiration to epoch
         tokenExpiration: new Date(0),
@@ -56,23 +57,21 @@ export default {
             })
             .delete({returnChanges: true})('changes')(0)('old_val')
             .default(null);
-        }),
-      softUpdates: removeSoftTeamMember(email, teamId)
+        })
     });
 
-    const {softProjectsToArchive, softTeamMemberId} = softUpdates;
-    const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive);
+    const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader);
+    const {id: softTeamMemberId} = removedSoftTeamMember;
+    const softProjectsToArchive = await getProjectsByAssigneeId(softTeamMemberId);
+    const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive, dataLoader);
     const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
-
     const data = {invitationId, removedTeamInviteNotification, archivedSoftProjectIds, softTeamMemberId};
 
     if (archivedSoftProjectIds.length > 0) {
-      const teamMemberUserIds = await r.table('TeamMember')
-        .getAll(teamId, {index: 'temId'})
-        .filter({isNotRemoved: true})('userId')
-        .default([]);
-      teamMemberUserIds.forEach((userId) => {
-        publish(PROJECT, userId, CancelApprovalPayload, data, subOptions);
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
+      const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
+      userIdsOnTeams.forEach((userId) => {
+        publish(PROJECT, userId, CancelTeamInvitePayload, data, subOptions);
       });
     }
 

@@ -53,7 +53,7 @@ class TeamColumnsContainer extends Component {
   }
 
   render() {
-    const {myTeamMemberId, teamMemberFilterId, viewer: { projects: allProjects }} = this.props;
+    const {myTeamMemberId, teamMemberFilterId, viewer: {projects: allProjects}} = this.props;
     const {projects} = this.state;
     return (
       <ProjectColumns

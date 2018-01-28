@@ -4,19 +4,20 @@ import ms from 'ms';
 
 const UNARCHIVE_PROJECT_THRESHOLD = ms('60d');
 
-const unarchiveProjectsForReactivatedSoftTeamMembers = async (newSoftTeamMemberEmails) => {
+const unarchiveProjectsForReactivatedSoftTeamMembers = async (newSoftTeamMemberEmails, teamId) => {
   const r = getRethink();
   const unarchiveDate = new Date(Date.now() - UNARCHIVE_PROJECT_THRESHOLD);
-  const archivedSoftProjects = r.table('SoftTeamMember')
+  const archivedSoftProjects = await r.table('SoftTeamMember')
     .getAll(r.args(newSoftTeamMemberEmails), {index: 'email'})
-    .filter({isActive: false})('id')
+    .filter({isActive: false, teamId})('id')
+    .coerceTo('array')
     .do((softTeamMemberIds) => {
       return r.table('Project')
         .getAll(r.args(softTeamMemberIds), {index: 'assigneeId'})
         .filter((project) => r.and(
           project('createdAt').ge(unarchiveDate),
           project('tags').contains('archived'))
-        )
+        );
     });
 
   if (archivedSoftProjects.length === 0) return [];

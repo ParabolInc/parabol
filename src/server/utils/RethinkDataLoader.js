@@ -46,9 +46,9 @@ const makeCustomLoader = (batchFn, options) => {
 //  }
 //  return obj;
 // };
-const primeStandardLoader = (loader, items) => {
+export const primeStandardLoader = (loader, items) => {
   items.forEach((item) => {
-    loader.prime(item.id, item);
+    loader.clear(item.id).prime(item.id, item);
   });
 };
 
@@ -143,4 +143,3 @@ export default class RethinkDataLoader {
   teamMembers = makeStandardLoader('TeamMember');
   users = makeStandardLoader('User');
 }
-

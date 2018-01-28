@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const LinkNewTab = (props) => {
-  const { children, href, title } = props;
+  const {children, href, title} = props;
   return (
     <a
       href={href}

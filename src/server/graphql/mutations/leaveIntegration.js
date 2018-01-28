@@ -16,7 +16,7 @@ export default {
       description: 'the id of the integration to remove'
     }
   },
-  async resolve(source, {globalId}, {authToken, socket}) {
+  async resolve(source, {globalId}, {authToken, socket, dataLoader}) {
     const r = getRethink();
     const {id: localId, type: service} = fromGlobalId(globalId);
 
@@ -58,7 +58,7 @@ export default {
     let archivedProjectIds = [];
     if (isActive === false) {
       if (service === GITHUB) {
-        archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner);
+        archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner, dataLoader);
       }
     }
 

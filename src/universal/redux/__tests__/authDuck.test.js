@@ -1,14 +1,14 @@
 import raven from 'raven-js';
 import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
-import auth, {setAuthToken, removeAuthToken, setNextUrl, unsetNextUrl} from '../authDuck';
+import auth, {removeAuthToken, setAuthToken, setNextUrl, unsetNextUrl} from '../authDuck';
 import {testToken, testTokenData} from './testTokens';
 import * as segmentActions from '../segmentActions';
 
 raven.setUserContext = jest.fn();
 segmentActions.selectSegmentTraits = jest.fn(() => ({email: 'a@a.co'}));
-segmentActions.segmentEventIdentify = jest.fn(() => ({ type: '@@segment/EVENT' }));
-segmentActions.segmentEventReset = jest.fn(() => ({ type: '@@segment/EVENT' }));
+segmentActions.segmentEventIdentify = jest.fn(() => ({type: '@@segment/EVENT'}));
+segmentActions.segmentEventReset = jest.fn(() => ({type: '@@segment/EVENT'}));
 let appReducer;
 let store;
 let initialState;

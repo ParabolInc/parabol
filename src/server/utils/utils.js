@@ -20,7 +20,7 @@ export function firstChange(possiblyUpdatedResult) {
     }
     return possiblyUpdatedResult.changes[0];
   }
-  return { new_val: undefined, old_val: undefined };
+  return {new_val: undefined, old_val: undefined};
 }
 
 export function getOldVal(possiblyUpdatedResult) {

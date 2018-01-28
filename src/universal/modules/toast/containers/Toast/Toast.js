@@ -23,20 +23,8 @@ export default class Toast extends React.Component {
     this.toastToNotification = new Map();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { toasts: currentToasts } = this.props;
-    const { toasts: nextToasts } = nextProps;
-
-    const nextToastNids = new Set(nextToasts.map(({ nid }) => nid));
-    const addedToasts = nextToasts.filter(({ nid }) => !this.toastToNotification.has(nid));
-    const removedToasts = currentToasts.filter(({ nid }) => !nextToastNids.has(nid));
-
-    addedToasts.forEach(this.addToast);
-    removedToasts.forEach(this.removeToast);
-  }
-
   addToast = (toast) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     const notification = this.system().addNotification({
       ...toast,
       onRemove: () => {
@@ -47,6 +35,18 @@ export default class Toast extends React.Component {
     this.toastToNotification.set(toast.nid, notification.uid);
     return toast;
   };
+
+  componentWillReceiveProps(nextProps) {
+    const {toasts: currentToasts} = this.props;
+    const {toasts: nextToasts} = nextProps;
+
+    const nextToastNids = new Set(nextToasts.map(({nid}) => nid));
+    const addedToasts = nextToasts.filter(({nid}) => !this.toastToNotification.has(nid));
+    const removedToasts = currentToasts.filter(({nid}) => !nextToastNids.has(nid));
+
+    addedToasts.forEach(this.addToast);
+    removedToasts.forEach(this.removeToast);
+  }
 
   removeToast = (toast) => {
     const notification = this.toastToNotification.get(toast.nid);

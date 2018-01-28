@@ -4,7 +4,7 @@ import {APPROVED} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {TEAM_INVITE} from 'universal/utils/constants';
 import promiseAllObj from 'universal/utils/promiseAllObj';
-import makeNewSoftTeamMembers from 'server/graphql/mutations/helpers/makeNewSoftTeamMembers';
+import makeNewSoftTeamMembers from 'server/safeMutations/makeNewSoftTeamMembers';
 
 const maybeAutoApproveToOrg = (invitees, inviter) => {
   const r = getRethink();
@@ -24,8 +24,15 @@ const maybeAutoApproveToOrg = (invitees, inviter) => {
   return r.table('OrgApproval').insert(approvals);
 };
 
-const sendTeamInvitations = async (invitees, inviter, inviteId) => {
-  if (invitees.length === 0) return {newInvitations: [], updatedInvitations: [], teamInviteNotifications: []};
+const sendTeamInvitations = async (invitees, inviter, inviteId, dataLoader) => {
+  if (invitees.length === 0) {
+    return {
+      newInvitations: [],
+      updatedInvitations: [],
+      teamInviteNotifications: [],
+      newSoftTeamMembers: []
+    };
+  }
   const r = getRethink();
   const now = new Date();
   const {orgId, inviterName, inviterUserId, teamId, teamName} = inviter;
@@ -59,7 +66,7 @@ const sendTeamInvitations = async (invitees, inviter, inviteId) => {
   });
 
   const inviteeEmails = invitees.map(({email}) => email);
-  const newSoftTeamMembers = await makeNewSoftTeamMembers(inviteeEmails, teamId);
+  const newSoftTeamMembers = await makeNewSoftTeamMembers(inviteeEmails, teamId, dataLoader);
 
   return {
     ...upsertedInvitations,

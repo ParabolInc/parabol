@@ -94,7 +94,7 @@ class ProjectInvolves extends Component {
     return (
       <Row compact>
         <div className={css(styles.icon)}>
-          <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size="small"/>
+          <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size="small" />
         </div>
         <div className={css(styles.message)}>
           <div className={css(styles.messageText)}>
@@ -119,7 +119,7 @@ class ProjectInvolves extends Component {
             />
             {assignee &&
             <div className={css(styles.owner)}>
-              <img alt="Avatar" className={css(styles.ownerAvatar)} src={assignee.picture}/>
+              <img alt="Avatar" className={css(styles.ownerAvatar)} src={assignee.picture} />
               <div className={css(styles.ownerName)}>
                 {assignee.preferredName}
               </div>

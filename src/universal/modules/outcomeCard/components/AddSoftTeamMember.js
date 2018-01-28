@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
+import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {connect} from 'react-redux';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const iconStyle = {
   color: 'inherit',
@@ -17,22 +21,64 @@ const iconStyle = {
 };
 
 class AddSoftTeamMember extends Component {
+  static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    teamId: PropTypes.string.isRequired,
+    error: PropTypes.any,
+    submitting: PropTypes.bool,
+    submitMutation: PropTypes.func.isRequired,
+    onCompleted: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired
+  };
+
+  state = {inviteeEmail: ''};
+
+  onChange = (e) => {
+    this.setState({inviteeEmail: e.target.value});
+  };
+
+  onSubmit = (e) => {
+    e.preventDefault();
+    console.log('onSub');
+    const {inviteeEmail} = this.state;
+    const {atmosphere, teamId, dispatch, submitting, submitMutation, onCompleted, onError} = this.props;
+    if (submitting) return;
+
+    // validate
+    const invitees = [{email: inviteeEmail}];
+    submitMutation();
+    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, onCompleted);
+  };
+
+  onClick = () => {
+    this.inputRef.focus();
+  };
+
   render() {
+    const {inviteeEmail} = this.state;
     const {
+      error,
       styles
     } = this.props;
     const rootStyles = css(styles.root);
 
-    const handleClick = () => {
-      this.inputRef.focus();
-    };
-
     return (
       <div title="New Team Member">
-        <div className={rootStyles} onClick={handleClick}>
+        <div className={rootStyles} onClick={this.onClick}>
           <img alt="New Team Member" className={css(styles.avatar)} src={avatarUser} />
-          <input placeholder="NewTeamMember@yourco.co" />
+          <form onSubmit={this.onSubmit}>
+            <input
+              ref={(c) => {
+                this.inputRef = c;
+              }}
+              placeholder="NewTeamMember@yourco.co"
+              onChange={this.onChange}
+              value={inviteeEmail}
+            />
+          </form>
         </div>
+        {error && <div>error</div>}
       </div>
     );
   }
@@ -124,4 +170,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(AddSoftTeamMember);
+export default withMutationProps(connect()(withAtmosphere(withStyles(styleThunk)(AddSoftTeamMember))));

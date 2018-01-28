@@ -14,6 +14,7 @@ import {PROJECT} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -46,9 +47,9 @@ export default {
     const schema = makeProjectSchema();
     const {errors, data: validUpdatedProject} = schema(updatedProject);
     handleSchemaErrors(errors);
-    const {agendaId, content, status, assigneeId, isSoftProject, sortOrder} = validUpdatedProject;
+    const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedProject;
     if (assigneeId) {
-      const table = isSoftProject ? 'SoftTeamMember' : 'TeamMember';
+      const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember';
       const res = r.table(table).get(assigneeId);
       if (!res) {
         throw new Error('AssigneeId not found', assigneeId);
@@ -56,18 +57,24 @@ export default {
     }
 
     // RESOLUTION
-    const projectUserId = isSoftProject ? undefined : fromTeamMemberId(assigneeId);
     const newProject = {
       agendaId,
       content,
       status,
-      userId: projectUserId,
       tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
       teamId,
-      isSoftProject,
       assigneeId,
       sortOrder
     };
+
+    if (assigneeId) {
+      const isSoftProject = getIsSoftTeamMember(assigneeId);
+      newProject.isSoftProject = isSoftProject;
+      newProject.userId = isSoftProject ? null : fromTeamMemberId(assigneeId);
+      if (assigneeId === false) {
+        newProject.userId = null;
+      }
+    }
 
     let projectHistory;
     if (Object.keys(updatedProject).length > 2 || newProject.sortOrder === undefined) {
@@ -78,7 +85,7 @@ export default {
         projectId,
         status,
         assigneeId: newProject.assigneeId,
-        isSoftProject,
+        isSoftProject: newProject.isSoftProject,
         updatedAt: now,
         tags: newProject.tags
       };
@@ -121,7 +128,7 @@ export default {
     const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(project, oldProject, viewerId, usersToIgnore);
     const data = {isPrivatized, projectId, notificationsToAdd, notificationsToRemove};
     teamMembers.forEach(({userId}) => {
-      if (isPublic || userId === projectUserId) {
+      if (isPublic || userId === newProject.userId) {
         publish(PROJECT, userId, UpdateProjectPayload, data, subOptions);
       }
     });

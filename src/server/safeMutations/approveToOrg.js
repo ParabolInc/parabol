@@ -4,7 +4,7 @@ import {APPROVED, PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants';
 
-const approveToOrg = async (email, orgId, userId) => {
+const approveToOrg = async (email, orgId, userId, dataLoader) => {
   const r = getRethink();
   const now = new Date();
   // get all notifications for this email to join this org
@@ -85,7 +85,7 @@ const approveToOrg = async (email, orgId, userId) => {
   const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
 
   const sentTeamInvitations = await Promise.all(inviters.map((inviter) => {
-    return sendTeamInvitations(invitees, inviter);
+    return sendTeamInvitations(invitees, inviter, undefined, dataLoader);
   }));
 
   const newInvitations = sentTeamInvitations.reduce((arr, upserts) => {

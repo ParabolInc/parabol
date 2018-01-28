@@ -36,7 +36,7 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
       .default(null),
     removedSoftTeamMember: r.table('SoftTeamMember')
       .getAll(email, {index: 'email'})
-      .filter({teamId})
+      .filter({isActive: true, teamId})
       .update({isActive: false}, {returnChanges: true})('changes')('0')('new_val')
       .default(null)
   });

@@ -1,12 +1,12 @@
 import shortid from 'shortid';
 import getRethink from 'server/database/rethinkDriver';
+import {primeStandardLoader} from 'server/utils/RethinkDataLoader';
+import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail';
 
-const makeNewSoftTeamMembers = async (emails, teamId) => {
+const makeNewSoftTeamMembers = async (emails, teamId, dataLoader) => {
   const now = new Date();
   const r = getRethink();
-  const inviteesSoftTeamMembers = await r.table('SoftTeamMember')
-    .getAll(r.args(emails), {index: 'email'})
-    .filter({isActive: true});
+  const inviteesSoftTeamMembers = await getActiveSoftTeamMembersByEmail(emails, teamId, dataLoader);
   const newSoftTeamMembers = emails.reduce((arr, email) => {
     if (!inviteesSoftTeamMembers.find((softTeamMember) => softTeamMember.email === email)) {
       arr.push({
@@ -23,6 +23,7 @@ const makeNewSoftTeamMembers = async (emails, teamId) => {
 
   if (newSoftTeamMembers.length > 0) {
     await r.table('SoftTeamMember').insert(newSoftTeamMembers);
+    primeStandardLoader(dataLoader.get('softTeamMembers'), newSoftTeamMembers);
   }
   return newSoftTeamMembers;
 };

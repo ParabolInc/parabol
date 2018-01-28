@@ -39,12 +39,12 @@ class UserColumnsContainer extends Component {
   }
 
   render() {
-    const {teams, userId, viewer: { projects: allProjecrts }} = this.props;
+    const {teams, userId, viewer: {projects: allProjects}} = this.props;
     const {projects} = this.state;
     return (
       <ProjectColumns
         area={USER_DASH}
-        getProjectById={getProjectById(allProjecrts)}
+        getProjectById={getProjectById(allProjects)}
         projects={projects}
         teams={teams}
         userId={userId}

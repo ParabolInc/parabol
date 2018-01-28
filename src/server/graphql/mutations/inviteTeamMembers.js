@@ -42,7 +42,7 @@ export default {
       newSoftTeamMembers,
       teamInviteNotifications: inviteNotifications,
       unarchivedSoftProjects
-    } = await inviteTeamMembers(invitees, teamId, viewerId, subOptions);
+    } = await inviteTeamMembers(invitees, teamId, viewerId, dataLoader);
     const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId);
     const reactivationNotificationIds = reactivations.map(({notificationId}) => notificationId);
     const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);

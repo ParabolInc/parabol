@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 // import appTheme from 'universal/styles/theme/appTheme';
 
 const styles = {};
@@ -8,7 +8,7 @@ const styles = {};
 export default class ExampleCode extends Component {
   static propTypes = {
     children: PropTypes.any
-  }
+  };
 
   render() {
     return (

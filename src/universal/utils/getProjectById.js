@@ -4,7 +4,7 @@
  * @flow
  */
 
-import type { Project, ProjectID } from 'universal/types/project';
+import type {Project, ProjectID} from 'universal/types/project';
 
 type PaginatedProjectsArray = {
   edges: Array<{ node: Project }>
@@ -12,7 +12,7 @@ type PaginatedProjectsArray = {
 
 const getProjectById = (projects: PaginatedProjectsArray) => (projectId: ProjectID): ?Project =>
   projects.edges
-    .map(({ node }) => node)
-    .find(({ id }) => projectId === id);
+    .map(({node}) => node)
+    .find(({id}) => projectId === id);
 
 export default getProjectById;

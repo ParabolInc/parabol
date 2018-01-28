@@ -51,7 +51,7 @@ class NullableProject extends Component {
         project={project}
         myUserId={myUserId}
       /> :
-      <NullCard preferredName={preferredName}/>;
+      <NullCard preferredName={preferredName} />;
   }
 }
 

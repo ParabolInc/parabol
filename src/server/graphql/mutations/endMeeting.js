@@ -123,7 +123,7 @@ export default {
         .coerceTo('array')
     });
 
-    const archivedProjects = await archiveProjectsForDB(projectsToArchive);
+    const archivedProjects = await archiveProjectsForDB(projectsToArchive, dataLoader);
     const {meetingNumber} = completedMeeting;
     const userIds = completedMeeting.invitees
       .filter((invitee) => invitee.present)

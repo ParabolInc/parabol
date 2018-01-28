@@ -16,5 +16,5 @@ export default (appReducer) => (state, action) => {
 
 export const reset = (whitelist = []) => ({
   type: RESET,
-  payload: { whitelist }
+  payload: {whitelist}
 });

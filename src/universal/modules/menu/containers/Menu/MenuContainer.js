@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Menu from 'universal/modules/menu/components/Menu/Menu';
 
 const calculateMenuPosY = (originHeight, originTop, orientation, targetOrientation) => {

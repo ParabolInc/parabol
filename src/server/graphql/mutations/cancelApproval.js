@@ -5,7 +5,9 @@ import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {NOTIFICATION, ORG_APPROVAL, PROJECT, REQUEST_NEW_USER, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
-import removeSoftTeamMember from 'server/graphql/mutations/helpers/removeSoftTeamMember';
+import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
+import getProjectsByAssigneeId from 'server/safeQueries/getProjectsByAssigneeIds';
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
 export default {
   type: CancelApprovalPayload,
@@ -27,7 +29,7 @@ export default {
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const {removedRequestNotification, softUpdates} = await r({
+    const {removedRequestNotification} = await r({
       orgApproval: r.table('OrgApproval')
         .get(orgApprovalId)
         .update({
@@ -40,12 +42,13 @@ export default {
           teamId,
           inviteeEmail: email
         })
-        .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null),
-      softUpdates: removeSoftTeamMember(email, teamId)
+        .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null)
     });
 
-    const {softProjectsToArchive, softTeamMemberId} = softUpdates;
-    const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive);
+    const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader);
+    const {id: softTeamMemberId} = removedSoftTeamMember;
+    const softProjectsToArchive = await getProjectsByAssigneeId(softTeamMemberId);
+    const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive, dataLoader);
     const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
     const data = {orgApprovalId, removedRequestNotification, softTeamMemberId, archivedSoftProjectIds};
 
@@ -57,11 +60,9 @@ export default {
     }
 
     if (archivedSoftProjectIds.length > 0) {
-      const teamMemberUserIds = await r.table('TeamMember')
-        .getAll(teamId, {index: 'temId'})
-        .filter({isNotRemoved: true})('userId')
-        .default([]);
-      teamMemberUserIds.forEach((userId) => {
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
+      const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
+      userIdsOnTeams.forEach((userId) => {
         publish(PROJECT, userId, CancelApprovalPayload, data, subOptions);
       });
     }

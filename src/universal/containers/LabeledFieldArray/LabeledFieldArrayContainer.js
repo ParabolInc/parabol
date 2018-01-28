@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {FieldArray} from 'redux-form';
 import FieldArrayRow from 'universal/components/FieldArrayRow/FieldArrayRow';
 
@@ -19,8 +19,8 @@ export default class LabeledFieldArray extends Component {
     };
   }
 
-  onHoverRow = (index) => this.setState({ hoverRow: index });
-  onLeaveRow = () => this.setState({ hoverRow: null });
+  onHoverRow = (index) => this.setState({hoverRow: index});
+  onLeaveRow = () => this.setState({hoverRow: null});
 
   render() {
     const {existingInvites, labelSource} = this.props;

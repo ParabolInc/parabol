@@ -1,7 +1,7 @@
-import {createStore, applyMiddleware, compose} from 'redux';
+import {applyMiddleware, compose, createStore} from 'redux';
 import ravenMiddleware from 'redux-raven-middleware';
 import thunkMiddleware from 'redux-thunk';
-import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
+import {createLoader, createMiddleware} from 'redux-storage-whitelist-fn';
 import {createTracker} from 'redux-segment';
 import createEngine from 'redux-storage-engine-localstorage';
 import makeReducer from 'universal/redux/makeReducer';
@@ -43,7 +43,7 @@ export default async (initialState) => {
     }
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
-    const devtoolsExt = global.__REDUX_DEVTOOLS_EXTENSION__ && global.__REDUX_DEVTOOLS_EXTENSION__({ maxAge: 50 });
+    const devtoolsExt = global.__REDUX_DEVTOOLS_EXTENSION__ && global.__REDUX_DEVTOOLS_EXTENSION__({maxAge: 50});
     // removing for now, it kinda pollutes the console when debugging browser-specific bugs
     // if (!devtoolsExt) {
     // We don't have the Redux extension in the browser, show the Redux logger

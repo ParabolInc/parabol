@@ -56,7 +56,7 @@ const InviteUser = (props) => {
       throw new SubmissionError(errors);
     }
     const invitees = [{email: inviteTeamMember}];
-    InviteTeamMembersMutation(atmosphere, invitees, teamId, dispatch);
+    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch);
   };
   return (
     <div className={css(styles.inviteUser)}>

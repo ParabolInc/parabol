@@ -14,7 +14,7 @@ const OutcomeCardAssignMenu = (props) => {
     area,
     closePortal,
     project: {projectId, assignee: {ownerId}},
-    viewer: {team: {softTeamMembers, teamMembers}}
+    viewer: {team: {teamId, softTeamMembers, teamMembers}}
   } = props;
 
   const handleProjectUpdate = (newOwner) => {
@@ -48,7 +48,7 @@ const OutcomeCardAssignMenu = (props) => {
             />
           );
         })}
-      <AddSoftTeamMember />
+      <AddSoftTeamMember teamId={teamId} />
     </div>
   );
 };
@@ -66,6 +66,7 @@ export default createFragmentContainer(
   graphql`
     fragment OutcomeCardAssignMenu_viewer on User {
       team(teamId: $teamId) {
+        teamId: id
         teamMembers(sortBy: "preferredName") {
           id
           picture

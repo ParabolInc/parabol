@@ -108,7 +108,7 @@ class OutcomeCardFooter extends Component {
                 // hack because aphrodite loads styles on next tick, which causes the cell height adjuster to bork >:-(
                 style={{height, width: height}}
               /> :
-              <AvatarPlaceholder/>
+              <AvatarPlaceholder />
             }
           </div>
           <div className={css(styles.avatarLabel)}>
