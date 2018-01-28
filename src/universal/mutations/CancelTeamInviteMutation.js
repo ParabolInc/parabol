@@ -2,7 +2,6 @@ import {commitMutation} from 'react-relay';
 import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import getInProxy from 'universal/utils/relay/getInProxy';
-import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
 import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 
@@ -87,7 +86,8 @@ const CancelTeamInviteMutation = (environment, invitationId, teamId, onError, on
       cancelTeamInviteProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      const invitationProxy = createProxyRecord(store, 'Invitation', {id: invitationId, teamId});
+      const invitationProxy = store.get(invitationId);
+      invitationProxy.setValue(teamId, 'teamId');
       handleRemoveInvitations(invitationProxy, store);
     },
     onCompleted,

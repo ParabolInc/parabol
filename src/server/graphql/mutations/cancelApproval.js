@@ -47,7 +47,7 @@ export default {
 
     const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader);
     const {id: softTeamMemberId} = removedSoftTeamMember;
-    const softProjectsToArchive = await getProjectsByAssigneeId(softTeamMemberId);
+    const softProjectsToArchive = await getProjectsByAssigneeId(softTeamMemberId, dataLoader);
     const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive, dataLoader);
     const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
     const data = {orgApprovalId, removedRequestNotification, softTeamMemberId, archivedSoftProjectIds};

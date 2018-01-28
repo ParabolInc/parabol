@@ -83,6 +83,14 @@ const FIELD_SIZE_SMALL = CONTROL_SIZE_SMALL;
 const FIELD_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
 const FIELD_SIZE_LARGE = CONTROL_SIZE_LARGE;
 
+// Default Menu Dimensions
+export const DEFAULT_MENU_HEIGHT = '5rem';
+export const DEFAULT_MENU_WIDTH = '10rem';
+
+// Wait time. 25% under Doherty Threshold. Because millennials.
+// The goal is to respond to input, but avoid responding with a spinner because that increases perceived wait time
+export const HUMAN_ADDICTION_THRESH = 300;
+export const MAX_WAIT_TIME = 5000;
 // Filter
 const filterBlur = 'blur(1.5px)';
 

@@ -8,7 +8,7 @@ import OutcomeCardMessage from 'universal/modules/outcomeCard/components/Outcome
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 import appTheme from 'universal/styles/theme/theme';
-import ui from 'universal/styles/ui';
+import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {USER_DASH} from 'universal/utils/constants';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
@@ -16,10 +16,22 @@ import isProjectArchived from 'universal/utils/isProjectArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
+import Loadable from 'react-loadable';
+import LoadableMenu from 'universal/components/LoadableMenu';
+import LoadableLoading from 'universal/components/LoadableLoading';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
-const fetchAssignMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot');
+
+const LoadableAssignMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
+    'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
 
 const originAnchor = {
   vertical: 'bottom',
@@ -120,8 +132,8 @@ class OutcomeCardFooter extends Component {
           <div className={css(styles.avatarBlock)}>
             {service || showTeam || isArchived ?
               ownerAvatarOrTeamName :
-              <AsyncMenuContainer
-                fetchMenu={fetchAssignMenu}
+              <LoadableMenu
+                LoadableComponent={LoadableAssignMenu}
                 maxWidth={350}
                 maxHeight={225}
                 originAnchor={assignOriginAnchor}
@@ -132,7 +144,8 @@ class OutcomeCardFooter extends Component {
                 }}
                 targetAnchor={assignTargetAnchor}
                 toggle={ownerAvatarOrTeamName}
-                toggleMenuState={toggleMenuState}
+                onOpen={toggleMenuState}
+                onClose={toggleMenuState}
               />
             }
           </div>

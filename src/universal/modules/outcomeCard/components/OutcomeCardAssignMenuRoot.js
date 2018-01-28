@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {graphql} from 'react-relay';
-import {TransitionGroup} from 'react-transition-group';
-import AnimatedFade from 'universal/components/AnimatedFade';
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import {cacheConfig} from 'universal/utils/constants';
+import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
+import Loadable from 'react-loadable';
+import LoadableLoading from 'universal/components/LoadableLoading';
+import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup';
 
 const query = graphql`
   query OutcomeCardAssignMenuRootQuery($teamId: ID!) {
@@ -18,6 +17,17 @@ const query = graphql`
   }
 `;
 
+const loading = (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />;
+
+const LoadableOutcomeCardAssignMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'OutcomeCardAssignMenu' */
+    'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu'
+  ),
+  loading,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
 
 const OutcomeCardAssignMenuRoot = (props) => {
   const {area, atmosphere, closePortal, project, teamId} = props;
@@ -27,26 +37,14 @@ const OutcomeCardAssignMenuRoot = (props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      render={({error, props: renderProps}) => {
-        return (
-          <TransitionGroup appear component={null}>
-            {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps && <AnimatedFade key="1">
-              <OutcomeCardAssignMenu
-                area={area}
-                closePortal={closePortal}
-                project={project}
-                viewer={renderProps.viewer}
-              />
-            </AnimatedFade>}
-            {!renderProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} />
-            </AnimatedFade>
-            }
-          </TransitionGroup>
-        );
-      }}
+      render={(readyState) => (
+        <RelayLoadableTransitionGroup
+          LoadableComponent={LoadableOutcomeCardAssignMenu}
+          loading={loading}
+          readyState={readyState}
+          extraProps={{area, closePortal, project}}
+        />
+      )}
     />
   );
 };
