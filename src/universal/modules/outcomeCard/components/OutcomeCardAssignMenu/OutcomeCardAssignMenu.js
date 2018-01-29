@@ -10,6 +10,10 @@ import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 class OutcomeCardAssignMenu extends Component {
   state = {active: 0};
 
+  componentDidMount() {
+    this.menuRef.focus();
+  }
+
   handleKeyDown = (e) => {
     const {viewer: {team}, project: {assignee: {ownerId}}} = this.props;
     const {teamMembers, softTeamMembers} = team;
@@ -39,10 +43,6 @@ class OutcomeCardAssignMenu extends Component {
     }
     e.preventDefault();
   };
-
-  componentDidMount() {
-    this.menuRef.focus();
-  }
 
   handleProjectUpdate = (newOwner) => {
     const {
