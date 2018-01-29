@@ -32,10 +32,8 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import UpdateAgendaItemMutation from 'universal/mutations/UpdateAgendaItemMutation';
 import {
-  AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, SORT_STEP,
-  UPDATES
+  AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES
 } from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
