@@ -51,11 +51,6 @@ class LoadableMenu extends Component {
   state = {
     isOpen: false
   };
-  closePortal = () => {
-    this.setState({
-      isOpen: false
-    });
-  };
 
   componentWillMount() {
     const {toggle, LoadableComponent} = this.props;
@@ -84,6 +79,12 @@ class LoadableMenu extends Component {
       }
     }
   }
+
+  closePortal = () => {
+    this.setState({
+      isOpen: false
+    });
+  };
 
   makeSmartToggle(toggle) {
     return React.cloneElement(toggle, {

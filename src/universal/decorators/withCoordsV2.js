@@ -39,6 +39,29 @@ export default (ComposedComponent) => {
       left: 0,
       top: 0
     };
+
+    componentWillMount() {
+      const {originCoords} = this.props;
+      if (originCoords) {
+        this.originCoords = originCoords;
+      }
+    }
+
+    componentWillReceiveProps(nextProps) {
+      const {originCoords} = nextProps;
+      if (originCoords) {
+        if (!this.originCoords ||
+          this.originCoords.top !== originCoords.top ||
+          this.originCoords.left !== originCoords.left) {
+          this.setOriginCoords(originCoords);
+        }
+      }
+    }
+
+    componentWillUnmount() {
+      window.removeEventListener('resize', this.resizeWindow, {passive: true});
+    }
+
     setOriginCoords = (originCoords) => {
       this.originCoords = originCoords;
       this.updateModalCoords();
@@ -101,6 +124,7 @@ export default (ComposedComponent) => {
       }
       this.setState(nextCoords);
     };
+
     resizeWindow = () => {
       const {left, top} = this.state;
       if (left === undefined || top === undefined) {
@@ -114,28 +138,6 @@ export default (ComposedComponent) => {
         this.setState(nextCoords);
       }
     };
-
-    componentWillMount() {
-      const {originCoords} = this.props;
-      if (originCoords) {
-        this.originCoords = originCoords;
-      }
-    }
-
-    componentWillReceiveProps(nextProps) {
-      const {originCoords} = nextProps;
-      if (originCoords) {
-        if (!this.originCoords ||
-          this.originCoords.top !== originCoords.top ||
-          this.originCoords.left !== originCoords.left) {
-          this.setOriginCoords(originCoords);
-        }
-      }
-    }
-
-    componentWillUnmount() {
-      window.removeEventListener('resize', this.resizeWindow, {passive: true});
-    }
 
     render() {
       const {...coords} = this.state;

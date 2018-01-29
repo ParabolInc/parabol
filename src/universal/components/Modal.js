@@ -13,18 +13,6 @@ class Modal extends Component {
     escToClose: PropTypes.bool,
     children: PropTypes.element.isRequired
   };
-  handleKeydown = (e) => {
-    if (e.key === 'Escape') {
-      const {onClose} = this.props;
-      onClose();
-    }
-  };
-  handleDocumentClick = (e) => {
-    if (!this.el.contains(e.target)) {
-      const {onClose} = this.props;
-      onClose();
-    }
-  };
 
   constructor(props) {
     super(props);
@@ -50,6 +38,19 @@ class Modal extends Component {
     document.removeEventListener('touchstart', this.handleDocumentClick);
     document.removeEventListener('keydown', this.handleKeydown);
   }
+
+  handleKeydown = (e) => {
+    if (e.key === 'Escape') {
+      const {onClose} = this.props;
+      onClose();
+    }
+  };
+  handleDocumentClick = (e) => {
+    if (!this.el.contains(e.target)) {
+      const {onClose} = this.props;
+      onClose();
+    }
+  };
 
   render() {
     const {children} = this.props;

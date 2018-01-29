@@ -41,11 +41,14 @@ const validateEmailAddress = (inviteeEmail, assignees, onError) => {
 class AddSoftTeamMember extends Component {
   static propTypes = {
     area: PropTypes.string.isRequired,
+    assignRef: PropTypes.element,
     atmosphere: PropTypes.object.isRequired,
     dirty: PropTypes.bool.isRequired,
     setDirty: PropTypes.func.isRequired,
     closePortal: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
+    isActive: PropTypes.bool.isRequired,
+    menuRef: PropTypes.element,
     projectId: PropTypes.string.isRequired,
     error: PropTypes.any,
     submitting: PropTypes.bool,
@@ -57,25 +60,12 @@ class AddSoftTeamMember extends Component {
   };
 
   state = {inviteeEmail: ''};
-
-  onChange = (e) => {
-    const {dirty, error, onCompleted, onError, team} = this.props;
-    const inviteeEmail = e.target.value;
-    this.setState({inviteeEmail});
-    if (dirty) {
-      const assignees = team.teamMembers.concat(team.softTeamMembers);
-      const isValid = validateEmailAddress(inviteeEmail, assignees, onError);
-      if (isValid && error) {
-        onCompleted();
-      }
-    }
-  };
-
   onSubmit = (e) => {
     e.preventDefault();
     const {inviteeEmail} = this.state;
     const {
       area,
+      assignRef,
       atmosphere,
       closePortal,
       setDirty,
@@ -97,6 +87,7 @@ class AddSoftTeamMember extends Component {
     if (!isValid) return;
 
     closePortal();
+    assignRef.focus();
     const invitees = [{email: inviteeEmail}];
     submitMutation();
     const handleCompleted = (res) => {
@@ -113,6 +104,29 @@ class AddSoftTeamMember extends Component {
     };
     InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, handleCompleted);
   };
+  onChange = (e) => {
+    const {dirty, error, onCompleted, onError, team} = this.props;
+    const inviteeEmail = e.target.value;
+    this.setState({inviteeEmail});
+    if (dirty) {
+      const assignees = team.teamMembers.concat(team.softTeamMembers);
+      const isValid = validateEmailAddress(inviteeEmail, assignees, onError);
+      if (isValid && error) {
+        onCompleted();
+      }
+    }
+  };
+
+  componentWillReceiveProps(nextProps) {
+    const {isActive, menuRef} = nextProps;
+    if (isActive !== this.props.isActive) {
+      if (isActive) {
+        this.inputRef.focus();
+      } else {
+        menuRef.focus();
+      }
+    }
+  }
 
   onClick = () => {
     this.inputRef.focus();
@@ -121,10 +135,11 @@ class AddSoftTeamMember extends Component {
   render() {
     const {inviteeEmail} = this.state;
     const {
+      isActive,
       error,
       styles
     } = this.props;
-    const rootStyles = css(styles.root);
+    const rootStyles = css(styles.root, isActive && styles.active);
     return (
       <div title="New Team Member">
         <div className={rootStyles} onClick={this.onClick}>
@@ -150,7 +165,24 @@ const hoverFocusStyles = {
   outline: 0
 };
 
+const activeHoverFocusStyles = {
+  backgroundColor: ui.menuItemBackgroundColorActive
+};
+
 const styleThunk = () => ({
+  active: {
+    backgroundColor: ui.menuItemBackgroundColorActive,
+    color: ui.menuItemColorHoverActive,
+    cursor: 'default',
+
+    ':hover': {
+      ...activeHoverFocusStyles
+    },
+    ':focus': {
+      ...activeHoverFocusStyles
+    }
+  },
+
   avatar: {
     borderRadius: '100%',
     height: '1.5rem',

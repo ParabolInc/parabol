@@ -110,6 +110,7 @@ class OutcomeCardFooter extends Component {
           tabIndex={service && '-1'}
           title={`Assigned to ${assignee.preferredName}`}
           type="button"
+          ref={(c) => { this.assignRef = c; }}
         >
           <div className={avatarStyles}>
             <img
@@ -139,6 +140,7 @@ class OutcomeCardFooter extends Component {
                 originAnchor={assignOriginAnchor}
                 queryVars={{
                   area,
+                  assignRef: this.assignRef,
                   project,
                   teamId
                 }}
