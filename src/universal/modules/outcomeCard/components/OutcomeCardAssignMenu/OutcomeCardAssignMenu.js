@@ -22,26 +22,27 @@ class OutcomeCardAssignMenu extends Component {
       .concat(softTeamMembers);
 
     const {active} = this.state;
+    let handled;
     if (e.key === 'ArrowDown') {
+      handled = true;
       this.setState({
         active: Math.min(active + 1, allAssignees.length)
       });
-      return;
-    }
-    if (e.key === 'ArrowUp') {
+    } else if (e.key === 'ArrowUp') {
+      handled = true;
       this.setState({
         active: Math.max(active - 1, 0)
       });
-      return;
-    }
-    if (e.key === 'Enter') {
+    } else if (e.key === 'Enter') {
       const nextAssignee = allAssignees[active];
       if (nextAssignee) {
+        handled = true;
         this.handleMenuItemClick(nextAssignee.id)();
-        return;
       }
     }
-    e.preventDefault();
+    if (handled) {
+      e.preventDefault();
+    }
   };
 
   handleProjectUpdate = (newOwner) => {
