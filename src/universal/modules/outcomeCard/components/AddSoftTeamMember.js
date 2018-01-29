@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -56,6 +55,7 @@ class AddSoftTeamMember extends Component {
     submitMutation: PropTypes.func.isRequired,
     onCompleted: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
+    setAddSoftAsActive: PropTypes.func.isRequired,
     styles: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired
   };
@@ -141,7 +141,8 @@ class AddSoftTeamMember extends Component {
     const {
       isActive,
       error,
-      styles
+      styles,
+      setAddSoftAsActive
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
     return (
@@ -152,6 +153,7 @@ class AddSoftTeamMember extends Component {
             <input
               className={css(styles.input)}
               onChange={this.onChange}
+              onFocus={setAddSoftAsActive}
               placeholder="“name@company.co”"
               ref={(c) => { this.inputRef = c; }}
               value={inviteeEmail}

@@ -14,6 +14,17 @@ class OutcomeCardAssignMenu extends Component {
     this.menuRef.focus();
   }
 
+  setAddSoftAsActive = () => {
+    const {viewer: {team}, project: {assignee: {ownerId}}} = this.props;
+    const {teamMembers, softTeamMembers} = team;
+    const allAssignees = teamMembers
+      .filter((teamMember) => teamMember.id !== ownerId)
+      .concat(softTeamMembers);
+    this.setState({
+      active: allAssignees.length
+    });
+  };
+
   handleKeyDown = (e) => {
     const {viewer: {team}, project: {assignee: {ownerId}}} = this.props;
     const {teamMembers, softTeamMembers} = team;
@@ -105,6 +116,7 @@ class OutcomeCardAssignMenu extends Component {
           team={team}
           menuRef={this.menuRef}
           assignRef={assignRef}
+          setAddSoftAsActive={this.setAddSoftAsActive}
         />
       </div>
     );
