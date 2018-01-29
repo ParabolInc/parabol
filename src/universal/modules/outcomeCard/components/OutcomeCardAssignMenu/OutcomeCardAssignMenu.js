@@ -9,6 +9,7 @@ import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 
 class OutcomeCardAssignMenu extends Component {
   state = {active: 0};
+
   handleKeyDown = (e) => {
     const {viewer: {team}, project: {assignee: {ownerId}}} = this.props;
     const {teamMembers, softTeamMembers} = team;
@@ -17,28 +18,32 @@ class OutcomeCardAssignMenu extends Component {
       .concat(softTeamMembers);
 
     const {active} = this.state;
-    let handled;
     if (e.key === 'ArrowDown') {
-      handled = true;
       this.setState({
         active: Math.min(active + 1, allAssignees.length)
       });
-    } else if (e.key === 'ArrowUp') {
-      handled = true;
+      return;
+    }
+    if (e.key === 'ArrowUp') {
       this.setState({
         active: Math.max(active - 1, 0)
       });
-    } else if (e.key === 'Enter') {
+      return;
+    }
+    if (e.key === 'Enter') {
       const nextAssignee = allAssignees[active];
       if (nextAssignee) {
-        handled = true;
         this.handleMenuItemClick(nextAssignee.id)();
+        return;
       }
     }
-    if (handled) {
-      e.preventDefault();
-    }
+    e.preventDefault();
   };
+
+  componentDidMount() {
+    this.menuRef.focus();
+  }
+
   handleProjectUpdate = (newOwner) => {
     const {
       atmosphere,
@@ -54,16 +59,13 @@ class OutcomeCardAssignMenu extends Component {
     };
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
+
   handleMenuItemClick = (newAssigneeId) => () => {
     const {assignRef, closePortal} = this.props;
     this.handleProjectUpdate(newAssigneeId);
     closePortal();
     assignRef.focus();
   };
-
-  componentDidMount() {
-    this.menuRef.focus();
-  }
 
   render() {
     const {active} = this.state;

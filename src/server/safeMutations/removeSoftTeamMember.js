@@ -15,13 +15,3 @@ const removeSoftTeamMember = async (email, teamId, dataLoader) => {
 };
 
 export default removeSoftTeamMember;
-
-// .do((softTeamMemberId) => {
-//   return r({
-//     softTeamMemberId,
-//     softProjectsToArchive: r.table('Project')
-//       .getAll(softTeamMemberId, {index: 'assigneeId'})
-//       .default([])
-//       .coerceTo('array')
-//   });
-// })

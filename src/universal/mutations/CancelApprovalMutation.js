@@ -59,7 +59,7 @@ export const cancelApprovalProjectUpdater = (payload, store, viewerId) => {
 };
 
 export const cancelApprovalTeamMemberUpdater = (payload, store) => {
-  const removedSoftTeamMember = getInProxy(payload, 'removedSoftTeamMember');
+  const removedSoftTeamMember = payload.getLinkedRecord('removedSoftTeamMember');
   handleRemoveSoftTeamMembers(removedSoftTeamMember, store);
 };
 

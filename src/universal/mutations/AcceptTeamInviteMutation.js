@@ -95,7 +95,7 @@ export const acceptTeamInviteTeamMemberUpdater = (payload, store, viewerId, disp
   const teamMember = payload.getLinkedRecord('teamMember');
   handleAddTeamMembers(teamMember, store);
 
-  const removedSoftTeamMember = getInProxy(payload, 'removedSoftTeamMember');
+  const removedSoftTeamMember = payload.getLinkedRecord('removedSoftTeamMember');
   handleRemoveSoftTeamMembers(removedSoftTeamMember, store);
 
   popJoinedYourTeamToast(payload, dispatch);

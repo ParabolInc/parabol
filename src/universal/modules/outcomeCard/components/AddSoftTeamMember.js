@@ -59,6 +59,18 @@ class AddSoftTeamMember extends Component {
   };
 
   state = {inviteeEmail: ''};
+
+  componentWillReceiveProps(nextProps) {
+    const {isActive, menuRef} = nextProps;
+    if (isActive !== this.props.isActive) {
+      if (isActive) {
+        this.inputRef.focus();
+      } else {
+        menuRef.focus();
+      }
+    }
+  }
+
   onSubmit = (e) => {
     e.preventDefault();
     const {inviteeEmail} = this.state;
@@ -104,17 +116,6 @@ class AddSoftTeamMember extends Component {
     };
     InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, handleCompleted);
   };
-
-  componentWillReceiveProps(nextProps) {
-    const {isActive, menuRef} = nextProps;
-    if (isActive !== this.props.isActive) {
-      if (isActive) {
-        this.inputRef.focus();
-      } else {
-        menuRef.focus();
-      }
-    }
-  }
 
   onChange = (e) => {
     const {dirty, error, onCompleted, onError, team} = this.props;

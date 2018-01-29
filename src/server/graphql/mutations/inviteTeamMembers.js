@@ -6,7 +6,7 @@ import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorizatio
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, PROJECT, TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import getRethink from 'server/database/rethinkDriver';
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -23,8 +23,8 @@ export default {
     }
   },
   async resolve(source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
     const operationId = dataLoader.share();
+
     // AUTH
     await requireOrgLeaderOrTeamMember(authToken, teamId);
     const viewerId = getUserId(authToken);
@@ -95,10 +95,8 @@ export default {
 
     if (unarchivedSoftProjects.length > 0) {
       const teamIds = Array.from(new Set(unarchivedSoftProjects.map((p) => p.teamId)));
-      const userIdsOnTeam = await r.table('TeamMember')
-        .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter({isNotRemoved: true})('userId');
-      userIdsOnTeam.forEach((userId) => {
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamIds);
+      teamMembers.forEach(({userId}) => {
         publish(PROJECT, userId, InviteTeamMembersPayload, data, subOptions);
       });
     }
