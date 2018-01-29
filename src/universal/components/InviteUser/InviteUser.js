@@ -67,7 +67,7 @@ const InviteUser = (props) => {
           handleSubmit={handleSubmit(updateEditable)}
           hideIconOnValue
           name="inviteTeamMember"
-          placeholder="email@domain.co"
+          placeholder="name@company.co"
           touch={touch}
           typeStyles={fieldStyles}
           untouch={untouch}

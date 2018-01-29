@@ -81,8 +81,11 @@ class OutcomeCardAssignMenu extends Component {
     const allAssignees = teamMembers
       .filter((teamMember) => teamMember.id !== ownerId)
       .concat(softTeamMembers);
+    const menuBlock = {
+      outline: 0
+    };
     return (
-      <div tabIndex={-1} onKeyDown={this.handleKeyDown} ref={(c) => { this.menuRef = c; }}>
+      <div tabIndex={-1} onKeyDown={this.handleKeyDown} ref={(c) => { this.menuRef = c; }} style={menuBlock}>
         {allAssignees.map((teamMember, idx) => {
           return (
             <MenuItem

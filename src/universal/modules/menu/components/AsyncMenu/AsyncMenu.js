@@ -108,6 +108,7 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
 
   menuBlock: {
     maxWidth,
+    outline: 0,
     padding: '.25rem 0',
     position: 'absolute',
     zIndex: ui.ziMenu

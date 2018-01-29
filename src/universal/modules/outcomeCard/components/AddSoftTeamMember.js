@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -13,6 +14,7 @@ import {emailRegex} from 'universal/validation/regex';
 import legitify from 'universal/validation/legitify';
 import {createFragmentContainer} from 'react-relay';
 import ErrorMessageInMenu from 'universal/components/ErrorMessageInMenu';
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 
 const makeValidationSchema = (allAssignees) => {
   return legitify({
@@ -148,9 +150,10 @@ class AddSoftTeamMember extends Component {
           <img alt="New Team Member" className={css(styles.avatar)} src={avatarUser} />
           <form onSubmit={this.onSubmit}>
             <input
-              ref={(c) => { this.inputRef = c; }}
-              placeholder="NewTeamMember@yourco.co"
+              className={css(styles.input)}
               onChange={this.onChange}
+              placeholder="“name@company.co”"
+              ref={(c) => { this.inputRef = c; }}
               value={inviteeEmail}
             />
           </form>
@@ -168,7 +171,8 @@ const hoverFocusStyles = {
 };
 
 const activeHoverFocusStyles = {
-  backgroundColor: ui.menuItemBackgroundColorActive
+  backgroundColor: ui.menuItemBackgroundColorActive,
+  color: ui.menuItemColorHoverActive
 };
 
 const styleThunk = () => ({
@@ -196,9 +200,10 @@ const styleThunk = () => ({
   root: {
     alignItems: 'center',
     backgroundColor: ui.menuBackgroundColor,
-    color: ui.menuItemColor,
+    color: ui.placeholderColor, // input and placeholder inherit until active
     cursor: 'pointer',
     display: 'flex',
+    padding: '.25rem 0',
     transition: `background-color ${ui.transition[0]}`,
 
     ':hover': {
@@ -207,6 +212,20 @@ const styleThunk = () => ({
     ':focus': {
       ...hoverFocusStyles
     }
+  },
+
+  input: {
+    appearance: 'none',
+    background: 'transparent',
+    border: 0,
+    borderRadius: 0,
+    color: 'inherit',
+    fontSize: ui.menuItemFontSize,
+    lineHeight: '1.5rem',
+    outline: 0,
+    padding: 0,
+
+    ...makePlaceholderStyles('inherit')
   }
 });
 
