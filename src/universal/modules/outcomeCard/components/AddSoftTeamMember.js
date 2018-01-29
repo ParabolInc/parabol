@@ -22,7 +22,6 @@ const makeValidationSchema = (allAssignees) => {
       .matches(emailRegex, 'That doesn’t look like an email address')
       .test((inviteeEmail) => {
         const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
-        console.log('alreadyInList', alreadyInList, allAssignees, inviteeEmail);
         return alreadyInList && 'That person is already in the list';
       })
   });
@@ -41,14 +40,14 @@ const validateEmailAddress = (inviteeEmail, assignees, onError) => {
 class AddSoftTeamMember extends Component {
   static propTypes = {
     area: PropTypes.string.isRequired,
-    assignRef: PropTypes.element,
+    assignRef: PropTypes.instanceOf(Element),
     atmosphere: PropTypes.object.isRequired,
     dirty: PropTypes.bool.isRequired,
     setDirty: PropTypes.func.isRequired,
     closePortal: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
     isActive: PropTypes.bool.isRequired,
-    menuRef: PropTypes.element,
+    menuRef: PropTypes.instanceOf(Element),
     projectId: PropTypes.string.isRequired,
     error: PropTypes.any,
     submitting: PropTypes.bool,
@@ -86,6 +85,7 @@ class AddSoftTeamMember extends Component {
     const isValid = validateEmailAddress(inviteeEmail, assignees, onError);
     if (!isValid) return;
 
+    // resolve
     closePortal();
     assignRef.focus();
     const invitees = [{email: inviteeEmail}];
@@ -104,6 +104,18 @@ class AddSoftTeamMember extends Component {
     };
     InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, handleCompleted);
   };
+
+  componentWillReceiveProps(nextProps) {
+    const {isActive, menuRef} = nextProps;
+    if (isActive !== this.props.isActive) {
+      if (isActive) {
+        this.inputRef.focus();
+      } else {
+        menuRef.focus();
+      }
+    }
+  }
+
   onChange = (e) => {
     const {dirty, error, onCompleted, onError, team} = this.props;
     const inviteeEmail = e.target.value;
@@ -116,17 +128,6 @@ class AddSoftTeamMember extends Component {
       }
     }
   };
-
-  componentWillReceiveProps(nextProps) {
-    const {isActive, menuRef} = nextProps;
-    if (isActive !== this.props.isActive) {
-      if (isActive) {
-        this.inputRef.focus();
-      } else {
-        menuRef.focus();
-      }
-    }
-  }
 
   onClick = () => {
     this.inputRef.focus();

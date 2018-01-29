@@ -107,7 +107,7 @@ class OutcomeCardAssignMenu extends Component {
 
 OutcomeCardAssignMenu.propTypes = {
   area: PropTypes.string.isRequired,
-  assignRef: PropTypes.element,
+  assignRef: PropTypes.instanceOf(Element),
   atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
   project: PropTypes.object.isRequired,
