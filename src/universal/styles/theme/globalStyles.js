@@ -3,7 +3,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import fontLoader from 'universal/styles/theme/fontLoader';
 import ui from 'universal/styles/ui';
 
-const basePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
+const basePlaceholderStyles = makePlaceholderStyles(ui.placeholderColor);
 
 export default {
   '*': {

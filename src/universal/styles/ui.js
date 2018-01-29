@@ -109,6 +109,9 @@ const MODAL_LAYOUT_VIEWPORT = 'viewport';
 // Panels
 const panelInnerBorderColor = appTheme.palette.mid30l;
 
+// Placeholders
+const placeholderColor = appTheme.palette.dark50l;
+
 // Transitions
 // NOTE: increases on a scale of 2x
 const transition = [
@@ -466,6 +469,10 @@ const ui = {
   panelGutter: '1rem',
   panelCompactGutter: '.75rem',
   panelMarginVertical: '1.5rem',
+
+  // Placeholders
+  // ---------------------------------------------------------------------------
+  placeholderColor,
 
   // Project columns
   // ---------------------------------------------------------------------------

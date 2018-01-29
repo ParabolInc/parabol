@@ -66,7 +66,7 @@ UserRow.propTypes = {
 };
 
 UserRow.defaultProps = {
-  email: 'email@domain.co'
+  email: 'name@company.co'
 };
 
 const styleThunk = () => ({
