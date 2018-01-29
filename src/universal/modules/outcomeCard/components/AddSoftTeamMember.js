@@ -3,7 +3,8 @@ import React, {Component} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
+import appTheme from 'universal/styles/theme/appTheme';
+import avatarUser from 'universal/styles/theme/images/add-round-button.svg';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {connect} from 'react-redux';
@@ -154,7 +155,7 @@ class AddSoftTeamMember extends Component {
               className={css(styles.input)}
               onChange={this.onChange}
               onFocus={setAddSoftAsActive}
-              placeholder="“name@company.co”"
+              placeholder="name@company.co"
               ref={(c) => { this.inputRef = c; }}
               value={inviteeEmail}
             />
@@ -227,7 +228,11 @@ const styleThunk = () => ({
     outline: 0,
     padding: 0,
 
-    ...makePlaceholderStyles('inherit')
+    ...makePlaceholderStyles('inherit'),
+
+    ':focus': {
+      color: ui.menuItemColorHoverActive
+    }
   }
 });
 

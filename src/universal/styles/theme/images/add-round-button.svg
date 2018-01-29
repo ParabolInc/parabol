@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<title>add-round-button</title>
+<desc>Created using Figma</desc>
+<g id="Canvas" transform="translate(-4408 308)">
+<g id="add-round-button">
+<use xlink:href="#path0_fill" transform="translate(4408 -308)" fill="#4E495F"/>
+</g>
+</g>
+<defs>
+<path id="path0_fill" fill-rule="evenodd" d="M 12 24C 18.6274 24 24 18.6274 24 12C 24 5.37259 18.6274 0 12 0C 5.37256 0 0 5.37259 0 12C 0 18.6274 5.37256 24 12 24ZM 15.498 13C 15.7715 13 15.998 12.7734 15.998 12.5L 15.998 11.5C 15.998 11.2266 15.7715 11 15.498 11L 12.998 11L 12.998 8.5C 12.998 8.22656 12.7715 8 12.498 8L 11.498 8C 11.2246 8 10.998 8.22656 10.998 8.5L 10.998 11L 8.49805 11C 8.22461 11 7.99805 11.2266 7.99805 11.5L 7.99805 12.5C 7.99805 12.7734 8.22461 13 8.49805 13L 10.998 13L 10.998 15.5C 10.998 15.7734 11.2246 16 11.498 16L 12.498 16C 12.7715 16 12.998 15.7734 12.998 15.5L 12.998 13L 15.498 13Z"/>
+</defs>
+</svg>
