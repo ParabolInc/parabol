@@ -147,9 +147,9 @@ class AddSoftTeamMember extends Component {
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
     return (
-      <div title="New Team Member">
+      <div title="Invite a new teammate by email">
         <div className={rootStyles} onClick={this.onClick}>
-          <img alt="New Team Member" className={css(styles.avatar)} src={avatarUser} />
+          <img alt="Invite a new teammate by email" className={css(styles.avatar)} src={avatarUser} />
           <form onSubmit={this.onSubmit}>
             <input
               className={css(styles.input)}
