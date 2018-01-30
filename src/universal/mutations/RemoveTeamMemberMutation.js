@@ -66,7 +66,7 @@ const mutation = graphql`
   }
 `;
 
-const popKickedOutNotification = (payload, {dispatch, environment, history, location}) => {
+const popKickedOutNotification = (payload, {dispatch, environment, history}) => {
   const kickOutNotification = payload.getLinkedRecord('kickOutNotification');
   const teamId = getInProxy(kickOutNotification, 'team', 'id');
   if (!teamId) return;
