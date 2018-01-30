@@ -8,36 +8,23 @@ import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftT
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 
 class OutcomeCardAssignMenu extends Component {
-  state = {active: 0};
-
-  componentDidMount() {
-    this.menuRef.focus();
-  }
-
+  state = {
+    active: 0,
+    assignees: []
+  };
   setAddSoftAsActive = () => {
-    const {viewer: {team}, project: {assignee: {ownerId}}} = this.props;
-    const {teamMembers, softTeamMembers} = team;
-    const allAssignees = teamMembers
-      .filter((teamMember) => teamMember.id !== ownerId)
-      .concat(softTeamMembers);
     this.setState({
-      active: allAssignees.length
+      active: this.state.assignees.length
     });
   };
-
   handleKeyDown = (e) => {
-    const {viewer: {team}, project: {assignee: {ownerId}}} = this.props;
-    const {teamMembers, softTeamMembers} = team;
-    const allAssignees = teamMembers
-      .filter((teamMember) => teamMember.id !== ownerId)
-      .concat(softTeamMembers);
-
+    const {assignees} = this.state;
     const {active} = this.state;
     let handled;
     if (e.key === 'ArrowDown') {
       handled = true;
       this.setState({
-        active: Math.min(active + 1, allAssignees.length)
+        active: Math.min(active + 1, assignees.length)
       });
     } else if (e.key === 'ArrowUp') {
       handled = true;
@@ -45,7 +32,7 @@ class OutcomeCardAssignMenu extends Component {
         active: Math.max(active - 1, 0)
       });
     } else if (e.key === 'Enter') {
-      const nextAssignee = allAssignees[active];
+      const nextAssignee = assignees[active];
       if (nextAssignee) {
         handled = true;
         this.handleMenuItemClick(nextAssignee.id)();
@@ -55,14 +42,13 @@ class OutcomeCardAssignMenu extends Component {
       e.preventDefault();
     }
   };
-
   handleProjectUpdate = (newOwner) => {
     const {
       atmosphere,
       area,
-      project: {projectId, assignee: {ownerId}}
+      project: {projectId, assignee: {assigneeId}}
     } = this.props;
-    if (newOwner === ownerId) {
+    if (newOwner === assigneeId) {
       return;
     }
     const updatedProject = {
@@ -71,6 +57,28 @@ class OutcomeCardAssignMenu extends Component {
     };
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
+
+  componentDidMount() {
+    this.menuRef.focus();
+    this.setAssignees(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {viewer: {team: {teamMembers, softTeamMembers}}} = nextProps;
+    const {viewer: {team: {teamMembers: oldTeamMembers, softTeamMembers: oldSoftTeamMembers}}} = this.props;
+    if (teamMembers !== oldTeamMembers || oldSoftTeamMembers !== softTeamMembers) {
+      this.setAssignees(nextProps);
+    }
+  }
+
+  setAssignees(props) {
+    const {viewer: {team: {teamMembers, softTeamMembers}}, project: {assignee: {assigneeId}}} = props;
+    this.setState({
+      assignees: teamMembers
+        .concat(softTeamMembers)
+        .filter((teamMember) => teamMember.id !== assigneeId)
+    });
+  }
 
   handleMenuItemClick = (newAssigneeId) => () => {
     const {assignRef, closePortal} = this.props;
@@ -85,19 +93,16 @@ class OutcomeCardAssignMenu extends Component {
       area,
       assignRef,
       closePortal,
-      project: {projectId, assignee: {ownerId}},
+      project: {projectId},
       viewer: {team}
     } = this.props;
-    const {softTeamMembers, teamMembers} = team;
-    const allAssignees = teamMembers
-      .filter((teamMember) => teamMember.id !== ownerId)
-      .concat(softTeamMembers);
+    const {assignees} = this.state;
     const menuBlock = {
       outline: 0
     };
     return (
       <div tabIndex={-1} onKeyDown={this.handleKeyDown} ref={(c) => { this.menuRef = c; }} style={menuBlock}>
-        {allAssignees.map((teamMember, idx) => {
+        {assignees.map((teamMember, idx) => {
           return (
             <MenuItem
               key={teamMember.id}
@@ -109,7 +114,7 @@ class OutcomeCardAssignMenu extends Component {
           );
         })}
         <AddSoftTeamMember
-          isActive={active >= allAssignees.length}
+          isActive={active >= assignees.length}
           area={area}
           closePortal={closePortal}
           projectId={projectId}
@@ -153,7 +158,7 @@ export default createFragmentContainer(
     fragment OutcomeCardAssignMenu_project on Project {
       projectId: id
       assignee {
-        ownerId: id
+        assigneeId: id
       }
     }
   `
