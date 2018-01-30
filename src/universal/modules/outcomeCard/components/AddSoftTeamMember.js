@@ -174,7 +174,7 @@ const hoverFocusStyles = {
 };
 
 const activeHoverFocusStyles = {
-  backgroundColor: ui.menuItemBackgroundColorActive,
+  backgroundColor: ui.menuItemBackgroundColorActive
 };
 
 const styleThunk = () => ({
