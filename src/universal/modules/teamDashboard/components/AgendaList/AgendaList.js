@@ -129,16 +129,13 @@ const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 1,
-    position: 'relative',
+    minHeight: '5rem',
+    maxHeight: '15rem',
     width: '100%'
   },
 
   inner: {
     ...overflowTouch,
-    bottom: 0,
-    position: 'absolute',
-    top: 0,
     width: '100%'
   },
 

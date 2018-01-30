@@ -29,12 +29,6 @@ const AgendaListAndInput = (props) => {
   );
   return (
     <div className={rootStyles}>
-      <AgendaInput
-        context={context}
-        disabled={disabled}
-        setAgendaInputRef={setAgendaInputRef}
-        team={team}
-      />
       <AgendaList
         agendaPhaseItem={agendaPhaseItem}
         canNavigate={canNavigate}
@@ -45,6 +39,12 @@ const AgendaListAndInput = (props) => {
         gotoAgendaItem={gotoAgendaItem}
         localPhase={localPhase}
         localPhaseItem={localPhaseItem}
+        team={team}
+      />
+      <AgendaInput
+        context={context}
+        disabled={disabled}
+        setAgendaInputRef={setAgendaInputRef}
         team={team}
       />
     </div>
