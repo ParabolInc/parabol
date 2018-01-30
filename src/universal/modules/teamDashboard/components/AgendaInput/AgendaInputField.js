@@ -93,7 +93,7 @@ const AgendaInputField = (props) => {
         disabled={disabled}
         maxLength="63"
         onKeyDown={maybeBlur}
-        placeholder="Next Agenda Item…"
+        placeholder="Add Agenda Topic…"
         ref={setRef}
         type="text"
       />
