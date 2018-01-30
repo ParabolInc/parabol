@@ -83,7 +83,7 @@ const popKickedOutNotification = (payload, {dispatch, environment, history, loca
       }
     }
   }));
-  const {pathname} = location;
+  const {pathname} = history.location;
   const onExTeamRoute = Boolean(matchPath(pathname, {
     path: `(/team/${teamId}|/meeting/${teamId})`
   }));
