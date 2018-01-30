@@ -208,7 +208,8 @@ export default createFragmentContainer(
   )),
   graphql`
     fragment AgendaList_team on Team {
-      agendaItems {
+      contentFilter
+      agendaItems @__clientField(handler: "contentFilter") {
         id
         # need these 2 for the DnD
         isComplete

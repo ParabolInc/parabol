@@ -1,8 +1,5 @@
-import {
-  ConnectionHandler,
-  ViewerHandler
-} from 'relay-runtime';
-import MergeHandler from 'universal/utils/relay/MergeHandler';
+import {ConnectionHandler, ViewerHandler} from 'relay-runtime';
+import ContentFilterHandler from 'universal/utils/relay/ContentFilterHandler';
 
 const handlerProvider = (handle) => {
   switch (handle) {
@@ -10,8 +7,10 @@ const handlerProvider = (handle) => {
       return ConnectionHandler;
     case 'viewer':
       return ViewerHandler;
-    case 'merge':
-      return MergeHandler;
+    case 'contentFilter':
+      return ContentFilterHandler;
+    // case 'merge':
+    //   return MergeHandler;
     default:
       throw new Error(`Unknown handle ${handle}`);
   }

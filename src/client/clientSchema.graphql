@@ -1,0 +1,7 @@
+extend type Team {
+  contentFilter: String
+}
+
+extend type Project {
+  contentText: String
+}

@@ -4,6 +4,7 @@ import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
 import {GQL_COMPLETE, GQL_DATA, GQL_ERROR, GQL_EXEC, GQL_START, GQL_STOP} from 'universal/utils/constants';
 import tryParse from 'universal/utils/tryParse';
+import handlerProvider from 'universal/utils/relay/handlerProvider';
 
 const makeErrorObj = (errors) => {
   const firstError = errors[0].message;
@@ -27,7 +28,7 @@ export default class Atmosphere extends Environment {
   constructor() {
     // deal with Environment
     const store = new Store(new RecordSource());
-    super({store});
+    super({store, handlerProvider});
     this._network = Network.create(this.fetchHTTP);
 
     // now atmosphere
