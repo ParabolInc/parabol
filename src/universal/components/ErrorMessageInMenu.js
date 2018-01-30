@@ -27,7 +27,8 @@ const styleThunk = () => ({
   error: {
     ...formError,
     fontSize: appTheme.typography.s2,
-    padding: '0 0.5rem'
+    padding: '.5rem .5rem 0',
+    textAlign: 'left'
   }
 });
 

@@ -20,8 +20,8 @@ const makeValidationSchema = (allAssignees) => {
   return legitify({
     inviteeEmail: (value) => value
       .trim()
-      .required('You should enter an email here')
-      .matches(emailRegex, 'That doesn’t look like an email address')
+      .required('You should enter an email here.')
+      .matches(emailRegex, 'That doesn’t look like an email address.')
       .test((inviteeEmail) => {
         const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
         return alreadyInList && 'That person is already in the list';
