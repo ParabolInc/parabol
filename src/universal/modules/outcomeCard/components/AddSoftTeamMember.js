@@ -146,13 +146,14 @@ class AddSoftTeamMember extends Component {
       setAddSoftAsActive
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
+    const inputStyles = css(styles.input, isActive && styles.inputActive);
     return (
       <div title="Invite a new teammate by email">
         <div className={rootStyles} onClick={this.onClick}>
           <img alt="Invite a new teammate by email" className={css(styles.avatar)} src={avatarUser} />
           <form onSubmit={this.onSubmit}>
             <input
-              className={css(styles.input)}
+              className={inputStyles}
               onChange={this.onChange}
               onFocus={setAddSoftAsActive}
               placeholder="name@company.co"
@@ -169,19 +170,16 @@ class AddSoftTeamMember extends Component {
 
 const hoverFocusStyles = {
   backgroundColor: ui.menuItemBackgroundColorHover,
-  color: ui.menuItemColorHoverActive,
   outline: 0
 };
 
 const activeHoverFocusStyles = {
   backgroundColor: ui.menuItemBackgroundColorActive,
-  color: ui.menuItemColorHoverActive
 };
 
 const styleThunk = () => ({
   active: {
     backgroundColor: ui.menuItemBackgroundColorActive,
-    color: ui.menuItemColorHoverActive,
     cursor: 'default',
 
     ':hover': {
@@ -203,7 +201,6 @@ const styleThunk = () => ({
   root: {
     alignItems: 'center',
     backgroundColor: ui.menuBackgroundColor,
-    color: ui.placeholderColor, // input and placeholder inherit until active
     cursor: 'pointer',
     display: 'flex',
     padding: '.25rem 0',
@@ -222,17 +219,20 @@ const styleThunk = () => ({
     background: 'transparent',
     border: 0,
     borderRadius: 0,
-    color: 'inherit',
+    color: ui.menuItemColor,
     fontSize: ui.menuItemFontSize,
     lineHeight: '1.5rem',
     outline: 0,
     padding: 0,
+    width: '100%',
 
-    ...makePlaceholderStyles('inherit'),
+    ...makePlaceholderStyles(ui.placeholderColor)
+  },
 
-    ':focus': {
-      color: ui.menuItemColorHoverActive
-    }
+  inputActive: {
+    color: ui.menuItemColorHoverActive,
+
+    ...makePlaceholderStyles(appTheme.palette.dark70l)
   }
 });
 
