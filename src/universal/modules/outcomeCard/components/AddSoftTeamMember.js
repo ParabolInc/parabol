@@ -20,7 +20,6 @@ const makeValidationSchema = (allAssignees) => {
   return legitify({
     inviteeEmail: (value) => value
       .trim()
-      .required('You should enter an email here.')
       .matches(emailRegex, 'That doesn’t look like an email address.')
       .test((inviteeEmail) => {
         const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
@@ -162,7 +161,7 @@ class AddSoftTeamMember extends Component {
             />
           </form>
         </div>
-        {error && <ErrorMessageInMenu error={error} />}
+        {error && isActive && <ErrorMessageInMenu error={error} />}
       </div>
     );
   }
