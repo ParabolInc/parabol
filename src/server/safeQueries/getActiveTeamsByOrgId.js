@@ -5,7 +5,7 @@ const getActiveTeamsByOrgId = async (orgId, dataLoader) => {
   const r = getRethink();
   const teams = await r.table('Team')
     .getAll(orgId, {index: 'orgId'})
-    .filter({isActive: true});
+    .filter({isArchived: false});
   primeStandardLoader(dataLoader.get('teams'), teams);
   return teams;
 };

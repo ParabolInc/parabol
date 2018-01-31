@@ -14,6 +14,7 @@ import getProjectsByAssigneeIds from 'server/safeQueries/getProjectsByAssigneeId
 import promiseAllObj from 'universal/utils/promiseAllObj';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail';
+import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -57,6 +58,7 @@ export default {
     });
     const teamIdsInOrg = teamsInOrg.map(({id}) => id);
     const softTeamMembersInOrg = await getActiveSoftTeamMembersByEmail(inviteeEmail, teamIdsInOrg, dataLoader);
+    await Promise.all(softTeamMembersInOrg.map(({email, teamId}) => removeSoftTeamMember(email, teamId, dataLoader)));
     const softTeamMemberIdsInOrg = softTeamMembersInOrg.map(({id}) => id);
     const softProjectsInOrg = await getProjectsByAssigneeIds(softTeamMemberIdsInOrg, dataLoader);
     const archivedSoftProjects = await archiveProjectsForDB(softProjectsInOrg, dataLoader);

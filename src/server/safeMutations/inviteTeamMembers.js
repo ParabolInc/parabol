@@ -60,7 +60,7 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter),
     removedApprovalsAndNotifications: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
     teamInvites: sendTeamInvitations(inviteesToInvite, inviter, undefined, dataLoader),
-    newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter, undefined, dataLoader)
+    newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter, dataLoader)
   });
 
   const {newSoftTeamMembers: inviteeSoftTeamMemers} = teamInvites;

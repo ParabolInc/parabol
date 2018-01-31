@@ -102,7 +102,7 @@ export const acceptTeamInviteTeamMemberUpdater = (payload, store, viewerId, disp
 };
 
 export const acceptTeamInviteProjectUpdater = (payload, store, viewerId) => {
-  const hardenedProjects = store.getLinkedRecords(payload, 'hardenedProjects');
+  const hardenedProjects = payload.getLinkedRecords(payload, 'hardenedProjects');
   handleUpsertProjects(hardenedProjects, store, viewerId);
 };
 

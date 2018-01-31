@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import avatarUser from 'universal/styles/theme/images/add-round-button.svg';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';

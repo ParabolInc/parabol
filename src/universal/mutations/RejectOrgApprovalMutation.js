@@ -40,10 +40,7 @@ graphql`
 graphql`
   fragment RejectOrgApprovalMutation_project on RejectOrgApprovalPayload {
     archivedSoftProjects {
-      id
-      content
-      tags
-      teamId
+      ...CompleteProjectFrag @relay(mask: false)
     }
   }
 `;

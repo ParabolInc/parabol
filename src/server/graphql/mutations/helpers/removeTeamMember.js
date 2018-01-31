@@ -44,10 +44,10 @@ const removeTeamMember = async (teamMemberId, options) => {
         updatedAt: now
       }),
     reassignedProjects: r.table('Project')
-      .getAll(teamMemberId, {index: 'teamMemberId'})
+      .getAll(teamMemberId, {index: 'assigneeId'})
       .filter((project) => project('tags').contains('archived').not())
       .update({
-        teamMemberId: teamLeader.id,
+        assigneeId: teamLeader.id,
         userId: teamLeader.userId
       }, {returnChanges: true})('changes')('new_val')
       .default([]),

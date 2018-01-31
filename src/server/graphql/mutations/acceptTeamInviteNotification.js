@@ -7,6 +7,8 @@ import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NEW_AUTH_TOKEN, PROJECT, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
+import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 
 export default {
   type: AcceptTeamInviteNotificationPayload,
@@ -47,12 +49,9 @@ export default {
     };
 
     if (hardenedProjects.length > 0) {
-      const userIdsForTeam = await r.table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isNotRemoved: true})('userId')
-        .default([]);
-      userIdsForTeam.forEach((userId) => {
-        publish(PROJECT, userId, AcceptTeamInviteNotificationPayload, data, subOptions);
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
+      teamMembers.forEach(({userId}) => {
+        publish(PROJECT, userId, AcceptTeamInviteEmailPayload, data, subOptions);
       });
     }
 
