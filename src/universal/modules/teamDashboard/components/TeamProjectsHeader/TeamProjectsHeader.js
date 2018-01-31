@@ -16,6 +16,11 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
+import NewMenu, {
+  MenuItemButton as NewMenuItemButton,
+  MenuLabel as NewMenuLabel
+} from 'universal/components/Menu/Menu';
+
 const iconStyle = {
   ...ib,
   margin: '0 .5rem 0 0'
@@ -90,6 +95,49 @@ const TeamProjectsHeader = (props) => {
   );
 };
 
+const NewTeamProjectsHeader = (props) => {
+  const {dispatch, styles, teamMemberFilterId, teamMemberFilterName, team} = props;
+  const {teamId, teamMembers} = team;
+  const toggle = <DashFilterToggle label={teamMemberFilterName} />;
+
+  return (
+    <DashSectionHeader>
+      <DashSectionHeading icon="calendar" label="Team Projects" />
+      <DashSectionControls>
+        {/* TODO: needs link to archive */}
+        <DashSectionControl>
+          <FontAwesome name="archive" style={iconStyle} />
+          <Link className={css(styles.link)} to={`/team/${teamId}/archive`}>
+            See Archived Projects
+          </Link>
+        </DashSectionControl>
+        {/* TODO: needs minimal, inline dropdown */}
+        <DashSectionControl>
+          <div className={css(styles.filterRow)}>
+            <b style={inlineBlock}>{'Show Projects for'}</b><span style={inlineBlock}>:</span>
+            {' '}
+            <NewMenu menuWidth={ui.dashMenuWidth} maxHeight={ui.dashMenuHeight} toggle={toggle}>
+              <NewMenuLabel>Filter by:</NewMenuLabel>
+              <NewMenuItemButton isActive={teamMemberFilterId === null} onClick={() => dispatch(filterTeamMember(null))}>
+                All members
+              </NewMenuItemButton>
+              {teamMembers.map((teamMember) => (
+                <NewMenuItemButton
+                  isActive={teamMember.id === teamMemberFilterId}
+                  key={`teamMemberFilter${teamMember.id}`}
+                  onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
+                >
+                  {teamMember.preferredName}
+                </NewMenuItemButton>
+              ))}
+            </NewMenu>
+          </div>
+        </DashSectionControl>
+      </DashSectionControls>
+    </DashSectionHeader>
+  );
+};
+
 TeamProjectsHeader.propTypes = {
   children: PropTypes.any,
   dispatch: PropTypes.func.isRequired,
@@ -131,7 +179,7 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withStyles(styleThunk)(TeamProjectsHeader),
+  withStyles(styleThunk)(!__RELEASE_FLAGS__.newMenu ? NewTeamProjectsHeader : TeamProjectsHeader),
   graphql`
     fragment TeamProjectsHeader_team on Team {
       teamId: id

@@ -13,6 +13,12 @@ import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterTo
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 
+import NewMenu, {
+  MenuItemButton as NewMenuItemButton,
+  MenuLabel as NewMenuLabel
+} from 'universal/components/Menu/Menu';
+
+
 const inlineBlock = {
   display: 'inline-block',
   height: ui.dashSectionHeaderLineHeight,
@@ -73,6 +79,47 @@ const UserProjectsHeader = (props) => {
   );
 };
 
+const NewUserProjectsHeader = (props) => {
+  const {dispatch, styles, teams, teamFilterId, teamFilterName} = props;
+  const toggle = <DashFilterToggle label={teamFilterName} />;
+  // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
+  const menu = (
+    <NewMenu toggle={toggle} menuWidth={ui.dashMenuWidth}>
+      <NewMenuLabel>Filter By:</NewMenuLabel>
+      <NewMenuItemButton
+        isActive={teamFilterId === null} // TODO support this prop
+        onClick={() => dispatch(filterTeam(null))}
+      >
+        All teams
+      </NewMenuItemButton>
+      {teams.map((team) => (
+        <NewMenuItemButton
+          isActive={team.id === teamFilterId} // TODO support this prop
+          key={`teamFilter${team.id}`}
+          onClick={() => dispatch(filterTeam(team.id, team.name))}
+        >
+          {team.name}
+        </NewMenuItemButton>
+      ))}
+    </NewMenu>
+  );
+  return (
+    <DashSectionHeader>
+      <DashSectionHeading icon="calendar" label="My Projects" />
+      <DashSectionControls>
+        {/* TODO: needs minimal, inline dropdown */}
+        <DashSectionControl>
+          <div className={css(styles.filterRow)}>
+            <b style={inlineBlock}>Show Projects for</b><span style={inlineBlock}>:</span>
+            {' '}
+            {menu}
+          </div>
+        </DashSectionControl>
+      </DashSectionControls>
+    </DashSectionHeader>
+  );
+};
+
 UserProjectsHeader.propTypes = {
   children: PropTypes.any,
   dispatch: PropTypes.func,
@@ -89,4 +136,8 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserProjectsHeader);
+export default withStyles(styleThunk)(
+  !__RELEASE_FLAGS__.newMenu
+    ? NewUserProjectsHeader
+    : UserProjectsHeader
+);

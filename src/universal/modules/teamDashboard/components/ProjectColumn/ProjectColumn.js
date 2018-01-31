@@ -24,6 +24,11 @@ import dndNoise from 'universal/utils/dndNoise';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
+import NewMenu, {
+  MenuItemButton as NewMenuItemButton,
+  MenuLabel as NewMenuLabel
+} from 'universal/components/Menu/Menu';
+
 import ProjectColumnDropZone from './ProjectColumnDropZone';
 
 // The `ScrollZone` component manages an overflowed block-level element,
@@ -103,16 +108,27 @@ class ProjectColumn extends Component {
       }
       const itemFactory = () => {
         const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder);
-        return menuItems.map((item) =>
-          (<MenuItem
-            key={`MenuItem${item.label}`}
-            label={item.label}
-            onClick={item.handleClick}
-          />)
-        );
+        return menuItems.map((item) => (
+          <MenuItem key={`MenuItem${item.label}`} label={item.label} onClick={item.handleClick} />
+        ));
       };
 
       const toggle = <AddProjectButton label={label} />;
+
+      if (!__RELEASE_FLAGS__.newMenu) { // eslint-disable-line no-undef
+        const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder);
+        return (
+          <NewMenu toggle={toggle} menuWidth={ui.dashMenuWidth}>
+            <NewMenuLabel>Select Team:</NewMenuLabel>
+            {menuItems.map((item) => (
+              <NewMenuItemButton onClick={item.handleClick} key={item.label}>
+                <div style={{fontSize: ui.menuItemFontSize}}>{item.label}</div>
+              </NewMenuItemButton>
+            ))}
+          </NewMenu>
+        );
+      }
+
       return (
         <Menu
           itemFactory={itemFactory}

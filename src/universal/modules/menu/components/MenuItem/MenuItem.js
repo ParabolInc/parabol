@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
@@ -19,7 +20,6 @@ const MenuItem = (props) => {
     styles,
     title
   } = props;
-  const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
     if (closePortal) {
       closePortal();
@@ -55,13 +55,19 @@ const MenuItem = (props) => {
       src={avatar}
     />);
   return (
-    <div title={titleStr}>
+    <div>
       {hr === 'before' && <hr className={css(styles.hr)} />}
-      <div className={rootStyles} onClick={handleClick}>
+      <PlainButton
+        role="menuitem"
+        tabIndex="-1"
+        title={titleStr}
+        extraStyles={{...styles.root, ...(isActive && styles.active)}}
+        onClick={handleClick}
+      >
         {avatar && makeAvatar()}
         {!avatar && icon && makeIcon()}
         {labelEl}
-      </div>
+      </PlainButton>
       {hr === 'after' && <hr className={css(styles.hr)} />}
     </div>
   );
@@ -102,6 +108,7 @@ const styleThunk = () => ({
     cursor: 'pointer',
     display: 'flex',
     transition: `background-color ${ui.transition[0]}`,
+    width: '100%',
 
     ':hover': {
       ...hoverFocusStyles
