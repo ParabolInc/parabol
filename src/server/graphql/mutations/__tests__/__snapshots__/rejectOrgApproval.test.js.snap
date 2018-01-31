@@ -26,13 +26,15 @@ Object {
       "channelId": 1,
       "message": Object {
         "data": Object {
+          "archivedSoftProjectIds": Array [],
           "deniedNotificationIds": Array [
-            11,
+            13,
           ],
           "removedOrgApprovalIds": Array [
-            12,
+            14,
           ],
           "removedRequestNotifications": "UNTESTED",
+          "softTeamMemberIds": Array [],
           "type": "RejectOrgApprovalPayload",
         },
         "mutatorId": undefined,
@@ -43,13 +45,15 @@ Object {
       "channelId": 5,
       "message": Object {
         "data": Object {
+          "archivedSoftProjectIds": Array [],
           "deniedNotificationIds": Array [
-            11,
+            13,
           ],
           "removedOrgApprovalIds": Array [
-            12,
+            14,
           ],
           "removedRequestNotifications": "UNTESTED",
+          "softTeamMemberIds": Array [],
           "type": "RejectOrgApprovalPayload",
         },
         "mutatorId": undefined,
@@ -60,13 +64,15 @@ Object {
       "channelId": 5,
       "message": Object {
         "data": Object {
+          "archivedSoftProjectIds": Array [],
           "deniedNotificationIds": Array [
-            11,
+            13,
           ],
           "removedOrgApprovalIds": Array [
-            12,
+            14,
           ],
           "removedRequestNotifications": "UNTESTED",
+          "softTeamMemberIds": Array [],
           "type": "RejectOrgApprovalPayload",
         },
         "mutatorId": undefined,
@@ -79,13 +85,37 @@ Object {
       "channelId": 4,
       "message": Object {
         "data": Object {
+          "archivedSoftProjectIds": Array [],
           "deniedNotificationIds": Array [
-            11,
+            13,
           ],
           "removedOrgApprovalIds": Array [
-            12,
+            14,
           ],
           "removedRequestNotifications": "UNTESTED",
+          "softTeamMemberIds": Array [],
+          "teamId": 4,
+          "type": "RejectOrgApprovalPayload",
+        },
+        "mutatorId": undefined,
+        "operationId": 0,
+      },
+    },
+  ],
+  "teamMember": Array [
+    Object {
+      "channelId": 4,
+      "message": Object {
+        "data": Object {
+          "archivedSoftProjectIds": Array [],
+          "deniedNotificationIds": Array [
+            13,
+          ],
+          "removedOrgApprovalIds": Array [
+            14,
+          ],
+          "removedRequestNotifications": "UNTESTED",
+          "softTeamMemberIds": Array [],
           "teamId": 4,
           "type": "RejectOrgApprovalPayload",
         },

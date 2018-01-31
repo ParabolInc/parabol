@@ -43,7 +43,7 @@ describe('endMeeting', () => {
     expect(dataLoader.isShared()).toEqual(true);
   });
 
-  test.only('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
+  test('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
     // SETUP
     sendEmailPromise.default = jest.fn(() => true);
     const r = getRethink();

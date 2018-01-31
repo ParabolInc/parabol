@@ -4,6 +4,7 @@ exports[`removeTeamMember removes the teamMember, reassigns active projects to t
 Object {
   "project": Array [
     Object {
+      "assigneeId": 0,
       "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 24,
@@ -12,7 +13,6 @@ Object {
       "status": "active",
       "tags": Array [],
       "teamId": 16,
-      "teamMemberId": 0,
       "updatedAt": 2017-01-01T07:00:00.000Z,
       "userId": 17,
     },
