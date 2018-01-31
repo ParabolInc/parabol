@@ -12,6 +12,7 @@ import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMuta
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {withRouter} from 'react-router-dom';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -92,7 +93,9 @@ export default createFragmentContainer(
     withReducer({userDashboardSettings: userSettingsReducer})(
       reduxForm({form: 'userSettings', shouldValidate, validate})(
         connect(mapStateToProps)(
-          UserSettingsContainer
+          withRouter(
+            UserSettingsContainer
+          )
         )
       )
     )

@@ -6,7 +6,7 @@ import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 import {GQL_COMPLETE, GQL_DATA, GQL_ERROR} from 'universal/utils/constants';
 
-const trySubscribe = async (authToken, body, socket, sharedDataLoader) => {
+const trySubscribe = async (authToken, body, socket, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}));
   const {opId, query, variables} = body;
   const context = {authToken, dataLoader, socketId: socket.id};
@@ -14,12 +14,15 @@ const trySubscribe = async (authToken, body, socket, sharedDataLoader) => {
   try {
     const result = await subscribe(Schema, document, {}, context, variables);
     if (!result.errors) return result;
-    // the supplied request failed our auth business logic
-    const message = {
-      opId,
-      payload: result
-    };
-    socket.emit(GQL_ERROR, message);
+    // squelch errors for resub, we expect a few errors & the client doesn't need to know about them
+    if (!isResub) {
+      // the supplied request failed our auth business logic
+      const message = {
+        opId,
+        payload: result
+      };
+      socket.emit(GQL_ERROR, message);
+    }
   } catch (e) {
     // the subscription couldn't be found or there was an internal graphql error
     const errorObj = {message: e.message};
@@ -34,9 +37,10 @@ const trySubscribe = async (authToken, body, socket, sharedDataLoader) => {
 
 export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
   return function relaySubscribeHandler(body) {
-    const handleSubscribe = async () => {
+    const handleSubscribe = async (options = {}) => {
+      const isResub = options;
       const authToken = socket.getAuthToken();
-      const asyncIterator = await trySubscribe(authToken, body, socket, sharedDataLoader);
+      const asyncIterator = await trySubscribe(authToken, body, socket, sharedDataLoader, isResub);
       if (!asyncIterator) return;
       // node coerces things that look like numbres, but this will be the key for the subs object, and keys are strings
       const opId = String(body.opId);
@@ -66,7 +70,7 @@ export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
       const resubIdx = socket.availableResubs.indexOf(opId);
       if (resubIdx !== -1) {
         // reinitialize the subscription
-        handleSubscribe();
+        handleSubscribe({isResub: true});
         socket.availableResubs.splice(resubIdx, 1);
       } else {
         socket.emit(GQL_COMPLETE, {opId});
