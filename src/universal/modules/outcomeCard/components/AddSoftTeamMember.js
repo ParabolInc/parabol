@@ -14,6 +14,7 @@ import legitify from 'universal/validation/legitify';
 import {createFragmentContainer} from 'react-relay';
 import ErrorMessageInMenu from 'universal/components/ErrorMessageInMenu';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const makeValidationSchema = (allAssignees) => {
   return legitify({
