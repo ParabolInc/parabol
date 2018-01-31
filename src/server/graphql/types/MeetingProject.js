@@ -21,7 +21,7 @@ const MeetingProject = new GraphQLObjectType({
       type: new GraphQLList(GraphQLString),
       description: 'The tags associated with the project'
     },
-    teamMemberId: {
+    assigneeId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team member the action was assigned to during the meeting'
     }

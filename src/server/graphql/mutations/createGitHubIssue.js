@@ -7,6 +7,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {GITHUB, PROJECT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 // const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
 //  if (!creatorProvider) return false;
@@ -89,14 +90,14 @@ export default {
     }
 
     // RESOLUTION
-    const {teamMemberId: assigneeTeamMemberId, content: rawContentStr} = project;
-    const [assigneeUserId] = assigneeTeamMemberId.split('::');
+    const {assigneeId, content: rawContentStr} = project;
+    const {userId: assigneeUserId} = fromTeamMemberId(assigneeId);
     const providers = await r.table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({service: GITHUB, isActive: true});
     const assigneeProvider = providers.find((provider) => provider.userId === assigneeUserId);
     if (!assigneeProvider) {
-      const assigneeName = await r.table('TeamMember').get(assigneeTeamMemberId)('preferredName');
+      const assigneeName = await r.table('TeamMember').get(assigneeId)('preferredName');
       throw new Error(`Assignment failed! Ask ${assigneeName} to add GitHub in Team Settings`);
     }
     const adminProvider = providers.find((provider) => provider.userId === adminUserId);
@@ -136,7 +137,7 @@ export default {
     const newIssue = await fetch(endpoint, postOptions);
     const newIssueJson = await newIssue.json();
     try {
-      await makeAssigneeError(newIssueJson, assigneeTeamMemberId, nameWithOwner);
+      await makeAssigneeError(newIssueJson, assigneeId, nameWithOwner);
     } catch (e) {
       throw e;
     }
@@ -151,7 +152,7 @@ export default {
       });
       const assignedIssueJson = await assignedIssue.json();
       try {
-        await makeAssigneeError(assignedIssueJson, assigneeTeamMemberId, nameWithOwner);
+        await makeAssigneeError(assignedIssueJson, assigneeId, nameWithOwner);
       } catch (e) {
         throw e;
       }
