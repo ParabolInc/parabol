@@ -158,6 +158,7 @@ const styleThunk = () => ({
     height: '1.5rem',
     marginLeft: ui.menuGutterHorizontal,
     marginRight: ui.menuGutterInner,
+    minWidth: '1.5rem',
     width: '1.5rem'
   }
 });
