@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import {QueryRenderer} from 'react-relay';
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';

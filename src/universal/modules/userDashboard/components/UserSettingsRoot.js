@@ -3,7 +3,7 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import {QueryRenderer} from 'react-relay';
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UserSettingsContainer from 'universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer';

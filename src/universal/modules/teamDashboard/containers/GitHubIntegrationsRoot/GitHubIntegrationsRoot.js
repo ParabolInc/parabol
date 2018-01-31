@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql} from 'react-relay';
+import {graphql, QueryRenderer} from 'react-relay';
 import GitHubIntegrations from 'universal/modules/teamDashboard/components/GitHubIntegrations/GitHubIntegrations';
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import {connect} from 'react-redux';

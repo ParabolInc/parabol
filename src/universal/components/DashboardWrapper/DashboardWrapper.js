@@ -6,7 +6,7 @@ import DashSidebar from 'universal/components/Dashboard/DashSidebar';
 import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import {QueryRenderer} from 'react-relay';
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
 import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';

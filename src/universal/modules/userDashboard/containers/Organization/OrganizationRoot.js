@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql} from 'react-relay';
+import {graphql, QueryRenderer} from 'react-relay';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization';
 import {cacheConfig} from 'universal/utils/constants';

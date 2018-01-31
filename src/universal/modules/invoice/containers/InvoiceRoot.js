@@ -4,7 +4,7 @@ import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import {QueryRenderer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import Invoice from 'universal/modules/invoice/components/Invoice/Invoice';
 

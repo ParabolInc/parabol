@@ -558,7 +558,7 @@ babel-eslint@^7.1.1:
     babel-types "^6.23.0"
     babylon "^6.17.0"
 
-babel-generator@^6.18.0, babel-generator@^6.24.1, babel-generator@^6.26.0:
+babel-generator@^6.18.0, babel-generator@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-generator/-/babel-generator-6.26.0.tgz#ac1ae20070b79f6e3ca1d3269613053774f20dc5"
   dependencies:
@@ -757,13 +757,12 @@ babel-plugin-react-transform@2.0.2:
   dependencies:
     lodash "^4.6.1"
 
-babel-plugin-relay@^1.4.1:
+"babel-plugin-relay@file:../relay/dist/babel-plugin-relay":
   version "1.4.1"
-  resolved "https://registry.yarnpkg.com/babel-plugin-relay/-/babel-plugin-relay-1.4.1.tgz#8ac562bcb1fd2b3565d271aaced32be42c827353"
   dependencies:
     babel-runtime "^6.23.0"
     babel-types "^6.24.1"
-    graphql "^0.11.3"
+    graphql "^0.12.3"
 
 babel-plugin-static-fs@1.1.0:
   version "1.1.0"
@@ -3963,12 +3962,6 @@ graphql@^0.10.1:
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.10.5.tgz#c9be17ca2bdfdbd134077ffd9bbaa48b8becd298"
   dependencies:
     iterall "^1.1.0"
-
-graphql@^0.11.3:
-  version "0.11.7"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.11.7.tgz#e5abaa9cb7b7cccb84e9f0836bf4370d268750c6"
-  dependencies:
-    iterall "1.1.3"
 
 graphql@^0.12.3:
   version "0.12.3"
@@ -7471,9 +7464,8 @@ react-redux@^5.0.6:
     loose-envify "^1.1.0"
     prop-types "^15.5.10"
 
-react-relay@^1.4.1:
+"react-relay@file:../relay/dist/react-relay":
   version "1.4.1"
-  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-1.4.1.tgz#61f7b5802d70446e154490f9d0fceec9150ebda5"
   dependencies:
     babel-runtime "^6.23.0"
     fbjs "^0.8.14"
@@ -7849,11 +7841,10 @@ regjsparser@^0.1.4:
   dependencies:
     jsesc "~0.5.0"
 
-relay-compiler@^1.4.1:
+"relay-compiler@file:../relay/dist/relay-compiler":
   version "1.4.1"
-  resolved "https://registry.yarnpkg.com/relay-compiler/-/relay-compiler-1.4.1.tgz#10e83f0f5de8db3d000851a4c0e435e7dd1deb95"
   dependencies:
-    babel-generator "^6.24.1"
+    babel-generator "^6.26.0"
     babel-polyfill "^6.20.0"
     babel-preset-fbjs "^2.1.4"
     babel-runtime "^6.23.0"
@@ -7864,7 +7855,7 @@ relay-compiler@^1.4.1:
     fast-glob "^1.0.1"
     fb-watchman "^2.0.0"
     fbjs "^0.8.14"
-    graphql "^0.11.3"
+    graphql "^0.12.3"
     immutable "~3.7.6"
     relay-runtime "1.4.1"
     signedsource "^1.0.0"
@@ -7881,6 +7872,12 @@ relay-runtime@1.4.1:
     babel-runtime "^6.23.0"
     fbjs "^0.8.14"
     relay-debugger-react-native-runtime "0.0.10"
+
+"relay-runtime@file:../relay/dist/relay-runtime/":
+  version "1.4.1"
+  dependencies:
+    babel-runtime "^6.23.0"
+    fbjs "^0.8.14"
 
 remove-trailing-separator@^1.0.1:
   version "1.1.0"

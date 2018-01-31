@@ -1,7 +1,6 @@
 import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
-import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
 import {GQL_COMPLETE, GQL_DATA, GQL_ERROR, GQL_EXEC, GQL_START, GQL_STOP} from 'universal/utils/constants';
 import tryParse from 'universal/utils/tryParse';
 import handlerProvider from 'universal/utils/relay/handlerProvider';
@@ -22,7 +21,7 @@ const defaultErrorHandler = (err) => {
 
 export default class Atmosphere extends Environment {
   static getKey = (name, variables) => {
-    return stableJSONStringify({name, variables});
+    return JSON.stringify({name, variables});
   };
 
   constructor() {

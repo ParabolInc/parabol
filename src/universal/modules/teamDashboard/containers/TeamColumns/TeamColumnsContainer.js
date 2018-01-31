@@ -105,6 +105,7 @@ export default createFragmentContainer(
           node {
             # grab these so we can sort correctly
             id
+            content
             status
             sortOrder
             assignee {

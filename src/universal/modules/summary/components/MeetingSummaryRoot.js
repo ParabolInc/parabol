@@ -6,7 +6,7 @@ import {maintainSocket} from 'redux-socket-cluster';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import {QueryRenderer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingSummary from 'universal/modules/summary/components/MeetingSummary';
 

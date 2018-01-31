@@ -78,7 +78,7 @@ const Team = (props) => {
           />
           }
           Filter:
-          <input value={contentFilter} onChange={updateFilter} />
+          <input onChange={updateFilter} />
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
           {isSettings ?
