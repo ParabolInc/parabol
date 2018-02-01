@@ -121,26 +121,6 @@ class AgendaItem extends Component {
   }
 }
 
-AgendaItem.propTypes = {
-  agendaItem: PropTypes.object.isRequired,
-  agendaLength: PropTypes.number.isRequired,
-  canNavigate: PropTypes.bool,
-  connectDragSource: PropTypes.func.isRequired,
-  content: PropTypes.string,
-  disabled: PropTypes.bool,
-  handleRemove: PropTypes.func,
-  idx: PropTypes.number,
-  isCurrent: PropTypes.bool,
-  isComplete: PropTypes.bool,
-  facilitatorPhase: PropTypes.oneOf(phaseArray),
-  facilitatorPhaseItem: PropTypes.number,
-  gotoAgendaItem: PropTypes.func,
-  localPhase: PropTypes.oneOf(phaseArray),
-  localPhaseItem: PropTypes.number,
-  styles: PropTypes.object,
-  teamMember: PropTypes.object
-};
-
 const warmLinkHover = tinycolor(appTheme.palette.warm).darken(15).toHexString();
 const lineHeight = '1.5rem';
 
