@@ -202,7 +202,6 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '5rem',
-    maxHeight: '15rem',
     width: '100%'
   },
 
