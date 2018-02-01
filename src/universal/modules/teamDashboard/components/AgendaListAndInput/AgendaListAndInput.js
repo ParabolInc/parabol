@@ -29,24 +29,26 @@ const AgendaListAndInput = (props) => {
   );
   return (
     <div className={rootStyles}>
-      <AgendaList
-        agendaPhaseItem={agendaPhaseItem}
-        canNavigate={canNavigate}
-        context={context}
-        disabled={disabled}
-        facilitatorPhase={facilitatorPhase}
-        facilitatorPhaseItem={facilitatorPhaseItem}
-        gotoAgendaItem={gotoAgendaItem}
-        localPhase={localPhase}
-        localPhaseItem={localPhaseItem}
-        team={team}
-      />
-      <AgendaInput
-        context={context}
-        disabled={disabled}
-        setAgendaInputRef={setAgendaInputRef}
-        team={team}
-      />
+      <div className={css(styles.inner)}>
+        <AgendaList
+          agendaPhaseItem={agendaPhaseItem}
+          canNavigate={canNavigate}
+          context={context}
+          disabled={disabled}
+          facilitatorPhase={facilitatorPhase}
+          facilitatorPhaseItem={facilitatorPhaseItem}
+          gotoAgendaItem={gotoAgendaItem}
+          localPhase={localPhase}
+          localPhaseItem={localPhaseItem}
+          team={team}
+        />
+        <AgendaInput
+          context={context}
+          disabled={disabled}
+          setAgendaInputRef={setAgendaInputRef}
+          team={team}
+        />
+      </div>
     </div>
   );
 };
@@ -76,7 +78,16 @@ const styleThunk = (theme, {context}) => ({
     flexDirection: 'column',
     flex: 1,
     paddingTop: context === 'dashboard' ? 0 : ui.meetingSidebarGutter,
+    position: 'relative',
     width: '100%'
+  },
+
+  inner: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0
   },
 
   disabled: {

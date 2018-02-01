@@ -33,8 +33,7 @@ AgendaInput.propTypes = {
 
 const styleThunk = () => ({
   agendaInputBlock: {
-    paddingTop: '.25rem',
-    paddingBottom: '.25rem',
+    padding: `${ui.meetingSidebarGutter} 0`,
     position: 'relative'
   }
 });
