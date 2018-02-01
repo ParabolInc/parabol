@@ -155,11 +155,11 @@ class AgendaList extends Component {
                 canNavigate={canNavigateItems}
                 disabled={disabled}
                 facilitatorPhase={facilitatorPhase}
-                facilitatorPhaseItem={facilitatorPhaseItem}
                 gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
                 handleRemove={this.removeItemFactory(item.id)}
                 idx={idx}
                 isCurrent={idx + 1 === agendaPhaseItem}
+                isFacilitator={idx + 1 === facilitatorPhaseItem}
                 localPhase={localPhase}
                 localPhaseItem={localPhaseItem}
                 ref={(c) => {

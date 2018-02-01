@@ -33,8 +33,8 @@ class AgendaItem extends Component {
     idx: PropTypes.number,
     isCurrent: PropTypes.bool,
     isComplete: PropTypes.bool,
+    isFacilitator: PropTypes.bool,
     facilitatorPhase: PropTypes.oneOf(phaseArray),
-    facilitatorPhaseItem: PropTypes.number,
     gotoAgendaItem: PropTypes.func,
     localPhase: PropTypes.oneOf(phaseArray),
     localPhaseItem: PropTypes.number,
@@ -46,12 +46,14 @@ class AgendaItem extends Component {
     this.scrollToWhenCurrent();
   }
 
-  componentDidUpdate() {
-    this.scrollToWhenCurrent();
+  componentDidUpdate(prevProps) {
+    if (!prevProps.isFacilitator && this.props.isFacilitator) {
+      this.scrollToWhenCurrent();
+    }
   }
 
   scrollToWhenCurrent = () => {
-    if (this.props.isCurrent && this.el) {
+    if (this.props.isFacilitator && this.el) {
       this.el.scrollIntoViewIfNeeded();
     }
   };
@@ -67,17 +69,16 @@ class AgendaItem extends Component {
       disabled,
       idx,
       isCurrent,
+      isFacilitator,
       handleRemove,
       localPhase,
       facilitatorPhase,
-      facilitatorPhaseItem,
       gotoAgendaItem,
       localPhaseItem,
       styles
     } = this.props;
     const {content, isComplete, teamMember = {}} = agendaItem;
     const isLocal = idx + 1 === localPhaseItem;
-    const isFacilitator = idx + 1 === facilitatorPhaseItem;
     const canDelete = !isComplete && !isCurrent && !disabled;
     const inAgendaGroupLocal = inAgendaGroup(localPhase);
     const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
