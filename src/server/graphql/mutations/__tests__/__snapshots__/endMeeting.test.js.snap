@@ -4,7 +4,7 @@ exports[`endMeeting generates a meeting summary and sets sort order 1`] = `
 Object {
   "agendaItem": Array [
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 3,
       "id": 0,
@@ -16,7 +16,7 @@ Object {
       "updatedAt": 2017-01-01T06:59:59.998Z,
     },
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 1,
@@ -28,7 +28,7 @@ Object {
       "updatedAt": 2017-01-01T06:59:59.999Z,
     },
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 5,
       "id": 2,
@@ -97,7 +97,7 @@ Object {
         "projects": Array [
           Object {
             "assigneeId": 8,
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
             "id": 20,
             "status": "active",
             "tags": Array [],
@@ -112,7 +112,7 @@ Object {
         "projects": Array [
           Object {
             "assigneeId": 7,
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
             "id": 21,
             "status": "active",
             "tags": Array [],
@@ -124,14 +124,14 @@ Object {
     "projects": Array [
       Object {
         "assigneeId": 7,
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
         "id": 21,
         "status": "active",
         "tags": Array [],
       },
       Object {
         "assigneeId": 8,
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
         "id": 20,
         "status": "active",
         "tags": Array [],
@@ -147,7 +147,7 @@ Object {
     Object {
       "agendaId": 2,
       "assigneeId": 9,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 5,
       "id": 10,
@@ -162,7 +162,7 @@ Object {
     Object {
       "agendaId": 1,
       "assigneeId": 8,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 11,
@@ -176,7 +176,7 @@ Object {
     Object {
       "agendaId": 0,
       "assigneeId": 7,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 3,
       "id": 12,
@@ -191,7 +191,7 @@ Object {
     Object {
       "agendaId": 0,
       "assigneeId": 7,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.996Z,
       "createdBy": 3,
       "id": 13,
@@ -209,7 +209,7 @@ Object {
       "content": "Shalom",
       "language": "Hebrew",
     },
-    "checkInQuestion": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What are you grateful for today?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "checkInQuestion": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What are you grateful for today?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,
@@ -335,7 +335,7 @@ exports[`endMeeting generates a meeting summary and sets sort order with pre-exi
 Object {
   "agendaItem": Array [
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 3,
       "id": 0,
@@ -347,7 +347,7 @@ Object {
       "updatedAt": 2017-01-01T07:00:00.000Z,
     },
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 4,
       "id": 1,
@@ -359,7 +359,7 @@ Object {
       "updatedAt": 2017-01-01T06:59:59.999Z,
     },
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Agenda Item[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 5,
       "id": 2,
@@ -421,7 +421,7 @@ Object {
         "projects": Array [
           Object {
             "assigneeId": 7,
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
             "id": 21,
             "status": "active",
             "tags": Array [],
@@ -436,7 +436,7 @@ Object {
         "projects": Array [
           Object {
             "assigneeId": 8,
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
             "id": 22,
             "status": "active",
             "tags": Array [],
@@ -451,7 +451,7 @@ Object {
         "projects": Array [
           Object {
             "assigneeId": 9,
-            "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+            "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
             "id": 23,
             "status": "active",
             "tags": Array [],
@@ -463,21 +463,21 @@ Object {
     "projects": Array [
       Object {
         "assigneeId": 9,
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
         "id": 23,
         "status": "active",
         "tags": Array [],
       },
       Object {
         "assigneeId": 8,
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
         "id": 22,
         "status": "active",
         "tags": Array [],
       },
       Object {
         "assigneeId": 7,
-        "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+        "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
         "id": 21,
         "status": "active",
         "tags": Array [],
@@ -492,7 +492,7 @@ Object {
   "project": Array [
     Object {
       "assigneeId": 7,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 3,
       "id": 10,
@@ -506,7 +506,7 @@ Object {
     Object {
       "agendaId": 0,
       "assigneeId": 7,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[1]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.998Z,
       "createdBy": 3,
       "id": 11,
@@ -521,7 +521,7 @@ Object {
     Object {
       "agendaId": 1,
       "assigneeId": 8,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[2]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.997Z,
       "createdBy": 4,
       "id": 12,
@@ -535,7 +535,7 @@ Object {
     Object {
       "agendaId": 2,
       "assigneeId": 9,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[3]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.996Z,
       "createdBy": 5,
       "id": 13,
@@ -550,7 +550,7 @@ Object {
     Object {
       "agendaId": 2,
       "assigneeId": 9,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[4]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.995Z,
       "createdBy": 5,
       "id": 14,
@@ -568,7 +568,7 @@ Object {
       "content": "Shalom",
       "language": "Hebrew",
     },
-    "checkInQuestion": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What are you grateful for today?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "checkInQuestion": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What are you grateful for today?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,
