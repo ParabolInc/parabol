@@ -89,6 +89,7 @@ class AgendaList extends Component {
                 gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
                 handleRemove={this.removeItemFactory(item.id)}
                 idx={idx}
+                isCurrent={idx + 1 === agendaPhaseItem}
                 localPhase={localPhase}
                 localPhaseItem={localPhaseItem}
                 ref={(c) => {

@@ -1,6 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Component} from 'react';
 import {DragSource as dragSource} from 'react-dnd';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
@@ -21,73 +21,109 @@ const projectSource = {
   }
 };
 
-const AgendaItem = (props) => {
-  const {
-    agendaItem,
-    agendaLength,
-    canNavigate,
-    connectDragSource,
-    disabled,
-    idx,
-    handleRemove,
-    agendaPhaseItem,
-    localPhase,
-    facilitatorPhase,
-    facilitatorPhaseItem,
-    gotoAgendaItem,
-    localPhaseItem,
-    styles
-  } = props;
-  const {content, isComplete, teamMember = {}} = agendaItem;
-  const isCurrent = idx + 1 === agendaPhaseItem;
-  const isLocal = idx + 1 === localPhaseItem;
-  const isFacilitator = idx + 1 === facilitatorPhaseItem;
-  const canDelete = !isComplete && !isCurrent && !disabled;
-  const inAgendaGroupLocal = inAgendaGroup(localPhase);
-  const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
-  const rootStyles = css(
-    styles.root,
-    inAgendaGroupLocal && isLocal && styles.itemLocal,
-    inAgendaGroupFacilitator && isFacilitator && styles.itemFacilitator,
-    isComplete && styles.processed,
-    disabled && styles.rootDisabled,
-    isComplete && disabled && styles.processedDisabled
-  );
-  const contentStyles = css(
-    styles.link,
-    isComplete && styles.strikethrough,
-    canNavigate && styles.canNavigate,
-    inAgendaGroupLocal && isLocal && styles.descLocal,
-    inAgendaGroupFacilitator && isFacilitator && styles.descFacilitator
-  );
-  const delStyles = css(
-    styles.del,
-    disabled && styles.delDisabled,
-    // we can make the position of the del (x) more centered when there’s a low number of agenda items
-    agendaLength < 10 ? styles.delBumpRight : styles.delBumpLeft
-  );
-  return connectDragSource(
-    <div className={rootStyles} title={content}>
-      {canDelete &&
-      <div className={delStyles} onClick={handleRemove}>
-        <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}} />
+class AgendaItem extends Component {
+  static propTypes = {
+    agendaItem: PropTypes.object.isRequired,
+    agendaLength: PropTypes.number.isRequired,
+    canNavigate: PropTypes.bool,
+    connectDragSource: PropTypes.func.isRequired,
+    content: PropTypes.string,
+    disabled: PropTypes.bool,
+    handleRemove: PropTypes.func,
+    idx: PropTypes.number,
+    isCurrent: PropTypes.bool,
+    isComplete: PropTypes.bool,
+    facilitatorPhase: PropTypes.oneOf(phaseArray),
+    facilitatorPhaseItem: PropTypes.number,
+    gotoAgendaItem: PropTypes.func,
+    localPhase: PropTypes.oneOf(phaseArray),
+    localPhaseItem: PropTypes.number,
+    styles: PropTypes.object,
+    teamMember: PropTypes.object
+  };
+
+  componentDidMount() {
+    this.scrollToWhenCurrent();
+  }
+
+  componentDidUpdate() {
+    this.scrollToWhenCurrent();
+  }
+
+  scrollToWhenCurrent = () => {
+    if (this.props.isCurrent && this.el) {
+      this.el.scrollIntoViewIfNeeded();
+    }
+  };
+
+  el = null;
+
+  render() {
+    const {
+      agendaItem,
+      agendaLength,
+      canNavigate,
+      connectDragSource,
+      disabled,
+      idx,
+      isCurrent,
+      handleRemove,
+      localPhase,
+      facilitatorPhase,
+      facilitatorPhaseItem,
+      gotoAgendaItem,
+      localPhaseItem,
+      styles
+    } = this.props;
+    const {content, isComplete, teamMember = {}} = agendaItem;
+    const isLocal = idx + 1 === localPhaseItem;
+    const isFacilitator = idx + 1 === facilitatorPhaseItem;
+    const canDelete = !isComplete && !isCurrent && !disabled;
+    const inAgendaGroupLocal = inAgendaGroup(localPhase);
+    const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
+    const rootStyles = css(
+      styles.root,
+      inAgendaGroupLocal && isLocal && styles.itemLocal,
+      inAgendaGroupFacilitator && isFacilitator && styles.itemFacilitator,
+      isComplete && styles.processed,
+      disabled && styles.rootDisabled,
+      isComplete && disabled && styles.processedDisabled
+    );
+    const contentStyles = css(
+      styles.link,
+      isComplete && styles.strikethrough,
+      canNavigate && styles.canNavigate,
+      inAgendaGroupLocal && isLocal && styles.descLocal,
+      inAgendaGroupFacilitator && isFacilitator && styles.descFacilitator
+    );
+    const delStyles = css(
+      styles.del,
+      disabled && styles.delDisabled,
+      // we can make the position of the del (x) more centered when there’s a low number of agenda items
+      agendaLength < 10 ? styles.delBumpRight : styles.delBumpLeft
+    );
+    return connectDragSource(
+      <div className={rootStyles} title={content} ref={(el) => { this.el = el; }}>
+        {canDelete &&
+        <div className={delStyles} onClick={handleRemove}>
+          <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}} />
+        </div>
+        }
+        <div className={css(styles.index)}>{idx + 1}.</div>
+        <div className={css(styles.content)} onClick={gotoAgendaItem}>
+          <a className={contentStyles}>{content}</a>”
+        </div>
+        <div className={css(styles.author)}>
+          <Avatar hasBadge={false} picture={teamMember.picture} size="smallest" />
+        </div>
       </div>
-      }
-      <div className={css(styles.index)}>{idx + 1}.</div>
-      <div className={css(styles.content)} onClick={gotoAgendaItem}>
-        <a className={contentStyles}>{content}</a>”
-      </div>
-      <div className={css(styles.author)}>
-        <Avatar hasBadge={false} picture={teamMember.picture} size="smallest" />
-      </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 AgendaItem.propTypes = {
   agendaItem: PropTypes.object.isRequired,
   agendaLength: PropTypes.number.isRequired,
-  agendaPhaseItem: PropTypes.number,
   canNavigate: PropTypes.bool,
   connectDragSource: PropTypes.func.isRequired,
   content: PropTypes.string,
