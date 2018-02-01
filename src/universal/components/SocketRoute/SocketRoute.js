@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 import {Switch} from 'react-router-dom';
 import {socketClusterReducer} from 'redux-socket-cluster';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import withReducer from '../../decorators/withReducer/withReducer';
 
@@ -32,9 +31,7 @@ export default connect()(
   withAtmosphere(
     withReducer({socket: socketClusterReducer})(
       dragDropContext(HTML5Backend)(
-        socketWithPresence(
-          SocketRoute
-        )
+        SocketRoute
       )
     )
   )

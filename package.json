@@ -207,6 +207,7 @@
     "shortid": "^2.2.8",
     "string-score": "^1.0.1",
     "stripe": "^4.24.0",
+    "subscriptions-transport-ws": "^0.9.5",
     "tinycolor2": "^1.4.1",
     "tlds": "^1.192.0",
     "unicode-substring": "^1.0.0",
