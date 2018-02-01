@@ -3,6 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
 import {GITHUB} from 'universal/utils/constants';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
+import fetch from 'node-fetch';
 
 const getCollabsOnPersonalRepos = async (personalRepos, providerUserName, accessToken) => {
   const integrationIdsToJoin = [];

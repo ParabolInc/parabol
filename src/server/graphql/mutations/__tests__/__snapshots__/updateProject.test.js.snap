@@ -6,7 +6,7 @@ exports[`updateProject updates the content of the project 1`] = `
 Object {
   "project": Object {
     "assigneeId": 3,
-    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -19,7 +19,7 @@ Object {
   },
   "projectHistory": Array [
     Object {
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "id": 4,
       "projectId": 0,
       "tags": Array [],
@@ -33,7 +33,7 @@ exports[`updateProject updates the content of the project quickly and do not tri
 Object {
   "project": Object {
     "assigneeId": 3,
-    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -47,7 +47,7 @@ Object {
   "projectHistory": Array [
     Object {
       "assigneeId": 3,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Updated content\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "id": 4,
       "projectId": 0,
       "status": "active",
@@ -62,7 +62,7 @@ exports[`updateProject updates the sortOrder without changing updatedAt or makin
 Object {
   "project": Object {
     "assigneeId": 3,
-    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -81,7 +81,7 @@ exports[`updateProject updates the status of the project 1`] = `
 Object {
   "project": Object {
     "assigneeId": 3,
-    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -107,7 +107,7 @@ exports[`updateProject updates the teamMember of the project slowly and trigger 
 Object {
   "project": Object {
     "assigneeId": 3,
-    "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+    "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "createdAt": 2017-01-01T06:59:59.999Z,
     "createdBy": 1,
     "id": 0,
@@ -121,7 +121,7 @@ Object {
   "projectHistory": Array [
     Object {
       "assigneeId": 3,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "id": 4,
       "projectId": 0,
       "status": "active",
@@ -129,7 +129,7 @@ Object {
     },
     Object {
       "assigneeId": 3,
-      "content": "{\\"entityMap\\":{},\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}]}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "id": 5,
       "projectId": 0,
       "status": "active",
