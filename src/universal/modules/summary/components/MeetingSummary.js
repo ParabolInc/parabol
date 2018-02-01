@@ -50,7 +50,7 @@ export default createFragmentContainer(
             id
             content
             status
-            teamMemberId
+            assigneeId
             tags
           }
           picture

@@ -17,7 +17,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (source, {githubGlobalId}, {authToken, socket}) => {
+  resolve: async (source, {githubGlobalId}, {authToken, socket, dataLoader}) => {
     const r = getRethink();
     const {id} = fromGlobalId(githubGlobalId);
 
@@ -52,7 +52,7 @@ export default {
         userIds: []
       });
 
-    const archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner);
+    const archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner, dataLoader);
     const githubRepoRemoved = {
       deletedId: githubGlobalId,
       archivedProjectIds

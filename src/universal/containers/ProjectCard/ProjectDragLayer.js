@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import NullableProject from 'universal/components/NullableProject/NullableProject';
 import {DragLayer as dragLayer} from 'react-dnd';
 import ui from 'universal/styles/ui';

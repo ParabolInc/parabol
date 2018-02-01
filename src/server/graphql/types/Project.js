@@ -1,4 +1,12 @@
-import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import GitHubProject from 'server/graphql/types/GitHubProject';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
@@ -6,7 +14,7 @@ import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 import ProjectEditorDetails from 'server/graphql/types/ProjectEditorDetails';
 import ProjectStatusEnum from 'server/graphql/types/ProjectStatusEnum';
 import Team from 'server/graphql/types/Team';
-import TeamMember from 'server/graphql/types/TeamMember';
+import Assignee from 'server/graphql/types/Assignee';
 
 const Project = new GraphQLObjectType({
   name: 'Project',
@@ -40,6 +48,10 @@ const Project = new GraphQLObjectType({
       // TODO replace this with ProjectIntegration
       type: GitHubProject
     },
+    isSoftProject: {
+      type: GraphQLBoolean,
+      description: 'true if this is assigned to a soft team member'
+    },
     sortOrder: {
       type: GraphQLFloat,
       description: 'the shared sort order for projects on the team dash & user dash'
@@ -64,16 +76,18 @@ const Project = new GraphQLObjectType({
         return dataLoader.get('teams').load(teamId);
       }
     },
-    teamMember: {
-      type: TeamMember,
-      description: 'The team member that owns this project',
-      resolve: ({teamMemberId}, args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(teamMemberId);
+    assignee: {
+      type: Assignee,
+      description: 'The team member (or soft team member) that owns this project',
+      resolve: ({assigneeId, isSoftProject}, args, {dataLoader}) => {
+        return isSoftProject ?
+          dataLoader.get('softTeamMembers').load(assigneeId) :
+          dataLoader.get('teamMembers').load(assigneeId);
       }
     },
-    teamMemberId: {
+    assigneeId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team member assigned to this project, or the creator if content is null'
+      description: 'The id of the team member (or soft team member) assigned to this project'
     },
     updatedAt: {
       type: GraphQLISO8601Type,

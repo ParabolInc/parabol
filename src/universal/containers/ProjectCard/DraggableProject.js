@@ -1,22 +1,20 @@
 // @flow
 import type {Node} from 'react';
+import React, {Component} from 'react';
 import type {Project, ProjectID} from 'universal/types/project';
 import type {UserID} from 'universal/types/user';
-
-import React, { Component } from 'react';
 import {findDOMNode} from 'react-dom';
-import {graphql} from 'react-relay';
+import {createFragmentContainer, graphql} from 'react-relay';
 import NullableProject from 'universal/components/NullableProject/NullableProject';
 import {PROJECT} from 'universal/utils/constants';
 import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
 import ProjectDragLayer from './ProjectDragLayer';
-import {createFragmentContainer} from 'react-relay';
 
 const importantProjectProps = [
   'content',
   'status',
-  'teamMember',
+  'assignee',
   'sortOrder',
   'integration'
 ];
@@ -151,7 +149,7 @@ export default createFragmentContainer(
       }
       status
       sortOrder
-      teamMember {
+      assignee {
         id
       }
       ...NullableProject_project

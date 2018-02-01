@@ -1,5 +1,10 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {makeResolveNotificationForViewer, resolveTeam} from 'server/graphql/resolvers';
+import {
+  makeResolveNotificationForViewer,
+  resolveProjects,
+  resolveSoftTeamMembers,
+  resolveTeam
+} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
 import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
@@ -7,6 +12,8 @@ import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import OrgApproval from 'server/graphql/types/OrgApproval';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
+import Project from 'server/graphql/types/Project';
 
 
 const InviteTeamMembersPayload = new GraphQLObjectType({
@@ -72,6 +79,16 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
         if (!removedOrgApprovalIds || removedOrgApprovalIds.length === 0) return null;
         return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds);
       }
+    },
+    newSoftTeamMembers: {
+      type: new GraphQLList(SoftTeamMember),
+      description: 'The new invitees who have yet to accept the invite or get approved to receive an invite',
+      resolve: resolveSoftTeamMembers
+    },
+    unarchivedSoftProjects: {
+      type: new GraphQLList(Project),
+      description: 'Any projects that were recently assigned to a reactivated soft team member',
+      resolve: resolveProjects
     }
   })
 });

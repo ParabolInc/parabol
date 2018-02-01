@@ -74,7 +74,20 @@ export const resolveProjects = async ({projectIds}, args, {authToken, dataLoader
   const projects = await dataLoader.get('projects').loadMany(projectIds);
   const {userId} = projects[0];
   const isViewer = userId === getUserId(authToken);
-  return isViewer ? projects : nullIfEmpty(projects.filter((p) => !p.tags.includes('private')));
+  const teamProjects = projects.filter(({teamId}) => authToken.tms.includes(teamId));
+  return isViewer ? teamProjects : nullIfEmpty(teamProjects.filter((p) => !p.tags.includes('private')));
+};
+
+export const resolveSoftTeamMember = async ({softTeamMemberId, softTeamMember}, args, {authToken, dataLoader}) => {
+  const teamMember = softTeamMemberId ? await dataLoader.get('softTeamMembers').load(softTeamMemberId) : softTeamMember;
+  return authToken.tms.includes(teamMember.teamId) ? teamMember : undefined;
+};
+
+export const resolveSoftTeamMembers = async ({softTeamMemberIds, softTeamMembers}, args, {authToken, dataLoader}) => {
+  const {tms} = authToken;
+  const teamMembers = softTeamMemberIds ? await dataLoader.get('softTeamMembers').loadMany(softTeamMemberIds) : softTeamMembers;
+  if (!teamMembers || teamMembers.length === 0) return null;
+  return teamMembers.filter((teamMember) => tms.includes(teamMember.teamId));
 };
 
 export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
@@ -117,4 +130,10 @@ export const resolveFilterByTeam = (resolver, getTeamId) => async (source, args,
   const {teamIdFilter} = source;
   const resolvedArray = await resolver(source, args, context);
   return teamIdFilter ? resolvedArray.filter((obj) => getTeamId(obj) === teamIdFilter) : resolvedArray;
+};
+
+export const resolveArchivedSoftProjects = async ({archivedSoftProjectIds}, args, {authToken, dataLoader}) => {
+  const {tms} = authToken;
+  const softProjects = await dataLoader.get('projects').loadMany(archivedSoftProjectIds);
+  return softProjects.filter(({teamId}) => tms.includes(teamId));
 };

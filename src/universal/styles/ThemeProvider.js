@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Component, Children } from 'react';
+import {Children, Component} from 'react';
 
 export default class ThemeProvider extends Component {
   constructor(props, context) {

@@ -39,7 +39,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
     }));
 
   // add in the assignee changes
-  if (oldProject.teamMemberId !== project.teamMemberId) {
+  if (oldProject.assigneeId !== project.assigneeId) {
     if (project.userId !== changeUserId && !usersToIgnore.includes(project.userId)) {
       notificationsToAdd.push({
         id: shortid.generate(),

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import makeReducer from 'universal/redux/makeReducer';
 
 export default (reducerObj) => (ComposedComponent) => {

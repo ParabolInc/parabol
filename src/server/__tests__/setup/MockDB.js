@@ -3,7 +3,7 @@ import testUsers from 'server/__tests__/setup/testUsers';
 import newInvitee from 'server/__tests__/utils/newInvitee';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import getRethink from 'server/database/rethinkDriver';
-import {PENDING, INVITATION_LIFESPAN, ADD_USER} from 'server/utils/serverConstants';
+import {ADD_USER, INVITATION_LIFESPAN, PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
 import {ACTIVE, ADDED_USERS, BILLING_LEADER, CHECKIN, LOBBY, PERSONAL, PRO} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
@@ -32,6 +32,7 @@ class MockDB {
       orgApproval: [],
       project: [],
       projectHistory: [],
+      softTeamMember: [],
       team: [],
       teamMember: [],
       user: []
@@ -233,7 +234,7 @@ class MockDB {
           picture: teamMember.picture,
           preferredName: teamMember.preferredName,
           present: true,
-          projects: projects.filter((a) => a.teamMemberId === teamMember.id)
+          projects: projects.filter((a) => a.assigneeId === teamMember.id)
         })),
         projects
       });
@@ -313,7 +314,7 @@ class MockDB {
       status: ACTIVE,
       tags: [],
       teamId,
-      teamMemberId,
+      assigneeId: teamMemberId,
       updatedAt: new Date(__anHourAgo - table.length),
       userId,
       ...overrides
@@ -321,14 +322,27 @@ class MockDB {
   }
 
   newProjectHistory(overrides = {}) {
-    const {project: {id, content, teamMemberId, status, updatedAt}} = this.context;
+    const {project: {id, content, assigneeId, status, updatedAt}} = this.context;
     return this.closeout('projectHistory', {
       id: `${id}::${shortid.generate()}`,
       projectId: id,
       content,
-      teamMemberId,
+      assigneeId,
       status,
       updatedAt,
+      ...overrides
+    });
+  }
+
+  newSoftTeamMember(overrides = {}) {
+    const table = this.db.softTeamMember;
+    return this.closeout('softTeamMember', {
+      id: shortid.generate(),
+      email: this.context.invitation.email || this.context.orgApproval.email,
+      createdAt: new Date(__anHourAgo + table.length),
+      isActive: true,
+      preferredName: 'newSoft',
+      teamId: this.context.team.id,
       ...overrides
     });
   }

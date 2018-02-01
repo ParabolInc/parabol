@@ -33,7 +33,7 @@ export default {
       newInvitations,
       inviteeApprovedNotifications,
       teamInviteNotifications
-    } = await approveToOrg(email, orgId, viewerId);
+    } = await approveToOrg(email, orgId, viewerId, dataLoader);
 
     const invitationIds = newInvitations.map(({id}) => id);
 

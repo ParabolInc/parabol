@@ -3,6 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {ACTIVE, FUTURE} from 'server/../universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 
 const SEED_PROJECTS = [
@@ -51,7 +52,7 @@ export default (userId, teamId) => {
     createdBy: userId,
     tags: getTagsFromEntityMap(JSON.parse(proj.content).entityMap),
     teamId,
-    teamMemberId: `${userId}::${teamId}`,
+    assigneeId: toTeamMemberId(teamId, userId),
     userId,
     updatedAt: now
   }));
@@ -64,7 +65,7 @@ export default (userId, teamId) => {
           content: change('new_val')('content'),
           projectId: change('new_val')('id'),
           status: change('new_val')('status'),
-          teamMemberId: change('new_val')('teamMemberId'),
+          assigneeId: change('new_val')('assigneeId'),
           updatedAt: change('new_val')('updatedAt')
         }))
       );

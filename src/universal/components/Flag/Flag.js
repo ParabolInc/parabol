@@ -1,5 +1,5 @@
 // @flow
-import type { Node } from 'react';
+import type {Node} from 'react';
 
 type NodeOrThunk = Node | () => Node;
 
@@ -46,7 +46,7 @@ const getNode = (nodeOrThunk: NodeOrThunk): Node =>
  *   />
  */
 const Flag = <T>(props: Props<T>) => {
-  const { when, switchOnVal, render, otherwise } = props;
+  const {when, switchOnVal, render, otherwise} = props;
   const val = typeof when === 'function' ? when() : when;
   if (switchOnVal && !(render || otherwise)) {
     return getNode(switchOnVal(val));

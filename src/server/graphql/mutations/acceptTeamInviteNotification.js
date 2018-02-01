@@ -5,8 +5,10 @@ import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NEW_AUTH_TOKEN, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {INVITATION, NEW_AUTH_TOKEN, PROJECT, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
+import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 
 export default {
   type: AcceptTeamInviteNotificationPayload,
@@ -29,15 +31,29 @@ export default {
 
     // RESOLUTION
     const {inviteeEmail, teamId} = notification;
-    const {removedNotification, removedInvitationId: invitationId} = await acceptTeamInvite(teamId, authToken, inviteeEmail);
+    const {
+      hardenedProjects,
+      removedNotification,
+      removedInvitationId: invitationId,
+      removedSoftTeamMember
+    } = await acceptTeamInvite(teamId, authToken, inviteeEmail);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
     const data = {
+      userId: viewerId,
       teamId,
       teamMemberId,
       removedNotification,
       invitationId,
-      userId: viewerId
+      softTeamMemberId: removedSoftTeamMember.id,
+      projectIds: hardenedProjects.map(({id}) => id)
     };
+
+    if (hardenedProjects.length > 0) {
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
+      teamMembers.forEach(({userId}) => {
+        publish(PROJECT, userId, AcceptTeamInviteEmailPayload, data, subOptions);
+      });
+    }
 
     // Send the new team member a welcome & a new token
     const tms = authToken.tms.concat(teamId);

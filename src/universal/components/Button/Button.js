@@ -17,8 +17,8 @@ const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid') =
     borderColor: buttonColor,
     color,
 
-    ':hover': { color },
-    ':focus': { color }
+    ':hover': {color},
+    ':focus': {color}
   };
 };
 
@@ -101,11 +101,11 @@ class Button extends Component {
     if (e.button === 0) {
       this.setState({pressedDown: true});
     }
-  }
+  };
 
   onMouseUp = (e) => {
     if (this.state.pressedDown) {
-      this.setState({ pressedDown: false });
+      this.setState({pressedDown: false});
     }
     // We don’t want 'focus' styles to linger after the click (TA)
     e.currentTarget.blur();
@@ -119,7 +119,7 @@ class Button extends Component {
     if (onMouseLeave) {
       onMouseLeave(e);
     }
-  }
+  };
 
   render() {
     const {

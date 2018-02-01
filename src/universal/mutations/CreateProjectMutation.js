@@ -34,8 +34,10 @@ graphql`
         content
         status
         tags
-        teamMember {
-          picture
+        assignee {
+          ...on TeamMember {
+            picture
+          }
           preferredName
         }
       }
@@ -87,7 +89,7 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
     },
     optimisticUpdater: (store) => {
       const {teamId, userId} = newProject;
-      const teamMemberId = toTeamMemberId(teamId, userId);
+      const assigneeId = toTeamMemberId(teamId, userId);
       const now = new Date().toJSON();
       const projectId = clientTempId(teamId);
       const optimisticProject = {
@@ -99,11 +101,11 @@ const CreateProjectMutation = (environment, newProject, area, onError, onComplet
         createdBy: userId,
         updatedAt: now,
         tags: [],
-        teamMemberId,
+        assigneeId,
         content: newProject.content || makeEmptyStr()
       };
       const project = createProxyRecord(store, 'Project', optimisticProject)
-        .setLinkedRecord(store.get(teamMemberId), 'teamMember')
+        .setLinkedRecord(store.get(assigneeId), 'assignee')
         .setLinkedRecord(store.get(teamId), 'team');
       const editorPayload = getOptimisticProjectEditor(store, userId, projectId, isEditing);
       handleEditProject(editorPayload, store);

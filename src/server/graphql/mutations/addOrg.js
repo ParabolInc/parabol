@@ -54,7 +54,7 @@ export default {
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
 
-    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(invitees, teamId, viewerId);
+    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(invitees, teamId, viewerId, dataLoader);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
     const data = {orgId, teamId, teamMemberId, invitationIds, teamInviteNotifications};
     teamInviteNotifications.forEach((notification) => {

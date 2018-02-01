@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Landing from 'universal/modules/landing/components/Landing/Landing';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import {
-  APP_UPGRADE_PENDING_KEY,
+  APP_UPGRADE_PENDING_DONE,
   APP_UPGRADE_PENDING_FALSE,
-  APP_UPGRADE_PENDING_RELOAD,
-  APP_UPGRADE_PENDING_DONE
+  APP_UPGRADE_PENDING_KEY,
+  APP_UPGRADE_PENDING_RELOAD
 } from 'universal/utils/constants';
 import {connect} from 'react-redux';
 import injectGlobals from 'universal/styles/hepha';

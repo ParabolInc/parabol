@@ -1,4 +1,5 @@
 import ms from 'ms';
+
 /**
  * Big stuff:
  */
@@ -213,15 +214,7 @@ export const GQL_COMPLETE = 'GQL_COMPLETE';
 export const GQL_DATA = 'GQL_DATA';
 
 /* Relay Subscription Event Types */
-export const ADDED = 'added';
 export const UPDATED = 'updated';
-export const REMOVED = 'removed';
-// used just for projects
-export const EDITED = 'edited';
-// used just for meetings
-export const MOVED = 'moved';
-export const FACILITATOR_CHANGED = 'facilitatorChanged';
-
 
 /* Parabol Payment level */
 export const PERSONAL = 'personal';

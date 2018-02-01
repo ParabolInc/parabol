@@ -2,6 +2,8 @@ import {commitMutation} from 'react-relay';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 
 graphql`
   fragment CancelApprovalMutation_orgApproval on CancelApprovalPayload {
@@ -20,14 +22,43 @@ graphql`
   }
 `;
 
+graphql`
+  fragment CancelApprovalMutation_project on CancelApprovalPayload {
+    archivedSoftProjects {
+      ...CompleteProjectFrag @relay(mask: false)
+    }
+  }
+`;
+
+graphql`
+  fragment CancelApprovalMutation_teamMember on CancelApprovalPayload {
+    removedSoftTeamMember {
+      id
+      teamId
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation CancelApprovalMutation($orgApprovalId: ID!) {
     cancelApproval(orgApprovalId: $orgApprovalId) {
       ...CancelApprovalMutation_notification @relay(mask: false)
       ...CancelApprovalMutation_orgApproval @relay(mask: false)
+      ...CancelApprovalMutation_teamMember @relay(mask: false)
+      ...CancelApprovalMutation_project @relay(mask: false)
     }
   }
 `;
+
+export const cancelApprovalProjectUpdater = (payload, store, viewerId) => {
+  const archivedSoftProjects = payload.getLinkedRecords('archivedSoftProjects');
+  handleUpsertProjects(archivedSoftProjects, store, viewerId);
+};
+
+export const cancelApprovalTeamMemberUpdater = (payload, store) => {
+  const removedSoftTeamMember = payload.getLinkedRecord('removedSoftTeamMember');
+  handleRemoveSoftTeamMembers(removedSoftTeamMember, store);
+};
 
 export const cancelApprovalOrgApprovalUpdater = (payload, store) => {
   const orgApproval = payload.getLinkedRecord('orgApproval');
@@ -48,6 +79,8 @@ const CancelApprovalMutation = (environment, orgApprovalId, teamId, onError, onC
       const payload = store.getRootField('cancelApproval');
       cancelApprovalNotificationUpdater(payload, store, viewerId);
       cancelApprovalOrgApprovalUpdater(payload, store);
+      cancelApprovalTeamMemberUpdater(payload, store);
+      cancelApprovalProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const orgApproval = store.get(orgApprovalId)

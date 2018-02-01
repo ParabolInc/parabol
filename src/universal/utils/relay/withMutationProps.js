@@ -7,13 +7,11 @@ export default (ComposedComponent) => {
   return class WithMutationProps extends Component {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`;
 
-    constructor(props) {
-      super(props);
-      this.state = {
-        submitting: false,
-        error: undefined
-      };
-    }
+    state = {
+      submitting: false,
+      error: undefined,
+      dirty: false
+    };
 
     componentWillMount() {
       this._mounted = true;
@@ -41,6 +39,12 @@ export default (ComposedComponent) => {
       }
     };
 
+    setDirty = () => {
+      if (this._mounted && !this.state.dirty) {
+        this.setState({dirty: true});
+      }
+    };
+
     submitMutation = () => {
       if (this._mounted) {
         this.setState({
@@ -50,10 +54,12 @@ export default (ComposedComponent) => {
     };
 
     render() {
-      const {error, submitting} = this.state;
+      const {dirty, error, submitting} = this.state;
       return (<ComposedComponent
         {...this.props}
+        dirty={dirty}
         error={error}
+        setDirty={this.setDirty}
         submitting={submitting}
         submitMutation={this.submitMutation}
         onCompleted={this.onCompleted}
@@ -64,6 +70,7 @@ export default (ComposedComponent) => {
 };
 
 // const propTypes = {
+//  setDirty: PropTypes.func.isRequired,
 //  error: PropTypes.any,
 //  submitting: PropTypes.bool,
 //  submitMutation: PropTypes.func.isRequired,

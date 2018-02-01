@@ -22,6 +22,7 @@ module.exports = {
       "always"
     ],
     "babel/generator-star-spacing": OFF,
+    "babel/object-curly-spacing": ["error", "never"],
     "global-require": OFF,
     "import/default": OFF,
     "import/extensions": [
@@ -81,6 +82,7 @@ module.exports = {
     "import",
     "jest",
     "react",
+    "babel"
   ],
   "parser": "babel-eslint",
   "settings": {

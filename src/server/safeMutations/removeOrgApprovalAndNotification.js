@@ -8,7 +8,7 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
   const status = approvedBy ? APPROVED : DENIED;
   const emails = Array.isArray(maybeEmails) ? maybeEmails : [maybeEmails];
   const r = getRethink();
-  return r({
+  const {removedOrgApprovals, removedRequestNotifications} = await r({
     removedOrgApprovals: r.table('OrgApproval')
       .getAll(r.args(emails), {index: 'email'})
       .filter({orgId, status: PENDING})
@@ -31,6 +31,11 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
       .delete({returnChanges: true})('changes')('old_val')
       .default([])
   });
+
+  return {
+    removedOrgApprovals,
+    removedRequestNotifications
+  };
 };
 
 export default removeOrgApprovalAndNotification;

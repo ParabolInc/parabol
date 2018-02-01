@@ -49,7 +49,7 @@ export default {
       ))
       .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
       .orderBy('createdAt')
-      .pluck('id', 'content', 'status', 'tags', 'teamMemberId')
+      .pluck('id', 'content', 'status', 'tags', 'assigneeId')
       .coerceTo('array')
       .default([])
       .do((projects) => {
@@ -75,7 +75,7 @@ export default {
                 preferredName: teamMember('preferredName'),
                 present: teamMember('isCheckedIn').not().not()
                   .default(false),
-                projects: projects.filter({teamMemberId: teamMember('id')})
+                projects: projects.filter({assigneeId: teamMember('id')})
               })),
             projects
           }, {
@@ -123,7 +123,7 @@ export default {
         .coerceTo('array')
     });
 
-    const archivedProjects = await archiveProjectsForDB(projectsToArchive);
+    const archivedProjects = await archiveProjectsForDB(projectsToArchive, dataLoader);
     const {meetingNumber} = completedMeeting;
     const userIds = completedMeeting.invitees
       .filter((invitee) => invitee.present)

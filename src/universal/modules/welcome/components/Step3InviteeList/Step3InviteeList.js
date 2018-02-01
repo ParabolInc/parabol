@@ -29,7 +29,7 @@ const Step3InviteeList = (props) => {
           task
         };
       });
-      InviteTeamMembersMutation(atmosphere, serverInvitees, teamId, dispatch);
+      InviteTeamMembersMutation(atmosphere, {invitees: serverInvitees, teamId}, dispatch);
     }
     history.push(`/team/${teamId}`); // redirect leader to their new team
 

@@ -1,4 +1,4 @@
-import {applyMiddleware, createStore, combineReducers} from 'redux';
+import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import auth, {DEFAULT_AUTH_REDUCER_NAME} from '../authDuck';
 import ReduxAuthEngine from '../AuthEngine';
@@ -10,8 +10,8 @@ const reducers = combineReducers({[REDUCER_NAME]: auth});
 let store;
 let rae;
 segmentActions.selectSegmentTraits = jest.fn(() => ({email: 'a@a.co'}));
-segmentActions.segmentEventIdentify = jest.fn(() => ({ type: '@@segment/EVENT' }));
-segmentActions.segmentEventReset = jest.fn(() => ({ type: '@@segment/EVENT' }));
+segmentActions.segmentEventIdentify = jest.fn(() => ({type: '@@segment/EVENT'}));
+segmentActions.segmentEventReset = jest.fn(() => ({type: '@@segment/EVENT'}));
 
 beforeEach(() => {
   store = createStore(reducers, {}, applyMiddleware(thunk));

@@ -14,6 +14,7 @@ export default function makeProjectSchema() {
       .test((str) => str && !columnArray.includes(str) && 'That isn’t a status!'),
     teamId: id,
     userId: id,
-    sortOrder: (value) => value.float()
+    sortOrder: (value) => value.float(),
+    assigneeId: id
   });
 }

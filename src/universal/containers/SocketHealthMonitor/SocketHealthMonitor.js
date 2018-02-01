@@ -7,11 +7,11 @@
  * @flow
  */
 import raven from 'raven-js';
-import { Component } from 'react';
-import type { Dispatch } from 'redux';
+import {Component} from 'react';
+import type {Dispatch} from 'redux';
 
-import { connect } from 'react-redux';
-import { showError, showSuccess, hide } from 'universal/modules/toast/ducks/toastDuck';
+import {connect} from 'react-redux';
+import {hide, showError, showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 
 type ToastOpts = {
   autoDismiss?: number,
@@ -44,21 +44,21 @@ class WebSocketHealthMonitor extends Component<Props> {
   }
 
   activeSocketError() {
-    const { socketData } = this.props;
+    const {socketData} = this.props;
     return socketData ? socketData.error || socketData.authError : null;
   }
 
   hasErrors() {
-    const { socketData } = this.props;
+    const {socketData} = this.props;
     return Boolean(socketData && (socketData.error || socketData.authError));
   }
 
   isConnected() {
-    const { socketData } = this.props;
+    const {socketData} = this.props;
     if (!socketData) {
       return false;
     }
-    const { authState, socketState } = socketData;
+    const {authState, socketState} = socketData;
     return authState === 'authenticated' && socketState === 'open';
   }
 
@@ -69,21 +69,21 @@ class WebSocketHealthMonitor extends Component<Props> {
     if (!this.props.socketData) {
       return;
     }
-    const { authState, error, authError, socketState } = this.props.socketData;
+    const {authState, error, authError, socketState} = this.props.socketData;
     const theError = error || authError;
     const isAuthError = theError === authError;
     raven.captureBreadcrumb({
       category: 'network',
       level: 'error',
       message: isAuthError ? 'WebSocket authentication error' : 'WebSocket error',
-      data: { authState, socketState }
+      data: {authState, socketState}
     });
     raven.captureException(theError);
   }
 
   // Shows a toast if there's a new socket error, and hides it (with a "reconnected" toast) when we're reconnected
   maybePopToast() {
-    const { socketData, errorToastId, showError, showSuccess, hideError } = this.props; // eslint-disable-line no-shadow
+    const {socketData, errorToastId, showError, showSuccess, hideError} = this.props; // eslint-disable-line no-shadow
     if (!socketData) {
       return;
     }
@@ -114,7 +114,7 @@ class WebSocketHealthMonitor extends Component<Props> {
 }
 
 const mapStateToProps = (state) => {
-  const { socket, toasts } = state;
+  const {socket, toasts} = state;
 
   const errorToast = toasts.find((toast) => toast.__isWebSocketError__);
   const errorToastId = errorToast ? errorToast.nid : null;
@@ -131,7 +131,7 @@ const mapStateToProps = (state) => {
     };
   }
 
-  return { socketData: null, errorToastId };
+  return {socketData: null, errorToastId};
 };
 
 const mapDispatchToProps = <A: { type: string }>(dispatch: Dispatch<A>) => ({

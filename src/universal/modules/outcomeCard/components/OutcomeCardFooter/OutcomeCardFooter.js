@@ -8,17 +8,30 @@ import OutcomeCardMessage from 'universal/modules/outcomeCard/components/Outcome
 import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 import appTheme from 'universal/styles/theme/theme';
-import ui from 'universal/styles/ui';
+import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {USER_DASH} from 'universal/utils/constants';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
+import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
+import Loadable from 'react-loadable';
+import LoadableMenu from 'universal/components/LoadableMenu';
+import LoadableLoading from 'universal/components/LoadableLoading';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
 const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
-const fetchAssignMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot');
+
+const LoadableAssignMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
+    'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
 
 const originAnchor = {
   vertical: 'bottom',
@@ -76,7 +89,7 @@ class OutcomeCardFooter extends Component {
       toggleMenuState
     } = this.props;
     const showTeam = area === USER_DASH;
-    const {projectId, owner, integration, tags, team} = project;
+    const {projectId, assignee, integration, tags, team} = project;
     const {teamId, teamName} = team;
     const {service} = integration || {};
     const isArchived = isProjectArchived(tags);
@@ -95,20 +108,21 @@ class OutcomeCardFooter extends Component {
         (<button
           className={css(styles.avatarButton)}
           tabIndex={service && '-1'}
-          title={`Assigned to ${owner.preferredName}`}
+          title={`Assigned to ${assignee.preferredName}`}
           type="button"
+          ref={(c) => { this.assignRef = c; }}
         >
           <div className={avatarStyles}>
             <img
-              alt={owner.preferredName}
+              alt={assignee.preferredName}
               className={css(styles.avatarImg)}
-              src={owner.picture}
+              src={assignee.picture || avatarUser}
               // hack because aphrodite loads styles on next tick, which causes the cell height adjuster to bork >:-(
               style={{height, width: height}}
             />
           </div>
           <div className={css(styles.avatarLabel)}>
-            {owner.preferredName}
+            {assignee.preferredName}
           </div>
         </button>)
     );
@@ -119,19 +133,21 @@ class OutcomeCardFooter extends Component {
           <div className={css(styles.avatarBlock)}>
             {service || showTeam || isArchived ?
               ownerAvatarOrTeamName :
-              <AsyncMenuContainer
-                fetchMenu={fetchAssignMenu}
+              <LoadableMenu
+                LoadableComponent={LoadableAssignMenu}
                 maxWidth={350}
                 maxHeight={225}
                 originAnchor={assignOriginAnchor}
                 queryVars={{
                   area,
+                  assignRef: this.assignRef,
                   project,
                   teamId
                 }}
                 targetAnchor={assignTargetAnchor}
                 toggle={ownerAvatarOrTeamName}
-                toggleMenuState={toggleMenuState}
+                onOpen={toggleMenuState}
+                onClose={toggleMenuState}
               />
             }
           </div>
@@ -319,14 +335,15 @@ export default createFragmentContainer(
     fragment OutcomeCardFooter_project on Project {
       projectId: id
       content
-      owner: teamMember {
-        picture
+      assignee {
+        ...on TeamMember {
+          picture
+        }
         preferredName
       }
       integration {
         service
       }
-      
       tags
       team {
         teamId: id

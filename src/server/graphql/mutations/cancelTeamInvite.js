@@ -3,7 +3,11 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NOTIFICATION, TEAM_INVITE} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATION, PROJECT, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
+import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
+import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
+import getProjectsByAssigneeId from 'server/safeQueries/getProjectsByAssigneeIds';
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
 export default {
   name: 'CancelTeamInvite',
@@ -55,7 +59,23 @@ export default {
             .default(null);
         })
     });
-    const data = {invitationId, removedTeamInviteNotification};
+
+    const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader);
+    const {id: softTeamMemberId} = removedSoftTeamMember;
+    const softProjectsToArchive = await getProjectsByAssigneeId(softTeamMemberId, dataLoader);
+    const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive, dataLoader);
+    const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
+    const data = {invitationId, removedTeamInviteNotification, archivedSoftProjectIds, softTeamMemberId};
+
+    if (archivedSoftProjectIds.length > 0) {
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
+      const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
+      userIdsOnTeams.forEach((userId) => {
+        publish(PROJECT, userId, CancelTeamInvitePayload, data, subOptions);
+      });
+    }
+
+    publish(TEAM_MEMBER, teamId, CancelTeamInvitePayload, data, subOptions);
     publish(INVITATION, teamId, CancelTeamInvitePayload, data, subOptions);
     if (removedTeamInviteNotification) {
       const {userIds: [userId]} = removedTeamInviteNotification;

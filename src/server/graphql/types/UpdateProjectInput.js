@@ -11,9 +11,9 @@ const UpdateProjectInput = new GraphQLInputObjectType({
     content: {type: GraphQLString},
     sortOrder: {type: GraphQLFloat},
     status: {type: ProjectStatusEnum},
-    userId: {
+    assigneeId: {
       type: GraphQLID,
-      description: 'the owner of the project'
+      description: 'The teamMemberId or softTeamMemberId'
     }
   })
 });

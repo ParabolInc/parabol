@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem';
 
 export default class InvoiceLineItemContainer extends Component {
@@ -14,7 +14,9 @@ export default class InvoiceLineItemContainer extends Component {
     };
   }
 
-  toggleDetails = () => { this.setState({ detailsOpen: !this.state.detailsOpen }); };
+  toggleDetails = () => {
+    this.setState({detailsOpen: !this.state.detailsOpen});
+  };
 
   render() {
     return (

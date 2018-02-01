@@ -33,7 +33,7 @@ class TeamColumnsContainer extends Component {
   filterByTeamMember(props) {
     const {teamMemberFilterId, viewer: {projects, team: {teamMembers}}} = props;
     const edges = teamMemberFilterId ?
-      projects.edges.filter(({node}) => node.teamMember.id === teamMemberFilterId) :
+      projects.edges.filter(({node}) => node.assignee.id === teamMemberFilterId) :
       projects.edges;
     const edgesWithTeamMembers = edges.map((edge) => {
       return {
@@ -53,7 +53,7 @@ class TeamColumnsContainer extends Component {
   }
 
   render() {
-    const {myTeamMemberId, teamMemberFilterId, viewer: { projects: allProjects }} = this.props;
+    const {myTeamMemberId, teamMemberFilterId, viewer: {projects: allProjects}} = this.props;
     const {projects} = this.state;
     return (
       <ProjectColumns
@@ -92,7 +92,7 @@ export default createFragmentContainer(
             id
             status
             sortOrder
-            teamMember {
+            assignee {
               id
             }
             ...DraggableProject_project

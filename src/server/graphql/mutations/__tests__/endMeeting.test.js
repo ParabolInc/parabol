@@ -34,7 +34,7 @@ describe('endMeeting', () => {
     // VERIFY
     const db = await fetchAndSerialize({
       agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('teamMemberId'),
-      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
+      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'assigneeId'}).orderBy('content'),
       meeting: r.table('Meeting').get(meetingId),
       team: r.table('Team').get(teamId),
       teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName')
@@ -43,7 +43,7 @@ describe('endMeeting', () => {
     expect(dataLoader.isShared()).toEqual(true);
   });
 
-  test.only('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
+  test('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
     // SETUP
     sendEmailPromise.default = jest.fn(() => true);
     const r = getRethink();
@@ -63,7 +63,7 @@ describe('endMeeting', () => {
     // VERIFY
     const db = await fetchAndSerialize({
       agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('content'),
-      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
+      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'assigneeId'}).orderBy('content'),
       meeting: r.table('Meeting').get(meetingId),
       team: r.table('Team').get(teamId),
       teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName')

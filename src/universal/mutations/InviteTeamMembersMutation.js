@@ -10,6 +10,9 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import handleAddSoftTeamMembers from 'universal/mutations/handlers/handleAddSoftTeamMembers';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
 graphql`
   fragment InviteTeamMembersMutation_invitation on InviteTeamMembersPayload {
@@ -62,6 +65,20 @@ graphql`
     team {
       name
     }
+    newSoftTeamMembers {
+      id
+      email
+      preferredName
+      teamId
+    }
+  }
+`;
+
+graphql`
+  fragment InviteTeamMembersMutation_project on InviteTeamMembersPayload {
+    unarchivedSoftProjects {
+      ...CompleteProjectFrag @relay(mask: false)
+    }
   }
 `;
 
@@ -73,9 +90,15 @@ const mutation = graphql`
       ...InviteTeamMembersMutation_notification @relay(mask:false)
       ...InviteTeamMembersMutation_orgApproval @relay(mask: false)
       ...InviteTeamMembersMutation_teamMember @relay(mask: false)
+      ...InviteTeamMembersMutation_project @relay(mask: false)
     }
   }
 `;
+
+export const inviteTeamMembersProjectUpdater = (payload, store, viewerId) => {
+  const unarchivedSoftProjects = payload.getLinkedRecords('unarchivedSoftProjects');
+  handleUpsertProjects(unarchivedSoftProjects, store, viewerId);
+};
 
 const popInvitationToast = (payload, dispatch) => {
   const invitationsSent = payload.getLinkedRecords('invitationsSent');
@@ -188,7 +211,7 @@ export const inviteTeamMembersNotificationUpdater = (payload, store, viewerId, o
   handleAddTeams(team, store, viewerId);
 };
 
-export const inviteTeamMembesrOrgApprovalUpdater = (payload, store) => {
+export const inviteTeamMembersOrgApprovalUpdater = (payload, store) => {
   const orgApprovalsRemoved = payload.getLinkedRecords('orgApprovalsRemoved');
   handleRemoveOrgApprovals(orgApprovalsRemoved, store);
 
@@ -204,24 +227,51 @@ export const inviteTeamMembersTeamUpdater = (payload, store, viewerId) => {
 export const inviteTeamMembersTeamMemberUpdater = (payload, store, dispatch, isMutator) => {
   const reactivatedTeamMembers = payload.getLinkedRecords('reactivatedTeamMembers');
   handleAddTeamMembers(reactivatedTeamMembers, store);
-  if (isMutator) {
-    popReactivationToast(reactivatedTeamMembers, dispatch);
-  } else {
-    popTeamMemberReactivatedToast(payload, dispatch);
+  const newSoftTeamMembers = payload.getLinkedRecords('newSoftTeamMembers');
+  handleAddSoftTeamMembers(newSoftTeamMembers, store);
+  if (reactivatedTeamMembers) {
+    if (isMutator) {
+      popReactivationToast(reactivatedTeamMembers, dispatch);
+    } else {
+      popTeamMemberReactivatedToast(payload, dispatch);
+    }
   }
 };
 
-const InviteTeamMembersMutation = (environment, invitees, teamId, dispatch, onError, onCompleted) => {
+const InviteTeamMembersMutation = (environment, variables, dispatch, onError, onCompleted) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {invitees, teamId},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('inviteTeamMembers');
       inviteTeamMembersInvitationUpdater(payload, store);
       popInvitationToast(payload, dispatch);
-      inviteTeamMembesrOrgApprovalUpdater(payload, store);
+      inviteTeamMembersOrgApprovalUpdater(payload, store);
       popOrgApprovalToast(payload, dispatch);
       inviteTeamMembersTeamMemberUpdater(payload, store, dispatch, true);
+      inviteTeamMembersProjectUpdater(payload, store, viewerId);
+    },
+    optimisticUpdater: (store) => {
+      // add the invitees as soft team members
+      const {invitees, teamId} = variables;
+      const team = store.get(teamId);
+      if (!team) return;
+      const softTeamMembers = team.getLinkedRecords('softTeamMembers') || [];
+      const now = new Date().toJSON();
+      const newSoftTeamMembers = invitees.map(({email}) => {
+        const softTeamMember = createProxyRecord(store, 'SoftTeamMember', {
+          email,
+          preferredName: email.split('@')[0],
+          createdAt: now,
+          isActive: true,
+          teamId
+        });
+        softTeamMember.setLinkedRecord(team, 'team');
+        return softTeamMember;
+      });
+      const nextSoftTeamMembers = softTeamMembers.concat(newSoftTeamMembers);
+      team.setLinkedRecords(nextSoftTeamMembers, 'softTeamMembers');
     },
     onCompleted,
     onError

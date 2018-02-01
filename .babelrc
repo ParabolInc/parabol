@@ -4,14 +4,24 @@
       "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
         ["relay"],
-        ["transform-decorators-legacy"]
+        [
+          "transform-decorators-legacy"
+        ],
+        [
+          "react-loadable/babel"
+        ]
       ]
     },
     "development": {
       "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
         ["relay"],
-        ["transform-decorators-legacy"]
+        [
+          "transform-decorators-legacy"
+        ],
+        [
+          "react-loadable/babel"
+        ]
       ]
     },
     "test": {
@@ -25,7 +35,12 @@
         ["transform-class-properties"],
         ["transform-es2015-modules-commonjs"],
         ["transform-es2015-destructuring"],
-        ["transform-es2015-classes"]
+        [
+          "transform-es2015-classes"
+        ],
+        [
+          "react-loadable/babel"
+        ]
       ]
     }
   }

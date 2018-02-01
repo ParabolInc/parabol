@@ -5,9 +5,9 @@ import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProje
 import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getInProxy from 'universal/utils/relay/getInProxy';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 graphql`
   fragment UpdateProjectMutation_project on UpdateProjectPayload {
@@ -71,7 +71,7 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
       updateProjectProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      const {id, content, userId} = updatedProject;
+      const {id, content, assigneeId} = updatedProject;
       const project = store.get(id);
       if (!project) return;
       const now = new Date();
@@ -80,12 +80,15 @@ const UpdateProjectMutation = (environment, updatedProject, area, onCompleted, o
         updatedAt: now.toJSON()
       };
       updateProxyRecord(project, optimisticProject);
-      if (userId) {
-        const teamMemberId = toTeamMemberId(project.getValue('teamId'), userId);
-        project.setValue(teamMemberId, 'teamMemberId');
-        const teamMember = store.get(teamMemberId);
-        if (teamMember) {
-          project.setLinkedRecord(teamMember, 'teamMember');
+      if (assigneeId) {
+        project.setValue(assigneeId, 'assigneeId');
+        const assignee = store.get(assigneeId);
+        if (assignee) {
+          project.setLinkedRecord(assignee, 'assignee');
+          if (assignee.getValue('__typename') === 'TeamMember') {
+            const {userId} = fromTeamMemberId(assigneeId);
+            project.setValue(userId, 'userId');
+          }
         }
       }
       if (content) {

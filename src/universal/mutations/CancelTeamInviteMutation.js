@@ -2,7 +2,8 @@ import {commitMutation} from 'react-relay';
 import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import getInProxy from 'universal/utils/relay/getInProxy';
-import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
+import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
 
 graphql`
   fragment CancelTeamInviteMutation_invitation on CancelTeamInvitePayload {
@@ -21,14 +22,46 @@ graphql`
   }
 `;
 
+graphql`
+  fragment CancelTeamInviteMutation_project on CancelTeamInvitePayload {
+    archivedSoftProjects {
+      id
+      content
+      tags
+      teamId
+    }
+  }
+`;
+
+graphql`
+  fragment CancelTeamInviteMutation_teamMember on CancelTeamInvitePayload {
+    removedSoftTeamMember {
+      id
+      teamId
+    }
+  }
+`;
+
 const mutation = graphql`
   mutation CancelTeamInviteMutation($invitationId: ID!) {
     cancelTeamInvite(invitationId: $invitationId) {
       ...CancelTeamInviteMutation_invitation @relay(mask: false)
       ...CancelTeamInviteMutation_notification @relay(mask: false)
+      ...CancelTeamInviteMutation_teamMember @relay(mask: false)
+      ...CancelTeamInviteMutation_project @relay(mask: false)
     }
   }
 `;
+
+export const cancelTeamInviteProjectUpdater = (payload, store, viewerId) => {
+  const archivedSoftProjects = payload.getLinkedRecords('archivedSoftProjects');
+  handleUpsertProjects(archivedSoftProjects, store, viewerId);
+};
+
+export const cancelTeamInviteTeamMemberUpdater = (payload, store) => {
+  const removedSoftTeamMember = payload.getLinkedRecord('removedSoftTeamMember');
+  handleRemoveSoftTeamMembers(removedSoftTeamMember, store);
+};
 
 export const cancelTeamInviteInvitationUpdater = (payload, store) => {
   const invitation = payload.getLinkedRecord('invitation');
@@ -49,9 +82,12 @@ const CancelTeamInviteMutation = (environment, invitationId, teamId, onError, on
       const payload = store.getRootField('cancelTeamInvite');
       cancelTeamInviteInvitationUpdater(payload, store);
       cancelTeamInviteNotificationUpdater(payload, store, viewerId);
+      cancelTeamInviteTeamMemberUpdater(payload, store);
+      cancelTeamInviteProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      const invitationProxy = createProxyRecord(store, 'Invitation', {id: invitationId, teamId});
+      const invitationProxy = store.get(invitationId);
+      invitationProxy.setValue(teamId, 'teamId');
       handleRemoveInvitations(invitationProxy, store);
     },
     onCompleted,

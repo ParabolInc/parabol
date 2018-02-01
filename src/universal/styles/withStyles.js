@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
 import getDisplayName from 'universal/utils/getDisplayName';
 

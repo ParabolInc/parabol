@@ -61,14 +61,14 @@ export const requiredId = (value) => value.required().matches(idRegex);
 
 export const requiredEmail = (value) => value
   .trim()
-  .required('You should enter an email here')
-  .matches(emailRegex, 'That doesn’t look like an email address');
+  .required('You should enter an email here.')
+  .matches(emailRegex, 'That doesn’t look like an email address.');
 
 export const makeInviteeTemplate = (inviteEmails, teamMemberEmails, pendingApprovalEmails = []) => {
   return (value) => value
     .trim()
-    .required('You should enter an email here')
-    .matches(emailRegex, 'That doesn’t look like an email address')
+    .required('You should enter an email here.')
+    .matches(emailRegex, 'That doesn’t look like an email address.')
     .test((inviteTeamMember) => {
       return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!';
     })

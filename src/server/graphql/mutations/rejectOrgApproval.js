@@ -7,7 +7,14 @@ import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authoriza
 import publish from 'server/utils/publish';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL} from 'universal/utils/constants';
+import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, PROJECT, TEAM_MEMBER} from 'universal/utils/constants';
+import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
+import getActiveTeamsByOrgId from 'server/safeQueries/getActiveTeamsByOrgId';
+import getProjectsByAssigneeIds from 'server/safeQueries/getProjectsByAssigneeIds';
+import promiseAllObj from 'universal/utils/promiseAllObj';
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
+import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail';
+import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -45,10 +52,19 @@ export default {
     // RESOLUTION
     const deniedByName = await r.table('User').get(viewerId)('preferredName').default('A Billing Leader');
 
-    // TODO include mutatorId in publishes once we're completely on Relay
-    const {removedOrgApprovals, removedRequestNotifications} =
-      await removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: viewerId});
+    const {removeOrgApp, teamsInOrg} = await promiseAllObj({
+      removeOrgApp: removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: viewerId}),
+      teamsInOrg: getActiveTeamsByOrgId(orgId, dataLoader)
+    });
+    const teamIdsInOrg = teamsInOrg.map(({id}) => id);
+    const softTeamMembersInOrg = await getActiveSoftTeamMembersByEmail(inviteeEmail, teamIdsInOrg, dataLoader);
+    await Promise.all(softTeamMembersInOrg.map(({email, teamId}) => removeSoftTeamMember(email, teamId, dataLoader)));
+    const softTeamMemberIdsInOrg = softTeamMembersInOrg.map(({id}) => id);
+    const softProjectsInOrg = await getProjectsByAssigneeIds(softTeamMemberIdsInOrg, dataLoader);
+    const archivedSoftProjects = await archiveProjectsForDB(softProjectsInOrg, dataLoader);
+    const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
 
+    const {removedOrgApprovals, removedRequestNotifications} = removeOrgApp;
     const deniedNotifications = removedRequestNotifications.map(({inviterUserId}) => ({
       id: shortid.generate(),
       type: DENY_NEW_USER,
@@ -64,16 +80,26 @@ export default {
     const data = {
       deniedNotificationIds: deniedNotifications.map(({id}) => id),
       removedOrgApprovalIds,
-      removedRequestNotifications
+      removedRequestNotifications,
+      softTeamMemberIds: softTeamMemberIdsInOrg,
+      archivedSoftProjectIds
     };
 
-    // publish the removed org approval to the team
     const teamIds = Array.from(new Set(removedOrgApprovals.map(({teamId}) => teamId)));
     teamIds.forEach((teamId) => {
       const teamData = {...data, teamId};
       publish(ORG_APPROVAL, teamId, RejectOrgApprovalPayload, teamData, subOptions);
+      publish(TEAM_MEMBER, teamId, RejectOrgApprovalPayload, teamData, subOptions);
     });
 
+    // publish the archived soft projects
+    if (archivedSoftProjectIds.length > 0) {
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamIds, dataLoader);
+      const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
+      userIdsOnTeams.forEach((userId) => {
+        publish(PROJECT, userId, RejectOrgApprovalPayload, data, subOptions);
+      });
+    }
     // publish all notifications
     removedRequestNotifications.concat(deniedNotifications).forEach((notification) => {
       const {userIds} = notification;

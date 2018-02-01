@@ -8,8 +8,9 @@ import getPendingInvitations from 'server/safeQueries/getPendingInvitations';
 import {isBillingLeader} from 'server/utils/authorization';
 import {ASK_APPROVAL, DENIED, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
+import unarchiveProjectsForReactivatedSoftTeamMembers from 'server/safeMutations/unarchiveProjectsForReactivatedSoftTeamMembers';
 
-const inviteTeamMembers = async (invitees, teamId, userId) => {
+const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
   const r = getRethink();
   const {name: teamName, orgId} = await r.table('Team').get(teamId).pluck('name', 'orgId');
 
@@ -58,15 +59,22 @@ const inviteTeamMembers = async (invitees, teamId, userId) => {
   const {reactivations, newPendingApprovals, removedApprovalsAndNotifications, teamInvites} = await resolvePromiseObj({
     reactivations: reactivateTeamMembersAndMakeNotifications(inviteesToReactivate, inviter),
     removedApprovalsAndNotifications: removeOrgApprovalAndNotification(orgId, approvalsToClear, {approvedBy: userId}),
-    teamInvites: sendTeamInvitations(inviteesToInvite, inviter),
-    newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter)
+    teamInvites: sendTeamInvitations(inviteesToInvite, inviter, undefined, dataLoader),
+    newPendingApprovals: createPendingApprovals(pendingApprovalEmails, inviter, dataLoader)
   });
 
+  const {newSoftTeamMembers: inviteeSoftTeamMemers} = teamInvites;
+  const {newSoftTeamMembers: approvalSoftTeamMembers} = newPendingApprovals;
+  const newSoftTeamMembers = inviteeSoftTeamMemers.concat(approvalSoftTeamMembers);
+  const softTeamMemberEmails = newSoftTeamMembers.map(({email}) => email);
+  const unarchivedSoftProjects = await unarchiveProjectsForReactivatedSoftTeamMembers(softTeamMemberEmails, teamId);
   return {
     ...newPendingApprovals,
     ...removedApprovalsAndNotifications,
     ...teamInvites,
-    reactivations
+    reactivations,
+    newSoftTeamMembers,
+    unarchivedSoftProjects
   };
 };
 

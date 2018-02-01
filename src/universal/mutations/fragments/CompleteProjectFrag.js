@@ -13,7 +13,6 @@ graphql`
     sortOrder
     status
     tags
-    teamMemberId
     updatedAt
     userId
     teamId
@@ -21,10 +20,12 @@ graphql`
       id
       name
     }
-    teamMember {
+    assignee {
       id
-      picture
       preferredName
+      ... on TeamMember {
+        picture
+      }
     }
   }
 `;

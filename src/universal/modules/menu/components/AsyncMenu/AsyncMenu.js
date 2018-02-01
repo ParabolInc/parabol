@@ -6,8 +6,6 @@ import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorBoundary from 'universal/components/ErrorBoundary';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
-import {textOverflow} from 'universal/styles/helpers';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
@@ -110,6 +108,7 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
 
   menuBlock: {
     maxWidth,
+    outline: 0,
     padding: '.25rem 0',
     position: 'absolute',
     zIndex: ui.ziMenu
@@ -126,17 +125,6 @@ const styleThunk = (theme, {maxHeight, maxWidth}) => ({
     paddingTop: ui.menuGutterVertical,
     textAlign: 'left',
     width: '100%'
-  },
-
-  label: {
-    ...textOverflow,
-    borderBottom: `1px solid ${appTheme.palette.mid30l}`,
-    color: ui.palette.dark,
-    fontSize: ui.menuItemFontSize,
-    fontWeight: 700,
-    lineHeight: ui.menuItemHeight,
-    marginBottom: ui.menuGutterVertical,
-    padding: `0 ${ui.menuGutterHorizontal}`
   }
 });
 

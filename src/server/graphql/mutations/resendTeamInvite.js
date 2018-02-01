@@ -37,7 +37,7 @@ export default {
       teamId
     };
     const invitees = [{email, fullName}];
-    await sendTeamInvitations(invitees, inviter, inviteId);
+    await sendTeamInvitations(invitees, inviter, inviteId, dataLoader);
     const data = {invitationId: inviteId};
     publish(INVITATION, teamId, ResendTeamInvitePayload, data, subOptions);
     return data;

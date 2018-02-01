@@ -5,19 +5,30 @@ import {removeTeamMemberProjectsUpdater} from 'universal/mutations/RemoveTeamMem
 import {updateProjectProjectUpdater} from 'universal/mutations/UpdateProjectMutation';
 import {endMeetingProjectUpdater} from 'universal/mutations/EndMeetingMutation';
 import {removeOrgUserProjectUpdater} from 'universal/mutations/RemoveOrgUserMutation';
+import {cancelApprovalProjectUpdater} from 'universal/mutations/CancelApprovalMutation';
+import {rejectOrgApprovalProjectUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
+import {cancelTeamInviteProjectUpdater} from 'universal/mutations/CancelTeamInviteMutation';
+import {inviteTeamMembersProjectUpdater} from 'universal/mutations/InviteTeamMembersMutation';
+import {acceptTeamInviteProjectUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
 
 const subscription = graphql`
   subscription ProjectSubscription {
     projectSubscription {
       __typename
+      ...AcceptTeamInviteMutation_project
+      ...AcceptTeamInviteEmailMutation_project
       ...RemoveTeamMemberMutation_project
+      ...CancelApprovalMutation_project
+      ...CancelTeamInviteMutation_project
       ...CreateGitHubIssueMutation_project,
       ...CreateProjectMutation_project,
       ...DeleteProjectMutation_project,
       ...EditProjectMutation_project
       ...EndMeetingMutation_project
-      ...UpdateProjectMutation_project
+      ...InviteTeamMembersMutation_project
+      ...RejectOrgApprovalMutation_project
       ...RemoveOrgUserMutation_project
+      ...UpdateProjectMutation_project
     }
   }
 `;
@@ -31,8 +42,18 @@ const ProjectSubscription = (environment, queryVariables, {dispatch, history, lo
       const payload = store.getRootField('projectSubscription');
       const type = payload.getValue('__typename');
       switch (type) {
+        case 'AcceptTeamInviteNotificationPayload':
+        case 'AcceptTeamInviteEmailPayload':
+          acceptTeamInviteProjectUpdater(payload, store, viewerId);
+          break;
         case 'RemoveTeamMemberOtherPayload':
           removeTeamMemberProjectsUpdater(payload, store, viewerId);
+          break;
+        case 'CancelApprovalPayload':
+          cancelApprovalProjectUpdater(payload, store, viewerId);
+          break;
+        case 'CancelTeamInvitePayload':
+          cancelTeamInviteProjectUpdater(payload, store, viewerId);
           break;
         case 'CreateProjectPayload':
           createProjectProjectUpdater(payload, store, viewerId, false);
@@ -45,6 +66,12 @@ const ProjectSubscription = (environment, queryVariables, {dispatch, history, lo
           break;
         case 'EndMeetingPayload':
           endMeetingProjectUpdater(payload, store, viewerId);
+          break;
+        case 'InviteTeamMembersPayload':
+          inviteTeamMembersProjectUpdater(payload, store, viewerId);
+          break;
+        case 'RejectOrgApprovalPayload':
+          rejectOrgApprovalProjectUpdater(payload, store, viewerId);
           break;
         case 'RemoveOrgUserPayload':
           removeOrgUserProjectUpdater(payload, store, viewerId);
