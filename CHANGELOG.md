@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.26.1 2018-Jan-31
+## Fixed
+- E2E Timeouts
+
 ## v0.26.0 2018-Jan-31
 ## Added
 - Soft team members
