@@ -77,12 +77,6 @@ export const requireWebsocket = (socket) => {
   }
 };
 
-export const requireWebsocketExchange = (exchange) => {
-  if (!exchange) {
-    throw errorObj({_error: 'this requires a websocket channel exchange'});
-  }
-};
-
 // undefined orgId will disable the filter
 export const getUserOrgDoc = (userId, orgId = '') => {
   const r = getRethink();

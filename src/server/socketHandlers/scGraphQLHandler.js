@@ -2,15 +2,14 @@ import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 
-export default function wsGraphQLHandler(exchange, socket, sharedDataLoader) {
+export default function wsGraphQLHandler(socket, sharedDataLoader) {
   return async function graphQLHandler(body, cb) {
     const {query, variables} = body;
     const authToken = socket.getAuthToken();
     const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken));
     const context = {
       authToken,
-      // TODO remove exchange & socket when we break GraphQL into a microservice
-      exchange,
+      // TODO remove socket when we break GraphQL into a microservice
       socket,
       socketId: socket.id,
       dataLoader

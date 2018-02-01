@@ -1,11 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import {
-  GraphQLNonNull,
-  GraphQLString
-} from 'graphql';
-import {
-  requireSU
-} from 'server/utils/authorization';
+import {GraphQLNonNull, GraphQLString} from 'graphql';
+import {requireSU} from 'server/utils/authorization';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
@@ -40,7 +35,6 @@ export default {
 
     // get a fresh token from auth0
 
-    // publish it on the exchange for the user memo channel
     return `${email} has been given access to beta features. Please have them log in again.`;
   }
 };

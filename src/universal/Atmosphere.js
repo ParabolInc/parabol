@@ -5,8 +5,6 @@ import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
 import tryParse from 'universal/utils/tryParse';
 import {SubscriptionClient} from 'subscriptions-transport-ws';
 
-const GRAPHQL_SUBSCRIPTION_ENDPOINT = `ws://${location.hostname}/graphql`;
-
 const makeErrorObj = (errors) => {
   const firstError = errors[0].message;
   return tryParse(firstError) ||
@@ -108,8 +106,17 @@ export default class Atmosphere extends Environment {
     const onComplete = () => {
       observer.onCompleted()
     };
-
-    this.subscriptionClient = new SubscriptionClient(GRAPHQL_SUBSCRIPTION_ENDPOINT, {reconnect: true, lazy: true});
+    if (!this.subscriptionClient) {
+      this.setSocket();
+      if (!this.authToken) {
+        throw new Error('No Auth Token provided!');
+      }
+      this.subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
+        reconnect: true,
+        lazy: true,
+        connectionParams: {authToken: this.authToken}
+      });
+    }
     const client = this.subscriptionClient
       .request({query: text, variables})
       .subscribe(onNext, onError, onComplete);
@@ -211,7 +218,7 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions = this.querySubscriptions.filter((qs) => {
       return !peerSubKeys.includes(qs.subKey) || !queryKeys.includes(qs.queryKey);
     });
-  }
+  };
 
   registerQuery = (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {
     const subConfigs = subscriptions.map((subCreator) => subCreator(this, queryVariables, subParams));
@@ -220,6 +227,7 @@ export default class Atmosphere extends Environment {
       const {name} = subscription();
       const subKey = Atmosphere.getKey(name, variables);
       const existingSub = this.querySubscriptions.find((qs) => qs.subKey === subKey);
+      this.setSocket();
       const disposable = existingSub ? existingSub.subscription :
         requestSubscription(this, {onError: defaultErrorHandler, ...config});
       return {

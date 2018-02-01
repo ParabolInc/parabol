@@ -211,6 +211,7 @@
     "tinycolor2": "^1.4.1",
     "tlds": "^1.192.0",
     "unicode-substring": "^1.0.0",
+    "uws": "^9.14.0",
     "webpack-s3-plugin": "^0.9.2"
   },
   "engines": {
