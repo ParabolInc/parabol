@@ -55,7 +55,7 @@ class AgendaItem extends Component {
 
   scrollToIfNeeded = () => {
     if (this.props.ensureVisible && this.el) {
-      this.el.scrollIntoViewIfNeeded();
+      this.el.scrollIntoView();
     }
   };
 
