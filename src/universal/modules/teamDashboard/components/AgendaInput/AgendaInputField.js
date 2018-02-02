@@ -31,6 +31,7 @@ const iconStyle = {
 };
 const AgendaInputField = (props) => {
   const {
+    afterSubmitAgendaItem,
     atmosphere,
     bindHotkey,
     disabled,
@@ -57,6 +58,7 @@ const AgendaInputField = (props) => {
     };
     AddAgendaItemMutation(atmosphere, newAgendaItem);
     inputRef.focus();
+    afterSubmitAgendaItem();
   };
 
   const focusOnInput = (e) => {
@@ -127,6 +129,7 @@ AgendaInputField.propTypes = {
   disabled: PropTypes.bool,
   handleSubmit: PropTypes.func,
   input: PropTypes.object,
+  afterSubmitAgendaItem: PropTypes.func.isRequired,
   setAgendaInputRef: PropTypes.func,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired

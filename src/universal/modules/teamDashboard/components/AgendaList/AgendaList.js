@@ -21,6 +21,25 @@ const columnTarget = {
 };
 
 class AgendaList extends Component {
+  static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
+    agendaPhaseItem: PropTypes.number,
+    canNavigate: PropTypes.bool,
+    connectDropTarget: PropTypes.func.isRequired,
+    context: PropTypes.string,
+    disabled: PropTypes.bool,
+    dragState: PropTypes.object.isRequired,
+    facilitatorPhase: PropTypes.oneOf(phaseArray),
+    facilitatorPhaseItem: PropTypes.number,
+    gotoAgendaItem: PropTypes.func,
+    localPhase: PropTypes.oneOf(phaseArray),
+    localPhaseItem: PropTypes.number,
+    styles: PropTypes.object,
+    visibleAgendaItemId: PropTypes.string,
+    submittedCount: PropTypes.number,
+    team: PropTypes.object.isRequired
+  };
+
   state = {
     overflownAbove: false,
     overflownBelow: false
@@ -132,6 +151,7 @@ class AgendaList extends Component {
       gotoAgendaItem,
       localPhase,
       localPhaseItem,
+      visibleAgendaItemId,
       styles,
       team
     } = this.props;
@@ -154,6 +174,7 @@ class AgendaList extends Component {
                 agendaPhaseItem={agendaPhaseItem}
                 canNavigate={canNavigateItems}
                 disabled={disabled}
+                ensureVisible={visibleAgendaItemId === item.id}
                 facilitatorPhase={facilitatorPhase}
                 gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
                 handleRemove={this.removeItemFactory(item.id)}
@@ -179,23 +200,6 @@ class AgendaList extends Component {
     );
   }
 }
-
-AgendaList.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  agendaPhaseItem: PropTypes.number,
-  canNavigate: PropTypes.bool,
-  connectDropTarget: PropTypes.func.isRequired,
-  context: PropTypes.string,
-  disabled: PropTypes.bool,
-  dragState: PropTypes.object.isRequired,
-  facilitatorPhase: PropTypes.oneOf(phaseArray),
-  facilitatorPhaseItem: PropTypes.number,
-  gotoAgendaItem: PropTypes.func,
-  localPhase: PropTypes.oneOf(phaseArray),
-  localPhaseItem: PropTypes.number,
-  styles: PropTypes.object,
-  team: PropTypes.object.isRequired
-};
 
 const styleThunk = () => ({
   root: {

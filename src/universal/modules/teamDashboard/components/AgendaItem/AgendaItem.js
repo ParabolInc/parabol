@@ -29,6 +29,7 @@ class AgendaItem extends Component {
     connectDragSource: PropTypes.func.isRequired,
     content: PropTypes.string,
     disabled: PropTypes.bool,
+    ensureVisible: PropTypes.bool,
     handleRemove: PropTypes.func,
     idx: PropTypes.number,
     isCurrent: PropTypes.bool,
@@ -43,17 +44,17 @@ class AgendaItem extends Component {
   };
 
   componentDidMount() {
-    this.scrollToWhenCurrent();
+    this.scrollToIfNeeded();
   }
 
   componentDidUpdate(prevProps) {
-    if (!prevProps.isFacilitator && this.props.isFacilitator) {
-      this.scrollToWhenCurrent();
+    if (!prevProps.ensureVisible && this.props.ensureVisible) {
+      this.scrollToIfNeeded();
     }
   }
 
-  scrollToWhenCurrent = () => {
-    if (this.props.isFacilitator && this.el) {
+  scrollToIfNeeded = () => {
+    if (this.props.ensureVisible && this.el) {
       this.el.scrollIntoViewIfNeeded();
     }
   };
