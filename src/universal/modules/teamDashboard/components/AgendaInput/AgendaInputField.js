@@ -56,7 +56,7 @@ const AgendaInputField = (props) => {
       teamMemberId: toTeamMemberId(teamId, atmosphere.userId)
     };
     AddAgendaItemMutation(atmosphere, newAgendaItem);
-    inputRef.blur();
+    inputRef.focus();
   };
 
   const focusOnInput = (e) => {
