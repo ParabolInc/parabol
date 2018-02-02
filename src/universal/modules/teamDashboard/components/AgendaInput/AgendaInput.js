@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
+import ui from 'universal/styles/ui';
 import {css} from 'aphrodite-local-styles/no-important';
 import {reduxForm, Field} from 'redux-form';
 import AgendaInputField from './AgendaInputField';
