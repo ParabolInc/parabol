@@ -1,13 +1,13 @@
 import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
-import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
 import tryParse from 'universal/utils/tryParse';
 import {SubscriptionClient} from 'subscriptions-transport-ws';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
 import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import raven from 'raven-js';
+import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 
 const makeErrorObj = (errors) => {
   const firstError = errors[0].message;
@@ -25,7 +25,28 @@ const defaultErrorHandler = (err) => {
 
 export default class Atmosphere extends Environment {
   static getKey = (name, variables) => {
-    return stableJSONStringify({name, variables});
+    return JSON.stringify({name, variables});
+  };
+  registerQuery = (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {
+    this.setNet('socket');
+    const subConfigs = subscriptions.map((subCreator) => subCreator(this, queryVariables, subParams));
+    const newQuerySubs = subConfigs.map((config) => {
+      const {subscription, variables = {}} = config;
+      const {name} = subscription();
+      const subKey = Atmosphere.getKey(name, variables);
+      const existingSub = this.querySubscriptions.find((qs) => qs.subKey === subKey);
+
+      const disposable = existingSub ? existingSub.subscription :
+        requestSubscription(this, {onError: defaultErrorHandler, ...config});
+      return {
+        subKey,
+        queryKey,
+        component: {dispose: releaseComponent},
+        subscription: disposable
+      };
+    });
+
+    this.querySubscriptions.push(...newQuerySubs);
   };
 
   fetchWS = async (operation, variables) => {
@@ -43,20 +64,9 @@ export default class Atmosphere extends Environment {
     });
   };
 
-  // use = (networkName) => {
-  //   // TODO build this out when we start hitting github directly
-  //   return this.environments[networkName];
-  // };
-
-  // addNet = (name, network) => {
-  //   this.networks[name] = network;
-  //   this.setNet(name);
-  // };
-
   setNet = (name) => {
     this._network = this.networks[name];
   };
-
   fetchHTTP = async (operation, variables) => {
     const res = await fetch('/graphql', {
       method: 'POST',
@@ -75,6 +85,7 @@ export default class Atmosphere extends Environment {
     const errorObj = makeErrorObj(errors);
     return Promise.reject(errorObj);
   };
+
   setSocket = () => {
     this.querySubscriptions = [];
     this.subscriptions = {};
@@ -89,10 +100,10 @@ export default class Atmosphere extends Environment {
       this.viewerId = authObj.sub;
     }
   };
+
   socketSubscribe = (operation, variables, cacheConfig, observer) => {
     const {name, text} = operation;
     const subKey = Atmosphere.getKey(name, variables);
-    // const opId = this.opIdIndex++;
 
     const onNext = (result) => {
       observer.onNext(result);
@@ -113,106 +124,28 @@ export default class Atmosphere extends Environment {
     this.subscriptions[subKey] = {
       client
     };
-    console.log('unsub', client);
-    // this.emitSubscribe(text, variables, opId);
     return this.makeDisposable(subKey);
   };
 
-  ensureSubscriptionClient() {
-    if (!this.subscriptionClient) {
-      this.setSocket();
-      if (!this.authToken) {
-        throw new Error('No Auth Token provided!');
-      }
-      this.subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
-        reconnect: true,
-        connectionParams: {authToken: this.authToken}
-      });
+  constructor() {
+    // deal with Environment
+    const store = new Store(new RecordSource());
+    super({store});
+    this._network = Network.create(this.fetchHTTP);
 
-      // notify when disconnected
-      const offDisconnected = this.subscriptionClient.onDisconnected(() => {
-        this.dispatch(showWarning({
-          autoDismiss: 10,
-          title: 'You’re offline!',
-          message: 'We’re trying to reconnect you'
-        }));
-      });
+    // now atmosphere
+    this.authToken = undefined;
+    this.socket = undefined;
+    this.subscriptionClient = undefined;
+    this.networks = {
+      http: this._network,
+      socket: Network.create(this.fetchWS, this.socketSubscribe)
+    };
 
-      // Catch aggressive firewalls that block websockets
-      this.subscriptionClient.client.onerror = (e) => {
-        this.subscriptionClient.reconnect = false;
-        offDisconnected();
-        raven.captureBreadcrumb({
-          category: 'network',
-          level: 'error',
-          message: 'WebSockets Disabled'
-        });
-        raven.captureException(e);
-
-        this.dispatch(showError({
-          autoDismiss: 0,
-          title: 'WebSockets Disabled',
-          message: `We weren't able to create a live connection to our server. 
-          Ask your network administrator to enable WebSockets.`
-        }))
-      };
-
-
-      // notify on reconnects
-      this.subscriptionClient.onReconnected(() => {
-        this.dispatch(showSuccess({
-          autoDismiss: 5,
-          title: 'You’re back online!',
-          message: 'You were offline for a bit, but we’ve reconnected you.'
-        }));
-      });
-
-      // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
-      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
-        handler: (errors, payload) => {
-          const {authToken} = payload;
-          this.dispatch(setAuthToken(authToken));
-        }
-      };
-    }
+    this.querySubscriptions = [];
+    this.subscriptions = {};
   }
 
-  // getSubscription(opId) {
-  //   const subscription = this.subscriptions[opId];
-  //   // In the future, it might be nice to store this in a queue that we can retry in a few ms
-  //   if (!subscription) {
-  //     throw new Error(`No subscription set up for opId ${opId}`);
-  //   }
-  //   return subscription;
-  // }
-
-  // handleGQLComplete = (message) => {
-  //   const {opId} = message;
-  //   const {observer} = this.getSubscription(opId);
-  //   if (observer.onCompleted) {
-  //     observer.onCompleted();
-  //   }
-  // };
-  // handleGQLData = (message) => {
-  //   const {opId, payload} = message;
-  //   const {observer} = this.getSubscription(opId);
-  //   observer.onNext(payload);
-  // };
-  // handleGQLError = (message) => {
-  //   const {opId, payload} = message;
-  //   const {errors} = payload;
-  //   const {observer} = this.getSubscription(opId);
-  //   const errorObj = makeErrorObj(errors);
-  //   observer.onError(errorObj);
-  // };
-  //
-  // emitSubscribe = (query, variables, opId) => {
-  //   this.socket.emit(GQL_START, {
-  //     query,
-  //     variables,
-  //     opId
-  //   });
-  // };
   /*
    * When a subscription encounters an error, it affects the subscription itself,
    * the queries that depend on that subscription to stay valid,
@@ -242,6 +175,7 @@ export default class Atmosphere extends Environment {
       }
     };
   };
+
   unregisterQuery = (maybeQueryKeys) => {
     const queryKeys = Array.isArray(maybeQueryKeys) ? maybeQueryKeys : [maybeQueryKeys];
 
@@ -255,11 +189,7 @@ export default class Atmosphere extends Environment {
       // for each peerSubKey, see if there exists a query that is not affected.
       const unaffectedQuery = this.querySubscriptions.find((qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey));
       if (!unaffectedQuery) {
-        // const opId = this.findOpId(subKey);
-        // if (opId === undefined) return;
-        // TODO
         this.subscriptions[subKey].client.unsubscribe();
-        // this.socket.emit(GQL_STOP, opId);
       }
     });
 
@@ -268,53 +198,66 @@ export default class Atmosphere extends Environment {
     });
   };
 
-  registerQuery = (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {
-    const subConfigs = subscriptions.map((subCreator) => subCreator(this, queryVariables, subParams));
-    const newQuerySubs = subConfigs.map((config) => {
-      const {subscription, variables = {}} = config;
-      const {name} = subscription();
-      const subKey = Atmosphere.getKey(name, variables);
-      const existingSub = this.querySubscriptions.find((qs) => qs.subKey === subKey);
-      this.setSocket();
-      const disposable = existingSub ? existingSub.subscription :
-        requestSubscription(this, {onError: defaultErrorHandler, ...config});
-      return {
-        subKey,
-        queryKey,
-        component: {dispose: releaseComponent},
-        subscription: disposable
+  ensureSubscriptionClient() {
+    if (!this.subscriptionClient) {
+      this.setNet('socket');
+      if (!this.authToken) {
+        throw new Error('No Auth Token provided!');
+      }
+      this.subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
+        reconnect: true,
+        connectionParams: {authToken: this.authToken}
+      });
+
+      // notify when disconnected
+      const removeDisconnectedListener = this.subscriptionClient.onDisconnected(() => {
+        this.dispatch(showWarning({
+          autoDismiss: 10,
+          title: 'You’re offline!',
+          message: 'We’re trying to reconnect you'
+        }));
+      });
+
+      // Catch aggressive firewalls that block websockets
+      this.subscriptionClient.client.onerror = (e) => {
+        this.subscriptionClient.reconnect = false;
+        removeDisconnectedListener();
+        raven.captureBreadcrumb({
+          category: 'network',
+          level: 'error',
+          message: 'WebSockets Disabled'
+        });
+        raven.captureException(e);
+
+        this.dispatch(showError({
+          autoDismiss: 0,
+          title: 'WebSockets Disabled',
+          message: `We weren't able to create a live connection to our server. 
+          Ask your network administrator to enable WebSockets.`
+        }))
       };
-    });
 
-    this.querySubscriptions.push(...newQuerySubs);
-  };
+      // notify on reconnects
+      this.subscriptionClient.onReconnected(() => {
+        this.dispatch(showSuccess({
+          autoDismiss: 5,
+          title: 'You’re back online!',
+          message: 'You were offline for a bit, but we’ve reconnected you.'
+        }));
+      });
 
-  // findOpId(subKey) {
-  //   const opIds = Object.keys(this.subscriptions);
-  //   for (let ii = 0; ii < opIds.length; ii++) {
-  //     const opId = opIds[ii];
-  //     if (this.subscriptions[opId].subKey === subKey) return opId;
-  //   }
-  //   return undefined;
-  // }
-
-  constructor() {
-    // deal with Environment
-    const store = new Store(new RecordSource());
-    super({store});
-    this._network = Network.create(this.fetchHTTP);
-
-    // now atmosphere
-    this.authToken = undefined;
-    this.socket = undefined;
-    this.subscriptionClient = undefined;
-    this.networks = {
-      http: this._network,
-      socket: Network.create(this.fetchWS, this.socketSubscribe)
-    };
-
-    // this.opIdIndex = 1;
-    this.querySubscriptions = [];
-    this.subscriptions = {};
+      // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
+      const {text: query, name: operationName} = NewAuthTokenSubscription().subscription();
+      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
+        handler: (errors, payload) => {
+          const {authToken} = payload;
+          this.dispatch(setAuthToken(authToken));
+        },
+        options: {
+          query,
+          operationName
+        }
+      };
+    }
   }
 }
