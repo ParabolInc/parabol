@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload';
-import {requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {SLACK} from 'universal/utils/constants';
 
@@ -15,7 +15,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (source, {slackGlobalId}, {authToken, socket}) => {
+  resolve: async (source, {slackGlobalId}, {authToken, socketId: mutatorId}) => {
     const r = getRethink();
     const {id} = fromGlobalId(slackGlobalId);
     // AUTH
@@ -26,7 +26,6 @@ export default {
     }
     const {teamId, isActive} = integration;
     requireTeamMember(authToken, teamId);
-    requireWebsocket(socket);
 
     // VALIDATION
     if (!isActive) {
@@ -42,7 +41,7 @@ export default {
     const slackChannelRemoved = {
       deletedId: slackGlobalId
     };
-    getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved, mutatorId: socket.id});
+    getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved, mutatorId});
     return slackChannelRemoved;
   }
 };

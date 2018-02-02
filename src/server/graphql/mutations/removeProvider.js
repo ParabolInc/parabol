@@ -3,7 +3,7 @@ import {fromGlobalId, toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
-import {getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
@@ -42,12 +42,11 @@ export default {
       description: 'the teamId to disconnect from the token'
     }
   },
-  resolve: async (source, {providerId, teamId}, {authToken, socket}) => {
+  resolve: async (source, {providerId, teamId}, {authToken, socketId: mutatorId}) => {
     const r = getRethink();
 
     // AUTH
     requireTeamMember(authToken, teamId);
-    requireWebsocket(socket);
 
     // RESOLUTION
     const {id: dbProviderId} = fromGlobalId(providerId);
@@ -77,7 +76,7 @@ export default {
           isActive: false
         }, {returnChanges: true})('changes').default([]);
       const providerRemoved = await getPayload(service, channelChanges, teamId, userId);
-      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
+      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId});
       return providerRemoved;
     } else if (service === GITHUB) {
       const repoChanges = await removeGitHubReposForUserId(userId, [teamId]);
@@ -88,7 +87,7 @@ export default {
         return arr;
       }, []);
 
-      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId: socket.id});
+      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId});
       return providerRemoved;
     }
     // will never hit this

@@ -5,77 +5,72 @@ import handleGraphQLResult from 'server/utils/handleGraphQLResult';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 import {GQL_COMPLETE, GQL_DATA, GQL_ERROR} from 'universal/utils/constants';
+import relayUnsubscribe from 'server/utils/relayUnsubscribe';
 
-const trySubscribe = async (authToken, body, socket, sharedDataLoader, isResub) => {
+const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}));
-  const {opId, query, variables} = body;
-  const context = {authToken, dataLoader, socketId: socket.id};
+  const {payload: {query, variables}} = parsedMessage;
+  const context = {authToken, dataLoader, socketId};
   const document = parse(query);
   try {
     const result = await subscribe(Schema, document, {}, context, variables);
-    if (!result.errors) return result;
+    if (!result.errors || !isResub) return result;
     // squelch errors for resub, we expect a few errors & the client doesn't need to know about them
-    if (!isResub) {
-      // the supplied request failed our auth business logic
-      const message = {
-        opId,
-        payload: result
-      };
-      socket.emit(GQL_ERROR, message);
-    }
+    // failing here means the subscription failed our custom business logic in the subscribe method
   } catch (e) {
     // the subscription couldn't be found or there was an internal graphql error
-    const errorObj = {message: e.message};
-    const message = {
-      opId,
-      payload: {errors: [errorObj]}
-    };
-    socket.emit(GQL_ERROR, message);
+    return {errors: [{message: e.message}]};
   }
   return undefined;
 };
 
-export default function scRelaySubscribeHandler(socket, sharedDataLoader) {
-  return function relaySubscribeHandler(body) {
-    const handleSubscribe = async (options = {}) => {
-      const isResub = options;
-      const authToken = socket.getAuthToken();
-      const asyncIterator = await trySubscribe(authToken, body, socket, sharedDataLoader, isResub);
-      if (!asyncIterator) return;
-      // node coerces things that look like numbres, but this will be the key for the subs object, and keys are strings
-      const opId = String(body.opId);
+export default function scRelaySubscribeHandler(connectionContext, parsedMessage) {
+  const {id: socketId, availableResubs, authToken, socket, sharedDataLoader, subs} = connectionContext;
+  const {id: opId} = parsedMessage;
+  subs[opId] = {status: 'pending'};
+  const handleSubscribe = async (options = {}) => {
+    const isResub = options;
+    if (subs[opId]) {
+      // subscription already exists, restart it
+      relayUnsubscribe(subs, opId);
+    }
 
-      socket.subs[opId] = {
-        asyncIterator
-      };
-      const iterableCb = (payload) => {
-        const changedAuth = handleGraphQLResult(payload, socket);
-        if (changedAuth) {
-          // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
-          // delay it to guarantee that no matter when this is published, it is the last message on the mutation
-          setTimeout(() => unsubscribeRelaySub(socket), 1000);
-        } else {
-          // we already sent a new authToken, no need to emit the gql response
-          const message = {opId, payload};
-          socket.emit(GQL_DATA, message);
-        }
-      };
+    const asyncIterator = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
+    if (!asyncIterator) return;
 
-      // Use this to kick clients out of the sub
-      // setTimeout(() => {
-      //  asyncIterator.return();
-      //  console.log('sub ended', opId)
-      // }, 5000)
-      await forAwaitEach(asyncIterator, iterableCb);
-      const resubIdx = socket.availableResubs.indexOf(opId);
-      if (resubIdx !== -1) {
-        // reinitialize the subscription
-        handleSubscribe({isResub: true});
-        socket.availableResubs.splice(resubIdx, 1);
-      } else {
-        socket.emit(GQL_COMPLETE, {opId});
-      }
+    subs[opId] = {
+      asyncIterator
     };
-    handleSubscribe();
+    const iterableCb = (payload) => {
+      const changedAuth = handleGraphQLResult(connectionContext, payload);
+      if (changedAuth) {
+        // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
+        // delay it to guarantee that no matter when this is published, it is the last message on the mutation
+        setTimeout(() => unsubscribeRelaySub(socket), 1000);
+        return;
+      }
+      const message = {
+        id: opId,
+        type: payload.errors ? GQL_ERROR : GQL_DATA,
+        payload
+      };
+      socket.send(JSON.stringify(message));
+    };
+
+    // Use this to kick clients out of the sub
+    // setTimeout(() => {
+    //  asyncIterator.return();
+    //  console.log('sub ended', opId)
+    // }, 5000)
+    await forAwaitEach(asyncIterator, iterableCb);
+    const resubIdx = availableResubs.indexOf(opId);
+    if (resubIdx !== -1) {
+      // reinitialize the subscription
+      handleSubscribe({isResub: true});
+      availableResubs.splice(resubIdx, 1);
+    } else {
+      socket.send(JSON.stringify({id: opId, type: GQL_COMPLETE}));
+    }
   };
+  handleSubscribe();
 }

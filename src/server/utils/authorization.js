@@ -70,13 +70,6 @@ export const requireTeamLead = async (teamMemberId) => {
   return teamMember;
 };
 
-
-export const requireWebsocket = (socket) => {
-  if (!socket) {
-    throw errorObj({_error: 'this must be called from a websocket'});
-  }
-};
-
 // undefined orgId will disable the filter
 export const getUserOrgDoc = (userId, orgId = '') => {
   const r = getRethink();

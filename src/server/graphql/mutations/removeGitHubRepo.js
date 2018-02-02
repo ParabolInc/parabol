@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
-import {getIsTeamLead, getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getIsTeamLead, getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
@@ -17,7 +17,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (source, {githubGlobalId}, {authToken, socket, dataLoader}) => {
+  resolve: async (source, {githubGlobalId}, {authToken, socketId: mutatorId, dataLoader}) => {
     const r = getRethink();
     const {id} = fromGlobalId(githubGlobalId);
 
@@ -30,7 +30,6 @@ export default {
     }
     const {teamId, isActive, userIds, nameWithOwner} = integration;
     requireTeamMember(authToken, teamId);
-    requireWebsocket(socket);
 
     // VALIDATION
     if (!isActive) {
@@ -57,7 +56,7 @@ export default {
       deletedId: githubGlobalId,
       archivedProjectIds
     };
-    getPubSub().publish(`githubRepoRemoved.${teamId}`, {githubRepoRemoved, mutatorId: socket.id});
+    getPubSub().publish(`githubRepoRemoved.${teamId}`, {githubRepoRemoved, mutatorId});
     return githubRepoRemoved;
   }
 };

@@ -1,7 +1,23 @@
-import jwtDecode from 'jwt-decode';
-import {GQL_CONNECTION_ACK, GQL_CONNECTION_INIT, GQL_EXEC} from 'universal/utils/constants';
-import isObject from 'universal/utils/isObject';
+import {
+  GQL_CONNECTION_ACK,
+  GQL_CONNECTION_ERROR,
+  GQL_CONNECTION_INIT,
+  GQL_CONNECTION_TERMINATE,
+  GQL_START,
+  GQL_STOP,
+  NEW_AUTH_TOKEN
+} from 'universal/utils/constants';
 import shortid from 'shortid';
+import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
+import {verify} from 'jsonwebtoken';
+import scGraphQLHandler from 'server/socketHandlers/scGraphQLHandler';
+import scRelaySubscribeHandler from 'server/socketHandlers/scRelaySubscribeHandler';
+import relayUnsubscribe from 'server/utils/relayUnsubscribe';
+import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
+import {fromEpochSeconds} from 'server/utils/epochTime';
+import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants';
+import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
+import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj';
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
@@ -12,116 +28,147 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   return true;
 };
 
-const keepAlive = (connectionContext, timeout) => setInterval(() => {
-  if (connectionContext.isAlive === false) {
-    clearInterval(keepAlive);
-    connectionContext.socket.terminate();
-  } else {
-    connectionContext.isAlive = false;
-    connectionContext.socket.ping(connectionContext.socket.onping);
+const closeUnauthedSocket = (connectionContext) => {
+  const {authToken, socket} = connectionContext;
+  if (!authToken) {
+    /*
+     *  Unauthorized (Application-specific ws code. 4 + HTTP equivalent)
+     *  The endpoint is terminating the connection because a connection was established without proper
+     *  authorization credentials.
+     */
+    socket.send(JSON.stringify({type: GQL_CONNECTION_ERROR}));
+    socket.close(4401);
+    return true;
   }
-}, timeout);
+  return false;
+};
+
+
+const handleConnect = async (connectionContext) => {
+  const payload = {
+    query: `
+    mutation ConnectSocket {
+      connectSocket {
+        tmsDB: tms
+      }
+    }
+  `
+  };
+  const now = new Date();
+  const {payload: result} = await scGraphQLHandler(connectionContext, {payload});
+  if (result.errors) {
+    closeUnauthedSocket(connectionContext);
+    return;
+  }
+  const {exp, sub, tms} = connectionContext.authToken;
+  const tokenExpiration = fromEpochSeconds(exp);
+  const timeLeftOnToken = tokenExpiration - now;
+  const {data} = result;
+  const {connectSocket: {tmsDB}} = data;
+  const tmsIsValid = isTmsValid(tmsDB, tms);
+  if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
+    const nextAuthToken = makeAuthTokenObj(sub, tmsDB);
+    connectionContext.authToken = nextAuthToken;
+    connectionContext.socket.send(JSON.stringify({type: NEW_AUTH_TOKEN, authToken: encodeAuthTokenObj(nextAuthToken)}))
+  }
+};
+
+const setConnectionAuth = (connectionContent, authToken) => {
+  const nextAuthToken = authToken ? verify(authToken, Buffer.from(auth0ClientSecret, 'base64')) : null;
+  if (nextAuthToken && (!connectionContent.authToken || connectionContent.authToken.exp > nextAuthToken.exp)) {
+    // don't take an old token
+    connectionContent.authToken = nextAuthToken;
+    handleConnect(connectionContent);
+  }
+};
+
+const keepAlive = (connectionContext, timeout) => {
+  const cancel = setInterval(() => {
+    const {socket} = connectionContext;
+    if (connectionContext.isAlive === false) {
+      clearInterval(cancel);
+      // no need to gracefully close if it's dead
+      socket.terminate();
+    } else {
+      connectionContext.isAlive = false;
+      socket.ping(socket.onping);
+    }
+  }, timeout);
+};
+
+const handleMessage = (connectionContext) => async (message) => {
+  const {socket, subs} = connectionContext;
+  // catch raw, non-graphql protocol messages here
+  let parsedMessage;
+  try {
+    parsedMessage = JSON.parse(message);
+  } catch (e) {
+    /*
+     * Invalid frame payload data
+     * The endpoint is terminating the connection because a message was received that contained inconsistent data
+     * (e.g., non-UTF-8 data within a text message).
+     */
+    socket.close(1007);
+    return;
+  }
+
+  const {id: opId, type, payload} = parsedMessage;
+
+  if (type === GQL_CONNECTION_INIT) {
+    const {authToken} = payload;
+    setConnectionAuth(connectionContext, authToken);
+    const socketClosed = closeUnauthedSocket(connectionContext);
+    if (socketClosed) return;
+    socket.send(JSON.stringify({type: GQL_CONNECTION_ACK}));
+  } else {
+    const socketClosed = closeUnauthedSocket(connectionContext);
+    if (socketClosed) return;
+  }
+
+  if (type === GQL_CONNECTION_TERMINATE) {
+    socket.terminate();
+  } else if (type === GQL_START && payload.query.startsWith('subscription')) {
+    scRelaySubscribeHandler(connectionContext, parsedMessage);
+  } else if (type === GQL_START) {
+    const gqlMessage = await scGraphQLHandler(connectionContext, parsedMessage);
+    socket.send(JSON.stringify(gqlMessage));
+  } else if (type === GQL_STOP) {
+    relayUnsubscribe(subs, opId);
+  }
+};
+
+const handleDisconnect = (connectionContext) => () => {
+  const payload = {
+    query: `
+    mutation DisconnectSocket {
+      disconnectSocket {
+        id
+      }
+    }
+  `
+  };
+  unsubscribeRelaySub(connectionContext);
+  scGraphQLHandler(connectionContext, {payload});
+};
+
+const handlePong = (connectionContext) => () => {
+  connectionContext.isAlive = true;
+};
 
 export default function scConnectionHandler(sharedDataLoader) {
-  return async function connectionHandler(socket, req) {
-    console.log('connected', socket);
-    const now = new Date();
+  return async function connectionHandler(socket) {
     const connectionContext = {
+      authToken: null,
       subs: {},
       availableResubs: [],
       id: shortid.generate(),
       isAlive: true,
-      socket
+      socket,
+      sharedDataLoader
     };
-    socket.on('pong', () => {
-      connectionContext.isAlive = true;
-    });
     keepAlive(connectionContext, 10000);
-
-    // const graphQLHandler = scGraphQLHandler(socket, sharedDataLoader);
-    // const relaySubscribeHandler = scRelaySubscribeHandler(socket, sharedDataLoader);
-    socket.on('message', (message) => {
-      // catch raw, non-graphql protocol messages here
-      let messageJSON;
-      try {
-        messageJSON = JSON.parse(message);
-      } catch (e) {
-        // this did not come from the client. fail silently
-        console.error('bad message received', message);
-        return;
-      }
-      const {id, type, payload} = messageJSON;
-
-      console.log('json', id, type);
-      if (type === GQL_CONNECTION_INIT) {
-        const {authToken} = payload;
-        if (!authToken) {
-          console.error('no auth token provided by the client');
-          return;
-        }
-        socket.authToken = authToken;
-        socket.send(JSON.stringify({type: GQL_CONNECTION_ACK}));
-      }
-      console.log('calling pong');
-
-      // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
-      if (isObject(message) && message.event === '#authenticate') {
-        const decodedToken = jwtDecode(message.data);
-        const serverToken = socket.getAuthToken();
-        if (decodedToken.exp < serverToken.exp) {
-          socket.disconnect(4501, 'naughty nelly');
-        }
-      }
-    });
-    // socket.on(GQL_EXEC, graphQLHandler);
-    // socket.on(GQL_START, relaySubscribeHandler);
-    // socket.on(GQL_STOP, (opId) => {
-    //   const subscriptionContext = socket.subs[opId];
-    //   if (!subscriptionContext) return;
-    //   const {asyncIterator} = subscriptionContext;
-    //   asyncIterator.return();
-    //   delete socket.subs[opId];
-    // });
-    // socket.on('disconnect', () => {
-    //   graphQLHandler({
-    //     query: `
-    //     mutation DisconnectSocket {
-    //       disconnectSocket {
-    //         id
-    //       }
-    //     }
-    //   `
-    //   });
-    //   unsubscribeRelaySub(socket);
-    // });
-    //
-    // graphQLHandler({
-    //   query: `
-    //     mutation ConnectSocket {
-    //       connectSocket {
-    //         tmsDB: tms
-    //       }
-    //     }
-    //   `
-    // }, (err, res) => {
-    //   // Ugly callback, will remove when we move away from socketcluster
-    //   const authToken = socket.getAuthToken();
-    //   const {exp, tms} = authToken;
-    //   const tokenExpiration = fromEpochSeconds(exp);
-    //   const timeLeftOnToken = tokenExpiration - now;
-    //   const {data} = res;
-    //   if (data) {
-    //     const {connectSocket: {tmsDB}} = data;
-    //     const tmsIsValid = isTmsValid(tmsDB, tms);
-    //     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
-    //       const newAuthToken = {
-    //         ...authToken,
-    //         tms: tmsDB,
-    //         exp: undefined
-    //       };
-    //       socket.setAuthToken(newAuthToken);
-    //     }
-    //   }
-    // });
-  };
-}
+    socket.on('pong', handlePong(connectionContext));
+    socket.on('message', handleMessage(connectionContext));
+    socket.on('close', handleDisconnect(connectionContext));
+  }
+};

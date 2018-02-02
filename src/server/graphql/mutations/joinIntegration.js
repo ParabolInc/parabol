@@ -3,7 +3,7 @@ import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import JoinIntegrationPayload from 'server/graphql/types/JoinIntegrationPayload';
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
-import {getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 
@@ -16,11 +16,10 @@ export default {
       description: 'The global id of the integration to join'
     }
   },
-  async resolve(source, {globalId}, {authToken, socket}) {
+  async resolve(source, {globalId}, {authToken, socketId: mutatorId}) {
     const r = getRethink();
 
     // AUTH
-    requireWebsocket(socket);
     const userId = getUserId(authToken);
     const {id: localId, type: service} = fromGlobalId(globalId);
     const integration = await r.table(service).get(localId);
@@ -69,7 +68,7 @@ export default {
       teamMember
     };
 
-    getPubSub().publish(`integrationJoined.${teamId}.${service}`, {integrationJoined, mutatorId: socket.id});
+    getPubSub().publish(`integrationJoined.${teamId}.${service}`, {integrationJoined, mutatorId});
     return integrationJoined;
   }
 };

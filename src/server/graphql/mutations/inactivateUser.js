@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import {requireOrgLeaderOfUser, requireWebsocket} from 'server/utils/authorization';
+import {requireOrgLeaderOfUser} from 'server/utils/authorization';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import {MAX_MONTHLY_PAUSES, PAUSE_USER} from 'server/utils/serverConstants';
 import {errorObj} from 'server/utils/utils';
@@ -16,11 +16,10 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve(source, {userId}, {authToken, socket}) {
+  async resolve(source, {userId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
-    requireWebsocket(socket);
     await requireOrgLeaderOfUser(authToken, userId);
     const orgDocs = await r.table('Organization')
       .getAll(userId, {index: 'orgUsers'})

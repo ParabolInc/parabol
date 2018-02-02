@@ -32,9 +32,7 @@ const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
 const app = express();
 const server = http.createServer(app);
 const wss = new Server({server});
-server.listen(3000, () => {
-  console.log('listen')
-});
+server.listen(3000);
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
 const sharedDataLoader = new SharedDataLoader({PROD, onShare: '_share', ttl: 5000});
 
