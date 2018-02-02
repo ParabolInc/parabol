@@ -90,8 +90,7 @@ class AgendaInputField extends Component {
       teamId,
       teamMemberId: toTeamMemberId(teamId, atmosphere.userId)
     };
-    AddAgendaItemMutation(atmosphere, newAgendaItem);
-    afterSubmitAgendaItem();
+    AddAgendaItemMutation(atmosphere, newAgendaItem, null, afterSubmitAgendaItem);
   };
 
   makeForm = () => {
