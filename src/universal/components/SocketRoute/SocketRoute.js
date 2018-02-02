@@ -9,9 +9,9 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot');
 
+// eslint-disable-next-line react/prefer-stateless-function
 class SocketRoute extends Component {
   render() {
-
     return (
       <Switch>
         <AsyncRoute

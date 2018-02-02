@@ -226,8 +226,6 @@ export const GQL_COMPLETE = 'complete'; // Server -> Client
 export const GQL_STOP = 'stop'; // Client -> Server
 
 
-
-
 /* Relay Subscription Event Types */
 export const UPDATED = 'updated';
 

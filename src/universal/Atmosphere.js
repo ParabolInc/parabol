@@ -96,15 +96,15 @@ export default class Atmosphere extends Environment {
     // const opId = this.opIdIndex++;
 
     const onNext = (result) => {
-      observer.onNext(result)
+      observer.onNext(result);
     };
 
     const onError = (error) => {
-      observer.onError(error)
+      observer.onError(error);
     };
 
     const onComplete = () => {
-      observer.onCompleted()
+      observer.onCompleted();
     };
     if (!this.subscriptionClient) {
       this.setSocket();
@@ -113,8 +113,10 @@ export default class Atmosphere extends Environment {
       }
       this.subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
         reconnect: true,
-        lazy: true,
         connectionParams: {authToken: this.authToken}
+      });
+      this.subscriptionClient.client.on('message', () => {
+
       });
     }
     const client = this.subscriptionClient

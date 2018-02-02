@@ -9,7 +9,7 @@ import raven from 'raven';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
 import {clientSecret as secretKey} from './utils/auth0Helpers';
-import scConnectionHandler from './socketHandlers/scConnectionHandler';
+import connectionHandler from './socketHandlers/wssConnectionHandler';
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
@@ -110,5 +110,4 @@ app.get('*', createSSR);
 // app.use(raven.middleware.express.errorHandler(process.env.SENTRY_DSN));
 
 // handle sockets
-const connectionHandler = scConnectionHandler(sharedDataLoader);
-wss.on('connection', connectionHandler);
+wss.on('connection', connectionHandler(sharedDataLoader));

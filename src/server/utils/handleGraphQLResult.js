@@ -1,5 +1,5 @@
 import jwtDecode from 'jwt-decode';
-import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import sendNewAuthToken from 'server/socketHelpers/sendNewAuthToken';
 
 const setSocketAuth = (connectionContext, authTokenStr) => {
   let newAuthToken;
@@ -10,7 +10,7 @@ const setSocketAuth = (connectionContext, authTokenStr) => {
     return;
   }
   connectionContext.authToken = newAuthToken;
-  connectionContext.socket.send(JSON.stringify({type: NEW_AUTH_TOKEN, authToken: authTokenStr}))
+  sendNewAuthToken(connectionContext.socket, newAuthToken);
 };
 
 const handleGraphQLResult = (connectionContext, result) => {

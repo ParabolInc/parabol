@@ -6,6 +6,7 @@ import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
 import {GQL_COMPLETE, GQL_DATA, GQL_ERROR} from 'universal/utils/constants';
 import relayUnsubscribe from 'server/utils/relayUnsubscribe';
+import sendMessage from 'server/socketHelpers/sendMessage';
 
 const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}));
@@ -24,7 +25,7 @@ const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader
   return undefined;
 };
 
-export default function scRelaySubscribeHandler(connectionContext, parsedMessage) {
+export default function wsRelaySubscribeHandler(connectionContext, parsedMessage) {
   const {id: socketId, availableResubs, authToken, socket, sharedDataLoader, subs} = connectionContext;
   const {id: opId} = parsedMessage;
   subs[opId] = {status: 'pending'};
@@ -49,12 +50,8 @@ export default function scRelaySubscribeHandler(connectionContext, parsedMessage
         setTimeout(() => unsubscribeRelaySub(socket), 1000);
         return;
       }
-      const message = {
-        id: opId,
-        type: payload.errors ? GQL_ERROR : GQL_DATA,
-        payload
-      };
-      socket.send(JSON.stringify(message));
+      const resultType = payload.errors ? GQL_ERROR : GQL_DATA;
+      sendMessage(socket, resultType, payload, opId);
     };
 
     // Use this to kick clients out of the sub
@@ -69,7 +66,7 @@ export default function scRelaySubscribeHandler(connectionContext, parsedMessage
       handleSubscribe({isResub: true});
       availableResubs.splice(resubIdx, 1);
     } else {
-      socket.send(JSON.stringify({id: opId, type: GQL_COMPLETE}));
+      sendMessage(socket, GQL_COMPLETE, undefined, opId);
     }
   };
   handleSubscribe();
