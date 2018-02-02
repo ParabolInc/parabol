@@ -4,6 +4,8 @@ import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
 import tryParse from 'universal/utils/tryParse';
 import {SubscriptionClient} from 'subscriptions-transport-ws';
+import {setAuthToken} from 'universal/redux/authDuck';
+import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
 
 const makeErrorObj = (errors) => {
   const firstError = errors[0].message;
@@ -115,9 +117,12 @@ export default class Atmosphere extends Environment {
         reconnect: true,
         connectionParams: {authToken: this.authToken}
       });
-      this.subscriptionClient.client.on('message', () => {
 
-      });
+      // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
+      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = (errors, payload) => {
+        const {authToken} = payload;
+        this.dispatch(setAuthToken(authToken));
+      };
     }
     const client = this.subscriptionClient
       .request({query: text, variables})
