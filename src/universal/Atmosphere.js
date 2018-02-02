@@ -6,6 +6,8 @@ import tryParse from 'universal/utils/tryParse';
 import {SubscriptionClient} from 'subscriptions-transport-ws';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import raven from 'raven-js';
 
 const makeErrorObj = (errors) => {
   const firstError = errors[0].message;
@@ -73,15 +75,10 @@ export default class Atmosphere extends Environment {
     const errorObj = makeErrorObj(errors);
     return Promise.reject(errorObj);
   };
-  setSocket = (socket) => {
-    // this.opIdIndex = 1;
+  setSocket = () => {
     this.querySubscriptions = [];
     this.subscriptions = {};
-    this.socket = socket;
     this.setNet('socket');
-    // this.socket.on(GQL_DATA, this.handleGQLData);
-    // this.socket.on(GQL_ERROR, this.handleGQLError);
-    // this.socket.on(GQL_COMPLETE, this.handleGQLComplete);
   };
 
   setAuthToken = (authToken) => {
@@ -108,24 +105,7 @@ export default class Atmosphere extends Environment {
     const onComplete = () => {
       observer.onCompleted();
     };
-    if (!this.subscriptionClient) {
-      this.setSocket();
-      if (!this.authToken) {
-        throw new Error('No Auth Token provided!');
-      }
-      this.subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
-        reconnect: true,
-        connectionParams: {authToken: this.authToken}
-      });
-
-      // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
-      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
-        handler: (errors, payload) => {
-          const {authToken} = payload;
-          this.dispatch(setAuthToken(authToken));
-        }
-      };
-    }
+    this.ensureSubscriptionClient();
     const client = this.subscriptionClient
       .request({query: text, variables})
       .subscribe(onNext, onError, onComplete);
@@ -137,6 +117,65 @@ export default class Atmosphere extends Environment {
     // this.emitSubscribe(text, variables, opId);
     return this.makeDisposable(subKey);
   };
+
+  ensureSubscriptionClient() {
+    if (!this.subscriptionClient) {
+      this.setSocket();
+      if (!this.authToken) {
+        throw new Error('No Auth Token provided!');
+      }
+      this.subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
+        reconnect: true,
+        connectionParams: {authToken: this.authToken}
+      });
+
+      // notify when disconnected
+      const offDisconnected = this.subscriptionClient.onDisconnected(() => {
+        this.dispatch(showWarning({
+          autoDismiss: 10,
+          title: 'You’re offline!',
+          message: 'We’re trying to reconnect you'
+        }));
+      });
+
+      // Catch aggressive firewalls that block websockets
+      this.subscriptionClient.client.onerror = (e) => {
+        this.subscriptionClient.reconnect = false;
+        offDisconnected();
+        raven.captureBreadcrumb({
+          category: 'network',
+          level: 'error',
+          message: 'WebSockets Disabled'
+        });
+        raven.captureException(e);
+
+        this.dispatch(showError({
+          autoDismiss: 0,
+          title: 'WebSockets Disabled',
+          message: `We weren't able to create a live connection to our server. 
+          Ask your network administrator to enable WebSockets.`
+        }))
+      };
+
+
+      // notify on reconnects
+      this.subscriptionClient.onReconnected(() => {
+        this.dispatch(showSuccess({
+          autoDismiss: 5,
+          title: 'You’re back online!',
+          message: 'You were offline for a bit, but we’ve reconnected you.'
+        }));
+      });
+
+      // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
+      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
+        handler: (errors, payload) => {
+          const {authToken} = payload;
+          this.dispatch(setAuthToken(authToken));
+        }
+      };
+    }
+  }
 
   // getSubscription(opId) {
   //   const subscription = this.subscriptions[opId];
