@@ -119,9 +119,11 @@ export default class Atmosphere extends Environment {
       });
 
       // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
-      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = (errors, payload) => {
-        const {authToken} = payload;
-        this.dispatch(setAuthToken(authToken));
+      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
+        handler: (errors, payload) => {
+          const {authToken} = payload;
+          this.dispatch(setAuthToken(authToken));
+        }
       };
     }
     const client = this.subscriptionClient
