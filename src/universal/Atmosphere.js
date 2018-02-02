@@ -1,23 +1,12 @@
 import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
-import tryParse from 'universal/utils/tryParse';
 import {SubscriptionClient} from 'subscriptions-transport-ws';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
 import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import raven from 'raven-js';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
-
-const makeErrorObj = (errors) => {
-  const firstError = errors[0].message;
-  return tryParse(firstError) ||
-    errors.reduce((errObj, err, idx) => {
-      const prop = idx === 0 ? '_error' : idx;
-      errObj[prop] = err.message;
-      return errObj;
-    }, {});
-};
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err);
@@ -81,9 +70,10 @@ export default class Atmosphere extends Environment {
     });
     const resJson = await res.json();
     const {errors} = resJson;
-    if (!errors) return resJson;
-    const errorObj = makeErrorObj(errors);
-    return Promise.reject(errorObj);
+    if (errors) {
+      throw new Error(errors[0].message);
+    }
+    return resJson;
   };
 
   setSocket = () => {

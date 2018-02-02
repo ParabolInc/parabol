@@ -1,7 +1,6 @@
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {qualifyingTiers, tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import getRethink from '../database/rethinkDriver';
-import {errorObj} from './utils';
 
 export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -28,14 +27,14 @@ export const requireAuth = (authToken) => {
  */
 export const requireSU = (authToken) => {
   if (!isSuperUser(authToken)) {
-    throw errorObj({_error: 'Unauthorized. Must be a super user to run this query.'});
+    throw new Error('Unauthorized. Must be a super user to run this query.');
   }
 };
 
 export const requireTeamMember = (authToken, teamId) => {
   const teams = authToken.tms || [];
   if (!teams.includes(teamId)) {
-    throw errorObj({_error: `You do not have access to team ${teamId}`});
+    throw new Error(`You do not have access to team ${teamId}`);
   }
 };
 
@@ -56,7 +55,7 @@ export const requireOrgLeaderOrTeamMember = async (authToken, teamId) => {
           .default(false);
       });
     if (!isOrgLeader) {
-      throw errorObj({_error: `Unauthorized to view details for team ${teamId} with token ${JSON.stringify(authToken)}`});
+      throw new Error(`Unauthorized to view details for team ${teamId} with token ${JSON.stringify(authToken)}`);
     }
   }
 };
@@ -65,7 +64,7 @@ export const requireTeamLead = async (teamMemberId) => {
   const r = getRethink();
   const teamMember = await r.table('TeamMember').get(teamMemberId);
   if (!teamMember || !teamMember.isLead) {
-    throw errorObj({_error: 'Unauthorized. Only the team leader promote someone to lead'});
+    throw new Error('Unauthorized. Only the team leader promote someone to lead');
   }
   return teamMember;
 };
@@ -115,24 +114,14 @@ export const requireOrgLeaderOfUser = async (authToken, userId) => {
         .lt(res('leaderOrgs').count().add(res('memberOrgs').count()));
     });
   if (!isLeaderOfUser) {
-    throw errorObj({_error: 'Unauthorized. Only an Billing Leader of a user can set this'});
+    throw new Error('Unauthorized. Only an Billing Leader of a user can set this');
   }
   return true;
 };
 
-// VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
-// this still isn't secure because the resolve could get called twice & make it past this point before 1 of them writes the insert
-export const ensureUniqueId = async (table, id) => {
-  const r = getRethink();
-  const res = await r.table(table).get(id);
-  if (res) {
-    throw errorObj({type: 'unique id collision'});
-  }
-};
-
 export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
   if (!userOrgDoc) {
-    throw errorObj({_error: `Unauthorized. ${userId} does not belong in org ${orgId}`});
+    throw new Error(`Unauthorized. ${userId} does not belong in org ${orgId}`);
   }
   return true;
 };
@@ -151,11 +140,10 @@ export const requireTeamCanUpdateCheckInQuestion = async (teamId) => {
     .pluck('tier');
 
   if (!tierSupportsUpdateCheckInQuestion(tier)) {
-    throw errorObj({
-      _error:
+    throw new Error(
       `Unauthorized. Team billing tier must be one of {${qualifyingTiers.join(', ')}} to update the Check-in question. ` +
       `Actual tier is '${tier}'.`
-    });
+    );
   }
   return true;
 };

@@ -103,7 +103,7 @@ const OrgMembers = (props) => {
         const handleError = (error) => {
           dispatch(showError({
             title: 'Oh no',
-            message: error._error || 'Cannot pause user'
+            message: error || 'Cannot pause user'
           }));
           onError(error);
         };

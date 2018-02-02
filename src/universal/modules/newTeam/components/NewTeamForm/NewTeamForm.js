@@ -62,7 +62,7 @@ class NewTeamForm extends Component {
         name: teamName
       };
       const handleError = (err) => {
-        throw new SubmissionError(err._error);
+        throw new SubmissionError(err);
       };
       const variables = {newTeam, invitees, orgName};
       AddOrgMutation(atmosphere, variables, {dispatch, history}, handleError);

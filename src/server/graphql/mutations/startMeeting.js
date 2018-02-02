@@ -4,7 +4,6 @@ import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {CHECKIN, TEAM} from 'universal/utils/constants';
 import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
@@ -33,7 +32,7 @@ export default {
     const facilitatorId = `${userId}::${teamId}`;
     const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
-      throw errorObj({_error: 'facilitator is not active on that team'});
+      throw new Error('facilitator is not active on that team');
     }
 
     const now = new Date();

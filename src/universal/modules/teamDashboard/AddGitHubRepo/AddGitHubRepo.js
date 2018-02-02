@@ -74,7 +74,7 @@ class AddGitHubRepo extends Component {
     styles: PropTypes.object,
     teamId: PropTypes.string,
     teamMemberId: PropTypes.string
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -151,10 +151,10 @@ class AddGitHubRepo extends Component {
       const {data, errors, message} = resJson;
       if (errors || message) {
         if (errors) {
-          setError.call(this, {_error: errors[0].message});
+          setError.call(this, errors[0].message);
           throw errors;
         }
-        setError.call(this, {_error: `GitHub Error: ${message}. Try refreshing your token`});
+        setError.call(this, `GitHub Error: ${message}. Try refreshing your token`);
         throw message;
       }
       const {viewer: {organizations: {nodes: orgs}, repositories: {nodes: personalRepos}}} = data;

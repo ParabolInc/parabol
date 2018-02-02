@@ -14,6 +14,9 @@ import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandl
 import closeUnauthedSocket from 'server/socketHelpers/closeUnauthedSocket';
 import relayUnsubscribe from 'server/utils/relayUnsubscribe';
 
+const isSubscriptionPayload = (payload) => payload.query.startsWith('subscription');
+const isQueryProvided = (payload) => payload && payload.query;
+
 const handleMessage = (connectionContext) => async (message) => {
   const {socket, subs} = connectionContext;
   // catch raw, non-graphql protocol messages here
@@ -41,9 +44,9 @@ const handleMessage = (connectionContext) => async (message) => {
   if (type === GQL_CONNECTION_TERMINATE) {
     socket.terminate();
     handleDisconnect(connectionContext)();
-  } else if (type === GQL_START && payload.query.startsWith('subscription')) {
+  } else if (type === GQL_START && isQueryProvided(payload) && isSubscriptionPayload(payload)) {
     wsRelaySubscribeHandler(connectionContext, parsedMessage);
-  } else if (type === GQL_START) {
+  } else if (type === GQL_START && payload && isQueryProvided(payload)) {
     const result = await wsGraphQLHandler(connectionContext, parsedMessage);
     const resultType = result.errors ? GQL_ERROR : GQL_DATA;
     sendMessage(socket, resultType, result, opId);

@@ -5,7 +5,6 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload';
 import publish from 'server/utils/publish';
-import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {BILLING_LEADER, FAILED, NOTIFICATION, PAYMENT_REJECTED} from 'universal/utils/constants';
 
@@ -34,7 +33,7 @@ export default {
     if (!orgId) {
       ({metadata: {orgId}} = await stripe.customers.retrieve(customerId));
       if (!orgId) {
-        throw errorObj({_error: `Could not find orgId on invoice ${invoiceId}`});
+        throw new Error(`Could not find orgId on invoice ${invoiceId}`);
       }
     }
     const org = await r.table('Organization').get(orgId).pluck('creditCard', 'stripeSubscriptionId');
