@@ -8,6 +8,9 @@ import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler';
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import sendMessage from 'server/socketHelpers/sendMessage';
+import packageJSON from '../../../package.json';
+
+const APP_VERSION = packageJSON.version;
 
 const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
@@ -61,7 +64,7 @@ const handleConnect = (connectionContext, payload) => {
   setConnectionAuth(connectionContext, authToken);
   const socketClosed = closeUnauthedSocket(connectionContext);
   if (socketClosed) return;
-  sendMessage(socket, GQL_CONNECTION_ACK);
+  sendMessage(socket, GQL_CONNECTION_ACK, {version: APP_VERSION});
 };
 
 export default handleConnect;

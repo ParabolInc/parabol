@@ -14,12 +14,22 @@ import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLea
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
 import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
-import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 import {
-  ADD_TO_TEAM, DENY_NEW_USER, FACILITATOR_DISCONNECTED, INVITEE_APPROVED, JOIN_TEAM, KICKED_OUT, PAYMENT_REJECTED,
-  PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_ARCHIVED, TEAM_INVITE, VERSION_INFO
+  ADD_TO_TEAM,
+  DENY_NEW_USER,
+  FACILITATOR_DISCONNECTED,
+  INVITEE_APPROVED,
+  JOIN_TEAM,
+  KICKED_OUT,
+  PAYMENT_REJECTED,
+  PROJECT_INVOLVES,
+  PROMOTE_TO_BILLING_LEADER,
+  REJOIN_TEAM,
+  REQUEST_NEW_USER,
+  TEAM_ARCHIVED,
+  TEAM_INVITE
 } from 'universal/utils/constants';
 
 export const notificationInterfaceFields = {
@@ -63,8 +73,7 @@ const Notification = new GraphQLInterfaceType({
       [REQUEST_NEW_USER]: NotifyRequestNewUser,
       [TEAM_INVITE]: NotifyTeamInvite,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
-      [TEAM_ARCHIVED]: NotifyTeamArchived,
-      [VERSION_INFO]: NotifyVersionInfo
+      [TEAM_ARCHIVED]: NotifyTeamArchived
     };
 
     return resolveTypeLookup[value.type];

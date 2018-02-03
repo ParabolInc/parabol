@@ -7,6 +7,7 @@ import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
 import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import raven from 'raven-js';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
+import popUpgradeAppToast from 'universal/mutations/toasts/popUpgradeAppToast';
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err);
@@ -201,11 +202,13 @@ export default class Atmosphere extends Environment {
 
       // notify when disconnected
       const removeDisconnectedListener = this.subscriptionClient.onDisconnected(() => {
-        this.dispatch(showWarning({
-          autoDismiss: 10,
-          title: 'You’re offline!',
-          message: 'We’re trying to reconnect you'
-        }));
+        if (!this.subscriptionClient.reconnecting) {
+          this.dispatch(showWarning({
+            autoDismiss: 10,
+            title: 'You’re offline!',
+            message: 'We’re trying to reconnect you'
+          }));
+        }
       });
 
       // Catch aggressive firewalls that block websockets
@@ -224,7 +227,7 @@ export default class Atmosphere extends Environment {
           title: 'WebSockets Disabled',
           message: `We weren't able to create a live connection to our server. 
           Ask your network administrator to enable WebSockets.`
-        }))
+        }));
       };
 
       // notify on reconnects
@@ -234,6 +237,11 @@ export default class Atmosphere extends Environment {
           title: 'You’re back online!',
           message: 'You were offline for a bit, but we’ve reconnected you.'
         }));
+      });
+
+      this.subscriptionClient.onConnected((payload) => {
+        const {version} = payload;
+        popUpgradeAppToast(version, {dispatch: this.dispatch, history: this.history});
       });
 
       // this is dirty, but removing auth state from redux is out of scope. we'll change it soon

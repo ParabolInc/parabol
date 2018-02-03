@@ -2,7 +2,9 @@ import mime from 'mime-types';
 import {APP_MAX_AVATAR_FILE_SIZE} from '../../universal/utils/constants';
 
 export const handleSchemaErrors = (errors, genericMessage) => {
-  throw new Error(genericMessage || 'Server validation error');
+  if (Object.keys(errors).length > 0) {
+    throw new Error(genericMessage || 'Server validation error');
+  }
 };
 
 // todo put this in a legitify schema

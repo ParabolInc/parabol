@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import {Children, Component} from 'react';
 import {connect} from 'react-redux';
 import Atmosphere from 'universal/Atmosphere';
+import {withRouter} from 'react-router-dom';
 
 const mapStateToProps = (state) => ({authToken: state.auth.token});
 
@@ -19,7 +20,8 @@ class AtmosphereProvider extends Component {
   static propTypes = {
     authToken: PropTypes.string,
     children: PropTypes.element.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired
   };
 
   getChildContext() {
@@ -29,9 +31,10 @@ class AtmosphereProvider extends Component {
   }
 
   componentWillMount() {
-    const {authToken, dispatch} = this.props;
+    const {authToken, dispatch, history} = this.props;
     // super dirty, we'll remove it in the next chore PR when we remove auth from redux
     atmosphere.dispatch = dispatch;
+    atmosphere.history = history;
     if (authToken) {
       atmosphere.setAuthToken(authToken);
     }
@@ -49,4 +52,4 @@ class AtmosphereProvider extends Component {
   }
 }
 
-export default connect(mapStateToProps)(AtmosphereProvider);
+export default withRouter(connect(mapStateToProps)(AtmosphereProvider));

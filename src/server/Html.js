@@ -30,11 +30,11 @@ export default function Html({store, assets, clientIds}) {
     try {
       return renderToString(
         <Provider store={store}>
-          <AtmosphereProvider atmosphere={atmosphere}>
-            <StaticRouter location={'/'} context={context}>
+          <StaticRouter location={'/'} context={context}>
+            <AtmosphereProvider atmosphere={atmosphere}>
               <ActionContainer />
-            </StaticRouter>
-          </AtmosphereProvider>
+            </AtmosphereProvider>
+          </StaticRouter>
         </Provider>
       );
     } catch (e) {
