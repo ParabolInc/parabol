@@ -249,6 +249,7 @@ export default class Atmosphere extends Environment {
       this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
         handler: (errors, payload) => {
           const {authToken} = payload;
+          this.setAuthToken(authToken);
           this.dispatch(setAuthToken(authToken));
         },
         options: {

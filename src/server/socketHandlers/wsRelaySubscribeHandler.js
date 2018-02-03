@@ -26,20 +26,20 @@ const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader
 };
 
 export default function wsRelaySubscribeHandler(connectionContext, parsedMessage) {
-  const {id: socketId, availableResubs, authToken, socket, sharedDataLoader, subs} = connectionContext;
   const {id: opId} = parsedMessage;
-  subs[opId] = {status: 'pending'};
+  const {id: socketId, authToken, socket, sharedDataLoader} = connectionContext;
+  connectionContext.subs[opId] = {status: 'pending'};
   const handleSubscribe = async (options = {}) => {
     const isResub = options;
-    if (subs[opId]) {
+    if (connectionContext.subs[opId]) {
       // subscription already exists, restart it
-      relayUnsubscribe(subs, opId);
+      relayUnsubscribe(connectionContext.subs, opId);
     }
 
     const asyncIterator = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
     if (!asyncIterator) return;
 
-    subs[opId] = {
+    connectionContext.subs[opId] = {
       asyncIterator
     };
     const iterableCb = (payload) => {
@@ -47,7 +47,7 @@ export default function wsRelaySubscribeHandler(connectionContext, parsedMessage
       if (changedAuth) {
         // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
         // delay it to guarantee that no matter when this is published, it is the last message on the mutation
-        setTimeout(() => unsubscribeRelaySub(socket), 1000);
+        setTimeout(() => unsubscribeRelaySub(connectionContext), 1000);
         return;
       }
       const resultType = payload.errors ? GQL_ERROR : GQL_DATA;
@@ -60,11 +60,11 @@ export default function wsRelaySubscribeHandler(connectionContext, parsedMessage
     //  console.log('sub ended', opId)
     // }, 5000)
     await forAwaitEach(asyncIterator, iterableCb);
-    const resubIdx = availableResubs.indexOf(opId);
+    const resubIdx = connectionContext.availableResubs.indexOf(opId);
     if (resubIdx !== -1) {
       // reinitialize the subscription
       handleSubscribe({isResub: true});
-      availableResubs.splice(resubIdx, 1);
+      connectionContext.availableResubs.splice(resubIdx, 1);
     } else {
       sendMessage(socket, GQL_COMPLETE, undefined, opId);
     }
