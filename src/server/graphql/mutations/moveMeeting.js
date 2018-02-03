@@ -123,7 +123,10 @@ export default {
         .update({isComplete: true}, {returnChanges: true})('changes')(0)('new_val').default(null)
     });
 
-    const data = {teamId, agendaItemId: completedAgendaItem.id};
+    const data = {
+      teamId,
+      agendaItemId: completedAgendaItem && completedAgendaItem.id
+    };
     publish(AGENDA_ITEM, teamId, MoveMeetingPayload, data, subOptions);
     publish(TEAM, teamId, MoveMeetingPayload, data, subOptions);
     return data;

@@ -40,7 +40,10 @@ const mutation = graphql`
   }
 `;
 
+const clearAgendaItems = (team) => team.setLinkedRecords([], 'agendaItems');
+
 export const endMeetingTeamUpdater = (payload, {history}) => {
+  clearAgendaItems(payload.getLinkedRecord('team'));
   const meetingId = getInProxy(payload, 'meeting', 'id');
   history.push(`/summary/${meetingId}`);
 };

@@ -35,14 +35,15 @@ const styleThunk = () => ({
     backgroundColor: '#fff',
     display: 'flex !important',
     flexDirection: 'column',
-    minHeight: '100vh',
+    height: '100vh',
     minWidth: ui.dashMinWidth
   },
 
   main: {
     display: 'flex !important',
     flex: 1,
-    position: 'relative'
+    position: 'relative',
+    height: '100%'
   }
 });
 

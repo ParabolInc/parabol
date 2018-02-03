@@ -31,16 +31,8 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import UpdateAgendaItemMutation from 'universal/mutations/UpdateAgendaItemMutation';
 import {
-  AGENDA_ITEMS,
-  CHECKIN,
-  FIRST_CALL,
-  LAST_CALL,
-  LOBBY,
-  phaseArray,
-  SORT_STEP,
-  UPDATES
+  AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES
 } from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
@@ -252,29 +244,7 @@ class MeetingContainer extends Component {
   };
 
   gotoAgendaItem = (idx) => async () => {
-    const {atmosphere, viewer: {team: {activeFacilitator, agendaItems, facilitatorPhase}}, myTeamMemberId} = this.props;
-    const isFacilitating = activeFacilitator === myTeamMemberId;
-    const facilitatorPhaseInfo = actionMeeting[facilitatorPhase];
-    const agendaPhaseInfo = actionMeeting[AGENDA_ITEMS];
-    const firstIncompleteIdx = agendaItems.findIndex((a) => a.isComplete === false);
-    const nextItemIdx = firstIncompleteIdx + (facilitatorPhase === AGENDA_ITEMS ? 1 : 0);
-    const shouldResort = facilitatorPhaseInfo.index >= agendaPhaseInfo.index && idx > nextItemIdx && firstIncompleteIdx > -1;
-    if (isFacilitating && shouldResort) {
-      // resort
-      const desiredItem = agendaItems[idx];
-      const nextItem = agendaItems[nextItemIdx];
-      const prevItem = agendaItems[nextItemIdx - 1];
-      const updatedAgendaItem = {
-        id: desiredItem.id,
-        sortOrder: prevItem ? (prevItem.sortOrder + nextItem.sortOrder) / 2 : nextItem.sortOrder - SORT_STEP
-      };
-      const onCompleted = () => {
-        this.gotoItem(nextItemIdx + 1, AGENDA_ITEMS);
-      };
-      UpdateAgendaItemMutation(atmosphere, updatedAgendaItem, undefined, onCompleted);
-    } else {
-      this.gotoItem(idx + 1, AGENDA_ITEMS);
-    }
+    this.gotoItem(idx + 1, AGENDA_ITEMS);
   };
 
   rejoinFacilitator = () => {
