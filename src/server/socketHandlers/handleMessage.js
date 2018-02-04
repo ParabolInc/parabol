@@ -29,7 +29,7 @@ const handleMessage = (connectionContext) => async (message) => {
      * The endpoint is terminating the connection because a message was received that contained inconsistent data
      * (e.g., non-UTF-8 data within a text message).
      */
-    socket.close(1007);
+    handleDisconnect(connectionContext, {exitCode: 1007})();
     return;
   }
 
@@ -42,7 +42,6 @@ const handleMessage = (connectionContext) => async (message) => {
   }
 
   if (type === GQL_CONNECTION_TERMINATE) {
-    socket.terminate();
     handleDisconnect(connectionContext)();
   } else if (type === GQL_START && isQueryProvided(payload) && isSubscriptionPayload(payload)) {
     wsRelaySubscribeHandler(connectionContext, parsedMessage);

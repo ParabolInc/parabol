@@ -21,6 +21,7 @@ import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks';
 import SharedDataLoader from 'shared-dataloader';
 import {Server} from 'uws';
 import http from 'http';
+import startMemwatch from 'server/utils/startMemwatch';
 
 // Import .env and expand variables:
 getDotenv();
@@ -111,3 +112,7 @@ app.get('*', createSSR);
 
 // handle sockets
 wss.on('connection', connectionHandler(sharedDataLoader));
+
+if (process.env.MEMWATCH) {
+  startMemwatch();
+}

@@ -1,4 +1,4 @@
-const unsubscribeRelaySub = (connectionContext) => {
+const unsubscribeRelaySub = (connectionContext, options = {}) => {
   if (connectionContext.subs) {
     const opIds = Object.keys(connectionContext.subs);
     for (let ii = 0; ii < opIds.length; ii++) {
@@ -10,7 +10,9 @@ const unsubscribeRelaySub = (connectionContext) => {
     }
     connectionContext.subs = {};
     // flag all of these as eligible for resubscribing
-    connectionContext.availableResubs = opIds;
+    if (options.isResub) {
+      connectionContext.availableResubs = opIds;
+    }
   }
 };
 
