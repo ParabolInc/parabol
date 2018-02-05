@@ -17,27 +17,88 @@ export default class Atmosphere extends Environment {
   static getKey = (name, variables) => {
     return JSON.stringify({name, variables});
   };
+
   registerQuery = (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {
-    this.setNet('socket');
     const subConfigs = subscriptions.map((subCreator) => subCreator(this, queryVariables, subParams));
     const newQuerySubs = subConfigs.map((config) => {
       const {subscription, variables = {}} = config;
       const {name} = subscription();
       const subKey = Atmosphere.getKey(name, variables);
-      const existingSub = this.querySubscriptions.find((qs) => qs.subKey === subKey);
-
-      const disposable = existingSub ? existingSub.subscription :
-        requestSubscription(this, {onError: defaultErrorHandler, ...config});
+      this.safeRequestSubscription(config);
       return {
         subKey,
         queryKey,
-        component: {dispose: releaseComponent},
-        subscription: disposable
+        component: {dispose: releaseComponent}
       };
     });
 
     this.querySubscriptions.push(...newQuerySubs);
   };
+  socketSubscribe = async (operation, variables, cacheConfig, observer) => {
+    const {name, text} = operation;
+    const subKey = Atmosphere.getKey(name, variables);
+
+    const onNext = (result) => {
+      observer.onNext(result);
+    };
+
+    const onError = (error) => {
+      observer.onError(error);
+    };
+
+    const onComplete = () => {
+      observer.onCompleted();
+    };
+    const subscriptionClient = await this.ensureSubscriptionClient();
+    if (!subscriptionClient) return undefined;
+
+    const client = subscriptionClient
+      .request({query: text, variables})
+      .subscribe(onNext, onError, onComplete);
+
+    this.subscriptions[subKey] = {
+      client
+    };
+    return this.makeDisposable(subKey);
+  };
+
+  constructor() {
+    // deal with Environment
+    const store = new Store(new RecordSource());
+    super({store});
+    this._network = Network.create(this.fetchHTTP);
+
+    // now atmosphere
+    this.authToken = undefined;
+    this.subscriptionClient = undefined;
+    this.networks = {
+      http: this._network,
+      socket: Network.create(this.fetchWS, this.socketSubscribe)
+    };
+    this.querySubscriptions = [];
+    this.subscriptions = {};
+    this.useSubscriptions = true;
+  }
+
+  makeSubscriptionClient() {
+    if (!this.subscriptionClient) {
+      this.subscriptionClient = new Promise((resolve, reject) => {
+        const subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
+          reconnect: true,
+          connectionParams: {authToken: this.authToken}
+        });
+        // Catch aggressive firewalls that block websockets
+        subscriptionClient.client.onerror = (e) => {
+          subscriptionClient.reconnect = false;
+          reject(e);
+        };
+        subscriptionClient.onConnecting(() => {
+          resolve(subscriptionClient);
+        });
+      });
+    }
+    return this.subscriptionClient;
+  }
 
   fetchWS = async (operation, variables) => {
     const request = this.subscriptionClient
@@ -92,49 +153,9 @@ export default class Atmosphere extends Environment {
     }
   };
 
-  socketSubscribe = (operation, variables, cacheConfig, observer) => {
-    const {name, text} = operation;
-    const subKey = Atmosphere.getKey(name, variables);
-
-    const onNext = (result) => {
-      observer.onNext(result);
-    };
-
-    const onError = (error) => {
-      observer.onError(error);
-    };
-
-    const onComplete = () => {
-      observer.onCompleted();
-    };
-    this.ensureSubscriptionClient();
-    const client = this.subscriptionClient
-      .request({query: text, variables})
-      .subscribe(onNext, onError, onComplete);
-
-    this.subscriptions[subKey] = {
-      client
-    };
-    return this.makeDisposable(subKey);
-  };
-
-  constructor() {
-    // deal with Environment
-    const store = new Store(new RecordSource());
-    super({store});
-    this._network = Network.create(this.fetchHTTP);
-
-    // now atmosphere
-    this.authToken = undefined;
-    this.socket = undefined;
-    this.subscriptionClient = undefined;
-    this.networks = {
-      http: this._network,
-      socket: Network.create(this.fetchWS, this.socketSubscribe)
-    };
-
-    this.querySubscriptions = [];
-    this.subscriptions = {};
+  async safeRequestSubscription(config) {
+    const subscriptionClient = await this.ensureSubscriptionClient();
+    return subscriptionClient && requestSubscription(this, {onError: defaultErrorHandler, ...config});
   }
 
   /*
@@ -189,32 +210,18 @@ export default class Atmosphere extends Environment {
     });
   };
 
-  ensureSubscriptionClient() {
-    if (!this.subscriptionClient) {
-      this.setNet('socket');
-      if (!this.authToken) {
-        throw new Error('No Auth Token provided!');
-      }
-      this.subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
-        reconnect: true,
-        connectionParams: {authToken: this.authToken}
-      });
+  async ensureSubscriptionClient() {
+    if (this.subscriptionClient && !this.subscriptionClient.then) return this.subscriptionClient;
+    if (this.useSubscriptions === false) return null;
+    if (!this.authToken) {
+      throw new Error('No Auth Token provided!');
+    }
 
-      // notify when disconnected
-      const removeDisconnectedListener = this.subscriptionClient.onDisconnected(() => {
-        if (!this.subscriptionClient.reconnecting) {
-          this.dispatch(showWarning({
-            autoDismiss: 10,
-            title: 'You’re offline!',
-            message: 'We’re trying to reconnect you'
-          }));
-        }
-      });
-
-      // Catch aggressive firewalls that block websockets
-      this.subscriptionClient.client.onerror = (e) => {
-        this.subscriptionClient.reconnect = false;
-        removeDisconnectedListener();
+    try {
+      this.subscriptionClient = await this.makeSubscriptionClient();
+    } catch (e) {
+      if (this.useSubscriptions) {
+        this.useSubscriptions = false;
         raven.captureBreadcrumb({
           category: 'network',
           level: 'error',
@@ -228,35 +235,51 @@ export default class Atmosphere extends Environment {
           message: `We weren't able to create a live connection to our server. 
           Ask your network administrator to enable WebSockets.`
         }));
-      };
-
-      // notify on reconnects
-      this.subscriptionClient.onReconnected(() => {
-        this.dispatch(showSuccess({
-          autoDismiss: 5,
-          title: 'You’re back online!',
-          message: 'You were offline for a bit, but we’ve reconnected you.'
-        }));
-      });
-
-      this.subscriptionClient.onConnected((payload) => {
-        const {version} = payload;
-        popUpgradeAppToast(version, {dispatch: this.dispatch, history: this.history});
-      });
-
-      // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
-      const {text: query, name: operationName} = NewAuthTokenSubscription().subscription();
-      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
-        handler: (errors, payload) => {
-          const {authToken} = payload;
-          this.setAuthToken(authToken);
-          this.dispatch(setAuthToken(authToken));
-        },
-        options: {
-          query,
-          operationName
-        }
-      };
+      }
+      return null;
     }
+
+    this.setNet('socket');
+    // notify when disconnected
+    this.subscriptionClient.onDisconnected(() => {
+      if (!this.subscriptionClient.reconnecting) {
+        this.dispatch(showWarning({
+          autoDismiss: 10,
+          title: 'You’re offline!',
+          message: 'We’re trying to reconnect you'
+        }));
+      }
+    });
+
+    // notify on reconnects
+    const handleAck = (payload) => {
+      const {version} = payload;
+      popUpgradeAppToast(version, {dispatch: this.dispatch, history: this.history});
+    };
+
+    this.subscriptionClient.onReconnected((payload) => {
+      handleAck(payload);
+      this.dispatch(showSuccess({
+        autoDismiss: 5,
+        title: 'You’re back online!',
+        message: 'You were offline for a bit, but we’ve reconnected you.'
+      }));
+    });
+    this.subscriptionClient.onConnected(handleAck);
+
+    // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
+    const {text: query, name: operationName} = NewAuthTokenSubscription().subscription();
+    this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
+      handler: (errors, payload) => {
+        const {authToken} = payload;
+        this.setAuthToken(authToken);
+        this.dispatch(setAuthToken(authToken));
+      },
+      options: {
+        query,
+        operationName
+      }
+    };
+    return this.subscriptionClient;
   }
 }
