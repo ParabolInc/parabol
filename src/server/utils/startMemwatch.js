@@ -5,7 +5,7 @@ const path = require('path');
 const startMemwatch = () => {
   console.log('starting memwatch');
   memwatch.on('leak', (info) => {
-    console.error('Mem leak detected', info)
+    console.error('Mem leak detected', info);
   });
   let snapStart;
   let snapStop;
@@ -24,7 +24,7 @@ const startMemwatch = () => {
       const jsonPath = path.join(process.cwd(), 'leak.json');
       fs.writeFileSync(jsonPath, JSON.stringify(end, null, 2));
     }
-  })
+  });
 };
 
 export default startMemwatch;

@@ -34,8 +34,8 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
     relayUnsubscribe(connectionContext.subs, opId);
   }
 
-    const asyncIterator = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
-    if (!asyncIterator) return;
+  const asyncIterator = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
+  if (!asyncIterator) return;
 
   connectionContext.subs[opId] = {
     asyncIterator
