@@ -12,7 +12,6 @@ class SubscriptionClient {
       subscribe: jest.fn()
     }));
   }
-
 }
 
 export default SubscriptionClient;

@@ -25,49 +25,51 @@ const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader
   return undefined;
 };
 
+const handleSubscribe = async (connectionContext, parsedMessage, options = {}) => {
+  const {id: socketId, authToken, socket, sharedDataLoader} = connectionContext;
+  const {id: opId} = parsedMessage;
+  const isResub = options;
+  if (connectionContext.subs[opId]) {
+    // subscription already exists, restart it
+    relayUnsubscribe(connectionContext.subs, opId);
+  }
+
+  const asyncIterator = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
+  if (!asyncIterator) return;
+
+  connectionContext.subs[opId] = {
+    asyncIterator
+  };
+  const iterableCb = (payload) => {
+    const changedAuth = handleGraphQLResult(connectionContext, payload);
+    if (changedAuth) {
+      // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
+      // delay it to guarantee that no matter when this is published, it is the last message on the mutation
+      setTimeout(() => unsubscribeRelaySub(connectionContext, {isResub: true}), 1000);
+      return;
+    }
+    const resultType = payload.errors ? GQL_ERROR : GQL_DATA;
+    sendMessage(socket, resultType, payload, opId);
+  };
+
+  // Use this to kick clients out of the sub
+  // setTimeout(() => {
+  //  asyncIterator.return();
+  //  console.log('sub ended', opId)
+  // }, 5000)
+  await forAwaitEach(asyncIterator, iterableCb);
+  const resubIdx = connectionContext.availableResubs.indexOf(opId);
+  if (resubIdx !== -1) {
+    // reinitialize the subscription
+    handleSubscribe(connectionContext, parsedMessage, {isResub: true});
+    connectionContext.availableResubs.splice(resubIdx, 1);
+  } else {
+    sendMessage(socket, GQL_COMPLETE, undefined, opId);
+  }
+};
+
 export default function wsRelaySubscribeHandler(connectionContext, parsedMessage) {
   const {id: opId} = parsedMessage;
-  const {id: socketId, authToken, socket, sharedDataLoader} = connectionContext;
   connectionContext.subs[opId] = {status: 'pending'};
-  const handleSubscribe = async (options = {}) => {
-    const isResub = options;
-    if (connectionContext.subs[opId]) {
-      // subscription already exists, restart it
-      relayUnsubscribe(connectionContext.subs, opId);
-    }
-
-    const asyncIterator = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
-    if (!asyncIterator) return;
-
-    connectionContext.subs[opId] = {
-      asyncIterator
-    };
-    const iterableCb = (payload) => {
-      const changedAuth = handleGraphQLResult(connectionContext, payload);
-      if (changedAuth) {
-        // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
-        // delay it to guarantee that no matter when this is published, it is the last message on the mutation
-        setTimeout(() => unsubscribeRelaySub(connectionContext), 1000);
-        return;
-      }
-      const resultType = payload.errors ? GQL_ERROR : GQL_DATA;
-      sendMessage(socket, resultType, payload, opId);
-    };
-
-    // Use this to kick clients out of the sub
-    // setTimeout(() => {
-    //  asyncIterator.return();
-    //  console.log('sub ended', opId)
-    // }, 5000)
-    await forAwaitEach(asyncIterator, iterableCb);
-    const resubIdx = connectionContext.availableResubs.indexOf(opId);
-    if (resubIdx !== -1) {
-      // reinitialize the subscription
-      handleSubscribe({isResub: true});
-      connectionContext.availableResubs.splice(resubIdx, 1);
-    } else {
-      sendMessage(socket, GQL_COMPLETE, undefined, opId);
-    }
-  };
-  handleSubscribe();
+  handleSubscribe(connectionContext, parsedMessage);
 }

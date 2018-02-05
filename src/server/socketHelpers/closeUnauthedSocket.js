@@ -1,5 +1,6 @@
 import {GQL_CONNECTION_ERROR} from 'universal/utils/constants';
 import sendMessage from 'server/socketHelpers/sendMessage';
+import handleDisconnect from 'server/socketHandlers/handleDisconnect';
 
 const closeUnauthedSocket = (connectionContext) => {
   const {authToken, socket} = connectionContext;
@@ -10,7 +11,7 @@ const closeUnauthedSocket = (connectionContext) => {
      *  authorization credentials.
      */
     sendMessage(socket, GQL_CONNECTION_ERROR);
-    socket.close(4401);
+    handleDisconnect(connectionContext, {exitCode: 4401})();
     return true;
   }
   return false;
