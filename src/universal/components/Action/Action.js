@@ -25,8 +25,8 @@ const Action = (props) => {
       <Toast />
       <Switch>
         <Route exact path="/" component={LandingContainer} />
-        <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper}/>
-        <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot}/>
+        <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
+        <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
         <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />
         <AsyncRoute isPrivate path="/summary/:meetingId" mod={meetingSummary} />
         <AsyncRoute isPrivate path="/welcome" mod={welcome} />
