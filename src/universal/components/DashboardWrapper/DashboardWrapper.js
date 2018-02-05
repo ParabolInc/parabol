@@ -14,6 +14,8 @@ import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
+import HTML5Backend from 'react-dnd-html5-backend';
+import {DragDropContext as dragDropContext} from 'react-dnd';
 
 const query = graphql`
   query DashboardWrapperQuery {
@@ -83,4 +85,4 @@ DashboardWrapper.propTypes = {
   notifications: PropTypes.object
 };
 
-export default connect()(withRouter(withAtmosphere(DashboardWrapper)));
+export default dragDropContext(HTML5Backend)(connect()(withRouter(withAtmosphere(DashboardWrapper))));

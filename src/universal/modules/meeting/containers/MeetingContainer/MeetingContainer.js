@@ -31,10 +31,9 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {
-  AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES
-} from 'universal/utils/constants';
+import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES} from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import {withRouter} from 'react-router-dom';
 
 const handleHotkey = (gotoFunc, submitting) => () => {
   if (!submitting && document.activeElement === document.body) gotoFunc();
@@ -376,7 +375,9 @@ export default createFragmentContainer(
       withHotkey(
         withAtmosphere(
           withMutationProps(
-            MeetingContainer
+            withRouter(
+              MeetingContainer
+            )
           )
         )
       )

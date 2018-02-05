@@ -89,6 +89,8 @@ export default class Atmosphere extends Environment {
         });
         // Catch aggressive firewalls that block websockets
         subscriptionClient.client.onerror = (e) => {
+          // if reconnecting, then websockets aren't blocked
+          if (subscriptionClient.reconnecting) return;
           subscriptionClient.reconnect = false;
           reject(e);
         };
@@ -238,48 +240,49 @@ export default class Atmosphere extends Environment {
       }
       return null;
     }
+    if (this.networks.socket !== this._network) {
+      this.setNet('socket');
+      // notify when disconnected
+      this.subscriptionClient.onDisconnected(() => {
+        if (!this.subscriptionClient.reconnecting) {
+          this.dispatch(showWarning({
+            autoDismiss: 10,
+            title: 'You’re offline!',
+            message: 'We’re trying to reconnect you'
+          }));
+        }
+      });
 
-    this.setNet('socket');
-    // notify when disconnected
-    this.subscriptionClient.onDisconnected(() => {
-      if (!this.subscriptionClient.reconnecting) {
-        this.dispatch(showWarning({
-          autoDismiss: 10,
-          title: 'You’re offline!',
-          message: 'We’re trying to reconnect you'
+      // notify on reconnects
+      const handleAck = (payload) => {
+        const {version} = payload;
+        popUpgradeAppToast(version, {dispatch: this.dispatch, history: this.history});
+      };
+
+      this.subscriptionClient.onReconnected((payload) => {
+        handleAck(payload);
+        this.dispatch(showSuccess({
+          autoDismiss: 5,
+          title: 'You’re back online!',
+          message: 'You were offline for a bit, but we’ve reconnected you.'
         }));
-      }
-    });
+      });
+      this.subscriptionClient.onConnected(handleAck);
 
-    // notify on reconnects
-    const handleAck = (payload) => {
-      const {version} = payload;
-      popUpgradeAppToast(version, {dispatch: this.dispatch, history: this.history});
-    };
-
-    this.subscriptionClient.onReconnected((payload) => {
-      handleAck(payload);
-      this.dispatch(showSuccess({
-        autoDismiss: 5,
-        title: 'You’re back online!',
-        message: 'You were offline for a bit, but we’ve reconnected you.'
-      }));
-    });
-    this.subscriptionClient.onConnected(handleAck);
-
-    // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
-    const {text: query, name: operationName} = NewAuthTokenSubscription().subscription();
-    this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
-      handler: (errors, payload) => {
-        const {authToken} = payload;
-        this.setAuthToken(authToken);
-        this.dispatch(setAuthToken(authToken));
-      },
-      options: {
-        query,
-        operationName
-      }
-    };
+      // this is dirty, but removing auth state from redux is out of scope. we'll change it soon
+      const {text: query, name: operationName} = NewAuthTokenSubscription().subscription();
+      this.subscriptionClient.operations[NEW_AUTH_TOKEN] = {
+        handler: (errors, payload) => {
+          const {authToken} = payload;
+          this.setAuthToken(authToken);
+          this.dispatch(setAuthToken(authToken));
+        },
+        options: {
+          query,
+          operationName
+        }
+      };
+    }
     return this.subscriptionClient;
   }
 }
