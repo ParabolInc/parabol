@@ -17,8 +17,10 @@ class ErrorMessageInMenu extends Component {
 
   render() {
     const {error, styles} = this.props;
+    // TODO remove this when we are guaranteed a string from the server
+    const errorStr = typeof error === 'string' ? error : error._error;
     return (
-      <div className={css(styles.error)} ref={(c) => { this.errorRef = c; }}>{error}</div>
+      <div className={css(styles.error)} ref={(c) => { this.errorRef = c; }}>{errorStr}</div>
     );
   }
 }
@@ -27,7 +29,8 @@ const styleThunk = () => ({
   error: {
     ...formError,
     fontSize: appTheme.typography.s2,
-    padding: '0 0.5rem'
+    padding: '.5rem .5rem 0',
+    textAlign: 'left'
   }
 });
 

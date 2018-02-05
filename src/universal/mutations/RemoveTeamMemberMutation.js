@@ -68,7 +68,7 @@ const mutation = graphql`
   }
 `;
 
-const popKickedOutNotification = (payload, {dispatch, environment, history, location}) => {
+const popKickedOutNotification = (payload, {dispatch, environment, history}) => {
   const kickOutNotification = payload.getLinkedRecord('kickOutNotification');
   const teamId = getInProxy(kickOutNotification, 'team', 'id');
   if (!teamId) return;
@@ -85,7 +85,7 @@ const popKickedOutNotification = (payload, {dispatch, environment, history, loca
       }
     }
   }));
-  const {pathname} = location;
+  const {pathname} = history.location;
   const onExTeamRoute = Boolean(matchPath(pathname, {
     path: `(/team/${teamId}|/meeting/${teamId})`
   }));

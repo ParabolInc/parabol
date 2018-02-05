@@ -1,6 +1,6 @@
 import {approveToOrgOrgApprovalUpdater} from 'universal/mutations/ApproveToOrgMutation';
 import {cancelApprovalOrgApprovalUpdater} from 'universal/mutations/CancelApprovalMutation';
-import {inviteTeamMembesrOrgApprovalUpdater} from 'universal/mutations/InviteTeamMembersMutation';
+import {inviteTeamMembersOrgApprovalUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {rejectOrgApprovalOrgApprovalUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
 
 const subscription = graphql`
@@ -31,7 +31,7 @@ const OrgApprovalSubscription = (environment, queryVariables) => {
           cancelApprovalOrgApprovalUpdater(payload, store);
           break;
         case 'InviteTeamMembersPayload':
-          inviteTeamMembesrOrgApprovalUpdater(payload, store);
+          inviteTeamMembersOrgApprovalUpdater(payload, store);
           break;
         case 'RejectOrgApprovalPayload':
           rejectOrgApprovalOrgApprovalUpdater(payload, store);

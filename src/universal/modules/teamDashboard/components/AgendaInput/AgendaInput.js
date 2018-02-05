@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
+import ui from 'universal/styles/ui';
 import {css} from 'aphrodite-local-styles/no-important';
 import {reduxForm, Field} from 'redux-form';
 import AgendaInputField from './AgendaInputField';
-import ui from 'universal/styles/ui';
 
 const AgendaInput = (props) => {
-  const {agenda, disabled, handleSubmit, setAgendaInputRef, team, styles} = props;
+  const {afterSubmitAgendaItem, agenda, disabled, handleSubmit, setAgendaInputRef, team, styles} = props;
   return (
     <div className={css(styles.agendaInputBlock)}>
       <Field
@@ -16,6 +16,7 @@ const AgendaInput = (props) => {
         component={AgendaInputField}
         disabled={disabled}
         handleSubmit={handleSubmit}
+        afterSubmitAgendaItem={afterSubmitAgendaItem}
         setAgendaInputRef={setAgendaInputRef}
         team={team}
       />
@@ -27,6 +28,7 @@ AgendaInput.propTypes = {
   agenda: PropTypes.array,
   disabled: PropTypes.bool,
   handleSubmit: PropTypes.func,
+  afterSubmitAgendaItem: PropTypes.func.isRequired,
   setAgendaInputRef: PropTypes.func,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired
@@ -34,7 +36,7 @@ AgendaInput.propTypes = {
 
 const styleThunk = () => ({
   agendaInputBlock: {
-    paddingBottom: ui.meetingSidebarGutter,
+    padding: `${ui.meetingSidebarGutter} 0`,
     position: 'relative'
   }
 });

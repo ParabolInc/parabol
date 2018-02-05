@@ -9,6 +9,7 @@ import shortid from 'shortid';
 import {GITHUB, GITHUB_ENDPOINT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
+import fetch from 'node-fetch';
 
 const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) => {
   const endpoint = `https://api.github.com/repos/${nameWithOwner}/hooks`;

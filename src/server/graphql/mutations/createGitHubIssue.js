@@ -1,4 +1,4 @@
-import {convertFromRaw} from 'draft-js';
+import {ContentState, convertFromRaw} from 'draft-js';
 import {stateToMarkdown} from 'draft-js-export-markdown';
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
@@ -7,6 +7,9 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {GITHUB, PROJECT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
+import fetch from 'node-fetch';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
 
 // const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
 //  if (!creatorProvider) return false;
@@ -27,6 +30,10 @@ const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner) => {
     const {code, field} = errors[0];
     if (code === 'invalid') {
       if (field === 'assignees') {
+        if (getIsSoftTeamMember(assigneeTeamMemberId)) {
+          const assigneeName = await r.table('SoftTeamMember').get(assigneeTeamMemberId)('preferredName');
+          throw new Error(`Assignment failed! Ask ${assigneeName} to join Parabol and add GitHub in Team Settings`);
+        }
         const assigneeName = await r.table('TeamMember').get(assigneeTeamMemberId)('preferredName');
         throw new Error(`${assigneeName} cannot be assigned to ${nameWithOwner}. Make sure they have access`);
       }
@@ -89,14 +96,18 @@ export default {
     }
 
     // RESOLUTION
-    const {teamMemberId: assigneeTeamMemberId, content: rawContentStr} = project;
-    const [assigneeUserId] = assigneeTeamMemberId.split('::');
+    const {assigneeId, content: rawContentStr} = project;
+    const {userId: assigneeUserId} = fromTeamMemberId(assigneeId);
     const providers = await r.table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({service: GITHUB, isActive: true});
     const assigneeProvider = providers.find((provider) => provider.userId === assigneeUserId);
     if (!assigneeProvider) {
-      const assigneeName = await r.table('TeamMember').get(assigneeTeamMemberId)('preferredName');
+      if (getIsSoftTeamMember(assigneeId)) {
+        const assigneeName = await r.table('SoftTeamMember').get(assigneeId)('preferredName');
+        throw new Error(`Assignment failed! Ask ${assigneeName} to join Parabol and add GitHub in Team Settings`);
+      }
+      const assigneeName = await r.table('TeamMember').get(assigneeId)('preferredName');
       throw new Error(`Assignment failed! Ask ${assigneeName} to add GitHub in Team Settings`);
     }
     const adminProvider = providers.find((provider) => provider.userId === adminUserId);
@@ -119,7 +130,7 @@ export default {
     } else {
       title = title.slice(0, 256);
     }
-    const contentState = convertFromRaw(rawContent);
+    const contentState = blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent);
     let body = stateToMarkdown(contentState);
     if (!creatorProvider) {
       const creatorName = await r.table('User').get(viewerId)('preferredName');
@@ -136,7 +147,7 @@ export default {
     const newIssue = await fetch(endpoint, postOptions);
     const newIssueJson = await newIssue.json();
     try {
-      await makeAssigneeError(newIssueJson, assigneeTeamMemberId, nameWithOwner);
+      await makeAssigneeError(newIssueJson, assigneeId, nameWithOwner);
     } catch (e) {
       throw e;
     }
@@ -151,7 +162,7 @@ export default {
       });
       const assignedIssueJson = await assignedIssue.json();
       try {
-        await makeAssigneeError(assignedIssueJson, assigneeTeamMemberId, nameWithOwner);
+        await makeAssigneeError(assignedIssueJson, assigneeId, nameWithOwner);
       } catch (e) {
         throw e;
       }

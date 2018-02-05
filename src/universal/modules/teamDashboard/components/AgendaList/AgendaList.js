@@ -21,12 +21,29 @@ const columnTarget = {
 };
 
 class AgendaList extends Component {
-  state = {filteredAgendaItems: []};
-  setFilteredAgendaItems = (props) => {
-    const {team: {agendaItems, contentFilter}} = props;
-    this.setState({
-      filteredAgendaItems: contentFilter ? agendaItems.filter(({content}) => content.match(contentFilter)) : agendaItems
-    })
+  static propTypes = {
+    atmosphere: PropTypes.object.isRequired,
+    agendaPhaseItem: PropTypes.number,
+    canNavigate: PropTypes.bool,
+    connectDropTarget: PropTypes.func.isRequired,
+    context: PropTypes.string,
+    disabled: PropTypes.bool,
+    dragState: PropTypes.object.isRequired,
+    facilitatorPhase: PropTypes.oneOf(phaseArray),
+    facilitatorPhaseItem: PropTypes.number,
+    gotoAgendaItem: PropTypes.func,
+    localPhase: PropTypes.oneOf(phaseArray),
+    localPhaseItem: PropTypes.number,
+    styles: PropTypes.object,
+    visibleAgendaItemId: PropTypes.string,
+    submittedCount: PropTypes.number,
+    team: PropTypes.object.isRequired
+  }
+
+  state = {
+    filteredAgendaItems: [],
+    overflownAbove: false,
+    overflownBelow: false
   };
 
   componentWillMount() {
@@ -41,10 +58,36 @@ class AgendaList extends Component {
     }
   }
 
-  removeItemFactory = (agendaId) => () => {
-    const {atmosphere} = this.props;
-    RemoveAgendaItemMutation(atmosphere, agendaId);
+  setFilteredAgendaItems = (props) => {
+    const {team: {agendaItems, contentFilter}} = props;
+    this.setState({
+      filteredAgendaItems: contentFilter ? agendaItems.filter(({content}) => content.match(contentFilter)) : agendaItems
+    })
   };
+
+  setOverflowContainerElRef = (el) => {
+    this.overflowContainerEl = el;
+    this.setState({
+      overflownAbove: this.isOverflownAbove(),
+      overflownBelow: this.isOverflownBelow()
+    });
+    if (!el) { return; }
+    this.overflowContainerEl.addEventListener('scroll', () => {
+      const overflownAbove = this.isOverflownAbove();
+      const overflownBelow = this.isOverflownBelow();
+      const newState = {};
+      if (this.state.overflownAbove !== overflownAbove) {
+        newState.overflownAbove = overflownAbove;
+      }
+      if (this.state.overflownBelow !== overflownBelow) {
+        newState.overflownBelow = overflownBelow;
+      }
+      if (Object.keys(newState).length) {
+        this.setState(newState);
+      }
+    });
+  }
+
   makeLoadingState() {
     const {styles} = this.props;
     const loadingItem = <div className={css(styles.agendaItemLoading)} />;
@@ -71,6 +114,51 @@ class AgendaList extends Component {
     );
   }
 
+  makeOverflownAboveShadow = () => {
+    return (
+      <div
+        style={{
+          position: 'relative',
+          top: '-1px',
+          boxShadow: '0 1px 1px rgba(0, 0, 0, 0.25)',
+          height: '1px'
+        }}
+      />
+    );
+  };
+
+  makeOverflownBelowShadow = () => {
+    return (
+      <div
+        style={{
+          position: 'relative',
+          top: '1px',
+          boxShadow: '0 -1px 1px rgba(0, 0, 0, 0.25)',
+          height: '1px'
+        }}
+      />
+    );
+  };
+
+  overflowContainerEl = null;
+
+  isOverflownAbove = () => {
+    const {overflowContainerEl} = this;
+    if (!overflowContainerEl) { return false; }
+    return overflowContainerEl.scrollTop > 0;
+  };
+
+  isOverflownBelow = () => {
+    const {overflowContainerEl} = this;
+    if (!overflowContainerEl) { return false; }
+    return overflowContainerEl.scrollHeight - overflowContainerEl.scrollTop > overflowContainerEl.clientHeight;
+  };
+
+  removeItemFactory = (agendaId) => () => {
+    const {atmosphere} = this.props;
+    RemoveAgendaItemMutation(atmosphere, agendaId);
+  };
+
   render() {
     const {
       agendaPhaseItem,
@@ -83,10 +171,11 @@ class AgendaList extends Component {
       gotoAgendaItem,
       localPhase,
       localPhaseItem,
+      visibleAgendaItemId,
       styles,
       team
     } = this.props;
-    const {filteredAgendaItems} = this.state;
+    const {filteredAgendaItems, overflownAbove, overflownBelow} = this.state;
     const {agendaItems} = team;
     const canNavigateItems = canNavigate && !disabled;
     dragState.clear();
@@ -94,8 +183,9 @@ class AgendaList extends Component {
     const isLoading = false;
     return connectDropTarget(
       <div className={css(styles.root)}>
+        {overflownAbove && this.makeOverflownAboveShadow()}
         {filteredAgendaItems.length > 0 ?
-          <div className={css(styles.inner)}>
+          <div className={css(styles.inner)} ref={this.setOverflowContainerElRef}>
             {filteredAgendaItems.map((item, idx) =>
               (<AgendaItem
                 key={`agendaItem${item.id}`}
@@ -104,11 +194,13 @@ class AgendaList extends Component {
                 agendaPhaseItem={agendaPhaseItem}
                 canNavigate={canNavigateItems}
                 disabled={disabled}
+                ensureVisible={visibleAgendaItemId === item.id}
                 facilitatorPhase={facilitatorPhase}
-                facilitatorPhaseItem={facilitatorPhaseItem}
                 gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
                 handleRemove={this.removeItemFactory(item.id)}
                 idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                isCurrent={idx + 1 === agendaPhaseItem}
+                isFacilitator={idx + 1 === facilitatorPhaseItem}
                 localPhase={localPhase}
                 localPhaseItem={localPhaseItem}
                 ref={(c) => {
@@ -123,42 +215,22 @@ class AgendaList extends Component {
             {isLoading ? this.makeLoadingState() : this.makeEmptyState()}
           </div>
         }
+        {overflownBelow && this.makeOverflownBelowShadow()}
       </div>
     );
   }
 }
 
-AgendaList.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  agendaPhaseItem: PropTypes.number,
-  canNavigate: PropTypes.bool,
-  connectDropTarget: PropTypes.func.isRequired,
-  context: PropTypes.string,
-  disabled: PropTypes.bool,
-  dragState: PropTypes.object.isRequired,
-  facilitatorPhase: PropTypes.oneOf(phaseArray),
-  facilitatorPhaseItem: PropTypes.number,
-  gotoAgendaItem: PropTypes.func,
-  localPhase: PropTypes.oneOf(phaseArray),
-  localPhaseItem: PropTypes.number,
-  styles: PropTypes.object,
-  team: PropTypes.object.isRequired
-};
-
 const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 1,
-    position: 'relative',
+    maxHeight: 'calc(100% - 3.625rem)',
     width: '100%'
   },
 
   inner: {
     ...overflowTouch,
-    bottom: 0,
-    position: 'absolute',
-    top: 0,
     width: '100%'
   },
 

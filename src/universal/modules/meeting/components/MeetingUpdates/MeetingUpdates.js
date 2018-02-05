@@ -10,6 +10,7 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import withStyles from 'universal/styles/withStyles';
 import {MEETING} from 'universal/utils/constants';
 import getProjectById from 'universal/utils/getProjectById';
+import isProjectPrivate from 'universal/utils/isProjectPrivate';
 
 class MeetingUpdates extends Component {
   state = {projects: {}};
@@ -29,7 +30,7 @@ class MeetingUpdates extends Component {
   filterProjects(props) {
     const {localPhaseItem, setUpdateUserHasProjects, viewer: {projects, team: {teamMembers}}} = props;
     const currentTeamMember = teamMembers[localPhaseItem - 1];
-    const edges = projects.edges.filter(({node}) => node.assignee.id === currentTeamMember.id);
+    const edges = projects.edges.filter(({node}) => node.assignee.id === currentTeamMember.id && !isProjectPrivate(node.tags));
     this.setState({
       projects: {edges}
     });
@@ -128,6 +129,7 @@ export default createFragmentContainer(
             id
             status
             sortOrder
+            tags
             assignee {
               id
             }

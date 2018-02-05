@@ -1,6 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {SLACK} from 'universal/utils/constants';
 import makeAppLink from 'server/utils/makeAppLink';
+import fetch from 'node-fetch';
 
 const getIntegrationsForNotification = (teamId, notification) => {
   const r = getRethink();

@@ -77,10 +77,7 @@ graphql`
 graphql`
   fragment InviteTeamMembersMutation_project on InviteTeamMembersPayload {
     unarchivedSoftProjects {
-      id
-      content
-      tags
-      teamId
+      ...CompleteProjectFrag @relay(mask: false)
     }
   }
 `;
@@ -214,7 +211,7 @@ export const inviteTeamMembersNotificationUpdater = (payload, store, viewerId, o
   handleAddTeams(team, store, viewerId);
 };
 
-export const inviteTeamMembesrOrgApprovalUpdater = (payload, store) => {
+export const inviteTeamMembersOrgApprovalUpdater = (payload, store) => {
   const orgApprovalsRemoved = payload.getLinkedRecords('orgApprovalsRemoved');
   handleRemoveOrgApprovals(orgApprovalsRemoved, store);
 
@@ -232,14 +229,17 @@ export const inviteTeamMembersTeamMemberUpdater = (payload, store, dispatch, isM
   handleAddTeamMembers(reactivatedTeamMembers, store);
   const newSoftTeamMembers = payload.getLinkedRecords('newSoftTeamMembers');
   handleAddSoftTeamMembers(newSoftTeamMembers, store);
-  if (isMutator) {
-    popReactivationToast(reactivatedTeamMembers, dispatch);
-  } else {
-    popTeamMemberReactivatedToast(payload, dispatch);
+  if (reactivatedTeamMembers) {
+    if (isMutator) {
+      popReactivationToast(reactivatedTeamMembers, dispatch);
+    } else {
+      popTeamMemberReactivatedToast(payload, dispatch);
+    }
   }
 };
 
 const InviteTeamMembersMutation = (environment, variables, dispatch, onError, onCompleted) => {
+  const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
     variables,
@@ -247,9 +247,10 @@ const InviteTeamMembersMutation = (environment, variables, dispatch, onError, on
       const payload = store.getRootField('inviteTeamMembers');
       inviteTeamMembersInvitationUpdater(payload, store);
       popInvitationToast(payload, dispatch);
-      inviteTeamMembesrOrgApprovalUpdater(payload, store);
+      inviteTeamMembersOrgApprovalUpdater(payload, store);
       popOrgApprovalToast(payload, dispatch);
       inviteTeamMembersTeamMemberUpdater(payload, store, dispatch, true);
+      inviteTeamMembersProjectUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       // add the invitees as soft team members

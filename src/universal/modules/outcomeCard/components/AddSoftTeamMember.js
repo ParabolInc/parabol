@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import avatarUser from 'universal/styles/theme/images/add-round-button.svg';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -15,13 +14,13 @@ import legitify from 'universal/validation/legitify';
 import {createFragmentContainer} from 'react-relay';
 import ErrorMessageInMenu from 'universal/components/ErrorMessageInMenu';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const makeValidationSchema = (allAssignees) => {
   return legitify({
     inviteeEmail: (value) => value
       .trim()
-      .required('You should enter an email here')
-      .matches(emailRegex, 'That doesn’t look like an email address')
+      .matches(emailRegex, 'That doesn’t look like an email address.')
       .test((inviteeEmail) => {
         const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
         return alreadyInList && 'That person is already in the list';
@@ -146,13 +145,14 @@ class AddSoftTeamMember extends Component {
       setAddSoftAsActive
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
+    const inputStyles = css(styles.input, isActive && styles.inputActive);
     return (
       <div title="Invite a new teammate by email">
         <div className={rootStyles} onClick={this.onClick}>
           <img alt="Invite a new teammate by email" className={css(styles.avatar)} src={avatarUser} />
           <form onSubmit={this.onSubmit}>
             <input
-              className={css(styles.input)}
+              className={inputStyles}
               onChange={this.onChange}
               onFocus={setAddSoftAsActive}
               placeholder="name@company.co"
@@ -161,7 +161,7 @@ class AddSoftTeamMember extends Component {
             />
           </form>
         </div>
-        {error && <ErrorMessageInMenu error={error} />}
+        {error && isActive && <ErrorMessageInMenu error={error} />}
       </div>
     );
   }
@@ -169,19 +169,16 @@ class AddSoftTeamMember extends Component {
 
 const hoverFocusStyles = {
   backgroundColor: ui.menuItemBackgroundColorHover,
-  color: ui.menuItemColorHoverActive,
   outline: 0
 };
 
 const activeHoverFocusStyles = {
-  backgroundColor: ui.menuItemBackgroundColorActive,
-  color: ui.menuItemColorHoverActive
+  backgroundColor: ui.menuItemBackgroundColorActive
 };
 
 const styleThunk = () => ({
   active: {
     backgroundColor: ui.menuItemBackgroundColorActive,
-    color: ui.menuItemColorHoverActive,
     cursor: 'default',
 
     ':hover': {
@@ -203,7 +200,6 @@ const styleThunk = () => ({
   root: {
     alignItems: 'center',
     backgroundColor: ui.menuBackgroundColor,
-    color: ui.placeholderColor, // input and placeholder inherit until active
     cursor: 'pointer',
     display: 'flex',
     padding: '.25rem 0',
@@ -222,17 +218,20 @@ const styleThunk = () => ({
     background: 'transparent',
     border: 0,
     borderRadius: 0,
-    color: 'inherit',
+    color: ui.menuItemColor,
     fontSize: ui.menuItemFontSize,
     lineHeight: '1.5rem',
     outline: 0,
     padding: 0,
+    width: '100%',
 
-    ...makePlaceholderStyles('inherit'),
+    ...makePlaceholderStyles(ui.placeholderColor)
+  },
 
-    ':focus': {
-      color: ui.menuItemColorHoverActive
-    }
+  inputActive: {
+    color: ui.menuItemColorHoverActive,
+
+    ...makePlaceholderStyles(appTheme.palette.dark70l)
   }
 });
 

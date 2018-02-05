@@ -41,7 +41,9 @@ describe('acceptTeamInviteEmail', () => {
     await mockDB.init()
       .newUser({name: 'inviteeGuy', tms: [], userOrgs: [], email: invitee.email})
       .newNotification(undefined, {type: TEAM_INVITE, email: invitee.email})
-      .newInvitation({id, hashedToken, email: invitee.email});
+      .newInvitation({id, hashedToken, email: invitee.email})
+      .newSoftTeamMember({email: invitee.email});
+
     const teamId = mockDB.context.team.id;
     const inviteeUser = mockDB.context.user;
     const authToken = mockAuthToken(inviteeUser);

@@ -4,6 +4,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.26.1 2018-Jan-31
+## Fixed
+- E2E Timeouts
+
+## v0.26.0 2018-Jan-31
+## Added
+- Soft team members
+
+## Fixed
+- Errors on removed team members (#1664)
+- Regression in agenda list flow (#1668)
+- Private cards showing up during updates phase (#1604)
+- Vanishing links in cards (#1656)
+- Integration regression (#1667)
+
+## v0.25.0 2018-Jan-24
+## Added
+- Feature flags
+- Message on websocket disconnects
+
+## Removed
+- Cashay. We're 100% Relay!
+
 ## v0.24.1 2018-Jan-10
 ### Fixed
 - Unresponsive filtered add project button #1634

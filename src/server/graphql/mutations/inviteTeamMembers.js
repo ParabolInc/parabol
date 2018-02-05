@@ -95,7 +95,7 @@ export default {
 
     if (unarchivedSoftProjects.length > 0) {
       const teamIds = Array.from(new Set(unarchivedSoftProjects.map((p) => p.teamId)));
-      const teamMembers = await getActiveTeamMembersByTeamIds(teamIds);
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamIds, dataLoader);
       teamMembers.forEach(({userId}) => {
         publish(PROJECT, userId, InviteTeamMembersPayload, data, subOptions);
       });

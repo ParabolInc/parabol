@@ -13,21 +13,21 @@ const iconStyle = {
 };
 
 const AddProjectButton = (props) => {
-  const {styles, toggleLabel, onClick} = props;
+  const {styles, label, onClick} = props;
   return (
     <FontAwesome
       className={css(styles.addIcon)}
       name="plus-square-o"
       onClick={onClick}
       style={iconStyle}
-      title={`Add a Project set to ${toggleLabel}`}
+      title={`Add a Project set to ${label}`}
     />
   );
 };
 
 AddProjectButton.propTypes = {
   styles: PropTypes.object,
-  toggleLabel: PropTypes.string,
+  label: PropTypes.string.isRequired,
   onClick: PropTypes.func
 };
 

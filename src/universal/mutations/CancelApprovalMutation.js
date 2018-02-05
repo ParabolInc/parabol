@@ -25,10 +25,7 @@ graphql`
 graphql`
   fragment CancelApprovalMutation_project on CancelApprovalPayload {
     archivedSoftProjects {
-      id
-      content
-      tags
-      teamId
+      ...CompleteProjectFrag @relay(mask: false)
     }
   }
 `;

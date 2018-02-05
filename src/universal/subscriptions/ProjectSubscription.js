@@ -16,6 +16,7 @@ const subscription = graphql`
     projectSubscription {
       __typename
       ...AcceptTeamInviteMutation_project
+      ...AcceptTeamInviteEmailMutation_project
       ...RemoveTeamMemberMutation_project
       ...CancelApprovalMutation_project
       ...CancelTeamInviteMutation_project

@@ -12,11 +12,35 @@ class OutcomeCardAssignMenu extends Component {
     active: 0,
     assignees: []
   };
+
+  componentDidMount() {
+    this.menuRef.focus();
+    this.setAssignees(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {viewer: {team: {teamMembers, softTeamMembers}}} = nextProps;
+    const {viewer: {team: {teamMembers: oldTeamMembers, softTeamMembers: oldSoftTeamMembers}}} = this.props;
+    if (teamMembers !== oldTeamMembers || oldSoftTeamMembers !== softTeamMembers) {
+      this.setAssignees(nextProps);
+    }
+  }
+
   setAddSoftAsActive = () => {
     this.setState({
       active: this.state.assignees.length
     });
   };
+
+  setAssignees(props) {
+    const {viewer: {team: {teamMembers, softTeamMembers}}, project: {assignee: {assigneeId}}} = props;
+    this.setState({
+      assignees: teamMembers
+        .concat(softTeamMembers)
+        .filter((teamMember) => teamMember.id !== assigneeId)
+    });
+  }
+
   handleKeyDown = (e) => {
     const {assignees} = this.state;
     const {active} = this.state;
@@ -42,6 +66,7 @@ class OutcomeCardAssignMenu extends Component {
       e.preventDefault();
     }
   };
+
   handleProjectUpdate = (newOwner) => {
     const {
       atmosphere,
@@ -57,28 +82,6 @@ class OutcomeCardAssignMenu extends Component {
     };
     UpdateProjectMutation(atmosphere, updatedProject, area);
   };
-
-  componentDidMount() {
-    this.menuRef.focus();
-    this.setAssignees(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {team: {teamMembers, softTeamMembers}}} = nextProps;
-    const {viewer: {team: {teamMembers: oldTeamMembers, softTeamMembers: oldSoftTeamMembers}}} = this.props;
-    if (teamMembers !== oldTeamMembers || oldSoftTeamMembers !== softTeamMembers) {
-      this.setAssignees(nextProps);
-    }
-  }
-
-  setAssignees(props) {
-    const {viewer: {team: {teamMembers, softTeamMembers}}, project: {assignee: {assigneeId}}} = props;
-    this.setState({
-      assignees: teamMembers
-        .concat(softTeamMembers)
-        .filter((teamMember) => teamMember.id !== assigneeId)
-    });
-  }
 
   handleMenuItemClick = (newAssigneeId) => () => {
     const {assignRef, closePortal} = this.props;

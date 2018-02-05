@@ -11,6 +11,7 @@ import tmsSignToken from 'server/utils/tmsSignToken';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {NEW_AUTH_TOKEN, PROJECT, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInviteEmailPayload),
@@ -118,11 +119,8 @@ export default {
     };
 
     if (hardenedProjects.length > 0) {
-      const userIdsForTeam = await r.table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isNotRemoved: true})('userId')
-        .default([]);
-      userIdsForTeam.forEach((userId) => {
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
+      teamMembers.forEach(({userId}) => {
         publish(PROJECT, userId, AcceptTeamInviteEmailPayload, data, subOptions);
       });
     }

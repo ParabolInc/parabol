@@ -103,16 +103,21 @@ class OutcomeCardContainer extends Component {
       // it's possible the user calls update, then delete, then the update timeout fires, so clear it here
       clearTimeout(this.updateTimer);
       DeleteProjectMutation(atmosphere, projectId, teamId);
-    } else if (initialContentState.getPlainText() !== contentState.getPlainText()) {
-      clearTimeout(this.updateTimer);
-      this.updateTimer = setTimeout(() => {
-        const updatedProject = {
-          id: projectId,
-          content: JSON.stringify(convertToRaw(contentState))
-        };
-        UpdateProjectMutation(atmosphere, updatedProject, area);
-        this.updateTimer = undefined;
-      }, 15);
+    } else {
+      const content = JSON.stringify(convertToRaw(contentState));
+      const initialContent = JSON.stringify(convertToRaw(initialContentState));
+      // TODO PR Draft-js to make it possible to compare entity maps. Adding a link should trigger a change
+      if (content !== initialContent) {
+        clearTimeout(this.updateTimer);
+        this.updateTimer = setTimeout(() => {
+          const updatedProject = {
+            id: projectId,
+            content
+          };
+          UpdateProjectMutation(atmosphere, updatedProject, area);
+          this.updateTimer = undefined;
+        }, 15);
+      }
     }
   };
 
