@@ -6,6 +6,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import SocketHealthMonitor from 'universal/containers/SocketHealthMonitor/SocketHealthMonitor';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
+import Error404Container from 'universal/modules/error404/containers/Error404Container';
 import withStyles from 'universal/styles/withStyles';
 
 const socketRoute = () => System.import('universal/components/SocketRoute/SocketRoute');
@@ -26,6 +27,7 @@ const Action = (props) => {
       <SocketHealthMonitor />
       <Switch>
         <Route exact path="/" component={LandingContainer} />
+        <Route exact path="/error" component={Error404Container} />
         <AsyncRoute isAbstract isPrivate path="(/me|/meeting|/newteam|/team)" mod={socketRoute} />
         <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />
         <AsyncRoute isPrivate path="/summary/:meetingId" mod={meetingSummary} />
