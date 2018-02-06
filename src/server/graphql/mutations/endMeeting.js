@@ -43,9 +43,13 @@ export default {
     const {id: meetingId} = meeting;
     const completedMeeting = await r.table('Project')
       .getAll(teamId, {index: 'teamId'})
-      .filter((project) => r.and(
-        project('createdAt').ge(meeting.createdAt),
-        project('tags').contains('private').not()
+      .filter((project) => project('tags').contains('private').not().and(
+        r.or(
+          // the project was created since the meeting started
+          project('createdAt').ge(meeting.createdAt),
+          // the project is done but not archived
+          project('status').eq(DONE).and(project('tags').contains('archived').not())
+        )
       ))
       .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
       .orderBy('createdAt')
