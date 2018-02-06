@@ -3,38 +3,38 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
-import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import withStyles from 'universal/styles/withStyles';
 import {MEETING} from 'universal/utils/constants';
-import getProjectById from 'universal/utils/getProjectById';
-import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import getTaskById from 'universal/utils/getTaskById';
+import isTaskPrivate from 'universal/utils/isTaskPrivate';
 
 class MeetingUpdates extends Component {
-  state = {projects: {}};
+  state = {tasks: {}};
 
   componentWillMount() {
-    this.filterProjects(this.props);
+    this.filterTasks(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    const {viewer: {projects: oldProjects}, localPhaseItem: oldLocalPhaseItem} = this.props;
-    const {viewer: {projects}, localPhaseItem} = nextProps;
-    if (projects !== oldProjects || localPhaseItem !== oldLocalPhaseItem) {
-      this.filterProjects(nextProps);
+    const {viewer: {tasks: oldTasks}, localPhaseItem: oldLocalPhaseItem} = this.props;
+    const {viewer: {tasks}, localPhaseItem} = nextProps;
+    if (tasks !== oldTasks || localPhaseItem !== oldLocalPhaseItem) {
+      this.filterTasks(nextProps);
     }
   }
 
-  filterProjects(props) {
-    const {localPhaseItem, setUpdateUserHasProjects, viewer: {projects, team: {teamMembers}}} = props;
+  filterTasks(props) {
+    const {localPhaseItem, setUpdateUserHasTasks, viewer: {tasks, team: {teamMembers}}} = props;
     const currentTeamMember = teamMembers[localPhaseItem - 1];
-    const edges = projects.edges.filter(({node}) => node.assignee.id === currentTeamMember.id && !isProjectPrivate(node.tags));
+    const edges = tasks.edges.filter(({node}) => node.assignee.id === currentTeamMember.id && !isTaskPrivate(node.tags));
     this.setState({
-      projects: {edges}
+      tasks: {edges}
     });
-    setUpdateUserHasProjects(Boolean(edges.length));
+    setUpdateUserHasTasks(Boolean(edges.length));
   }
 
   render() {
@@ -43,9 +43,9 @@ class MeetingUpdates extends Component {
       localPhaseItem,
       showMoveMeetingControls,
       styles,
-      viewer: {team: {teamMembers}, projects: allProjects}
+      viewer: {team: {teamMembers}, tasks: allTasks}
     } = this.props;
-    const {projects} = this.state;
+    const {tasks} = this.state;
     const self = teamMembers.find((m) => m.isSelf);
     const currentTeamMember = teamMembers[localPhaseItem - 1];
     const isLastMember = localPhaseItem === teamMembers.length;
@@ -70,12 +70,12 @@ class MeetingUpdates extends Component {
             }
           </div>
           <div className={css(styles.body)}>
-            <ProjectColumns
+            <TaskColumns
               alignColumns="center"
-              getProjectById={getProjectById(allProjects)}
+              getTaskById={getTaskById(allTasks)}
               isMyMeetingSection={isMyMeetingSection}
               myTeamMemberId={myTeamMemberId}
-              projects={projects}
+              tasks={tasks}
               area={MEETING}
             />
           </div>
@@ -90,7 +90,7 @@ MeetingUpdates.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
   showMoveMeetingControls: PropTypes.bool,
-  setUpdateUserHasProjects: PropTypes.func.isRequired,
+  setUpdateUserHasTasks: PropTypes.func.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
 };
@@ -122,7 +122,7 @@ export default createFragmentContainer(
           preferredName
         }
       }
-      projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
+      tasks(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_tasks") {
         edges {
           node {
             # grab these so we can sort correctly
@@ -133,7 +133,7 @@ export default createFragmentContainer(
             assignee {
               id
             }
-            ...DraggableProject_project
+            ...DraggableTask_task
           }
         }
       }

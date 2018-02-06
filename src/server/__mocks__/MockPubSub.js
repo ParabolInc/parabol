@@ -18,7 +18,7 @@ const fieldsToSerialize = {
   orgApproval: [
     ...dataFieldsToSerialize
   ],
-  project: [
+  task: [
     ...dataFieldsToSerialize
   ],
   team: [

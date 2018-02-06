@@ -9,7 +9,7 @@ import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 const QuickStats = (props) => {
   const {
     agendaItems,
-    newProjects,
+    newTasks,
     teamMembers,
     teamMembersPresent
   } = props;
@@ -70,8 +70,8 @@ const QuickStats = (props) => {
             </td>
             <td style={cellStyles}>
               <div style={statStyles}>
-                <div style={statValue}>{newProjects}</div>
-                <div style={statLabel}>New {plural(newProjects, 'Project')}</div>
+                <div style={statValue}>{newTasks}</div>
+                <div style={statLabel}>New {plural(newTasks, 'Task')}</div>
               </div>
             </td>
             <td style={cellStyles}>
@@ -95,7 +95,7 @@ const QuickStats = (props) => {
 
 QuickStats.propTypes = {
   agendaItems: PropTypes.number,
-  newProjects: PropTypes.number,
+  newTasks: PropTypes.number,
   teamMembers: PropTypes.number,
   teamMembersPresent: PropTypes.number
 };

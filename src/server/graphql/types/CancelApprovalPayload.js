@@ -1,9 +1,9 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveArchivedSoftProjects, resolveOrgApproval, resolveSoftTeamMember} from 'server/graphql/resolvers';
+import {resolveArchivedSoftTasks, resolveOrgApproval, resolveSoftTeamMember} from 'server/graphql/resolvers';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import OrgApproval from 'server/graphql/types/OrgApproval';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import Project from 'server/graphql/types/Project';
+import Task from 'server/graphql/types/Task';
 
 const CancelApprovalPayload = new GraphQLObjectType({
   name: 'CancelApprovalPayload',
@@ -22,10 +22,10 @@ const CancelApprovalPayload = new GraphQLObjectType({
       description: 'The soft team members that are no longer tentatively on the team',
       resolve: resolveSoftTeamMember
     },
-    archivedSoftProjects: {
-      type: new GraphQLList(Project),
-      description: 'The projects that belonged to the soft team member',
-      resolve: resolveArchivedSoftProjects
+    archivedSoftTasks: {
+      type: new GraphQLList(Task),
+      description: 'The tasks that belonged to the soft team member',
+      resolve: resolveArchivedSoftTasks
     }
   })
 });

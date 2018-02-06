@@ -32,7 +32,7 @@ export default {
     // RESOLUTION
     const {inviteeEmail, teamId} = notification;
     const {
-      hardenedProjects,
+      hardenedTasks,
       removedNotification,
       removedInvitationId: invitationId,
       removedSoftTeamMember
@@ -45,10 +45,10 @@ export default {
       removedNotification,
       invitationId,
       softTeamMemberId: removedSoftTeamMember.id,
-      projectIds: hardenedProjects.map(({id}) => id)
+      taskIds: hardenedTasks.map(({id}) => id)
     };
 
-    if (hardenedProjects.length > 0) {
+    if (hardenedTasks.length > 0) {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
       teamMembers.forEach(({userId}) => {
         publish(PROJECT, userId, AcceptTeamInviteEmailPayload, data, subOptions);

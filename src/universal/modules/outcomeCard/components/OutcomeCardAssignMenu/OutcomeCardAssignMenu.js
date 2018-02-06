@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {MenuItem} from 'universal/modules/menu';
-import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftTeamMember';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 
@@ -33,7 +33,7 @@ class OutcomeCardAssignMenu extends Component {
   };
 
   setAssignees(props) {
-    const {viewer: {team: {teamMembers, softTeamMembers}}, project: {assignee: {assigneeId}}} = props;
+    const {viewer: {team: {teamMembers, softTeamMembers}}, task: {assignee: {assigneeId}}} = props;
     this.setState({
       assignees: teamMembers
         .concat(softTeamMembers)
@@ -67,25 +67,25 @@ class OutcomeCardAssignMenu extends Component {
     }
   };
 
-  handleProjectUpdate = (newOwner) => {
+  handleTaskUpdate = (newOwner) => {
     const {
       atmosphere,
       area,
-      project: {projectId, assignee: {assigneeId}}
+      task: {taskId, assignee: {assigneeId}}
     } = this.props;
     if (newOwner === assigneeId) {
       return;
     }
-    const updatedProject = {
-      id: projectId,
+    const updatedTask = {
+      id: taskId,
       assigneeId: newOwner
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateTaskMutation(atmosphere, updatedTask, area);
   };
 
   handleMenuItemClick = (newAssigneeId) => () => {
     const {assignRef, closePortal} = this.props;
-    this.handleProjectUpdate(newAssigneeId);
+    this.handleTaskUpdate(newAssigneeId);
     closePortal();
     assignRef.focus();
   };
@@ -96,7 +96,7 @@ class OutcomeCardAssignMenu extends Component {
       area,
       assignRef,
       closePortal,
-      project: {projectId},
+      task: {taskId},
       viewer: {team}
     } = this.props;
     const {assignees} = this.state;
@@ -120,7 +120,7 @@ class OutcomeCardAssignMenu extends Component {
           isActive={active >= assignees.length}
           area={area}
           closePortal={closePortal}
-          projectId={projectId}
+          taskId={taskId}
           team={team}
           menuRef={this.menuRef}
           assignRef={assignRef}
@@ -136,7 +136,7 @@ OutcomeCardAssignMenu.propTypes = {
   assignRef: PropTypes.instanceOf(Element),
   atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
-  project: PropTypes.object.isRequired,
+  task: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired
 };
 
@@ -158,8 +158,8 @@ export default createFragmentContainer(
         ...AddSoftTeamMember_team
       }
     }
-    fragment OutcomeCardAssignMenu_project on Project {
-      projectId: id
+    fragment OutcomeCardAssignMenu_task on Task {
+      taskId: id
       assignee {
         assigneeId: id
       }

@@ -8,7 +8,7 @@ import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMuta
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {connect} from 'react-redux';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import {emailRegex} from 'universal/validation/regex';
 import legitify from 'universal/validation/legitify';
 import {createFragmentContainer} from 'react-relay';
@@ -49,7 +49,7 @@ class AddSoftTeamMember extends Component {
     dispatch: PropTypes.func.isRequired,
     isActive: PropTypes.bool.isRequired,
     menuRef: PropTypes.instanceOf(Element),
-    projectId: PropTypes.string.isRequired,
+    taskId: PropTypes.string.isRequired,
     error: PropTypes.any,
     submitting: PropTypes.bool,
     submitMutation: PropTypes.func.isRequired,
@@ -83,7 +83,7 @@ class AddSoftTeamMember extends Component {
       closePortal,
       setDirty,
       dispatch,
-      projectId,
+      taskId,
       submitting,
       submitMutation,
       onCompleted,
@@ -110,11 +110,11 @@ class AddSoftTeamMember extends Component {
       const newSoftTeamMemberId = newSoftTeamMembers && newSoftTeamMembers[0].id;
       const reactivatedTeamMemberId = reactivatedTeamMembers && reactivatedTeamMembers[0].id;
       submitMutation();
-      const updatedProject = {
-        id: projectId,
+      const updatedTask = {
+        id: taskId,
         assigneeId: newSoftTeamMemberId || reactivatedTeamMemberId
       };
-      UpdateProjectMutation(atmosphere, updatedProject, area, onCompleted, onError);
+      UpdateTaskMutation(atmosphere, updatedTask, area, onCompleted, onError);
     };
     InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, handleCompleted);
   };

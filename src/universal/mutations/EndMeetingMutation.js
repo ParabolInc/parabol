@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay';
 import {SUMMARY} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
-import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 
 graphql`
   fragment EndMeetingMutation_team on EndMeetingPayload {
@@ -22,8 +22,8 @@ graphql`
 `;
 
 graphql`
-  fragment EndMeetingMutation_project on EndMeetingPayload {
-    archivedProjects {
+  fragment EndMeetingMutation_task on EndMeetingPayload {
+    archivedTasks {
       id
       tags
       teamId
@@ -35,7 +35,7 @@ const mutation = graphql`
   mutation EndMeetingMutation($teamId: ID!) {
     endMeeting(teamId: $teamId) {
       ...EndMeetingMutation_team @relay(mask: false)
-      ...EndMeetingMutation_project @relay(mask: false)
+      ...EndMeetingMutation_task @relay(mask: false)
     }
   }
 `;
@@ -48,9 +48,9 @@ export const endMeetingTeamUpdater = (payload, {history}) => {
   history.push(`/summary/${meetingId}`);
 };
 
-export const endMeetingProjectUpdater = (payload, store, viewerId) => {
-  const archivedProjects = payload.getLinkedRecords('archivedProjects');
-  handleUpsertProjects(archivedProjects, store, viewerId);
+export const endMeetingTaskUpdater = (payload, store, viewerId) => {
+  const archivedTasks = payload.getLinkedRecords('archivedTasks');
+  handleUpsertTasks(archivedTasks, store, viewerId);
 };
 
 const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) => {
@@ -61,7 +61,7 @@ const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) 
     updater: (store) => {
       const payload = store.getRootField('endMeeting');
       endMeetingTeamUpdater(payload, {history});
-      endMeetingProjectUpdater(payload, store, viewerId);
+      endMeetingTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const team = store.get(teamId);

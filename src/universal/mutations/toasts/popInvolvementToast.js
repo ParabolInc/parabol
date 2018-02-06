@@ -15,7 +15,7 @@ const popInvolvementToast = (notification, {dispatch, location, history}) => {
   if (inMeeting) return;
 
   const wording = involvement === MENTIONEE ? 'mentioned you in' : 'assigned you to';
-  const message = `${changeAuthorName} ${wording} a project`;
+  const message = `${changeAuthorName} ${wording} a task`;
   dispatch(showInfo({
     autoDismiss: 10,
     title: 'Fresh work!',

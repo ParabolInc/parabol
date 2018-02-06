@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLObjectType, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import MeetingProject from 'server/graphql/types/MeetingProject';
+import MeetingTask from 'server/graphql/types/MeetingTask';
 import TeamMember from 'server/graphql/types/TeamMember';
 
 
@@ -18,9 +18,9 @@ const MeetingInvitee = new GraphQLObjectType({
       description: 'true if the invitee was present in the meeting'
     },
     /* RethinkDB sugar */
-    projects: {
-      type: new GraphQLList(MeetingProject),
-      description: 'A list of immutable projects, as they were created in the meeting'
+    tasks: {
+      type: new GraphQLList(MeetingTask),
+      description: 'A list of immutable tasks, as they were created in the meeting'
     },
     picture: {
       type: GraphQLURLType,

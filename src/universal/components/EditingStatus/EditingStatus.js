@@ -33,7 +33,7 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 };
 
 const EditingStatus = (props) => {
-  const {atmosphere: {userId: myUserId}, handleClick, project: {editors}, timestamp, timestampType, styles} = props;
+  const {atmosphere: {userId: myUserId}, handleClick, task: {editors}, timestamp, timestampType, styles} = props;
   const otherEditors = editors.filter((editor) => editor.userId !== myUserId);
   const isEditing = editors.length > otherEditors.length;
   const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated';
@@ -47,7 +47,7 @@ const EditingStatus = (props) => {
 EditingStatus.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   handleClick: PropTypes.func,
-  project: PropTypes.object.isRequired,
+  task: PropTypes.object.isRequired,
   timestamp: PropTypes.string.isRequired,
   timestampType: PropTypes.string,
   styles: PropTypes.object
@@ -68,7 +68,7 @@ const styleThunk = (custom, {isEditing}) => ({
 export default createFragmentContainer(
   withAtmosphere(withStyles(styleThunk)(EditingStatus)),
   graphql`
-    fragment EditingStatus_project on Project {
+    fragment EditingStatus_task on Task {
       editors {
         userId
         preferredName

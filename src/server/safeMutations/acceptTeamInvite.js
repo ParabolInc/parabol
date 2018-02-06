@@ -43,9 +43,9 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
   });
   const teamMemberId = toTeamMemberId(teamId, userId);
 
-  const hardenedProjects = await r.table('Project')
+  const hardenedTasks = await r.table('Task')
     .getAll(removedSoftTeamMember.id, {index: 'assigneeId'})
-    .update({assigneeId: teamMemberId, isSoftProject: false}, {returnChanges: true})('changes')('new_val')
+    .update({assigneeId: teamMemberId, isSoftTask: false}, {returnChanges: true})('changes')('new_val')
     .default([]);
 
   if (!userInOrg) {
@@ -56,7 +56,7 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
     removedNotification,
     removedInvitationId,
     removedSoftTeamMember,
-    hardenedProjects
+    hardenedTasks
   };
 };
 

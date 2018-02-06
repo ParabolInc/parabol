@@ -51,8 +51,8 @@ const removeOrgUser = {
       return removeTeamMember(teamMemberId, {isKickout: true});
     }));
 
-    const projectIds = perTeamRes.reduce((arr, res) => {
-      arr.push(...res.archivedProjectIds, ...res.reassignedProjectIds);
+    const taskIds = perTeamRes.reduce((arr, res) => {
+      arr.push(...res.archivedTaskIds, ...res.reassignedTaskIds);
       return arr;
     }, []);
 
@@ -118,7 +118,7 @@ const removeOrgUser = {
       kickOutNotificationIds,
       teamIds,
       teamMemberIds,
-      projectIds,
+      taskIds,
       removedTeamNotifications,
       removedOrgNotifications: allRemovedOrgNotifications.notifications,
       userId

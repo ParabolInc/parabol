@@ -13,7 +13,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
 
-const projectSource = {
+const taskSource = {
   beginDrag(props) {
     return {
       id: props.agendaItem.id
@@ -296,7 +296,7 @@ const dragSourceCb = (connectSource, monitor) => ({
 });
 
 export default createFragmentContainer(
-  dragSource(AGENDA_ITEM, projectSource, dragSourceCb)(
+  dragSource(AGENDA_ITEM, taskSource, dragSourceCb)(
     withStyles(styleThunk)(AgendaItem)
   ),
   graphql`

@@ -41,8 +41,8 @@ export default function cleanupTeamAndOrg(teamLeader, teamMembers) {
       await r.table('InvoiceItemHook').getAll(...affect.userIds, {index: 'userId'}).delete();
       await r.table('Notification').getAll(affect.orgId, {index: 'orgId'}).delete();
       await r.table('Organization').get(affect.orgId).delete();
-      await r.table('Project').getAll(...affect.teamMemberIds, {index: 'teamMemberId'}).delete();
-      await r.table('ProjectHistory').getAll(...affect.teamMemberIds, {index: 'teamMemberId'}).delete();
+      await r.table('Task').getAll(...affect.teamMemberIds, {index: 'teamMemberId'}).delete();
+      await r.table('TaskHistory').getAll(...affect.teamMemberIds, {index: 'teamMemberId'}).delete();
       await r.table('Team').getAll(affect.orgId, {index: 'orgId'}).delete();
       await r.table('TeamMember').getAll(...affect.teamMemberIds).delete();
       await r.table('User').getAll(...affect.userIds).delete();
