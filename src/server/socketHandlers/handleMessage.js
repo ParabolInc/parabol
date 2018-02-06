@@ -1,17 +1,8 @@
-import {
-  GQL_CONNECTION_INIT,
-  GQL_CONNECTION_TERMINATE,
-  GQL_DATA,
-  GQL_ERROR,
-  GQL_START,
-  GQL_STOP
-} from 'universal/utils/constants';
-import handleConnect from 'server/socketHandlers/handleConnect';
+import {GQL_CONNECTION_TERMINATE, GQL_DATA, GQL_ERROR, GQL_START, GQL_STOP} from 'universal/utils/constants';
 import handleDisconnect from 'server/socketHandlers/handleDisconnect';
 import sendMessage from 'server/socketHelpers/sendMessage';
 import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler';
 import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandler';
-import closeUnauthedSocket from 'server/socketHelpers/closeUnauthedSocket';
 import relayUnsubscribe from 'server/utils/relayUnsubscribe';
 
 const isSubscriptionPayload = (payload) => payload.query.startsWith('subscription');
@@ -34,12 +25,6 @@ const handleMessage = (connectionContext) => async (message) => {
   }
 
   const {id: opId, type, payload} = parsedMessage;
-
-  if (type === GQL_CONNECTION_INIT) {
-    handleConnect(connectionContext, payload);
-  } else if (closeUnauthedSocket(connectionContext)) {
-    return;
-  }
 
   if (type === GQL_CONNECTION_TERMINATE) {
     handleDisconnect(connectionContext)();

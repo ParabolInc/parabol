@@ -197,7 +197,8 @@ export const TEAM_MEMBER = 'teamMember';
 /*
  * WebSocket Events
  */
-export const GQL_CONNECTION_INIT = 'connection_init'; // Client -> Server
+// NOTE: The init doesn't happen at init. that's confusing & wrong, so we do our own thing.
+// export const GQL_CONNECTION_INIT = 'connection_init'; // Client -> Server
 export const GQL_CONNECTION_ACK = 'connection_ack'; // Server -> Client
 export const GQL_CONNECTION_ERROR = 'connection_error'; // Server -> Client
 // NOTE: The keep alive message type does not follow the Apollo standard because the "standard" doesn't use native standard

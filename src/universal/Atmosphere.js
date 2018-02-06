@@ -83,9 +83,8 @@ export default class Atmosphere extends Environment {
   makeSubscriptionClient() {
     if (!this.subscriptionClient) {
       this.subscriptionClient = new Promise((resolve, reject) => {
-        const subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/graphql`, {
-          reconnect: true,
-          connectionParams: {authToken: this.authToken}
+        const subscriptionClient = new SubscriptionClient(`ws://${window.location.host}/?token=${this.authToken}`, {
+          reconnect: true
         });
         // Catch aggressive firewalls that block websockets
         subscriptionClient.client.onerror = (e) => {
@@ -94,9 +93,14 @@ export default class Atmosphere extends Environment {
           subscriptionClient.reconnect = false;
           reject(e);
         };
-        subscriptionClient.onConnecting(() => {
+
+        subscriptionClient.client.onopen = () => {
           resolve(subscriptionClient);
-        });
+          subscriptionClient.clearMaxConnectTimeout();
+          subscriptionClient.closedByUser = false;
+          subscriptionClient.eventEmitter.emit(subscriptionClient.reconnecting ? 'reconnecting' : 'connecting');
+          subscriptionClient.flushUnsentMessagesQueue();
+        };
       });
     }
     return this.subscriptionClient;
