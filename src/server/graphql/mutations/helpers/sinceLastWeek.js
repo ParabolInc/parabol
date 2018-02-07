@@ -14,28 +14,28 @@
 //     }
 //   })
 //   .do((res) => {
-//     // create project diffs
+//     // create task diffs
 //     return {
 //       meetingId: res('meetingId'),
-//       projectDiffs: r.table('Project')
+//       taskDiffs: r.table('Task')
 //         .getAll(teamId, {index: 'teamId'})
 //         .coerceTo('array')
-//         .map((project) => {
-//           // for each team project, get the old val and new val
+//         .map((task) => {
+//           // for each team task, get the old val and new val
 //           return {
-//             oldVal: r.table('ProjectHistory')
-//               .between([project('id'), r.minval], [project('id'), res('sinceTime')], {index: 'projectIdUpdatedAt'})
-//               .orderBy('projectIdUpdatedAt')
+//             oldVal: r.table('TaskHistory')
+//               .between([task('id'), r.minval], [task('id'), res('sinceTime')], {index: 'taskIdUpdatedAt'})
+//               .orderBy('taskIdUpdatedAt')
 //               .coerceTo('array')
 //               .nth(-1)
-//               .without('id', 'projectId', 'updatedAt')
+//               .without('id', 'taskId', 'updatedAt')
 //               .default(null),
-//             newVal: r.table('ProjectHistory')
-//               .between([project('id'), res('sinceTime')], [project('id'), r.maxval], {index: 'projectIdUpdatedAt'})
-//               .orderBy('projectIdUpdatedAt')
+//             newVal: r.table('TaskHistory')
+//               .between([task('id'), res('sinceTime')], [task('id'), r.maxval], {index: 'taskIdUpdatedAt'})
+//               .orderBy('taskIdUpdatedAt')
 //               .coerceTo('array')
 //               .nth(-1)
-//               .without('id', 'projectId', 'updatedAt')
+//               .without('id', 'taskId', 'updatedAt')
 //               .default(null)
 //           }
 //         })
@@ -57,7 +57,7 @@
 //           }
 //         })
 //         .do((partialDiffs) => {
-//           // if a project switch from 'active' to 'done' to 'active', remove it, too
+//           // if a task switch from 'active' to 'done' to 'active', remove it, too
 //           return partialDiffs.filter((row) => row('newVal').ne({}))
 //         })
 //     }
@@ -80,14 +80,14 @@
 //               .coerceTo('array')
 //           }),
 //         endedAt: now,
-//         projects: res('projectDiffs'),
+//         tasks: res('taskDiffs'),
 //         teamName: r.table('Team').get(teamId)('name'),
 //         agendaItemsCompleted: r.table('AgendaItem')
 //           .getAll(teamId, {index: 'teamId'})
 //           .filter({isActive: true, isComplete: true})
 //           .count()
 //       }
-//       // itemsCompleted: projectDiffs
+//       // itemsCompleted: taskDiffs
 //       //   .map(row => r.branch(row('newVal')('status').eq(DONE), 1, 0))
 //       //   .reduce((left, right) => left.add(right)).default(0)
 //     }
@@ -119,7 +119,7 @@
 //               .pluck('id', 'content', 'teamMemberId')
 //               .coerceTo('array'),
 //             agendaItemsCompleted: agendaItemIds.count(),
-//             projects: r.db('actionDevelopment').table('Project')
+//             tasks: r.db('actionDevelopment').table('Task')
 //               .getAll(r.args(agendaItemIds), {index: 'agendaId'})
 //               .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
 //               .pluck('id', 'content', 'status', 'teamMemberId')

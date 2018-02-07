@@ -1,10 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLObjectType, GraphQLString} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
-import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
+import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks';
 import {resolveTeam} from 'server/graphql/resolvers';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember';
-import {ProjectConnection} from 'server/graphql/types/Project';
+import {TaskConnection} from 'server/graphql/types/Task';
 import Team from 'server/graphql/types/Team';
 import {getUserId} from 'server/utils/authorization';
 import Assignee from 'server/graphql/types/Assignee';
@@ -35,9 +35,9 @@ const SoftTeamMember = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The name, as confirmed by the user'
     },
-    projects: {
-      type: ProjectConnection,
-      description: 'Projects owned by the team member',
+    tasks: {
+      type: TaskConnection,
+      description: 'Tasks owned by the team member',
       args: {
         ...forwardConnectionArgs,
         after: {
@@ -47,11 +47,11 @@ const SoftTeamMember = new GraphQLObjectType({
       },
       resolve: async ({teamId, id: assigneeId, userId}, args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken);
-        const allProjects = await dataLoader.get('projectsByTeamId').load(teamId);
-        const projectsForUserId = allProjects.filter((project) => project.assigneeId === assigneeId);
-        const publicProjectsForUserId = viewerId === userId ? projectsForUserId :
-          projectsForUserId.filter((project) => !project.tags.includes('private'));
-        return connectionFromProjects(publicProjectsForUserId);
+        const allTasks = await dataLoader.get('tasksByTeamId').load(teamId);
+        const tasksForUserId = allTasks.filter((task) => task.assigneeId === assigneeId);
+        const publicTasksForUserId = viewerId === userId ? tasksForUserId :
+          tasksForUserId.filter((task) => !task.tags.includes('private'));
+        return connectionFromTasks(publicTasksForUserId);
       }
     },
     teamId: {

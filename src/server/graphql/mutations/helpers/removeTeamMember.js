@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
-import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
+import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
 import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
 import shortid from 'shortid';
 import {GITHUB, KICKED_OUT} from 'universal/utils/constants';
@@ -11,7 +11,7 @@ const removeTeamMember = async (teamMemberId, options) => {
   const now = new Date();
   const {userId, teamId} = fromTeamMemberId(teamMemberId);
 
-  // see if they were a leader, make a new guy leader so later we can reassign projects
+  // see if they were a leader, make a new guy leader so later we can reassign tasks
   const activeTeamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'});
   const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId);
   const {isLead, isNotRemoved} = teamMember;
@@ -35,17 +35,17 @@ const removeTeamMember = async (teamMemberId, options) => {
     });
   }
 
-  // assign active projects to the team lead
-  const {changedProviders, reassignedProjects, removedNotifications, user} = await r({
+  // assign active tasks to the team lead
+  const {changedProviders, reassignedTasks, removedNotifications, user} = await r({
     teamMember: r.table('TeamMember')
       .get(teamMemberId)
       .update({
         isNotRemoved: false,
         updatedAt: now
       }),
-    reassignedProjects: r.table('Project')
+    reassignedTasks: r.table('Task')
       .getAll(teamMemberId, {index: 'assigneeId'})
-      .filter((project) => project('tags').contains('archived').not())
+      .filter((task) => task('tags').contains('archived').not())
       .update({
         assigneeId: teamLeader.id,
         userId: teamLeader.userId
@@ -85,19 +85,19 @@ const removeTeamMember = async (teamMemberId, options) => {
   }
 
   const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB);
-  let archivedProjectIds = [];
+  let archivedTaskIds = [];
   if (changedGitHubIntegrations) {
     const repoChanges = await removeGitHubReposForUserId(userId, [teamId]);
-    // TODO send the archived projects in a mutation payload
-    archivedProjectIds = await archiveProjectsForManyRepos(repoChanges);
+    // TODO send the archived tasks in a mutation payload
+    archivedTaskIds = await archiveTasksForManyRepos(repoChanges);
   }
 
   return {
     user,
     removedNotifications,
     notificationId,
-    archivedProjectIds,
-    reassignedProjectIds: reassignedProjects.map(({id}) => id)
+    archivedTaskIds,
+    reassignedTaskIds: reassignedTasks.map(({id}) => id)
   };
 }
 ;

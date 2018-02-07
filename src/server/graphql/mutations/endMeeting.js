@@ -4,7 +4,7 @@ import getEndMeetingSortOrders from 'server/graphql/mutations/helpers/endMeeting
 import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEmailSummary';
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
-import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
+import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
@@ -41,18 +41,18 @@ export default {
     // RESOLUTION
     const now = new Date();
     const {id: meetingId} = meeting;
-    const completedMeeting = await r.table('Project')
+    const completedMeeting = await r.table('Task')
       .getAll(teamId, {index: 'teamId'})
-      .filter((project) => r.and(
-        project('createdAt').ge(meeting.createdAt),
-        project('tags').contains('private').not()
+      .filter((task) => r.and(
+        task('createdAt').ge(meeting.createdAt),
+        task('tags').contains('private').not()
       ))
       .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
       .orderBy('createdAt')
       .pluck('id', 'content', 'status', 'tags', 'assigneeId')
       .coerceTo('array')
       .default([])
-      .do((projects) => {
+      .do((tasks) => {
         return r.table('Meeting').get(meetingId)
           .update({
             agendaItemsCompleted: r.table('AgendaItem')
@@ -75,20 +75,20 @@ export default {
                 preferredName: teamMember('preferredName'),
                 present: teamMember('isCheckedIn').not().not()
                   .default(false),
-                projects: projects.filter({assigneeId: teamMember('id')})
+                tasks: tasks.filter({assigneeId: teamMember('id')})
               })),
-            projects
+            tasks
           }, {
             nonAtomic: true,
             returnChanges: true
           })('changes')(0)('new_val');
       });
-    const updatedProjects = await getEndMeetingSortOrders(completedMeeting);
-    const {projectsToArchive, team} = await r({
-      updatedSortOrders: r(updatedProjects)
-        .forEach((project) => {
-          return r.table('Project').get(project('id')).update({
-            sortOrder: project('sortOrder')
+    const updatedTasks = await getEndMeetingSortOrders(completedMeeting);
+    const {tasksToArchive, team} = await r({
+      updatedSortOrders: r(updatedTasks)
+        .forEach((task) => {
+          return r.table('Task').get(task('id')).update({
+            sortOrder: task('sortOrder')
           });
         }),
       team: r.table('Team').get(teamId)
@@ -116,14 +116,14 @@ export default {
               isCheckedIn: null
             });
         })),
-      projectsToArchive: r.table('Project').getAll(teamId, {index: 'teamId'})
+      tasksToArchive: r.table('Task').getAll(teamId, {index: 'teamId'})
         .filter({status: DONE})
-        .filter((project) => project('tags').contains('archived').not())
+        .filter((task) => task('tags').contains('archived').not())
         .pluck('id', 'content', 'tags')
         .coerceTo('array')
     });
 
-    const archivedProjects = await archiveProjectsForDB(projectsToArchive, dataLoader);
+    const archivedTasks = await archiveTasksForDB(tasksToArchive, dataLoader);
     const {meetingNumber} = completedMeeting;
     const userIds = completedMeeting.invitees
       .filter((invitee) => invitee.present)
@@ -133,7 +133,7 @@ export default {
 
     const data = {
       team,
-      archivedProjects,
+      archivedTasks,
       meetingId
     };
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);

@@ -15,30 +15,30 @@ import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 class MeetingAgendaItems extends Component {
-  state = {agendaProjects: []};
+  state = {agendaTasks: []};
 
   componentWillMount() {
-    this.makeAgendaProjects(this.props);
+    this.makeAgendaTasks(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    const {viewer: {projects: oldProjects}, localPhaseItem: oldLocalPhaseItem} = this.props;
-    const {viewer: {projects}, localPhaseItem} = nextProps;
-    if (projects !== oldProjects || localPhaseItem !== oldLocalPhaseItem) {
-      this.makeAgendaProjects(nextProps);
+    const {viewer: {tasks: oldTasks}, localPhaseItem: oldLocalPhaseItem} = this.props;
+    const {viewer: {tasks}, localPhaseItem} = nextProps;
+    if (tasks !== oldTasks || localPhaseItem !== oldLocalPhaseItem) {
+      this.makeAgendaTasks(nextProps);
     }
   }
 
-  makeAgendaProjects(props) {
-    const {localPhaseItem, viewer: {team: {agendaItems}, projects}} = props;
+  makeAgendaTasks(props) {
+    const {localPhaseItem, viewer: {team: {agendaItems}, tasks}} = props;
     const agendaItem = agendaItems[localPhaseItem - 1];
-    const agendaProjects = projects.edges
+    const agendaTasks = tasks.edges
       .map(({node}) => node)
       .filter((node) => node.agendaId === agendaItem.id)
       .sort((a, b) => a.sortOrder < b.sortOrder ? 1 : -1);
 
     this.setState({
-      agendaProjects
+      agendaTasks
     });
   }
 
@@ -51,7 +51,7 @@ class MeetingAgendaItems extends Component {
       styles,
       viewer: {team}
     } = this.props;
-    const {agendaProjects} = this.state;
+    const {agendaTasks} = this.state;
     const {agendaItems, teamMembers} = team;
     const agendaItem = agendaItems[localPhaseItem - 1];
     const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id);
@@ -90,7 +90,7 @@ class MeetingAgendaItems extends Component {
               </div>
               <MeetingAgendaCards
                 agendaId={agendaItem.id}
-                projects={agendaProjects}
+                tasks={agendaTasks}
                 teamId={team.id}
               />
               <EditorHelpModalContainer />
@@ -165,14 +165,14 @@ export default createFragmentContainer(
           preferredName
         }
       }
-      projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
+      tasks(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_tasks") {
         edges {
           node {
             id
             agendaId
             createdAt
             sortOrder
-            ...NullableProject_project
+            ...NullableTask_task
           }
         }
       }

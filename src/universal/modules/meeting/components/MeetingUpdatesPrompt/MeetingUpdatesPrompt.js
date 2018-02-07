@@ -10,15 +10,15 @@ const MeetingUpdatesPrompt = (props) => {
     agendaInputRef,
     localPhaseItem,
     team,
-    updateUserHasProjects
+    updateUserHasTasks
   } = props;
   const {teamMembers} = team;
   const currentTeamMember = teamMembers[localPhaseItem - 1];
   const {isSelf: isMyMeetingSection} = currentTeamMember;
   const isCheckedInFalse = currentTeamMember.isCheckedIn === false;
-  const question = updateUserHasProjects ? 'what’s changed with your tasks' : 'what are you working on';
+  const question = updateUserHasTasks ? 'what’s changed with your tasks' : 'what are you working on';
   const headingHere = <span>{currentTeamMember.preferredName}, <i>{question}</i>{'?'}</span>;
-  const questionNotHere = updateUserHasProjects
+  const questionNotHere = updateUserHasTasks
     ? `Any updates with ${currentTeamMember.preferredName}’s tasks`
     : `What is ${currentTeamMember.preferredName} working on`;
   const headingNotHere = <span><i>{questionNotHere}</i>{'?'}</span>;
@@ -30,7 +30,7 @@ const MeetingUpdatesPrompt = (props) => {
       heading={heading}
       helpText={isMyMeetingSection ?
         <HelpTextMyRound
-          updateUserHasProjects={updateUserHasProjects}
+          updateUserHasTasks={updateUserHasTasks}
         /> :
         <HelpTextForTeam
           agendaInputRef={agendaInputRef}
@@ -44,7 +44,7 @@ MeetingUpdatesPrompt.propTypes = {
   agendaInputRef: PropTypes.instanceOf(Element),
   localPhaseItem: PropTypes.number.isRequired,
   team: PropTypes.object.isRequired,
-  updateUserHasProjects: PropTypes.bool
+  updateUserHasTasks: PropTypes.bool
 };
 
 export default createFragmentContainer(

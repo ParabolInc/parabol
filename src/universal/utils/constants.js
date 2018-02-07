@@ -50,7 +50,7 @@ export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
 export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
 /* Drag-n-Drop Items */
-export const PROJECT = 'project';
+export const PROJECT = 'task';
 export const AGENDA_ITEM = 'agendaItem';
 
 /* Sorting */
@@ -93,7 +93,7 @@ export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 export const TEAM_INVITE = 'TEAM_INVITE';
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
-// sent to members when a project is assigned to them or mentions them
+// sent to members when a task is assigned to them or mentions them
 export const PROJECT_INVOLVES = 'PROJECT_INVOLVES';
 // sent on socket connection
 export const VERSION_INFO = 'VERSION_INFO';
@@ -146,7 +146,7 @@ export const PROJECT_MAX_CHARS = 51200;
 export const tags = [
   {
     name: 'private',
-    description: 'Only you will be able to see this project'
+    description: 'Only you will be able to see this task'
   },
   {
     name: 'archived',
@@ -188,7 +188,7 @@ export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATION = 'notification';
 export const ORGANIZATION = 'organization';
 export const ORG_APPROVAL = 'orgApproval';
-// export const PROJECT = 'project'; // TODO refactor so it doesn't conflict with DnD
+// export const PROJECT = 'task'; // TODO refactor so it doesn't conflict with DnD
 // export const MEETING = 'meeting'; // conflicts with area
 // export const AGENDA_ITEM = 'agendaItem'; // conflict
 export const TEAM = 'team';
@@ -221,6 +221,6 @@ export const PERSONAL = 'personal';
 export const PRO = 'pro';
 export const ENTERPRISE = 'enterprise';
 
-/* Project Involvement Types */
+/* Task Involvement Types */
 export const ASSIGNEE = 'ASSIGNEE';
 export const MENTIONEE = 'MENTIONEE';

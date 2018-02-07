@@ -9,7 +9,7 @@ type Sortable = {
 };
 
 /**
- * Computes the sort order of a project to be sandwiched between
+ * Computes the sort order of a task to be sandwiched between
  * `target` and `bounding`.
  */
 export default function sortOrderBetween(

@@ -10,7 +10,7 @@ import newAuthToken from 'server/graphql/subscriptions/newAuthToken';
 import notificationSubscription from 'server/graphql/subscriptions/notificationSubscription';
 import organizationSubscription from 'server/graphql/subscriptions/organizationSubscription';
 import orgApprovalSubscription from 'server/graphql/subscriptions/orgApprovalSubscription';
-import projectSubscription from 'server/graphql/subscriptions/projectSubscription';
+import taskSubscription from 'server/graphql/subscriptions/taskSubscription';
 import providerAdded from 'server/graphql/subscriptions/providerAdded';
 import providerRemoved from 'server/graphql/subscriptions/providerRemoved';
 import slackChannelAdded from 'server/graphql/subscriptions/slackChannelAdded';
@@ -33,7 +33,7 @@ export default new GraphQLObjectType({
     notificationSubscription,
     orgApprovalSubscription,
     organizationSubscription,
-    projectSubscription,
+    taskSubscription,
     slackChannelAdded,
     slackChannelRemoved,
     providerAdded,

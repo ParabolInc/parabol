@@ -2,7 +2,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 
 const labels = {
-  projectStatus: {
+  taskStatus: {
     slugs: [
       DONE,
       ACTIVE,
@@ -46,11 +46,11 @@ const labels = {
     label: 'Archived',
     slug: 'archived'
   },
-  project: {
+  task: {
     color: appTheme.palette.dark,
     icon: 'calendar',
-    label: 'Project',
-    slug: 'project'
+    label: 'Task',
+    slug: 'task'
   }
 };
 

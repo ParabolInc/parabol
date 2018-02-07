@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import {toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import archiveProjectsForManyRepos from 'server/safeMutations/archiveProjectsForManyRepos';
+import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 
@@ -43,7 +43,7 @@ export default {
       .default([]);
 
 
-    const archivedProjectsByRepo = await archiveProjectsForManyRepos(updatedIntegrations);
+    const archivedTasksByRepo = await archiveTasksForManyRepos(updatedIntegrations);
 
     // 2 teams could use the same org, so break it down by team
     const payloadsByTeam = updatedIntegrations.reduce((obj, {new_val: {id, isActive, teamId}}, idx) => {
@@ -57,7 +57,7 @@ export default {
       obj[teamId].leaveIntegration.push({
         globalId: toGlobalId(GITHUB, id),
         userId: isActive ? userId : null,
-        archivedProjectsIds: archivedProjectsByRepo[idx]
+        archivedTasksIds: archivedTasksByRepo[idx]
       });
       return obj;
     }, {});

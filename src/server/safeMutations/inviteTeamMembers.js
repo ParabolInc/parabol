@@ -8,7 +8,7 @@ import getPendingInvitations from 'server/safeQueries/getPendingInvitations';
 import {isBillingLeader} from 'server/utils/authorization';
 import {ASK_APPROVAL, DENIED, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
-import unarchiveProjectsForReactivatedSoftTeamMembers from 'server/safeMutations/unarchiveProjectsForReactivatedSoftTeamMembers';
+import unarchiveTasksForReactivatedSoftTeamMembers from 'server/safeMutations/unarchiveTasksForReactivatedSoftTeamMembers';
 
 const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
   const r = getRethink();
@@ -67,14 +67,14 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
   const {newSoftTeamMembers: approvalSoftTeamMembers} = newPendingApprovals;
   const newSoftTeamMembers = inviteeSoftTeamMemers.concat(approvalSoftTeamMembers);
   const softTeamMemberEmails = newSoftTeamMembers.map(({email}) => email);
-  const unarchivedSoftProjects = await unarchiveProjectsForReactivatedSoftTeamMembers(softTeamMemberEmails, teamId);
+  const unarchivedSoftTasks = await unarchiveTasksForReactivatedSoftTeamMembers(softTeamMemberEmails, teamId);
   return {
     ...newPendingApprovals,
     ...removedApprovalsAndNotifications,
     ...teamInvites,
     reactivations,
     newSoftTeamMembers,
-    unarchivedSoftProjects
+    unarchivedSoftTasks
   };
 };
 

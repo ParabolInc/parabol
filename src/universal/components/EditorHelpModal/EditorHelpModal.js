@@ -118,7 +118,7 @@ const EditorHelpModal = (props) => {
           {makeIcon('keyboard-o', true)}
         </div>
         <div className={css(styles.modalHeaderTitle)}>
-          {'Project Card Formatting'}
+          {'Task Card Formatting'}
         </div>
         <button className={css(styles.closeButton)} onClick={handleCloseModal}>
           {makeIcon('times-circle', true)}
