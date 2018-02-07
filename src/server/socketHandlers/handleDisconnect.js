@@ -1,4 +1,4 @@
-import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
+import relayUnsubscribeAll from 'server/utils/relayUnsubscribeAll';
 import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler';
 
 const handleDisconnect = (connectionContext, options = {}) => () => {
@@ -12,7 +12,7 @@ const handleDisconnect = (connectionContext, options = {}) => () => {
     }
   `
   };
-  unsubscribeRelaySub(connectionContext);
+  relayUnsubscribeAll(connectionContext);
   connectionContext.socket.close(exitCode);
   clearInterval(connectionContext.cancelKeepAlive);
   wsGraphQLHandler(connectionContext, {payload});

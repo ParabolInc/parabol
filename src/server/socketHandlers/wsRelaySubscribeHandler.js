@@ -1,9 +1,9 @@
 import {parse, subscribe} from 'graphql';
 import {forAwaitEach} from 'iterall';
 import Schema from 'server/graphql/rootSchema';
-import handleGraphQLResult from 'server/utils/handleGraphQLResult';
+import maybeSendNewAuthToken from 'server/utils/maybeSendNewAuthToken';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
-import unsubscribeRelaySub from 'server/utils/unsubscribeRelaySub';
+import relayUnsubscribeAll from 'server/utils/relayUnsubscribeAll';
 import {GQL_COMPLETE, GQL_DATA, GQL_ERROR} from 'universal/utils/constants';
 import relayUnsubscribe from 'server/utils/relayUnsubscribe';
 import sendMessage from 'server/socketHelpers/sendMessage';
@@ -15,14 +15,14 @@ const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader
   const document = parse(query);
   try {
     const result = await subscribe(Schema, document, {}, context, variables);
-    if (!result.errors || !isResub) return result;
+    if (!result.errors || !isResub) return {asyncIterator: result};
     // squelch errors for resub, we expect a few errors & the client doesn't need to know about them
     // failing here means the subscription failed our custom business logic in the subscribe method
   } catch (e) {
     // the subscription couldn't be found or there was an internal graphql error
-    return {errors: [{message: e.message}]};
+    return {error: e.message};
   }
-  return undefined;
+  return {};
 };
 
 const handleSubscribe = async (connectionContext, parsedMessage, options = {}) => {
@@ -34,18 +34,22 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
     relayUnsubscribe(connectionContext.subs, opId);
   }
 
-  const asyncIterator = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
-  if (!asyncIterator) return;
-
+  const {asyncIterator, error} = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
+  if (!asyncIterator) {
+    if (error) {
+      sendMessage(socket, GQL_ERROR, {errors: [{message: error}]}, opId);
+    }
+    return;
+  }
   connectionContext.subs[opId] = {
     asyncIterator
   };
   const iterableCb = (payload) => {
-    const changedAuth = handleGraphQLResult(connectionContext, payload);
+    const changedAuth = maybeSendNewAuthToken(connectionContext, payload);
     if (changedAuth) {
       // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
       // delay it to guarantee that no matter when this is published, it is the last message on the mutation
-      setTimeout(() => unsubscribeRelaySub(connectionContext, {isResub: true}), 1000);
+      setTimeout(() => relayUnsubscribeAll(connectionContext, {isResub: true}), 1000);
       return;
     }
     const resultType = payload.errors ? GQL_ERROR : GQL_DATA;

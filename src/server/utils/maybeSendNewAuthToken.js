@@ -13,7 +13,7 @@ const setSocketAuth = (connectionContext, authTokenStr) => {
   sendNewAuthToken(connectionContext.socket, newAuthToken);
 };
 
-const handleGraphQLResult = (connectionContext, result) => {
+const maybeSendNewAuthToken = (connectionContext, result) => {
   const {data} = result;
   if (data && data.newAuthToken) {
     setSocketAuth(connectionContext, data.newAuthToken);
@@ -22,4 +22,4 @@ const handleGraphQLResult = (connectionContext, result) => {
   return false;
 };
 
-export default handleGraphQLResult;
+export default maybeSendNewAuthToken;

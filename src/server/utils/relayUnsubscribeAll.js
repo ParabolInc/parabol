@@ -1,4 +1,4 @@
-const unsubscribeRelaySub = (connectionContext, options = {}) => {
+const relayUnsubscribeAll = (connectionContext, options = {}) => {
   if (connectionContext.subs) {
     const opIds = Object.keys(connectionContext.subs);
     for (let ii = 0; ii < opIds.length; ii++) {
@@ -16,4 +16,4 @@ const unsubscribeRelaySub = (connectionContext, options = {}) => {
   }
 };
 
-export default unsubscribeRelaySub;
+export default relayUnsubscribeAll;

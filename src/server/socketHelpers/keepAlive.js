@@ -1,6 +1,9 @@
 import handleDisconnect from 'server/socketHandlers/handleDisconnect';
 
 const keepAlive = (connectionContext, timeout) => {
+  connectionContext.socket.on('pong', () => {
+    connectionContext.isAlive = true;
+  });
   connectionContext.cancelKeepAlive = setInterval(() => {
     const {socket} = connectionContext;
     if (connectionContext.isAlive === false) {

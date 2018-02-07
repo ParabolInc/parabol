@@ -45,9 +45,6 @@ export default function connectionHandler(sharedDataLoader) {
     const isConnected = await handleConnect(connectionContext);
     if (!isConnected) return;
     keepAlive(connectionContext, 10000);
-    socket.on('pong', () => {
-      connectionContext.isAlive = true;
-    });
     socket.on('message', handleMessage(connectionContext));
     socket.on('close', handleDisconnect(connectionContext));
   };
