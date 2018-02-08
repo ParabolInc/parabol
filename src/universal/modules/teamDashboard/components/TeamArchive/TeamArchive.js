@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createPaginationContainer} from 'react-relay';
 import {CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader, WindowScroller} from 'react-virtualized';
-import NullableProject from 'universal/components/NullableProject/NullableProject';
+import NullableTask from 'universal/components/NullableTask/NullableTask';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
 import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot';
@@ -39,8 +39,8 @@ class TeamArchive extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    const {viewer: {archivedProjects: {edges: oldEdges}}} = this.props;
-    const {viewer: {archivedProjects: {edges}}} = nextProps;
+    const {viewer: {archivedTasks: {edges: oldEdges}}} = this.props;
+    const {viewer: {archivedTasks: {edges}}} = nextProps;
     this.invalidateOnAddRemove(oldEdges, edges);
   }
 
@@ -55,13 +55,13 @@ class TeamArchive extends Component {
   }
 
   getGridRowCount = () => {
-    const {viewer: {archivedProjects: {edges}}} = this.props;
+    const {viewer: {archivedTasks: {edges}}} = this.props;
     const currentCount = edges.length;
     return Math.ceil(currentCount / this.columnCount);
   };
 
   isRowLoaded = ({index}) => {
-    return Boolean(this.props.viewer.archivedProjects.edges[index]);
+    return Boolean(this.props.viewer.archivedTasks.edges[index]);
   };
 
   loadMore = () => {
@@ -98,10 +98,10 @@ class TeamArchive extends Component {
 
   rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
-    const {viewer: {archivedProjects: {edges}}, userId} = this.props;
+    const {viewer: {archivedTasks: {edges}}, userId} = this.props;
     const index = this.getIndex(columnIndex, rowIndex);
     if (!this.isRowLoaded({index})) return undefined;
-    const project = edges[index].node;
+    const task = edges[index].node;
     return (
       <CellMeasurer
         cache={this.cellCache}
@@ -111,12 +111,12 @@ class TeamArchive extends Component {
         rowIndex={rowIndex}
       >
         {/* Put padding here because of aphrodite's async annoyance */}
-        <div key={`cardBlockFor${project.id}`} style={{...style, width: CARD_WIDTH, padding: '0.5rem'}}>
-          <NullableProject
+        <div key={`cardBlockFor${task.id}`} style={{...style, width: CARD_WIDTH, padding: '0.5rem'}}>
+          <NullableTask
             key={key}
             area={TEAM_DASH}
             myUserId={userId}
-            project={project}
+            task={task}
           />
         </div>
       </CellMeasurer>
@@ -164,8 +164,8 @@ class TeamArchive extends Component {
   render() {
     const {relay: {hasMore}, styles, team, teamId, viewer} = this.props;
     const {teamName, tier, orgId} = team;
-    const {archivedProjects} = viewer;
-    const {edges} = archivedProjects;
+    const {archivedTasks} = viewer;
+    const {edges} = archivedTasks;
     // Archive squeeze
     const showArchiveSqueeze = Boolean(tier === PERSONAL && !hasMore());
 
@@ -191,7 +191,7 @@ class TeamArchive extends Component {
             <div className={css(styles.emptyMsg)}>
               <FontAwesome name="smile-o" style={iconStyle} />
               <span style={ib}>
-                {'Hi there! There are zero archived projects. '}
+                {'Hi there! There are zero archived tasks. '}
                 {'Nothing to see here. How about a fun rally video? '}
                 <span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
@@ -200,7 +200,7 @@ class TeamArchive extends Component {
           {showArchiveSqueeze &&
           <div className={css(styles.archiveSqueezeBlock)}>
             <TeamArchiveSqueezeRoot
-              projectsAvailableCount={edges.length}
+              tasksAvailableCount={edges.length}
               orgId={orgId}
               teamId={teamId}
             />
@@ -277,12 +277,12 @@ export default createPaginationContainer(
   withStyles(styleThunk)(TeamArchive),
   graphql`
     fragment TeamArchive_viewer on User {
-      archivedProjects(first: $first, teamId: $teamId, after: $after) @connection(key: "TeamArchive_archivedProjects") {
+      archivedTasks(first: $first, teamId: $teamId, after: $after) @connection(key: "TeamArchive_archivedTasks") {
         edges {
           cursor
           node {
             id
-            ...NullableProject_project
+            ...NullableTask_task
           }
         }
         pageInfo {
@@ -300,7 +300,7 @@ export default createPaginationContainer(
   {
     direction: 'forward',
     getConnectionFromProps(props) {
-      return props.viewer && props.viewer.archivedProjects;
+      return props.viewer && props.viewer.archivedTasks;
     },
     getFragmentVariables(prevVars, totalCount) {
       return {

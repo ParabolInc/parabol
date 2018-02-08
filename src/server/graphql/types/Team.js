@@ -9,7 +9,7 @@ import {
 } from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
-import connectionFromProjects from 'server/graphql/queries/helpers/connectionFromProjects';
+import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks';
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
 import AgendaItem from 'server/graphql/types/AgendaItem';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
@@ -17,7 +17,7 @@ import Invitation from 'server/graphql/types/Invitation';
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
 import Organization from 'server/graphql/types/Organization';
 import OrgApproval from 'server/graphql/types/OrgApproval';
-import {ProjectConnection} from 'server/graphql/types/Project';
+import {TaskConnection} from 'server/graphql/types/Task';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
 import {requireTeamMember} from 'server/utils/authorization';
@@ -137,8 +137,8 @@ const Team = new GraphQLObjectType({
         return agendaItems;
       }
     },
-    projects: {
-      type: ProjectConnection,
+    tasks: {
+      type: TaskConnection,
       args: {
         ...forwardConnectionArgs,
         after: {
@@ -146,11 +146,11 @@ const Team = new GraphQLObjectType({
           description: 'the datetime cursor'
         }
       },
-      description: 'All of the projects for this team',
+      description: 'All of the tasks for this team',
       async resolve({id: teamId}, args, {authToken, dataLoader}) {
         requireTeamMember(authToken, teamId);
-        const projects = await dataLoader.get('projectsByTeamId').load(teamId);
-        return connectionFromProjects(projects);
+        const tasks = await dataLoader.get('tasksByTeamId').load(teamId);
+        return connectionFromTasks(tasks);
       }
     },
     softTeamMembers: {

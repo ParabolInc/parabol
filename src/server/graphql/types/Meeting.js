@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, G
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
-import MeetingProject from 'server/graphql/types/MeetingProject';
+import MeetingTask from 'server/graphql/types/MeetingTask';
 import TeamMember from 'server/graphql/types/TeamMember';
 
 const Meeting = new GraphQLObjectType({
@@ -33,13 +33,13 @@ const Meeting = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The auto-incrementing meeting number for the team'
     },
-    projects: {
-      type: new GraphQLList(MeetingProject),
-      description: 'A list of immutable projects, as they were created in the meeting'
+    tasks: {
+      type: new GraphQLList(MeetingTask),
+      description: 'A list of immutable tasks, as they were created in the meeting'
     },
     sinceTime: {
       type: GraphQLISO8601Type,
-      description: 'The start time used to create the diff (all projectDiffs occurred between this time and the endTime'
+      description: 'The start time used to create the diff (all taskDiffs occurred between this time and the endTime'
     },
     successExpression: {
       type: GraphQLString,

@@ -10,7 +10,7 @@ import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
-import addSeedProjects from './helpers/addSeedProjects';
+import addSeedTasks from './helpers/addSeedTasks';
 import createFirstTeamValidation from './helpers/createFirstTeamValidation';
 
 export default {
@@ -50,7 +50,7 @@ export default {
     await createNewOrg(orgId, orgName, viewerId);
     const {newTeamUpdatedUser: {team, teamLead, tms}} = await resolvePromiseObj({
       newTeamUpdatedUser: createTeamAndLeader(viewerId, validNewTeam, true),
-      seedTeam: addSeedProjects(viewerId, teamId)
+      seedTeam: addSeedTasks(viewerId, teamId)
     });
     sendSegmentEvent('Welcome Step2 Completed', viewerId, {teamId});
 

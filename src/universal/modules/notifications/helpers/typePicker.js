@@ -17,7 +17,7 @@ export default {
   [INVITEE_APPROVED]: () => System.import('universal/modules/notifications/components/InviteeApproved'),
   [KICKED_OUT]: () => System.import('universal/modules/notifications/components/KickedOut'),
   [PAYMENT_REJECTED]: () => System.import('universal/modules/notifications/components/PaymentRejected/PaymentRejected'),
-  [PROJECT_INVOLVES]: () => System.import('universal/modules/notifications/components/ProjectInvolves'),
+  [PROJECT_INVOLVES]: () => System.import('universal/modules/notifications/components/TaskInvolves'),
   // eslint-disable-next-line max-len
   [PROMOTE_TO_BILLING_LEADER]: () => System.import('universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader'),
   [REQUEST_NEW_USER]: () => System.import('universal/modules/notifications/components/RequestNewUser/RequestNewUser'),

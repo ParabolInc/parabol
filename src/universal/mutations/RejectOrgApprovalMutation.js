@@ -5,7 +5,7 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
-import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 
 graphql`
   fragment RejectOrgApprovalMutation_orgApproval on RejectOrgApprovalPayload {
@@ -38,9 +38,9 @@ graphql`
 `;
 
 graphql`
-  fragment RejectOrgApprovalMutation_project on RejectOrgApprovalPayload {
-    archivedSoftProjects {
-      ...CompleteProjectFrag @relay(mask: false)
+  fragment RejectOrgApprovalMutation_task on RejectOrgApprovalPayload {
+    archivedSoftTasks {
+      ...CompleteTaskFrag @relay(mask: false)
     }
   }
 `;
@@ -93,9 +93,9 @@ export const rejectOrgApprovalTeamMemberUpdater = (payload, store) => {
   handleRemoveSoftTeamMembers(removedSoftTeamMembers, store);
 };
 
-export const rejectOrgApprovalProjectUpdater = (payload, store, viewerId) => {
-  const archivedSoftProjects = payload.getLinkedRecords('archivedSoftProjects');
-  handleUpsertProjects(archivedSoftProjects, store, viewerId);
+export const rejectOrgApprovalTaskUpdater = (payload, store, viewerId) => {
+  const archivedSoftTasks = payload.getLinkedRecords('archivedSoftTasks');
+  handleUpsertTasks(archivedSoftTasks, store, viewerId);
 };
 
 const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted) => {
@@ -108,7 +108,7 @@ const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted)
       rejectOrgApprovalOrgApprovalUpdater(payload, store);
       rejectOrgApprovalNotificationUpdater(payload, store, viewerId);
       rejectOrgApprovalTeamMemberUpdater(payload, store);
-      rejectOrgApprovalProjectUpdater(payload, store, viewerId);
+      rejectOrgApprovalTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {notificationId} = variables;

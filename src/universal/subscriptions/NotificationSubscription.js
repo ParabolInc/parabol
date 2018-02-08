@@ -5,8 +5,8 @@ import {approveToOrgNotificationUpdater} from 'universal/mutations/ApproveToOrgM
 import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation';
 import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation';
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
-import {createProjectNotificationUpdater} from 'universal/mutations/CreateProjectMutation';
-import {deleteProjectNotificationUpdater} from 'universal/mutations/DeleteProjectMutation';
+import {createTaskNotificationUpdater} from 'universal/mutations/CreateTaskMutation';
+import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
@@ -24,8 +24,8 @@ const subscription = graphql`
       ...CancelApprovalMutation_notification
       ...CancelTeamInviteMutation_notification
       ...ClearNotificationMutation_notification
-      ...CreateProjectMutation_notification
-      ...DeleteProjectMutation_notification
+      ...CreateTaskMutation_notification
+      ...DeleteTaskMutation_notification
       ...InviteTeamMembersMutation_notification
       ...RemoveOrgUserMutation_notification
       ...RejectOrgApprovalMutation_notification
@@ -112,11 +112,11 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
         case 'ClearNotificationPayload':
           clearNotificationNotificationUpdater(payload, store, viewerId);
           break;
-        case 'CreateProjectPayload':
-          createProjectNotificationUpdater(payload, store, viewerId, options);
+        case 'CreateTaskPayload':
+          createTaskNotificationUpdater(payload, store, viewerId, options);
           break;
-        case 'DeleteProjectPayload':
-          deleteProjectNotificationUpdater(payload, store, viewerId);
+        case 'DeleteTaskPayload':
+          deleteTaskNotificationUpdater(payload, store, viewerId);
           break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersNotificationUpdater(payload, store, viewerId, options);

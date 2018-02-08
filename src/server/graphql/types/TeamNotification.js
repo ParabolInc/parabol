@@ -5,7 +5,7 @@ import NotifyDenial from 'server/graphql/types/NotifyDenial';
 import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
 import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
-import NotifyProjectInvolves from 'server/graphql/types/NotifyProjectInvolves';
+import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
 import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
@@ -39,7 +39,7 @@ const TeamNotification = new GraphQLInterfaceType({
       [INVITEE_APPROVED]: NotifyInviteeApproved,
       [JOIN_TEAM]: NotifyNewTeamMember,
       [KICKED_OUT]: NotifyKickedOut,
-      [PROJECT_INVOLVES]: NotifyProjectInvolves,
+      [PROJECT_INVOLVES]: NotifyTaskInvolves,
       [REJOIN_TEAM]: NotifyNewTeamMember,
       [REQUEST_NEW_USER]: NotifyRequestNewUser,
       [TEAM_INVITE]: NotifyTeamInvite,

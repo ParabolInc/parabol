@@ -132,7 +132,7 @@ const UserNoNewOutcomes = (props) => {
           <td style={cardsCell}>
             <div style={{padding: '0 8px'}}>
               <div style={emptyOutcomesMessage}>
-                {'No new Projects this week…'}
+                {'No new Tasks this week…'}
               </div>
             </div>
             <EmptySpace height={24} />

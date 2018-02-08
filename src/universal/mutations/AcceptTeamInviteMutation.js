@@ -6,7 +6,7 @@ import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveIn
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
-import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 
 graphql`
   fragment AcceptTeamInviteMutation_invitation on AcceptTeamInviteNotificationPayload {
@@ -33,9 +33,9 @@ graphql`
 `;
 
 graphql`
-  fragment AcceptTeamInviteMutation_project on AcceptTeamInviteNotificationPayload {
-    hardenedProjects {
-      ...CompleteProjectFrag @relay(mask: false)
+  fragment AcceptTeamInviteMutation_task on AcceptTeamInviteNotificationPayload {
+    hardenedTasks {
+      ...CompleteTaskFrag @relay(mask: false)
     }
   }
 `;
@@ -101,9 +101,9 @@ export const acceptTeamInviteTeamMemberUpdater = (payload, store, viewerId, disp
   popJoinedYourTeamToast(payload, dispatch);
 };
 
-export const acceptTeamInviteProjectUpdater = (payload, store, viewerId) => {
-  const hardenedProjects = payload.getLinkedRecords(payload, 'hardenedProjects');
-  handleUpsertProjects(hardenedProjects, store, viewerId);
+export const acceptTeamInviteTaskUpdater = (payload, store, viewerId) => {
+  const hardenedTasks = payload.getLinkedRecords(payload, 'hardenedTasks');
+  handleUpsertTasks(hardenedTasks, store, viewerId);
 };
 
 export const acceptTeamInviteInvitationUpdater = (payload, store) => {

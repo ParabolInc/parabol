@@ -1,7 +1,7 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
 import {resolveMeeting, resolveTeam} from 'server/graphql/resolvers';
 import Team from 'server/graphql/types/Team';
-import Project from 'server/graphql/types/Project';
+import Task from 'server/graphql/types/Task';
 import Meeting from 'server/graphql/types/Meeting';
 
 const EndMeetingPayload = new GraphQLObjectType({
@@ -11,9 +11,9 @@ const EndMeetingPayload = new GraphQLObjectType({
       type: Team,
       resolve: resolveTeam
     },
-    archivedProjects: {
-      type: new GraphQLList(Project),
-      description: 'The list of projects that were archived during the meeting'
+    archivedTasks: {
+      type: new GraphQLList(Task),
+      description: 'The list of tasks that were archived during the meeting'
     },
     meeting: {
       type: Meeting,

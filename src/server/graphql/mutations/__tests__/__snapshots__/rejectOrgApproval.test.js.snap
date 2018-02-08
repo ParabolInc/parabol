@@ -26,7 +26,7 @@ Object {
       "channelId": 1,
       "message": Object {
         "data": Object {
-          "archivedSoftProjectIds": Array [],
+          "archivedSoftTaskIds": Array [],
           "deniedNotificationIds": Array [
             13,
           ],
@@ -45,7 +45,7 @@ Object {
       "channelId": 5,
       "message": Object {
         "data": Object {
-          "archivedSoftProjectIds": Array [],
+          "archivedSoftTaskIds": Array [],
           "deniedNotificationIds": Array [
             13,
           ],
@@ -64,7 +64,7 @@ Object {
       "channelId": 5,
       "message": Object {
         "data": Object {
-          "archivedSoftProjectIds": Array [],
+          "archivedSoftTaskIds": Array [],
           "deniedNotificationIds": Array [
             13,
           ],
@@ -85,7 +85,7 @@ Object {
       "channelId": 4,
       "message": Object {
         "data": Object {
-          "archivedSoftProjectIds": Array [],
+          "archivedSoftTaskIds": Array [],
           "deniedNotificationIds": Array [
             13,
           ],
@@ -107,7 +107,7 @@ Object {
       "channelId": 4,
       "message": Object {
         "data": Object {
-          "archivedSoftProjectIds": Array [],
+          "archivedSoftTaskIds": Array [],
           "deniedNotificationIds": Array [
             13,
           ],

@@ -5,7 +5,7 @@ import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifi
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveOrganization from 'universal/mutations/handlers/handleRemoveOrganization';
 import handleRemoveOrgMembers from 'universal/mutations/handlers/handleRemoveOrgMembers';
-import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
+import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks';
 import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTeamMembers';
 import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
 import getInProxy from 'universal/utils/relay/getInProxy';
@@ -63,9 +63,9 @@ graphql`
 `;
 
 graphql`
-  fragment RemoveOrgUserMutation_project on RemoveOrgUserPayload {
-    updatedProjects {
-      ...CompleteProjectFrag @relay(mask: false)
+  fragment RemoveOrgUserMutation_task on RemoveOrgUserPayload {
+    updatedTasks {
+      ...CompleteTaskFrag @relay(mask: false)
     }
     user {
       id
@@ -79,7 +79,7 @@ const mutation = graphql`
       ...RemoveOrgUserMutation_organization @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_teamMember @relay(mask: false)
-      ...RemoveOrgUserMutation_project @relay(mask: false)
+      ...RemoveOrgUserMutation_task @relay(mask: false)
     }
   }
 `;
@@ -153,12 +153,12 @@ export const removeOrgUserTeamMemberUpdater = (payload, store, viewerId) => {
   }
 };
 
-export const removeOrgUserProjectUpdater = (payload, store, viewerId) => {
+export const removeOrgUserTaskUpdater = (payload, store, viewerId) => {
   const removedUserId = getInProxy(payload, 'user', 'id');
   if (removedUserId === viewerId) {
-    const projects = payload.getLinkedRecords('updatedProjects');
-    const projectIds = getInProxy(projects, 'id');
-    handleRemoveProjects(projectIds, store, viewerId);
+    const tasks = payload.getLinkedRecords('updatedTasks');
+    const taskIds = getInProxy(tasks, 'id');
+    handleRemoveTasks(taskIds, store, viewerId);
   }
 };
 

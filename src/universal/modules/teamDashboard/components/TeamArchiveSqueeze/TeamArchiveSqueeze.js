@@ -21,17 +21,17 @@ const iconStyles = {
 
 class TeamArchiveSqueeze extends Component {
   componentWillReceiveProps(nextProps) {
-    const {projectsAvailableCount: oldCount, relay: {refetch}} = this.props;
-    const {projectsAvailableCount: newCount} = nextProps;
+    const {tasksAvailableCount: oldCount, relay: {refetch}} = this.props;
+    const {tasksAvailableCount: newCount} = nextProps;
     if (newCount !== oldCount) {
       refetch();
     }
   }
   render() {
-    const {history, orgId, projectsAvailableCount, styles, viewer} = this.props;
-    const {archivedProjectsCount, team: {organization: {isBillingLeader, mainBillingLeader}}} = viewer;
-    const unavailableProjects = archivedProjectsCount - projectsAvailableCount;
-    if (unavailableProjects < 1) {
+    const {history, orgId, tasksAvailableCount, styles, viewer} = this.props;
+    const {archivedTasksCount, team: {organization: {isBillingLeader, mainBillingLeader}}} = viewer;
+    const unavailableTasks = archivedTasksCount - tasksAvailableCount;
+    if (unavailableTasks < 1) {
       // https://github.com/reactjs/react-transition-group/issues/208
       return <br />;
     }
@@ -44,7 +44,7 @@ class TeamArchiveSqueeze extends Component {
           <div className={css(styles.archiveSqueezeInner)}>
             <div className={css(styles.archiveSqueezeContent)}>
               <h2 className={css(styles.archiveSqueezeHeading)}>
-                {`${unavailableProjects} Cards Unavailable!`}
+                {`${unavailableTasks} Cards Unavailable!`}
               </h2>
               <p className={css(styles.archiveSqueezeCopy)}>
                 {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can see cards archived up to '}<b>{'14 days ago'}</b>{'.'}<br />
@@ -88,7 +88,7 @@ class TeamArchiveSqueeze extends Component {
 TeamArchiveSqueeze.propTypes = {
   history: PropTypes.object.isRequired,
   orgId: PropTypes.string.isRequired,
-  projectsAvailableCount: PropTypes.number,
+  tasksAvailableCount: PropTypes.number,
   relay: PropTypes.object.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
@@ -154,7 +154,7 @@ export default createRefetchContainer(
   withRouter(withStyles(styleThunk)(TeamArchiveSqueeze)),
   graphql`
     fragment TeamArchiveSqueeze_viewer on User {
-      archivedProjectsCount(teamId: $teamId)
+      archivedTasksCount(teamId: $teamId)
       team(teamId: $teamId) {
         organization {
           isBillingLeader
@@ -169,7 +169,7 @@ export default createRefetchContainer(
   graphql`
     query TeamArchiveSqueezeRefetchQuery($teamId: ID!) {
       viewer {
-        archivedProjectsCount(teamId: $teamId)
+        archivedTasksCount(teamId: $teamId)
       }
     }
   `

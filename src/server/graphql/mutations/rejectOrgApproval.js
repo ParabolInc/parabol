@@ -8,9 +8,9 @@ import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, PROJECT, TEAM_MEMBER} from 'universal/utils/constants';
-import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
+import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import getActiveTeamsByOrgId from 'server/safeQueries/getActiveTeamsByOrgId';
-import getProjectsByAssigneeIds from 'server/safeQueries/getProjectsByAssigneeIds';
+import getTasksByAssigneeIds from 'server/safeQueries/getTasksByAssigneeIds';
 import promiseAllObj from 'universal/utils/promiseAllObj';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail';
@@ -60,9 +60,9 @@ export default {
     const softTeamMembersInOrg = await getActiveSoftTeamMembersByEmail(inviteeEmail, teamIdsInOrg, dataLoader);
     await Promise.all(softTeamMembersInOrg.map(({email, teamId}) => removeSoftTeamMember(email, teamId, dataLoader)));
     const softTeamMemberIdsInOrg = softTeamMembersInOrg.map(({id}) => id);
-    const softProjectsInOrg = await getProjectsByAssigneeIds(softTeamMemberIdsInOrg, dataLoader);
-    const archivedSoftProjects = await archiveProjectsForDB(softProjectsInOrg, dataLoader);
-    const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
+    const softTasksInOrg = await getTasksByAssigneeIds(softTeamMemberIdsInOrg, dataLoader);
+    const archivedSoftTasks = await archiveTasksForDB(softTasksInOrg, dataLoader);
+    const archivedSoftTaskIds = archivedSoftTasks.map(({id}) => id);
 
     const {removedOrgApprovals, removedRequestNotifications} = removeOrgApp;
     const deniedNotifications = removedRequestNotifications.map(({inviterUserId}) => ({
@@ -82,7 +82,7 @@ export default {
       removedOrgApprovalIds,
       removedRequestNotifications,
       softTeamMemberIds: softTeamMemberIdsInOrg,
-      archivedSoftProjectIds
+      archivedSoftTaskIds
     };
 
     const teamIds = Array.from(new Set(removedOrgApprovals.map(({teamId}) => teamId)));
@@ -92,8 +92,8 @@ export default {
       publish(TEAM_MEMBER, teamId, RejectOrgApprovalPayload, teamData, subOptions);
     });
 
-    // publish the archived soft projects
-    if (archivedSoftProjectIds.length > 0) {
+    // publish the archived soft tasks
+    if (archivedSoftTaskIds.length > 0) {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamIds, dataLoader);
       const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
       userIdsOnTeams.forEach((userId) => {

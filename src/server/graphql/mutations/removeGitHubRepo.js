@@ -5,7 +5,7 @@ import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayloa
 import {getIsTeamLead, getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
-import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
+import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo';
 
 
 export default {
@@ -51,10 +51,10 @@ export default {
         userIds: []
       });
 
-    const archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner, dataLoader);
+    const archivedTaskIds = await archiveTasksByGitHubRepo(teamId, nameWithOwner, dataLoader);
     const githubRepoRemoved = {
       deletedId: githubGlobalId,
-      archivedProjectIds
+      archivedTaskIds
     };
     getPubSub().publish(`githubRepoRemoved.${teamId}`, {githubRepoRemoved, mutatorId});
     return githubRepoRemoved;

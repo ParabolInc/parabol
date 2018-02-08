@@ -33,18 +33,18 @@ export default {
     // RESOLUTION
     const isKickout = !isSelf;
     const res = await removeTeamMember(teamMemberId, {isKickout}, subOptions);
-    const {user, removedNotifications, notificationId, archivedProjectIds, reassignedProjectIds} = res;
+    const {user, removedNotifications, notificationId, archivedTaskIds, reassignedTaskIds} = res;
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const {tms} = user;
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
-    const projectIds = [...archivedProjectIds, ...reassignedProjectIds];
-    const data = {teamId, teamMemberId, projectIds, notificationId, removedNotifications, userId};
+    const taskIds = [...archivedTaskIds, ...reassignedTaskIds];
+    const data = {teamId, teamMemberId, taskIds, notificationId, removedNotifications, userId};
     // messages to the rest of the team reporting the kick out
     publish(TEAM_MEMBER, teamId, RemoveTeamMemberPayload, data, subOptions);
     teamMembers.forEach(({teamMemberUserId}) => {
-      // don't send updated projects to the person being kicked out
+      // don't send updated tasks to the person being kicked out
       if (teamMemberUserId === userId) return;
       publish(PROJECT, teamMemberUserId, RemoveTeamMemberPayload, data, subOptions);
     });

@@ -8,7 +8,7 @@ import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
 import {trimString} from 'universal/utils';
-import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import isTaskPrivate from 'universal/utils/isTaskPrivate';
 
 const SummaryCard = (props) => {
   const {
@@ -17,7 +17,7 @@ const SummaryCard = (props) => {
     tags,
     styles
   } = props;
-  const isPrivate = isProjectPrivate(tags);
+  const isPrivate = isTaskPrivate(tags);
   const rootStyles = css(
     styles.root,
     styles[status],
@@ -37,7 +37,7 @@ const SummaryCard = (props) => {
 
 SummaryCard.propTypes = {
   content: PropTypes.string,
-  status: PropTypes.oneOf(labels.projectStatus.slugs),
+  status: PropTypes.oneOf(labels.taskStatus.slugs),
   styles: PropTypes.object,
   tags: PropTypes.array
 };
@@ -64,25 +64,25 @@ const styleThunk = () => ({
 
   [ACTIVE]: {
     '::after': {
-      color: labels.projectStatus[ACTIVE].color
+      color: labels.taskStatus[ACTIVE].color
     }
   },
 
   [STUCK]: {
     '::after': {
-      color: labels.projectStatus[STUCK].color
+      color: labels.taskStatus[STUCK].color
     }
   },
 
   [DONE]: {
     '::after': {
-      color: labels.projectStatus[DONE].color
+      color: labels.taskStatus[DONE].color
     }
   },
 
   [FUTURE]: {
     '::after': {
-      color: labels.projectStatus[FUTURE].color
+      color: labels.taskStatus[FUTURE].color
     }
   },
 

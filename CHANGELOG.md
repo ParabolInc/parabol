@@ -4,9 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.27.0 2018-Feb-07
+## Added
+- Scroll to active agenda item during meeting
+- Renamed Project to Task
+
+## Fixed
+- Minor style updates
+
+
 ## v0.26.1 2018-Jan-31
 ## Fixed
 - E2E Timeouts
+
 
 ## v0.26.0 2018-Jan-31
 ## Added

@@ -71,7 +71,7 @@ class MeetingContainer extends Component {
     onError: PropTypes.func.isRequired
   };
 
-  state = {updateUserHasProjects: null};
+  state = {updateUserHasTasks: null};
 
   componentWillMount() {
     const {
@@ -164,9 +164,9 @@ class MeetingContainer extends Component {
     this.agendaInputRef = c;
   };
 
-  setUpdateUserHasProjects = (updateUserHasProjects) => {
-    if (updateUserHasProjects !== this.state.updateUserHasProjects) {
-      this.setState({updateUserHasProjects});
+  setUpdateUserHasTasks = (updateUserHasTasks) => {
+    if (updateUserHasTasks !== this.state.updateUserHasTasks) {
+      this.setState({updateUserHasTasks});
     }
   };
 
@@ -309,7 +309,7 @@ class MeetingContainer extends Component {
               agendaInputRef={this.agendaInputRef}
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
-              updateUserHasProjects={this.state.updateUserHasProjects}
+              updateUserHasTasks={this.state.updateUserHasTasks}
               team={team}
             />
             }
@@ -331,7 +331,7 @@ class MeetingContainer extends Component {
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
-            setUpdateUserHasProjects={this.setUpdateUserHasProjects}
+            setUpdateUserHasTasks={this.setUpdateUserHasTasks}
             showMoveMeetingControls={showMoveMeetingControls}
             viewer={viewer}
           />

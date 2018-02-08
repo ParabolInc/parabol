@@ -53,33 +53,33 @@ export default {
   name: 'CreateGitHubIssue',
   type: CreateGitHubIssuePayload,
   args: {
-    projectId: {
+    taskId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the project to convert to a GH issue'
+      description: 'The id of the task to convert to a GH issue'
     },
     nameWithOwner: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The owner/repo string'
     }
   },
-  resolve: async (source, {nameWithOwner, projectId}, {authToken, dataLoader, socketId: mutatorId}) => {
+  resolve: async (source, {nameWithOwner, taskId}, {authToken, dataLoader, socketId: mutatorId}) => {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const [teamId] = projectId.split('::');
+    const [teamId] = taskId.split('::');
     requireTeamMember(authToken, teamId);
 
     // VALIDATION
     const viewerId = getUserId(authToken);
-    const project = await r.table('Project').get(projectId);
-    if (!project) {
-      throw new Error('That project no longer exists');
+    const task = await r.table('Task').get(taskId);
+    if (!task) {
+      throw new Error('That task no longer exists');
     }
-    if (project.integration && project.integration.service) {
-      throw new Error(`That project is already linked to ${project.integration.service}`);
+    if (task.integration && task.integration.service) {
+      throw new Error(`That task is already linked to ${task.integration.service}`);
     }
     const [repoOwner, repoName] = nameWithOwner.split('/');
     if (!repoOwner || !repoName) {
@@ -96,7 +96,7 @@ export default {
     }
 
     // RESOLUTION
-    const {assigneeId, content: rawContentStr} = project;
+    const {assigneeId, content: rawContentStr} = task;
     const {userId: assigneeUserId} = fromTeamMemberId(assigneeId);
     const providers = await r.table('Provider')
       .getAll(teamId, {index: 'teamId'})
@@ -119,7 +119,7 @@ export default {
     const creatorProvider = providers.find((provider) => provider.userId === viewerId);
 
     if (!rawContentStr) {
-      throw new Error('You must add some text before submitting a project to github');
+      throw new Error('You must add some text before submitting a task to github');
     }
     const rawContent = JSON.parse(rawContentStr);
     const {blocks} = rawContent;
@@ -168,7 +168,7 @@ export default {
       }
     }
 
-    await r.table('Project').get(projectId)
+    await r.table('Task').get(taskId)
       .update({
         integration: {
           integrationId,
@@ -179,7 +179,7 @@ export default {
         updatedAt: now
       });
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
-    const data = {projectId};
+    const data = {taskId};
     teamMembers.forEach(({userId}) => {
       publish(PROJECT, userId, CreateGitHubIssuePayload, data, subOptions);
     });

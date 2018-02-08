@@ -61,7 +61,7 @@ const TeamInvite = (props) => {
     inviterEmail,
     inviteeEmail,
     inviteeName,
-    // firstProject,
+    // firstTask,
     teamName,
     inviteLink
   } = props;
@@ -118,7 +118,7 @@ const TeamInvite = (props) => {
           >
             develop a weekly rhythm
           </a>.<br />
-          <a href={inviteLink} style={boldLinkStyle}>Add a project to the board</a> to get started.
+          <a href={inviteLink} style={boldLinkStyle}>Add a task to the board</a> to get started.
         </div>
         <EmptySpace height={32} />
       </Body>
@@ -127,12 +127,12 @@ const TeamInvite = (props) => {
   );
 };
 
-// TODO: Don’t show this until we actually transfer it to the dashboard as a project? (TA)
-// {firstProject &&
+// TODO: Don’t show this until we actually transfer it to the dashboard as a task? (TA)
+// {firstTask &&
 //   <div>
-//     <b>{inviterName} added one of your projects to Parabol</b>:
+//     <b>{inviterName} added one of your tasks to Parabol</b>:
 //     <EmptySpace height={32} />
-//     <span style={projectNameStyle}>“{firstProject}”</span>
+//     <span style={taskNameStyle}>“{firstTask}”</span>
 //     <EmptySpace height={32} />
 //   </div>
 // }
@@ -143,7 +143,7 @@ TeamInvite.propTypes = {
   inviteeEmail: PropTypes.string.isRequired,
   inviterName: PropTypes.string.isRequired,
   inviterEmail: PropTypes.string.isRequired,
-  firstProject: PropTypes.string,
+  firstTask: PropTypes.string,
   teamName: PropTypes.string.isRequired,
   inviteLink: PropTypes.string.isRequired
 };

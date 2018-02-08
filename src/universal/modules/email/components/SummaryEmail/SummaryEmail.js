@@ -10,7 +10,7 @@ import Footer from '../../components/Footer/Footer';
 import Layout from '../../components/Layout/Layout';
 import QuickStats from '../../components/QuickStats/QuickStats';
 import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
-import UserProjects from '../UserProjects/UserProjects';
+import UserTasks from '../UserTasks/UserTasks';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
 import {MEETING_NAME, AGENDA_ITEM_LABEL} from 'universal/utils/constants';
@@ -109,10 +109,10 @@ const SummaryEmail = (props) => {
     teamDashUrl
   } = props;
   const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName} = meeting;
-  const membersSansOutcomes = invitees.filter((invitee) => invitee.projects.length === 0);
-  const membersWithOutcomes = invitees.filter((invitee) => invitee.projects.length > 0);
+  const membersSansOutcomes = invitees.filter((invitee) => invitee.tasks.length === 0);
+  const membersWithOutcomes = invitees.filter((invitee) => invitee.tasks.length > 0);
   const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
-  const projectCount = invitees.reduce((sum, invitee) => sum + invitee.projects.length, 0);
+  const taskCount = invitees.reduce((sum, invitee) => sum + invitee.tasks.length, 0);
 
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
@@ -180,7 +180,7 @@ const SummaryEmail = (props) => {
               <td align="center" style={quickStatsBlock}>
                 <QuickStats
                   agendaItems={agendaItemsCompleted}
-                  newProjects={projectCount}
+                  newTasks={taskCount}
                   teamMembers={invitees.length}
                   teamMembersPresent={presentMemberCount}
                 />
@@ -189,7 +189,7 @@ const SummaryEmail = (props) => {
           </tbody>
         </table>
         {membersWithOutcomes.map((member) =>
-          <UserProjects member={member} key={`userProjects'${member.id}`} />
+          <UserTasks member={member} key={`userTasks'${member.id}`} />
         )}
         {hasUsersWithoutOutcomes &&
         <UserNoNewOutcomes members={membersSansOutcomes} />
@@ -302,15 +302,15 @@ SummaryEmail.propTypes = {
   ]).isRequired,
   referrerUrl: PropTypes.string,
   teamDashUrl: PropTypes.string,
-  projectCount: PropTypes.number
+  taskCount: PropTypes.number
 };
 
 export const summaryEmailText = (props) => {
   const {meeting} = props;
   const {teamName, agendaItemsCompleted, invitees} = meeting;
-  const projectCount = invitees.reduce((sum, member) => sum + member.projects.length, 0);
+  const taskCount = invitees.reduce((sum, member) => sum + member.tasks.length, 0);
   return `Hello ${teamName}! As a team you discussed ${agendaItemsCompleted} Agenda Items${' '}
-  resulting in ${projectCount} New Projects.${' '}`;
+  resulting in ${taskCount} New Tasks.${' '}`;
 };
 
 export default SummaryEmail;

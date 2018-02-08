@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
-import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
+import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
@@ -54,17 +54,17 @@ export default {
     }
 
     const {isActive, nameWithOwner} = updatedIntegration;
-    let archivedProjectIds = [];
+    let archivedTaskIds = [];
     if (isActive === false) {
       if (service === GITHUB) {
-        archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner, dataLoader);
+        archivedTaskIds = await archiveTasksByGitHubRepo(teamId, nameWithOwner, dataLoader);
       }
     }
 
     const integrationLeft = {
       globalId,
       userId: isActive ? userId : null,
-      archivedProjectIds
+      archivedTaskIds
     };
     getPubSub().publish(`integrationLeft.${teamId}.${service}`, {integrationLeft, mutatorId});
     return integrationLeft;

@@ -41,13 +41,13 @@ export default {
       newInvitations,
       newSoftTeamMembers,
       teamInviteNotifications: inviteNotifications,
-      unarchivedSoftProjects
+      unarchivedSoftTasks
     } = await inviteTeamMembers(invitees, teamId, viewerId, dataLoader);
     const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId);
     const reactivationNotificationIds = reactivations.map(({notificationId}) => notificationId);
     const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id);
     const invitationIds = newInvitations.map(({id}) => id);
-    const unarchivedSoftProjectIds = unarchivedSoftProjects.map(({id}) => id);
+    const unarchivedSoftTaskIds = unarchivedSoftTasks.map(({id}) => id);
     const softTeamMemberIds = newSoftTeamMembers.map(({id}) => id);
 
     const data = {
@@ -61,7 +61,7 @@ export default {
       invitationIds,
       inviteNotifications,
       softTeamMemberIds,
-      projectIds: unarchivedSoftProjectIds
+      taskIds: unarchivedSoftTaskIds
     };
 
     // Tell each invitee
@@ -93,8 +93,8 @@ export default {
       publish(TEAM_MEMBER, teamId, InviteTeamMembersPayload, data, subOptions);
     }
 
-    if (unarchivedSoftProjects.length > 0) {
-      const teamIds = Array.from(new Set(unarchivedSoftProjects.map((p) => p.teamId)));
+    if (unarchivedSoftTasks.length > 0) {
+      const teamIds = Array.from(new Set(unarchivedSoftTasks.map((p) => p.teamId)));
       const teamMembers = await getActiveTeamMembersByTeamIds(teamIds, dataLoader);
       teamMembers.forEach(({userId}) => {
         publish(PROJECT, userId, InviteTeamMembersPayload, data, subOptions);

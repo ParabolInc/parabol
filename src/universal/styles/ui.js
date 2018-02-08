@@ -146,7 +146,7 @@ const ui = {
   palette: PALETTE_VALUES,
   filterBlur,
 
-  // Private projects
+  // Private tasks
   // ---------------------------------------------------------------------------
   privateCardBgColor: appTheme.palette.light50l,
 
@@ -474,10 +474,10 @@ const ui = {
   // ---------------------------------------------------------------------------
   placeholderColor,
 
-  // Project columns
+  // Task columns
   // ---------------------------------------------------------------------------
-  projectColumnsMaxWidth: '78.25rem',
-  projectColumnsMinWidth: '48rem',
+  taskColumnsMaxWidth: '78.25rem',
+  taskColumnsMinWidth: '48rem',
 
   // Providers
   // ---------------------------------------------------------------------------
