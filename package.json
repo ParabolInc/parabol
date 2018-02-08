@@ -146,6 +146,7 @@
     "enzyme-adapter-react-16": "^1.0.0",
     "es6-promisify": "^5.0.0",
     "eslint-plugin-babel": "^4.1.2",
+    "eventemitter3": "^3.0.1",
     "expect": "^21.2.1",
     "express": "^4.15.4",
     "express-jwt": "5.3.0",
