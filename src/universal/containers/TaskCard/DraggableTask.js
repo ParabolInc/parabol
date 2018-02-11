@@ -6,7 +6,7 @@ import type {UserID} from 'universal/types/user';
 import {findDOMNode} from 'react-dom';
 import {createFragmentContainer, graphql} from 'react-relay';
 import NullableTask from 'universal/components/NullableTask/NullableTask';
-import {PROJECT} from 'universal/utils/constants';
+import {TASK} from 'universal/utils/constants';
 import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
 import TaskDragLayer from './TaskDragLayer';
@@ -137,8 +137,8 @@ const taskDropSpec = {
 };
 
 export default createFragmentContainer(
-  dragSource(PROJECT, taskDragSpec, taskDragCollect)(
-    dropTarget(PROJECT, taskDropSpec, taskDropCollect)(DraggableTask)
+  dragSource(TASK, taskDragSpec, taskDragCollect)(
+    dropTarget(TASK, taskDropSpec, taskDropCollect)(DraggableTask)
   ),
   graphql`
     fragment DraggableTask_task on Task {

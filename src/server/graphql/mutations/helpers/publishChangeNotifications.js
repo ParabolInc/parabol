@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
-import {ASSIGNEE, MENTIONEE, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {ASSIGNEE, MENTIONEE, TASK_INVOLVES} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
 const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIgnore) => {
@@ -30,7 +30,7 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
     .map((userId) => ({
       id: shortid.generate(),
       startAt: now,
-      type: PROJECT_INVOLVES,
+      type: TASK_INVOLVES,
       userIds: [userId],
       involvement: MENTIONEE,
       taskId: task.id,
@@ -44,7 +44,7 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
       notificationsToAdd.push({
         id: shortid.generate(),
         startAt: now,
-        type: PROJECT_INVOLVES,
+        type: TASK_INVOLVES,
         userIds: [task.userId],
         involvement: ASSIGNEE,
         taskId: task.id,
@@ -65,7 +65,7 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
         .getAll(r.args(maybeInvolvedUserIds), {index: 'userIds'})
         .filter({
           taskId: task.id,
-          type: PROJECT_INVOLVES
+          type: TASK_INVOLVES
         });
       notificationsToAdd.push(...existingTaskNotifications);
     }
@@ -77,7 +77,7 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
       .getAll(r.args(userIdsToRemove), {index: 'userIds'})
       .filter({
         taskId: oldTask.id,
-        type: PROJECT_INVOLVES
+        type: TASK_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
       .pluck('id', 'userIds')

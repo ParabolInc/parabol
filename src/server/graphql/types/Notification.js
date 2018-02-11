@@ -19,7 +19,7 @@ import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
 
 import {
   ADD_TO_TEAM, DENY_NEW_USER, FACILITATOR_DISCONNECTED, INVITEE_APPROVED, JOIN_TEAM, KICKED_OUT, PAYMENT_REJECTED,
-  PROJECT_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_ARCHIVED, TEAM_INVITE, VERSION_INFO
+  TASK_INVOLVES, PROMOTE_TO_BILLING_LEADER, REJOIN_TEAM, REQUEST_NEW_USER, TEAM_ARCHIVED, TEAM_INVITE, VERSION_INFO
 } from 'universal/utils/constants';
 
 export const notificationInterfaceFields = {
@@ -58,7 +58,7 @@ const Notification = new GraphQLInterfaceType({
       [JOIN_TEAM]: NotifyNewTeamMember,
       [KICKED_OUT]: NotifyKickedOut,
       [PAYMENT_REJECTED]: NotifyPaymentRejected,
-      [PROJECT_INVOLVES]: NotifyTaskInvolves,
+      [TASK_INVOLVES]: NotifyTaskInvolves,
       [REJOIN_TEAM]: NotifyNewTeamMember,
       [REQUEST_NEW_USER]: NotifyRequestNewUser,
       [TEAM_INVITE]: NotifyTeamInvite,

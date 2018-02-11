@@ -50,7 +50,7 @@ export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
 export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
 /* Drag-n-Drop Items */
-export const PROJECT = 'task';
+export const TASK = 'task';
 export const AGENDA_ITEM = 'agendaItem';
 
 /* Sorting */
@@ -94,7 +94,7 @@ export const TEAM_INVITE = 'TEAM_INVITE';
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
 // sent to members when a task is assigned to them or mentions them
-export const PROJECT_INVOLVES = 'PROJECT_INVOLVES';
+export const TASK_INVOLVES = 'TASK_INVOLVES';
 // sent on socket connection
 export const VERSION_INFO = 'VERSION_INFO';
 
@@ -140,7 +140,7 @@ export const PAID = 'PAID';
 export const FAILED = 'FAILED';
 
 /* character limits */
-export const PROJECT_MAX_CHARS = 51200;
+export const TASK_MAX_CHARS = 51200;
 
 /* Action Tags */
 export const tags = [
@@ -188,7 +188,7 @@ export const NEW_AUTH_TOKEN = 'newAuthToken';
 export const NOTIFICATION = 'notification';
 export const ORGANIZATION = 'organization';
 export const ORG_APPROVAL = 'orgApproval';
-// export const PROJECT = 'task'; // TODO refactor so it doesn't conflict with DnD
+// export const TASK = 'task'; // TODO refactor so it doesn't conflict with DnD
 // export const MEETING = 'meeting'; // conflicts with area
 // export const AGENDA_ITEM = 'agendaItem'; // conflict
 export const TEAM = 'team';

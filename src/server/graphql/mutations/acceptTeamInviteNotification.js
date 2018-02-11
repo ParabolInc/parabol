@@ -5,7 +5,7 @@ import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NEW_AUTH_TOKEN, PROJECT, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {INVITATION, NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
@@ -51,7 +51,7 @@ export default {
     if (hardenedTasks.length > 0) {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
       teamMembers.forEach(({userId}) => {
-        publish(PROJECT, userId, AcceptTeamInviteEmailPayload, data, subOptions);
+        publish(TASK, userId, AcceptTeamInviteEmailPayload, data, subOptions);
       });
     }
 

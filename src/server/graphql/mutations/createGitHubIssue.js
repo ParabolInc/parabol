@@ -5,7 +5,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {GITHUB, PROJECT} from 'universal/utils/constants';
+import {GITHUB, TASK} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 import fetch from 'node-fetch';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
@@ -181,7 +181,7 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const data = {taskId};
     teamMembers.forEach(({userId}) => {
-      publish(PROJECT, userId, CreateGitHubIssuePayload, data, subOptions);
+      publish(TASK, userId, CreateGitHubIssuePayload, data, subOptions);
     });
     return data;
   }

@@ -9,7 +9,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {errorObj} from 'server/utils/utils';
-import {DONE, LOBBY, PROJECT, TEAM} from 'universal/utils/constants';
+import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
@@ -140,7 +140,7 @@ export default {
 
     publish(TEAM, teamId, EndMeetingPayload, data, subOptions);
     teamMembers.forEach(({userId}) => {
-      publish(PROJECT, userId, EndMeetingPayload, data, subOptions);
+      publish(TASK, userId, EndMeetingPayload, data, subOptions);
     });
     await sendEmailSummary(completedMeeting);
 

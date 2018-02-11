@@ -9,7 +9,7 @@ import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import {NEW_AUTH_TOKEN, PROJECT, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
@@ -121,7 +121,7 @@ export default {
     if (hardenedTasks.length > 0) {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
       teamMembers.forEach(({userId}) => {
-        publish(PROJECT, userId, AcceptTeamInviteEmailPayload, data, subOptions);
+        publish(TASK, userId, AcceptTeamInviteEmailPayload, data, subOptions);
       });
     }
     // Send the new team member a welcome & a new token

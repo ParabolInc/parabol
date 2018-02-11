@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {NOTIFICATION, PROJECT, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
 export default {
@@ -48,7 +48,7 @@ export default {
       .getAll(r.args(userIdsWithNotifications), {index: 'userIds'})
       .filter({
         taskId,
-        type: PROJECT_INVOLVES
+        type: TASK_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
       .default([]);
@@ -62,7 +62,7 @@ export default {
     const isPrivate = tags.includes('private');
     subscribedUserIds.forEach((userId) => {
       if (!isPrivate || userId === taskUserId) {
-        publish(PROJECT, userId, DeleteTaskPayload, data, subOptions);
+        publish(TASK, userId, DeleteTaskPayload, data, subOptions);
       }
     });
     return data;
