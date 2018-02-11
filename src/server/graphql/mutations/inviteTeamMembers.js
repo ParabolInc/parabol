@@ -4,7 +4,7 @@ import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayl
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
 import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NOTIFICATION, ORG_APPROVAL, PROJECT, TEAM_MEMBER} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
@@ -97,7 +97,7 @@ export default {
       const teamIds = Array.from(new Set(unarchivedSoftTasks.map((p) => p.teamId)));
       const teamMembers = await getActiveTeamMembersByTeamIds(teamIds, dataLoader);
       teamMembers.forEach(({userId}) => {
-        publish(PROJECT, userId, InviteTeamMembersPayload, data, subOptions);
+        publish(TASK, userId, InviteTeamMembersPayload, data, subOptions);
       });
     }
 

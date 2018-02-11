@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {NOTIFICATION, ORG_APPROVAL, PROJECT, REQUEST_NEW_USER, TEAM_MEMBER} from 'universal/utils/constants';
+import {NOTIFICATION, ORG_APPROVAL, TASK, REQUEST_NEW_USER, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
@@ -63,7 +63,7 @@ export default {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
       const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
       userIdsOnTeams.forEach((userId) => {
-        publish(PROJECT, userId, CancelApprovalPayload, data, subOptions);
+        publish(TASK, userId, CancelApprovalPayload, data, subOptions);
       });
     }
 
