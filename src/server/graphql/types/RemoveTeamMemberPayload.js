@@ -1,14 +1,14 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
 import {
   makeResolveNotificationsForViewer,
-  resolveProjects,
+  resolveTasks,
   resolveTeam,
   resolveTeamMember,
   resolveUser
 } from 'server/graphql/resolvers';
 import Notification from 'server/graphql/types/Notification';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
-import Project from 'server/graphql/types/Project';
+import Task from 'server/graphql/types/Task';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import User from 'server/graphql/types/User';
@@ -28,10 +28,10 @@ const RemoveTeamMemberPayload = new GraphQLObjectType({
       description: 'The team the team member was removed from',
       resolve: resolveTeam
     },
-    updatedProjects: {
-      type: new GraphQLList(Project),
-      description: 'The projects that got reassigned',
-      resolve: resolveProjects
+    updatedTasks: {
+      type: new GraphQLList(Task),
+      description: 'The tasks that got reassigned',
+      resolve: resolveTasks
     },
     user: {
       type: User,

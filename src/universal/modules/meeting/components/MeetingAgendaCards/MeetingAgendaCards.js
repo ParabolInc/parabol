@@ -1,31 +1,31 @@
 // @flow
-import type {Project} from 'universal/types/project';
+import type {Task} from 'universal/types/task';
 
 import {css} from 'aphrodite-local-styles/no-important';
 import React, {Component} from 'react';
 import withHotkey from 'react-hotkey-hoc';
 import {withRouter} from 'react-router';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
-import NullableProject from 'universal/components/NullableProject/NullableProject';
+import NullableTask from 'universal/components/NullableTask/NullableTask';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import sortOrderBetween from 'universal/dnd/sortOrderBetween';
-import CreateProjectMutation from 'universal/mutations/CreateProjectMutation';
+import CreateTaskMutation from 'universal/mutations/CreateTaskMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
 
-const makeCards = (projects, myUserId, itemStyle, handleAddProject) => {
-  return projects.map((project) => {
-    const {id} = project;
+const makeCards = (tasks, myUserId, itemStyle, handleAddTask) => {
+  return tasks.map((task) => {
+    const {id} = task;
     const key = `$outcomeCard${id}`;
     return (
       <div className={css(itemStyle)} key={key}>
-        <NullableProject
+        <NullableTask
           area={MEETING}
-          handleAddProject={handleAddProject}
+          handleAddTask={handleAddTask}
           isAgenda
           myUserId={myUserId}
-          project={project}
+          task={task}
         />
       </div>
     );
@@ -51,7 +51,7 @@ type Props = {
   atmosphere: Object, // TODO: atmosphere type
   bindHotkey: (key: string, cb: () => void) => void,
   history: Object,
-  projects: Project[],
+  tasks: Task[],
   styles: Object,
   teamId: string
 };
@@ -59,17 +59,17 @@ type Props = {
 class MeetingAgendaCards extends Component<Props> {
   componentWillMount() {
     const {bindHotkey} = this.props;
-    bindHotkey('p', this.handleAddProject());
+    bindHotkey('t', this.handleAddTask());
   }
 
-  handleAddProject = (content) => () => {
-    const {agendaId, atmosphere, projects, teamId} = this.props;
+  handleAddTask = (content) => () => {
+    const {agendaId, atmosphere, tasks, teamId} = this.props;
     const {userId} = atmosphere;
-    const maybeLastProject = projects[projects.length - 1];
+    const maybeLastTask = tasks[tasks.length - 1];
     const sortOrder = sortOrderBetween(
-      maybeLastProject, null, null, false
+      maybeLastTask, null, null, false
     );
-    const newProject = {
+    const newTask = {
       content,
       status: ACTIVE,
       sortOrder,
@@ -77,23 +77,23 @@ class MeetingAgendaCards extends Component<Props> {
       userId,
       teamId
     };
-    CreateProjectMutation(atmosphere, newProject, MEETING);
+    CreateTaskMutation(atmosphere, newTask, MEETING);
   }
 
   render() {
-    const {atmosphere: {userId}, projects, styles} = this.props;
+    const {atmosphere: {userId}, tasks, styles} = this.props;
     return (
       <div className={css(styles.root)}>
-        {makeCards(projects, userId, styles.item, this.handleAddProject)}
+        {makeCards(tasks, userId, styles.item, this.handleAddTask)}
         {/* Input Card */}
         <div className={css(styles.item)}>
           <CreateCard
-            handleAddProject={this.handleAddProject()}
+            handleAddTask={this.handleAddTask()}
             hasControls
           />
         </div>
         {/* Placeholder Cards */}
-        {makePlaceholders(projects.length, styles.item)}
+        {makePlaceholders(tasks.length, styles.item)}
       </div>
     );
   }

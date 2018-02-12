@@ -1,16 +1,16 @@
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
-import {ASSIGNEE, MENTIONEE, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {ASSIGNEE, MENTIONEE, TASK_INVOLVES} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 
-const publishChangeNotifications = async (project, oldProject, changeUserId, usersToIgnore) => {
+const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIgnore) => {
   const r = getRethink();
   const now = new Date();
-  const changeAuthorId = `${changeUserId}::${project.teamId}`;
-  const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldProject.content);
-  const {entityMap, blocks} = JSON.parse(project.content);
-  const wasPrivate = oldProject.tags.includes('private');
-  const isPrivate = project.tags.includes('private');
+  const changeAuthorId = `${changeUserId}::${task.teamId}`;
+  const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldTask.content);
+  const {entityMap, blocks} = JSON.parse(task.content);
+  const wasPrivate = oldTask.tags.includes('private');
+  const isPrivate = task.tags.includes('private');
   const oldMentions = wasPrivate ? [] : getTypeFromEntityMap('MENTION', oldEntityMap);
   const mentions = isPrivate ? [] : getTypeFromEntityMap('MENTION', entityMap);
   // intersect the mentions to get the ones to add and remove
@@ -21,7 +21,7 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
       // it didn't already exist
       !oldMentions.includes(userId) &&
       // it isn't the owner (they get the assign notification)
-      userId !== project.userId &&
+      userId !== task.userId &&
       // it isn't the person changing it
       changeUserId !== userId &&
       // it isn't someone in a meeting
@@ -30,44 +30,44 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
     .map((userId) => ({
       id: shortid.generate(),
       startAt: now,
-      type: PROJECT_INVOLVES,
+      type: TASK_INVOLVES,
       userIds: [userId],
       involvement: MENTIONEE,
-      projectId: project.id,
+      taskId: task.id,
       changeAuthorId,
-      teamId: project.teamId
+      teamId: task.teamId
     }));
 
   // add in the assignee changes
-  if (oldProject.assigneeId !== project.assigneeId) {
-    if (project.userId !== changeUserId && !usersToIgnore.includes(project.userId)) {
+  if (oldTask.assigneeId !== task.assigneeId) {
+    if (task.userId !== changeUserId && !usersToIgnore.includes(task.userId)) {
       notificationsToAdd.push({
         id: shortid.generate(),
         startAt: now,
-        type: PROJECT_INVOLVES,
-        userIds: [project.userId],
+        type: TASK_INVOLVES,
+        userIds: [task.userId],
         involvement: ASSIGNEE,
-        projectId: project.id,
+        taskId: task.id,
         changeAuthorId,
-        teamId: project.teamId
+        teamId: task.teamId
       });
     }
-    userIdsToRemove.push(oldProject.userId);
+    userIdsToRemove.push(oldTask.userId);
   }
 
-  // if we updated the project content, push a new one with an updated project
+  // if we updated the task content, push a new one with an updated task
   const oldContentLen = oldBlocks[0] ? oldBlocks[0].text.length : 0;
   if (oldContentLen < 3) {
     const contentLen = blocks[0] ? blocks[0].text.length : 0;
     if (contentLen > oldContentLen) {
-      const maybeInvolvedUserIds = mentions.concat(project.userId);
-      const existingProjectNotifications = await r.table('Notification')
+      const maybeInvolvedUserIds = mentions.concat(task.userId);
+      const existingTaskNotifications = await r.table('Notification')
         .getAll(r.args(maybeInvolvedUserIds), {index: 'userIds'})
         .filter({
-          projectId: project.id,
-          type: PROJECT_INVOLVES
+          taskId: task.id,
+          type: TASK_INVOLVES
         });
-      notificationsToAdd.push(...existingProjectNotifications);
+      notificationsToAdd.push(...existingTaskNotifications);
     }
   }
 
@@ -76,8 +76,8 @@ const publishChangeNotifications = async (project, oldProject, changeUserId, use
     notificationsToRemove: userIdsToRemove.length === 0 ? [] : r.table('Notification')
       .getAll(r.args(userIdsToRemove), {index: 'userIds'})
       .filter({
-        projectId: oldProject.id,
-        type: PROJECT_INVOLVES
+        taskId: oldTask.id,
+        type: TASK_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
       .pluck('id', 'userIds')

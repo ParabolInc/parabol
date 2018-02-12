@@ -7,7 +7,7 @@ import getRefreshPeriod from 'universal/utils/getRefreshPeriod';
 class EditingStatusContainer extends Component {
   static propTypes = {
     isEditing: PropTypes.bool,
-    project: PropTypes.object.isRequired
+    task: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -33,7 +33,7 @@ class EditingStatusContainer extends Component {
 
   queueNextRender() {
     this.resetTimeout();
-    const {project: {createdAt, updatedAt}} = this.props;
+    const {task: {createdAt, updatedAt}} = this.props;
     const timestamp = this.state.timestampType === 'createdAt' ? createdAt : updatedAt;
     const timeTilRefresh = getRefreshPeriod(timestamp);
     this.refreshTimer = setTimeout(() => {
@@ -42,8 +42,8 @@ class EditingStatusContainer extends Component {
   }
 
   render() {
-    const {isEditing, project} = this.props;
-    const {createdAt, updatedAt} = project;
+    const {isEditing, task} = this.props;
+    const {createdAt, updatedAt} = task;
     const {timestampType} = this.state;
     this.queueNextRender();
     const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt;
@@ -51,7 +51,7 @@ class EditingStatusContainer extends Component {
       <EditingStatus
         handleClick={this.toggleTimestamp}
         isEditing={isEditing}
-        project={project}
+        task={task}
         timestamp={timestamp}
         timestampType={timestampType}
       />
@@ -62,9 +62,9 @@ class EditingStatusContainer extends Component {
 export default createFragmentContainer(
   EditingStatusContainer,
   graphql`
-    fragment EditingStatusContainer_project on Project {
+    fragment EditingStatusContainer_task on Task {
       createdAt
       updatedAt
-      ...EditingStatus_project
+      ...EditingStatus_task
     }`
 );

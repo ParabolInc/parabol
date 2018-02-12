@@ -62,20 +62,20 @@ export const resolveOrgApproval = ({orgApprovalId, orgApproval}, args, {dataLoad
   return orgApprovalId ? dataLoader.get('orgApprovals').load(orgApprovalId) : orgApproval;
 };
 
-export const resolveProject = async ({project, projectId}, args, {authToken, dataLoader}) => {
-  const projectDoc = projectId ? await dataLoader.get('projects').load(projectId) : project;
-  const {userId, tags} = projectDoc;
+export const resolveTask = async ({task, taskId}, args, {authToken, dataLoader}) => {
+  const taskDoc = taskId ? await dataLoader.get('tasks').load(taskId) : task;
+  const {userId, tags} = taskDoc;
   const isViewer = userId === getUserId(authToken);
-  return (isViewer || !tags.includes('private')) ? projectDoc : null;
+  return (isViewer || !tags.includes('private')) ? taskDoc : null;
 };
 
-export const resolveProjects = async ({projectIds}, args, {authToken, dataLoader}) => {
-  if (!projectIds || projectIds.length === 0) return null;
-  const projects = await dataLoader.get('projects').loadMany(projectIds);
-  const {userId} = projects[0];
+export const resolveTasks = async ({taskIds}, args, {authToken, dataLoader}) => {
+  if (!taskIds || taskIds.length === 0) return null;
+  const tasks = await dataLoader.get('tasks').loadMany(taskIds);
+  const {userId} = tasks[0];
   const isViewer = userId === getUserId(authToken);
-  const teamProjects = projects.filter(({teamId}) => authToken.tms.includes(teamId));
-  return isViewer ? teamProjects : nullIfEmpty(teamProjects.filter((p) => !p.tags.includes('private')));
+  const teamTasks = tasks.filter(({teamId}) => authToken.tms.includes(teamId));
+  return isViewer ? teamTasks : nullIfEmpty(teamTasks.filter((p) => !p.tags.includes('private')));
 };
 
 export const resolveSoftTeamMember = async ({softTeamMemberId, softTeamMember}, args, {authToken, dataLoader}) => {
@@ -132,8 +132,8 @@ export const resolveFilterByTeam = (resolver, getTeamId) => async (source, args,
   return teamIdFilter ? resolvedArray.filter((obj) => getTeamId(obj) === teamIdFilter) : resolvedArray;
 };
 
-export const resolveArchivedSoftProjects = async ({archivedSoftProjectIds}, args, {authToken, dataLoader}) => {
+export const resolveArchivedSoftTasks = async ({archivedSoftTaskIds}, args, {authToken, dataLoader}) => {
   const {tms} = authToken;
-  const softProjects = await dataLoader.get('projects').loadMany(archivedSoftProjectIds);
-  return softProjects.filter(({teamId}) => tms.includes(teamId));
+  const softTasks = await dataLoader.get('tasks').loadMany(archivedSoftTaskIds);
+  return softTasks.filter(({teamId}) => tms.includes(teamId));
 };

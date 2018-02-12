@@ -6,7 +6,7 @@ const RemoveGitHubRepoPayload = new GraphQLObjectType({
     deletedId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    archivedProjectIds: {
+    archivedTaskIds: {
       type: new GraphQLList(GraphQLID)
     }
   })

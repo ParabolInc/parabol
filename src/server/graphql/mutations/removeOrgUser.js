@@ -11,7 +11,7 @@ import {
   NEW_AUTH_TOKEN,
   NOTIFICATION,
   ORGANIZATION,
-  PROJECT,
+  TASK,
   TEAM,
   TEAM_MEMBER,
   UPDATED
@@ -51,8 +51,8 @@ const removeOrgUser = {
       return removeTeamMember(teamMemberId, {isKickout: true});
     }));
 
-    const projectIds = perTeamRes.reduce((arr, res) => {
-      arr.push(...res.archivedProjectIds, ...res.reassignedProjectIds);
+    const taskIds = perTeamRes.reduce((arr, res) => {
+      arr.push(...res.archivedTaskIds, ...res.reassignedTaskIds);
       return arr;
     }, []);
 
@@ -118,7 +118,7 @@ const removeOrgUser = {
       kickOutNotificationIds,
       teamIds,
       teamMemberIds,
-      projectIds,
+      taskIds,
       removedTeamNotifications,
       removedOrgNotifications: allRemovedOrgNotifications.notifications,
       userId
@@ -135,7 +135,7 @@ const removeOrgUser = {
     const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds);
     remainingTeamMembers.forEach((teamMember) => {
       if (teamMemberIds.includes(teamMember.id)) return;
-      publish(PROJECT, teamMember.userId, RemoveOrgUserPayload, data, subOptions);
+      publish(TASK, teamMember.userId, RemoveOrgUserPayload, data, subOptions);
     });
     return data;
   }

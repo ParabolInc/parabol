@@ -7,7 +7,7 @@ import publish from 'server/utils/publish';
 import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {CHECKIN, TEAM} from 'universal/utils/constants';
-import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
+import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 
@@ -42,7 +42,7 @@ export default {
 
     const updatedTeam = {
       checkInGreeting: makeCheckinGreeting(week, teamId),
-      checkInQuestion: convertToProjectContent(makeCheckinQuestion(week, teamId)),
+      checkInQuestion: convertToTaskContent(makeCheckinQuestion(week, teamId)),
       meetingId,
       activeFacilitator: facilitatorId,
       facilitatorPhase: CHECKIN,

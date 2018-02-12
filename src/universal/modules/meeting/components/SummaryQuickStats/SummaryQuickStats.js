@@ -16,7 +16,7 @@ const iconStyle = {
 
 const SummaryQuickStats = (props) => {
   const {
-    projectCount,
+    taskCount,
     styles
   } = props;
 
@@ -26,10 +26,10 @@ const SummaryQuickStats = (props) => {
         <span className={css(styles.headingLabel)}>Quick Stats</span>
       </div>
       <div className={css(styles.cardGroup)}>
-        <div className={css(styles.cardRootStyles, styles.projects)}>
-          <div className={css(styles.count)}>{projectCount}</div>
-          <FontAwesome name={labels.project.icon} style={iconStyle} />
-          <div className={css(styles.label)}>New Projects</div>
+        <div className={css(styles.cardRootStyles, styles.tasks)}>
+          <div className={css(styles.count)}>{taskCount}</div>
+          <FontAwesome name={labels.task.icon} style={iconStyle} />
+          <div className={css(styles.label)}>New Tasks</div>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@ const SummaryQuickStats = (props) => {
 };
 
 SummaryQuickStats.propTypes = {
-  projectCount: PropTypes.number,
+  taskCount: PropTypes.number,
   styles: PropTypes.object
 };
 
@@ -116,10 +116,10 @@ const styleThunk = () => ({
     }
   },
 
-  projects: {
-    color: labels.projectStatus[ACTIVE].color,
+  tasks: {
+    color: labels.taskStatus[ACTIVE].color,
     '::after': {
-      color: labels.projectStatus[ACTIVE].color
+      color: labels.taskStatus[ACTIVE].color
     }
   },
 
@@ -131,9 +131,9 @@ const styleThunk = () => ({
   },
 
   done: {
-    color: labels.projectStatus[DONE].color,
+    color: labels.taskStatus[DONE].color,
     '::after': {
-      color: labels.projectStatus[DONE].color
+      color: labels.taskStatus[DONE].color
     }
   }
 });

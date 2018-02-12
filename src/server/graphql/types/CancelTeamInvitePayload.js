@@ -1,9 +1,9 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveArchivedSoftProjects, resolveInvitation, resolveSoftTeamMember} from 'server/graphql/resolvers';
+import {resolveArchivedSoftTasks, resolveInvitation, resolveSoftTeamMember} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
 import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import {getUserId} from 'server/utils/authorization';
-import Project from 'server/graphql/types/Project';
+import Task from 'server/graphql/types/Task';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 
 const CancelTeamInvitePayload = new GraphQLObjectType({
@@ -28,10 +28,10 @@ const CancelTeamInvitePayload = new GraphQLObjectType({
       description: 'The soft team members that are no longer tentatively on the team',
       resolve: resolveSoftTeamMember
     },
-    archivedSoftProjects: {
-      type: new GraphQLList(Project),
-      description: 'The projects that belonged to the soft team member',
-      resolve: resolveArchivedSoftProjects
+    archivedSoftTasks: {
+      type: new GraphQLList(Task),
+      description: 'The tasks that belonged to the soft team member',
+      resolve: resolveArchivedSoftTasks
     }
   })
 });

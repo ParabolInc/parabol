@@ -1,7 +1,7 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
 import {
   makeResolveNotificationForViewer,
-  resolveProjects,
+  resolveTasks,
   resolveSoftTeamMembers,
   resolveTeam
 } from 'server/graphql/resolvers';
@@ -13,7 +13,7 @@ import OrgApproval from 'server/graphql/types/OrgApproval';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import Project from 'server/graphql/types/Project';
+import Task from 'server/graphql/types/Task';
 
 
 const InviteTeamMembersPayload = new GraphQLObjectType({
@@ -85,10 +85,10 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       description: 'The new invitees who have yet to accept the invite or get approved to receive an invite',
       resolve: resolveSoftTeamMembers
     },
-    unarchivedSoftProjects: {
-      type: new GraphQLList(Project),
-      description: 'Any projects that were recently assigned to a reactivated soft team member',
-      resolve: resolveProjects
+    unarchivedSoftTasks: {
+      type: new GraphQLList(Task),
+      description: 'Any tasks that were recently assigned to a reactivated soft team member',
+      resolve: resolveTasks
     }
   })
 });

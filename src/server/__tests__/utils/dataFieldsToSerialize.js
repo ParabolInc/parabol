@@ -1,7 +1,7 @@
 const dataFieldsToSerialize = [
   'channelId',
   'message.data.notificationId',
-  'message.data.projectIds',
+  'message.data.taskIds',
   'message.data.teamId',
   'message.data.teamMemberId',
   'message.data.userId',

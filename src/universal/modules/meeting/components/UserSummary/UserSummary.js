@@ -8,7 +8,7 @@ import {Avatar, Type} from 'universal/components';
 import SummaryCard from 'universal/modules/meeting/components/SummaryCard/SummaryCard';
 
 const UserSummary = (props) => {
-  const {picture, preferredName, projects, styles} = props;
+  const {picture, preferredName, tasks, styles} = props;
 
   return (
     <div className={css(styles.root)}>
@@ -19,16 +19,16 @@ const UserSummary = (props) => {
         </Type>
         <span className={css(styles.userStat)}>
           <FontAwesome name="calendar" />{' '}
-          {projects.length} New Projects
+          {tasks.length} New Tasks
         </span>
       </div>
       <div className={css(styles.cardGroup)}>
-        {projects.map((project) =>
-          (<div className={css(styles.cardBlock)} key={`summary-card-${project.id}`}>
+        {tasks.map((task) =>
+          (<div className={css(styles.cardBlock)} key={`summary-card-${task.id}`}>
             <SummaryCard
-              content={project.content}
-              status={project.status}
-              tags={project.tags}
+              content={task.content}
+              status={task.status}
+              tags={task.tags}
             />
           </div>)
         )}
@@ -40,7 +40,7 @@ const UserSummary = (props) => {
 UserSummary.propTypes = {
   picture: PropTypes.string,
   preferredName: PropTypes.string,
-  projects: PropTypes.array,
+  tasks: PropTypes.array,
   styles: PropTypes.object
 };
 

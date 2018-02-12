@@ -39,7 +39,7 @@ const Provider = new GraphQLObjectType({
     },
     updatedAt: {
       type: GraphQLISO8601Type,
-      description: 'The timestamp the project was updated'
+      description: 'The timestamp the task was updated'
     },
     userId: {
       type: GraphQLID,

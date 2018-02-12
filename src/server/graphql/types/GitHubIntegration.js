@@ -7,7 +7,7 @@ import {GITHUB} from 'universal/utils/constants';
 
 const GitHubIntegration = new GraphQLObjectType({
   name: GITHUB,
-  description: 'An integration that connects github issues & PRs to Parabol projects',
+  description: 'An integration that connects github issues & PRs to Parabol tasks',
   fields: () => ({
     // shortid
     id: globalIdField(GITHUB, ({id}) => id),

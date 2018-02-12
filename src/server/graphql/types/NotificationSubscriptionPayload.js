@@ -5,8 +5,8 @@ import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload';
-import CreateProjectPayload from 'server/graphql/types/CreateProjectPayload';
-import DeleteProjectPayload from 'server/graphql/types/DeleteProjectPayload';
+import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload';
+import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
@@ -22,8 +22,8 @@ const types = [
   CancelApprovalPayload,
   CancelTeamInvitePayload,
   ClearNotificationPayload,
-  CreateProjectPayload,
-  DeleteProjectPayload,
+  CreateTaskPayload,
+  DeleteTaskPayload,
   InviteTeamMembersPayload,
   RejectOrgApprovalPayload,
   RemoveOrgUserPayload,
