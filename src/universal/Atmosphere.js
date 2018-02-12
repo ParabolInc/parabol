@@ -247,7 +247,6 @@ export default class Atmosphere extends Environment {
         this.subscriptionClient.eventEmitter.once('connecting', this._onceConnecting);
         this.subscriptionClient.eventEmitter.once('socketsDisabled', this._onceSocketsDisabled);
       });
-
     }
     return this.subscriptionClientPromise;
   }
