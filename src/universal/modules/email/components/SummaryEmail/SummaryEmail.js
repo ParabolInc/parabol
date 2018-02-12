@@ -12,8 +12,9 @@ import QuickStats from '../../components/QuickStats/QuickStats';
 import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
 import UserTasks from '../UserTasks/UserTasks';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
+import {Link} from 'react-router-dom';
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
-import {MEETING_NAME, AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE} from 'universal/utils/constants';
 
 const ruleStyle = {
   backgroundColor: ui.emailRuleColor,
@@ -48,14 +49,14 @@ const greetingStyles = {
 };
 
 const bannerStyle = {
-  backgroundColor: appTheme.palette.warm,
+  backgroundColor: '#ffffff',
   textAlign: 'center'
 };
 
 const bannerMessageStyles = {
-  color: '#ffffff',
+  color: ui.palette.dark,
   fontFamily: ui.emailFontFamily,
-  fontSize: '16px',
+  fontSize: '13px',
   fontWeight: 700,
   textAlign: 'center'
 };
@@ -77,7 +78,7 @@ const meetingLink = {
 };
 
 const bannerLink = {
-  color: '#FFFFFF',
+  color: ui.palette.dark,
   cursor: 'pointer',
   textDecoration: 'underline'
 };
@@ -112,11 +113,15 @@ const SummaryEmail = (props) => {
   const membersSansOutcomes = invitees.filter((invitee) => invitee.tasks.length === 0);
   const membersWithOutcomes = invitees.filter((invitee) => invitee.tasks.length > 0);
   const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
-  const taskCount = invitees.reduce((sum, invitee) => sum + invitee.tasks.length, 0);
-
+  const doneTaskCount = invitees.reduce((sum, invitee) => sum + invitee.tasks.filter((task) => task.status === DONE).length, 0);
+  const newTaskCount = invitees.reduce((sum, invitee) => sum + invitee.tasks.filter((task) => task.status !== DONE).length, 0);
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
   const iconSize = 28;
+  const teamDashLabel = 'Go to Team Dashboard';
+  const textStyle = {
+    fontFamily: ui.emailFontFamily
+  };
   const iconLinkBlock = {
     backgroundColor: appTheme.palette.cool10l,
     display: 'inline-block',
@@ -139,6 +144,22 @@ const SummaryEmail = (props) => {
     margin: '0 0 0 6px',
     verticalAlign: 'middle'
   };
+  const teamDashLinkStyle = {
+    ...textStyle,
+    backgroundColor: appTheme.palette.warm,
+    borderRadius: '2px',
+    color: '#ffffff',
+    cursor: 'pointer',
+    display: 'block',
+    fontSize: '14px',
+    fontWeight: 700,
+    lineHeight: '20px',
+    margin: '0 auto',
+    padding: '6px 0',
+    textAlign: 'center',
+    textDecoration: 'none',
+    width: '186px'
+  };
   return (
     <Layout>
       <table style={ui.emailTableBase} width="100%">
@@ -157,11 +178,11 @@ const SummaryEmail = (props) => {
         </tbody>
       </table>
       <Body verticalGutter={0}>
-        {/* Summary Header */}
         <table align="center" style={ui.emailTableBase} width="100%">
           <tbody>
             <tr>
               <td align="center" style={{padding: 0}}>
+                {/* Summary Header */}
                 <SummaryHeader
                   createdAt={createdAt}
                   meetingNumber={meetingNumber}
@@ -171,19 +192,38 @@ const SummaryEmail = (props) => {
                 />
               </td>
             </tr>
-          </tbody>
-        </table>
-        {/* Quick Stats */}
-        <table align="center" style={ui.emailTableBase} width="100%">
-          <tbody>
             <tr>
               <td align="center" style={quickStatsBlock}>
+                {/* Quick Stats */}
                 <QuickStats
                   agendaItems={agendaItemsCompleted}
-                  newTasks={taskCount}
+                  doneTaskCount={doneTaskCount}
+                  newTaskCount={newTaskCount}
                   teamMembers={invitees.length}
                   teamMembersPresent={presentMemberCount}
                 />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {/* Team Dashboard Button */}
+                {referrer === 'email' ?
+                  <a
+                    href={teamDashUrl}
+                    style={teamDashLinkStyle}
+                    title={teamDashLabel}
+                  >
+                    {teamDashLabel}
+                  </a> :
+                  <Link
+                    to={teamDashUrl}
+                    style={teamDashLinkStyle}
+                    title={teamDashLabel}
+                  >
+                    {teamDashLabel}
+                  </Link>
+                }
+                <EmptySpace height={32} />
               </td>
             </tr>
           </tbody>
@@ -195,6 +235,11 @@ const SummaryEmail = (props) => {
         <UserNoNewOutcomes members={membersSansOutcomes} />
         }
         <EmptySpace height={0} />
+        <hr style={ruleStyle} />
+        <EmptySpace height={48} />
+        <b>{'Pro Tip'}</b>{': all Tasks in the '}<b>{'Done'}</b>{' column are'}<br />
+        {'automatically archived after each meeting.'}
+        <EmptySpace height={48} />
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
         {/* First-time prompt to schedule recurring meeting */}
@@ -301,16 +346,16 @@ SummaryEmail.propTypes = {
     'history'
   ]).isRequired,
   referrerUrl: PropTypes.string,
-  teamDashUrl: PropTypes.string,
-  taskCount: PropTypes.number
+  teamDashUrl: PropTypes.string
 };
 
 export const summaryEmailText = (props) => {
   const {meeting} = props;
   const {teamName, agendaItemsCompleted, invitees} = meeting;
-  const taskCount = invitees.reduce((sum, member) => sum + member.tasks.length, 0);
+  const doneTaskCount = invitees.reduce((sum, member) => sum + member.tasks.filter((task) => task.status === DONE).length, 0);
+  const newTaskCount = invitees.reduce((sum, member) => sum + member.tasks.filter((task) => task.status !== DONE).length, 0);
   return `Hello ${teamName}! As a team you discussed ${agendaItemsCompleted} Agenda Items${' '}
-  resulting in ${taskCount} New Tasks.${' '}`;
+  resulting in ${doneTaskCount} Tasks Completed and ${newTaskCount} New Tasks.${' '}`;
 };
 
 export default SummaryEmail;
