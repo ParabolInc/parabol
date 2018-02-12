@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import {Component} from 'react';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {connect} from 'react-redux';
 import popUpgradeAppToast from 'universal/mutations/toasts/popUpgradeAppToast';
@@ -13,6 +13,17 @@ class SocketHealthMonitor extends Component {
     dispatch: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired
   };
+
+  componentWillMount() {
+    const {atmosphere} = this.props;
+    atmosphere.eventEmitter.once('newSubscriptionClient', () => {
+      const {subscriptionClient} = atmosphere;
+      subscriptionClient.eventEmitter.once('socketsDisabled', this.onSocketsDisabled);
+      subscriptionClient.onConnected(this.onConnected);
+      subscriptionClient.onReconnected(this.onReconnected);
+      subscriptionClient.onDisconnected(this.onDisconnected);
+    });
+  }
   onReconnected = (payload) => {
     const {dispatch, history} = this.props;
     const {version} = payload;
@@ -38,6 +49,7 @@ class SocketHealthMonitor extends Component {
       }));
     }
   };
+
   onSocketsDisabled = () => {
     const {dispatch} = this.props;
     raven.captureBreadcrumb({
@@ -52,17 +64,6 @@ class SocketHealthMonitor extends Component {
           Ask your network administrator to enable WebSockets.`
     }));
   };
-
-  componentWillMount() {
-    const {atmosphere} = this.props;
-    atmosphere.eventEmitter.once('newSubscriptionClient', () => {
-      const {subscriptionClient} = atmosphere;
-      subscriptionClient.eventEmitter.once('socketsDisabled', this.onSocketsDisabled);
-      subscriptionClient.onConnected(this.onConnected);
-      subscriptionClient.onReconnected(this.onReconnected);
-      subscriptionClient.onDisconnected(this.onDisconnected);
-    });
-  }
 
   render() {
     return null;
