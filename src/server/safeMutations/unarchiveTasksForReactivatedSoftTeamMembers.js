@@ -2,11 +2,11 @@ import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesFor
 import getRethink from 'server/database/rethinkDriver';
 import ms from 'ms';
 
-const UNARCHIVE_PROJECT_THRESHOLD = ms('60d');
+const UNARCHIVE_TASK_THRESHOLD = ms('60d');
 
 const unarchiveTasksForReactivatedSoftTeamMembers = async (newSoftTeamMemberEmails, teamId) => {
   const r = getRethink();
-  const unarchiveDate = new Date(Date.now() - UNARCHIVE_PROJECT_THRESHOLD);
+  const unarchiveDate = new Date(Date.now() - UNARCHIVE_TASK_THRESHOLD);
   const softTeamMembers = await r.table('SoftTeamMember')
     .getAll(r.args(newSoftTeamMemberEmails), {index: 'email'})
     .filter({teamId});

@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.27.2 2018-Feb-11
+## Fixed
+- Regression caused by incomplete project -> task refactor (#1728)
+
 ## v0.27.0 2018-Feb-07
 ## Added
 - Scroll to active agenda item during meeting

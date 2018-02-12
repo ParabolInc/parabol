@@ -8,7 +8,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {ASSIGNEE, MENTIONEE, NOTIFICATION, PROJECT, PROJECT_INVOLVES} from 'universal/utils/constants';
+import {ASSIGNEE, MENTIONEE, NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -89,7 +89,7 @@ export default {
       notificationsToAdd.push({
         id: shortid.generate(),
         startAt: now,
-        type: PROJECT_INVOLVES,
+        type: TASK_INVOLVES,
         userIds: [userId],
         involvement: ASSIGNEE,
         taskId: task.id,
@@ -104,7 +104,7 @@ export default {
         notificationsToAdd.push({
           id: shortid.generate(),
           startAt: now,
-          type: PROJECT_INVOLVES,
+          type: TASK_INVOLVES,
           userIds: [mentioneeUserId],
           involvement: MENTIONEE,
           taskId: task.id,
@@ -125,7 +125,7 @@ export default {
     const isPrivate = tags.includes('private');
     teamMembers.forEach((teamMember) => {
       if (!isPrivate || teamMember.userId === userId) {
-        publish(PROJECT, teamMember.userId, CreateTaskPayload, data, subOptions);
+        publish(TASK, teamMember.userId, CreateTaskPayload, data, subOptions);
       }
     });
     return data;

@@ -8,7 +8,7 @@ import {DropTarget} from 'react-dnd';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import sortOrderBetween from 'universal/dnd/sortOrderBetween';
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
-import {PROJECT} from 'universal/utils/constants';
+import {TASK} from 'universal/utils/constants';
 
 type Props = {
   connectDropTarget: (node: Node) => Node,
@@ -70,7 +70,7 @@ const collect = (connect) => ({
 });
 
 export default withAtmosphere(
-  DropTarget(PROJECT, spec, collect)(
+  DropTarget(TASK, spec, collect)(
     TaskColumnDropZone
   )
 );

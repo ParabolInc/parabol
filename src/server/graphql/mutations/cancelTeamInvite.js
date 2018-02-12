@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NOTIFICATION, PROJECT, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATION, TASK, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
@@ -71,7 +71,7 @@ export default {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
       const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
       userIdsOnTeams.forEach((userId) => {
-        publish(PROJECT, userId, CancelTeamInvitePayload, data, subOptions);
+        publish(TASK, userId, CancelTeamInvitePayload, data, subOptions);
       });
     }
 

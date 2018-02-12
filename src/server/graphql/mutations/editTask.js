@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import EditTaskPayload from 'server/graphql/types/EditTaskPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {PROJECT} from 'universal/utils/constants';
+import {TASK} from 'universal/utils/constants';
 import promiseAllObj from 'universal/utils/promiseAllObj';
 
 export default {
@@ -38,7 +38,7 @@ export default {
     teamMembers.forEach((teamMember) => {
       const {userId} = teamMember;
       if (!isPrivate || taskUserId === userId) {
-        publish(PROJECT, userId, EditTaskPayload, data, subOptions);
+        publish(TASK, userId, EditTaskPayload, data, subOptions);
       }
     });
     return data;

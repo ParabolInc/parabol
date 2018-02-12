@@ -7,7 +7,7 @@ import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authoriza
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, PROJECT, TEAM_MEMBER} from 'universal/utils/constants';
+import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import getActiveTeamsByOrgId from 'server/safeQueries/getActiveTeamsByOrgId';
 import getTasksByAssigneeIds from 'server/safeQueries/getTasksByAssigneeIds';
@@ -97,7 +97,7 @@ export default {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamIds, dataLoader);
       const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
       userIdsOnTeams.forEach((userId) => {
-        publish(PROJECT, userId, RejectOrgApprovalPayload, data, subOptions);
+        publish(TASK, userId, RejectOrgApprovalPayload, data, subOptions);
       });
     }
     // publish all notifications

@@ -6,7 +6,7 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 
-const SEED_PROJECTS = [
+const SEED_TASKS = [
   {
     status: ACTIVE,
     sortOrder: 0,
@@ -45,7 +45,7 @@ export default (userId, teamId) => {
   const r = getRethink();
   const now = new Date();
 
-  const seedTasks = SEED_PROJECTS.map((proj) => ({
+  const seedTasks = SEED_TASKS.map((proj) => ({
     ...proj,
     id: `${teamId}::${shortid.generate()}`,
     createdAt: now,

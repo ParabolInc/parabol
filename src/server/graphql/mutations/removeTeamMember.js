@@ -4,7 +4,7 @@ import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayloa
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {NEW_AUTH_TOKEN, PROJECT, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -46,7 +46,7 @@ export default {
     teamMembers.forEach(({teamMemberUserId}) => {
       // don't send updated tasks to the person being kicked out
       if (teamMemberUserId === userId) return;
-      publish(PROJECT, teamMemberUserId, RemoveTeamMemberPayload, data, subOptions);
+      publish(TASK, teamMemberUserId, RemoveTeamMemberPayload, data, subOptions);
     });
 
     // individualized message to the user getting kicked out

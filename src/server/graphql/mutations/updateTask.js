@@ -10,7 +10,7 @@ import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
-import {PROJECT} from 'universal/utils/constants';
+import {TASK} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeTaskSchema from 'universal/validation/makeTaskSchema';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
@@ -129,7 +129,7 @@ export default {
     const data = {isPrivatized, taskId, notificationsToAdd, notificationsToRemove};
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === newTask.userId) {
-        publish(PROJECT, userId, UpdateTaskPayload, data, subOptions);
+        publish(TASK, userId, UpdateTaskPayload, data, subOptions);
       }
     });
 
