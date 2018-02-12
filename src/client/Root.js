@@ -8,11 +8,11 @@ import ActionContainer from 'universal/containers/Action/ActionContainer';
 export default function Root({store}) {
   return (
     <Provider store={store}>
-      <Router>
-        <AtmosphereProvider>
+      <AtmosphereProvider>
+        <Router>
           <ActionContainer />
-        </AtmosphereProvider>
-      </Router>
+        </Router>
+      </AtmosphereProvider>
     </Provider>
   );
 }
