@@ -4,6 +4,7 @@ import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
 import MeetingTask from 'server/graphql/types/MeetingTask';
 import {resolveTeam} from 'server/graphql/resolvers';
 import RetroThoughtGroup from 'server/graphql/types/RetroThoughtGroup';
+import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
 
 const NewMeeting = new GraphQLObjectType({
   name: 'NewMeeting',
@@ -43,18 +44,6 @@ const NewMeeting = new GraphQLObjectType({
       type: new GraphQLList(NewMeetingPhase),
       description: 'The phases that make up the meeting'
     },
-    // sinceTime: {
-    //   type: GraphQLISO8601Type,
-    //   description: 'The start time used to create the diff (all taskDiffs occurred between this time and the endTime'
-    // },
-    // successExpression: {
-    //   type: GraphQLString,
-    //   description: 'The happy introductory clause to the summary'
-    // },
-    // successStatement: {
-    //   type: GraphQLString,
-    //   description: 'The happy body statement for the summary'
-    // },
     summarySentAt: {
       type: GraphQLISO8601Type,
       description: 'The time the meeting summary was emailed to the team'

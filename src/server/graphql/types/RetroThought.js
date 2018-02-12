@@ -1,9 +1,7 @@
-import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
-import MeetingTask from 'server/graphql/types/MeetingTask';
-import {resolveTeam} from 'server/graphql/resolvers';
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
+import RetroThoughtGroup from 'server/graphql/types/RetroThoughtGroup';
 
 const RetroThought = new GraphQLObjectType({
   name: 'RetroThought',
