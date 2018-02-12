@@ -5,7 +5,7 @@ import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayl
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {errorObj, handleSchemaErrors} from 'server/utils/utils';
+import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
@@ -39,7 +39,7 @@ export default {
     const viewerId = getUserId(authToken);
     const rejectionNotification = await r.table('Notification').get(notificationId);
     if (!rejectionNotification) {
-      throw errorObj({reason: `Notification ${notificationId} no longer exists!`});
+      throw new Error(`Notification ${notificationId} no longer exists!`);
     }
     const {orgId, inviteeEmail} = rejectionNotification;
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);

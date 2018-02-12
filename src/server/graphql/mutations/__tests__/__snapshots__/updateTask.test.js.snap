@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`updateTask throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to team 0\\"}"`;
+exports[`updateTask throw when the caller is not a team member 1`] = `"You do not have access to team 0"`;
 
 exports[`updateTask updates the content of the task 1`] = `
 Object {

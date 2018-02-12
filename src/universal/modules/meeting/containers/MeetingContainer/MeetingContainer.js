@@ -6,7 +6,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
@@ -32,10 +31,9 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {
-  AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES
-} from 'universal/utils/constants';
+import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES} from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import {withRouter} from 'react-router-dom';
 
 const handleHotkey = (gotoFunc, submitting) => () => {
   if (!submitting && document.activeElement === document.body) gotoFunc();
@@ -373,11 +371,11 @@ class MeetingContainer extends Component {
 
 export default createFragmentContainer(
   connect()(
-    socketWithPresence(
-      dragDropContext(HTML5Backend)(
-        withHotkey(
-          withAtmosphere(
-            withMutationProps(
+    dragDropContext(HTML5Backend)(
+      withHotkey(
+        withAtmosphere(
+          withMutationProps(
+            withRouter(
               MeetingContainer
             )
           )

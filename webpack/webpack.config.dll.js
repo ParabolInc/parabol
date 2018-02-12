@@ -34,11 +34,9 @@ module.exports = {
       'redux-form',
       'redux-raven-middleware',
       'redux-segment',
-      'redux-socket-cluster',
       'redux-storage-engine-localstorage',
       'redux-storage-whitelist-fn',
       'redux-thunk',
-      'socketcluster-client',
       'tinycolor2'
     ]
   },

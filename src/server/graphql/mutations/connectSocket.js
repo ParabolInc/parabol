@@ -1,6 +1,5 @@
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import sendAppVersion from 'server/graphql/mutations/helpers/sendAppVersion';
 import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
@@ -54,8 +53,6 @@ export default {
         publish(NOTIFICATION, onlineUserId, User, user, subOptions);
       });
     }
-    // TODO just send this to the socketId, not all users
-    sendAppVersion(userId);
     return user;
   }
 };

@@ -8,7 +8,6 @@ import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayl
 import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload';
 import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
-import NotifyVersionInfo from 'server/graphql/types/NotifyVersionInfo';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload';
 import User from 'server/graphql/types/User';
@@ -29,8 +28,7 @@ const types = [
   RemoveOrgUserPayload,
   StripeFailPaymentPayload,
   User,
-  UpdateUserProfilePayload,
-  NotifyVersionInfo
+  UpdateUserProfilePayload
 ];
 
 export default graphQLSubscriptionType('NotificationSubscriptionPayload', types);

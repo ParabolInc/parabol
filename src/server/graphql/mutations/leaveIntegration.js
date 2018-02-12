@@ -3,7 +3,7 @@ import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
 import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo';
-import {getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 
@@ -16,13 +16,12 @@ export default {
       description: 'the id of the integration to remove'
     }
   },
-  async resolve(source, {globalId}, {authToken, socket, dataLoader}) {
+  async resolve(source, {globalId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const {id: localId, type: service} = fromGlobalId(globalId);
 
     // AUTH
     const userId = getUserId(authToken);
-    requireWebsocket(socket);
     const integration = await r.table(service).get(localId);
     if (!integration) {
       throw new Error('That integration does not exist');
@@ -67,7 +66,7 @@ export default {
       userId: isActive ? userId : null,
       archivedTaskIds
     };
-    getPubSub().publish(`integrationLeft.${teamId}.${service}`, {integrationLeft, mutatorId: socket.id});
+    getPubSub().publish(`integrationLeft.${teamId}.${service}`, {integrationLeft, mutatorId});
     return integrationLeft;
   }
 };

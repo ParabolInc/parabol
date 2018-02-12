@@ -1,6 +1,5 @@
 import initStripe from 'stripe';
 import getDotenv from '../../universal/utils/dotenv';
-import {errorObj} from '../utils/utils';
 import {usedMethods, usedResources} from './constants';
 
 const tryCatchWrapper = (target) => async (...args) => {
@@ -9,7 +8,7 @@ const tryCatchWrapper = (target) => async (...args) => {
     const myArgs = args;
     return await target(...myArgs);
   } catch (e) {
-    throw errorObj({_error: e.message});
+    throw e;
   }
 };
 

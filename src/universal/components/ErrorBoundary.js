@@ -25,7 +25,7 @@ class ErrorBoundary extends Component {
     if (this.state.errorInfo) {
       // Error path
       return (
-        <ErrorComponent error={{_error: this.state.error.message}} />
+        <ErrorComponent error={this.state.error} />
       );
     }
     // Normally, just render children
