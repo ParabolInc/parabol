@@ -5,13 +5,13 @@ import MeetingTask from 'server/graphql/types/MeetingTask';
 import {resolveTeam} from 'server/graphql/resolvers';
 import RetroThoughtGroup from 'server/graphql/types/RetroThoughtGroup';
 
-const NewMeeting = new GraphQLObjectType({
-  name: 'NewMeeting',
-  description: 'A team meeting history for all previous meetings',
+const NewMeetingPhase = new GraphQLObjectType({
+  name: 'NewMeetingPhase',
+  description: 'A meeting phase. On the client, this usually represents a single view',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The unique meeting id. shortid.'
+      description: 'shortid'
     },
     createdAt: {
       type: GraphQLISO8601Type,
@@ -66,4 +66,4 @@ const NewMeeting = new GraphQLObjectType({
   })
 });
 
-export default NewMeeting;
+export default NewMeetingPhase;

@@ -3,10 +3,11 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
 import MeetingTask from 'server/graphql/types/MeetingTask';
 import {resolveTeam} from 'server/graphql/resolvers';
+import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 
 const RetroThought = new GraphQLObjectType({
   name: 'RetroThought',
-  description: 'A team meeting history for all previous meetings',
+  description: 'A thought created during the think phase of a retrospective',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -24,8 +25,18 @@ const RetroThought = new GraphQLObjectType({
       description: 'The stringified draft-js content',
       type: GraphQLString
     },
+    retroThoughtGroup: {
+      type: RetroThoughtGroup,
+      description: 'The group the thought belongs to, if any',
+      resolve: ({retroGroupId}, args, {dataLoader}) => {
+        return dataLoader.get('retroThoughtGroup').load(retroGroupId);
+      }
+    },
     phase: {
-      type: PhaseType
+      type: RetroPhaseItem,
+      resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
+        return dataLoader.get('retroPhaseItem').load(retroPhaseItemId);
+      }
     }
   })
 });
