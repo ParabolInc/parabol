@@ -26,14 +26,16 @@ const RetroThought = new GraphQLObjectType({
     retroThoughtGroup: {
       type: RetroThoughtGroup,
       description: 'The group the thought belongs to, if any',
-      resolve: ({retroGroupId}, args, {dataLoader}) => {
-        return dataLoader.get('retroThoughtGroup').load(retroGroupId);
+      resolve: async ({id: meetingId, thoughtGroupId}, args, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId);
+        return meeting.thoughtGroups.find(({id}) => id === thoughtGroupId);
       }
     },
     phase: {
       type: RetroPhaseItem,
-      resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
-        return dataLoader.get('retroPhaseItem').load(retroPhaseItemId);
+      resolve: async ({id: meetingId, retroPhaseItemId}, args, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId);
+        return meeting.phases.find(({id}) => id === retroPhaseItemId);
       }
     }
   })

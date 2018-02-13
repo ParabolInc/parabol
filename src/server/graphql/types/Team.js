@@ -24,6 +24,7 @@ import {requireTeamMember} from 'server/utils/authorization';
 import {PENDING} from 'server/utils/serverConstants';
 import {resolveOrganization} from 'server/graphql/resolvers';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
+import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -70,6 +71,12 @@ const Team = new GraphQLObjectType({
     checkInQuestion: {
       type: GraphQLString,
       description: 'The checkIn question of the week'
+    },
+    customPhaseItems: {
+      type: new GraphQLList(CustomPhaseItem),
+      resolve: ({id: teamId}, args, {dataLoader}) => {
+        return dataLoader.get('customPhaseItemsByTeamId').load(teamId);
+      }
     },
     meetingId: {
       type: GraphQLID,

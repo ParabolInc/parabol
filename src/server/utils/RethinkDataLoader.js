@@ -57,6 +57,16 @@ export default class RethinkDataLoader {
   constructor(authToken, dataloaderOptions = {}) {
     this.authToken = authToken;
     this.dataloaderOptions = dataloaderOptions;
+    this.customPhaseItemsByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink();
+      const customPhaseItems = await r.table('CustomPhaseItem')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.customPhaseItems, customPhaseItems);
+      return teamIds.map((teamId) => {
+        return customPhaseItems.filter((task) => task.teamId === teamId);
+      });
+    }, this.dataloaderOptions);
     // doing this ugly stuff in the constructor because class properties are created before constructor is called
     this.orgsByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink();
@@ -132,10 +142,12 @@ export default class RethinkDataLoader {
   }
 
   agendaItems = makeStandardLoader('AgendaItem');
+  customPhaseItems = makeStandardLoader('CustomPhaseItem');
   invitations = makeStandardLoader('Invitation');
   organizations = makeStandardLoader('Organization');
   orgApprovals = makeStandardLoader('OrgApproval');
   meetings = makeStandardLoader('Meeting');
+  newMeetings = makeStandardLoader('NewMeeting');
   notifications = makeStandardLoader('Notification');
   tasks = makeStandardLoader('Task');
   softTeamMembers = makeStandardLoader('SoftTeamMember');
