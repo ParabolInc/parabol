@@ -1,10 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import {requireOrgLeaderOfUser, requireWebsocket} from 'server/utils/authorization';
+import {requireOrgLeaderOfUser} from 'server/utils/authorization';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import {MAX_MONTHLY_PAUSES, PAUSE_USER} from 'server/utils/serverConstants';
-import {errorObj} from 'server/utils/utils';
 import {PERSONAL} from 'universal/utils/constants';
 
 export default {
@@ -16,11 +15,10 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve(source, {userId}, {authToken, socket}) {
+  async resolve(source, {userId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
-    requireWebsocket(socket);
     await requireOrgLeaderOfUser(authToken, userId);
     const orgDocs = await r.table('Organization')
       .getAll(userId, {index: 'orgUsers'})
@@ -28,7 +26,7 @@ export default {
     const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId);
     if (!firstOrgUser) {
       // no userOrgs means there were no changes, which means inactive was already true
-      throw errorObj({_error: 'That user is already inactive. cannot inactivate twice'});
+      throw new Error('That user is already inactive. cannot inactivate twice');
     }
     const hookPromises = orgDocs.map((orgDoc) => {
       const {periodStart, periodEnd, stripeSubscriptionId, tier} = orgDoc;
@@ -48,7 +46,7 @@ export default {
     const pausesByOrg = await Promise.all(hookPromises);
     const triggeredPauses = Math.max(...pausesByOrg);
     if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
-      throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
+      throw new Error('Max monthly pauses exceeded for this user');
     }
 
     // TODO ping the user to see if they're currently online

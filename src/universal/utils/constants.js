@@ -196,22 +196,20 @@ export const TEAM_MEMBER = 'teamMember';
 
 /*
  * WebSocket Events
- * loosely based off of: https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md
  */
-/* CLIENT-TO-SERVER */
-// subscribe
-export const GQL_START = 'GQL_START';
-// unsubscribe
-export const GQL_STOP = 'GQL_STOP';
-// execute query or mutation
-export const GQL_EXEC = 'GQL_EXEC';
-/* SERVER-TO-CLIENT */
-// error starting subscription
-export const GQL_ERROR = 'GQL_ERROR';
-// unsubscribed
-export const GQL_COMPLETE = 'GQL_COMPLETE';
-// published message
-export const GQL_DATA = 'GQL_DATA';
+// NOTE: The init doesn't happen at init. that's confusing & wrong, so we do our own thing.
+// export const GQL_CONNECTION_INIT = 'connection_init'; // Client -> Server
+export const GQL_CONNECTION_ACK = 'connection_ack'; // Server -> Client
+export const GQL_CONNECTION_ERROR = 'connection_error'; // Server -> Client
+// NOTE: The keep alive message type does not follow the Apollo standard because the "standard" doesn't use native standard
+// export const GQL_CONNECTION_KEEP_ALIVE = 'ka'; // Server -> Client
+export const GQL_CONNECTION_TERMINATE = 'connection_terminate'; // Client -> Server
+export const GQL_START = 'start'; // Client -> Server
+export const GQL_DATA = 'data'; // Server -> Client
+export const GQL_ERROR = 'error'; // Server -> Client
+export const GQL_COMPLETE = 'complete'; // Server -> Client
+export const GQL_STOP = 'stop'; // Client -> Server
+
 
 /* Relay Subscription Event Types */
 export const UPDATED = 'updated';

@@ -10,7 +10,6 @@ import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutat
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
-import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import {removeOrgUserNotificationUpdater} from 'universal/mutations/RemoveOrgUserMutation';
@@ -39,11 +38,6 @@ const subscription = graphql`
         tms
       }
 
-      # App Version Updater
-      ... on NotifyVersionInfo {
-        version
-      }
-
       # Stripe webhooks
       ... on StripeFailPaymentPayload {
         notification {
@@ -66,26 +60,6 @@ const connectSocketUserUpdater = (payload, store) => {
     if (!teamMember) return;
     teamMember.setValue(isConnected, 'isConnected');
   });
-};
-
-const popUpgradeAppToast = (payload, {dispatch, history}) => {
-  const versionOnServer = payload.getValue('version');
-  const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-  if (versionOnServer !== versionInStorage) {
-    dispatch(showWarning({
-      title: 'New stuff!',
-      message: 'A new version of Parabol is available',
-      autoDismiss: 0,
-      action: {
-        label: 'Log out and upgrade',
-        callback: () => {
-          history.replace('/signout');
-        }
-      }
-    }));
-    window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
-      APP_UPGRADE_PENDING_RELOAD);
-  }
 };
 
 const popPaymentFailedToast = (payload, {dispatch, history}) => {
@@ -152,9 +126,6 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           break;
         case 'User':
           connectSocketUserUpdater(payload, store);
-          break;
-        case 'NotifyVersionInfo':
-          popUpgradeAppToast(payload, options);
           break;
         case 'RemoveOrgUserPayload':
           removeOrgUserNotificationUpdater(payload, store, viewerId, options);

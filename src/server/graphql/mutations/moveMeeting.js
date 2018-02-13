@@ -4,7 +4,6 @@ import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum'
 import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {errorObj} from 'server/utils/utils';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {AGENDA_ITEM, AGENDA_ITEMS, CHECKIN, TEAM} from 'universal/utils/constants';
 
@@ -57,7 +56,7 @@ export default {
     const meetingPhaseInfo = actionMeeting[meetingPhase];
     if (nextPhase) {
       if (!nextPhaseInfo) {
-        throw errorObj({_error: `${nextPhase} is not a valid phase`});
+        throw new Error(`${nextPhase} is not a valid phase`);
       }
       if (nextPhaseInfo.items) {
         const {arrayName} = nextPhaseInfo.items;
@@ -67,7 +66,7 @@ export default {
             .filter({isNotRemoved: true})
             .count();
           if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
-            throw errorObj({_error: 'We don’t have that many team members!'});
+            throw new Error('We don’t have that many team members!');
           }
         } else if (arrayName === 'agendaItems') {
           const agendaItemCount = await r.table('AgendaItem')
@@ -75,25 +74,25 @@ export default {
             .filter({isActive: true})
             .count();
           if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
-            throw errorObj({_error: 'We don’t have that many agenda items!'});
+            throw new Error('We don’t have that many agenda items!');
           }
         }
         if (nextPhaseInfo.visitOnce && meetingPhaseInfo.index > nextPhaseInfo.index) {
-          throw errorObj({_error: 'You can’t visit first call twice!'});
+          throw new Error('You can’t visit first call twice!');
         }
       } else if (nextPhaseItem) {
-        throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});
+        throw new Error(`${nextPhase} does not have phase items, but you said ${nextPhaseItem}`);
       }
     }
 
     if (!nextPhaseItem && (!nextPhase || nextPhaseInfo.items)) {
-      throw errorObj({_error: 'Did not receive a nextPhaseItem'});
+      throw new Error('Did not receive a nextPhaseItem');
     }
 
     const userId = getUserId(authToken);
     const teamMemberId = `${userId}::${teamId}`;
     if (activeFacilitator !== teamMemberId) {
-      throw errorObj({_error: 'Only the facilitator can advance the meeting'});
+      throw new Error('Only the facilitator can advance the meeting');
     }
 
     // RESOLUTION

@@ -8,7 +8,6 @@ import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import {errorObj} from 'server/utils/utils';
 import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
@@ -35,7 +34,7 @@ export default {
       .nth(0)
       .default({endedAt: r.now()});
     if (meeting.endedAt) {
-      throw errorObj({_error: 'Meeting already ended!'});
+      throw new Error('Meeting already ended!');
     }
 
     // RESOLUTION
