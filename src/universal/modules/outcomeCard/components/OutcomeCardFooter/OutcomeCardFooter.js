@@ -106,6 +106,7 @@ class OutcomeCardFooter extends Component {
       showTeam ?
         <div className={css(styles.teamNameLabel)}>{teamName}</div> :
         (<button
+          aria-label="Assign this task to a teammate"
           className={css(styles.avatarButton)}
           tabIndex={service && '-1'}
           title={`Assigned to ${assignee.preferredName}`}
