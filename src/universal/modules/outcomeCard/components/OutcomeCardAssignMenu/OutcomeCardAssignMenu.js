@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
+import {css} from 'aphrodite-local-styles/no-important';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {MenuItem} from 'universal/modules/menu';
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftTeamMember';
+import {textOverflow} from 'universal/styles/helpers';
+import appTheme from 'universal/styles/theme/appTheme';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
+import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
 
 class OutcomeCardAssignMenu extends Component {
   state = {
@@ -41,6 +46,12 @@ class OutcomeCardAssignMenu extends Component {
     });
   }
 
+  closeMenu = () => {
+    const {assignRef, closePortal} = this.props;
+    closePortal();
+    assignRef.focus();
+  };
+
   handleKeyDown = (e) => {
     const {assignees} = this.state;
     const {active} = this.state;
@@ -61,6 +72,9 @@ class OutcomeCardAssignMenu extends Component {
         handled = true;
         this.handleMenuItemClick(nextAssignee.id)();
       }
+    } else if (e.key === 'Tab') {
+      handled = true;
+      this.closeMenu();
     }
     if (handled) {
       e.preventDefault();
@@ -84,10 +98,8 @@ class OutcomeCardAssignMenu extends Component {
   };
 
   handleMenuItemClick = (newAssigneeId) => () => {
-    const {assignRef, closePortal} = this.props;
     this.handleTaskUpdate(newAssigneeId);
-    closePortal();
-    assignRef.focus();
+    this.closeMenu();
   };
 
   render() {
@@ -96,6 +108,7 @@ class OutcomeCardAssignMenu extends Component {
       area,
       assignRef,
       closePortal,
+      styles,
       task: {taskId},
       viewer: {team}
     } = this.props;
@@ -104,7 +117,15 @@ class OutcomeCardAssignMenu extends Component {
       outline: 0
     };
     return (
-      <div tabIndex={-1} onKeyDown={this.handleKeyDown} ref={(c) => { this.menuRef = c; }} style={menuBlock}>
+      <div
+        role="menu"
+        aria-label={'Assign this task to a teammate'}
+        tabIndex={-1}
+        onKeyDown={this.handleKeyDown}
+        ref={(c) => { this.menuRef = c; }}
+        style={menuBlock}
+      >
+        <div className={css(styles.label)}>Assign to:</div>
         {assignees.map((teamMember, idx) => {
           return (
             <MenuItem
@@ -116,16 +137,18 @@ class OutcomeCardAssignMenu extends Component {
             />
           );
         })}
-        <AddSoftTeamMember
-          isActive={active >= assignees.length}
-          area={area}
-          closePortal={closePortal}
-          taskId={taskId}
-          team={team}
-          menuRef={this.menuRef}
-          assignRef={assignRef}
-          setAddSoftAsActive={this.setAddSoftAsActive}
-        />
+        <div role="menuitem">
+          <AddSoftTeamMember
+            isActive={active >= assignees.length}
+            area={area}
+            closePortal={closePortal}
+            taskId={taskId}
+            team={team}
+            menuRef={this.menuRef}
+            assignRef={assignRef}
+            setAddSoftAsActive={this.setAddSoftAsActive}
+          />
+        </div>
       </div>
     );
   }
@@ -136,12 +159,26 @@ OutcomeCardAssignMenu.propTypes = {
   assignRef: PropTypes.instanceOf(Element),
   atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
+  styles: PropTypes.object.isRequired,
   task: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired
 };
 
+const styleThunk = () => ({
+  label: {
+    ...textOverflow,
+    borderBottom: `1px solid ${appTheme.palette.mid30l}`,
+    color: ui.palette.dark,
+    fontSize: ui.menuItemFontSize,
+    fontWeight: 700,
+    lineHeight: ui.menuItemHeight,
+    marginBottom: ui.menuGutterVertical,
+    padding: `0 ${ui.menuGutterHorizontal}`
+  }
+});
+
 export default createFragmentContainer(
-  withAtmosphere(OutcomeCardAssignMenu),
+  withAtmosphere(withStyles(styleThunk)(OutcomeCardAssignMenu)),
   graphql`
     fragment OutcomeCardAssignMenu_viewer on User {
       team(teamId: $teamId) {

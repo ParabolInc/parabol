@@ -146,12 +146,14 @@ class AddSoftTeamMember extends Component {
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
     const inputStyles = css(styles.input, isActive && styles.inputActive);
+    const labelText = 'Invite a new teammate by their email address';
     return (
-      <div title="Invite a new teammate by email">
+      <div title={labelText}>
         <div className={rootStyles} onClick={this.onClick}>
-          <img alt="Invite a new teammate by email" className={css(styles.avatar)} src={avatarUser} />
+          <img alt="" className={css(styles.avatar)} src={avatarUser} />
           <form onSubmit={this.onSubmit}>
             <input
+              aria-label={labelText}
               className={inputStyles}
               onChange={this.onChange}
               onFocus={setAddSoftAsActive}
