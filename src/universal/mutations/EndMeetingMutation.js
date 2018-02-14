@@ -65,7 +65,6 @@ const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) 
     },
     optimisticUpdater: (store) => {
       const team = store.get(teamId);
-      const meetingId = team.getValue('meetingId');
       team
         .setValue(null, 'activeFacilitator')
         .setValue(SUMMARY, 'facilitatorPhase')
@@ -73,7 +72,6 @@ const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) 
         .setValue(SUMMARY, 'meetingPhase')
         .setValue(null, 'meetingPhaseItem')
         .setValue(null, 'meetingId');
-      history.push(`/summary/${meetingId}`);
     },
     onCompleted,
     onError
