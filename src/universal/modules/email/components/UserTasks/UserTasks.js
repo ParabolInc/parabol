@@ -5,6 +5,7 @@ import TasksTable from '../TasksTable/TasksTable';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import plural from 'universal/utils/plural';
+import {DONE} from 'universal/utils/constants';
 
 const UserTasks = (props) => {
   const {member} = props;
@@ -45,7 +46,7 @@ const UserTasks = (props) => {
 
   const userStats = {
     ...textCenter,
-    padding: '0 0 8px'
+    padding: 0
   };
 
   const presentLabelStyles = {
@@ -59,6 +60,36 @@ const UserTasks = (props) => {
 
   const presentLabel = present ? 'Present' : 'Absent';
 
+  const doneTasks = tasks.filter((task) => task.status === DONE);
+  const newTasks = tasks.filter((task) => task.status !== DONE);
+  const doneTasksLabel = `${doneTasks.length} ${plural(doneTasks.length, 'Task')} Done`;
+  const newTasksLabel = `${newTasks.length} New ${plural(newTasks.length, 'Task')}`;
+
+  const makeTaskGroup = (taskArr, label, space) =>
+    (<tr>
+      <td>
+        <table align="center" width="100%">
+          <tbody>
+            <tr>
+              <td style={userStats}>
+                {taskArr.length > 0 &&
+                  <span style={labelStyle}>
+                    {label}
+                  </span>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style={cardsCell}>
+                <TasksTable tasks={taskArr} />
+                <EmptySpace height={space} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>);
+
   return (
     <table align="center" width="100%">
       <tbody>
@@ -68,23 +99,13 @@ const UserTasks = (props) => {
             <img height="80" src={picture} style={avatarStyles} width="80" />
             <div style={nameStyle}>{preferredName}</div>
             <div style={presentLabelStyles}>{presentLabel}</div>
+            <EmptySpace height={8} />
           </td>
         </tr>
-        <tr>
-          <td style={userStats}>
-            {tasks.length > 0 &&
-              <span style={labelStyle}>
-                {`${tasks.length} New ${plural(tasks.length, 'Task')}`}
-              </span>
-            }
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style={cardsCell}>
-            <TasksTable tasks={tasks} />
-            <EmptySpace height={24} />
-          </td>
-        </tr>
+        {/* Done Tasks */}
+        {doneTasks.length > 0 && makeTaskGroup(doneTasks, doneTasksLabel, 8)}
+        {/* New Tasks */}
+        {newTasks.length > 0 && makeTaskGroup(newTasks, newTasksLabel, 24)}
       </tbody>
     </table>
   );
