@@ -79,6 +79,7 @@ const styleThunk = () => ({
 
   nav: {
     flex: 1,
+    overflowY: 'scroll',
     paddingBottom: '1.25rem',
     paddingLeft: '3.75rem',
     width: '100%'
