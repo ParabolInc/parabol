@@ -53,12 +53,13 @@ const bannerStyle = {
   textAlign: 'center'
 };
 
-const bannerMessageStyles = {
-  color: ui.palette.dark,
+const topMessageStyles = {
+  color: ui.palette.mid,
   fontFamily: ui.emailFontFamily,
-  fontSize: '13px',
-  fontWeight: 700,
-  textAlign: 'center'
+  fontSize: '11px',
+  fontWeight: 400,
+  textAlign: 'right',
+  padding: '0 16px'
 };
 
 const meetingLinkTable = {
@@ -88,19 +89,6 @@ const quickStatsBlock = {
   textAlign: 'center'
 };
 
-const makeBannerMessage = (referrer, url) => {
-  if (referrer === 'meeting') {
-    return <span>{'All team members will receive this summary in their inbox.'}</span>;
-  }
-  if (referrer === 'email') {
-    return <span><a href={url} style={bannerLink}>{'View this summary in your web browser'}</a></span>;
-  }
-  if (referrer === 'history') {
-    return <span><a href={url} style={bannerLink}>{'See all meeting summaries here'}</a></span>;
-  }
-  return null;
-};
-
 const SummaryEmail = (props) => {
   const {
     meeting,
@@ -115,7 +103,6 @@ const SummaryEmail = (props) => {
   const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
   const doneTaskCount = invitees.reduce((sum, invitee) => sum + invitee.tasks.filter((task) => task.status === DONE).length, 0);
   const newTaskCount = invitees.reduce((sum, invitee) => sum + invitee.tasks.filter((task) => task.status !== DONE).length, 0);
-  const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
   const iconSize = 28;
   const teamDashLabel = 'Go to Team Dashboard';
@@ -160,23 +147,29 @@ const SummaryEmail = (props) => {
     textDecoration: 'none',
     width: '186px'
   };
+  const tipStyle = {
+    ...textStyle,
+    fontWeight: 400,
+    fontSize: '16px',
+    lineHeight: '24px'
+  };
   return (
     <Layout>
-      <table style={ui.emailTableBase} width="100%">
-        <tbody>
-          <tr>
-            <td style={bannerStyle}>
-              <EmptySpace height={8} />
-              {bannerMessage &&
-              <div style={bannerMessageStyles}>
-                {bannerMessage}
-              </div>
-              }
-              <EmptySpace height={8} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {referrer === 'email' &&
+        <table style={ui.emailTableBase} width="100%">
+          <tbody>
+            <tr>
+              <td style={bannerStyle}>
+                <EmptySpace height={8} />
+                <div style={topMessageStyles}>
+                  <span><a href={referrerUrl} style={bannerLink}>{'View this in your browser'}</a></span>
+                </div>
+                <EmptySpace height={8} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      }
       <Body verticalGutter={0}>
         <table align="center" style={ui.emailTableBase} width="100%">
           <tbody>
@@ -235,11 +228,24 @@ const SummaryEmail = (props) => {
         <UserNoNewOutcomes members={membersSansOutcomes} />
         }
         <EmptySpace height={0} />
-        <hr style={ruleStyle} />
-        <EmptySpace height={48} />
-        <b>{'Pro Tip'}</b>{': all Tasks in the '}<b>{'Done'}</b>{' column are'}<br />
-        {'automatically archived after each meeting.'}
-        <EmptySpace height={48} />
+        {/* Show this tip for the first 3 summaries. */}
+        {meetingNumber < 40 &&
+          <table align="center" style={ui.emailTableBase} width="100%">
+            <tbody>
+              <tr>
+                <td align="center" style={{padding: 0}}>
+                  <hr style={ruleStyle} />
+                  <EmptySpace height={32} />
+                  <div style={tipStyle}>
+                    <b>{'Pro Tip'}</b>{': all Tasks in the '}<b>{'Done'}</b>{' column are'}<br />
+                    {'automatically archived after each meeting.'}
+                  </div>
+                  <EmptySpace height={32} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        }
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
         {/* First-time prompt to schedule recurring meeting */}
