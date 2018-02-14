@@ -85,7 +85,8 @@ export default class Atmosphere extends Environment {
     if (!this.authToken) {
       throw new Error('No Auth Token provided!');
     }
-    const url = `ws://${window.location.host}/?token=${this.authToken}`;
+    const wsProtocol = window.location.protocol.replace('http', 'ws');
+    const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`;
     const subscriptionClient = new SubscriptionClient(url, {reconnect: true});
 
     // monkey patched to catch aggressive firewalls that block websockets

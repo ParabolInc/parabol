@@ -14,7 +14,7 @@ export default function fromNow(maybeTime) {
   const now = Date.now();
   const distance = Math.abs(now - time) || 0;
   const ago = now > time ? ' ago' : '';
-  if (distance < 1000) return 'just now';
+  if (distance < 3000) return 'just now';
   const threshKeys = Object.keys(thresholds);
   let prevThresh = 1000;
   for (let i = 1; i < threshKeys.length; i++) {

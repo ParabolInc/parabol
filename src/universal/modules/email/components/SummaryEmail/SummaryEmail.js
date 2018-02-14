@@ -229,7 +229,7 @@ const SummaryEmail = (props) => {
         }
         <EmptySpace height={0} />
         {/* Show this tip for the first 3 summaries. */}
-        {meetingNumber < 40 &&
+        {meetingNumber < 4 &&
           <table align="center" style={ui.emailTableBase} width="100%">
             <tbody>
               <tr>

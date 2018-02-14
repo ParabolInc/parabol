@@ -35,6 +35,7 @@ const styleThunk = () => ({
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
+    overflowY: 'auto',
     width: '100%'
   },
 
