@@ -210,7 +210,7 @@
     "shortid": "^2.2.8",
     "string-score": "^1.0.1",
     "stripe": "^4.24.0",
-    "subscriptions-transport-ws": "https://github.com/mattkrick/subscriptions-transport-ws/tarball/725ccffb40834075ba765852e03c70fe59fa90fa",
+    "subscriptions-transport-ws": "https://github.com/mattkrick/subscriptions-transport-ws/tarball/39100e7e6458a0831cd7c0f8cf0f12ea0482b399",
     "tinycolor2": "^1.4.1",
     "tlds": "^1.192.0",
     "unicode-substring": "^1.0.0",

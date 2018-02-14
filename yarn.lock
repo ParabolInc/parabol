@@ -8639,9 +8639,9 @@ style-loader@^0.18.1:
     loader-utils "^1.0.2"
     schema-utils "^0.3.0"
 
-"subscriptions-transport-ws@https://github.com/mattkrick/subscriptions-transport-ws/tarball/725ccffb40834075ba765852e03c70fe59fa90fa":
+"subscriptions-transport-ws@https://github.com/mattkrick/subscriptions-transport-ws/tarball/39100e7e6458a0831cd7c0f8cf0f12ea0482b399":
   version "0.9.5"
-  resolved "https://github.com/mattkrick/subscriptions-transport-ws/tarball/725ccffb40834075ba765852e03c70fe59fa90fa#0a330ce07d4498a2ffdf2641e42c529ead9d3935"
+  resolved "https://github.com/mattkrick/subscriptions-transport-ws/tarball/39100e7e6458a0831cd7c0f8cf0f12ea0482b399#844fceb634edc9e9206c108f0e6235406f05d880"
   dependencies:
     backo2 "^1.0.2"
     eventemitter3 "^2.0.3"
