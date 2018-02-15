@@ -8,7 +8,7 @@ import LandingContainer from 'universal/modules/landing/containers/Landing/Landi
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
-import SignIn from 'universal/components/SignIn/SignIn';
+import SignInPage from 'universal/components/SignInPage/SignInPage';
 
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
 const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
@@ -33,7 +33,7 @@ const Action = (props) => {
           : <Route exact path="/" component={LandingContainer} />
         }
         {__RELEASE_FLAGS__.newSignIn &&
-          <Route exact path="/signin" component={SignIn} />
+          <Route exact path="/signin" component={SignInPage} />
         }
         <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
