@@ -77,6 +77,26 @@ export default class RethinkDataLoader {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
       });
     }, this.dataloaderOptions);
+    this.retroThoughtsByGroupId = makeCustomLoader(async (groupIds) => {
+      const r = getRethink();
+      const retroThoughts = await r.table('SoftTeamMember')
+        .getAll(r.args(groupIds), {index: 'teamId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.retroThoughts, retroThoughts);
+      return groupIds.map((teamId) => {
+        return retroThoughts.filter((retroThought) => retroThought.teamId === teamId);
+      });
+    }, this.dataloaderOptions);
+    this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink();
+      const softTeamMembers = await r.table('SoftTeamMember')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.softTeamMembers, softTeamMembers);
+      return teamIds.map((teamId) => {
+        return softTeamMembers.filter((softTeamMember) => softTeamMember.teamId === teamId);
+      });
+    }, this.dataloaderOptions);
     this.tasksByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
       const userId = getUserId(this.authToken);
@@ -104,16 +124,6 @@ export default class RethinkDataLoader {
         ));
       primeStandardLoader(this.tasks, tasks);
       return userIds.map(() => tasks);
-    }, this.dataloaderOptions);
-    this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
-      const r = getRethink();
-      const softTeamMembers = await r.table('SoftTeamMember')
-        .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter({isActive: true});
-      primeStandardLoader(this.softTeamMembers, softTeamMembers);
-      return teamIds.map((teamId) => {
-        return softTeamMembers.filter((softTeamMember) => softTeamMember.teamId === teamId);
-      });
     }, this.dataloaderOptions);
     this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
@@ -144,14 +154,16 @@ export default class RethinkDataLoader {
   agendaItems = makeStandardLoader('AgendaItem');
   customPhaseItems = makeStandardLoader('CustomPhaseItem');
   invitations = makeStandardLoader('Invitation');
-  organizations = makeStandardLoader('Organization');
-  orgApprovals = makeStandardLoader('OrgApproval');
   meetings = makeStandardLoader('Meeting');
   newMeetings = makeStandardLoader('NewMeeting');
   notifications = makeStandardLoader('Notification');
-  tasks = makeStandardLoader('Task');
+  orgApprovals = makeStandardLoader('OrgApproval');
+  organizations = makeStandardLoader('Organization');
+  retroThoughtGroups = makeStandardLoader('RetroThoughtGroup');
+  retroThoughts = makeStandardLoader('RetroThought');
   softTeamMembers = makeStandardLoader('SoftTeamMember');
-  teams = makeStandardLoader('Team');
+  tasks = makeStandardLoader('Task');
   teamMembers = makeStandardLoader('TeamMember');
+  teams = makeStandardLoader('Team');
   users = makeStandardLoader('User');
 }

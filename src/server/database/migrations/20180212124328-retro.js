@@ -13,9 +13,9 @@ exports.up = async (r) => {
       r.table('CustomPhaseItem').indexCreate('teamId'),
       r.table('NewMeeting').indexCreate('teamId'),
       r.table('RetroThought').indexCreate('meetingId'),
-      r.table('RetroThought').indexCreate('teamId'),
+      r.table('RetroThought').indexCreate('thoughtGroupId'),
       r.table('RetroThoughtGroup').indexCreate('meetingId'),
-      r.table('RetroThoughtGroup').indexCreate('teamId'),
+      // r.table('RetroThoughtGroup').indexCreate('teamId'),
     ]);
   } catch (e) {
     // noop
