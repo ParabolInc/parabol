@@ -6,16 +6,17 @@ import AnimatedFade from 'universal/components/AnimatedFade';
 import Modal from 'universal/components/Modal';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import {css} from 'react-emotion';
+import styled from 'react-emotion';
 import withCoordsV2 from 'universal/decorators/withCoordsV2';
 
-const modalBlock = css({
+const ModalBlock = styled('div')(({maxWidth}) => ({
   padding: '.25rem .5rem',
   position: 'absolute',
-  zIndex: ui.ziTooltip
-});
+  zIndex: ui.ziTooltip,
+  maxWidth
+}));
 
-const contents = css({
+const ModalContents = styled('div')(({maxHeight}) => ({
   color: 'white',
   backgroundColor: appTheme.palette.dark,
   borderRadius: ui.tooltipBorderRadius,
@@ -23,13 +24,14 @@ const contents = css({
   fontSize: appTheme.typography.s2,
   fontWeight: 700,
   lineHeight: appTheme.typography.s5,
+  maxHeight,
   overflow: 'hidden',
   padding: '.375rem .625rem',
   textAlign: 'left',
   textShadow: '0 .0625rem 0 rgba(0, 0, 0, .25)',
   whiteSpace: 'nowrap',
   width: '100%'
-});
+}));
 
 
 class Tooltip extends Component {
@@ -136,7 +138,7 @@ class Tooltip extends Component {
   }
 
   render() {
-    const {coords, setModalRef, maxHeight, maxWidth} = this.props;
+    const {coords, setModalRef} = this.props;
     const {inTip, inToggle} = this.state;
     const isOpen = inTip || inToggle || this.props.isOpen;
     return (
@@ -148,11 +150,11 @@ class Tooltip extends Component {
           {isOpen &&
           <AnimatedFade>
             <Modal>
-              <div className={modalBlock} style={{...coords, maxWidth}} ref={setModalRef}>
-                <div className={contents} style={maxHeight}>
+              <ModalBlock style={coords} innerRef={setModalRef}>
+                <ModalContents>
                   {this.makeSmartTip()}
-                </div>
-              </div>
+                </ModalContents>
+              </ModalBlock>
             </Modal>
           </AnimatedFade>
           }
