@@ -24,6 +24,11 @@ const inputWrapperStyles = {
   marginBottom: '2rem'
 };
 
+const forgotPasswordStyles = {
+  marginTop: '1rem',
+  textAlign: 'center'
+};
+
 const SignInEmailPasswordForm = (props: Props) => (
   <form style={formStyles} onSubmit={props.handleSubmit}>
     <div style={inputWrapperStyles}>
@@ -41,13 +46,13 @@ const SignInEmailPasswordForm = (props: Props) => (
         name="password"
       />
     </div>
-    <Link to="/reset-password">Forgot your password?</Link>
     <Button
       type="submit"
       label="Sign In"
       title="Sign In"
       colorPalette="warm"
     />
+    <Link to="/reset-password" style={forgotPasswordStyles}>Forgot your password?</Link>
   </form>
 );
 

@@ -1,5 +1,6 @@
 /**
- * The sign-in page.
+ * The sign-in page.  Hosts 3rd part signin, email/password signin, and
+ * also functions as the callback handler for the Auth0 OIDC response.
  *
  * @flow
  */
@@ -17,6 +18,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 import Header from './Header';
 import SignIn from './SignIn';
+import chunkArray from 'universal/utils/chunkArray';
 
 type Credentials = {
   email: string,
@@ -46,6 +48,15 @@ const containerStyles = {
   flexDirection: 'column'
 };
 
+// A naive implementation taking a querystring-formatted string (beginning in '?'),
+// and returning an object of the key/value pairs.  Will not work for null-valued
+// keys, but works for our own `?redirectTo=/path/to/page` contract.
+const parseSearch = (search: string): Object => {
+  if (!search) { return {}; }
+  const assocArray = chunkArray(search.slice(1).split(/=|&/), 2);
+  return assocArray.reduce((acc, [key, val]) => ({...acc, [key]: val}), {});
+};
+
 class SignInPage extends Component<Props, State> {
   state = {
     error: null,
@@ -53,24 +64,31 @@ class SignInPage extends Component<Props, State> {
   };
 
   componentWillMount() {
-    // 1) If we've already got a session, send us to `/me`
+    this.maybeRedirectToApp();
+    this.maybeCaptureAuthResponse();
+  }
+
+  componentDidUpdate() {
+    this.maybeRedirectToApp();
+  }
+
+  maybeRedirectToApp = () => {
     if (this.props.hasSession) {
-      this.props.history.replace('/me');
+      const parsedSearch = parseSearch(this.props.location.search);
+      const pathToVisit = parsedSearch.redirectTo || '/me';
+      this.props.history.replace(pathToVisit);
     }
-    // 2) If we've received an auth response, validate it and log us in
+  };
+
+  maybeCaptureAuthResponse = () => {
+    // If we've received an auth response, log us in
     const {hash} = this.props.location;
     if (hash) {
       this.setState({loggingIn: true});
       this.parseAuthResponse(hash)
         .then(this.saveTokens);
     }
-  }
-
-  componentDidUpdate() {
-    if (this.props.hasSession) {
-      this.props.history.push('/me');
-    }
-  }
+  };
 
   parseAuthResponse = (hash: string): Promise<ParsedAuthResponse> => {
     return new Promise((resolve, reject) => {
