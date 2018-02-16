@@ -58,6 +58,7 @@ class LoadableMenu extends Component {
       this.smartToggle = this.makeSmartToggle(toggle);
     } else {
       LoadableComponent.preload();
+      this.state.isOpen = true;
     }
   }
 
@@ -94,6 +95,7 @@ class LoadableMenu extends Component {
     const refProp = typeof toggle.type === 'string' ? 'ref' : 'setRef';
     return React.cloneElement(toggle, {
       'aria-haspopup': 'true',
+      'aria-expanded': this.state.isOpen,
       onClick: (e) => {
         const {setOriginCoords, LoadableComponent} = this.props;
         LoadableComponent.preload();
@@ -120,7 +122,7 @@ class LoadableMenu extends Component {
     const {coords, setModalRef, LoadableComponent, queryVars, maxWidth, maxHeight} = this.props;
     return (
       <React.Fragment>
-        {React.cloneElement(this.smartToggle, {'aria-expanded': this.state.isOpen})}
+        {this.smartToggle}
         <TransitionGroup appear component={null}>
           {isOpen &&
           <AnimatedFade>
