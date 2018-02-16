@@ -3,7 +3,7 @@ import React, {Children, cloneElement, Component} from 'react';
 import {css} from 'react-emotion';
 
 const isValidMenuItem = (menuItem) => {
-  return menuItem && menuItem.type.name === 'MenuItemWithShortcuts';
+  return menuItem && typeof menuItem.type !== 'string' && menuItem.type.name === 'MenuItemWithShortcuts';
 };
 
 class MenuWithShortcuts extends Component {
@@ -14,39 +14,27 @@ class MenuWithShortcuts extends Component {
   };
 
   state = {
-    active: -1,
-    smartChildren: []
+    active: null
   }
 
   componentWillMount() {
     const {children} = this.props;
-    this.state.smartChildren = this.makeSmartChildren(children, 0);
-  }
-
-  componentDidMount() {
-    const {children} = this.props;
     const childArr = Children.toArray(children);
     const startIdx = childArr.findIndex((child) => isValidMenuItem(child));
     this.state.active = startIdx;
-    this.setActiveIndex(startIdx);
+  }
+
+  componentDidMount() {
     this.menuRef.focus();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {children} = nextProps;
-    if (this.props.children !== children) {
-      this.setState({
-        smartChildren: this.makeSmartChildren(children, this.state.active)
-      });
-    }
-  }
-
   setActiveIndex = (idx) => {
-    const {active, smartChildren} = this.state;
+    const {active} = this.state;
+    const children = Children.toArray(this.props.children);
     let nextIdx;
     if (active < idx) {
-      for (let ii = idx; ii < smartChildren.length; ii++) {
-        const nextChild = smartChildren[ii];
+      for (let ii = idx; ii < children.length; ii++) {
+        const nextChild = children[ii];
         if (isValidMenuItem(nextChild)) {
           nextIdx = ii;
           break;
@@ -54,17 +42,16 @@ class MenuWithShortcuts extends Component {
       }
     } else if (active > idx) {
       for (let ii = idx; ii >= 0; ii--) {
-        const nextChild = smartChildren[ii];
+        const nextChild = children[ii];
         if (isValidMenuItem(nextChild)) {
           nextIdx = ii;
           break;
         }
       }
     }
-    if (nextIdx === null || nextIdx === undefined || nextIdx === active || nextIdx < 0 || nextIdx >= smartChildren.length) return;
+    if (nextIdx === null || nextIdx === undefined || nextIdx === active || nextIdx < 0 || nextIdx >= children.length) return;
     this.setState({
       active: nextIdx,
-      smartChildren: this.makeSmartChildren(this.props.children, nextIdx)
     });
   }
 
@@ -80,7 +67,8 @@ class MenuWithShortcuts extends Component {
   }
 
   handleKeyDown = (e) => {
-    const {active, smartChildren} = this.state;
+    const {active} = this.state;
+    const {children} = this.props;
     const {closePortal} = this.props;
     let handled;
     if (e.key === 'ArrowDown') {
@@ -90,7 +78,7 @@ class MenuWithShortcuts extends Component {
       handled = true;
       this.setActiveIndex(active - 1);
     } else if (e.key === 'Enter') {
-      const smartChild = smartChildren[active];
+      const smartChild = children[active];
       if (smartChild && smartChild.props.onClick) {
         handled = true;
         smartChild.props.onClick();
@@ -106,8 +94,8 @@ class MenuWithShortcuts extends Component {
   };
 
   render() {
-    const {ariaLabel} = this.props;
-    const {smartChildren} = this.state;
+    const {ariaLabel, children} = this.props;
+    const {active} = this.state;
     return (
       <div
         role="menu"
@@ -117,7 +105,7 @@ class MenuWithShortcuts extends Component {
         ref={(c) => { this.menuRef = c; }}
         className={css({outline: 0})}
       >
-        {smartChildren}
+        {this.makeSmartChildren(children, active)}
       </div>
     );
   }

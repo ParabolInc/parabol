@@ -34,7 +34,6 @@ const menu = {
 class LoadableMenu extends Component {
   static propTypes = {
     toggle: PropTypes.any,
-    toggleRef: PropTypes.instanceOf(Element),
     LoadableComponent: PropTypes.func.isRequired,
     setOriginCoords: PropTypes.func.isRequired,
     setModalRef: PropTypes.func.isRequired,
@@ -82,16 +81,17 @@ class LoadableMenu extends Component {
   }
 
   closePortal = (e) => {
-    const {toggleRef} = this.props;
     this.setState({
       isOpen: false
     });
-    if (e && e.key && toggleRef) {
-      toggleRef.focus();
+    if (e && e.key && this.toggleRef) {
+      this.toggleRef.focus();
     }
   };
 
   makeSmartToggle(toggle) {
+    // strings are plain DOM nodes
+    const refProp = typeof toggle.type === 'string' ? 'ref' : 'setRef';
     return React.cloneElement(toggle, {
       'aria-haspopup': 'true',
       onClick: (e) => {
@@ -108,6 +108,9 @@ class LoadableMenu extends Component {
       onMouseEnter: () => {
         const {LoadableComponent} = this.props;
         LoadableComponent.preload();
+      },
+      [refProp]: (c) => {
+        this.toggleRef = c;
       }
     });
   }

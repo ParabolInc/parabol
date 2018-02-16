@@ -15,6 +15,7 @@ const Avatar = (props) => {
     picture,
     sansRadius,
     sansShadow,
+    setRef,
     size,
     styles
   } = props;
@@ -39,6 +40,7 @@ const Avatar = (props) => {
     <div
       className={rootStyles}
       onClick={onClick}
+      ref={setRef}
       style={rootInlineStyle}
     >
       <div
@@ -69,6 +71,7 @@ Avatar.propTypes = {
   picture: PropTypes.string,
   sansRadius: PropTypes.bool,
   sansShadow: PropTypes.bool,
+  setRef: PropTypes.func,
   size: PropTypes.oneOf([
     'fill',
     'smallest',

@@ -126,7 +126,6 @@ class OutcomeCardFooter extends Component {
           className={css(styles.avatarButton)}
           title={`Assigned to ${assignee.preferredName}`}
           type="button"
-          ref={(c) => { this.assignRef = c; }}
         >
           <div className={avatarStyles}>
             <img
@@ -161,7 +160,6 @@ class OutcomeCardFooter extends Component {
                 }}
                 targetAnchor={assignTargetAnchor}
                 toggle={ownerAvatarOrTeamName}
-                toggleRef={this.assignRef}
                 onOpen={toggleMenuState}
                 onClose={toggleMenuState}
               />
@@ -186,8 +184,7 @@ class OutcomeCardFooter extends Component {
                       clearError: this.clearError
                     }}
                     targetAnchor={targetAnchor}
-                    toggle={<OutcomeCardFooterButton icon="github" setRef={(c) => { this.githubRef = c; }} />}
-                    toggleRef={this.githubRef}
+                    toggle={<OutcomeCardFooterButton icon="github" />}
                     onOpen={toggleMenuState}
                     onClose={toggleMenuState}
                   /> :
@@ -207,8 +204,7 @@ class OutcomeCardFooter extends Component {
                     removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" setRef={(c) => { this.statusRef = c; }} />}
-                  toggleRef={this.statusRef}
+                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
                   onOpen={toggleMenuState}
                   onClose={toggleMenuState}
                 />
