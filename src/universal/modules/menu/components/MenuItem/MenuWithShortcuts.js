@@ -51,7 +51,7 @@ class MenuWithShortcuts extends Component {
     }
     if (nextIdx === null || nextIdx === undefined || nextIdx === active || nextIdx < 0 || nextIdx >= children.length) return;
     this.setState({
-      active: nextIdx,
+      active: nextIdx
     });
   }
 

@@ -57,7 +57,7 @@ const GitHubReposMenuRoot = (rootProps) => {
     taskId,
     setError,
     clearError,
-    closePortal,
+    closePortal
   } = rootProps;
   const [teamId] = taskId.split('::');
   return (
@@ -87,7 +87,7 @@ GitHubReposMenuRoot.propTypes = {
   viewer: PropTypes.object,
   setError: PropTypes.func.isRequired,
   clearError: PropTypes.func.isRequired,
-  closePortal: PropTypes.func.isRequired,
+  closePortal: PropTypes.func.isRequired
 };
 
 export default withAtmosphere(GitHubReposMenuRoot);
