@@ -17,7 +17,7 @@ const OutcomeCardFooterButton = (props) => {
     onClick,
     onMouseEnter,
     styles,
-    setRef
+    innerRef
   } = props;
 
   const buttonStyles = css(
@@ -34,7 +34,7 @@ const OutcomeCardFooterButton = (props) => {
       onClick={handleOnClick}
       onMouseEnter={onMouseEnter}
       type="button"
-      ref={setRef}
+      ref={innerRef}
     >
       <FontAwesome name={icon} style={faStyle} />
     </button>
@@ -45,7 +45,7 @@ OutcomeCardFooterButton.propTypes = {
   icon: PropTypes.string,
   onClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
-  setRef: PropTypes.func.isRequired,
+  innerRef: PropTypes.func.isRequired,
   styles: PropTypes.object
 };
 

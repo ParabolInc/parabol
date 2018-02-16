@@ -93,7 +93,7 @@ class LoadableMenu extends Component {
 
   makeSmartToggle(toggle) {
     // strings are plain DOM nodes
-    const refProp = typeof toggle.type === 'string' ? 'ref' : 'setRef';
+    const refProp = typeof toggle.type === 'string' ? 'ref' : 'innerRef';
     return React.cloneElement(toggle, {
       'aria-haspopup': 'true',
       'aria-expanded': this.state.isOpen,
