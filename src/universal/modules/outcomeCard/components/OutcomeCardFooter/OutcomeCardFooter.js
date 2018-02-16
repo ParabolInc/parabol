@@ -21,12 +21,21 @@ import LoadableMenu from 'universal/components/LoadableMenu';
 import LoadableLoading from 'universal/components/LoadableLoading';
 
 const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
-const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
 
 const LoadableAssignMenu = Loadable({
   loader: () => System.import(
     /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
     'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
+
+const LoadableStatusMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'OutcomeCardStatusMenu' */
+    'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'
   ),
   loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
@@ -108,7 +117,6 @@ class OutcomeCardFooter extends Component {
         (<button
           aria-label="Assign this task to a teammate"
           className={css(styles.avatarButton)}
-          tabIndex={service && '-1'}
           title={`Assigned to ${assignee.preferredName}`}
           type="button"
           ref={(c) => { this.assignRef = c; }}
@@ -141,12 +149,12 @@ class OutcomeCardFooter extends Component {
                 originAnchor={assignOriginAnchor}
                 queryVars={{
                   area,
-                  assignRef: this.assignRef,
                   task,
                   teamId
                 }}
                 targetAnchor={assignTargetAnchor}
                 toggle={ownerAvatarOrTeamName}
+                toggleRef={this.assignRef}
                 onOpen={toggleMenuState}
                 onClose={toggleMenuState}
               />
@@ -176,9 +184,9 @@ class OutcomeCardFooter extends Component {
                   /> :
                   <div className={css(styles.buttonSpacer)} />
                 }
-                <AsyncMenuContainer
-                  fetchMenu={fetchStatusMenu}
-                  maxWidth={200}
+                <LoadableMenu
+                  LoadableComponent={LoadableStatusMenu}
+                  maxWidth={350}
                   maxHeight={225}
                   originAnchor={originAnchor}
                   queryVars={{
@@ -187,11 +195,13 @@ class OutcomeCardFooter extends Component {
                     isAgenda,
                     isPrivate,
                     task,
-                    removeContentTag: this.removeContentTag
+                    removeContentTag: this.removeContentTag,
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
-                  toggleMenuState={toggleMenuState}
+                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" ref={(c) => { this.statusRef = c; }} />}
+                  toggleRef={this.statusRef}
+                  onOpen={toggleMenuState}
+                  onClose={toggleMenuState}
                 />
               </div>
             }

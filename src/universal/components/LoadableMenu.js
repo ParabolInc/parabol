@@ -34,6 +34,7 @@ const menu = {
 class LoadableMenu extends Component {
   static propTypes = {
     toggle: PropTypes.any,
+    toggleRef: PropTypes.instanceOf(Element),
     LoadableComponent: PropTypes.func.isRequired,
     setOriginCoords: PropTypes.func.isRequired,
     setModalRef: PropTypes.func.isRequired,
@@ -80,10 +81,14 @@ class LoadableMenu extends Component {
     }
   }
 
-  closePortal = () => {
+  closePortal = (e) => {
+    const {toggleRef} = this.props;
     this.setState({
       isOpen: false
     });
+    if (e && e.key && toggleRef) {
+      toggleRef.focus();
+    }
   };
 
   makeSmartToggle(toggle) {
