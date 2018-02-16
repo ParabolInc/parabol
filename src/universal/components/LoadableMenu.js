@@ -5,6 +5,7 @@ import AnimatedFade from 'universal/components/AnimatedFade';
 import {TransitionGroup} from 'react-transition-group';
 import PropTypes from 'prop-types';
 import withCoordsV2 from 'universal/decorators/withCoordsV2';
+import isKeyboardEvent from 'universal/utils/isKeyboardEvent';
 
 /*
  * Replaces the react-portal-hoc with React16s built-in portal
@@ -85,7 +86,7 @@ class LoadableMenu extends Component {
     this.setState({
       isOpen: false
     });
-    if (e && e.key && this.toggleRef) {
+    if (isKeyboardEvent(e) && this.toggleRef) {
       this.toggleRef.focus();
     }
   };
@@ -126,7 +127,7 @@ class LoadableMenu extends Component {
         <TransitionGroup appear component={null}>
           {isOpen &&
           <AnimatedFade>
-            <Modal clickToClose escToClose onClose={this.closePortal}>
+            <Modal>
               <div style={{...menuBlock, ...coords, maxWidth}} ref={setModalRef}>
                 <div style={{...menu, maxHeight}}>
                   <LoadableComponent {...queryVars} closePortal={this.closePortal} />
