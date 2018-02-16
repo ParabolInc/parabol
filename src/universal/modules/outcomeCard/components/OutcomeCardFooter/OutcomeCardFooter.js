@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
 import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import textOverflow from 'universal/styles/helpers/textOverflow';
@@ -20,8 +19,6 @@ import Loadable from 'react-loadable';
 import LoadableMenu from 'universal/components/LoadableMenu';
 import LoadableLoading from 'universal/components/LoadableLoading';
 
-const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
-
 const LoadableAssignMenu = Loadable({
   loader: () => System.import(
     /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
@@ -36,6 +33,16 @@ const LoadableStatusMenu = Loadable({
   loader: () => System.import(
     /* webpackChunkName: 'OutcomeCardStatusMenu' */
     'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
+
+const LoadableGitHubMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'GitHubReposMenuRoot' */
+    'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot'
   ),
   loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
@@ -163,11 +170,11 @@ class OutcomeCardFooter extends Component {
           <div className={buttonBlockStyles}>
             {isArchived ?
               <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" /> :
-              <div>
+              <React.Fragment>
                 {/* buttonSpacer helps truncated names (…) be consistent */}
                 {!service ?
-                  <AsyncMenuContainer
-                    fetchMenu={fetchGitHubRepos}
+                  <LoadableMenu
+                    LoadableComponent={LoadableGitHubMenu}
                     maxWidth={350}
                     maxHeight={225}
                     originAnchor={originAnchor}
@@ -179,8 +186,10 @@ class OutcomeCardFooter extends Component {
                       clearError: this.clearError
                     }}
                     targetAnchor={targetAnchor}
-                    toggle={<OutcomeCardFooterButton icon="github" />}
-                    toggleMenuState={toggleMenuState}
+                    toggle={<OutcomeCardFooterButton icon="github" setRef={(c) => { this.githubRef = c; }} />}
+                    toggleRef={this.githubRef}
+                    onOpen={toggleMenuState}
+                    onClose={toggleMenuState}
                   /> :
                   <div className={css(styles.buttonSpacer)} />
                 }
@@ -203,7 +212,7 @@ class OutcomeCardFooter extends Component {
                   onOpen={toggleMenuState}
                   onClose={toggleMenuState}
                 />
-              </div>
+              </React.Fragment>
             }
           </div>
         </div>

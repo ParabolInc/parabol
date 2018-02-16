@@ -18,12 +18,17 @@ class MenuWithShortcuts extends Component {
     smartChildren: []
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const {children} = this.props;
     this.state.smartChildren = this.makeSmartChildren(children, 0);
+  }
+
+  componentDidMount() {
+    const {children} = this.props;
     const childArr = Children.toArray(children);
     const startIdx = childArr.findIndex((child) => isValidMenuItem(child));
     this.state.active = startIdx;
+    this.setActiveIndex(startIdx);
     this.menuRef.focus();
   }
 
