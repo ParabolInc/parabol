@@ -4,7 +4,6 @@
  *
  * @flow
  */
-
 import React from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
@@ -13,13 +12,13 @@ type Props = {
   hasSession: boolean
 };
 
-const DynamicHome = ({hasSession}: Props) => (
-  hasSession
+const DynamicHome = (props: Props) => (
+  props.hasSession
     ? <Redirect to="/me" />
     : <Redirect to="/signin" />
 );
 
-const mapStateToProps = (state): Props => ({
+const mapStateToProps = (state) => ({
   hasSession: Boolean(state.auth.obj.sub)
 });
 

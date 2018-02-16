@@ -19,5 +19,5 @@
  */
 
 export default {
-  newSignIn: false
+  newSignIn: true // FIXME: change back to `false` before merging
 };

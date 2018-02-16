@@ -99,6 +99,8 @@ module.exports = {
     ]
   },
   "globals": {
+    "__AUTH0_CLIENT_ID__": true,
+    "__AUTH0_DOMAIN__": true,
     "__PRODUCTION__": true,
     "__CLIENT__": true,
     "__WEBPACK__": true,

@@ -1,6 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {Fragment} from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import DynamicHome from 'universal/components/DynamicHome/DynamicHome';
