@@ -195,10 +195,10 @@ class OutcomeCardFooter extends Component {
                     isAgenda,
                     isPrivate,
                     task,
-                    removeContentTag: this.removeContentTag,
+                    removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" ref={(c) => { this.statusRef = c; }} />}
+                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" setRef={(c) => { this.statusRef = c; }} />}
                   toggleRef={this.statusRef}
                   onOpen={toggleMenuState}
                   onClose={toggleMenuState}

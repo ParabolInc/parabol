@@ -29,11 +29,11 @@ class MenuWithShortcuts extends Component {
 
   componentWillReceiveProps(nextProps) {
     const {children} = nextProps;
-    // if (this.props.children !== children) {
+    if (this.props.children !== children) {
       this.setState({
         smartChildren: this.makeSmartChildren(children, this.state.active)
       });
-    // }
+    }
   }
 
   setActiveIndex = (idx) => {
@@ -56,7 +56,7 @@ class MenuWithShortcuts extends Component {
         }
       }
     }
-    if (!nextIdx || nextIdx === active || nextIdx < 0 || nextIdx >= smartChildren.length) return;
+    if (nextIdx === null || nextIdx === undefined || nextIdx === active || nextIdx < 0 || nextIdx >= smartChildren.length) return;
     this.setState({
       active: nextIdx,
       smartChildren: this.makeSmartChildren(this.props.children, nextIdx)
@@ -109,7 +109,7 @@ class MenuWithShortcuts extends Component {
         aria-label={ariaLabel}
         tabIndex={-1}
         onKeyDown={this.handleKeyDown}
-        ref={(c) => {this.menuRef = c;}}
+        ref={(c) => { this.menuRef = c; }}
         className={css({outline: 0})}
       >
         {smartChildren}

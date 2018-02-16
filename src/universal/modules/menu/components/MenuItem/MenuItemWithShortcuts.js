@@ -93,7 +93,7 @@ class MenuItemWithShortcuts extends Component {
     const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
     const titleStr = title || titleFallbackStr;
     const makeIcon = () =>
-      <FontAwesome
+      (<FontAwesome
         name={icon}
         className={css({
           color: iconColor || 'inherit',
@@ -104,7 +104,7 @@ class MenuItemWithShortcuts extends Component {
           textAlign: 'center',
           width: '1.25rem'
         })}
-      />;
+      />);
     const makeAvatar = () =>
       (<img
         alt={titleStr}
