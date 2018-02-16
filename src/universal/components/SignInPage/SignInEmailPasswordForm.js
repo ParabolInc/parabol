@@ -9,10 +9,12 @@ import {Field, reduxForm} from 'redux-form';
 
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
+import shouldValidate from 'universal/validation/shouldValidate';
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
-  onSubmit: ({email: string, password: string}) => void // Provided by clients of the exported component
+  onSubmit: ({email: string, password: string}) => void, // Provided by clients of the exported component
+  valid: boolean
 };
 
 const formStyles = {
@@ -47,6 +49,7 @@ const SignInEmailPasswordForm = (props: Props) => (
       />
     </div>
     <Button
+      disabled={!props.valid}
       type="submit"
       label="Sign In"
       title="Sign In"
@@ -56,4 +59,15 @@ const SignInEmailPasswordForm = (props: Props) => (
   </form>
 );
 
-export default reduxForm({form: 'signin'})(SignInEmailPasswordForm);
+const validate = (values) => {
+  const validation = {};
+  if (!values.email) {
+    validation.email = 'Enter an email address.';
+  }
+  if (!values.password) {
+    validation.password = 'Enter a password.';
+  }
+  return validation;
+};
+
+export default reduxForm({form: 'signin', shouldValidate, validate})(SignInEmailPasswordForm);
