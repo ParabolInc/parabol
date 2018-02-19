@@ -78,7 +78,7 @@ class MenuWithShortcuts extends Component {
       handled = true;
       this.setActiveIndex(active - 1);
     } else if (e.key === 'Enter') {
-      const smartChild = children[active];
+      const smartChild = Children.toArray(children)[active];
       if (smartChild && smartChild.props.onClick) {
         handled = true;
         smartChild.props.onClick();
