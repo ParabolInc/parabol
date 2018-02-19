@@ -14,12 +14,15 @@ import Separator from './Separator';
 import SignInEmailPasswordForm from './SignInEmailPasswordForm';
 
 type AuthProvider = {
-  iconSrc?: string,
-  displayName: string
+  iconName: string,
+  displayName: string,
+  auth0Connection: string
 };
 
 type Props = {
   authProviders: Array<AuthProvider>,
+  error?: boolean,
+  getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
   handleSubmitCredentials: ({email: string, password: string}) => void
 };
 
@@ -34,9 +37,18 @@ const signInContainerStyles = {
 export default (props: Props) => (
   <div style={signInContainerStyles}>
     <h1>Sign In</h1>
-    <h2>or <Link to="/signup">Sign Up</Link></h2>
+    <h2>
+      or <Link to="/signup">Sign Up</Link>
+    </h2>
+    {props.error &&
+      <p>Oops! There was a problem signing you in. Please try again.</p>
+    }
     {props.authProviders.map((provider) => (
-      <ThirdPartySignInButton key={provider.displayName} provider={provider} />
+      <ThirdPartySignInButton
+        key={provider.displayName}
+        provider={provider}
+        handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
+      />
     ))}
     <Separator text="or" />
     <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />

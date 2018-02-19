@@ -9,8 +9,9 @@ import React from 'react';
 import Button from 'universal/components/Button/Button';
 
 type Props = {
+  handleClick: () => void,
   provider: {
-    iconSrc?: string,
+    iconName: string,
     displayName: string
   }
 };
@@ -19,7 +20,7 @@ const buttonWrapperStyles = {
   paddingTop: '.5rem'
 };
 
-export default ({provider}: Props) => {
+export default ({provider, handleClick}: Props) => {
   const label = `Sign in with ${provider.displayName}`;
   return (
     <div style={buttonWrapperStyles}>
@@ -27,9 +28,10 @@ export default ({provider}: Props) => {
         type="button"
         title={label}
         label={label}
-        icon={provider.iconSrc}
+        icon={provider.iconName}
         iconPlacement="left"
         colorPalette="gray"
+        onClick={handleClick}
       />
     </div>
   );

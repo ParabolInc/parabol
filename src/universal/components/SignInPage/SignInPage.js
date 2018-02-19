@@ -10,7 +10,7 @@ import type {RouterHistory, Location} from 'react-router-dom';
 import auth0 from 'auth0-js';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -48,6 +48,13 @@ const containerStyles = {
   flexDirection: 'column'
 };
 
+const loadingErrorStyles = ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  height: '100%'
+});
+
 // A naive implementation taking a querystring-formatted string (beginning in '?'),
 // and returning an object of the key/value pairs.  Will not work for null-valued
 // keys, but works for our own `?redirectTo=/path/to/page` contract.
@@ -72,6 +79,13 @@ class SignInPage extends Component<Props, State> {
     this.maybeRedirectToApp();
   }
 
+  getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
+    this.webAuth.authorize({
+      connection: auth0Connection,
+      responseType: 'token'
+    });
+  };
+
   maybeRedirectToApp = () => {
     if (this.props.hasSession) {
       const parsedSearch = parseSearch(this.props.location.search);
@@ -86,7 +100,11 @@ class SignInPage extends Component<Props, State> {
     if (hash) {
       this.setState({loggingIn: true});
       this.parseAuthResponse(hash)
-        .then(this.saveTokens);
+        .then(this.saveTokens)
+        .catch((error) => {
+          this.setState({error});
+          throw error; // Inform raven
+        });
     }
   };
 
@@ -101,9 +119,17 @@ class SignInPage extends Component<Props, State> {
     });
   };
 
+  resetState = () => {
+    this.setState({loggingIn: false, error: null});
+  };
+
   saveTokens = (response: ParsedAuthResponse): void => {
     signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
   };
+
+  authProviders = [
+    {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
+  ];
 
   webAuth = new auth0.WebAuth({
     domain: __AUTH0_DOMAIN__,
@@ -120,21 +146,49 @@ class SignInPage extends Component<Props, State> {
       responseType: 'token'
     }, (error) => {
       this.setState({error});
+      throw error; // Inform raven
     });
+  };
+
+  renderLoading = () => {
+    return <LoadingView />;
+  }
+
+  renderLoadingError = () => {
+    return (
+      <div style={containerStyles}>
+        <Header />
+        <div style={loadingErrorStyles}>
+          <h1>
+            🤭 Oops!
+          </h1>
+          <p>
+            We had some trouble signing you in!
+          </p>
+          <p>
+            Try going back to the <Link to="/signin" onClick={this.resetState}>Sign in page</Link> in order to sign in again.
+          </p>
+        </div>
+      </div>
+    );
   };
 
   render() {
     const {loggingIn, error} = this.state;
-    return loggingIn ? (
-      <LoadingView />
-    ) : (
+
+    if (loggingIn && !error) {
+      return this.renderLoading();
+    }
+    if (loggingIn && error) {
+      return this.renderLoadingError();
+    }
+    return (
       <div style={containerStyles}>
         <Header />
-        {error &&
-          <div>An error!</div>
-        }
         <SignIn
-          authProviders={[{displayName: 'Google'}, {displayName: 'Hooli'}]}
+          error={Boolean(error)}
+          authProviders={this.authProviders}
+          getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
           handleSubmitCredentials={this.handleSubmitCredentials}
         />
       </div>
