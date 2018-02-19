@@ -18,4 +18,6 @@
  * @flow
  */
 
-export default {};
+export default {
+  newSignIn: false
+};

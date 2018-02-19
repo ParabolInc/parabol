@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
+import DynamicHome from 'universal/components/DynamicHome/DynamicHome';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
+import SignIn from 'universal/components/SignIn/SignIn';
 
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
 const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
@@ -26,7 +28,13 @@ const Action = (props) => {
       <Toast />
       <SocketHealthMonitor />
       <Switch>
-        <Route exact path="/" component={LandingContainer} />
+        {__RELEASE_FLAGS__.newSignIn
+          ? <Route exact path="/" component={DynamicHome} />
+          : <Route exact path="/" component={LandingContainer} />
+        }
+        {__RELEASE_FLAGS__.newSignIn &&
+          <Route exact path="/signin" component={SignIn} />
+        }
         <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
         <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />
