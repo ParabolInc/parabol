@@ -31,12 +31,6 @@ class OutcomeCardAssignMenu extends Component {
     }
   }
 
-  setAddSoftAsActive = () => {
-    this.setState({
-      active: this.state.assignees.length
-    });
-  };
-
   setAssignees(props) {
     const {viewer: {team: {teamMembers, softTeamMembers}}, task: {assignee: {assigneeId}}} = props;
     this.setState({
@@ -67,7 +61,6 @@ class OutcomeCardAssignMenu extends Component {
   };
 
   render() {
-    const {active} = this.state;
     const {
       area,
       closePortal,
@@ -83,12 +76,11 @@ class OutcomeCardAssignMenu extends Component {
         closePortal={closePortal}
       >
         <div className={css(styles.label)}>Assign to:</div>
-        {assignees.map((teamMember, idx) => {
+        {assignees.map((teamMember) => {
           return (
             <MenuItemWithShortcuts
               key={teamMember.id}
               avatar={teamMember.picture || avatarUser}
-              isActive={active === idx}
               label={teamMember.preferredName}
               onClick={this.handleMenuItemClick(teamMember)}
             />

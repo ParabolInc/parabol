@@ -18,11 +18,22 @@ import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 import Loadable from 'react-loadable';
 import LoadableMenu from 'universal/components/LoadableMenu';
 import LoadableLoading from 'universal/components/LoadableLoading';
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 
 const LoadableAssignMenu = Loadable({
   loader: () => System.import(
     /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
     'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
+
+const LoadableAssignTeamMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
+    'universal/modules/outcomeCard/components/OutcomeCardAssignTeamMenuRoot'
   ),
   loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
@@ -120,7 +131,12 @@ class OutcomeCardFooter extends Component {
     const {error} = this.state;
     const ownerAvatarOrTeamName = (
       showTeam ?
-        <div className={css(styles.teamNameLabel)}>{teamName}</div> :
+        (<PlainButton
+          aria-label="Assign this task to another team"
+          onClick={this.selectAllQuestion}
+        >
+          {teamName}
+        </PlainButton>) :
         (<button
           aria-label="Assign this task to a teammate"
           className={css(styles.avatarButton)}
@@ -142,27 +158,44 @@ class OutcomeCardFooter extends Component {
         </button>)
     );
 
+    const canAssign = !service && !isArchived;
     return (
       <div className={css(styles.footerAndMessage)}>
         <div className={css(styles.footer)}>
           <div className={css(styles.avatarBlock)}>
-            {service || showTeam || isArchived ?
-              ownerAvatarOrTeamName :
-              <LoadableMenu
-                LoadableComponent={LoadableAssignMenu}
-                maxWidth={350}
-                maxHeight={225}
-                originAnchor={assignOriginAnchor}
-                queryVars={{
-                  area,
-                  task,
-                  teamId
-                }}
-                targetAnchor={assignTargetAnchor}
-                toggle={ownerAvatarOrTeamName}
-                onOpen={toggleMenuState}
-                onClose={toggleMenuState}
-              />
+            {!canAssign && ownerAvatarOrTeamName}
+            {canAssign && showTeam &&
+            <LoadableMenu
+              LoadableComponent={LoadableAssignTeamMenu}
+              maxWidth={350}
+              maxHeight={225}
+              originAnchor={assignOriginAnchor}
+              queryVars={{
+                area,
+                task
+              }}
+              targetAnchor={assignTargetAnchor}
+              toggle={ownerAvatarOrTeamName}
+              onOpen={toggleMenuState}
+              onClose={toggleMenuState}
+            />
+            }
+            {canAssign && !showTeam &&
+            <LoadableMenu
+              LoadableComponent={LoadableAssignMenu}
+              maxWidth={350}
+              maxHeight={225}
+              originAnchor={assignOriginAnchor}
+              queryVars={{
+                area,
+                task,
+                teamId
+              }}
+              targetAnchor={assignTargetAnchor}
+              toggle={ownerAvatarOrTeamName}
+              onOpen={toggleMenuState}
+              onClose={toggleMenuState}
+            />
             }
           </div>
           <div className={buttonBlockStyles}>
@@ -365,6 +398,7 @@ export default createFragmentContainer(
         teamId: id
         teamName: name
       }
+      ...OutcomeCardAssignTeamMenu_task
       ...OutcomeCardAssignMenu_task
       ...OutcomeCardStatusMenu_task
     }`
