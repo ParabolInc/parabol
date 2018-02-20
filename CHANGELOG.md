@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.28.1 2018-Feb-19
+## Fixed
+- unsentMessageQueue never released queries and mutations (#1775)
+
 ## v0.28.0 2018-Feb-14
 ## Added
 - Done items in the meeting summary
