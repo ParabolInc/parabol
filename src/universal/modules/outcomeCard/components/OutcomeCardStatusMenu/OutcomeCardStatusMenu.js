@@ -2,7 +2,6 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {convertToRaw} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {MenuItem} from 'universal/modules/menu';
 import {textOverflow} from 'universal/styles/helpers';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
@@ -12,6 +11,9 @@ import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import DeleteTaskMutation from 'universal/mutations/DeleteTaskMutation';
 import {createFragmentContainer} from 'react-relay';
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
+import MenuItemHR from 'universal/modules/menu/components/MenuItem/MenuItemHR';
 
 const statusItems = labels.taskStatus.slugs.slice();
 
@@ -43,7 +45,7 @@ class OutcomeCardStatusMenu extends Component {
       .map((status) => {
         const {color, icon, label} = labels.taskStatus[status];
         return (
-          <MenuItem
+          <MenuItemWithShortcuts
             icon={icon}
             iconColor={color}
             key={status}
@@ -53,17 +55,16 @@ class OutcomeCardStatusMenu extends Component {
           />
         );
       });
+    listItems.push(<MenuItemHR key="HR1" />);
     listItems.push(isPrivate ?
-      (<MenuItem
-        hr="before"
+      (<MenuItemWithShortcuts
         icon="lock"
         key="private"
         label={<div className={css(styles.label)}>{'Remove '}<b>{'#private'}</b></div>}
         onClick={removeContentTag('private')}
         closePortal={closePortal}
       />) :
-      (<MenuItem
-        hr="before"
+      (<MenuItemWithShortcuts
         icon="lock"
         key="private"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>}
@@ -72,14 +73,14 @@ class OutcomeCardStatusMenu extends Component {
       />)
     );
     listItems.push(isAgenda ?
-      (<MenuItem
+      (<MenuItemWithShortcuts
         icon="times"
         key="delete"
         label={<div className={css(styles.label)}>{'Delete this Task'}</div>}
         onClick={this.deleteOutcome}
         closePortal={closePortal}
       />) :
-      (<MenuItem
+      (<MenuItemWithShortcuts
         icon="archive"
         key="archive"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>}
@@ -107,10 +108,14 @@ class OutcomeCardStatusMenu extends Component {
 
 
   render() {
+    const {closePortal} = this.props;
     return (
-      <div>
+      <MenuWithShortcuts
+        ariaLabel={'Change the status of the task'}
+        closePortal={closePortal}
+      >
         {this.itemFactory()}
-      </div>
+      </MenuWithShortcuts>
     );
   }
 }

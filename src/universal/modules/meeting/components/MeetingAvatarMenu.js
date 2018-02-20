@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {MenuItem} from 'universal/modules/menu';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
 
 const MeetingAvatarMenu = (props) => {
   const {avatar, closePortal, handleNavigate, handlePromote, handleRequest, localPhase, styles} = props;
@@ -18,33 +19,33 @@ const MeetingAvatarMenu = (props) => {
   const phaseInfo = actionMeeting[localPhase];
   const {name: phaseName} = phaseInfo;
   return (
-    <div>
+    <MenuWithShortcuts
+      ariaLabel={'Select what to do with this team member'}
+      closePortal={closePortal}
+    >
       <div className={css(styles.label)}>{headerLabel}</div>
       {handleNavigate &&
-      <MenuItem
+      <MenuItemWithShortcuts
         key="handleNavigate"
         label={`See ${preferredName}’s ${phaseName}`}
         onClick={handleNavigate}
-        closePortal={closePortal}
       />
       }
       {handlePromote &&
-      <MenuItem
+      <MenuItemWithShortcuts
         key="promoteToFacilitator"
         label={`Promote ${preferredName} to Facilitator`}
         onClick={handlePromote}
-        closePortal={closePortal}
       />
       }
       {handleRequest &&
-      <MenuItem
+      <MenuItemWithShortcuts
         key="requestFacilitator"
         label={'Request to become Facilitator'}
         onClick={handleRequest}
-        closePortal={closePortal}
       />
       }
-    </div>
+    </MenuWithShortcuts>
   );
 };
 

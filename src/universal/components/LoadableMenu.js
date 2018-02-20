@@ -5,6 +5,8 @@ import AnimatedFade from 'universal/components/AnimatedFade';
 import {TransitionGroup} from 'react-transition-group';
 import PropTypes from 'prop-types';
 import withCoordsV2 from 'universal/decorators/withCoordsV2';
+import isKeyboardEvent from 'universal/utils/isKeyboardEvent';
+import styled from 'react-emotion';
 
 /*
  * Replaces the react-portal-hoc with React16s built-in portal
@@ -13,23 +15,25 @@ import withCoordsV2 from 'universal/decorators/withCoordsV2';
 
 
 // Aphrodite loads styles async, which make for erroneous height/width calculations.
-const menuBlock = {
+const MenuBlock = styled('div')(({maxWidth}) => ({
+  maxWidth,
   padding: '.25rem 0',
   position: 'absolute',
   zIndex: ui.ziMenu
-};
+}));
 
-const menu = {
+const MenuContents = styled('div')(({maxHeight}) => ({
   backgroundColor: ui.menuBackgroundColor,
   borderRadius: ui.menuBorderRadius,
   boxShadow: ui.menuBoxShadow,
+  maxHeight,
   outline: 0,
   overflowY: 'auto',
   paddingBottom: ui.menuGutterVertical,
   paddingTop: ui.menuGutterVertical,
   textAlign: 'left',
   width: '100%'
-};
+}));
 
 class LoadableMenu extends Component {
   static propTypes = {
@@ -58,6 +62,7 @@ class LoadableMenu extends Component {
       this.smartToggle = this.makeSmartToggle(toggle);
     } else {
       LoadableComponent.preload();
+      this.state.isOpen = true;
     }
   }
 
@@ -80,15 +85,21 @@ class LoadableMenu extends Component {
     }
   }
 
-  closePortal = () => {
+  closePortal = (e) => {
     this.setState({
       isOpen: false
     });
+    if (isKeyboardEvent(e) && this.toggleRef) {
+      this.toggleRef.focus();
+    }
   };
 
   makeSmartToggle(toggle) {
+    // strings are plain DOM nodes
+    const refProp = typeof toggle.type === 'string' ? 'ref' : 'innerRef';
     return React.cloneElement(toggle, {
       'aria-haspopup': 'true',
+      'aria-expanded': this.state.isOpen,
       onClick: (e) => {
         const {setOriginCoords, LoadableComponent} = this.props;
         LoadableComponent.preload();
@@ -103,25 +114,28 @@ class LoadableMenu extends Component {
       onMouseEnter: () => {
         const {LoadableComponent} = this.props;
         LoadableComponent.preload();
+      },
+      [refProp]: (c) => {
+        this.toggleRef = c;
       }
     });
   }
 
   render() {
     const {isOpen} = this.state;
-    const {coords, setModalRef, LoadableComponent, queryVars, maxWidth, maxHeight} = this.props;
+    const {coords, setModalRef, LoadableComponent, queryVars} = this.props;
     return (
       <React.Fragment>
-        {React.cloneElement(this.smartToggle, {'aria-expanded': this.state.isOpen})}
+        {this.smartToggle}
         <TransitionGroup appear component={null}>
           {isOpen &&
           <AnimatedFade>
             <Modal clickToClose escToClose onClose={this.closePortal}>
-              <div style={{...menuBlock, ...coords, maxWidth}} ref={setModalRef}>
-                <div style={{...menu, maxHeight}}>
+              <MenuBlock style={coords} innerRef={setModalRef}>
+                <MenuContents>
                   <LoadableComponent {...queryVars} closePortal={this.closePortal} />
-                </div>
-              </div>
+                </MenuContents>
+              </MenuBlock>
             </Modal>
           </AnimatedFade>
           }

@@ -25,7 +25,7 @@ class EditorInputWrapper extends Component {
     placeholder: PropTypes.string,
     readOnly: PropTypes.bool,
     setEditorState: PropTypes.func.isRequired,
-    setRef: PropTypes.func,
+    innerRef: PropTypes.func,
     styles: PropTypes.object
   };
 
@@ -135,7 +135,7 @@ class EditorInputWrapper extends Component {
   };
 
   render() {
-    const {editorState, placeholder, readOnly, setRef} = this.props;
+    const {editorState, placeholder, readOnly, innerRef} = this.props;
     return (
       <Editor
         blockStyleFn={this.blockStyleFn}
@@ -153,8 +153,8 @@ class EditorInputWrapper extends Component {
         placeholder={placeholder}
         readOnly={readOnly}
         ref={(c) => {
-          if (setRef) {
-            setRef(c);
+          if (innerRef) {
+            innerRef(c);
           }
           this.editorRef = c;
         }}

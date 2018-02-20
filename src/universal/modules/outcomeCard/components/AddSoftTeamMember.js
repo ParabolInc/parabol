@@ -20,6 +20,7 @@ const makeValidationSchema = (allAssignees) => {
   return legitify({
     inviteeEmail: (value) => value
       .trim()
+      .required()
       .matches(emailRegex, 'That doesn’t look like an email address.')
       .test((inviteeEmail) => {
         const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
@@ -41,7 +42,6 @@ const validateEmailAddress = (inviteeEmail, assignees, onError) => {
 class AddSoftTeamMember extends Component {
   static propTypes = {
     area: PropTypes.string.isRequired,
-    assignRef: PropTypes.instanceOf(Element),
     atmosphere: PropTypes.object.isRequired,
     dirty: PropTypes.bool.isRequired,
     setDirty: PropTypes.func.isRequired,
@@ -78,7 +78,6 @@ class AddSoftTeamMember extends Component {
     const {inviteeEmail} = this.state;
     const {
       area,
-      assignRef,
       atmosphere,
       closePortal,
       setDirty,
@@ -101,7 +100,6 @@ class AddSoftTeamMember extends Component {
 
     // resolve
     closePortal();
-    assignRef.focus();
     const invitees = [{email: inviteeEmail}];
     submitMutation();
     const handleCompleted = (res) => {
