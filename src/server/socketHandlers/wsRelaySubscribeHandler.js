@@ -34,6 +34,7 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
     relayUnsubscribe(connectionContext.subs, opId);
   }
 
+  connectionContext.subs[opId] = {status: 'pending'};
   const {asyncIterator, error} = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
   if (!asyncIterator) {
     if (error) {
@@ -73,7 +74,5 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
 };
 
 export default function wsRelaySubscribeHandler(connectionContext, parsedMessage) {
-  const {id: opId} = parsedMessage;
-  connectionContext.subs[opId] = {status: 'pending'};
   handleSubscribe(connectionContext, parsedMessage);
 }

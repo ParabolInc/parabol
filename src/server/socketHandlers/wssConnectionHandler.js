@@ -6,7 +6,7 @@ import sendMessage from 'server/socketHelpers/sendMessage';
 import url from 'url';
 import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
-import {GQL_CONNECTION_ERROR} from 'universal/utils/constants';
+import {GQL_CONNECTION_ERROR, WS_KEEP_ALIVE} from 'universal/utils/constants';
 import handleConnect from 'server/socketHandlers/handleConnect';
 import {GRAPHQL_WS} from 'subscriptions-transport-ws';
 
@@ -42,9 +42,8 @@ export default function connectionHandler(sharedDataLoader) {
       return;
     }
     const connectionContext = new ConnectionContext(socket, authToken, sharedDataLoader);
-    const isConnected = await handleConnect(connectionContext);
-    if (!isConnected) return;
-    keepAlive(connectionContext, 10000);
+    handleConnect(connectionContext);
+    keepAlive(connectionContext, WS_KEEP_ALIVE);
     socket.on('message', handleMessage(connectionContext));
     socket.on('close', handleDisconnect(connectionContext));
   };
