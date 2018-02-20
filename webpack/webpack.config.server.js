@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import npmPackage from '../package.json';
 import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin';
+
 const root = process.cwd();
 const serverInclude = [
   path.join(root, 'src', 'server'),
