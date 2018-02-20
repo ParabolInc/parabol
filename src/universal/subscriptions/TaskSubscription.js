@@ -10,6 +10,7 @@ import {rejectOrgApprovalTaskUpdater} from 'universal/mutations/RejectOrgApprova
 import {cancelTeamInviteTaskUpdater} from 'universal/mutations/CancelTeamInviteMutation';
 import {inviteTeamMembersTaskUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {acceptTeamInviteTaskUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
+import {changeTaskTeamTaskUpdater} from 'universal/mutations/ChangeTaskTeamMutation';
 
 const subscription = graphql`
   subscription TaskSubscription {
@@ -20,9 +21,10 @@ const subscription = graphql`
       ...RemoveTeamMemberMutation_task
       ...CancelApprovalMutation_task
       ...CancelTeamInviteMutation_task
-      ...CreateGitHubIssueMutation_task,
-      ...CreateTaskMutation_task,
-      ...DeleteTaskMutation_task,
+      ...ChangeTaskTeamMutation_task
+      ...CreateGitHubIssueMutation_task
+      ...CreateTaskMutation_task
+      ...DeleteTaskMutation_task
       ...EditTaskMutation_task
       ...EndMeetingMutation_task
       ...InviteTeamMembersMutation_task
@@ -54,6 +56,9 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
           break;
         case 'CancelTeamInvitePayload':
           cancelTeamInviteTaskUpdater(payload, store, viewerId);
+          break;
+        case 'ChangeTaskTeamMutationPayload':
+          changeTaskTeamTaskUpdater(payload, store, viewerId);
           break;
         case 'CreateTaskPayload':
           createTaskTaskUpdater(payload, store, viewerId, false);

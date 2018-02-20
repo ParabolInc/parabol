@@ -9,6 +9,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
 import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
+import ChangeTaskTeamMutation from 'universal/mutations/ChangeTaskTeamMutation';
 
 
 class OutcomeCardAssignTeamMenu extends Component {
@@ -45,7 +46,7 @@ class OutcomeCardAssignTeamMenu extends Component {
     if (newTeam.teamId === teamId) {
       return;
     }
-    ChangeTaskTeamMutation(atmosphere, {area, taskId, teamId})
+    ChangeTaskTeamMutation(atmosphere, {area, taskId, teamId});
   };
 
   render() {

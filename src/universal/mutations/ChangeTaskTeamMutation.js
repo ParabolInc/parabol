@@ -1,23 +1,16 @@
-import jwtDecode from 'jwt-decode';
 import {commitMutation} from 'react-relay';
-import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
-import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
-import handleToastError from 'universal/mutations/handlers/handleToastError';
-import {setAuthToken} from 'universal/redux/authDuck';
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import getInProxy from 'universal/utils/relay/getInProxy';
-import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast';
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 
 graphql`
   fragment ChangeTaskTeamMutation_task on ChangeTaskTeamMutationPayload {
     task {
       ...CompleteTaskFrag @relay(mask: false)
+    }
+    removedNotification {
+      id
     }
   }
 `;
@@ -30,24 +23,12 @@ const mutation = graphql`
   }
 `;
 
-export const changeTaskTeamTaskUpdater = (payload, store, viewerId, options) => {
+export const changeTaskTeamTaskUpdater = (payload, store, viewerId) => {
   const task = payload.getLinkedRecord('task');
   handleUpsertTasks(task, store, viewerId);
 
-  const addedNotification = payload.getLinkedRecord('addedNotification');
-  handleAddNotifications(addedNotification, store, viewerId);
-  if (options) {
-    popInvolvementToast(addedNotification, options);
-  }
-
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id');
   handleRemoveNotifications(removedNotificationId);
-
-  const privatizedTaskId = payload.getValue('privatizedTaskId');
-  const taskUserId = getInProxy(task, 'userId');
-  if (taskUserId !== viewerId && privatizedTaskId) {
-    handleRemoveTasks(privatizedTaskId, store, viewerId);
-  }
 };
 
 const ChangeTaskTeamMutation = (environment, variables, onError, onCompleted) => {
@@ -56,8 +37,8 @@ const ChangeTaskTeamMutation = (environment, variables, onError, onCompleted) =>
     mutation,
     variables,
     updater: (store) => {
-      const payload = store.getRootField('acceptTeamInviteEmail');
-      acceptTeamInviteEmailTeamUpdater(payload, store, viewerId, dispatch);
+      const payload = store.getRootField('changeTaskTeam');
+      changeTaskTeamTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const {taskId, teamId} = variables;
@@ -77,7 +58,6 @@ const ChangeTaskTeamMutation = (environment, variables, onError, onCompleted) =>
     },
     onError,
     onCompleted
-    }
   });
 };
 
