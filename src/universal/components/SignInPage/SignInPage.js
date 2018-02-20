@@ -7,12 +7,13 @@
 import type {Dispatch} from 'redux';
 import type {RouterHistory, Location} from 'react-router-dom';
 
-import auth0 from 'auth0-js';
 import React, {Component} from 'react';
+import Loadable from 'react-loadable';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
+import LoadableLoading from 'universal/components/LoadableLoading';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
@@ -35,7 +36,8 @@ type Props = {
   dispatch: Dispatch<*>,
   hasSession: boolean,
   history: RouterHistory,
-  location: Location
+  location: Location,
+  webAuth: Object
 };
 
 type State = {
@@ -64,6 +66,22 @@ const parseSearch = (search: string): Object => {
   return assocArray.reduce((acc, [key, val]) => ({...acc, [key]: val}), {});
 };
 
+// Note that auth0-js seems to break SSR.  Therefore we dynamically import it
+// over the network.
+const LoadableSignInPage = Loadable({
+  loader: () => import('auth0-js'),
+  loading: LoadableLoading,
+  render: (auth0, props) => {
+    const webAuth = new auth0.WebAuth({
+      domain: __AUTH0_DOMAIN__,
+      clientID: __AUTH0_CLIENT_ID__,
+      redirectUri: window.location.href,
+      scope: 'openid rol tms bet'
+    });
+    return <SignInPage webAuth={webAuth} {...props} />;
+  }
+});
+
 class SignInPage extends Component<Props, State> {
   state = {
     error: null,
@@ -80,7 +98,7 @@ class SignInPage extends Component<Props, State> {
   }
 
   getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
-    this.webAuth.authorize({
+    this.props.webAuth.authorize({
       connection: auth0Connection,
       responseType: 'token'
     });
@@ -110,7 +128,7 @@ class SignInPage extends Component<Props, State> {
 
   parseAuthResponse = (hash: string): Promise<ParsedAuthResponse> => {
     return new Promise((resolve, reject) => {
-      this.webAuth.parseHash({hash}, (err, authResult) => {
+      this.props.webAuth.parseHash({hash}, (err, authResult) => {
         if (err) {
           return reject(err);
         }
@@ -131,15 +149,8 @@ class SignInPage extends Component<Props, State> {
     {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
   ];
 
-  webAuth = new auth0.WebAuth({
-    domain: __AUTH0_DOMAIN__,
-    clientID: __AUTH0_CLIENT_ID__,
-    redirectUri: window.location.href,
-    scope: 'openid rol tms bet'
-  });
-
   handleSubmitCredentials = ({email, password}: Credentials) => {
-    this.webAuth.login({
+    this.props.webAuth.login({
       email,
       password,
       realm: 'Username-Password-Authentication', // FIXME: extract this as AUTH0_REALM to .env
@@ -206,6 +217,6 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default withAtmosphere(
   withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(SignInPage)
+    connect(mapStateToProps, mapDispatchToProps)(LoadableSignInPage)
   )
 );
