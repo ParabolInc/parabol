@@ -1,4 +1,7 @@
-import {GQL_CONNECTION_TERMINATE, GQL_DATA, GQL_ERROR, GQL_START, GQL_STOP} from 'universal/utils/constants';
+import {
+  GQL_CONNECTION_KEEP_ALIVE, GQL_CONNECTION_TERMINATE, GQL_DATA, GQL_ERROR, GQL_START,
+  GQL_STOP
+} from 'universal/utils/constants';
 import handleDisconnect from 'server/socketHandlers/handleDisconnect';
 import sendMessage from 'server/socketHelpers/sendMessage';
 import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler';
@@ -11,6 +14,11 @@ const isQueryProvided = (payload) => payload && payload.query;
 const handleMessage = (connectionContext) => async (message) => {
   const {socket, subs} = connectionContext;
   // catch raw, non-graphql protocol messages here
+  if (message === GQL_CONNECTION_KEEP_ALIVE) {
+    connectionContext.isAlive = true;
+    return;
+  }
+
   let parsedMessage;
   try {
     parsedMessage = JSON.parse(message);
