@@ -92,7 +92,6 @@ class OutcomeCardAssignMenu extends Component {
             closePortal={closePortal}
             taskId={taskId}
             team={team}
-            setAddSoftAsActive={this.setAddSoftAsActive}
           />
         </MenuItemWithShortcuts>
       </MenuWithShortcuts>

@@ -17,27 +17,26 @@ class OutcomeCardAssignTeamMenu extends Component {
     assignableTeams: []
   };
 
-  componentDidMount() {
-    this.setAssignableTeams(this.props);
+  componentWillMount() {
+    this.state.assignableTeams = this.makeAssignableTeams(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     const {viewer: {teams}} = nextProps;
     const {viewer: {teams: oldTeams}} = this.props;
     if (teams !== oldTeams) {
-      this.setAssignableTeams(nextProps);
+      this.setState({
+        assignableTeams: this.makeAssignableTeams(nextProps)
+      });
     }
   }
 
-  setAssignableTeams(props) {
+  makeAssignableTeams(props) {
     const {viewer: {teams}, task: {team: {teamId}}} = props;
-    this.setState({
-      assignableTeams: teams
-        .filter((team) => team.teamId !== teamId)
-    });
+    return teams.filter((team) => team.teamId !== teamId);
   }
 
-  handleTaskUpdate = (newTeam) => {
+  handleTaskUpdate = (newTeam) => () =>  {
     const {
       atmosphere,
       area,

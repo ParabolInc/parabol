@@ -57,7 +57,7 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
         case 'CancelTeamInvitePayload':
           cancelTeamInviteTaskUpdater(payload, store, viewerId);
           break;
-        case 'ChangeTaskTeamMutationPayload':
+        case 'ChangeTaskTeamPayload':
           changeTaskTeamTaskUpdater(payload, store, viewerId);
           break;
         case 'CreateTaskPayload':

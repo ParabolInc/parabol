@@ -63,31 +63,34 @@ class MenuItemWithShortcuts extends Component {
     }
   }
 
-  render() {
+  handleClick = () => {
     const {
       activate,
-      avatar,
       noCloseOnClick,
-      children,
       closePortal,
+      onClick
+    } = this.props;
+    if (noCloseOnClick) {
+      activate();
+    } else if (closePortal) {
+      closePortal();
+    }
+    if (onClick) {
+      onClick();
+    }
+  };
+
+  render() {
+    const {
+      avatar,
+      children,
       icon,
       iconColor,
       isActive,
       label,
-      onClick,
       menuRef,
       title
     } = this.props;
-    const handleClick = () => {
-      if (noCloseOnClick) {
-        activate();
-      } else if (closePortal) {
-        closePortal();
-      }
-      if (onClick) {
-        onClick();
-      }
-    };
     const labelEl = typeof label === 'string' ?
       <div className={cx(labelStyle, (avatar || icon) && iconLabelStyle)}>{label}</div> : label;
     const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
@@ -124,7 +127,7 @@ class MenuItemWithShortcuts extends Component {
         title={titleStr}
         ref={(c) => { this.itemRef = c; }}
         className={cx(rootStyle, isActive && activeStyle)}
-        onClick={handleClick}
+        onClick={this.handleClick}
       >
         {avatar && makeAvatar()}
         {!avatar && icon && makeIcon()}

@@ -5,7 +5,7 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
-  fragment ChangeTaskTeamMutation_task on ChangeTaskTeamMutationPayload {
+  fragment ChangeTaskTeamMutation_task on ChangeTaskTeamPayload {
     task {
       ...CompleteTaskFrag @relay(mask: false)
     }
