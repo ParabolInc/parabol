@@ -96,7 +96,7 @@ export default (ComposedComponent) => {
         const maxLeft = innerWidth - modalWidth + scrollX;
         nextCoords.left = Math.min(left, maxLeft);
       } else {
-        const right = innerWidth - (this.originCoords.left + originLeftOffset);
+        const right = innerWidth - (this.originCoords.left + originLeftOffset) - scrollX;
         const maxRight = innerWidth - modalWidth - scrollX;
         nextCoords.right = Math.min(right, maxRight);
       }
