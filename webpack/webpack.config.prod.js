@@ -20,6 +20,7 @@ const clientInclude = [
 
 
 const vendor = [
+  'auth0-js',
   'auth0-lock',
   'react',
   'react-dom',
