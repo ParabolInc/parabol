@@ -18,7 +18,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 import Header from './Header';
 import SignIn from './SignIn';
-import chunkArray from 'universal/utils/chunkArray';
 
 type Credentials = {
   email: string,
@@ -56,15 +55,6 @@ const loadingErrorStyles = ({
   height: '100%'
 });
 
-// A naive implementation taking a querystring-formatted string (beginning in '?'),
-// and returning an object of the key/value pairs.  Will not work for null-valued
-// keys, but works for our own `?redirectTo=/path/to/page` contract.
-const parseSearch = (search: string): Object => {
-  if (!search) { return {}; }
-  const assocArray = chunkArray(search.slice(1).split(/=|&/), 2);
-  return assocArray.reduce((acc, [key, val]) => ({...acc, [key]: val}), {});
-};
-
 class SignInPage extends Component<Props, State> {
   state = {
     error: null,
@@ -81,37 +71,38 @@ class SignInPage extends Component<Props, State> {
   }
 
   getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
-    this.props.webAuth.authorize({
+    this.webAuth.authorize({
       connection: auth0Connection,
       responseType: 'token'
     });
   };
 
   maybeRedirectToApp = () => {
-    if (this.props.hasSession) {
-      const parsedSearch = parseSearch(this.props.location.search);
-      const pathToVisit = parsedSearch.redirectTo || '/me';
-      this.props.history.replace(pathToVisit);
+    const {hasSession, history, location} = this.props;
+    if (hasSession) {
+      const parsedSearch = new URLSearchParams(location.search);
+      const pathToVisit = parsedSearch.get('redirectTo') || '/me';
+      history.replace(pathToVisit);
     }
   };
 
-  maybeCaptureAuthResponse = () => {
+  maybeCaptureAuthResponse = async () => {
     // If we've received an auth response, log us in
     const {hash} = this.props.location;
     if (hash) {
       this.setState({loggingIn: true});
-      this.parseAuthResponse(hash)
-        .then(this.saveTokens)
-        .catch((error) => {
-          this.setState({error});
-          throw error; // Inform raven
-        });
+      const authResponse = await this.parseAuthResponse(hash);
+      try {
+        this.saveToken(authResponse);
+      } catch (error) {
+        this.setState({error});
+      }
     }
   };
 
   parseAuthResponse = (hash: string): Promise<ParsedAuthResponse> => {
     return new Promise((resolve, reject) => {
-      this.props.webAuth.parseHash({hash}, (err, authResult) => {
+      this.webAuth.parseHash({hash}, (err, authResult) => {
         if (err) {
           return reject(err);
         }
@@ -124,7 +115,7 @@ class SignInPage extends Component<Props, State> {
     this.setState({loggingIn: false, error: null});
   };
 
-  saveTokens = (response: ParsedAuthResponse): void => {
+  saveToken = (response: ParsedAuthResponse): void => {
     signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
   };
 
@@ -140,14 +131,13 @@ class SignInPage extends Component<Props, State> {
   ];
 
   handleSubmitCredentials = ({email, password}: Credentials) => {
-    this.props.webAuth.login({
+    this.webAuth.login({
       email,
       password,
-      realm: 'Username-Password-Authentication', // FIXME: extract this as AUTH0_REALM to .env
+      realm: 'Username-Password-Authentication',
       responseType: 'token'
     }, (error) => {
       this.setState({error});
-      throw error; // Inform raven
     });
   };
 
@@ -187,7 +177,7 @@ class SignInPage extends Component<Props, State> {
       <div style={containerStyles}>
         <Header />
         <SignIn
-          error={Boolean(error)}
+          hasError={Boolean(error)}
           authProviders={this.authProviders}
           getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
           handleSubmitCredentials={this.handleSubmitCredentials}

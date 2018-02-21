@@ -4,22 +4,29 @@
  *
  * @flow
  */
+import type {Location} from 'react-router-dom';
+
 import React from 'react';
 import {connect} from 'react-redux';
-import {Redirect} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
 
 type Props = {
-  hasSession: boolean
+  hasSession: boolean,
+  location: Location
 };
 
 const DynamicHome = (props: Props) => (
-  props.hasSession
-    ? <Redirect to="/me" />
-    : <Redirect to="/signin" />
+  props.hasSession ? (
+    <Redirect to={{pathname: '/me', search: props.location.search}} />
+  ) : (
+    <Redirect to={{pathname: '/signin', search: props.location.search}} />
+  )
 );
 
 const mapStateToProps = (state) => ({
   hasSession: Boolean(state.auth.obj.sub)
 });
 
-export default connect(mapStateToProps)(DynamicHome);
+export default connect(mapStateToProps)(
+  withRouter(DynamicHome)
+);

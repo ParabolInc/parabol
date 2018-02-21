@@ -10,9 +10,8 @@ import React from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const separatorStyles = {
-  padding: '1rem 0 1rem 0',
-  display: 'flex',
-  flexDirection: 'row'
+  padding: '1rem 0',
+  display: 'flex'
 };
 
 const separatorLineStyles = {

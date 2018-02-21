@@ -21,7 +21,7 @@ type AuthProvider = {
 
 type Props = {
   authProviders: Array<AuthProvider>,
-  error?: boolean,
+  hasError?: boolean,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
   handleSubmitCredentials: ({email: string, password: string}) => void
 };
@@ -40,7 +40,7 @@ export default (props: Props) => (
     <h2>
       or <Link to="/signup">Sign Up</Link>
     </h2>
-    {props.error &&
+    {props.hasError &&
       <p>Oops! There was a problem signing you in. Please try again.</p>
     }
     {props.authProviders.map((provider) => (
