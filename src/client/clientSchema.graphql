@@ -2,6 +2,6 @@ extend type Team {
   contentFilter: String
 }
 
-extend type Project {
+extend type Task {
   contentText: String
 }

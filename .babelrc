@@ -4,6 +4,7 @@
       "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
         ["relay"],
+        ["@babel/plugin-syntax-export-default-from"],
         [
           "transform-decorators-legacy"
         ],
@@ -16,6 +17,7 @@
       "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
         ["relay"],
+        ["@babel/plugin-syntax-export-default-from"],
         [
           "transform-decorators-legacy"
         ],
@@ -28,6 +30,7 @@
       "presets": ["flow", "react"],
       "plugins": [
         ["relay"],
+        ["@babel/plugin-syntax-export-default-from"],
         ["transform-class-properties"],
         ["transform-export-extensions"],
         ["transform-object-rest-spread"],

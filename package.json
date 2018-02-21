@@ -48,7 +48,7 @@
     "lint": "yarn flow && eslint 'src/**/*.js' 'webpack/*.js'",
     "lint:fix": "eslint --fix 'src/**/*.js' 'webpack/*.js' ",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
-    "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.graphql --client-schema src/client/clientSchema.graphql --watch",
+    "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.json --watch",
     "update-schema": "node ./src/server/utils/updateSchema.babel.js",
     "postversion": "git push --follow-tags"
   },
@@ -120,6 +120,7 @@
     "webpack-hot-middleware": "^2.18.2"
   },
   "dependencies": {
+    "@babel/plugin-syntax-export-default-from": "^7.0.0-beta.40",
     "@segment/snippet": "^4.0.1",
     "analytics-node": "^3.0.0",
     "aphrodite-local-styles": "0.6.2",

@@ -10,6 +10,10 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
+"@babel/plugin-syntax-export-default-from@^7.0.0-beta.40":
+  version "7.0.0-beta.40"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-export-default-from/-/plugin-syntax-export-default-from-7.0.0-beta.40.tgz#6457a80bd22779eaf61f41b1d322d84d7e2deb65"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -2936,11 +2940,7 @@ es6-promise@^2.0.1:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-2.3.0.tgz#96edb9f2fdb01995822b263dd8aadab6748181bc"
 
-es6-promise@^3.2.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-3.3.1.tgz#a08cdde84ccdbf34d027a1451bc91d4bcd28a613"
-
-es6-promise@^4.0.3, es6-promise@^4.0.5, es6-promise@^4.1.0:
+es6-promise@^4.0.3, es6-promise@^4.0.5:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.1.1.tgz#8811e90915d9a0dba36274f0b242dbda78f9c92a"
 

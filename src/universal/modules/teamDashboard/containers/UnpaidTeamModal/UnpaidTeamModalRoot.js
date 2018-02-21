@@ -4,7 +4,7 @@ import portal from 'react-portal-hoc';
 import {withRouter} from 'react-router-dom';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {QueryRenderer} from 'react-relay';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import UnpaidTeamModal from 'universal/modules/teamDashboard/components/UnpaidTeamModal/UnpaidTeamModal';
 import ui from 'universal/styles/ui';
