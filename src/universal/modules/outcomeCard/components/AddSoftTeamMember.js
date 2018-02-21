@@ -138,7 +138,7 @@ class AddSoftTeamMember extends Component {
     const {
       isActive,
       error,
-      styles,
+      styles
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
     const inputStyles = css(styles.input, isActive && styles.inputActive);

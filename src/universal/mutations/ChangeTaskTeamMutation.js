@@ -9,6 +9,10 @@ graphql`
   fragment ChangeTaskTeamMutation_task on ChangeTaskTeamPayload {
     task {
       ...CompleteTaskFrag @relay(mask: false)
+      editors {
+        userId
+        preferredName
+      }
     }
     removedNotification {
       id
@@ -18,8 +22,8 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation ChangeTaskTeamMutation($taskId: ID!, $teamId: ID!, $area: AreaEnum) {
-    changeTaskTeam(taskId: $taskId, teamId: $teamId, area: $area) {
+  mutation ChangeTaskTeamMutation($taskId: ID!, $teamId: ID!) {
+    changeTaskTeam(taskId: $taskId, teamId: $teamId) {
       ...ChangeTaskTeamMutation_task @relay(mask: false)
     }
   }
@@ -32,7 +36,7 @@ export const changeTaskTeamTaskUpdater = (payload, store, viewerId) => {
   handleUpsertTasks(task, store, viewerId);
 
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id');
-  handleRemoveNotifications(removedNotificationId);
+  handleRemoveNotifications(removedNotificationId, store, viewerId);
 };
 
 const ChangeTaskTeamMutation = (environment, variables, onError, onCompleted) => {

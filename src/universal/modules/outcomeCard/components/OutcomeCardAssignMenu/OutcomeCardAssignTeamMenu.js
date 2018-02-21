@@ -11,6 +11,10 @@ import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/Me
 import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
 import ChangeTaskTeamMutation from 'universal/mutations/ChangeTaskTeamMutation';
 
+const makeAssignableTeams = (props) => {
+  const {viewer: {teams}, task: {team: {teamId}}} = props;
+  return teams.filter((team) => team.teamId !== teamId);
+};
 
 class OutcomeCardAssignTeamMenu extends Component {
   state = {
@@ -18,7 +22,7 @@ class OutcomeCardAssignTeamMenu extends Component {
   };
 
   componentWillMount() {
-    this.state.assignableTeams = this.makeAssignableTeams(this.props);
+    this.state.assignableTeams = makeAssignableTeams(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -26,27 +30,21 @@ class OutcomeCardAssignTeamMenu extends Component {
     const {viewer: {teams: oldTeams}} = this.props;
     if (teams !== oldTeams) {
       this.setState({
-        assignableTeams: this.makeAssignableTeams(nextProps)
+        assignableTeams: makeAssignableTeams(nextProps)
       });
     }
   }
 
-  makeAssignableTeams(props) {
-    const {viewer: {teams}, task: {team: {teamId}}} = props;
-    return teams.filter((team) => team.teamId !== teamId);
-  }
-
-  handleTaskUpdate = (newTeam) => () =>  {
+  handleTaskUpdate = (newTeam) => () => {
     const {
       atmosphere,
-      area,
       task: {taskId, team: {teamId: oldTeamId}}
     } = this.props;
     const {teamId} = newTeam;
     if (oldTeamId === teamId) {
       return;
     }
-    ChangeTaskTeamMutation(atmosphere, {area, taskId, teamId});
+    ChangeTaskTeamMutation(atmosphere, {taskId, teamId});
   };
 
   render() {
@@ -56,7 +54,7 @@ class OutcomeCardAssignTeamMenu extends Component {
     } = this.props;
     const {assignableTeams} = this.state;
 
-    if (assignableTeams.length === 0) return <div></div>;
+    if (assignableTeams.length === 0) return <div />;
     return (
       <MenuWithShortcuts
         ariaLabel={'Assign this task to another team'}

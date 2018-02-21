@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import AreaEnum from 'server/graphql/types/AreaEnum';
 import ChangeTaskTeamPayload from 'server/graphql/types/ChangeTaskTeamPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import shortid from 'shortid';
@@ -12,10 +11,10 @@ export default {
   type: ChangeTaskTeamPayload,
   description: 'Update a task with a change in content, ownership, or status',
   args: {
-    area: {
-      type: AreaEnum,
-      description: 'The part of the site where the creation occurred'
-    },
+    // area: {
+    //   type: AreaEnum,
+    //   description: 'The part of the site where the creation occurred'
+    // },
     taskId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The task to change'
@@ -25,7 +24,7 @@ export default {
       description: 'The new team to assign the task to'
     }
   },
-  async resolve(source, {area, taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -48,9 +47,14 @@ export default {
 
     // RESOLUTION
     const [oldTeamMembers, newTeamMembers] = await dataLoader.get('teamMembersByTeamId').loadMany([oldTeamId, teamId]);
-    const exclusivelyOldTeamMembers = oldTeamMembers.filter((teamMember) => !newTeamMembers.find(({id}) => id === teamMember.id));
+    const oldTeamUserIds = oldTeamMembers.map(({userId}) => userId);
+    const newTeamUserIds = newTeamMembers.map(({userId}) => userId);
+    const userIdsOnlyOnOldTeam = oldTeamUserIds.filter((oldTeamUserId) => {
+      return !newTeamUserIds.find((newTeamUserId) => newTeamUserId === oldTeamUserId);
+    });
     const rawContent = JSON.parse(content);
-    const eqFn = (entity) => entity.type === 'MENTION' && Boolean(exclusivelyOldTeamMembers.find((teamMember) => teamMember.userId === entity.data.userId));
+    const eqFn = (entity) => entity.type === 'MENTION' &&
+      Boolean(userIdsOnlyOnOldTeam.find((userId) => userId === entity.data.userId));
     const {rawContent: nextRawContent, removedEntities} = removeEntityKeepText(rawContent, eqFn);
 
     const updates = {
@@ -65,7 +69,7 @@ export default {
         .orderBy({index: 'taskIdUpdatedAt'})
         .nth(-1)
         .do((taskHistoryRecord) => {
-          return r.table('TaskHistory').insert(taskHistoryRecord.merge(updates, {id: shortid.generate()}))
+          return r.table('TaskHistory').insert(taskHistoryRecord.merge(updates, {id: shortid.generate()}));
         })
     });
 

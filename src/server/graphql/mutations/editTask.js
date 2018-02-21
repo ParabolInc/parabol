@@ -3,7 +3,6 @@ import EditTaskPayload from 'server/graphql/types/EditTaskPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TASK} from 'universal/utils/constants';
-import promiseAllObj from 'universal/utils/promiseAllObj';
 
 export default {
   type: EditTaskPayload,
@@ -30,7 +29,7 @@ export default {
 
     // RESOLUTION
     // grab the task to see if it's private, don't share with other if it is
-    const {teamMembers} = await dataLoader.get('teamMembersByTeamId').load(teamId);
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const isPrivate = tags.includes('private');
     const data = {taskId, editorId: viewerId, isEditing};
     teamMembers.forEach((teamMember) => {

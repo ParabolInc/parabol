@@ -22,7 +22,6 @@ const rootStyle = css({
 const activeStyle = css({
   backgroundColor: ui.menuItemBackgroundColorActive,
   color: ui.menuItemColorHoverActive,
-  cursor: 'default',
   '&:hover,:focus': {
     backgroundColor: ui.menuItemBackgroundColorActive
   }

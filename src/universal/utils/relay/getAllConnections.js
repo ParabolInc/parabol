@@ -12,7 +12,7 @@ const getAllConnections = (store, viewerId, connection) => {
   const viewerIds = Object.keys(viewerRecord);
   return viewerIds
     .filter((id) => id.startsWith(connectionRecordPrefix))
-    .map((viewerRecordId) => store.get(mutator.getLinkedRecordID(viewerId, viewerRecordId)))
+    .map((viewerRecordId) => store.get(mutator.getLinkedRecordID(viewerId, viewerRecordId)));
 };
 
 export default getAllConnections;

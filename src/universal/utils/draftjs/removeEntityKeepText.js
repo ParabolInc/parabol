@@ -22,18 +22,24 @@ const updateBlockEntityRanges = (blocks, updatedKeyMap) => {
  */
 const removeEntityKeepText = (rawContent, eqFn) => {
   const {blocks, entityMap} = rawContent;
-  const nextEntityMap = [];
+  const nextEntityMap = {};
   // oldKey: newKey. null is a remove sentinel
   const updatedKeyMap = {};
   const removedEntities = [];
-  for (let ii = 0; ii < entityMap.length; ii++) {
-    const entity = entityMap[ii];
+  // I'm not really sure how draft-js assigns keys, so I just reuse what they give me FIFO
+  const releasedKeys = [];
+  const entityMapKeys = Object.keys(entityMap);
+  for (let ii = 0; ii < entityMapKeys.length; ii++) {
+    const key = entityMapKeys[ii];
+    const entity = entityMap[key];
     if (eqFn(entity)) {
       removedEntities.push(entity);
-      updatedKeyMap[ii] = null;
+      updatedKeyMap[key] = null;
+      releasedKeys.push(key);
     } else {
-      nextEntityMap.push(entity);
-      updatedKeyMap[ii] = nextEntityMap.length;
+      const nextKey = releasedKeys.length ? releasedKeys.shift() : key;
+      nextEntityMap[nextKey] = entity;
+      updatedKeyMap[key] = nextKey;
     }
   }
 
