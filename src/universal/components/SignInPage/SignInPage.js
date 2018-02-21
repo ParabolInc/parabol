@@ -62,7 +62,7 @@ class SignInPage extends Component<Props, State> {
     loggingIn: false
   };
 
-  componentWillMount() {
+  componentDidMount() {
     this.maybeRedirectToApp();
     this.maybeCaptureAuthResponse();
   }
