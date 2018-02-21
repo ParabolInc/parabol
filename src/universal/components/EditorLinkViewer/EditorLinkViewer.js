@@ -20,7 +20,7 @@ class EditorLinkViewer extends Component {
       href,
       styles,
       addHyperlink,
-      setRef
+      innerRef
     } = this.props;
 
     const menuStyles = css(
@@ -38,7 +38,7 @@ class EditorLinkViewer extends Component {
     };
 
     return (
-      <div className={menuStyles} onMouseDown={dontTellDraft} ref={setRef}>
+      <div className={menuStyles} onMouseDown={dontTellDraft} ref={innerRef}>
         <span className={css(styles.url)}>
           <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
         </span>
@@ -57,7 +57,7 @@ EditorLinkViewer.propTypes = {
   left: PropTypes.number,
   removeModal: PropTypes.func.isRequired,
   setEditorState: PropTypes.func.isRequired,
-  setRef: PropTypes.func,
+  innerRef: PropTypes.func,
   styles: PropTypes.object,
   top: PropTypes.number
 };

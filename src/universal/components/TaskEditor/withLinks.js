@@ -5,17 +5,37 @@ import getAnchorLocation from 'universal/components/TaskEditor/getAnchorLocation
 import getSelectionLink from 'universal/components/TaskEditor/getSelectionLink';
 import getSelectionText from 'universal/components/TaskEditor/getSelectionText';
 import getWordAt from 'universal/components/TaskEditor/getWordAt';
-import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
-import ui from 'universal/styles/ui';
+import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import addSpace from 'universal/utils/draftjs/addSpace';
 import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
 import makeAddLink from 'universal/utils/draftjs/makeAddLink';
 import splitBlock from 'universal/utils/draftjs/splitBlock';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
+import Loadable from 'react-loadable';
+import LoadableLoading from 'universal/components/LoadableLoading';
+import LoadableMenu from 'universal/components/LoadableMenu';
 
-const fetchEditorLinkChanger = () => System.import('universal/components/EditorLinkChanger/EditorLinkChanger');
-const fetchEditorLinkViewer = () => System.import('universal/components/EditorLinkViewer/EditorLinkViewer');
+const LoadableEditorLinkChanger = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'EditorLinkChanger' */
+    'universal/components/EditorLinkChanger/EditorLinkChanger'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
+
+const LoadableEditorLinkViewer = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'EditorLinkViewer' */
+    'universal/components/EditorLinkViewer/EditorLinkViewer'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
+
 
 const originAnchor = {
   vertical: 'top',
@@ -265,16 +285,12 @@ const withLinks = (ComposedComponent) => {
       }
       // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
-        <AsyncMenuContainer
+        <LoadableMenu
           key="EditorLinkChanger"
-          escToClose={false}
-          clickToClose={false}
-          marginFromOrigin={ui.draftModalMargin}
-          fetchMenu={fetchEditorLinkChanger}
+          LoadableComponent={LoadableEditorLinkChanger}
           maxWidth={320}
           maxHeight={200}
           originAnchor={originAnchor}
-          originCoords={this.cachedCoords}
           queryVars={{
             editorState,
             selectionState,
@@ -287,7 +303,8 @@ const withLinks = (ComposedComponent) => {
             trackEditingComponent
           }}
           targetAnchor={targetAnchor}
-          isOpen
+          marginFromOrigin={ui.draftModalMargin}
+          originCoords={this.cachedCoords}
           top={this.top}
           left={this.left}
           height={this.height}
@@ -307,16 +324,12 @@ const withLinks = (ComposedComponent) => {
       }
 
       return (
-        <AsyncMenuContainer
+        <LoadableMenu
           key="EditorLinkViewer"
-          escToClose={false}
-          clickToClose={false}
-          marginFromOrigin={ui.draftModalMargin}
-          fetchMenu={fetchEditorLinkViewer}
+          LoadableComponent={LoadableEditorLinkViewer}
           maxWidth={400}
           maxHeight={100}
           originAnchor={originAnchor}
-          originCoords={coords}
           queryVars={{
             editorState,
             setEditorState,
@@ -325,7 +338,11 @@ const withLinks = (ComposedComponent) => {
             addHyperlink: this.addHyperlink
           }}
           targetAnchor={targetAnchor}
-          isOpen
+          marginFromOrigin={ui.draftModalMargin}
+          originCoords={coords}
+          top={this.top}
+          left={this.left}
+          height={this.height}
         />
       );
     };

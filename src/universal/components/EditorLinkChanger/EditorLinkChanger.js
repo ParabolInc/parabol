@@ -60,7 +60,7 @@ class EditorLinkChanger extends Component {
       styles,
       handleSubmit,
       valid,
-      setRef,
+      innerRef,
       text
     } = this.props;
 
@@ -71,7 +71,7 @@ class EditorLinkChanger extends Component {
         onBlur={this.handleBlur}
         onKeyDown={this.handleKeyDown}
         tabIndex={-1}
-        ref={setRef}
+        ref={innerRef}
       >
         <form onSubmit={handleSubmit(this.onSubmit)} className={css(styles.form)}>
           {text !== null &&
@@ -125,7 +125,7 @@ EditorLinkChanger.propTypes = {
   selectionState: PropTypes.object.isRequired,
   setEditorState: PropTypes.func.isRequired,
   trackEditingComponent: PropTypes.func.isRequired,
-  setRef: PropTypes.func,
+  innerRef: PropTypes.func,
   styles: PropTypes.object,
   text: PropTypes.string,
   top: PropTypes.number,
