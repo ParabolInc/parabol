@@ -38,7 +38,7 @@ export default (ComposedComponent) => {
       location: PropTypes.object.isRequired
     };
 
-    componentWillMount() {
+    componentDidMount() {
       handleAuthChange(this.props);
     }
 
