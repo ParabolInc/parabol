@@ -125,6 +125,7 @@
     "aphrodite-local-styles": "0.6.2",
     "assets-webpack-plugin": "^3.5.1",
     "auth0": "^2.7.0",
+    "auth0-js": "^9.2.3",
     "auth0-lock": "^9.2.2",
     "aws-sdk": "^2.99.0",
     "babel-plugin-emotion": "^9.0.1",
