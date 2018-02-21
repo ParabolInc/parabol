@@ -9,6 +9,7 @@ import type {RouterHistory, Location} from 'react-router-dom';
 
 import {WebAuth} from 'auth0-js';
 import React, {Component} from 'react';
+import styled from 'react-emotion';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 
@@ -43,12 +44,12 @@ type State = {
   error: ?Error
 };
 
-const containerStyles = {
+const PageContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column'
-};
+});
 
-const loadingErrorStyles = ({
+const ErrorContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -147,9 +148,9 @@ class SignInPage extends Component<Props, State> {
 
   renderLoadingError = () => {
     return (
-      <div style={containerStyles}>
+      <PageContainer>
         <Header />
-        <div style={loadingErrorStyles}>
+        <ErrorContainer>
           <h1>
             🤭 Oops!
           </h1>
@@ -159,8 +160,8 @@ class SignInPage extends Component<Props, State> {
           <p>
             Try going back to the <Link to="/signin" onClick={this.resetState}>Sign in page</Link> in order to sign in again.
           </p>
-        </div>
-      </div>
+        </ErrorContainer>
+      </PageContainer>
     );
   };
 
@@ -174,7 +175,7 @@ class SignInPage extends Component<Props, State> {
       return this.renderLoadingError();
     }
     return (
-      <div style={containerStyles}>
+      <PageContainer>
         <Header />
         <SignIn
           hasError={Boolean(error)}
@@ -182,7 +183,7 @@ class SignInPage extends Component<Props, State> {
           getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
           handleSubmitCredentials={this.handleSubmitCredentials}
         />
-      </div>
+      </PageContainer>
     );
   }
 }

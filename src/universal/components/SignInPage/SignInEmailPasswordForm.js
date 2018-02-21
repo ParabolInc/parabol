@@ -4,6 +4,7 @@
  * @flow
  */
 import React from 'react';
+import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
 import {Field, reduxForm} from 'redux-form';
 
@@ -17,23 +18,23 @@ type Props = {
   valid: boolean
 };
 
-const formStyles = {
+const Form = styled('form')({
   display: 'flex',
   flexDirection: 'column'
-};
+});
 
-const inputWrapperStyles = {
+const FieldsContainer = styled('div')({
   marginBottom: '2rem'
-};
+});
 
-const forgotPasswordStyles = {
+const ForgotPasswordLink = styled(Link)({
   marginTop: '1rem',
   textAlign: 'center'
-};
+});
 
 const SignInEmailPasswordForm = (props: Props) => (
-  <form style={formStyles} onSubmit={props.handleSubmit}>
-    <div style={inputWrapperStyles}>
+  <Form onSubmit={props.handleSubmit}>
+    <FieldsContainer>
       <Field
         autoFocus
         component={InputField}
@@ -47,7 +48,7 @@ const SignInEmailPasswordForm = (props: Props) => (
         label="Password:"
         name="password"
       />
-    </div>
+    </FieldsContainer>
     <Button
       disabled={!props.valid}
       type="submit"
@@ -55,8 +56,8 @@ const SignInEmailPasswordForm = (props: Props) => (
       title="Sign In"
       colorPalette="warm"
     />
-    <Link to="/reset-password" style={forgotPasswordStyles}>Forgot your password?</Link>
-  </form>
+    <ForgotPasswordLink to="/reset-password">Forgot your password?</ForgotPasswordLink>
+  </Form>
 );
 
 const validate = (values) => {

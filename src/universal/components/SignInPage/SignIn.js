@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
 
 import appTheme from 'universal/styles/theme/appTheme';
@@ -26,16 +27,16 @@ type Props = {
   handleSubmitCredentials: ({email: string, password: string}) => void
 };
 
-const signInContainerStyles = {
+const SignInContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   height: '100%',
   fontFamily: appTheme.typography.sansSerif
-};
+});
 
 export default (props: Props) => (
-  <div style={signInContainerStyles}>
+  <SignInContainer>
     <h1>Sign In</h1>
     <h2>
       or <Link to="/signup">Sign Up</Link>
@@ -52,5 +53,5 @@ export default (props: Props) => (
     ))}
     <Separator text="or" />
     <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />
-  </div>
+  </SignInContainer>
 );

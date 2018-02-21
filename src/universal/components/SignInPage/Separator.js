@@ -6,13 +6,14 @@
  */
 
 import React from 'react';
+import styled from 'react-emotion';
 
 import appTheme from 'universal/styles/theme/appTheme';
 
-const separatorStyles = {
+const SeparatorContainer = styled('div')({
   padding: '1rem 0',
   display: 'flex'
-};
+});
 
 const separatorLineStyles = {
   margin: 'auto',
@@ -20,24 +21,24 @@ const separatorLineStyles = {
   borderBottom: `1px solid ${appTheme.palette.mid}`
 };
 
-const separatorLineLeftStyles = {
+const LeftSeparator = styled('div')({
   ...separatorLineStyles,
   marginRight: '0.5rem'
-};
+});
 
-const separatorLineRightStyles = {
+const RightSeparator = styled('div')({
   ...separatorLineStyles,
   marginLeft: '0.5rem'
-};
+});
 
 type Props = {
   text: string
 };
 
 export default ({text}: Props) => (
-  <div style={separatorStyles}>
-    <div style={separatorLineLeftStyles} />
+  <SeparatorContainer>
+    <LeftSeparator />
     {text}
-    <div style={separatorLineRightStyles} />
-  </div>
+    <RightSeparator />
+  </SeparatorContainer>
 );

@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import styled from 'react-emotion';
 
 import Button from 'universal/components/Button/Button';
 
@@ -16,14 +17,14 @@ type Props = {
   }
 };
 
-const buttonWrapperStyles = {
+const ButtonContainer = styled('div')({
   paddingTop: '.5rem'
-};
+});
 
 export default ({provider, handleClick}: Props) => {
   const label = `Sign in with ${provider.displayName}`;
   return (
-    <div style={buttonWrapperStyles}>
+    <ButtonContainer>
       <Button
         type="button"
         title={label}
@@ -33,6 +34,6 @@ export default ({provider, handleClick}: Props) => {
         colorPalette="gray"
         onClick={handleClick}
       />
-    </div>
+    </ButtonContainer>
   );
 };
