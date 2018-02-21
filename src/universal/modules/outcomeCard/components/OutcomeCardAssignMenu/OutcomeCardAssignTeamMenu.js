@@ -40,9 +40,10 @@ class OutcomeCardAssignTeamMenu extends Component {
     const {
       atmosphere,
       area,
-      task: {taskId, team: {teamId}}
+      task: {taskId, team: {teamId: oldTeamId}}
     } = this.props;
-    if (newTeam.teamId === teamId) {
+    const {teamId} = newTeam;
+    if (oldTeamId === teamId) {
       return;
     }
     ChangeTaskTeamMutation(atmosphere, {area, taskId, teamId});

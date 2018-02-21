@@ -3,6 +3,7 @@ import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import safeRemoveNodeFromUnknownConn from 'universal/utils/relay/safeRemoveNodeFromUnknownConn';
 
 graphql`
   fragment ChangeTaskTeamMutation_task on ChangeTaskTeamPayload {
@@ -12,6 +13,7 @@ graphql`
     removedNotification {
       id
     }
+    removedTaskId
   }
 `;
 
@@ -25,6 +27,8 @@ const mutation = graphql`
 
 export const changeTaskTeamTaskUpdater = (payload, store, viewerId) => {
   const task = payload.getLinkedRecord('task');
+  const taskId = getInProxy(task, 'id') || payload.getValue('removedTaskId');
+  safeRemoveNodeFromUnknownConn(store, viewerId, 'TeamColumnsContainer_tasks', taskId);
   handleUpsertTasks(task, store, viewerId);
 
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id');
