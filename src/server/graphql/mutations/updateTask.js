@@ -81,7 +81,7 @@ export default {
     }
 
     let taskHistory;
-    if (Object.keys(taskUpdates).length > 2 || taskUpdates.sortOrder === undefined) {
+    if (Object.keys(updatedTask).length > 2 || taskUpdates.sortOrder === undefined) {
       // if this is anything but a sort update, log it to history
       taskUpdates.updatedAt = now;
       const mergeDoc = {

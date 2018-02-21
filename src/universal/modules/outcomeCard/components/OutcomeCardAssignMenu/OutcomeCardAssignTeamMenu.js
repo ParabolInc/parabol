@@ -1,20 +1,30 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {css} from 'aphrodite-local-styles/no-important';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
 import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
 import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
 import ChangeTaskTeamMutation from 'universal/mutations/ChangeTaskTeamMutation';
+import styled from 'react-emotion';
 
 const makeAssignableTeams = (props) => {
   const {viewer: {teams}, task: {team: {teamId}}} = props;
   return teams.filter((team) => team.teamId !== teamId);
 };
+
+const MenuLabel = styled('div')({
+  ...textOverflow,
+  borderBottom: `1px solid ${appTheme.palette.mid30l}`,
+  color: ui.palette.dark,
+  fontSize: ui.menuItemFontSize,
+  fontWeight: 700,
+  lineHeight: ui.menuItemHeight,
+  marginBottom: ui.menuGutterVertical,
+  padding: `0 ${ui.menuGutterHorizontal}`
+});
 
 class OutcomeCardAssignTeamMenu extends Component {
   state = {
@@ -49,8 +59,7 @@ class OutcomeCardAssignTeamMenu extends Component {
 
   render() {
     const {
-      closePortal,
-      styles
+      closePortal
     } = this.props;
     const {assignableTeams} = this.state;
 
@@ -60,7 +69,7 @@ class OutcomeCardAssignTeamMenu extends Component {
         ariaLabel={'Assign this task to another team'}
         closePortal={closePortal}
       >
-        <div className={css(styles.label)}>Move to:</div>
+        <MenuLabel>Move to:</MenuLabel>
         {assignableTeams.map((team) => {
           return (
             <MenuItemWithShortcuts
@@ -79,26 +88,12 @@ OutcomeCardAssignTeamMenu.propTypes = {
   area: PropTypes.string.isRequired,
   atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired,
   task: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired
 };
 
-const styleThunk = () => ({
-  label: {
-    ...textOverflow,
-    borderBottom: `1px solid ${appTheme.palette.mid30l}`,
-    color: ui.palette.dark,
-    fontSize: ui.menuItemFontSize,
-    fontWeight: 700,
-    lineHeight: ui.menuItemHeight,
-    marginBottom: ui.menuGutterVertical,
-    padding: `0 ${ui.menuGutterHorizontal}`
-  }
-});
-
 export default createFragmentContainer(
-  withAtmosphere(withStyles(styleThunk)(OutcomeCardAssignTeamMenu)),
+  withAtmosphere(OutcomeCardAssignTeamMenu),
   graphql`
     fragment OutcomeCardAssignTeamMenu_viewer on User {
       teams {
