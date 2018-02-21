@@ -1,13 +1,13 @@
 import {GraphQLObjectType} from 'graphql';
-import {resolveProject} from 'server/graphql/resolvers';
-import Project from 'server/graphql/types/Project';
+import {resolveTask} from 'server/graphql/resolvers';
+import Task from 'server/graphql/types/Task';
 
 const CreateGitHubIssuePayload = new GraphQLObjectType({
   name: 'CreateGitHubIssuePayload',
   fields: () => ({
-    project: {
-      type: Project,
-      resolve: resolveProject
+    task: {
+      type: Task,
+      resolve: resolveTask
     }
   })
 });

@@ -2,8 +2,8 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
-import archiveProjectsByGitHubRepo from 'server/safeMutations/archiveProjectsByGitHubRepo';
-import {getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 
@@ -16,13 +16,12 @@ export default {
       description: 'the id of the integration to remove'
     }
   },
-  async resolve(source, {globalId}, {authToken, socket, dataLoader}) {
+  async resolve(source, {globalId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const {id: localId, type: service} = fromGlobalId(globalId);
 
     // AUTH
     const userId = getUserId(authToken);
-    requireWebsocket(socket);
     const integration = await r.table(service).get(localId);
     if (!integration) {
       throw new Error('That integration does not exist');
@@ -55,19 +54,19 @@ export default {
     }
 
     const {isActive, nameWithOwner} = updatedIntegration;
-    let archivedProjectIds = [];
+    let archivedTaskIds = [];
     if (isActive === false) {
       if (service === GITHUB) {
-        archivedProjectIds = await archiveProjectsByGitHubRepo(teamId, nameWithOwner, dataLoader);
+        archivedTaskIds = await archiveTasksByGitHubRepo(teamId, nameWithOwner, dataLoader);
       }
     }
 
     const integrationLeft = {
       globalId,
       userId: isActive ? userId : null,
-      archivedProjectIds
+      archivedTaskIds
     };
-    getPubSub().publish(`integrationLeft.${teamId}.${service}`, {integrationLeft, mutatorId: socket.id});
+    getPubSub().publish(`integrationLeft.${teamId}.${service}`, {integrationLeft, mutatorId});
     return integrationLeft;
   }
 };

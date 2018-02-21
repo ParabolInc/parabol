@@ -15,7 +15,7 @@ const RemoveProviderPayload = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId of the person who removed the provider'
     },
-    archivedProjectIds: {
+    archivedTaskIds: {
       type: new GraphQLList(GraphQLID)
     }
   })

@@ -4,10 +4,9 @@ import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {CHECKIN, TEAM} from 'universal/utils/constants';
-import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
+import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 
@@ -33,7 +32,7 @@ export default {
     const facilitatorId = `${userId}::${teamId}`;
     const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
-      throw errorObj({_error: 'facilitator is not active on that team'});
+      throw new Error('facilitator is not active on that team');
     }
 
     const now = new Date();
@@ -42,7 +41,7 @@ export default {
 
     const updatedTeam = {
       checkInGreeting: makeCheckinGreeting(week, teamId),
-      checkInQuestion: convertToProjectContent(makeCheckinQuestion(week, teamId)),
+      checkInQuestion: convertToTaskContent(makeCheckinQuestion(week, teamId)),
       meetingId,
       activeFacilitator: facilitatorId,
       facilitatorPhase: CHECKIN,

@@ -2,9 +2,9 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
-import ProjectIntegrationLink from 'universal/components/ProjectIntegrationLink';
-import ProjectWatermark from 'universal/components/ProjectWatermark';
+import TaskEditor from 'universal/components/TaskEditor/TaskEditor';
+import TaskIntegrationLink from 'universal/components/TaskIntegrationLink';
+import TaskWatermark from 'universal/components/TaskWatermark';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
 import {cardBorderTop, cardRootStyles} from 'universal/styles/helpers';
@@ -12,8 +12,8 @@ import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
-import isProjectArchived from 'universal/utils/isProjectArchived';
-import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import isTaskArchived from 'universal/utils/isTaskArchived';
+import isTaskPrivate from 'universal/utils/isTaskPrivate';
 import isTempId from 'universal/utils/relay/isTempId';
 
 const OutcomeCard = (props) => {
@@ -27,18 +27,18 @@ const OutcomeCard = (props) => {
     isAgenda,
     isDragging,
     isEditing,
-    handleAddProject,
+    handleAddTask,
     hasDragStyles,
-    project,
+    task,
     setEditorRef,
     setEditorState,
     trackEditingComponent,
     styles,
     toggleMenuState
   } = props;
-  const isPrivate = isProjectPrivate(project.tags);
-  const isArchived = isProjectArchived(project.tags);
-  const {status, team} = project;
+  const isPrivate = isTaskPrivate(task.tags);
+  const isArchived = isTaskArchived(task.tags);
+  const {status, team} = task;
   const {teamId} = team;
   const rootStyles = css(
     styles.root,
@@ -51,35 +51,35 @@ const OutcomeCard = (props) => {
     cardHasFocus && styles.cardHasFocus,
     hasDragStyles && styles.hasDragStyles
   );
-  const {integration, projectId} = project;
+  const {integration, taskId} = task;
   const {service} = integration || {};
   return (
     <div className={rootStyles}>
-      <ProjectWatermark service={service} />
+      <TaskWatermark service={service} />
       <div className={css(styles.contentBlock)}>
         <EditingStatusContainer
           isEditing={isEditing}
-          project={project}
+          task={task}
         />
-        <ProjectEditor
+        <TaskEditor
           editorRef={editorRef}
           editorState={editorState}
-          readOnly={Boolean(isTempId(projectId) || isArchived || isDragging || service)}
+          readOnly={Boolean(isTempId(taskId) || isArchived || isDragging || service)}
           setEditorRef={setEditorRef}
           setEditorState={setEditorState}
           trackEditingComponent={trackEditingComponent}
           teamId={teamId}
           team={team}
         />
-        <ProjectIntegrationLink integration={integration || null} />
+        <TaskIntegrationLink integration={integration || null} />
         <OutcomeCardFooter
           area={area}
           cardIsActive={cardHasFocus || cardHasHover || cardHasMenuOpen}
           editorState={editorState}
-          handleAddProject={handleAddProject}
+          handleAddTask={handleAddTask}
           isAgenda={isAgenda}
           isPrivate={isPrivate}
-          project={project}
+          task={task}
           toggleMenuState={toggleMenuState}
         />
       </div>
@@ -95,12 +95,12 @@ OutcomeCard.propTypes = {
   cardHasFocus: PropTypes.bool,
   cardHasMenuOpen: PropTypes.bool,
   cardHasIntegration: PropTypes.bool,
-  handleAddProject: PropTypes.func,
+  handleAddTask: PropTypes.func,
   hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,
   isEditing: PropTypes.bool,
-  project: PropTypes.object.isRequired,
+  task: PropTypes.object.isRequired,
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
   trackEditingComponent: PropTypes.func,
@@ -122,25 +122,25 @@ const styleThunk = () => ({
 
   [ACTIVE]: {
     '::after': {
-      color: labels.projectStatus[ACTIVE].color
+      color: labels.taskStatus[ACTIVE].color
     }
   },
 
   [STUCK]: {
     '::after': {
-      color: labels.projectStatus[STUCK].color
+      color: labels.taskStatus[STUCK].color
     }
   },
 
   [DONE]: {
     '::after': {
-      color: labels.projectStatus[DONE].color
+      color: labels.taskStatus[DONE].color
     }
   },
 
   [FUTURE]: {
     '::after': {
-      color: labels.projectStatus[FUTURE].color
+      color: labels.taskStatus[FUTURE].color
     }
   },
 
@@ -182,11 +182,11 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withStyles(styleThunk)(OutcomeCard),
   graphql`
-    fragment OutcomeCard_project on Project {
-      projectId: id
+    fragment OutcomeCard_task on Task {
+      taskId: id
       integration {
         service
-        ...ProjectIntegrationLink_integration
+        ...TaskIntegrationLink_integration
       }
       status
       tags
@@ -195,7 +195,7 @@ export default createFragmentContainer(
       }
       # grab userId to ensure sorting on connections works
       userId
-      ...EditingStatusContainer_project
-      ...OutcomeCardFooter_project
+      ...EditingStatusContainer_task
+      ...OutcomeCardFooter_task
     }`
 );

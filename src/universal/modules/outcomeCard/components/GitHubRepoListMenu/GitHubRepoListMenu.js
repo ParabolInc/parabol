@@ -5,17 +5,17 @@ import {withRouter} from 'react-router-dom';
 import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation';
 import {MEETING} from 'universal/utils/constants';
-import convertToProjectContent from 'universal/utils/draftjs/convertToProjectContent';
+import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
 
 class GitHubRepoListMenu extends Component {
   static propTypes = {
     area: PropTypes.string.isRequired,
-    handleAddProject: PropTypes.func,
+    handleAddTask: PropTypes.func,
     viewer: PropTypes.object.isRequired,
     relay: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     closePortal: PropTypes.func.isRequired,
-    projectId: PropTypes.string.isRequired,
+    taskId: PropTypes.string.isRequired,
     setError: PropTypes.func.isRequired,
     clearError: PropTypes.func.isRequired,
     teamId: PropTypes.string.isRequired
@@ -42,11 +42,11 @@ class GitHubRepoListMenu extends Component {
   }
 
   render() {
-    const {area, handleAddProject, relay: {environment}, history, closePortal, projectId, setError, clearError, teamId} = this.props;
+    const {area, handleAddTask, relay: {environment}, history, closePortal, taskId, setError, clearError, teamId} = this.props;
     if (this.filteredRepos.length === 0) {
       const inMeeting = area === MEETING;
       const handleClick = inMeeting ?
-        handleAddProject(convertToProjectContent('#private Connect my GitHub account in Team Settings after the meeting')) :
+        handleAddTask(convertToTaskContent('#private Connect my GitHub account in Team Settings after the meeting')) :
         () => history.push(`/team/${teamId}/settings/integrations/github`);
       const label = inMeeting ? 'No repos! Remind me to set up GitHub' : 'Add your first GitHub repo';
       return (
@@ -68,7 +68,7 @@ class GitHubRepoListMenu extends Component {
               isActive={false}
               key={`githubReposMenItem${nameWithOwner}`}
               label={nameWithOwner}
-              onClick={() => CreateGitHubIssueMutation(environment, nameWithOwner, projectId, setError, clearError)}
+              onClick={() => CreateGitHubIssueMutation(environment, nameWithOwner, taskId, setError, clearError)}
               closePortal={closePortal}
             />
           );

@@ -9,13 +9,14 @@ import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 const QuickStats = (props) => {
   const {
     agendaItems,
-    newProjects,
+    doneTaskCount,
+    newTaskCount,
     teamMembers,
     teamMembersPresent
   } = props;
 
   const cellStyles = {
-    padding: '0 8px',
+    padding: 0,
     textAlign: 'center',
     verticalAlign: 'top',
     width: '25%'
@@ -26,42 +27,41 @@ const QuickStats = (props) => {
     fontFamily: ui.emailFontFamily
   };
 
-  const headingStyles = {
-    ...typeStyles,
-    fontSize: '20px',
-    fontWeight: 700,
-    padding: '0 0 16px',
-    textAlign: 'center',
-    textTransform: 'uppercase'
-  };
-
   const statStyles = {
-    backgroundColor: '#ffffff',
-    border: `1px solid ${ui.cardBorderColor}`,
-    borderRadius: '4px',
+    backgroundColor: appTheme.palette.mid10l,
     padding: '8px 0 12px',
     textAlign: 'center'
   };
 
   const statValue = {
     ...typeStyles,
-    fontSize: '48px'
+    fontSize: '36px'
   };
 
   const statLabel = {
     ...typeStyles,
-    fontSize: '14px',
-    fontWeight: 700
+    fontSize: '10px',
+    fontWeight: 700,
+    textTransform: 'uppercase'
+  };
+
+  const containerStyle = {
+    margin: '0 auto',
+    maxWidth: '440px',
+    width: '100%'
   };
 
   return (
-    <div>
-      <div style={headingStyles}>
-        Quick Stats
-      </div>
+    <div style={containerStyle}>
       <table width="100%">
         <tbody>
           <tr>
+            <td style={cellStyles}>
+              <div style={{...statStyles, borderRadius: '4px 0 0 4px'}}>
+                <div style={statValue}>{doneTaskCount}</div>
+                <div style={statLabel}>{plural(doneTaskCount, 'Task')}{' Done'}</div>
+              </div>
+            </td>
             <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{agendaItems}</div>
@@ -70,12 +70,12 @@ const QuickStats = (props) => {
             </td>
             <td style={cellStyles}>
               <div style={statStyles}>
-                <div style={statValue}>{newProjects}</div>
-                <div style={statLabel}>New {plural(newProjects, 'Project')}</div>
+                <div style={statValue}>{newTaskCount}</div>
+                <div style={statLabel}>{'New '}{plural(newTaskCount, 'Task')}</div>
               </div>
             </td>
             <td style={cellStyles}>
-              <div style={statStyles}>
+              <div style={{...statStyles, borderRadius: '0 4px 4px 0'}}>
                 <div style={statValue}>
                   {teamMembersPresent >= 10 ?
                     <span>{teamMembersPresent}</span> :
@@ -95,7 +95,8 @@ const QuickStats = (props) => {
 
 QuickStats.propTypes = {
   agendaItems: PropTypes.number,
-  newProjects: PropTypes.number,
+  doneTaskCount: PropTypes.number,
+  newTaskCount: PropTypes.number,
   teamMembers: PropTypes.number,
   teamMembersPresent: PropTypes.number
 };

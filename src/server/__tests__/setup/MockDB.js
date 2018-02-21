@@ -12,7 +12,7 @@ import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeS
 import convertToRichText from './convertToRichText';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 
-const meetingProject = ({id, content, status, teamMemberId}) => ({
+const meetingTask = ({id, content, status, teamMemberId}) => ({
   id,
   content,
   status,
@@ -30,8 +30,8 @@ class MockDB {
       notification: [],
       organization: [],
       orgApproval: [],
-      project: [],
-      projectHistory: [],
+      task: [],
+      taskHistory: [],
       softTeamMember: [],
       team: [],
       teamMember: [],
@@ -196,19 +196,19 @@ class MockDB {
       teamName: this.context.team.name,
       ...overrides
     };
-    // 3 agenda items, #1 has 1 private project, #2 has 1 project, #3 has 1 of each
-    const projects = [];
+    // 3 agenda items, #1 has 1 private task, #2 has 1 task, #3 has 1 of each
+    const tasks = [];
     this.newAgendaItem({isComplete: true});
-    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['private']});
+    this.newTask({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['private']});
     this.teamMember(1);
     this.newAgendaItem({isComplete: true});
-    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined});
-    projects.push(meetingProject(this.context.project));
+    this.newTask({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    tasks.push(meetingTask(this.context.task));
     this.teamMember(2);
     this.newAgendaItem({isComplete: true});
-    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['private']});
-    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined});
-    projects.push(meetingProject(this.context.project));
+    this.newTask({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['private']});
+    this.newTask({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    tasks.push(meetingTask(this.context.task));
     if (inProgress) {
       const week = getWeekOfYear(new Date());
       this.teamMember(activeFacilitatorIdx);
@@ -234,9 +234,9 @@ class MockDB {
           picture: teamMember.picture,
           preferredName: teamMember.preferredName,
           present: true,
-          projects: projects.filter((a) => a.assigneeId === teamMember.id)
+          tasks: tasks.filter((a) => a.assigneeId === teamMember.id)
         })),
-        projects
+        tasks
       });
     }
     return this.closeout('meeting', baseMeeting);
@@ -300,14 +300,14 @@ class MockDB {
     });
   }
 
-  newProject(overrides = {}) {
+  newTask(overrides = {}) {
     const teamMemberId = this.context.teamMember.id;
     const [userId] = teamMemberId.split('::');
     const teamId = this.context.team.id;
-    const table = this.db.project;
-    return this.closeout('project', {
+    const table = this.db.task;
+    return this.closeout('task', {
       id: `${teamId}::${shortid.generate()}`,
-      content: convertToRichText(`Test Project[${table.length}]`),
+      content: convertToRichText(`Test Task[${table.length}]`),
       createdAt: new Date(__anHourAgo - 1 - table.length),
       createdBy: userId,
       sortOrder: table.filter((item) => item.teamId === teamId).length,
@@ -321,11 +321,11 @@ class MockDB {
     });
   }
 
-  newProjectHistory(overrides = {}) {
-    const {project: {id, content, assigneeId, status, updatedAt}} = this.context;
-    return this.closeout('projectHistory', {
+  newTaskHistory(overrides = {}) {
+    const {task: {id, content, assigneeId, status, updatedAt}} = this.context;
+    return this.closeout('taskHistory', {
       id: `${id}::${shortid.generate()}`,
-      projectId: id,
+      taskId: id,
       content,
       assigneeId,
       status,

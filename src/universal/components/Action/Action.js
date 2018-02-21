@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
-import SocketHealthMonitor from 'universal/containers/SocketHealthMonitor/SocketHealthMonitor';
+import DynamicHome from 'universal/components/DynamicHome/DynamicHome';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
+import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
+import SignIn from 'universal/components/SignIn/SignIn';
 
-const socketRoute = () => System.import('universal/components/SocketRoute/SocketRoute');
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
 const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
 const welcome = () => System.import('universal/modules/welcome/components/WelcomeRoot');
@@ -17,6 +18,8 @@ const impersonate = () => System.import('universal/modules/admin/containers/Impe
 const invitation = () => System.import('universal/modules/invitation/containers/Invitation/InvitationContainer');
 const signout = () => System.import('universal/containers/Signout/SignoutContainer');
 const notFound = () => System.import('universal/components/NotFound/NotFound');
+const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
+const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot');
 
 const Action = (props) => {
   const {styles} = props;
@@ -25,8 +28,15 @@ const Action = (props) => {
       <Toast />
       <SocketHealthMonitor />
       <Switch>
-        <Route exact path="/" component={LandingContainer} />
-        <AsyncRoute isAbstract isPrivate path="(/me|/meeting|/newteam|/team)" mod={socketRoute} />
+        {__RELEASE_FLAGS__.newSignIn
+          ? <Route exact path="/" component={DynamicHome} />
+          : <Route exact path="/" component={LandingContainer} />
+        }
+        {__RELEASE_FLAGS__.newSignIn &&
+          <Route exact path="/signin" component={SignIn} />
+        }
+        <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
+        <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
         <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />
         <AsyncRoute isPrivate path="/summary/:meetingId" mod={meetingSummary} />
         <AsyncRoute isPrivate path="/welcome" mod={welcome} />

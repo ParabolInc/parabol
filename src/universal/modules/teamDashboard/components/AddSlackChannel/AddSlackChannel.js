@@ -20,7 +20,7 @@ class AddSlackChannel extends Component {
     environment: PropTypes.object,
     styles: PropTypes.object,
     teamMemberId: PropTypes.string
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -53,9 +53,9 @@ class AddSlackChannel extends Component {
     const {environment, teamMemberId} = this.props;
     const {selectedChannel} = this.state;
     if (!selectedChannel.channelId) return;
-    const onError = ({_error}) => {
+    const onError = (error) => {
       this.setState({
-        error: _error
+        error
       });
     };
     const onCompleted = () => {

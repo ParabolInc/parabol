@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {TransitionGroup} from 'react-transition-group';
-import {maintainSocket} from 'redux-socket-cluster';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -53,4 +52,4 @@ MeetingSummaryRoot.propTypes = {
   match: PropTypes.object.isRequired
 };
 
-export default withAtmosphere(withRouter(maintainSocket(MeetingSummaryRoot)));
+export default withAtmosphere(withRouter(MeetingSummaryRoot));

@@ -3,7 +3,7 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
-import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 
 export default {
   type: UpdateCreditCardPayload,
@@ -18,12 +18,11 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve(source, {orgId, stripeToken}, {authToken, socketId}) {
+  async resolve(source, {orgId, stripeToken}, {authToken}) {
     const r = getRethink();
     const now = new Date();
 
     // AUTH
-    requireWebsocket(socketId);
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
     requireOrgLeader(userOrgDoc);

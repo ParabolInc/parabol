@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
-import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
 import {TEAM_DASH} from 'universal/utils/constants';
-import getProjectById from 'universal/utils/getProjectById';
+import getTaskById from 'universal/utils/getTaskById';
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props;
@@ -19,22 +19,22 @@ const mapStateToProps = (state, props) => {
 
 class TeamColumnsContainer extends Component {
   componentWillMount() {
-    this.filterProjects(this.props);
+    this.filterTasks(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    const {teamMemberFilterId: oldFilter, viewer: {projects: oldProjects, team: {contentFilter: oldContentFilter}}} = this.props;
-    const {teamMemberFilterId, viewer: {projects, team: {contentFilter}}} = nextProps;
-    if (oldFilter !== teamMemberFilterId || oldProjects !== projects || oldContentFilter !== contentFilter) {
-      this.filterProjects(nextProps);
+    const {teamMemberFilterId: oldFilter, viewer: {tasks: oldTasks, team: {contentFilter: oldContentFilter}}} = this.props;
+    const {teamMemberFilterId, viewer: {tasks, team: {contentFilter}}} = nextProps;
+    if (oldFilter !== teamMemberFilterId || oldTasks !== tasks || oldContentFilter !== contentFilter) {
+      this.filterTasks(nextProps);
     }
   }
 
-  filterProjects(props) {
-    const {teamMemberFilterId, viewer: {projects, team: {contentFilter, teamMembers}}} = props;
+  filterTasks(props) {
+    const {teamMemberFilterId, viewer: {tasks, team: {contentFilter, teamMembers}}} = props;
     const contentFilterRegex = new RegExp(contentFilter);
     const contentFilteredEdges = contentFilter ?
-      projects.edges.filter(({node}) => {
+      tasks.edges.filter(({node}) => {
         const {blocks} = JSON.parse(node.content);
         for (let ii = 0; ii < blocks.length; ii++) {
           const block = blocks[ii];
@@ -43,7 +43,7 @@ class TeamColumnsContainer extends Component {
           }
         }
         return false;
-      }) : projects.edges;
+      }) : tasks.edges;
 
     const teamMemberFilteredEdges = teamMemberFilterId ?
       contentFilteredEdges.filter(({node}) => node.assignee.id === teamMemberFilterId) :
@@ -59,21 +59,21 @@ class TeamColumnsContainer extends Component {
       };
     });
     this.setState({
-      projects: {
-        ...projects,
+      tasks: {
+        ...tasks,
         edges: edgesWithTeamMembers
       }
     });
   }
 
   render() {
-    const {myTeamMemberId, teamMemberFilterId, viewer: {projects: allProjects}} = this.props;
-    const {projects} = this.state;
+    const {myTeamMemberId, teamMemberFilterId, viewer: {tasks: allTasks}} = this.props;
+    const {tasks} = this.state;
     return (
-      <ProjectColumns
-        getProjectById={getProjectById(allProjects)}
+      <TaskColumns
+        getTaskById={getTaskById(allTasks)}
         myTeamMemberId={myTeamMemberId}
-        projects={projects}
+        tasks={tasks}
         teamMemberFilterId={teamMemberFilterId}
         area={TEAM_DASH}
       />
@@ -100,7 +100,7 @@ export default createFragmentContainer(
           preferredName
         }
       }
-      projects(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_projects") {
+      tasks(first: 1000, teamId: $teamId) @connection(key: "TeamColumnsContainer_tasks") {
         edges {
           node {
             # grab these so we can sort correctly
@@ -111,7 +111,7 @@ export default createFragmentContainer(
             assignee {
               id
             }
-            ...DraggableProject_project
+            ...DraggableTask_task
           }
         }
       }

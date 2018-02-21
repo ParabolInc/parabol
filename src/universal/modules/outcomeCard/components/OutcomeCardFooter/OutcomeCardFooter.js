@@ -5,14 +5,14 @@ import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
 import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
-import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 import appTheme from 'universal/styles/theme/theme';
 import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {USER_DASH} from 'universal/utils/constants';
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
-import isProjectArchived from 'universal/utils/isProjectArchived';
+import isTaskArchived from 'universal/utils/isTaskArchived';
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
 import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
@@ -65,15 +65,15 @@ class OutcomeCardFooter extends Component {
   state = {};
 
   removeContentTag = (tagValue) => () => {
-    const {area, atmosphere, project: {projectId, content}} = this.props;
+    const {area, atmosphere, task: {taskId, content}} = this.props;
     const eqFn = (data) => data.value === tagValue;
     const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
     if (!nextContent) return;
-    const updatedProject = {
-      id: projectId,
+    const updatedTask = {
+      id: taskId,
       content: nextContent
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateTaskMutation(atmosphere, updatedTask, area);
   };
 
   render() {
@@ -81,18 +81,18 @@ class OutcomeCardFooter extends Component {
       area,
       cardIsActive,
       editorState,
-      handleAddProject,
+      handleAddTask,
       isAgenda,
       isPrivate,
-      project,
+      task,
       styles,
       toggleMenuState
     } = this.props;
     const showTeam = area === USER_DASH;
-    const {projectId, assignee, integration, tags, team} = project;
+    const {taskId, assignee, integration, tags, team} = task;
     const {teamId, teamName} = team;
     const {service} = integration || {};
-    const isArchived = isProjectArchived(tags);
+    const isArchived = isTaskArchived(tags);
     const buttonBlockStyles = css(
       styles.buttonBlock,
       cardIsActive && styles.showButtonBlock
@@ -106,6 +106,7 @@ class OutcomeCardFooter extends Component {
       showTeam ?
         <div className={css(styles.teamNameLabel)}>{teamName}</div> :
         (<button
+          aria-label="Assign this task to a teammate"
           className={css(styles.avatarButton)}
           tabIndex={service && '-1'}
           title={`Assigned to ${assignee.preferredName}`}
@@ -141,7 +142,7 @@ class OutcomeCardFooter extends Component {
                 queryVars={{
                   area,
                   assignRef: this.assignRef,
-                  project,
+                  task,
                   teamId
                 }}
                 targetAnchor={assignTargetAnchor}
@@ -164,8 +165,8 @@ class OutcomeCardFooter extends Component {
                     originAnchor={originAnchor}
                     queryVars={{
                       area,
-                      handleAddProject,
-                      projectId,
+                      handleAddTask,
+                      taskId,
                       setError: this.setError,
                       clearError: this.clearError
                     }}
@@ -185,7 +186,7 @@ class OutcomeCardFooter extends Component {
                     editorState,
                     isAgenda,
                     isPrivate,
-                    project,
+                    task,
                     removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
@@ -212,11 +213,11 @@ OutcomeCardFooter.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   cardIsActive: PropTypes.bool,
   editorState: PropTypes.object,
-  handleAddProject: PropTypes.func,
+  handleAddTask: PropTypes.func,
   isAgenda: PropTypes.bool,
   isArchived: PropTypes.bool,
   isPrivate: PropTypes.bool,
-  project: PropTypes.object,
+  task: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
   toggleMenuState: PropTypes.func.isRequired
@@ -332,8 +333,8 @@ export default createFragmentContainer(
     withStyles(styleThunk)(OutcomeCardFooter)
   ),
   graphql`
-    fragment OutcomeCardFooter_project on Project {
-      projectId: id
+    fragment OutcomeCardFooter_task on Task {
+      taskId: id
       content
       assignee {
         ...on TeamMember {
@@ -349,7 +350,7 @@ export default createFragmentContainer(
         teamId: id
         teamName: name
       }
-      ...OutcomeCardAssignMenu_project
-      ...OutcomeCardStatusMenu_project
+      ...OutcomeCardAssignMenu_task
+      ...OutcomeCardStatusMenu_task
     }`
 );

@@ -14,31 +14,31 @@ const Jordan = {
       content: 'Summary email designed',
       status: 'done',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary email implemented',
       status: 'active',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary view designed',
       status: 'active',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary view implemented',
       status: 'stuck',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
-      content: 'Project column empty states implemented with great skill',
+      content: 'Task column empty states implemented with great skill',
       status: 'stuck',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary updates shared',
@@ -53,7 +53,7 @@ const Jordan = {
       type: 'action'
     },
     {
-      content: 'Project column empty states shared',
+      content: 'Task column empty states shared',
       status: null,
       team: 'Parabol',
       type: 'action'
@@ -78,13 +78,13 @@ const Marimar = {
 //       content: 'First consultant client signed',
 //       status: 'active',
 //       team: 'Parabol',
-//       type: 'project'
+//       type: 'task'
 //     },
 //     {
 //       content: 'Accelerator acceptance received',
 //       status: 'active',
 //       team: 'Parabol',
-//       type: 'project'
+//       type: 'task'
 //     },
 //   ]
 // };
@@ -99,19 +99,19 @@ const Matt = {
       content: 'Me dashboard part 2 sprint merged',
       status: 'active',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary view implemented',
       status: 'stuck',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
-      content: 'Project column empty states implemented with great skill',
+      content: 'Task column empty states implemented with great skill',
       status: 'stuck',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Add beta signup link to readme',
@@ -126,7 +126,7 @@ const Matt = {
       type: 'action'
     },
     {
-      content: 'Project column empty states shared',
+      content: 'Task column empty states shared',
       status: null,
       team: 'Parabol',
       type: 'action'
@@ -144,13 +144,13 @@ const Taya = {
       content: 'First consultant client signed',
       status: 'active',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Accelerator acceptance received',
       status: 'active',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Adjust copy for beta signup page',
@@ -171,33 +171,33 @@ const Terry = {
       content: 'Summary email designed',
       status: 'done',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary email implemented',
       status: 'active',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary view designed',
       status: 'active',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary view implemented',
       status: 'stuck',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
-      content: `Project column empty states implemented with great skill
+      content: `Task column empty states implemented with great skill
                 and it is almost novel length but if it is longer than a
                 tweet it will be trimmed and that is cool.`,
       status: 'stuck',
       team: 'Parabol',
-      type: 'project'
+      type: 'task'
     },
     {
       content: 'Summary updates shared',
@@ -212,7 +212,7 @@ const Terry = {
       type: 'action'
     },
     {
-      content: 'Project column empty states shared',
+      content: 'Task column empty states shared',
       status: null,
       team: 'Parabol',
       type: 'action'

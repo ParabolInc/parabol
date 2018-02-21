@@ -2,7 +2,7 @@ import {GraphQLInterfaceType, GraphQLList} from 'graphql';
 import {
   resolveIfViewer,
   resolveInvitation,
-  resolveProjects,
+  resolveTasks,
   resolveSoftTeamMember,
   resolveTeam,
   resolveTeamMember,
@@ -16,7 +16,7 @@ import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import User from 'server/graphql/types/User';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import Project from 'server/graphql/types/Project';
+import Task from 'server/graphql/types/Task';
 
 export const acceptTeamInviteFields = {
   team: {
@@ -48,10 +48,10 @@ export const acceptTeamInviteFields = {
     description: 'The soft team member that got promoted to a real team member',
     resolve: resolveSoftTeamMember
   },
-  hardenedProjects: {
-    type: new GraphQLList(Project),
-    description: 'The projects that got reassigned from the soft team member to the real team member',
-    resolve: resolveProjects
+  hardenedTasks: {
+    type: new GraphQLList(Task),
+    description: 'The tasks that got reassigned from the soft team member to the real team member',
+    resolve: resolveTasks
   }
 };
 

@@ -3,10 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {INVITATION, NOTIFICATION, PROJECT, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
+import {INVITATION, NOTIFICATION, TASK, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
-import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
-import getProjectsByAssigneeId from 'server/safeQueries/getProjectsByAssigneeIds';
+import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
+import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
 export default {
@@ -62,16 +62,16 @@ export default {
 
     const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader);
     const {id: softTeamMemberId} = removedSoftTeamMember;
-    const softProjectsToArchive = await getProjectsByAssigneeId(softTeamMemberId, dataLoader);
-    const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive, dataLoader);
-    const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
-    const data = {invitationId, removedTeamInviteNotification, archivedSoftProjectIds, softTeamMemberId};
+    const softTasksToArchive = await getTasksByAssigneeId(softTeamMemberId, dataLoader);
+    const archivedSoftTasks = await archiveTasksForDB(softTasksToArchive, dataLoader);
+    const archivedSoftTaskIds = archivedSoftTasks.map(({id}) => id);
+    const data = {invitationId, removedTeamInviteNotification, archivedSoftTaskIds, softTeamMemberId};
 
-    if (archivedSoftProjectIds.length > 0) {
+    if (archivedSoftTaskIds.length > 0) {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
       const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
       userIdsOnTeams.forEach((userId) => {
-        publish(PROJECT, userId, CancelTeamInvitePayload, data, subOptions);
+        publish(TASK, userId, CancelTeamInvitePayload, data, subOptions);
       });
     }
 

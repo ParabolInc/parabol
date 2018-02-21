@@ -11,7 +11,7 @@ import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveO
 import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleAddSoftTeamMembers from 'universal/mutations/handlers/handleAddSoftTeamMembers';
-import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
 graphql`
@@ -75,9 +75,9 @@ graphql`
 `;
 
 graphql`
-  fragment InviteTeamMembersMutation_project on InviteTeamMembersPayload {
-    unarchivedSoftProjects {
-      ...CompleteProjectFrag @relay(mask: false)
+  fragment InviteTeamMembersMutation_task on InviteTeamMembersPayload {
+    unarchivedSoftTasks {
+      ...CompleteTaskFrag @relay(mask: false)
     }
   }
 `;
@@ -90,14 +90,14 @@ const mutation = graphql`
       ...InviteTeamMembersMutation_notification @relay(mask:false)
       ...InviteTeamMembersMutation_orgApproval @relay(mask: false)
       ...InviteTeamMembersMutation_teamMember @relay(mask: false)
-      ...InviteTeamMembersMutation_project @relay(mask: false)
+      ...InviteTeamMembersMutation_task @relay(mask: false)
     }
   }
 `;
 
-export const inviteTeamMembersProjectUpdater = (payload, store, viewerId) => {
-  const unarchivedSoftProjects = payload.getLinkedRecords('unarchivedSoftProjects');
-  handleUpsertProjects(unarchivedSoftProjects, store, viewerId);
+export const inviteTeamMembersTaskUpdater = (payload, store, viewerId) => {
+  const unarchivedSoftTasks = payload.getLinkedRecords('unarchivedSoftTasks');
+  handleUpsertTasks(unarchivedSoftTasks, store, viewerId);
 };
 
 const popInvitationToast = (payload, dispatch) => {
@@ -250,7 +250,7 @@ const InviteTeamMembersMutation = (environment, variables, dispatch, onError, on
       inviteTeamMembersOrgApprovalUpdater(payload, store);
       popOrgApprovalToast(payload, dispatch);
       inviteTeamMembersTeamMemberUpdater(payload, store, dispatch, true);
-      inviteTeamMembersProjectUpdater(payload, store, viewerId);
+      inviteTeamMembersTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       // add the invitees as soft team members

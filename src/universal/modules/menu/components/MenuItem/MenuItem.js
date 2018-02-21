@@ -63,7 +63,7 @@ class MenuItem extends Component {
         src={avatar}
       />);
     return (
-      <div title={titleStr} ref={(c) => { this.itemRef = c; }}>
+      <div role="menuitem" title={titleStr} ref={(c) => { this.itemRef = c; }}>
         {hr === 'before' && <hr className={css(styles.hr)} />}
         <div className={rootStyles} onClick={handleClick}>
           {avatar && makeAvatar()}

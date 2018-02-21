@@ -6,7 +6,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
@@ -32,10 +31,9 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {
-  AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES
-} from 'universal/utils/constants';
+import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES} from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import {withRouter} from 'react-router-dom';
 
 const handleHotkey = (gotoFunc, submitting) => () => {
   if (!submitting && document.activeElement === document.body) gotoFunc();
@@ -73,7 +71,7 @@ class MeetingContainer extends Component {
     onError: PropTypes.func.isRequired
   };
 
-  state = {updateUserHasProjects: null};
+  state = {updateUserHasTasks: null};
 
   componentWillMount() {
     const {
@@ -166,9 +164,9 @@ class MeetingContainer extends Component {
     this.agendaInputRef = c;
   };
 
-  setUpdateUserHasProjects = (updateUserHasProjects) => {
-    if (updateUserHasProjects !== this.state.updateUserHasProjects) {
-      this.setState({updateUserHasProjects});
+  setUpdateUserHasTasks = (updateUserHasTasks) => {
+    if (updateUserHasTasks !== this.state.updateUserHasTasks) {
+      this.setState({updateUserHasTasks});
     }
   };
 
@@ -311,7 +309,7 @@ class MeetingContainer extends Component {
               agendaInputRef={this.agendaInputRef}
               gotoNext={this.gotoNext}
               localPhaseItem={localPhaseItem}
-              updateUserHasProjects={this.state.updateUserHasProjects}
+              updateUserHasTasks={this.state.updateUserHasTasks}
               team={team}
             />
             }
@@ -333,7 +331,7 @@ class MeetingContainer extends Component {
             gotoItem={this.gotoItem}
             gotoNext={this.gotoNext}
             localPhaseItem={localPhaseItem}
-            setUpdateUserHasProjects={this.setUpdateUserHasProjects}
+            setUpdateUserHasTasks={this.setUpdateUserHasTasks}
             showMoveMeetingControls={showMoveMeetingControls}
             viewer={viewer}
           />
@@ -373,11 +371,11 @@ class MeetingContainer extends Component {
 
 export default createFragmentContainer(
   connect()(
-    socketWithPresence(
-      dragDropContext(HTML5Backend)(
-        withHotkey(
-          withAtmosphere(
-            withMutationProps(
+    dragDropContext(HTML5Backend)(
+      withHotkey(
+        withAtmosphere(
+          withMutationProps(
+            withRouter(
               MeetingContainer
             )
           )

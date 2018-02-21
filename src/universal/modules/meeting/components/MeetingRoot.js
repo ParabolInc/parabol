@@ -13,7 +13,7 @@ import AgendaItemSubscription from 'universal/subscriptions/AgendaItemSubscripti
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
-import ProjectSubscription from 'universal/subscriptions/ProjectSubscription';
+import TaskSubscription from 'universal/subscriptions/TaskSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import {cacheConfig} from 'universal/utils/constants';
@@ -31,7 +31,7 @@ const subscriptions = [
   NewAuthTokenSubscription,
   NotificationSubscription,
   OrganizationSubscription,
-  ProjectSubscription,
+  TaskSubscription,
   TeamMemberSubscription,
   TeamSubscription
 ];

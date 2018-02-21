@@ -5,12 +5,11 @@ import {approveToOrgNotificationUpdater} from 'universal/mutations/ApproveToOrgM
 import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation';
 import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation';
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
-import {createProjectNotificationUpdater} from 'universal/mutations/CreateProjectMutation';
-import {deleteProjectNotificationUpdater} from 'universal/mutations/DeleteProjectMutation';
+import {createTaskNotificationUpdater} from 'universal/mutations/CreateTaskMutation';
+import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
-import {APP_UPGRADE_PENDING_KEY, APP_UPGRADE_PENDING_RELOAD, APP_VERSION_KEY} from 'universal/utils/constants';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import {removeOrgUserNotificationUpdater} from 'universal/mutations/RemoveOrgUserMutation';
@@ -25,8 +24,8 @@ const subscription = graphql`
       ...CancelApprovalMutation_notification
       ...CancelTeamInviteMutation_notification
       ...ClearNotificationMutation_notification
-      ...CreateProjectMutation_notification
-      ...DeleteProjectMutation_notification
+      ...CreateTaskMutation_notification
+      ...DeleteTaskMutation_notification
       ...InviteTeamMembersMutation_notification
       ...RemoveOrgUserMutation_notification
       ...RejectOrgApprovalMutation_notification
@@ -37,11 +36,6 @@ const subscription = graphql`
         id
         isConnected
         tms
-      }
-
-      # App Version Updater
-      ... on NotifyVersionInfo {
-        version
       }
 
       # Stripe webhooks
@@ -66,26 +60,6 @@ const connectSocketUserUpdater = (payload, store) => {
     if (!teamMember) return;
     teamMember.setValue(isConnected, 'isConnected');
   });
-};
-
-const popUpgradeAppToast = (payload, {dispatch, history}) => {
-  const versionOnServer = payload.getValue('version');
-  const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-  if (versionOnServer !== versionInStorage) {
-    dispatch(showWarning({
-      title: 'New stuff!',
-      message: 'A new version of Parabol is available',
-      autoDismiss: 0,
-      action: {
-        label: 'Log out and upgrade',
-        callback: () => {
-          history.replace('/signout');
-        }
-      }
-    }));
-    window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
-      APP_UPGRADE_PENDING_RELOAD);
-  }
 };
 
 const popPaymentFailedToast = (payload, {dispatch, history}) => {
@@ -138,11 +112,11 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
         case 'ClearNotificationPayload':
           clearNotificationNotificationUpdater(payload, store, viewerId);
           break;
-        case 'CreateProjectPayload':
-          createProjectNotificationUpdater(payload, store, viewerId, options);
+        case 'CreateTaskPayload':
+          createTaskNotificationUpdater(payload, store, viewerId, options);
           break;
-        case 'DeleteProjectPayload':
-          deleteProjectNotificationUpdater(payload, store, viewerId);
+        case 'DeleteTaskPayload':
+          deleteTaskNotificationUpdater(payload, store, viewerId);
           break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersNotificationUpdater(payload, store, viewerId, options);
@@ -152,9 +126,6 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           break;
         case 'User':
           connectSocketUserUpdater(payload, store);
-          break;
-        case 'NotifyVersionInfo':
-          popUpgradeAppToast(payload, options);
           break;
         case 'RemoveOrgUserPayload':
           removeOrgUserNotificationUpdater(payload, store, viewerId, options);

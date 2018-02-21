@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ProviderMap from 'server/graphql/types/ProviderMap';
-import {getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import {CURRENT_PROVIDERS, SLACK} from 'universal/utils/constants';
 
 const getUserReduction = (service, reduction, userId) => {
@@ -20,13 +20,12 @@ export default {
       description: 'The unique team member Id'
     }
   },
-  resolve: async (source, {teamId}, {authToken, socket}) => {
+  resolve: async (source, {teamId}, {authToken}) => {
     const r = getRethink();
 
     // AUTH
     const userId = getUserId(authToken);
     requireTeamMember(authToken, teamId);
-    requireWebsocket(socket);
 
 
     // RESOLUTION

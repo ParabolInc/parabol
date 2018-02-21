@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
 import insertSlackChannel from 'server/safeMutations/insertSlackChannel';
-import {requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {SLACK} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
@@ -31,14 +31,13 @@ export default {
       type: new GraphQLNonNull(AddSlackChannelInput)
     }
   },
-  resolve: async (source, {input: {teamMemberId, slackChannelId}}, {authToken, socket}) => {
+  resolve: async (source, {input: {teamMemberId, slackChannelId}}, {authToken, socketId: mutatorId}) => {
     const r = getRethink();
 
     // AUTH
     // TODO replace teamMemberId with teamId, no need for the userId here?
     const {teamId} = fromTeamMemberId(teamMemberId);
     requireTeamMember(authToken, teamId);
-    requireWebsocket(socket);
 
     // VALIDATION
 
@@ -73,7 +72,7 @@ export default {
     const slackChannelAdded = {
       channel: newChannel
     };
-    getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded, mutatorId: socket.id});
+    getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded, mutatorId});
     return slackChannelAdded;
   }
 };

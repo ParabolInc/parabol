@@ -29,7 +29,7 @@ const LoadableOutcomeCardAssignMenu = Loadable({
 });
 
 const OutcomeCardAssignMenuRoot = (props) => {
-  const {area, assignRef, atmosphere, closePortal, project, teamId} = props;
+  const {area, assignRef, atmosphere, closePortal, task, teamId} = props;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -41,7 +41,7 @@ const OutcomeCardAssignMenuRoot = (props) => {
           LoadableComponent={LoadableOutcomeCardAssignMenu}
           loading={loading}
           readyState={readyState}
-          extraProps={{area, assignRef, closePortal, project}}
+          extraProps={{area, assignRef, closePortal, task}}
         />
       )}
     />
@@ -53,7 +53,7 @@ OutcomeCardAssignMenuRoot.propTypes = {
   assignRef: PropTypes.instanceOf(Element),
   atmosphere: PropTypes.object.isRequired,
   closePortal: PropTypes.func.isRequired,
-  project: PropTypes.object.isRequired,
+  task: PropTypes.object.isRequired,
   teamId: PropTypes.string.isRequired
 };
 

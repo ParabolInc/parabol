@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`removeTeamMember removes the teamMember, reassigns active projects to the lead 1`] = `
+exports[`removeTeamMember removes the teamMember, reassigns active tasks to the lead 1`] = `
 Object {
-  "project": Array [
+  "task": Array [
     Object {
       "assigneeId": 0,
-      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Project[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
+      "content": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"Test Task[0]\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
       "createdAt": 2017-01-01T06:59:59.999Z,
       "createdBy": 24,
       "id": 25,
@@ -146,7 +146,7 @@ Object {
 }
 `;
 
-exports[`removeTeamMember removes the teamMember, reassigns active projects to the lead 2`] = `
+exports[`removeTeamMember removes the teamMember, reassigns active tasks to the lead 2`] = `
 Object {
   "newAuthToken": Array [
     Object {
@@ -159,16 +159,16 @@ Object {
       },
     },
   ],
-  "project": Array [
+  "task": Array [
     Object {
       "channelId": 28,
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -183,10 +183,10 @@ Object {
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -201,10 +201,10 @@ Object {
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -219,10 +219,10 @@ Object {
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -237,10 +237,10 @@ Object {
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -255,10 +255,10 @@ Object {
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -273,10 +273,10 @@ Object {
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -293,10 +293,10 @@ Object {
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -313,10 +313,10 @@ Object {
       "message": Object {
         "data": Object {
           "notificationId": 29,
-          "projectIds": Array [
+          "removedNotifications": Array [],
+          "taskIds": Array [
             37,
           ],
-          "removedNotifications": Array [],
           "teamId": 16,
           "teamMemberId": 7,
           "type": "RemoveTeamMemberPayload",
@@ -330,4 +330,4 @@ Object {
 }
 `;
 
-exports[`removeTeamMember throw if the caller is not self or team lead 1`] = `"{\\"_error\\":\\"Unauthorized. Only the team leader promote someone to lead\\"}"`;
+exports[`removeTeamMember throw if the caller is not self or team lead 1`] = `"Unauthorized. Only the team leader promote someone to lead"`;

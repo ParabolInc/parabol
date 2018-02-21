@@ -3,10 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {NOTIFICATION, ORG_APPROVAL, PROJECT, REQUEST_NEW_USER, TEAM_MEMBER} from 'universal/utils/constants';
-import archiveProjectsForDB from 'server/safeMutations/archiveProjectsForDB';
+import {NOTIFICATION, ORG_APPROVAL, TASK, REQUEST_NEW_USER, TEAM_MEMBER} from 'universal/utils/constants';
+import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
-import getProjectsByAssigneeId from 'server/safeQueries/getProjectsByAssigneeIds';
+import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 
 export default {
@@ -47,10 +47,10 @@ export default {
 
     const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader);
     const {id: softTeamMemberId} = removedSoftTeamMember;
-    const softProjectsToArchive = await getProjectsByAssigneeId(softTeamMemberId, dataLoader);
-    const archivedSoftProjects = await archiveProjectsForDB(softProjectsToArchive, dataLoader);
-    const archivedSoftProjectIds = archivedSoftProjects.map(({id}) => id);
-    const data = {orgApprovalId, removedRequestNotification, softTeamMemberId, archivedSoftProjectIds};
+    const softTasksToArchive = await getTasksByAssigneeId(softTeamMemberId, dataLoader);
+    const archivedSoftTasks = await archiveTasksForDB(softTasksToArchive, dataLoader);
+    const archivedSoftTaskIds = archivedSoftTasks.map(({id}) => id);
+    const data = {orgApprovalId, removedRequestNotification, softTeamMemberId, archivedSoftTaskIds};
 
     if (removedRequestNotification) {
       const {userIds} = removedRequestNotification;
@@ -59,11 +59,11 @@ export default {
       });
     }
 
-    if (archivedSoftProjectIds.length > 0) {
+    if (archivedSoftTaskIds.length > 0) {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
       const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
       userIdsOnTeams.forEach((userId) => {
-        publish(PROJECT, userId, CancelApprovalPayload, data, subOptions);
+        publish(TASK, userId, CancelApprovalPayload, data, subOptions);
       });
     }
 

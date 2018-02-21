@@ -3,7 +3,6 @@ import getRethink from 'server/database/rethinkDriver';
 import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload';
 import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {errorObj} from 'server/utils/utils';
 import shortid from 'shortid';
 import {BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER} from 'universal/utils/constants';
 
@@ -35,7 +34,7 @@ export default {
 
     // VALIDATION
     if (role && role !== BILLING_LEADER) {
-      throw errorObj({_error: 'invalid role'});
+      throw new Error('invalid role');
     }
     // if someone is leaving, make sure there is someone else to take their place
     if (userId === authToken.sub) {
