@@ -73,8 +73,8 @@ const LoadableSignInPage = Loadable({
   loading: LoadableLoading,
   render: (auth0, props) => {
     const webAuth = new auth0.WebAuth({
-      domain: __AUTH0_DOMAIN__,
-      clientID: __AUTH0_CLIENT_ID__,
+      domain: __ACTION__.auth0Domain,
+      clientID: __ACTION__.auth0,
       redirectUri: window.location.href,
       scope: 'openid rol tms bet'
     });
