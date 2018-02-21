@@ -7,13 +7,12 @@
 import type {Dispatch} from 'redux';
 import type {RouterHistory, Location} from 'react-router-dom';
 
+import {WebAuth} from 'auth0-js';
 import React, {Component} from 'react';
-import Loadable from 'react-loadable';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
-import LoadableLoading from 'universal/components/LoadableLoading';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
@@ -65,22 +64,6 @@ const parseSearch = (search: string): Object => {
   const assocArray = chunkArray(search.slice(1).split(/=|&/), 2);
   return assocArray.reduce((acc, [key, val]) => ({...acc, [key]: val}), {});
 };
-
-// Note that auth0-js seems to break SSR.  Therefore we dynamically import it
-// over the network.
-const LoadableSignInPage = Loadable({
-  loader: () => import('auth0-js'),
-  loading: LoadableLoading,
-  render: (auth0, props) => {
-    const webAuth = new auth0.WebAuth({
-      domain: __ACTION__.auth0Domain,
-      clientID: __ACTION__.auth0,
-      redirectUri: window.location.href,
-      scope: 'openid rol tms bet'
-    });
-    return <SignInPage webAuth={webAuth} {...props} />;
-  }
-});
 
 class SignInPage extends Component<Props, State> {
   state = {
@@ -144,6 +127,13 @@ class SignInPage extends Component<Props, State> {
   saveTokens = (response: ParsedAuthResponse): void => {
     signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
   };
+
+  webAuth = new WebAuth({
+    domain: __ACTION__.auth0Domain,
+    clientID: __ACTION__.auth0,
+    redirectUri: window.location.href,
+    scope: 'openid rol tms bet'
+  });
 
   authProviders = [
     {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
@@ -217,6 +207,6 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default withAtmosphere(
   withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(LoadableSignInPage)
+    connect(mapStateToProps, mapDispatchToProps)(SignInPage)
   )
 );
