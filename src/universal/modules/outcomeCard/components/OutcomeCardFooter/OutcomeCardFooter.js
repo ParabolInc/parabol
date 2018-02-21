@@ -213,6 +213,7 @@ class OutcomeCardFooter extends Component {
                       area,
                       handleAddTask,
                       taskId,
+                      teamId,
                       setError: this.setError,
                       clearError: this.clearError
                     }}

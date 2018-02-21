@@ -40,7 +40,11 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken);
     const {id: taskId} = updatedTask;
-    const [teamId] = taskId.split('::');
+    const task = await r.table('Task').get(taskId);
+    if (!task) {
+      throw new Error('Task does not exist');
+    }
+    const {teamId} = task;
     requireTeamMember(authToken, teamId);
 
     // VALIDATION
@@ -57,7 +61,7 @@ export default {
     }
 
     // RESOLUTION
-    const newTask = {
+    const taskUpdates = {
       agendaId,
       content,
       status,
@@ -69,25 +73,25 @@ export default {
 
     if (assigneeId) {
       const isSoftTask = getIsSoftTeamMember(assigneeId);
-      newTask.isSoftTask = isSoftTask;
-      newTask.userId = isSoftTask ? null : fromTeamMemberId(assigneeId).userId;
+      taskUpdates.isSoftTask = isSoftTask;
+      taskUpdates.userId = isSoftTask ? null : fromTeamMemberId(assigneeId).userId;
       if (assigneeId === false) {
-        newTask.userId = null;
+        taskUpdates.userId = null;
       }
     }
 
     let taskHistory;
-    if (Object.keys(updatedTask).length > 2 || newTask.sortOrder === undefined) {
+    if (Object.keys(taskUpdates).length > 2 || taskUpdates.sortOrder === undefined) {
       // if this is anything but a sort update, log it to history
-      newTask.updatedAt = now;
+      taskUpdates.updatedAt = now;
       const mergeDoc = {
         content,
         taskId,
         status,
-        assigneeId: newTask.assigneeId,
-        isSoftTask: newTask.isSoftTask,
+        assigneeId: taskUpdates.assigneeId,
+        isSoftTask: taskUpdates.isSoftTask,
         updatedAt: now,
-        tags: newTask.tags
+        tags: taskUpdates.tags
       };
       taskHistory = r.table('TaskHistory')
         .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
@@ -102,8 +106,8 @@ export default {
           );
         });
     }
-    const {taskChanges, teamMembers} = await r({
-      taskChanges: r.table('Task').get(taskId).update(newTask, {returnChanges: true})('changes')(0).default(null),
+    const {newTask, teamMembers} = await r({
+      newTask: r.table('Task').get(taskId).update(taskUpdates, {returnChanges: true})('changes')(0)('new_val').default(null),
       history: taskHistory,
       teamMembers: r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
@@ -113,19 +117,18 @@ export default {
         .coerceTo('array')
     });
     const usersToIgnore = getUsersToIgnore(area, teamMembers);
-    if (!taskChanges) {
+    if (!newTask) {
       throw new Error('Task already updated or does not exist');
     }
 
     // send task updated messages
-    const {new_val: task, old_val: oldTask} = taskChanges;
-    const isPrivate = task.tags.includes('private');
-    const wasPrivate = oldTask.tags.includes('private');
+    const isPrivate = newTask.tags.includes('private');
+    const wasPrivate = task.tags.includes('private');
     const isPrivatized = isPrivate && !wasPrivate;
     const isPublic = !isPrivate || isPrivatized;
 
     // get notification diffs
-    const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(task, oldTask, viewerId, usersToIgnore);
+    const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(newTask, task, viewerId, usersToIgnore);
     const data = {isPrivatized, taskId, notificationsToAdd, notificationsToRemove};
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === newTask.userId) {

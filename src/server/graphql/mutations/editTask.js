@@ -21,18 +21,16 @@ export default {
   async resolve(source, {taskId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
+
     // AUTH
+    const task = await dataLoader.get('tasks').load(taskId);
     const viewerId = getUserId(authToken);
-    const [teamId] = taskId.split('::');
+    const {tags, teamId, userId: taskUserId} = task;
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
     // grab the task to see if it's private, don't share with other if it is
-    const {task, teamMembers} = await promiseAllObj({
-      task: dataLoader.get('tasks').load(taskId),
-      teamMembers: dataLoader.get('teamMembersByTeamId').load(teamId)
-    });
-    const {tags, userId: taskUserId} = task;
+    const {teamMembers} = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const isPrivate = tags.includes('private');
     const data = {taskId, editorId: viewerId, isEditing};
     teamMembers.forEach((teamMember) => {
