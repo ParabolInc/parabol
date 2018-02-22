@@ -27,7 +27,6 @@ const Action = (props) => {
       <SocketHealthMonitor />
       <Switch>
         <Route exact path="/" component={LandingContainer} />
-        <Route exact path="/error" component={Error404Container} />
         <AsyncRoute isAbstract isPrivate path="(/me|/meeting|/newteam|/team)" mod={socketRoute} />
         <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />
         <AsyncRoute isPrivate path="/summary/:meetingId" mod={meetingSummary} />
@@ -35,6 +34,7 @@ const Action = (props) => {
         <AsyncRoute path="/admin/graphql" mod={graphql} />
         <AsyncRoute path="/admin/impersonate/:newUserId" mod={impersonate} />
         <AsyncRoute path="/invitation/:id" mod={invitation} />
+        <Route component={Error404Container} />
         <AsyncRoute mod={signout} />
         <AsyncRoute mod={notFound} />
       </Switch>
