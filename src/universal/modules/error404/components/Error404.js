@@ -8,11 +8,6 @@ import {Route} from 'react-router-dom';
 
 // Images
 import parabolLogoMark from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
-import teamCheckIcon from 'universal/modules/landing/components/Landing/images/team-check-icon.svg';
-import mapIcon from 'universal/modules/landing/components/Landing/images/map-icon.svg';
-import megaphoneIcon from 'universal/modules/landing/components/Landing/images/megaphone-icon.svg';
-import github from 'universal/modules/landing/components/Landing/images/github.svg';
-import teamingPhoto from 'universal/styles/theme/images/banners/teaming.jpg';
 import cuteCat from './images/kitten.jpg';
 
 const Error404 = (props) => {
@@ -24,7 +19,7 @@ const Error404 = (props) => {
         <div className={css(styles.headerInner)}>
           <div className={css(styles.container)}>
             <h1 className={css(styles.mainHeading)}>
-            {'Sorry :('}
+              {'Sorry :('}
             </h1>
             <h2 className={css(styles.mainSubheading)}>
               {"The page you're looking for doesn't exist."}
@@ -33,18 +28,34 @@ const Error404 = (props) => {
                 or stare at this cat for as long as you like.`}
             </h2>
             <div className={css(styles.primaryButtonBlock)}>
-              <Route render={({ history }) => (
+              <Route render={() => (
                 <Button
                   buttonSize="large"
                   buttonStyle="solid"
                   colorPalette="warm"
                   depth={1}
                   isBlock
-                  label="HOME PAGE"
-                  onClick={() => { history.push('/') }}
+                  label="PREVIOUS PAGE"
+                  onClick={props.history.goBack}
                   textTransform="uppercase"
                 />
-              )} />
+              )}
+              />
+            </div>
+            <div className={css(styles.primaryButtonBlock)}>
+              <Route render={({history}) => (
+                <Button
+                  buttonSize="large"
+                  buttonStyle="solid"
+                  colorPalette="warm"
+                  depth={1}
+                  isBlock
+                  label="VISIT DASHBOARD"
+                  onClick={() => { history.push('/me'); }}
+                  textTransform="uppercase"
+                />
+              )}
+              />
             </div>
           </div>
         </div>
@@ -86,7 +97,8 @@ const Error404 = (props) => {
 Error404.propTypes = {
   // children included here for multi-part landing pages (FAQs, pricing, cha la la)
   // children: PropTypes.element,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  history: PropTypes.object
 };
 
 // Breakpoint constants
