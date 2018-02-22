@@ -6,6 +6,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import DynamicHome from 'universal/components/DynamicHome/DynamicHome';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
+import Error404Container from 'universal/modules/error404/containers/Error404Container';
 import withStyles from 'universal/styles/withStyles';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
 
@@ -43,6 +44,7 @@ const Action = (props) => {
         <AsyncRoute path="/admin/graphql" mod={graphql} />
         <AsyncRoute path="/admin/impersonate/:newUserId" mod={impersonate} />
         <AsyncRoute path="/invitation/:id" mod={invitation} />
+        <Route component={Error404Container} />
         <AsyncRoute mod={signout} />
         <AsyncRoute mod={notFound} />
       </Switch>

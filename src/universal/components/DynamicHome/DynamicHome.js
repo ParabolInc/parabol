@@ -1,5 +1,5 @@
 /**
- * Detects the user to their appropriate "home", depending on whether
+ * Directs the user to their appropriate "home", depending on whether
  * they're authenticated or not.
  *
  * @flow
