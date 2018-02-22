@@ -116,6 +116,7 @@ const Team = (props) => {
 };
 
 Team.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   children: PropTypes.any,
   hasMeetingAlert: PropTypes.bool,
   isSettings: PropTypes.bool.isRequired,
