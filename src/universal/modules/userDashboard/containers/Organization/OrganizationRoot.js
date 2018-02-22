@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql, QueryRenderer} from 'react-relay';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization';
 import {cacheConfig} from 'universal/utils/constants';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 
 const query = graphql`
   query OrganizationRootQuery($orgId: ID!) {

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql, QueryRenderer} from 'react-relay';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import SlackIntegrations from 'universal/modules/teamDashboard/components/SlackIntegrations/SlackIntegrations';
 import {DEFAULT_TTL, SLACK} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';

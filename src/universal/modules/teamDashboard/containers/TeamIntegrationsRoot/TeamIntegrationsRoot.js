@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
-import {graphql, QueryRenderer} from 'react-relay';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
