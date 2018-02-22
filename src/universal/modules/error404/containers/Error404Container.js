@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Error404 from 'universal/modules/error404/components/Error404';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
@@ -94,7 +94,7 @@ export default class Error404Container extends Component {
     } else {
       const {atmosphere, dispatch} = this.props;
       loginClickHandler = () => showLock(atmosphere, dispatch);
-    }*/
+    } */
     return (
       <div>
         <Helmet title="Parabol" />
