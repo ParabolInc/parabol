@@ -6,3 +6,6 @@
 
 // eslint-disable-next-line no-unused-vars
 declare var __ACTION__: Object;
+
+// eslint-disable-next-line no-unused-vars
+declare var __RELEASE_FLAGS__: Object;

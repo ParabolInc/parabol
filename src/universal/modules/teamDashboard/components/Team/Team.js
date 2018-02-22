@@ -8,6 +8,7 @@ import {DashContent, DashHeader, DashHeaderInfo, DashMain} from 'universal/compo
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
+import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction';
 import UnpaidTeamModalRoot from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -34,8 +35,6 @@ const Team = (props) => {
   const DashHeaderInfoTitle = isSettings ?
     <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
   const modalLayout = hasMeetingAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
-  const goToMeetingLobby = () =>
-    history.push(`/meeting/${teamId}/`);
   const goToTeamSettings = () =>
     history.push(`/team/${teamId}/settings/`);
   const goToTeamDashboard = () =>
@@ -58,16 +57,7 @@ const Team = (props) => {
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {!isSettings &&
-          <Button
-            buttonStyle="solid"
-            colorPalette="warm"
-            depth={1}
-            icon="users"
-            iconPlacement="left"
-            label="Meeting Lobby"
-            onClick={goToMeetingLobby}
-            buttonSize="small"
-          />
+            <TeamCallsToAction teamId={teamId} />
           }
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>

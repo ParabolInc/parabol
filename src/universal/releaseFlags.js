@@ -19,5 +19,8 @@
  */
 
 export default {
-  newSignIn: false
+  // The single-page embedded signin
+  newSignIn: false,
+  // The retrospective meeting
+  retro: false
 };
