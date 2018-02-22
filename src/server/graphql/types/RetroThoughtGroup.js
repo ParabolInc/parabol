@@ -29,14 +29,14 @@ const RetroThoughtGroup = new GraphQLObjectType({
     },
     meeting: {
       type: RetrospectiveMeeting,
-      description: 'The retrospective meeting this thought was cretaed in',
+      description: 'The retrospective meeting this thought was created in',
       resolve: ({meetingId}, args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId);
       }
     },
     team: {
       type: RetrospectiveMeeting,
-      description: 'The retrospective meeting this thought was cretaed in',
+      description: 'The team that is running the retro',
       resolve: async ({meetingId}, args, {dataLoader}) => {
         const meeting = dataLoader.get('newMeetings').load(meetingId);
         return dataLoader.get('teams').load(meeting.teamId);

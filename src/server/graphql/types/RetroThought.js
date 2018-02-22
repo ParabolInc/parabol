@@ -26,15 +26,15 @@ const RetroThought = new GraphQLObjectType({
     },
     meetingId: {
       type: GraphQLID,
-      description: 'The foreign key to link a thought to its meeting',
+      description: 'The foreign key to link a thought to its meeting'
     },
     retroPhaseItemId: {
       type: GraphQLID,
-      description: 'The foreign key to link a thought to its phaseItem',
+      description: 'The foreign key to link a thought to its phaseItem'
     },
     thoughtGroupId: {
       type: GraphQLID,
-      description: 'The foreign key to link a thought to its group',
+      description: 'The foreign key to link a thought to its group'
     },
     retroThoughtGroup: {
       type: RetroThoughtGroup,
@@ -58,7 +58,7 @@ const RetroThought = new GraphQLObjectType({
     },
     team: {
       type: RetrospectiveMeeting,
-      description: 'The retrospective meeting this thought was created in',
+      description: 'The team that is running the meeting that contains this thought',
       resolve: async ({meetingId}, args, {dataLoader}) => {
         const meeting = dataLoader.get('newMeetings').load(meetingId);
         return dataLoader.get('teams').load(meeting.teamId);

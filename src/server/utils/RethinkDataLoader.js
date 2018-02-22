@@ -64,7 +64,7 @@ export default class RethinkDataLoader {
         .filter({isActive: true});
       primeStandardLoader(this.customPhaseItems, customPhaseItems);
       return teamIds.map((teamId) => {
-        return customPhaseItems.filter((task) => task.teamId === teamId);
+        return customPhaseItems.filter((phaseItem) => phaseItem.teamId === teamId);
       });
     }, this.dataloaderOptions);
     // doing this ugly stuff in the constructor because class properties are created before constructor is called
@@ -77,14 +77,13 @@ export default class RethinkDataLoader {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
       });
     }, this.dataloaderOptions);
-    this.retroThoughtsByGroupId = makeCustomLoader(async (groupIds) => {
+    this.retroThoughtsByGroupId = makeCustomLoader(async (thoughtGroupIds) => {
       const r = getRethink();
-      const retroThoughts = await r.table('SoftTeamMember')
-        .getAll(r.args(groupIds), {index: 'teamId'})
-        .filter({isActive: true});
+      const retroThoughts = await r.table('RetroThought')
+        .getAll(r.args(thoughtGroupIds), {index: 'thoughtGroupId'});
       primeStandardLoader(this.retroThoughts, retroThoughts);
-      return groupIds.map((teamId) => {
-        return retroThoughts.filter((retroThought) => retroThought.teamId === teamId);
+      return thoughtGroupIds.map((thoughtGroupId) => {
+        return retroThoughts.filter((retroThought) => retroThought.thoughtGroupId === thoughtGroupId);
       });
     }, this.dataloaderOptions);
     this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
