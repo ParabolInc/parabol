@@ -6,7 +6,7 @@
 import type {RouterHistory} from 'react-router-dom';
 import type {TeamID} from 'universal/types/team';
 
-import React, {Fragment} from 'react';
+import React from 'react';
 import styled from 'react-emotion';
 import {withRouter} from 'react-router-dom';
 
@@ -17,12 +17,12 @@ type Props = {
   history: RouterHistory
 };
 
-const Buffer = styled('div')({
-  width: '1rem'
+const ButtonGroup = styled('div')({
+  display: 'flex'
 });
 
-const Container = styled('div')({
-  display: 'flex'
+const ButtonBlock = styled('div')({
+  margin: '0 0.5em'
 });
 
 const TeamCallToAction = ({history, teamId}: Props) => {
@@ -33,20 +33,21 @@ const TeamCallToAction = ({history, teamId}: Props) => {
     history.push(`/retro/${teamId}/`);
 
   return (
-    <Container>
-      <Button
-        buttonStyle="solid"
-        colorPalette="warm"
-        depth={1}
-        icon="users"
-        iconPlacement="left"
-        label="Start Meeting"
-        onClick={goToMeetingLobby}
-        buttonSize="small"
-      />
-      {__RELEASE_FLAGS__.newSignIn &&
-        <Fragment>
-          <Buffer />
+    <ButtonGroup>
+      <ButtonBlock>
+        <Button
+          buttonStyle="solid"
+          colorPalette="warm"
+          depth={1}
+          icon="users"
+          iconPlacement="left"
+          label="Start Action Meeting"
+          onClick={goToMeetingLobby}
+          buttonSize="small"
+        />
+      </ButtonBlock>
+      {__RELEASE_FLAGS__.retro &&
+        <ButtonBlock>
           <Button
             buttonStyle="solid"
             colorPalette="warm"
@@ -57,9 +58,9 @@ const TeamCallToAction = ({history, teamId}: Props) => {
             onClick={goToRetroLobby}
             buttonSize="small"
           />
-        </Fragment>
+        </ButtonBlock>
       }
-    </Container>
+    </ButtonGroup>
   );
 };
 
