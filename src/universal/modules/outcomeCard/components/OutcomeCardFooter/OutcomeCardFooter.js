@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
 import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import textOverflow from 'universal/styles/helpers/textOverflow';
@@ -20,13 +19,30 @@ import Loadable from 'react-loadable';
 import LoadableMenu from 'universal/components/LoadableMenu';
 import LoadableLoading from 'universal/components/LoadableLoading';
 
-const fetchGitHubRepos = () => System.import('universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot');
-const fetchStatusMenu = () => System.import('universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu');
-
 const LoadableAssignMenu = Loadable({
   loader: () => System.import(
     /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
     'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
+
+const LoadableStatusMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'OutcomeCardStatusMenu' */
+    'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
+
+const LoadableGitHubMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'GitHubReposMenuRoot' */
+    'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot'
   ),
   loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
@@ -108,10 +124,8 @@ class OutcomeCardFooter extends Component {
         (<button
           aria-label="Assign this task to a teammate"
           className={css(styles.avatarButton)}
-          tabIndex={service && '-1'}
           title={`Assigned to ${assignee.preferredName}`}
           type="button"
-          ref={(c) => { this.assignRef = c; }}
         >
           <div className={avatarStyles}>
             <img
@@ -141,7 +155,6 @@ class OutcomeCardFooter extends Component {
                 originAnchor={assignOriginAnchor}
                 queryVars={{
                   area,
-                  assignRef: this.assignRef,
                   task,
                   teamId
                 }}
@@ -155,11 +168,11 @@ class OutcomeCardFooter extends Component {
           <div className={buttonBlockStyles}>
             {isArchived ?
               <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" /> :
-              <div>
+              <React.Fragment>
                 {/* buttonSpacer helps truncated names (…) be consistent */}
                 {!service ?
-                  <AsyncMenuContainer
-                    fetchMenu={fetchGitHubRepos}
+                  <LoadableMenu
+                    LoadableComponent={LoadableGitHubMenu}
                     maxWidth={350}
                     maxHeight={225}
                     originAnchor={originAnchor}
@@ -172,13 +185,14 @@ class OutcomeCardFooter extends Component {
                     }}
                     targetAnchor={targetAnchor}
                     toggle={<OutcomeCardFooterButton icon="github" />}
-                    toggleMenuState={toggleMenuState}
+                    onOpen={toggleMenuState}
+                    onClose={toggleMenuState}
                   /> :
                   <div className={css(styles.buttonSpacer)} />
                 }
-                <AsyncMenuContainer
-                  fetchMenu={fetchStatusMenu}
-                  maxWidth={200}
+                <LoadableMenu
+                  LoadableComponent={LoadableStatusMenu}
+                  maxWidth={350}
                   maxHeight={225}
                   originAnchor={originAnchor}
                   queryVars={{
@@ -191,9 +205,10 @@ class OutcomeCardFooter extends Component {
                   }}
                   targetAnchor={targetAnchor}
                   toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
-                  toggleMenuState={toggleMenuState}
+                  onOpen={toggleMenuState}
+                  onClose={toggleMenuState}
                 />
-              </div>
+              </React.Fragment>
             }
           </div>
         </div>

@@ -22,6 +22,7 @@ const signout = () => System.import('universal/containers/Signout/SignoutContain
 const notFound = () => System.import('universal/components/NotFound/NotFound');
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot');
+const signInPage = () => System.import('universal/components/SignInPage/SignInPage');
 
 const Action = (props) => {
   const {styles} = props;
@@ -35,7 +36,7 @@ const Action = (props) => {
           : <Route exact path="/" component={LandingContainer} />
         }
         {__RELEASE_FLAGS__.newSignIn &&
-          <Route exact path="/signin" component={SignIn} />
+          <AsyncRoute exact path="/signin" mod={signInPage} />
         }
         <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />

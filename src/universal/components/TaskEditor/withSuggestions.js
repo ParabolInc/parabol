@@ -2,12 +2,33 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import getWordAt from 'universal/components/TaskEditor/getWordAt';
 import resolvers from 'universal/components/TaskEditor/resolvers';
-import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
-import ui from 'universal/styles/ui';
+import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import completeEntity, {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import getAnchorLocation from './getAnchorLocation';
+import Loadable from 'react-loadable';
+import LoadableLoading from 'universal/components/LoadableLoading';
+import LoadableMenu from 'universal/components/LoadableMenu';
 
+const LoadableEditorSuggestions = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'EditorSuggestions' */
+    'universal/components/EditorSuggestions/EditorSuggestions'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
+
+const LoadableMentionableUsersRoot = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'SuggestMentionableUsersRoot' */
+    'universal/components/SuggestMentionableUsersRoot'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
 
 const originAnchor = {
   vertical: 'top',
@@ -18,9 +39,6 @@ const targetAnchor = {
   vertical: 'top',
   horizontal: 'left'
 };
-
-const fetchEditorSuggestions = () => System.import('universal/components/EditorSuggestions/EditorSuggestions');
-const fetchSuggestMentionableUsers = () => System.import('universal/components/SuggestMentionableUsersRoot');
 
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
@@ -198,13 +216,11 @@ const withSuggestions = (ComposedComponent) => {
       }
       if (suggestionType === 'mention') {
         return (
-          <AsyncMenuContainer
-            marginFromOrigin={ui.draftModalMargin}
-            fetchMenu={fetchSuggestMentionableUsers}
+          <LoadableMenu
+            LoadableComponent={LoadableMentionableUsersRoot}
             maxWidth={500}
             maxHeight={200}
             originAnchor={originAnchor}
-            originCoords={coords}
             queryVars={{
               activeIdx: active,
               handleSelect: this.handleSelect,
@@ -214,18 +230,17 @@ const withSuggestions = (ComposedComponent) => {
               teamId
             }}
             targetAnchor={targetAnchor}
-            isOpen
+            marginFromOrigin={ui.draftModalMargin}
+            originCoords={coords}
           />
         );
       }
       return (
-        <AsyncMenuContainer
-          marginFromOrigin={ui.draftModalMargin}
-          fetchMenu={fetchEditorSuggestions}
+        <LoadableMenu
+          LoadableComponent={LoadableEditorSuggestions}
           maxWidth={500}
           maxHeight={200}
           originAnchor={originAnchor}
-          originCoords={coords}
           queryVars={{
             editorState,
             setEditorState,
@@ -236,7 +251,8 @@ const withSuggestions = (ComposedComponent) => {
             removeModal: this.removeModal
           }}
           targetAnchor={targetAnchor}
-          isOpen
+          marginFromOrigin={ui.draftModalMargin}
+          originCoords={coords}
         />
       );
     };

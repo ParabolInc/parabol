@@ -3,6 +3,7 @@
     "production": {
       "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
+        ["emotion", {"hoist": true}],
         ["relay"],
         [
           "transform-decorators-legacy"
@@ -15,6 +16,7 @@
     "development": {
       "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
+        ["emotion"],
         ["relay"],
         [
           "transform-decorators-legacy"
@@ -27,6 +29,7 @@
     "test": {
       "presets": ["flow", "react"],
       "plugins": [
+        ["emotion"],
         ["relay"],
         ["transform-class-properties"],
         ["transform-export-extensions"],

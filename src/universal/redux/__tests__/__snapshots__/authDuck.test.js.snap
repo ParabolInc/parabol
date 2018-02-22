@@ -48,35 +48,3 @@ Object {
   },
 }
 `;
-
-exports[`setNextUrl 1`] = `
-Object {
-  "auth": Object {
-    "nextUrl": "/foo",
-    "obj": Object {
-      "aud": null,
-      "exp": null,
-      "iat": null,
-      "iss": null,
-      "sub": null,
-    },
-    "token": null,
-  },
-}
-`;
-
-exports[`unsetNextUrl 1`] = `
-Object {
-  "auth": Object {
-    "nextUrl": null,
-    "obj": Object {
-      "aud": null,
-      "exp": null,
-      "iat": null,
-      "iss": null,
-      "sub": null,
-    },
-    "token": null,
-  },
-}
-`;

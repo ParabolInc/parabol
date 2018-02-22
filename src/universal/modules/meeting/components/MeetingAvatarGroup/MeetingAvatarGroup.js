@@ -4,16 +4,28 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Tag from 'universal/components/Tag/Tag';
-import AsyncMenuContainer from 'universal/modules/menu/containers/AsyncMenu/AsyncMenu';
 import appTheme from 'universal/styles/theme/appTheme';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import ui from 'universal/styles/ui';
+import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
 import {createFragmentContainer} from 'react-relay';
+import Loadable from 'react-loadable';
+import LoadableLoading from 'universal/components/LoadableLoading';
+import LoadableMenu from 'universal/components/LoadableMenu';
+
+const LoadableMeetingAvatarMenu = Loadable({
+  loader: () => System.import(
+    /* webpackChunkName: 'MeetingAvatarMenu' */
+    'universal/modules/meeting/components/MeetingAvatarMenu'
+  ),
+  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
+  delay: HUMAN_ADDICTION_THRESH,
+  timeout: MAX_WAIT_TIME
+});
 
 const originAnchor = {
   vertical: 'bottom',
@@ -24,7 +36,6 @@ const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
 };
-const fetchMeetingAvatarMenu = () => System.import('universal/modules/meeting/components/MeetingAvatarMenu');
 
 const MeetingAvatarGroup = (props) => {
   const {
@@ -74,22 +85,11 @@ const MeetingAvatarGroup = (props) => {
             const handleNavigate = canNavigate && navigateTo || undefined;
             const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator || undefined;
             const handleRequest = avatarIsFacilitating && !isSelf && requestFacilitator || undefined;
-            const toggle = () => (
-              <Avatar
-                hasBadge
-                isActive={avatarIsFacilitating}
-                isClickable
-                picture={picture}
-                isConnected={avatar.isConnected || avatar.isSelf}
-                isCheckedIn={avatar.isCheckedIn}
-                size="fill"
-              />
-            );
             return (
               <div className={itemStyles} key={avatar.id}>
                 <div className={avatarBlockStyles}>
-                  <AsyncMenuContainer
-                    fetchMenu={fetchMeetingAvatarMenu}
+                  <LoadableMenu
+                    LoadableComponent={LoadableMeetingAvatarMenu}
                     maxWidth={350}
                     maxHeight={225}
                     originAnchor={originAnchor}
@@ -101,7 +101,15 @@ const MeetingAvatarGroup = (props) => {
                       localPhase
                     }}
                     targetAnchor={targetAnchor}
-                    toggle={toggle()}
+                    toggle={<Avatar
+                      hasBadge
+                      isActive={avatarIsFacilitating}
+                      isClickable
+                      picture={picture}
+                      isConnected={avatar.isConnected || avatar.isSelf}
+                      isCheckedIn={avatar.isCheckedIn}
+                      size="fill"
+                    />}
                   />
                 </div>
                 {avatarIsFacilitating &&

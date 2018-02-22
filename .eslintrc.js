@@ -99,6 +99,7 @@ module.exports = {
     ]
   },
   "globals": {
+    "__ACTION__": true,
     "__PRODUCTION__": true,
     "__CLIENT__": true,
     "__WEBPACK__": true,

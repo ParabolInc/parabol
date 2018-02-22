@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {unsetNextUrl} from 'universal/redux/authDuck';
 
 const mapStateToProps = (state) => {
   const {auth} = state;
@@ -12,16 +11,16 @@ const mapStateToProps = (state) => {
 };
 
 const handleAuthChange = (props) => {
-  const {auth, dispatch, history} = props;
+  const {auth, location: {search}, history} = props;
+  const nextUrl = new URLSearchParams(search).get('redirectTo');
 
   if (auth.obj.sub) {
     // note if you join a team & leave it, tms will be an empty array
     const isNew = !auth.obj.hasOwnProperty('tms');
     if (isNew) {
       history.push('/welcome');
-    } else if (auth.nextUrl) {
-      history.push(auth.nextUrl);
-      dispatch(unsetNextUrl());
+    } else if (nextUrl) {
+      history.push(nextUrl);
     } else {
       history.push('/me');
     }
@@ -35,10 +34,11 @@ export default (ComposedComponent) => {
     static propTypes = {
       auth: PropTypes.object,
       dispatch: PropTypes.func,
-      history: PropTypes.object.isRequired
+      history: PropTypes.object.isRequired,
+      location: PropTypes.object.isRequired
     };
 
-    componentWillMount() {
+    componentDidMount() {
       handleAuthChange(this.props);
     }
 

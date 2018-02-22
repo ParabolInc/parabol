@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation';
 import {MEETING} from 'universal/utils/constants';
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
 
 class GitHubRepoListMenu extends Component {
   static propTypes = {
@@ -50,30 +51,33 @@ class GitHubRepoListMenu extends Component {
         () => history.push(`/team/${teamId}/settings/integrations/github`);
       const label = inMeeting ? 'No repos! Remind me to set up GitHub' : 'Add your first GitHub repo';
       return (
-        <div>
-          <MenuItem
+        <MenuWithShortcuts
+          ariaLabel={'Link your GitHub Account'}
+          closePortal={closePortal}
+        >
+          <MenuItemWithShortcuts
             label={label}
             onClick={handleClick}
-            closePortal={closePortal}
           />
-        </div>
+        </MenuWithShortcuts>
       );
     }
     return (
-      <div>
+      <MenuWithShortcuts
+        ariaLabel={'Select an associated GitHub Repository'}
+        closePortal={closePortal}
+      >
         {this.filteredRepos.map((repo) => {
           const {nameWithOwner} = repo;
           return (
-            <MenuItem
-              isActive={false}
+            <MenuItemWithShortcuts
               key={`githubReposMenItem${nameWithOwner}`}
               label={nameWithOwner}
               onClick={() => CreateGitHubIssueMutation(environment, nameWithOwner, taskId, setError, clearError)}
-              closePortal={closePortal}
             />
           );
         })}
-      </div>
+      </MenuWithShortcuts>
     );
   }
 }

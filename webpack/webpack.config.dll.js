@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     vendors: [
       'aphrodite-local-styles',
+      'auth0-js',
       'auth0-lock',
       'core-js',
       'email-addresses',
