@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.29.0 2018-Feb-21
+## Fixed
+- fixed withCoords
+- added new sign-in page (controlled by `newSignIn` release flag)
+
 ## v0.28.1 2018-Feb-19
 ## Fixed
 - unsentMessageQueue never released queries and mutations (#1775)
