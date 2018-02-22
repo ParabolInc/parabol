@@ -7,8 +7,8 @@
  * @flow
  * @format
  */
-
-'use strict';
+/* eslint-disable */
+import polyfill from 'react-lifecycles-compat';
 
 const React = require('react');
 const ReactRelayQueryFetcher = require('react-relay/lib/ReactRelayQueryFetcher');
@@ -340,4 +340,5 @@ function fetchQueryAndComputeStateFromProps(
   }
 }
 
+polyfill(ReactRelayQueryRenderer);
 module.exports = ReactRelayQueryRenderer;

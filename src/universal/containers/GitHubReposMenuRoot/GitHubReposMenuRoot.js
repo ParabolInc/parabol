@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql, QueryRenderer} from 'react-relay';
 import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
@@ -16,6 +15,7 @@ import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemoved
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 
 const githubRepoQuery = graphql`
   query GitHubReposMenuRootQuery($teamId: ID!) {

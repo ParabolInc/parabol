@@ -28,13 +28,13 @@ const Team = (props) => {
     team
   } = props;
   if (!team) return <LoadingView />;
-  const {contentFilter, teamId, teamName, isPaid, meetingId} = team;
+  const {teamId, teamName, isPaid, meetingId} = team;
   const updateFilter = (e) => {
     const nextValue = e.target.value;
     commitLocalUpdate(atmosphere, (store) => {
       const teamProxy = store.get(teamId);
       teamProxy.setValue(nextValue, 'contentFilter');
-    })
+    });
   };
   const hasActiveMeeting = Boolean(meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;

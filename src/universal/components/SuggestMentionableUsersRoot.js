@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql, QueryRenderer} from 'react-relay';
 import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
@@ -8,6 +7,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import SuggestMentionableUsers from 'universal/components/SuggestMentionableUsers';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {cacheConfig} from 'universal/utils/constants';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 
 const query = graphql`
   query SuggestMentionableUsersRootQuery($teamId: ID!) {

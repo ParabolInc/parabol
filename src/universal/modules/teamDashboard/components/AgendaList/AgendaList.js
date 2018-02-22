@@ -62,7 +62,7 @@ class AgendaList extends Component {
     const {team: {agendaItems, contentFilter}} = props;
     this.setState({
       filteredAgendaItems: contentFilter ? agendaItems.filter(({content}) => content.match(contentFilter)) : agendaItems
-    })
+    });
   };
 
   setOverflowContainerElRef = (el) => {
