@@ -17,19 +17,19 @@ export default class Atmosphere extends Environment {
     return JSON.stringify({name, variables});
   };
 
-  registerQuery = async (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {
+  registerQuery = async (queryKey, subscriptions, subParams, queryVariables, queryFetcher) => {
     const subConfigs = subscriptions.map((subCreator) => subCreator(this, queryVariables, subParams));
     const subscriptionClient = await this.ensureSubscriptionClient();
     if (!subscriptionClient) return;
     const newQuerySubs = subConfigs.map((config) => {
       const {subscription, variables = {}} = config;
       const {name} = subscription();
-      const subKey = Atmosphere.getKey(name, variables);
+      const subKey = JSON.stringify({name, variables});
       requestSubscription(this, {onError: defaultErrorHandler, ...config});
       return {
         subKey,
         queryKey,
-        component: {dispose: releaseComponent}
+        queryFetcher
       };
     });
 
@@ -185,10 +185,11 @@ export default class Atmosphere extends Environment {
         // get every query that is powered by this subscription
         const associatedQueries = this.querySubscriptions.filter(({subKey}) => subKey === subKeyToRemove);
         // these queries are no longer supported, so drop them
-        associatedQueries.forEach(({component}) => {
-          const {dispose} = component;
-          if (dispose) {
-            dispose();
+        associatedQueries.forEach(({queryFetcher}) => {
+          if (queryFetcher.readyToGC()) {
+            queryFetcher.dispose();
+          } else {
+            queryFetcher.flagForGC();
           }
         });
         const queryKeys = associatedQueries.map(({queryKey}) => queryKey);
