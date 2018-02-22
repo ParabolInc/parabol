@@ -4,9 +4,42 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.29.0 2018-Feb-21
+## Fixed
+- fixed withCoords
+- added new sign-in page (controlled by `newSignIn` release flag)
+
+## v0.28.1 2018-Feb-19
+## Fixed
+- unsentMessageQueue never released queries and mutations (#1775)
+
+## v0.28.0 2018-Feb-14
+## Added
+- Done items in the meeting summary
+
+## Fixed
+- Connectivity messages for socket disconnects/reconnects/firewalls
+
+## Removed
+- SocketCluster in favor of vanilla uws
+
+## v0.27.2 2018-Feb-11
+## Fixed
+- Regression caused by incomplete project -> task refactor (#1728)
+
+## v0.27.0 2018-Feb-07
+## Added
+- Scroll to active agenda item during meeting
+- Renamed Project to Task
+
+## Fixed
+- Minor style updates
+
+
 ## v0.26.1 2018-Jan-31
 ## Fixed
 - E2E Timeouts
+
 
 ## v0.26.0 2018-Jan-31
 ## Added

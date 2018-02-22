@@ -1,7 +1,7 @@
 import raven from 'raven-js';
 import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
-import auth, {removeAuthToken, setAuthToken, setNextUrl, unsetNextUrl} from '../authDuck';
+import auth, {removeAuthToken, setAuthToken} from '../authDuck';
 import {testToken, testTokenData} from './testTokens';
 import * as segmentActions from '../segmentActions';
 
@@ -49,16 +49,5 @@ test('can removeAuthToken', () => {
   store.dispatch(setAuthToken(testToken));
   store.dispatch(removeAuthToken());
   expect(segmentActions.segmentEventReset).toBeCalled();
-  expect(store.getState()).toMatchSnapshot();
-});
-
-test('setNextUrl', () => {
-  store.dispatch(setNextUrl('/foo'));
-  expect(store.getState()).toMatchSnapshot();
-});
-
-test('unsetNextUrl', () => {
-  store.dispatch(setNextUrl('/foo'));
-  store.dispatch(unsetNextUrl());
   expect(store.getState()).toMatchSnapshot();
 });

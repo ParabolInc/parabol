@@ -4,54 +4,46 @@ import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import makeDateString from 'universal/utils/makeDateString';
-import {Link} from 'react-router-dom';
 import {MEETING_NAME} from 'universal/utils/constants';
 
 const SummaryHeader = (props) => {
-  const {createdAt, meetingNumber, referrer, teamDashUrl, teamName} = props;
+  const {createdAt, meetingNumber, teamName} = props;
   const blockStyle = {
     backgroundColor: '#fff',
     color: appTheme.palette.dark,
     fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
-    fontWeight: props.fontWeight,
     lineHeight: `${props.lineHeight}`,
     padding: `${props.padding}px`,
     textAlign: 'center'
   };
 
   const textStyle = {
-    fontFamily: ui.emailFontFamily,
-    fontWeight: props.fontWeight
+    fontFamily: ui.emailFontFamily
   };
 
   const meetingDateStyle = {
     ...textStyle,
-    fontSize: '18px'
-  };
-
-  const teamDashLinkStyle = {
-    ...textStyle,
-    backgroundColor: appTheme.palette.cool,
-    borderRadius: '2px',
-    color: '#ffffff',
-    cursor: 'pointer',
-    display: 'block',
-    fontSize: '14px',
-    lineHeight: '20px',
-    margin: '16px auto 0',
-    padding: '6px 0',
-    textAlign: 'center',
-    textDecoration: 'none',
-    width: '186px'
+    fontSize: '18px',
+    fontWeight: 400
   };
 
   const teamNameStyle = {
     ...textStyle,
-    fontSize: '36px'
+    fontSize: '36px',
+    fontWeight: 700
   };
   const meetingDate = makeDateString(createdAt, {showDay: true});
-  const teamDashLabel = 'Go to Team Dashboard';
+
+  const labelStyles = {
+    color: appTheme.palette.dark70l,
+    fontSize: '13px',
+    fontWeight: 700,
+    padding: '0 0 16px',
+    textAlign: 'center',
+    textTransform: 'uppercase'
+  };
+
   return (
     <div style={{padding: '0 16px'}}>
       <EmptySpace height={props.vSpacing} />
@@ -59,29 +51,13 @@ const SummaryHeader = (props) => {
         <tbody>
           <tr>
             <td style={blockStyle}>
+              <div style={labelStyles}>{'Meeting Summary'}</div>
               <div style={teamNameStyle}>{teamName}</div>
               <div style={meetingDateStyle}>{`${MEETING_NAME} #${meetingNumber}`}{' • '}{meetingDate}</div>
-              {referrer === 'email' ?
-                <a
-                  href={teamDashUrl}
-                  style={teamDashLinkStyle}
-                  title={teamDashLabel}
-                >
-                  {teamDashLabel}
-                </a> :
-                <Link
-                  to={teamDashUrl}
-                  style={teamDashLinkStyle}
-                  title={teamDashLabel}
-                >
-                  {teamDashLabel}
-                </Link>
-              }
             </td>
           </tr>
         </tbody>
       </table>
-      <EmptySpace height={props.vSpacing} />
     </div>
   );
 };
@@ -94,19 +70,9 @@ SummaryHeader.propTypes = {
     PropTypes.instanceOf(Date)
   ]),
   fontSize: PropTypes.number,
-  fontWeight: PropTypes.oneOf([
-    400,
-    700
-  ]),
   lineHeight: PropTypes.number,
   meetingNumber: PropTypes.number,
   padding: PropTypes.number,
-  referrer: PropTypes.oneOf([
-    'meeting',
-    'email',
-    'history'
-  ]).isRequired,
-  teamDashUrl: PropTypes.string.isRequired,
   teamName: PropTypes.string,
   vSpacing: PropTypes.number,
   width: PropTypes.string
@@ -114,10 +80,9 @@ SummaryHeader.propTypes = {
 
 SummaryHeader.defaultProps = {
   fontSize: 24,
-  fontWeight: 700,
   lineHeight: 1.5,
   padding: 24,
-  vSpacing: 32,
+  vSpacing: 16,
   width: '100%'
 };
 

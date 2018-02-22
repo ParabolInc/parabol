@@ -2,9 +2,9 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import 'universal/components/ProjectEditor/Draft.css';
-import withKeyboardShortcuts from 'universal/components/ProjectEditor/withKeyboardShortcuts';
-import withMarkdown from 'universal/components/ProjectEditor/withMarkdown';
+import 'universal/components/TaskEditor/Draft.css';
+import withKeyboardShortcuts from 'universal/components/TaskEditor/withKeyboardShortcuts';
+import withMarkdown from 'universal/components/TaskEditor/withMarkdown';
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 import {textTags} from 'universal/utils/constants';
@@ -25,7 +25,7 @@ class EditorInputWrapper extends Component {
     placeholder: PropTypes.string,
     readOnly: PropTypes.bool,
     setEditorState: PropTypes.func.isRequired,
-    setRef: PropTypes.func,
+    innerRef: PropTypes.func,
     styles: PropTypes.object
   };
 
@@ -135,7 +135,7 @@ class EditorInputWrapper extends Component {
   };
 
   render() {
-    const {editorState, placeholder, readOnly, setRef} = this.props;
+    const {editorState, placeholder, readOnly, innerRef} = this.props;
     return (
       <Editor
         blockStyleFn={this.blockStyleFn}
@@ -153,8 +153,8 @@ class EditorInputWrapper extends Component {
         placeholder={placeholder}
         readOnly={readOnly}
         ref={(c) => {
-          if (setRef) {
-            setRef(c);
+          if (innerRef) {
+            innerRef(c);
           }
           this.editorRef = c;
         }}

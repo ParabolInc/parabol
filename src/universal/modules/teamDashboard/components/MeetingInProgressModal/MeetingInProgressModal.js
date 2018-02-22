@@ -20,7 +20,7 @@ const MeetingInProgressModal = (props) => {
       <Type align="center" marginBottom="1rem" bold scale="s4">
         The dashboard for {teamName} is disabled <br />
         as we are actively meeting to review <br />
-        Projects and Agenda Items.
+        Tasks and Agenda Items.
       </Type>
       <Button
         buttonSize="large"

@@ -10,10 +10,11 @@ import Footer from '../../components/Footer/Footer';
 import Layout from '../../components/Layout/Layout';
 import QuickStats from '../../components/QuickStats/QuickStats';
 import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
-import UserProjects from '../UserProjects/UserProjects';
+import UserTasks from '../UserTasks/UserTasks';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
+import {Link} from 'react-router-dom';
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
-import {MEETING_NAME, AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE} from 'universal/utils/constants';
 
 const ruleStyle = {
   backgroundColor: ui.emailRuleColor,
@@ -48,16 +49,17 @@ const greetingStyles = {
 };
 
 const bannerStyle = {
-  backgroundColor: appTheme.palette.warm,
+  backgroundColor: '#ffffff',
   textAlign: 'center'
 };
 
-const bannerMessageStyles = {
-  color: '#ffffff',
+const topMessageStyles = {
+  color: ui.palette.mid,
   fontFamily: ui.emailFontFamily,
-  fontSize: '16px',
-  fontWeight: 700,
-  textAlign: 'center'
+  fontSize: '11px',
+  fontWeight: 400,
+  textAlign: 'right',
+  padding: '0 16px'
 };
 
 const meetingLinkTable = {
@@ -77,7 +79,7 @@ const meetingLink = {
 };
 
 const bannerLink = {
-  color: '#FFFFFF',
+  color: ui.palette.dark,
   cursor: 'pointer',
   textDecoration: 'underline'
 };
@@ -85,19 +87,6 @@ const bannerLink = {
 const quickStatsBlock = {
   padding: '0 8px',
   textAlign: 'center'
-};
-
-const makeBannerMessage = (referrer, url) => {
-  if (referrer === 'meeting') {
-    return <span>{'All team members will receive this summary in their inbox.'}</span>;
-  }
-  if (referrer === 'email') {
-    return <span><a href={url} style={bannerLink}>{'View this summary in your web browser'}</a></span>;
-  }
-  if (referrer === 'history') {
-    return <span><a href={url} style={bannerLink}>{'See all meeting summaries here'}</a></span>;
-  }
-  return null;
 };
 
 const SummaryEmail = (props) => {
@@ -109,14 +98,17 @@ const SummaryEmail = (props) => {
     teamDashUrl
   } = props;
   const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName} = meeting;
-  const membersSansOutcomes = invitees.filter((invitee) => invitee.projects.length === 0);
-  const membersWithOutcomes = invitees.filter((invitee) => invitee.projects.length > 0);
+  const membersSansOutcomes = invitees.filter((invitee) => invitee.tasks.length === 0);
+  const membersWithOutcomes = invitees.filter((invitee) => invitee.tasks.length > 0);
   const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
-  const projectCount = invitees.reduce((sum, invitee) => sum + invitee.projects.length, 0);
-
-  const bannerMessage = makeBannerMessage(referrer, referrerUrl);
+  const doneTaskCount = invitees.reduce((sum, invitee) => sum + invitee.tasks.filter((task) => task.status === DONE).length, 0);
+  const newTaskCount = invitees.reduce((sum, invitee) => sum + invitee.tasks.filter((task) => task.status !== DONE).length, 0);
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
   const iconSize = 28;
+  const teamDashLabel = 'Go to Team Dashboard';
+  const textStyle = {
+    fontFamily: ui.emailFontFamily
+  };
   const iconLinkBlock = {
     backgroundColor: appTheme.palette.cool10l,
     display: 'inline-block',
@@ -139,29 +131,51 @@ const SummaryEmail = (props) => {
     margin: '0 0 0 6px',
     verticalAlign: 'middle'
   };
+  const teamDashLinkStyle = {
+    ...textStyle,
+    backgroundColor: appTheme.palette.warm,
+    borderRadius: '2px',
+    color: '#ffffff',
+    cursor: 'pointer',
+    display: 'block',
+    fontSize: '14px',
+    fontWeight: 700,
+    lineHeight: '20px',
+    margin: '0 auto',
+    padding: '6px 0',
+    textAlign: 'center',
+    textDecoration: 'none',
+    width: '186px'
+  };
+  const tipStyle = {
+    ...textStyle,
+    fontWeight: 400,
+    fontSize: '16px',
+    lineHeight: '24px'
+  };
   return (
     <Layout>
-      <table style={ui.emailTableBase} width="100%">
-        <tbody>
-          <tr>
-            <td style={bannerStyle}>
-              <EmptySpace height={8} />
-              {bannerMessage &&
-              <div style={bannerMessageStyles}>
-                {bannerMessage}
-              </div>
-              }
-              <EmptySpace height={8} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {referrer === 'email' &&
+        <table style={ui.emailTableBase} width="100%">
+          <tbody>
+            <tr>
+              <td style={bannerStyle}>
+                <EmptySpace height={8} />
+                <div style={topMessageStyles}>
+                  <span><a href={referrerUrl} style={bannerLink}>{'View this in your browser'}</a></span>
+                </div>
+                <EmptySpace height={8} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      }
       <Body verticalGutter={0}>
-        {/* Summary Header */}
         <table align="center" style={ui.emailTableBase} width="100%">
           <tbody>
             <tr>
               <td align="center" style={{padding: 0}}>
+                {/* Summary Header */}
                 <SummaryHeader
                   createdAt={createdAt}
                   meetingNumber={meetingNumber}
@@ -171,30 +185,67 @@ const SummaryEmail = (props) => {
                 />
               </td>
             </tr>
-          </tbody>
-        </table>
-        {/* Quick Stats */}
-        <table align="center" style={ui.emailTableBase} width="100%">
-          <tbody>
             <tr>
               <td align="center" style={quickStatsBlock}>
+                {/* Quick Stats */}
                 <QuickStats
                   agendaItems={agendaItemsCompleted}
-                  newProjects={projectCount}
+                  doneTaskCount={doneTaskCount}
+                  newTaskCount={newTaskCount}
                   teamMembers={invitees.length}
                   teamMembersPresent={presentMemberCount}
                 />
               </td>
             </tr>
+            <tr>
+              <td>
+                {/* Team Dashboard Button */}
+                {referrer === 'email' ?
+                  <a
+                    href={teamDashUrl}
+                    style={teamDashLinkStyle}
+                    title={teamDashLabel}
+                  >
+                    {teamDashLabel}
+                  </a> :
+                  <Link
+                    to={teamDashUrl}
+                    style={teamDashLinkStyle}
+                    title={teamDashLabel}
+                  >
+                    {teamDashLabel}
+                  </Link>
+                }
+                <EmptySpace height={32} />
+              </td>
+            </tr>
           </tbody>
         </table>
         {membersWithOutcomes.map((member) =>
-          <UserProjects member={member} key={`userProjects'${member.id}`} />
+          <UserTasks member={member} key={`userTasks'${member.id}`} />
         )}
         {hasUsersWithoutOutcomes &&
         <UserNoNewOutcomes members={membersSansOutcomes} />
         }
         <EmptySpace height={0} />
+        {/* Show this tip for the first 3 summaries. */}
+        {meetingNumber < 4 &&
+          <table align="center" style={ui.emailTableBase} width="100%">
+            <tbody>
+              <tr>
+                <td align="center" style={{padding: 0}}>
+                  <hr style={ruleStyle} />
+                  <EmptySpace height={32} />
+                  <div style={tipStyle}>
+                    <b>{'Pro Tip'}</b>{': all Tasks in the '}<b>{'Done'}</b>{' column are'}<br />
+                    {'automatically archived after each meeting.'}
+                  </div>
+                  <EmptySpace height={32} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        }
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
         {/* First-time prompt to schedule recurring meeting */}
@@ -301,16 +352,16 @@ SummaryEmail.propTypes = {
     'history'
   ]).isRequired,
   referrerUrl: PropTypes.string,
-  teamDashUrl: PropTypes.string,
-  projectCount: PropTypes.number
+  teamDashUrl: PropTypes.string
 };
 
 export const summaryEmailText = (props) => {
   const {meeting} = props;
   const {teamName, agendaItemsCompleted, invitees} = meeting;
-  const projectCount = invitees.reduce((sum, member) => sum + member.projects.length, 0);
+  const doneTaskCount = invitees.reduce((sum, member) => sum + member.tasks.filter((task) => task.status === DONE).length, 0);
+  const newTaskCount = invitees.reduce((sum, member) => sum + member.tasks.filter((task) => task.status !== DONE).length, 0);
   return `Hello ${teamName}! As a team you discussed ${agendaItemsCompleted} Agenda Items${' '}
-  resulting in ${projectCount} New Projects.${' '}`;
+  resulting in ${doneTaskCount} Tasks Completed and ${newTaskCount} New Tasks.${' '}`;
 };
 
 export default SummaryEmail;

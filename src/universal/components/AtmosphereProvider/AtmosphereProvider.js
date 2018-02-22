@@ -18,7 +18,8 @@ class AtmosphereProvider extends Component {
 
   static propTypes = {
     authToken: PropTypes.string,
-    children: PropTypes.element.isRequired
+    children: PropTypes.element.isRequired,
+    dispatch: PropTypes.func.isRequired
   };
 
   getChildContext() {
@@ -28,7 +29,9 @@ class AtmosphereProvider extends Component {
   }
 
   componentWillMount() {
-    const {authToken} = this.props;
+    const {authToken, dispatch} = this.props;
+    // super dirty, we'll remove it in the next chore PR when we remove auth from redux
+    atmosphere.dispatch = dispatch;
     if (authToken) {
       atmosphere.setAuthToken(authToken);
     }

@@ -36,12 +36,10 @@ const UserNoNewOutcomes = (props) => {
   const emptyOutcomesMessage = {
     ...textCenter,
     backgroundColor: '#ffffff',
-    border: `1px solid ${ui.cardBorderColor}`,
     borderRadius: '4px',
     fontFamily: ui.emailFontFamily,
-    fontSize: '16px',
-    fontStyle: 'italic',
-    padding: '16px'
+    fontSize: '18px',
+    fontWeight: 700
   };
 
   const attendingStyles = {
@@ -113,6 +111,16 @@ const UserNoNewOutcomes = (props) => {
             <EmptySpace height={24} />
           </td>
         </tr>
+        <tr>
+          <td style={cardsCell}>
+            <div style={{padding: '0 8px'}}>
+              <div style={emptyOutcomesMessage}>
+                {'No Done or New Tasks…'}
+              </div>
+            </div>
+            <EmptySpace height={24} />
+          </td>
+        </tr>
         {members.length &&
           <tr>
             <td align="center">
@@ -125,19 +133,10 @@ const UserNoNewOutcomes = (props) => {
                   )}
                 </tbody>
               </table>
+              <EmptySpace height={24} />
             </td>
           </tr>
         }
-        <tr>
-          <td style={cardsCell}>
-            <div style={{padding: '0 8px'}}>
-              <div style={emptyOutcomesMessage}>
-                {'No new Projects this week…'}
-              </div>
-            </div>
-            <EmptySpace height={24} />
-          </td>
-        </tr>
       </tbody>
     </table>
   );

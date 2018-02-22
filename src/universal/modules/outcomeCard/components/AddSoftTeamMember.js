@@ -8,7 +8,7 @@ import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMuta
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {connect} from 'react-redux';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import {emailRegex} from 'universal/validation/regex';
 import legitify from 'universal/validation/legitify';
 import {createFragmentContainer} from 'react-relay';
@@ -20,6 +20,7 @@ const makeValidationSchema = (allAssignees) => {
   return legitify({
     inviteeEmail: (value) => value
       .trim()
+      .required()
       .matches(emailRegex, 'That doesn’t look like an email address.')
       .test((inviteeEmail) => {
         const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
@@ -41,7 +42,6 @@ const validateEmailAddress = (inviteeEmail, assignees, onError) => {
 class AddSoftTeamMember extends Component {
   static propTypes = {
     area: PropTypes.string.isRequired,
-    assignRef: PropTypes.instanceOf(Element),
     atmosphere: PropTypes.object.isRequired,
     dirty: PropTypes.bool.isRequired,
     setDirty: PropTypes.func.isRequired,
@@ -49,7 +49,7 @@ class AddSoftTeamMember extends Component {
     dispatch: PropTypes.func.isRequired,
     isActive: PropTypes.bool.isRequired,
     menuRef: PropTypes.instanceOf(Element),
-    projectId: PropTypes.string.isRequired,
+    taskId: PropTypes.string.isRequired,
     error: PropTypes.any,
     submitting: PropTypes.bool,
     submitMutation: PropTypes.func.isRequired,
@@ -78,12 +78,11 @@ class AddSoftTeamMember extends Component {
     const {inviteeEmail} = this.state;
     const {
       area,
-      assignRef,
       atmosphere,
       closePortal,
       setDirty,
       dispatch,
-      projectId,
+      taskId,
       submitting,
       submitMutation,
       onCompleted,
@@ -101,7 +100,6 @@ class AddSoftTeamMember extends Component {
 
     // resolve
     closePortal();
-    assignRef.focus();
     const invitees = [{email: inviteeEmail}];
     submitMutation();
     const handleCompleted = (res) => {
@@ -110,11 +108,11 @@ class AddSoftTeamMember extends Component {
       const newSoftTeamMemberId = newSoftTeamMembers && newSoftTeamMembers[0].id;
       const reactivatedTeamMemberId = reactivatedTeamMembers && reactivatedTeamMembers[0].id;
       submitMutation();
-      const updatedProject = {
-        id: projectId,
+      const updatedTask = {
+        id: taskId,
         assigneeId: newSoftTeamMemberId || reactivatedTeamMemberId
       };
-      UpdateProjectMutation(atmosphere, updatedProject, area, onCompleted, onError);
+      UpdateTaskMutation(atmosphere, updatedTask, area, onCompleted, onError);
     };
     InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, handleCompleted);
   };
@@ -146,12 +144,14 @@ class AddSoftTeamMember extends Component {
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
     const inputStyles = css(styles.input, isActive && styles.inputActive);
+    const labelText = 'Invite a new teammate by their email address';
     return (
-      <div title="Invite a new teammate by email">
+      <div title={labelText}>
         <div className={rootStyles} onClick={this.onClick}>
-          <img alt="Invite a new teammate by email" className={css(styles.avatar)} src={avatarUser} />
+          <img alt="" className={css(styles.avatar)} src={avatarUser} />
           <form onSubmit={this.onSubmit}>
             <input
+              aria-label={labelText}
               className={inputStyles}
               onChange={this.onChange}
               onFocus={setAddSoftAsActive}

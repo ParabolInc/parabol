@@ -6,8 +6,8 @@ export function clearError() {
   }
 }
 
-export function setError({_error}) {
+export function setError(error) {
   this.setState({
-    error: _error
+    error
   });
 }

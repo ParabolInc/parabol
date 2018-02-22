@@ -62,7 +62,7 @@ class AgendaInputField extends Component {
     this.maybeRefocus();
   }
 
-  setRef = (c) => {
+  innerRef = (c) => {
     const {setAgendaInputRef} = this.props;
     this.inputRef = c;
     if (setAgendaInputRef) {
@@ -114,7 +114,7 @@ class AgendaInputField extends Component {
           maxLength="63"
           onKeyDown={this.maybeBlur}
           placeholder="Add Agenda Topic…"
-          ref={this.setRef}
+          ref={this.innerRef}
           type="text"
         />
         <FontAwesome name="plus-square-o" style={iconStyle} />

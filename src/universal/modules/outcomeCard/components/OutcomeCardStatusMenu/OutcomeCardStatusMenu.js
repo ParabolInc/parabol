@@ -2,104 +2,105 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {convertToRaw} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {MenuItem} from 'universal/modules/menu';
 import {textOverflow} from 'universal/styles/helpers';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import addTagToProject from 'universal/utils/draftjs/addTagToProject';
-import UpdateProjectMutation from 'universal/mutations/UpdateProjectMutation';
+import addTagToTask from 'universal/utils/draftjs/addTagToTask';
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import DeleteProjectMutation from 'universal/mutations/DeleteProjectMutation';
+import DeleteTaskMutation from 'universal/mutations/DeleteTaskMutation';
 import {createFragmentContainer} from 'react-relay';
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
+import MenuItemHR from 'universal/modules/menu/components/MenuItem/MenuItemHR';
 
-const statusItems = labels.projectStatus.slugs.slice();
+const statusItems = labels.taskStatus.slugs.slice();
 
 class OutcomeCardStatusMenu extends Component {
-  makeAddTagToProject = (tag) => () => {
-    const {area, atmosphere, project: {projectId}, editorState} = this.props;
+  makeAddTagToTask = (tag) => () => {
+    const {area, atmosphere, task: {taskId}, editorState} = this.props;
     const contentState = editorState.getCurrentContent();
-    const newContent = addTagToProject(contentState, tag);
+    const newContent = addTagToTask(contentState, tag);
     const rawContentStr = JSON.stringify(convertToRaw(newContent));
-    const updatedProject = {
-      id: projectId,
+    const updatedTask = {
+      id: taskId,
       content: rawContentStr
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateTaskMutation(atmosphere, updatedTask, area);
   };
 
   deleteOutcome = () => {
-    const {atmosphere, onComplete, project: {projectId, teamId}} = this.props;
-    DeleteProjectMutation(atmosphere, projectId, teamId);
+    const {atmosphere, onComplete, task: {taskId, teamId}} = this.props;
+    DeleteTaskMutation(atmosphere, taskId, teamId);
     if (onComplete) {
       onComplete();
     }
   };
 
   itemFactory = () => {
-    const {closePortal, isAgenda, isPrivate, removeContentTag, styles, project: {projectStatus}} = this.props;
+    const {closePortal, isAgenda, isPrivate, removeContentTag, styles, task: {taskStatus}} = this.props;
     const listItems = statusItems
-      .filter((status) => status !== projectStatus)
+      .filter((status) => status !== taskStatus)
       .map((status) => {
-        const {color, icon, label} = labels.projectStatus[status];
+        const {color, icon, label} = labels.taskStatus[status];
         return (
-          <MenuItem
+          <MenuItemWithShortcuts
             icon={icon}
             iconColor={color}
             key={status}
             label={<div className={css(styles.label)}>{'Move to '}<b style={{color}}>{label}</b></div>}
-            onClick={this.handleProjectUpdateFactory(status)}
+            onClick={this.handleTaskUpdateFactory(status)}
             closePortal={closePortal}
           />
         );
       });
+    listItems.push(<MenuItemHR key="HR1" />);
     listItems.push(isPrivate ?
-      (<MenuItem
-        hr="before"
+      (<MenuItemWithShortcuts
         icon="lock"
         key="private"
         label={<div className={css(styles.label)}>{'Remove '}<b>{'#private'}</b></div>}
         onClick={removeContentTag('private')}
         closePortal={closePortal}
       />) :
-      (<MenuItem
-        hr="before"
+      (<MenuItemWithShortcuts
         icon="lock"
         key="private"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>}
-        onClick={this.makeAddTagToProject('#private')}
+        onClick={this.makeAddTagToTask('#private')}
         closePortal={closePortal}
       />)
     );
     listItems.push(isAgenda ?
-      (<MenuItem
+      (<MenuItemWithShortcuts
         icon="times"
         key="delete"
-        label={<div className={css(styles.label)}>{'Delete this Project'}</div>}
+        label={<div className={css(styles.label)}>{'Delete this Task'}</div>}
         onClick={this.deleteOutcome}
         closePortal={closePortal}
       />) :
-      (<MenuItem
+      (<MenuItemWithShortcuts
         icon="archive"
         key="archive"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>}
-        onClick={this.makeAddTagToProject('#archived')}
+        onClick={this.makeAddTagToTask('#archived')}
         closePortal={closePortal}
       />));
     return listItems;
   };
 
-  handleProjectUpdateFactory = (newStatus) => () => {
-    const {area, atmosphere, onComplete, project} = this.props;
-    const {projectId, projectStatus} = project;
-    if (newStatus === projectStatus) {
+  handleTaskUpdateFactory = (newStatus) => () => {
+    const {area, atmosphere, onComplete, task} = this.props;
+    const {taskId, taskStatus} = task;
+    if (newStatus === taskStatus) {
       return;
     }
-    const updatedProject = {
-      id: projectId,
+    const updatedTask = {
+      id: taskId,
       status: newStatus
     };
-    UpdateProjectMutation(atmosphere, updatedProject, area);
+    UpdateTaskMutation(atmosphere, updatedTask, area);
     if (onComplete) {
       onComplete();
     }
@@ -107,10 +108,14 @@ class OutcomeCardStatusMenu extends Component {
 
 
   render() {
+    const {closePortal} = this.props;
     return (
-      <div>
+      <MenuWithShortcuts
+        ariaLabel={'Change the status of the task'}
+        closePortal={closePortal}
+      >
         {this.itemFactory()}
-      </div>
+      </MenuWithShortcuts>
     );
   }
 }
@@ -120,7 +125,7 @@ OutcomeCardStatusMenu.propTypes = {
   area: PropTypes.string.isRequired,
   closePortal: PropTypes.func.isRequired,
   editorState: PropTypes.object,
-  project: PropTypes.object,
+  task: PropTypes.object,
   isAgenda: PropTypes.bool,
   isPrivate: PropTypes.bool,
   onComplete: PropTypes.func,
@@ -140,9 +145,9 @@ const styleThunk = () => ({
 export default createFragmentContainer(
   withAtmosphere(withStyles(styleThunk)(OutcomeCardStatusMenu)),
   graphql`
-    fragment OutcomeCardStatusMenu_project on Project {
-      projectId: id
-      projectStatus: status
+    fragment OutcomeCardStatusMenu_task on Task {
+      taskId: id
+      taskStatus: status
       teamId
     }`
 );

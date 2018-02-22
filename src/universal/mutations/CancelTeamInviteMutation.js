@@ -3,7 +3,7 @@ import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveIn
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
-import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 
 graphql`
   fragment CancelTeamInviteMutation_invitation on CancelTeamInvitePayload {
@@ -23,8 +23,8 @@ graphql`
 `;
 
 graphql`
-  fragment CancelTeamInviteMutation_project on CancelTeamInvitePayload {
-    archivedSoftProjects {
+  fragment CancelTeamInviteMutation_task on CancelTeamInvitePayload {
+    archivedSoftTasks {
       id
       content
       tags
@@ -48,14 +48,14 @@ const mutation = graphql`
       ...CancelTeamInviteMutation_invitation @relay(mask: false)
       ...CancelTeamInviteMutation_notification @relay(mask: false)
       ...CancelTeamInviteMutation_teamMember @relay(mask: false)
-      ...CancelTeamInviteMutation_project @relay(mask: false)
+      ...CancelTeamInviteMutation_task @relay(mask: false)
     }
   }
 `;
 
-export const cancelTeamInviteProjectUpdater = (payload, store, viewerId) => {
-  const archivedSoftProjects = payload.getLinkedRecords('archivedSoftProjects');
-  handleUpsertProjects(archivedSoftProjects, store, viewerId);
+export const cancelTeamInviteTaskUpdater = (payload, store, viewerId) => {
+  const archivedSoftTasks = payload.getLinkedRecords('archivedSoftTasks');
+  handleUpsertTasks(archivedSoftTasks, store, viewerId);
 };
 
 export const cancelTeamInviteTeamMemberUpdater = (payload, store) => {
@@ -83,7 +83,7 @@ const CancelTeamInviteMutation = (environment, invitationId, teamId, onError, on
       cancelTeamInviteInvitationUpdater(payload, store);
       cancelTeamInviteNotificationUpdater(payload, store, viewerId);
       cancelTeamInviteTeamMemberUpdater(payload, store);
-      cancelTeamInviteProjectUpdater(payload, store, viewerId);
+      cancelTeamInviteTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
       const invitationProxy = store.get(invitationId);

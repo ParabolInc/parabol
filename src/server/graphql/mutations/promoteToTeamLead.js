@@ -3,7 +3,6 @@ import getRethink from 'server/database/rethinkDriver';
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
 import {getUserId, requireTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {errorObj} from 'server/utils/utils';
 import {TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -31,7 +30,7 @@ export default {
     // VALIDATION
     const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
     if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
-      throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
+      throw new Error(`Member ${teamMemberId} is not on the team`);
     }
 
     // RESOLUTION

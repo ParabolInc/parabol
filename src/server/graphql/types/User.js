@@ -7,7 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
-import archivedProjectsCount from 'server/graphql/queries/archivedProjectsCount';
+import archivedTasksCount from 'server/graphql/queries/archivedTasksCount';
 import githubRepos from 'server/graphql/queries/githubRepos';
 import integrationProvider from 'server/graphql/queries/integrationProvider';
 import invoiceDetails from 'server/graphql/queries/invoiceDetails';
@@ -27,8 +27,8 @@ import UserOrg from 'server/graphql/types/UserOrg';
 import {getUserId, requireAuth, requireTeamMember} from 'server/utils/authorization';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import organization from 'server/graphql/queries/organization';
-import projects from 'server/graphql/queries/projects';
-import archivedProjects from 'server/graphql/queries/archivedProjects';
+import tasks from 'server/graphql/queries/tasks';
+import archivedTasks from 'server/graphql/queries/archivedTasks';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -129,8 +129,8 @@ const User = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime that we sent them a welcome email'
     },
-    archivedProjects,
-    archivedProjectsCount,
+    archivedTasks,
+    archivedTasksCount,
     githubRepos,
     integrationProvider,
     invoices,
@@ -159,7 +159,7 @@ const User = new GraphQLObjectType({
     slackChannels,
     organization,
     organizations: require('../queries/organizations').default,
-    projects,
+    tasks,
     team: require('../queries/team').default,
     teams: {
       type: new GraphQLList(Team),

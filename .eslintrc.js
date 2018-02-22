@@ -99,9 +99,11 @@ module.exports = {
     ]
   },
   "globals": {
+    "__ACTION__": true,
     "__PRODUCTION__": true,
     "__CLIENT__": true,
     "__WEBPACK__": true,
+    "__RELEASE_FLAGS__": true,
     "socket": true,
     "graphql": true,
     "System": true

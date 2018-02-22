@@ -1,7 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
 const defaultMessage = 'An error has occurred! We’ll alert the developers. Try refreshing the page';
@@ -12,7 +11,7 @@ const LoadingComponent = (props) => {
   return (
     <div className={css(styles.errorComponent)}>
       <div>{defaultMessage}</div>
-      {/* <div>Error: {error._error}</div> */}
+      {/* <div>Error: {error}</div> */}
     </div>
   );
 };
@@ -30,15 +29,15 @@ LoadingComponent.propTypes = {
   styles: PropTypes.object
 };
 
-const styleThunk = (theme, {width = ui.settingsPanelMaxWidth, height = '20rem'}) => ({
+const styleThunk = () => ({
   errorComponent: {
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    minHeight: height,
     textAlign: 'center',
-    width
+    width: '100%',
+    height: '100%'
   }
 });
 

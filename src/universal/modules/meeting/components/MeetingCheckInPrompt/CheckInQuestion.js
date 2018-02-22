@@ -6,8 +6,8 @@ import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
-import editorDecorators from 'universal/components/ProjectEditor/decorators';
-import 'universal/components/ProjectEditor/Draft.css';
+import editorDecorators from 'universal/components/TaskEditor/decorators';
+import 'universal/components/TaskEditor/Draft.css';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation';
@@ -123,7 +123,7 @@ class CheckInQuestion extends Component {
               setEditorState={this.setEditorState}
               placehodler="e.g. How are you?"
               readOnly={!canEdit}
-              setRef={(c) => {
+              innerRef={(c) => {
                 this.editorRef = c;
               }}
             />

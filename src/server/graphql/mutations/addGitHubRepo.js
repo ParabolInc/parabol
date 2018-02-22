@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddGitHubRepoPayload from 'server/graphql/types/AddGitHubRepoPayload';
 import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
-import {getUserId, requireTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 import shortid from 'shortid';
@@ -71,12 +71,11 @@ export default {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  resolve: async (source, {teamId, nameWithOwner}, {authToken, socket}) => {
+  resolve: async (source, {teamId, nameWithOwner}, {authToken, socketId: mutatorId}) => {
     const r = getRethink();
     const now = new Date();
     // AUTH
     requireTeamMember(authToken, teamId);
-    requireWebsocket(socket);
     const userId = getUserId(authToken);
 
     // VALIDATION
@@ -159,7 +158,7 @@ export default {
     };
 
     const githubRepoAdded = {repo};
-    getPubSub().publish(`githubRepoAdded.${teamId}`, {githubRepoAdded, mutatorId: socket.id});
+    getPubSub().publish(`githubRepoAdded.${teamId}`, {githubRepoAdded, mutatorId});
 
 
     // set up webhooks

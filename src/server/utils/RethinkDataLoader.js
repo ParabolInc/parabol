@@ -67,33 +67,33 @@ export default class RethinkDataLoader {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
       });
     }, this.dataloaderOptions);
-    this.projectsByTeamId = makeCustomLoader(async (teamIds) => {
+    this.tasksByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
       const userId = getUserId(this.authToken);
-      const projects = await r.table('Project')
+      const tasks = await r.table('Task')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((project) => project('tags')
-          .contains('private').and(project('userId').ne(userId))
-          .or(project('tags').contains('archived'))
+        .filter((task) => task('tags')
+          .contains('private').and(task('userId').ne(userId))
+          .or(task('tags').contains('archived'))
           .not());
-      primeStandardLoader(this.projects, projects);
+      primeStandardLoader(this.tasks, tasks);
       return teamIds.map((teamId) => {
-        return projects.filter((project) => project.teamId === teamId);
+        return tasks.filter((task) => task.teamId === teamId);
       });
     }, this.dataloaderOptions);
-    this.projectsByUserId = makeCustomLoader(async (userIds) => {
+    this.tasksByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink();
       const userId = getUserId(this.authToken);
       const {tms} = this.authToken;
-      const projects = await r.table('Project')
+      const tasks = await r.table('Task')
         .getAll(userId, {index: 'userId'})
-        .filter((project) => r.and(
-          project('tags').contains('archived').not(),
-          // weed out the projects on archived teams
-          r(tms).contains(project('teamId'))
+        .filter((task) => r.and(
+          task('tags').contains('archived').not(),
+          // weed out the tasks on archived teams
+          r(tms).contains(task('teamId'))
         ));
-      primeStandardLoader(this.projects, projects);
-      return userIds.map(() => projects);
+      primeStandardLoader(this.tasks, tasks);
+      return userIds.map(() => tasks);
     }, this.dataloaderOptions);
     this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
@@ -137,7 +137,7 @@ export default class RethinkDataLoader {
   orgApprovals = makeStandardLoader('OrgApproval');
   meetings = makeStandardLoader('Meeting');
   notifications = makeStandardLoader('Notification');
-  projects = makeStandardLoader('Project');
+  tasks = makeStandardLoader('Task');
   softTeamMembers = makeStandardLoader('SoftTeamMember');
   teams = makeStandardLoader('Team');
   teamMembers = makeStandardLoader('TeamMember');

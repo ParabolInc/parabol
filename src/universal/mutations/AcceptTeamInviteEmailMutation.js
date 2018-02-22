@@ -30,9 +30,9 @@ graphql`
 `;
 
 graphql`
-  fragment AcceptTeamInviteEmailMutation_project on AcceptTeamInviteEmailPayload {
-    hardenedProjects {
-      ...CompleteProjectFrag @relay(mask: false)
+  fragment AcceptTeamInviteEmailMutation_task on AcceptTeamInviteEmailPayload {
+    hardenedTasks {
+      ...CompleteTaskFrag @relay(mask: false)
     }
   }
 `;

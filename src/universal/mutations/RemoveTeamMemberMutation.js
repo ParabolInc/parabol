@@ -6,13 +6,13 @@ import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifi
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
 import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTeamMembers';
 import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
-import handleUpsertProjects from 'universal/mutations/handlers/handleUpsertProjects';
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 import getInProxy from 'universal/utils/relay/getInProxy';
-import handleRemoveProjects from 'universal/mutations/handlers/handleRemoveProjects';
+import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks';
 
 graphql`
-  fragment RemoveTeamMemberMutation_project on RemoveTeamMemberPayload {
-    updatedProjects {
+  fragment RemoveTeamMemberMutation_task on RemoveTeamMemberPayload {
+    updatedTasks {
       id
       tags
       assigneeId
@@ -38,7 +38,7 @@ graphql`
 
 graphql`
   fragment RemoveTeamMemberMutation_team on RemoveTeamMemberPayload {
-    updatedProjects {
+    updatedTasks {
       id
     }
     removedNotifications {
@@ -62,7 +62,7 @@ const mutation = graphql`
   mutation RemoveTeamMemberMutation($teamMemberId: ID!) {
     removeTeamMember(teamMemberId: $teamMemberId) {
       ...RemoveTeamMemberMutation_teamMember @relay(mask: false)
-      ...RemoveTeamMemberMutation_project @relay(mask: false)
+      ...RemoveTeamMemberMutation_task @relay(mask: false)
       ...RemoveTeamMemberMutation_team @relay(mask: false)
     }
   }
@@ -94,9 +94,9 @@ const popKickedOutNotification = (payload, {dispatch, environment, history}) => 
   }
 };
 
-export const removeTeamMemberProjectsUpdater = (payload, store, viewerId) => {
-  const projects = payload.getLinkedRecords('updatedProjects');
-  handleUpsertProjects(projects, store, viewerId);
+export const removeTeamMemberTasksUpdater = (payload, store, viewerId) => {
+  const tasks = payload.getLinkedRecords('updatedTasks');
+  handleUpsertTasks(tasks, store, viewerId);
 };
 
 export const removeTeamMemberTeamMemberUpdater = (payload, store) => {
@@ -118,14 +118,14 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId, options) =
   handleAddNotifications(notification, store, viewerId);
   popKickedOutNotification(payload, options);
 
-  const removedProjects = payload.getLinkedRecords('updatedProjects');
-  const projectIds = getInProxy(removedProjects, 'id');
-  handleRemoveProjects(projectIds, store, viewerId);
+  const removedTasks = payload.getLinkedRecords('updatedTasks');
+  const taskIds = getInProxy(removedTasks, 'id');
+  handleRemoveTasks(taskIds, store, viewerId);
 };
 
 export const removeTeamMemberUpdater = (payload, store, viewerId, options) => {
   removeTeamMemberTeamMemberUpdater(payload, store);
-  removeTeamMemberProjectsUpdater(payload, store, viewerId);
+  removeTeamMemberTasksUpdater(payload, store, viewerId);
   removeTeamMemberTeamUpdater(payload, store, viewerId, options);
 };
 

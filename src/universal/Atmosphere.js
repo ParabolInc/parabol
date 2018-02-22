@@ -1,19 +1,11 @@
 import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
-import stableJSONStringify from 'relay-runtime/lib/stableJSONStringify';
-import {GQL_COMPLETE, GQL_DATA, GQL_ERROR, GQL_EXEC, GQL_START, GQL_STOP} from 'universal/utils/constants';
-import tryParse from 'universal/utils/tryParse';
-
-const makeErrorObj = (errors) => {
-  const firstError = errors[0].message;
-  return tryParse(firstError) ||
-    errors.reduce((errObj, err, idx) => {
-      const prop = idx === 0 ? '_error' : idx;
-      errObj[prop] = err.message;
-      return errObj;
-    }, {});
-};
+import {setAuthToken} from 'universal/redux/authDuck';
+import {GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
+import EventEmitter from 'eventemitter3';
+import SafeSubscriptionClient from 'universal/utils/SafeSubscriptionClient';
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err);
@@ -21,7 +13,26 @@ const defaultErrorHandler = (err) => {
 
 export default class Atmosphere extends Environment {
   static getKey = (name, variables) => {
-    return stableJSONStringify({name, variables});
+    return JSON.stringify({name, variables});
+  };
+
+  registerQuery = async (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {
+    const subConfigs = subscriptions.map((subCreator) => subCreator(this, queryVariables, subParams));
+    const subscriptionClient = await this.ensureSubscriptionClient();
+    if (!subscriptionClient) return;
+    const newQuerySubs = subConfigs.map((config) => {
+      const {subscription, variables = {}} = config;
+      const {name} = subscription();
+      const subKey = Atmosphere.getKey(name, variables);
+      requestSubscription(this, {onError: defaultErrorHandler, ...config});
+      return {
+        subKey,
+        queryKey,
+        component: {dispose: releaseComponent}
+      };
+    });
+
+    this.querySubscriptions.push(...newQuerySubs);
   };
 
   constructor() {
@@ -32,25 +43,88 @@ export default class Atmosphere extends Environment {
 
     // now atmosphere
     this.authToken = undefined;
-    this.socket = undefined;
+    this.subscriptionClient = undefined;
     this.networks = {
       http: this._network,
       socket: Network.create(this.fetchWS, this.socketSubscribe)
     };
-
-    this.opIdIndex = 1;
     this.querySubscriptions = [];
     this.subscriptions = {};
+    this.eventEmitter = new EventEmitter();
   }
 
-  use = (networkName) => {
-    // TODO build this out when we start hitting github directly
-    return this.environments[networkName];
+  socketSubscribe = async (operation, variables, cacheConfig, observer) => {
+    const {name, text} = operation;
+    const subKey = Atmosphere.getKey(name, variables);
+
+    const onNext = (result) => {
+      observer.onNext(result);
+    };
+
+    const onError = (error) => {
+      observer.onError(error);
+    };
+
+    const onComplete = () => {
+      observer.onCompleted();
+    };
+    const subscriptionClient = await this.ensureSubscriptionClient();
+    if (!subscriptionClient) return undefined;
+
+    const client = subscriptionClient
+      .request({query: text, variables})
+      .subscribe(onNext, onError, onComplete);
+
+    this.subscriptions[subKey] = {
+      client
+    };
+    return this.makeDisposable(subKey);
   };
 
-  addNet = (name, network) => {
-    this.networks[name] = network;
-    this.setNet(name);
+  makeSubscriptionClient() {
+    if (!this.authToken) {
+      throw new Error('No Auth Token provided!');
+    }
+    const wsProtocol = window.location.protocol.replace('http', 'ws');
+    const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`;
+    const subscriptionClient = new SafeSubscriptionClient(url, {reconnect: true});
+
+    // this is dirty, but it'll go away when we move auth out of redux
+    const {text: query, name: operationName} = NewAuthTokenSubscription().subscription();
+    subscriptionClient.operations[NEW_AUTH_TOKEN] = {
+      handler: (errors, payload) => {
+        const {authToken} = payload;
+        this.setAuthToken(authToken);
+        this.dispatch(setAuthToken(authToken));
+      },
+      options: {
+        query,
+        operationName
+      }
+    };
+    return subscriptionClient;
+  }
+
+  fetchWS = async (operation, variables) => {
+    return new Promise((resolve, reject) => {
+      const opId = this.subscriptionClient.generateOperationId();
+      const payload = {
+        query: operation.text,
+        variables
+      };
+      this.subscriptionClient.operations[opId] = {
+        options: payload,
+        handler: (errors, result) => {
+          if (errors) {
+            reject(errors[0]);
+          } else {
+            delete this.subscriptionClient.operations[opId];
+            resolve(result);
+          }
+        }
+      };
+      this.subscriptionClient.sendMessage(opId, GQL_START, payload);
+    });
   };
 
   setNet = (name) => {
@@ -71,25 +145,16 @@ export default class Atmosphere extends Environment {
     });
     const resJson = await res.json();
     const {errors} = resJson;
-    if (!errors) return resJson;
-    const errorObj = makeErrorObj(errors);
-    return Promise.reject(errorObj);
+    if (errors) {
+      throw new Error(errors[0].message);
+    }
+    return resJson;
   };
 
-  fetchWS = async (operation, variables) => {
-    return new Promise((resolve, reject) => {
-      this.socket.emit(GQL_EXEC, {query: operation.text, variables}, (_, response) => {
-        const {errors} = response;
-        if (errors) {
-          const errorObj = makeErrorObj(errors);
-          reject(errorObj);
-        } else {
-          // reject({_error: 'A really big one'})
-          // setTimeout(() => resolve(response), 2000);
-          resolve(response);
-        }
-      });
-    });
+  setSocket = () => {
+    this.querySubscriptions = [];
+    this.subscriptions = {};
+    this.setNet('socket');
   };
 
   setAuthToken = (authToken) => {
@@ -101,82 +166,21 @@ export default class Atmosphere extends Environment {
     }
   };
 
-  setSocket = (socket) => {
-    this.opIdIndex = 1;
-    this.querySubscriptions = [];
-    this.subscriptions = {};
-    this.socket = socket;
-    this.setNet('socket');
-    this.socket.on(GQL_DATA, this.handleGQLData);
-    this.socket.on(GQL_ERROR, this.handleGQLError);
-    this.socket.on(GQL_COMPLETE, this.handleGQLComplete);
-  };
-
-  getSubscription(opId) {
-    const subscription = this.subscriptions[opId];
-    // In the future, it might be nice to store this in a queue that we can retry in a few ms
-    if (!subscription) {
-      throw new Error(`No subscription set up for opId ${opId}`);
-    }
-    return subscription;
-  }
-
-  handleGQLComplete = (message) => {
-    const {opId} = message;
-    const {observer} = this.getSubscription(opId);
-    if (observer.onCompleted) {
-      observer.onCompleted();
-    }
-  };
-  handleGQLData = (message) => {
-    const {opId, payload} = message;
-    const {observer} = this.getSubscription(opId);
-    observer.onNext(payload);
-  };
-  handleGQLError = (message) => {
-    const {opId, payload} = message;
-    const {errors} = payload;
-    const {observer} = this.getSubscription(opId);
-    const errorObj = makeErrorObj(errors);
-    observer.onError(errorObj);
-  };
-
-  emitSubscribe = (query, variables, opId) => {
-    this.socket.emit(GQL_START, {
-      query,
-      variables,
-      opId
-    });
-  };
-
-  socketSubscribe = (operation, variables, cacheConfig, observer) => {
-    const {name, text} = operation;
-    const subKey = Atmosphere.getKey(name, variables);
-    const opId = this.opIdIndex++;
-    this.subscriptions[opId] = {
-      observer,
-      subKey
-    };
-    this.emitSubscribe(text, variables, opId);
-    return this.makeDisposable(opId);
-  };
-
   /*
-  * When a subscription encounters an error, it affects the subscription itself,
-  * the queries that depend on that subscription to stay valid,
-  * and the peer subscriptions that also keep that component valid.
-  *
-  * For example, in my app component A subscribes to 1,2,3, component B subscribes to 1, component C subscribes to 2,4.
-  * If subscription 1 fails, then the data for component A and B get released on unmount (or immediately, if already unmounted)
-  * Subscription 1 gets unsubscribed,
-  * Subscription 2 does not because it is used by component C.
-  * Subscription 3 does because no other component depends on it.
-  * Subscription 4 does not because it is a k > 1 nearest neighbor
-  */
-  makeDisposable = (opId) => {
+   * When a subscription encounters an error, it affects the subscription itself,
+   * the queries that depend on that subscription to stay valid,
+   * and the peer subscriptions that also keep that component valid.
+   *
+   * For example, in my app component A subscribes to 1,2,3, component B subscribes to 1, component C subscribes to 2,4.
+   * If subscription 1 fails, then the data for component A and B get released on unmount (or immediately, if already unmounted)
+   * Subscription 1 gets unsubscribed,
+   * Subscription 2 does not because it is used by component C.
+   * Subscription 3 does because no other component depends on it.
+   * Subscription 4 does not because it is a k > 1 nearest neighbor
+   */
+  makeDisposable = (subKeyToRemove) => {
     return {
       dispose: () => {
-        const {subKey: subKeyToRemove} = this.getSubscription(opId);
         // get every query that is powered by this subscription
         const associatedQueries = this.querySubscriptions.filter(({subKey}) => subKey === subKeyToRemove);
         // these queries are no longer supported, so drop them
@@ -188,39 +192,9 @@ export default class Atmosphere extends Environment {
         });
         const queryKeys = associatedQueries.map(({queryKey}) => queryKey);
         this.unregisterQuery(queryKeys);
-        delete this.subscriptions[opId];
       }
     };
   };
-
-  registerQuery = (queryKey, subscriptions, subParams, queryVariables, releaseComponent) => {
-    const subConfigs = subscriptions.map((subCreator) => subCreator(this, queryVariables, subParams));
-    const newQuerySubs = subConfigs.map((config) => {
-      const {subscription, variables = {}} = config;
-      const {name} = subscription();
-      const subKey = Atmosphere.getKey(name, variables);
-      const existingSub = this.querySubscriptions.find((qs) => qs.subKey === subKey);
-      const disposable = existingSub ? existingSub.subscription :
-        requestSubscription(this, {onError: defaultErrorHandler, ...config});
-      return {
-        subKey,
-        queryKey,
-        component: {dispose: releaseComponent},
-        subscription: disposable
-      };
-    });
-
-    this.querySubscriptions.push(...newQuerySubs);
-  };
-
-  findOpId(subKey) {
-    const opIds = Object.keys(this.subscriptions);
-    for (let ii = 0; ii < opIds.length; ii++) {
-      const opId = opIds[ii];
-      if (this.subscriptions[opId].subKey === subKey) return opId;
-    }
-    return undefined;
-  }
 
   unregisterQuery = (maybeQueryKeys) => {
     const queryKeys = Array.isArray(maybeQueryKeys) ? maybeQueryKeys : [maybeQueryKeys];
@@ -235,14 +209,37 @@ export default class Atmosphere extends Environment {
       // for each peerSubKey, see if there exists a query that is not affected.
       const unaffectedQuery = this.querySubscriptions.find((qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey));
       if (!unaffectedQuery) {
-        const opId = this.findOpId(subKey);
-        if (opId === undefined) return;
-        this.socket.emit(GQL_STOP, opId);
+        this.subscriptions[subKey].client.unsubscribe();
       }
     });
 
     this.querySubscriptions = this.querySubscriptions.filter((qs) => {
       return !peerSubKeys.includes(qs.subKey) || !queryKeys.includes(qs.queryKey);
     });
+  };
+
+  async ensureSubscriptionClient() {
+    if (!this.subscriptionClientPromise) {
+      this.subscriptionClientPromise = new Promise((resolve) => {
+        this.subscriptionClient = this.makeSubscriptionClient();
+        this.eventEmitter.emit('newSubscriptionClient');
+        this._onceConnecting = () => {
+          if (this.networks.socket !== this._network) {
+            this.setNet('socket');
+          }
+          this.subscriptionClient.eventEmitter.off('socketsDisabled', this._onceSocketsDisabled);
+          this._onceSocketsDisabled = undefined;
+          resolve(this.subscriptionClient);
+        };
+        this._onceSocketsDisabled = () => {
+          this.subscriptionClient.eventEmitter.off('connecting', this._onceConnecting);
+          this._onceConnecting = undefined;
+          resolve(null);
+        };
+        this.subscriptionClient.eventEmitter.once('connecting', this._onceConnecting);
+        this.subscriptionClient.eventEmitter.once('socketsDisabled', this._onceSocketsDisabled);
+      });
+    }
+    return this.subscriptionClientPromise;
   }
 }

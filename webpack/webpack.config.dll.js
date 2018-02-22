@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     vendors: [
       'aphrodite-local-styles',
+      'auth0-js',
       'auth0-lock',
       'core-js',
       'email-addresses',
@@ -34,11 +35,9 @@ module.exports = {
       'redux-form',
       'redux-raven-middleware',
       'redux-segment',
-      'redux-socket-cluster',
       'redux-storage-engine-localstorage',
       'redux-storage-whitelist-fn',
       'redux-thunk',
-      'socketcluster-client',
       'tinycolor2'
     ]
   },

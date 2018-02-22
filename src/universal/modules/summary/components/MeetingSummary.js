@@ -46,7 +46,7 @@ export default createFragmentContainer(
         invitees {
           id
           present
-          projects {
+          tasks {
             id
             content
             status

@@ -1,7 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import {errorObj} from 'server/utils/utils';
 import {PAID} from 'universal/utils/constants';
 
 
@@ -29,7 +28,7 @@ export default {
     const {metadata: {orgId}} = await stripe.customers.retrieve(customerId);
     const org = await r.table('Organization').get(orgId);
     if (!org) {
-      throw errorObj({_error: `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`});
+      throw new Error(`Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`);
     }
     const {creditCard} = org;
 

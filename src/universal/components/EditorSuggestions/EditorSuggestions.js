@@ -23,7 +23,7 @@ const EditorSuggestions = (props) => {
     active,
     handleSelect,
     isClosing,
-    setRef,
+    innerRef,
     styles,
     suggestions,
     suggestionType
@@ -36,7 +36,7 @@ const EditorSuggestions = (props) => {
     isClosing && styles.closing
   );
   return (
-    <div className={menuStyles} ref={setRef}>
+    <div className={menuStyles} ref={innerRef}>
       {suggestions.map((suggestion, idx) => {
         return (
           // eslint-disable-next-line
@@ -54,7 +54,7 @@ EditorSuggestions.propTypes = {
   handleSelect: PropTypes.func.isRequired,
   isClosing: PropTypes.bool,
   left: PropTypes.number,
-  setRef: PropTypes.func,
+  innerRef: PropTypes.func,
   styles: PropTypes.object,
   suggestions: PropTypes.array,
   suggestionType: PropTypes.string,

@@ -21,7 +21,7 @@ DashSectionHeader.propTypes = {
 const styleThunk = () => ({
   root: {
     display: 'flex',
-    maxWidth: ui.projectColumnsMaxWidth,
+    maxWidth: ui.taskColumnsMaxWidth,
     padding: '1rem',
     position: 'relative',
     width: '100%'

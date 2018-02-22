@@ -3,13 +3,13 @@ import {
   makeResolveNotificationsForViewer,
   resolveFilterByTeam,
   resolveOrganization,
-  resolveProjects,
+  resolveTasks,
   resolveTeamMembers,
   resolveTeams,
   resolveUser
 } from 'server/graphql/resolvers';
 import Organization from 'server/graphql/types/Organization';
-import Project from 'server/graphql/types/Project';
+import Task from 'server/graphql/types/Task';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import User from 'server/graphql/types/User';
@@ -35,10 +35,10 @@ const RemoveOrgUserPayload = new GraphQLObjectType({
       description: 'The teamMembers removed',
       resolve: resolveFilterByTeam(resolveTeamMembers, ({teamId}) => teamId)
     },
-    updatedProjects: {
-      type: new GraphQLList(Project),
-      description: 'The projects that were archived or reassigned',
-      resolve: resolveFilterByTeam(resolveProjects, ({teamId}) => teamId)
+    updatedTasks: {
+      type: new GraphQLList(Task),
+      description: 'The tasks that were archived or reassigned',
+      resolve: resolveFilterByTeam(resolveTasks, ({teamId}) => teamId)
     },
     user: {
       type: User,
