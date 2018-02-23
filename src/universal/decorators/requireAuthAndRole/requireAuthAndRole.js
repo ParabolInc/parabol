@@ -70,7 +70,9 @@ export default (role, {
       const {location: {pathname}} = this.props;
       const {legit} = this.state;
       if (!legit) {
-        return <Redirect to={`/?redirectTo=${encodeURIComponent(pathname)}`} />;
+        return (
+          <Redirect to={{pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`}} />
+        );
       }
       return <ComposedComponent {...this.props} />;
     }

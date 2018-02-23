@@ -27,7 +27,6 @@ import SignIn from './SignIn';
 type Props = {
   atmosphere: Object,
   dispatch: Dispatch<*>,
-  hasSession: boolean,
   history: RouterHistory,
   location: Location,
   webAuth: Object
@@ -159,10 +158,6 @@ class SignInPage extends Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state) => ({
-  hasSession: Boolean(state.auth.obj.sub)
-});
-
 const mapDispatchToProps = (dispatch) => ({
   dispatch
 });
@@ -170,7 +165,7 @@ const mapDispatchToProps = (dispatch) => ({
 export default withAtmosphere(
   loginWithToken(
     withRouter(
-      connect(mapStateToProps, mapDispatchToProps)(SignInPage)
+      connect(null, mapDispatchToProps)(SignInPage)
     )
   )
 );

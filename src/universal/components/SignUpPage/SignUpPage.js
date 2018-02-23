@@ -5,14 +5,13 @@
  */
 
 import type {Credentials} from 'universal/types/auth';
-import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
 
 import React, {Component} from 'react';
-import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import AuthPage from 'universal/components/AuthPage/AuthPage';
+import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
@@ -21,9 +20,7 @@ import SignUp from './SignUp';
 type Props = {
   atmosphere: Object,
   dispatch: Dispatch<*>,
-  hasSession: boolean,
-  history: RouterHistory,
-  location: Location
+  hasSession: boolean
 };
 
 type State = {
@@ -46,17 +43,28 @@ class SignUpPage extends Component<Props, State> {
 
   auth0SignUp = ({email, password}: Credentials): Promise<void> => {
     return new Promise((resolve, reject) => {
-      this.setState({submittingCredentials: true});
       this.webAuth.signup({
         email,
         password,
         connection: 'Username-Password-Authentication',
         responseType: 'token'
       }, (error) => {
-        this.setState({
-          error,
-          submittingCredentials: false
-        });
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
+  };
+
+  auth0LogIn = (credentials: Credentials): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      this.webAuth.login({
+        ...credentials,
+        realm: 'Username-Password-Authentication',
+        responseType: 'token'
+      }, (error) => {
         if (error) {
           reject(error);
         } else {
@@ -69,14 +77,15 @@ class SignUpPage extends Component<Props, State> {
   webAuth = getWebAuth();
 
   handleSubmitCredentials = async (credentials: Credentials): Promise<void> => {
-    await this.auth0SignUp(credentials);
-    this.webAuth.login({
-      ...credentials,
-      realm: 'Username-Password-Authentication',
-      responseType: 'token'
-    }, (error) => {
+    try {
+      this.setState({submittingCredentials: true, error: null});
+      await this.auth0SignUp(credentials);
+      await this.auth0LogIn(credentials);
+    } catch (error) {
       this.setState({error});
-    });
+    } finally {
+      this.setState({submittingCredentials: false});
+    }
   };
 
   render() {
@@ -104,5 +113,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-  withRouter(withAtmosphere(SignUpPage))
+  loginWithToken(
+    withAtmosphere(SignUpPage)
+  )
 );
