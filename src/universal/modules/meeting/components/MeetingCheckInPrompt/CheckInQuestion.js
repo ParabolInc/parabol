@@ -123,7 +123,7 @@ class CheckInQuestion extends Component {
               setEditorState={this.setEditorState}
               placehodler="e.g. How are you?"
               readOnly={!canEdit}
-              setRef={(c) => {
+              innerRef={(c) => {
                 this.editorRef = c;
               }}
             />

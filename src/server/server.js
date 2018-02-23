@@ -27,13 +27,14 @@ import startMemwatch from 'server/utils/startMemwatch';
 getDotenv();
 
 const PROD = process.env.NODE_ENV === 'production';
+const {PORT = 3000} = process.env;
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
 
 
 const app = express();
 const server = http.createServer(app);
 const wss = new Server({server});
-server.listen(3000);
+server.listen(PORT);
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
 const sharedDataLoader = new SharedDataLoader({PROD, onShare: '_share', ttl: 5000});
 

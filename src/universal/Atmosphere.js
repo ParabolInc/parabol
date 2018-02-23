@@ -1,11 +1,11 @@
 import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
-import {SubscriptionClient} from 'subscriptions-transport-ws';
 import {setAuthToken} from 'universal/redux/authDuck';
-import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import {GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import EventEmitter from 'eventemitter3';
+import SafeSubscriptionClient from 'universal/utils/SafeSubscriptionClient';
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err);
@@ -85,24 +85,9 @@ export default class Atmosphere extends Environment {
     if (!this.authToken) {
       throw new Error('No Auth Token provided!');
     }
-    const url = `ws://${window.location.host}/?token=${this.authToken}`;
-    const subscriptionClient = new SubscriptionClient(url, {reconnect: true});
-
-    // monkey patched to catch aggressive firewalls that block websockets
-    subscriptionClient.client.onerror = (e) => {
-      // if reconnecting, then websockets aren't blocked
-      if (subscriptionClient.reconnecting) return;
-      subscriptionClient.eventEmitter.emit('socketsDisabled', e.message);
-      subscriptionClient.reconnect = false;
-    };
-
-    // monkey patched to avoid sending an INIT
-    subscriptionClient.client.onopen = () => {
-      subscriptionClient.clearMaxConnectTimeout();
-      subscriptionClient.closedByUser = false;
-      subscriptionClient.eventEmitter.emit(subscriptionClient.reconnecting ? 'reconnecting' : 'connecting');
-      subscriptionClient.flushUnsentMessagesQueue();
-    };
+    const wsProtocol = window.location.protocol.replace('http', 'ws');
+    const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`;
+    const subscriptionClient = new SafeSubscriptionClient(url, {reconnect: true});
 
     // this is dirty, but it'll go away when we move auth out of redux
     const {text: query, name: operationName} = NewAuthTokenSubscription().subscription();
@@ -121,17 +106,24 @@ export default class Atmosphere extends Environment {
   }
 
   fetchWS = async (operation, variables) => {
-    const request = this.subscriptionClient
-      .request({query: operation.text, variables});
     return new Promise((resolve, reject) => {
-      request.subscribe({
-        // next: reject,
-        // next: ((data) => {
-        //   setTimeout(() => resolve(data), 1000)
-        // }),
-        next: resolve,
-        error: reject
-      });
+      const opId = this.subscriptionClient.generateOperationId();
+      const payload = {
+        query: operation.text,
+        variables
+      };
+      this.subscriptionClient.operations[opId] = {
+        options: payload,
+        handler: (errors, result) => {
+          if (errors) {
+            reject(errors[0]);
+          } else {
+            delete this.subscriptionClient.operations[opId];
+            resolve(result);
+          }
+        }
+      };
+      this.subscriptionClient.sendMessage(opId, GQL_START, payload);
     });
   };
 

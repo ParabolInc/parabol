@@ -20,30 +20,36 @@ const DashSidebar = (props) => {
     <div className={css(styles.root)}>
       <StandardHub viewer={viewer} />
       <nav className={css(styles.nav)}>
-        <div className={css(styles.singleNavItem)}>
-          <DashNavItem
-            location={location}
-            href="/me"
-            label="My Dashboard"
-          />
-        </div>
-        <div className={css(styles.navLabel, styles.navLabelForList)}>
-          My Teams
-        </div>
-        <DashNavList location={location} viewer={viewer} />
-        <NavLink
-          className={css(styles.addTeam)}
-          activeClassName={css(styles.addTeamDisabled)}
-          title="Add New Team"
-          to="/newteam/1"
-        >
-          <div className={css(styles.addTeamIcon)}>
-            <FontAwesome name="plus-square" />
+        <div className={css(styles.navTop)}>
+          <div className={css(styles.singleNavItem)}>
+            <DashNavItem
+              location={location}
+              href="/me"
+              label="My Dashboard"
+            />
           </div>
-          <div className={css(styles.addTeamLabel)}>
-            Add New Team
+          <div className={css(styles.navLabel, styles.navLabelForList)}>
+            {'My Teams'}
           </div>
-        </NavLink>
+        </div>
+        <div className={css(styles.navMain)}>
+          <DashNavList location={location} viewer={viewer} />
+        </div>
+        <div className={css(styles.navBottom)}>
+          <NavLink
+            className={css(styles.addTeam)}
+            activeClassName={css(styles.addTeamDisabled)}
+            title="Add New Team"
+            to="/newteam/1"
+          >
+            <div className={css(styles.addTeamIcon)}>
+              <FontAwesome name="plus-square" />
+            </div>
+            <div className={css(styles.addTeamLabel)}>
+              Add New Team
+            </div>
+          </NavLink>
+        </div>
       </nav>
       <div className={css(styles.brand)}>
         <a href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
@@ -78,10 +84,25 @@ const styleThunk = () => ({
   },
 
   nav: {
+    display: 'flex',
     flex: 1,
+    flexDirection: 'column',
     paddingBottom: '1.25rem',
     paddingLeft: '3.75rem',
     width: '100%'
+  },
+
+  navTop: {
+    // Define (div for flex layout)
+  },
+
+  navMain: {
+    flex: 1,
+    overflowY: 'auto'
+  },
+
+  navBottom: {
+    // Define (div for flex layout)
   },
 
   singleNavItem: {

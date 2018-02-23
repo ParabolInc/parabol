@@ -20,6 +20,7 @@ const makeValidationSchema = (allAssignees) => {
   return legitify({
     inviteeEmail: (value) => value
       .trim()
+      .required()
       .matches(emailRegex, 'That doesn’t look like an email address.')
       .test((inviteeEmail) => {
         const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
@@ -41,7 +42,6 @@ const validateEmailAddress = (inviteeEmail, assignees, onError) => {
 class AddSoftTeamMember extends Component {
   static propTypes = {
     area: PropTypes.string.isRequired,
-    assignRef: PropTypes.instanceOf(Element),
     atmosphere: PropTypes.object.isRequired,
     dirty: PropTypes.bool.isRequired,
     setDirty: PropTypes.func.isRequired,
@@ -55,7 +55,6 @@ class AddSoftTeamMember extends Component {
     submitMutation: PropTypes.func.isRequired,
     onCompleted: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
-    setAddSoftAsActive: PropTypes.func.isRequired,
     styles: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired
   };
@@ -78,7 +77,6 @@ class AddSoftTeamMember extends Component {
     const {inviteeEmail} = this.state;
     const {
       area,
-      assignRef,
       atmosphere,
       closePortal,
       setDirty,
@@ -101,7 +99,6 @@ class AddSoftTeamMember extends Component {
 
     // resolve
     closePortal();
-    assignRef.focus();
     const invitees = [{email: inviteeEmail}];
     submitMutation();
     const handleCompleted = (res) => {
@@ -141,20 +138,20 @@ class AddSoftTeamMember extends Component {
     const {
       isActive,
       error,
-      styles,
-      setAddSoftAsActive
+      styles
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
     const inputStyles = css(styles.input, isActive && styles.inputActive);
+    const labelText = 'Invite a new teammate by their email address';
     return (
-      <div title="Invite a new teammate by email">
+      <div title={labelText}>
         <div className={rootStyles} onClick={this.onClick}>
-          <img alt="Invite a new teammate by email" className={css(styles.avatar)} src={avatarUser} />
+          <img alt="" className={css(styles.avatar)} src={avatarUser} />
           <form onSubmit={this.onSubmit}>
             <input
+              aria-label={labelText}
               className={inputStyles}
               onChange={this.onChange}
-              onFocus={setAddSoftAsActive}
               placeholder="name@company.co"
               ref={(c) => { this.inputRef = c; }}
               value={inviteeEmail}

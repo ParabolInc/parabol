@@ -111,18 +111,3 @@ export function removeAuthToken() {
     dispatch(segmentEventReset());
   };
 }
-
-export function setNextUrl(nextUrl) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_NEXT_URL,
-      payload: {nextUrl}
-    });
-  };
-}
-
-export function unsetNextUrl() {
-  return (dispatch) => {
-    dispatch({type: UNSET_NEXT_URL});
-  };
-}

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
+import DynamicHome from 'universal/components/DynamicHome/DynamicHome';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
@@ -18,6 +19,8 @@ const signout = () => System.import('universal/containers/Signout/SignoutContain
 const notFound = () => System.import('universal/components/NotFound/NotFound');
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot');
+const retroRoot = () => System.import('universal/components/RetroRoot/RetroRoot');
+const signInPage = () => System.import('universal/components/SignInPage/SignInPage');
 
 const Action = (props) => {
   const {styles} = props;
@@ -26,9 +29,18 @@ const Action = (props) => {
       <Toast />
       <SocketHealthMonitor />
       <Switch>
-        <Route exact path="/" component={LandingContainer} />
+        {__RELEASE_FLAGS__.newSignIn
+          ? <Route exact path="/" component={DynamicHome} />
+          : <Route exact path="/" component={LandingContainer} />
+        }
+        {__RELEASE_FLAGS__.newSignIn &&
+          <AsyncRoute exact path="/signin" mod={signInPage} />
+        }
         <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
+        {__RELEASE_FLAGS__.retro &&
+          <AsyncRoute isPrivate path="/retro/:teamId" mod={retroRoot} />
+        }
         <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />
         <AsyncRoute isPrivate path="/summary/:meetingId" mod={meetingSummary} />
         <AsyncRoute isPrivate path="/welcome" mod={welcome} />

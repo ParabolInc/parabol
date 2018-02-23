@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
-import {setNextUrl} from 'universal/redux/authDuck';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -36,7 +35,7 @@ export default (role, {
       history: PropTypes.object.isRequired,
       location: PropTypes.object.isRequired,
       tokenRole: PropTypes.string,
-      userId: PropTypes.string.isRequired
+      userId: PropTypes.string
     };
 
     state = {
@@ -48,7 +47,7 @@ export default (role, {
     }
 
     handleAuthChange(props) { // eslint-disable-line
-      const {userId, tokenRole, dispatch, location: {pathname}} = props;
+      const {userId, tokenRole, dispatch} = props;
 
       if (userId) {
         if (role && role !== tokenRole) {
@@ -63,15 +62,15 @@ export default (role, {
           // squak about it:
           dispatch(showError(unauthenticated));
         }
-        dispatch(setNextUrl(pathname));
         this.setState({legit: false});
       }
     }
 
     render() {
+      const {location: {pathname}} = this.props;
       const {legit} = this.state;
       if (!legit) {
-        return <Redirect to="/" />;
+        return <Redirect to={`/?redirectTo=${pathname}`} />;
       }
       return <ComposedComponent {...this.props} />;
     }

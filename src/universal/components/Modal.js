@@ -42,13 +42,13 @@ class Modal extends Component {
   handleKeydown = (e) => {
     if (e.key === 'Escape') {
       const {onClose} = this.props;
-      onClose();
+      onClose(e);
     }
   };
   handleDocumentClick = (e) => {
     if (!this.el.contains(e.target)) {
       const {onClose} = this.props;
-      onClose();
+      onClose(e);
     }
   };
 

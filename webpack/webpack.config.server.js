@@ -1,6 +1,7 @@
 import path from 'path';
 import webpack from 'webpack';
 import npmPackage from '../package.json';
+import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin';
 
 const root = process.cwd();
 const serverInclude = [
@@ -41,9 +42,9 @@ export default {
       __PRODUCTION__: true,
       __WEBPACK__: true,
       __APP_VERSION__: JSON.stringify(npmPackage.version),
-
       'process.env.NODE_ENV': JSON.stringify('production')
-    })
+    }),
+    releaseFlagsDefinePlugin
   ],
   module: {
     loaders: [
