@@ -4,8 +4,6 @@
  * @flow
  */
 
-// FIXME - fix page title
-
 import type {AuthError, Credentials} from 'universal/types/auth';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
@@ -89,7 +87,7 @@ class SignUpPage extends Component<Props, State> {
   render() {
     const {error} = this.state;
     return (
-      <AuthPage>
+      <AuthPage title="Sign Up | Parabol">
         <SignUp
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
           error={error && error.error_description}

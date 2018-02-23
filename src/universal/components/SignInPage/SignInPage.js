@@ -5,8 +5,6 @@
  * @flow
  */
 
-// FIXME - fix page title
-
 import type {Node} from 'react';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
@@ -159,7 +157,7 @@ class SignInPage extends Component<Props, State> {
       pageContent = this.renderSignIn();
     }
     return (
-      <AuthPage>
+      <AuthPage title="Sign In | Parabol">
         {pageContent}
       </AuthPage>
     );

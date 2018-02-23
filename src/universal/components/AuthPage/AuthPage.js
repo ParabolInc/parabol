@@ -3,16 +3,19 @@
  *
  * @flow
  */
+
 import type {Node} from 'react';
 
 import React from 'react';
 import styled from 'react-emotion';
 
+import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import appTheme from 'universal/styles/theme/appTheme';
 import Header from './Header';
 
 type Props = {
-  children: Node
+  children: Node,
+  title: string
 };
 
 const PageContainer = styled('div')({
@@ -28,8 +31,9 @@ const CenteredBlock = styled('div')({
   height: '100%'
 });
 
-export default ({children}: Props) => (
+export default ({children, title}: Props) => (
   <PageContainer>
+    <Helmet title={title} />
     <Header />
     <CenteredBlock>
       {children}
