@@ -14,6 +14,7 @@ import SignUpEmailPasswordForm from './SignUpEmailPasswordForm';
 
 type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
+  getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
   handleValidSignUpCredentials: (credentials: ({email: string, password: string, confirmedPassword: string})) => any
 };
 
@@ -28,7 +29,7 @@ const SignUp = (props: Props) => (
         action="sign up"
         key={provider.displayName}
         provider={provider}
-        handleClick={() => console.log('Not yet implemented!')}
+        handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
       />
     ))}
     <HorizontalSeparator text="or" />

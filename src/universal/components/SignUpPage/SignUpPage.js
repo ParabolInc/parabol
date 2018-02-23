@@ -52,6 +52,13 @@ class SignUpPage extends Component<Props, State> {
     this.maybeRedirectToApp();
   }
 
+  getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
+    this.webAuth.authorize({
+      connection: auth0Connection,
+      responseType: 'token'
+    });
+  };
+
   maybeRedirectToApp = () => {
     const {hasSession, history, location} = this.props;
     if (hasSession) {
@@ -106,6 +113,7 @@ class SignUpPage extends Component<Props, State> {
       <AuthPage>
         <SignUp
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
+          getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
           handleValidSignUpCredentials={this.handleSubmitCredentials}
         />
       </AuthPage>
