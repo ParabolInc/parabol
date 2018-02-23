@@ -13,6 +13,15 @@ export type AuthResponse = {
 };
 
 /**
+ * An auth0 error, received as a JSON response to something
+ * like an HTTP 403.
+ */
+export type AuthError = {
+  error: string,
+  error_description: string
+};
+
+/**
  * Email/password credentials.
  */
 export type Credentials = {

@@ -9,15 +9,16 @@ import type {ThirdPartyAuthProvider, Credentials} from 'universal/types/auth';
 import React, {Fragment} from 'react';
 import {Link} from 'react-router-dom';
 
-import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
+import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
+import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
 import SignInEmailPasswordForm from './SignInEmailPasswordForm';
 
 type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
   handleSubmitCredentials: (Credentials) => void,
-  hasError?: boolean,
+  error: ?string,
   isSubmitting: boolean
 };
 
@@ -27,9 +28,6 @@ export default (props: Props) => (
     <h2>
       or <Link to="/signup">Sign Up</Link>
     </h2>
-    {props.hasError &&
-      <p>Oops! There was a problem signing you in. Please try again.</p>
-    }
     {props.authProviders.map((provider) => (
       <ThirdPartyAuthButton
         action="sign in"
@@ -40,6 +38,9 @@ export default (props: Props) => (
       />
     ))}
     <HorizontalSeparator text="or" />
+    {props.error &&
+      <ErrorAlert message={props.error} />
+    }
     <SignInEmailPasswordForm isSubmitting={props.isSubmitting} onSubmit={props.handleSubmitCredentials} />
   </Fragment>
 );

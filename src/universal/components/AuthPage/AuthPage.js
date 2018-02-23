@@ -8,6 +8,7 @@ import type {Node} from 'react';
 import React from 'react';
 import styled from 'react-emotion';
 
+import appTheme from 'universal/styles/theme/appTheme';
 import Header from './Header';
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 };
 
 const PageContainer = styled('div')({
+  color: appTheme.palette.dark,
   display: 'flex',
   flexDirection: 'column'
 });

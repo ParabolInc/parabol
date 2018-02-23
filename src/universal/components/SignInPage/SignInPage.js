@@ -6,12 +6,11 @@
  */
 
 // FIXME - fix page title
-// FIXME - show when email is taken
 
 import type {Node} from 'react';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
-import type {AuthResponse, Credentials} from 'universal/types/auth';
+import type {AuthResponse, AuthError, Credentials} from 'universal/types/auth';
 
 import {WebAuth} from 'auth0-js';
 import React, {Component, Fragment} from 'react';
@@ -38,7 +37,7 @@ type Props = {
 
 type State = {
   loggingIn: boolean,
-  error: ?Error,
+  error: ?AuthError,
   submittingCredentials: boolean
 };
 
@@ -142,7 +141,7 @@ class SignInPage extends Component<Props, State> {
         authProviders={THIRD_PARTY_AUTH_PROVIDERS}
         getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
         handleSubmitCredentials={this.handleSubmitCredentials}
-        hasError={Boolean(error)}
+        error={error && error.error_description}
         isSubmitting={submittingCredentials}
       />
     );

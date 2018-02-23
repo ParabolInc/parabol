@@ -5,9 +5,8 @@
  */
 
 // FIXME - fix page title
-// FIXME - show when email is taken
 
-import type {Credentials} from 'universal/types/auth';
+import type {AuthError, Credentials} from 'universal/types/auth';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
 
@@ -30,7 +29,7 @@ type Props = {
 };
 
 type State = {
-  error: ?Error,
+  error: ?AuthError,
   submittingCredentials: boolean
 };
 
@@ -88,10 +87,12 @@ class SignUpPage extends Component<Props, State> {
   };
 
   render() {
+    const {error} = this.state;
     return (
       <AuthPage>
         <SignUp
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
+          error={error && error.error_description}
           getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
           handleValidSignUpCredentials={this.handleSubmitCredentials}
           isSubmitting={this.state.submittingCredentials}
