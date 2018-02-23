@@ -4,7 +4,7 @@
  * @flow
  */
 
-import type {ThirdPartyAuthProvider} from 'universal/types/auth';
+import type {ThirdPartyAuthProvider, Credentials} from 'universal/types/auth';
 
 import React, {Fragment} from 'react';
 import {Link} from 'react-router-dom';
@@ -17,7 +17,7 @@ type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
   hasError?: boolean,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
-  handleSubmitCredentials: ({email: string, password: string}) => void
+  handleSubmitCredentials: (Credentials) => void
 };
 
 export default (props: Props) => (

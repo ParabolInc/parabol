@@ -3,7 +3,7 @@
  *
  * @flow
  */
-import type {ThirdPartyAuthProvider} from 'universal/types/auth';
+import type {Credentials, ThirdPartyAuthProvider} from 'universal/types/auth';
 
 import React, {Fragment} from 'react';
 import {Link} from 'react-router-dom';
@@ -15,7 +15,7 @@ import SignUpEmailPasswordForm from './SignUpEmailPasswordForm';
 type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
-  handleValidSignUpCredentials: (credentials: ({email: string, password: string, confirmedPassword: string})) => any
+  handleValidSignUpCredentials: (Credentials) => any
 };
 
 const SignUp = (props: Props) => (

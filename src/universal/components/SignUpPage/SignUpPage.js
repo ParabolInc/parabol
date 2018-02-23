@@ -6,30 +6,22 @@
 
 // FIXME - fix page title
 // FIXME - show when email is taken
-// TODO - third party signup
 // TODO - dedup logic shared with signin page
 // TODO - prevent double submit
 
+import type {Credentials} from 'universal/types/auth';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
-import type {AuthResponse} from 'universal/types/auth';
 
 import {WebAuth} from 'auth0-js';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
-import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
 import AuthPage from 'universal/components/AuthPage/AuthPage';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import SignUp from './SignUp';
-
-type SignUpCredentials = {
-  email: string,
-  password: string,
-  confirmedPassword: string
-}
 
 type Props = {
   atmosphere: Object,
@@ -68,7 +60,7 @@ class SignUpPage extends Component<Props, State> {
     }
   };
 
-  auth0SignUp = ({email, password}: SignUpCredentials): Promise<void> => {
+  auth0SignUp = ({email, password}: Credentials): Promise<void> => {
     return new Promise((resolve, reject) => {
       this.webAuth.signup({
         email,
@@ -93,7 +85,7 @@ class SignUpPage extends Component<Props, State> {
     scope: 'openid rol tms bet'
   });
 
-  handleSubmitCredentials = async (credentials: SignUpCredentials): Promise<void> => {
+  handleSubmitCredentials = async (credentials: Credentials): Promise<void> => {
     await this.auth0SignUp(credentials);
     this.webAuth.login({
       ...credentials,
@@ -102,10 +94,6 @@ class SignUpPage extends Component<Props, State> {
     }, (error) => {
       this.setState({error});
     });
-  };
-
-  saveToken = (response: AuthResponse): void => {
-    signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
   };
 
   render() {

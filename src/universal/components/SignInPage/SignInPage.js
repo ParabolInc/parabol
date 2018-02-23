@@ -12,7 +12,7 @@
 import type {Node} from 'react';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
-import type {AuthResponse} from 'universal/types/auth';
+import type {AuthResponse, Credentials} from 'universal/types/auth';
 
 import {WebAuth} from 'auth0-js';
 import React, {Component, Fragment} from 'react';
@@ -26,11 +26,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 
 import SignIn from './SignIn';
-
-type Credentials = {
-  email: string,
-  password: string
-};
 
 type Props = {
   atmosphere: Object,

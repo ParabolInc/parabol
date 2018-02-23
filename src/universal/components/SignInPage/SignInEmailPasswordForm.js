@@ -3,6 +3,8 @@
  *
  * @flow
  */
+import type {Credentials} from 'universal/types/auth';
+
 import React from 'react';
 import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
@@ -14,7 +16,7 @@ import shouldValidate from 'universal/validation/shouldValidate';
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
-  onSubmit: ({email: string, password: string}) => void, // Provided by clients of the exported component
+  onSubmit: (Credentials) => void, // Provided by clients of the exported component
   valid: boolean
 };
 
