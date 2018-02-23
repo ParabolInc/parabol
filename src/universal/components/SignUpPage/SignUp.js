@@ -6,6 +6,7 @@
 import type {Credentials, ThirdPartyAuthProvider} from 'universal/types/auth';
 
 import React, {Fragment} from 'react';
+import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
 
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
@@ -20,6 +21,10 @@ type Props = {
   handleValidSignUpCredentials: (Credentials) => any,
   isSubmitting: boolean
 };
+
+const PrivacyFooter = styled('div')({
+  marginTop: '1rem'
+});
 
 const SignUp = (props: Props) => (
   <Fragment>
@@ -37,10 +42,14 @@ const SignUp = (props: Props) => (
       />
     ))}
     <HorizontalSeparator text="or" />
-    {props.error &&
-      <ErrorAlert message={props.error} />
-    }
+    {props.error && <ErrorAlert message={props.error} />}
     <SignUpEmailPasswordForm isSubmitting={props.isSubmitting} onSubmit={props.handleValidSignUpCredentials} />
+    <PrivacyFooter>
+      By creating an account, you agree to our{' '}
+      <a href="https://www.parabol.co/privacy" target="_blank" rel="noopener noreferrer">
+        Privacy Policy
+      </a>.
+    </PrivacyFooter>
   </Fragment>
 );
 

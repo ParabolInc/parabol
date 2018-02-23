@@ -4,8 +4,6 @@
  * @flow
  */
 
-// TODO - privacy policy link
-
 import type {Credentials} from 'universal/types/auth';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
