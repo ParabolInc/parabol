@@ -55,11 +55,11 @@ const GitHubReposMenuRoot = (rootProps) => {
     atmosphere,
     handleAddTask,
     taskId,
+    teamId,
     setError,
     clearError,
     closePortal
   } = rootProps;
-  const [teamId] = taskId.split('::');
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -84,6 +84,7 @@ GitHubReposMenuRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   handleAddTask: PropTypes.func,
   taskId: PropTypes.string.isRequired,
+  teamId: PropTypes.string.isRequired,
   viewer: PropTypes.object,
   setError: PropTypes.func.isRequired,
   clearError: PropTypes.func.isRequired,

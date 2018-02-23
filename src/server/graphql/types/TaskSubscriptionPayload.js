@@ -1,4 +1,5 @@
 import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
+import ChangeTaskTeamPayload from 'server/graphql/types/ChangeTaskTeamPayload';
 import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
 import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload';
 import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload';
@@ -19,6 +20,7 @@ const types = [
   AcceptTeamInviteNotificationPayload,
   CancelApprovalPayload,
   CancelTeamInvitePayload,
+  ChangeTaskTeamPayload,
   CreateGitHubIssuePayload,
   CreateTaskPayload,
   DeleteTaskPayload,
