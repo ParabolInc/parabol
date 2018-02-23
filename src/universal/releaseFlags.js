@@ -20,7 +20,7 @@
 
 export default {
   // The single-page embedded signin
-  newSignIn: true,
+  newSignIn: false,
   // The retrospective meeting
   retro: false
 };
