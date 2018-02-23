@@ -8,9 +8,8 @@
 import type {Node} from 'react';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
-import type {AuthResponse, AuthError, Credentials} from 'universal/types/auth';
+import type {AuthResponse, Credentials} from 'universal/types/auth';
 
-import {WebAuth} from 'auth0-js';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
@@ -21,6 +20,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
+import getWebAuth from 'universal/utils/getWebAuth';
 
 import SignIn from './SignIn';
 
@@ -35,7 +35,7 @@ type Props = {
 
 type State = {
   loggingIn: boolean,
-  error: ?AuthError,
+  error: ?{error_description: string},
   submittingCredentials: boolean
 };
 
@@ -90,12 +90,7 @@ class SignInPage extends Component<Props, State> {
     signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
   };
 
-  webAuth = new WebAuth({
-    domain: __ACTION__.auth0Domain,
-    clientID: __ACTION__.auth0,
-    redirectUri: window.location.href,
-    scope: 'openid rol tms bet'
-  });
+  webAuth = getWebAuth();
 
   handleSubmitCredentials = ({email, password}: Credentials) => {
     this.setState({submittingCredentials: true});

@@ -4,11 +4,12 @@
  * @flow
  */
 
-import type {AuthError, Credentials} from 'universal/types/auth';
+// TODO - privacy policy link
+
+import type {Credentials} from 'universal/types/auth';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
 
-import {WebAuth} from 'auth0-js';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
@@ -16,6 +17,7 @@ import {connect} from 'react-redux';
 import AuthPage from 'universal/components/AuthPage/AuthPage';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
+import getWebAuth from 'universal/utils/getWebAuth';
 import SignUp from './SignUp';
 
 type Props = {
@@ -27,7 +29,7 @@ type Props = {
 };
 
 type State = {
-  error: ?AuthError,
+  error: ?{description: string},
   submittingCredentials: boolean
 };
 
@@ -66,12 +68,7 @@ class SignUpPage extends Component<Props, State> {
     });
   };
 
-  webAuth = new WebAuth({
-    domain: __ACTION__.auth0Domain,
-    clientID: __ACTION__.auth0,
-    redirectUri: `${window.location.origin}/signin${window.location.search}`,
-    scope: 'openid rol tms bet'
-  });
+  webAuth = getWebAuth();
 
   handleSubmitCredentials = async (credentials: Credentials): Promise<void> => {
     await this.auth0SignUp(credentials);
@@ -90,7 +87,7 @@ class SignUpPage extends Component<Props, State> {
       <AuthPage title="Sign Up | Parabol">
         <SignUp
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
-          error={error && error.error_description}
+          error={error && error.description}
           getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
           handleValidSignUpCredentials={this.handleSubmitCredentials}
           isSubmitting={this.state.submittingCredentials}
