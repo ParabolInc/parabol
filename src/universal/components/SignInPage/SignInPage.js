@@ -1,33 +1,35 @@
 /**
- * The sign-in page.  Hosts 3rd part signin, email/password signin, and
- * also functions as the callback handler for the Auth0 OIDC response.
+ * The sign-in page.  Hosts 3rd party signin, email/password signin, and also
+ * functions as the callback handler for the Auth0 OIDC response.
  *
  * @flow
  */
-import type {Dispatch} from 'redux';
+
+// FIXME - fix page title
+// FIXME - show when email is taken
+// TODO - prevent double submit
+
+import type {Node} from 'react';
 import type {RouterHistory, Location} from 'react-router-dom';
+import type {Dispatch} from 'redux';
+import type {AuthResponse} from 'universal/types/auth';
 
 import {WebAuth} from 'auth0-js';
-import React, {Component} from 'react';
-import styled from 'react-emotion';
+import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
+import AuthPage from 'universal/components/AuthPage/AuthPage';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 
-import Header from './Header';
 import SignIn from './SignIn';
 
 type Credentials = {
   email: string,
   password: string
-};
-
-type ParsedAuthResponse = {
-  idToken: string,
-  idTokenPayload: Object
 };
 
 type Props = {
@@ -43,18 +45,6 @@ type State = {
   loggingIn: boolean,
   error: ?Error
 };
-
-const PageContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column'
-});
-
-const ErrorContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  height: '100%'
-});
 
 class SignInPage extends Component<Props, State> {
   state = {
@@ -82,7 +72,7 @@ class SignInPage extends Component<Props, State> {
     const {hasSession, history, location} = this.props;
     if (hasSession) {
       const parsedSearch = new URLSearchParams(location.search);
-      const pathToVisit = parsedSearch.get('redirectTo') || '/me';
+      const pathToVisit = parsedSearch.get('redirectTo') || '/';
       history.replace(pathToVisit);
     }
   };
@@ -92,8 +82,8 @@ class SignInPage extends Component<Props, State> {
     const {hash} = this.props.location;
     if (hash) {
       this.setState({loggingIn: true});
-      const authResponse = await this.parseAuthResponse(hash);
       try {
+        const authResponse = await this.parseAuthResponse(hash);
         this.saveToken(authResponse);
       } catch (error) {
         this.setState({error});
@@ -101,7 +91,7 @@ class SignInPage extends Component<Props, State> {
     }
   };
 
-  parseAuthResponse = (hash: string): Promise<ParsedAuthResponse> => {
+  parseAuthResponse = (hash: string): Promise<AuthResponse> => {
     return new Promise((resolve, reject) => {
       this.webAuth.parseHash({hash}, (err, authResult) => {
         if (err) {
@@ -116,7 +106,7 @@ class SignInPage extends Component<Props, State> {
     this.setState({loggingIn: false, error: null});
   };
 
-  saveToken = (response: ParsedAuthResponse): void => {
+  saveToken = (response: AuthResponse): void => {
     signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
   };
 
@@ -126,10 +116,6 @@ class SignInPage extends Component<Props, State> {
     redirectUri: window.location.href,
     scope: 'openid rol tms bet'
   });
-
-  authProviders = [
-    {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
-  ];
 
   handleSubmitCredentials = ({email, password}: Credentials) => {
     this.webAuth.login({
@@ -148,42 +134,47 @@ class SignInPage extends Component<Props, State> {
 
   renderLoadingError = () => {
     return (
-      <PageContainer>
-        <Header />
-        <ErrorContainer>
-          <h1>
-            🤭 Oops!
-          </h1>
-          <p>
-            We had some trouble signing you in!
-          </p>
-          <p>
-            Try going back to the <Link to="/signin" onClick={this.resetState}>Sign in page</Link> in order to sign in again.
-          </p>
-        </ErrorContainer>
-      </PageContainer>
+      <Fragment>
+        <h1>
+          🤭 Oops!
+        </h1>
+        <p>
+          We had some trouble signing you in!
+        </p>
+        <p>
+          Try going back to the <Link to="/signin" onClick={this.resetState}>Sign in page</Link> in order to sign in again.
+        </p>
+      </Fragment>
+    );
+  };
+
+  renderSignIn = () => {
+    const {error} = this.state;
+    return (
+      <SignIn
+        hasError={Boolean(error)}
+        authProviders={THIRD_PARTY_AUTH_PROVIDERS}
+        getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
+        handleSubmitCredentials={this.handleSubmitCredentials}
+      />
     );
   };
 
   render() {
     const {loggingIn, error} = this.state;
 
+    let pageContent: Node;
     if (loggingIn && !error) {
-      return this.renderLoading();
-    }
-    if (loggingIn && error) {
-      return this.renderLoadingError();
+      pageContent = this.renderLoading();
+    } else if (loggingIn && error) {
+      pageContent = this.renderLoadingError();
+    } else {
+      pageContent = this.renderSignIn();
     }
     return (
-      <PageContainer>
-        <Header />
-        <SignIn
-          hasError={Boolean(error)}
-          authProviders={this.authProviders}
-          getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
-          handleSubmitCredentials={this.handleSubmitCredentials}
-        />
-      </PageContainer>
+      <AuthPage>
+        {pageContent}
+      </AuthPage>
     );
   }
 }

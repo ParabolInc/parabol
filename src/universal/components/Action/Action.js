@@ -21,6 +21,7 @@ const dashWrapper = () => System.import('universal/components/DashboardWrapper/D
 const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot');
 const retroRoot = () => System.import('universal/components/RetroRoot/RetroRoot');
 const signInPage = () => System.import('universal/components/SignInPage/SignInPage');
+const signUpPage = () => System.import('universal/components/SignUpPage/SignUpPage');
 
 const Action = (props) => {
   const {styles} = props;
@@ -35,6 +36,9 @@ const Action = (props) => {
         }
         {__RELEASE_FLAGS__.newSignIn &&
           <AsyncRoute exact path="/signin" mod={signInPage} />
+        }
+        {__RELEASE_FLAGS__.newSignIn &&
+          <AsyncRoute exact path="/signup" mod={signUpPage} />
         }
         <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />

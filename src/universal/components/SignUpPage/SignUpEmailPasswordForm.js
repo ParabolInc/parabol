@@ -1,11 +1,10 @@
 /**
- * The form used for signing in via email/password.
+ * The form used for signing up via email/password.
  *
  * @flow
  */
 import React from 'react';
 import styled from 'react-emotion';
-import {Link} from 'react-router-dom';
 import {Field, reduxForm} from 'redux-form';
 
 import Button from 'universal/components/Button/Button';
@@ -14,7 +13,7 @@ import shouldValidate from 'universal/validation/shouldValidate';
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
-  onSubmit: ({email: string, password: string}) => void, // Provided by clients of the exported component
+  onSubmit: ({email: string, password: string, confirmedPassword: string}) => void, // Provided by clients of the exported component
   valid: boolean
 };
 
@@ -27,40 +26,42 @@ const FieldsContainer = styled('div')({
   marginBottom: '2rem'
 });
 
-const ForgotPasswordLink = styled(Link)({
-  marginTop: '1rem',
-  textAlign: 'center'
-});
-
 const SignInEmailPasswordForm = (props: Props) => (
   <Form onSubmit={props.handleSubmit}>
     <FieldsContainer>
       <Field
-        type="email"
         autoFocus
         component={InputField}
+        type="email"
         placeholder="you@company.co"
         label="Email:"
         name="email"
         underline
       />
       <Field
-        type="password"
         component={InputField}
+        type="password"
         placeholder="********"
         label="Password:"
         name="password"
+        underline
+      />
+      <Field
+        component={InputField}
+        type="password"
+        placeholder="********"
+        label="Confirm Password:"
+        name="confirmedPassword"
         underline
       />
     </FieldsContainer>
     <Button
       disabled={!props.valid}
       type="submit"
-      label="Sign In"
-      title="Sign In"
+      label="Sign Up"
+      title="Sign Up"
       colorPalette="warm"
     />
-    <ForgotPasswordLink to="/reset-password">Forgot your password?</ForgotPasswordLink>
   </Form>
 );
 
@@ -72,7 +73,13 @@ const validate = (values) => {
   if (!values.password) {
     validation.password = 'Enter a password.';
   }
+  if (values.password !== values.confirmedPassword) {
+    validation.confirmedPassword = 'Passwords do not match';
+  }
+  if (!values.confirmedPassword) {
+    validation.confirmedPassword = 'Confirm your password.';
+  }
   return validation;
 };
 
-export default reduxForm({form: 'signin', shouldValidate, validate})(SignInEmailPasswordForm);
+export default reduxForm({form: 'signup', shouldValidate, validate})(SignInEmailPasswordForm);

@@ -4,39 +4,24 @@
  * @flow
  */
 
-import React from 'react';
-import styled from 'react-emotion';
+import type {ThirdPartyAuthProvider} from 'universal/types/auth';
+
+import React, {Fragment} from 'react';
 import {Link} from 'react-router-dom';
 
-import appTheme from 'universal/styles/theme/appTheme';
-
-import ThirdPartySignInButton from './ThirdPartySignInButton';
-import Separator from './Separator';
+import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
+import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
 import SignInEmailPasswordForm from './SignInEmailPasswordForm';
 
-type AuthProvider = {
-  iconName: string,
-  displayName: string,
-  auth0Connection: string
-};
-
 type Props = {
-  authProviders: Array<AuthProvider>,
+  authProviders: Array<ThirdPartyAuthProvider>,
   hasError?: boolean,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
   handleSubmitCredentials: ({email: string, password: string}) => void
 };
 
-const SignInContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  height: '100%',
-  fontFamily: appTheme.typography.sansSerif
-});
-
 export default (props: Props) => (
-  <SignInContainer>
+  <Fragment>
     <h1>Sign In</h1>
     <h2>
       or <Link to="/signup">Sign Up</Link>
@@ -45,13 +30,14 @@ export default (props: Props) => (
       <p>Oops! There was a problem signing you in. Please try again.</p>
     }
     {props.authProviders.map((provider) => (
-      <ThirdPartySignInButton
+      <ThirdPartyAuthButton
+        action="sign in"
         key={provider.displayName}
         provider={provider}
         handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
       />
     ))}
-    <Separator text="or" />
+    <HorizontalSeparator text="or" />
     <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />
-  </SignInContainer>
+  </Fragment>
 );

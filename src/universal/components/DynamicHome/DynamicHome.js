@@ -12,20 +12,27 @@ import {Redirect, withRouter} from 'react-router-dom';
 
 type Props = {
   hasSession: boolean,
+  isNew: boolean,
   location: Location
 };
 
-const DynamicHome = (props: Props) => (
-  props.hasSession ? (
-    <Redirect to={{pathname: '/me', search: props.location.search}} />
-  ) : (
-    <Redirect to={{pathname: '/signin', search: props.location.search}} />
-  )
-);
+const DynamicHome = ({hasSession, isNew, location: {search}}: Props) => {
+  if (hasSession && isNew) {
+    return <Redirect to={{pathname: '/welcome', search}} />;
+  }
+  if (hasSession) {
+    return <Redirect to={{pathname: '/me', search}} />;
+  }
+  return <Redirect to={{pathname: '/signin', search}} />;
+};
 
-const mapStateToProps = (state) => ({
-  hasSession: Boolean(state.auth.obj.sub)
-});
+const mapStateToProps = (state) => {
+  console.log(state.auth);
+  return {
+    hasSession: Boolean(state.auth.obj.sub),
+    isNew: !state.auth.obj.hasOwnProperty('tms')
+  };
+};
 
 export default connect(mapStateToProps)(
   withRouter(DynamicHome)
