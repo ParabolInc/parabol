@@ -7,7 +7,6 @@
 
 // FIXME - fix page title
 // FIXME - show when email is taken
-// TODO - prevent double submit
 
 import type {Node} from 'react';
 import type {RouterHistory, Location} from 'react-router-dom';
@@ -22,6 +21,7 @@ import {Link, withRouter} from 'react-router-dom';
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
 import AuthPage from 'universal/components/AuthPage/AuthPage';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 
@@ -38,22 +38,19 @@ type Props = {
 
 type State = {
   loggingIn: boolean,
-  error: ?Error
+  error: ?Error,
+  submittingCredentials: boolean
 };
 
 class SignInPage extends Component<Props, State> {
   state = {
     error: null,
-    loggingIn: false
+    loggingIn: false,
+    submittingCredentials: false
   };
 
   componentDidMount() {
-    this.maybeRedirectToApp();
     this.maybeCaptureAuthResponse();
-  }
-
-  componentDidUpdate() {
-    this.maybeRedirectToApp();
   }
 
   getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
@@ -61,15 +58,6 @@ class SignInPage extends Component<Props, State> {
       connection: auth0Connection,
       responseType: 'token'
     });
-  };
-
-  maybeRedirectToApp = () => {
-    const {hasSession, history, location} = this.props;
-    if (hasSession) {
-      const parsedSearch = new URLSearchParams(location.search);
-      const pathToVisit = parsedSearch.get('redirectTo') || '/';
-      history.replace(pathToVisit);
-    }
   };
 
   maybeCaptureAuthResponse = async () => {
@@ -113,13 +101,17 @@ class SignInPage extends Component<Props, State> {
   });
 
   handleSubmitCredentials = ({email, password}: Credentials) => {
+    this.setState({submittingCredentials: true});
     this.webAuth.login({
       email,
       password,
       realm: 'Username-Password-Authentication',
       responseType: 'token'
     }, (error) => {
-      this.setState({error});
+      this.setState({
+        error,
+        submittingCredentials: false
+      });
     });
   };
 
@@ -144,13 +136,14 @@ class SignInPage extends Component<Props, State> {
   };
 
   renderSignIn = () => {
-    const {error} = this.state;
+    const {error, submittingCredentials} = this.state;
     return (
       <SignIn
-        hasError={Boolean(error)}
         authProviders={THIRD_PARTY_AUTH_PROVIDERS}
         getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
         handleSubmitCredentials={this.handleSubmitCredentials}
+        hasError={Boolean(error)}
+        isSubmitting={submittingCredentials}
       />
     );
   };
@@ -183,7 +176,9 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default withAtmosphere(
-  withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(SignInPage)
+  loginWithToken(
+    withRouter(
+      connect(mapStateToProps, mapDispatchToProps)(SignInPage)
+    )
   )
 );

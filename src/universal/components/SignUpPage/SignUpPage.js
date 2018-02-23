@@ -6,8 +6,6 @@
 
 // FIXME - fix page title
 // FIXME - show when email is taken
-// TODO - dedup logic shared with signin page
-// TODO - prevent double submit
 
 import type {Credentials} from 'universal/types/auth';
 import type {RouterHistory, Location} from 'react-router-dom';
@@ -32,17 +30,15 @@ type Props = {
 };
 
 type State = {
-  error: ?Error
+  error: ?Error,
+  submittingCredentials: boolean
 };
 
 class SignUpPage extends Component<Props, State> {
   state = {
-    error: null
+    error: null,
+    submittingCredentials: false
   };
-
-  componentDidMount() {
-    this.maybeRedirectToApp();
-  }
 
   getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
     this.webAuth.authorize({
@@ -51,24 +47,19 @@ class SignUpPage extends Component<Props, State> {
     });
   };
 
-  maybeRedirectToApp = () => {
-    const {hasSession, history, location} = this.props;
-    if (hasSession) {
-      const parsedSearch = new URLSearchParams(location.search);
-      const pathToVisit = parsedSearch.get('redirectTo') || '/me';
-      history.replace(pathToVisit);
-    }
-  };
-
   auth0SignUp = ({email, password}: Credentials): Promise<void> => {
     return new Promise((resolve, reject) => {
+      this.setState({submittingCredentials: true});
       this.webAuth.signup({
         email,
         password,
         connection: 'Username-Password-Authentication',
         responseType: 'token'
       }, (error) => {
-        this.setState({error});
+        this.setState({
+          error,
+          submittingCredentials: false
+        });
         if (error) {
           reject(error);
         } else {
@@ -103,6 +94,7 @@ class SignUpPage extends Component<Props, State> {
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
           getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
           handleValidSignUpCredentials={this.handleSubmitCredentials}
+          isSubmitting={this.state.submittingCredentials}
         />
       </AuthPage>
     );

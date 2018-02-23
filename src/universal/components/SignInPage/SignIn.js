@@ -15,9 +15,10 @@ import SignInEmailPasswordForm from './SignInEmailPasswordForm';
 
 type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
-  hasError?: boolean,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
-  handleSubmitCredentials: (Credentials) => void
+  handleSubmitCredentials: (Credentials) => void,
+  hasError?: boolean,
+  isSubmitting: boolean
 };
 
 export default (props: Props) => (
@@ -32,12 +33,13 @@ export default (props: Props) => (
     {props.authProviders.map((provider) => (
       <ThirdPartyAuthButton
         action="sign in"
+        disabled={props.isSubmitting}
         key={provider.displayName}
         provider={provider}
         handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
       />
     ))}
     <HorizontalSeparator text="or" />
-    <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />
+    <SignInEmailPasswordForm isSubmitting={props.isSubmitting} onSubmit={props.handleSubmitCredentials} />
   </Fragment>
 );

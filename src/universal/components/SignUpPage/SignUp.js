@@ -15,7 +15,8 @@ import SignUpEmailPasswordForm from './SignUpEmailPasswordForm';
 type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
-  handleValidSignUpCredentials: (Credentials) => any
+  handleValidSignUpCredentials: (Credentials) => any,
+  isSubmitting: boolean
 };
 
 const SignUp = (props: Props) => (
@@ -29,11 +30,12 @@ const SignUp = (props: Props) => (
         action="sign up"
         key={provider.displayName}
         provider={provider}
+        disabled={props.isSubmitting}
         handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
       />
     ))}
     <HorizontalSeparator text="or" />
-    <SignUpEmailPasswordForm onSubmit={props.handleValidSignUpCredentials} />
+    <SignUpEmailPasswordForm isSubmitting={props.isSubmitting} onSubmit={props.handleValidSignUpCredentials} />
   </Fragment>
 );
 

@@ -24,6 +24,8 @@ const handleAuthChange = (props) => {
     } else {
       history.push('/me');
     }
+  } else {
+    history.push(`/signin${search}`);
   }
 };
 

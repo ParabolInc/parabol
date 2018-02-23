@@ -16,6 +16,7 @@ import shouldValidate from 'universal/validation/shouldValidate';
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
   onSubmit: (Credentials) => void, // Provided by clients of the exported component
+  isSubmitting: boolean,
   valid: boolean
 };
 
@@ -28,8 +29,10 @@ const FieldsContainer = styled('div')({
   marginBottom: '2rem'
 });
 
+const noop = () => {};
+
 const SignInEmailPasswordForm = (props: Props) => (
-  <Form onSubmit={props.handleSubmit}>
+  <Form onSubmit={props.isSubmitting ? noop : props.handleSubmit}>
     <FieldsContainer>
       <Field
         autoFocus
@@ -39,6 +42,7 @@ const SignInEmailPasswordForm = (props: Props) => (
         label="Email:"
         name="email"
         underline
+        disabled={props.isSubmitting}
       />
       <Field
         component={InputField}
@@ -47,6 +51,7 @@ const SignInEmailPasswordForm = (props: Props) => (
         label="Password:"
         name="password"
         underline
+        disabled={props.isSubmitting}
       />
       <Field
         component={InputField}
@@ -55,10 +60,11 @@ const SignInEmailPasswordForm = (props: Props) => (
         label="Confirm Password:"
         name="confirmedPassword"
         underline
+        disabled={props.isSubmitting}
       />
     </FieldsContainer>
     <Button
-      disabled={!props.valid}
+      disabled={!props.valid || props.isSubmitting}
       type="submit"
       label="Sign Up"
       title="Sign Up"

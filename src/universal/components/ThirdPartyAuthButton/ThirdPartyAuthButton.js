@@ -13,6 +13,7 @@ import Button from 'universal/components/Button/Button';
 
 type Props = {
   action: string, // E.g. "sign in" or "sign up"
+  disabled?: boolean,
   handleClick: () => void,
   provider: ThirdPartyAuthProvider
 };
@@ -24,7 +25,7 @@ const ButtonContainer = styled('div')({
 const capitalize = (str: string): string =>
   `${str.slice(0, 1).toUpperCase()}${str.slice(1)}`;
 
-export default ({action, provider, handleClick}: Props) => {
+export default ({action, disabled, provider, handleClick}: Props) => {
   const label = `${capitalize(action)} with ${provider.displayName}`;
   return (
     <ButtonContainer>
@@ -36,6 +37,7 @@ export default ({action, provider, handleClick}: Props) => {
         iconPlacement="left"
         colorPalette="gray"
         onClick={handleClick}
+        disabled={disabled}
       />
     </ButtonContainer>
   );
