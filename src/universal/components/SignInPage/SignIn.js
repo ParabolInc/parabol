@@ -17,7 +17,7 @@ import SignInEmailPasswordForm from './SignInEmailPasswordForm';
 type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
-  handleSubmitCredentials: (Credentials) => void,
+  handleSubmitCredentials: (Credentials) => Promise<any>,
   error: ?string,
   isSubmitting: boolean
 };
@@ -30,8 +30,8 @@ export default (props: Props) => (
     </h2>
     {props.authProviders.map((provider) => (
       <ThirdPartyAuthButton
-        action="sign in"
-        disabled={props.isSubmitting}
+        action="Sign in"
+        waiting={props.isSubmitting}
         key={provider.displayName}
         provider={provider}
         handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
@@ -41,6 +41,6 @@ export default (props: Props) => (
     {props.error &&
       <ErrorAlert message={props.error} />
     }
-    <SignInEmailPasswordForm isSubmitting={props.isSubmitting} onSubmit={props.handleSubmitCredentials} />
+    <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />
   </Fragment>
 );

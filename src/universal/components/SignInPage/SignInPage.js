@@ -19,6 +19,7 @@ import AuthPage from 'universal/components/AuthPage/AuthPage';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import auth0Login from 'universal/utils/auth0Login';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
 
@@ -63,7 +64,7 @@ class SignInPage extends Component<Props, State> {
       this.setState({loggingIn: true});
       try {
         const authResponse = await this.parseAuthResponse(hash);
-        this.saveToken(authResponse);
+        this.appSignIn(authResponse);
       } catch (error) {
         this.setState({error});
       }
@@ -85,25 +86,22 @@ class SignInPage extends Component<Props, State> {
     this.setState({loggingIn: false, error: null});
   };
 
-  saveToken = (response: AuthResponse): void => {
+  appSignIn = (response: AuthResponse): void => {
     signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
   };
 
   webAuth = getWebAuth();
 
-  handleSubmitCredentials = ({email, password}: Credentials) => {
-    this.setState({submittingCredentials: true});
-    this.webAuth.login({
-      email,
-      password,
-      realm: 'Username-Password-Authentication',
-      responseType: 'token'
-    }, (error) => {
-      this.setState({
-        error,
-        submittingCredentials: false
-      });
-    });
+  handleSubmitCredentials = async (credentials: Credentials) => {
+    this.setState({submittingCredentials: true, error: null});
+    try {
+      console.log('start');
+      await auth0Login(this.webAuth, credentials);
+      console.log('end');
+    } catch (error) {
+      this.setState({error});
+    }
+    this.setState({submittingCredentials: false});
   };
 
   renderLoading = () => {
@@ -158,14 +156,10 @@ class SignInPage extends Component<Props, State> {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatch
-});
-
 export default withAtmosphere(
   loginWithToken(
     withRouter(
-      connect(null, mapDispatchToProps)(SignInPage)
+      connect()(SignInPage)
     )
   )
 );

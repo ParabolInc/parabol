@@ -18,7 +18,7 @@ type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
   error: ?string,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
-  handleValidSignUpCredentials: (Credentials) => any,
+  handleValidSignUpCredentials: (Credentials) => Promise<any>,
   isSubmitting: boolean
 };
 
@@ -34,16 +34,16 @@ const SignUp = (props: Props) => (
     </h2>
     {props.authProviders.map((provider) => (
       <ThirdPartyAuthButton
-        action="sign up"
+        action="Sign up"
         key={provider.displayName}
         provider={provider}
-        disabled={props.isSubmitting}
+        waiting={props.isSubmitting}
         handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
       />
     ))}
     <HorizontalSeparator text="or" />
     {props.error && <ErrorAlert message={props.error} />}
-    <SignUpEmailPasswordForm isSubmitting={props.isSubmitting} onSubmit={props.handleValidSignUpCredentials} />
+    <SignUpEmailPasswordForm onSubmit={props.handleValidSignUpCredentials} />
     <PrivacyFooter>
       By creating an account, you agree to our{' '}
       <a href="https://www.parabol.co/privacy" target="_blank" rel="noopener noreferrer">

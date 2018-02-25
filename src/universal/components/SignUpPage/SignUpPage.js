@@ -13,6 +13,7 @@ import {connect} from 'react-redux';
 import AuthPage from 'universal/components/AuthPage/AuthPage';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import auth0Login from 'universal/utils/auth0Login';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
 import SignUp from './SignUp';
@@ -58,34 +59,17 @@ class SignUpPage extends Component<Props, State> {
     });
   };
 
-  auth0LogIn = (credentials: Credentials): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      this.webAuth.login({
-        ...credentials,
-        realm: 'Username-Password-Authentication',
-        responseType: 'token'
-      }, (error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-    });
-  };
-
   webAuth = getWebAuth();
 
   handleSubmitCredentials = async (credentials: Credentials): Promise<void> => {
+    this.setState({submittingCredentials: true, error: null});
     try {
-      this.setState({submittingCredentials: true, error: null});
       await this.auth0SignUp(credentials);
-      await this.auth0LogIn(credentials);
+      await auth0Login(this.webAuth, credentials);
     } catch (error) {
       this.setState({error});
-    } finally {
-      this.setState({submittingCredentials: false});
     }
+    this.setState({submittingCredentials: false});
   };
 
   render() {
@@ -108,11 +92,7 @@ const mapStateToProps = (state) => ({
   hasSession: Boolean(state.auth.obj.sub)
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatch
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(
+export default connect(mapStateToProps)(
   loginWithToken(
     withAtmosphere(SignUpPage)
   )

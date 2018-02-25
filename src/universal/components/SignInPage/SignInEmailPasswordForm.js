@@ -12,12 +12,13 @@ import {Field, reduxForm} from 'redux-form';
 
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
-  isSubmitting: boolean,
-  onSubmit: (Credentials) => void, // Provided by clients of the exported component
+  submitting: boolean,
+  onSubmit: (Credentials) => Promise<any>, // Provided by clients of the exported component
   valid: boolean
 };
 
@@ -35,10 +36,8 @@ const ForgotPasswordLink = styled(Link)({
   textAlign: 'center'
 });
 
-const noop = () => {};
-
 const SignInEmailPasswordForm = (props: Props) => (
-  <Form onSubmit={props.isSubmitting ? noop : props.handleSubmit}>
+  <Form onSubmit={props.handleSubmit}>
     <FieldsContainer>
       <Field
         type="email"
@@ -48,7 +47,7 @@ const SignInEmailPasswordForm = (props: Props) => (
         label="Email:"
         name="email"
         underline
-        disabled={props.isSubmitting}
+        disabled={props.submitting}
       />
       <Field
         type="password"
@@ -57,11 +56,11 @@ const SignInEmailPasswordForm = (props: Props) => (
         label="Password:"
         name="password"
         underline
-        disabled={props.isSubmitting}
+        disabled={props.submitting}
       />
     </FieldsContainer>
     <Button
-      disabled={!props.valid || props.isSubmitting}
+      waiting={!props.valid || props.submitting}
       type="submit"
       label="Sign In"
       title="Sign In"
@@ -73,8 +72,8 @@ const SignInEmailPasswordForm = (props: Props) => (
 
 const validate = (values) => {
   const validation = {};
-  if (!values.email) {
-    validation.email = 'Enter an email address.';
+  if (!parseEmailAddressList(values.email)) {
+    validation.email = 'Enter a valid email address.';
   }
   if (!values.password) {
     validation.password = 'Enter a password.';
