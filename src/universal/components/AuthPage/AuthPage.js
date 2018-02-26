@@ -21,14 +21,16 @@ type Props = {
 const PageContainer = styled('div')({
   color: appTheme.palette.dark,
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  alignItems: 'center'
 });
 
 const CenteredBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  height: '100%'
+  height: '100%',
+  width: '30rem'
 });
 
 export default ({children, title}: Props) => (
