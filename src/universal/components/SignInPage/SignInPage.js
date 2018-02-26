@@ -35,7 +35,7 @@ type Props = {
 
 type State = {
   loggingIn: boolean,
-  error: ?{error_description: string},
+  error: ?string,
   submittingCredentials: boolean
 };
 
@@ -66,7 +66,7 @@ class SignInPage extends Component<Props, State> {
         const authResponse = await this.parseAuthResponse(hash);
         this.appSignIn(authResponse);
       } catch (error) {
-        this.setState({error});
+        this.setState({error: error.error_description});
       }
     }
   };
@@ -95,11 +95,9 @@ class SignInPage extends Component<Props, State> {
   handleSubmitCredentials = async (credentials: Credentials) => {
     this.setState({submittingCredentials: true, error: null});
     try {
-      console.log('start');
       await auth0Login(this.webAuth, credentials);
-      console.log('end');
     } catch (error) {
-      this.setState({error});
+      this.setState({error: error.error_description});
     }
     this.setState({submittingCredentials: false});
   };
@@ -131,7 +129,7 @@ class SignInPage extends Component<Props, State> {
         authProviders={THIRD_PARTY_AUTH_PROVIDERS}
         getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
         handleSubmitCredentials={this.handleSubmitCredentials}
-        error={error && error.error_description}
+        error={error}
         isSubmitting={submittingCredentials}
       />
     );

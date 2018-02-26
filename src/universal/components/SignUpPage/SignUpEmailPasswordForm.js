@@ -54,7 +54,8 @@ const SignInEmailPasswordForm = (props: Props) => (
       />
     </FieldsContainer>
     <Button
-      waiting={!props.valid || props.submitting}
+      disabled={!props.valid}
+      waiting={props.submitting}
       type="submit"
       label="Sign Up"
       title="Sign Up"

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
-import DynamicHome from 'universal/components/DynamicHome/DynamicHome';
+import HomePage from 'universal/components/HomePage/HomePage';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
@@ -31,7 +31,7 @@ const Action = (props) => {
       <SocketHealthMonitor />
       <Switch>
         {__RELEASE_FLAGS__.newSignIn
-          ? <Route exact path="/" component={DynamicHome} />
+          ? <Route exact path="/" component={HomePage} />
           : <Route exact path="/" component={LandingContainer} />
         }
         {__RELEASE_FLAGS__.newSignIn &&

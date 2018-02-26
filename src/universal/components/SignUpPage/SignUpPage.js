@@ -25,7 +25,7 @@ type Props = {
 };
 
 type State = {
-  error: ?{description: string},
+  error: ?string,
   submittingCredentials: boolean
 };
 
@@ -67,7 +67,7 @@ class SignUpPage extends Component<Props, State> {
       await this.auth0SignUp(credentials);
       await auth0Login(this.webAuth, credentials);
     } catch (error) {
-      this.setState({error});
+      this.setState({error: error.description});
     }
     this.setState({submittingCredentials: false});
   };
@@ -78,7 +78,7 @@ class SignUpPage extends Component<Props, State> {
       <AuthPage title="Sign Up | Parabol">
         <SignUp
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
-          error={error && error.description}
+          error={error}
           getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
           handleValidSignUpCredentials={this.handleSubmitCredentials}
           isSubmitting={this.state.submittingCredentials}
