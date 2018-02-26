@@ -3,6 +3,7 @@
  *
  * @flow
  */
+import type {StyledComponent, Tag} from 'react-emotion';
 import type {Credentials, ThirdPartyAuthProvider} from 'universal/types/auth';
 
 import React, {Fragment} from 'react';
@@ -12,6 +13,7 @@ import {Link} from 'react-router-dom';
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
 import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
+import appTheme from 'universal/styles/theme/appTheme';
 import SignUpEmailPasswordForm from './SignUpEmailPasswordForm';
 
 type Props = {
@@ -22,16 +24,44 @@ type Props = {
   isSubmitting: boolean
 };
 
+const purple = {
+  color: appTheme.brand.new.purple
+};
+
+const linkStyles = {
+  ...purple,
+  textDecoration: 'underline'
+};
+
+const newlyStyledLink = (tag: Tag): StyledComponent<*> => (
+  styled(tag)({
+    ...linkStyles,
+    ':hover': linkStyles,
+    ':focus': linkStyles
+  })
+);
+
+const H1 = styled('h1')(purple);
+
+const H2 = styled('h2')({
+  ...purple,
+  fontSize: '1.2rem'
+});
+
+const A = newlyStyledLink('a');
+
+const BrandedLink = newlyStyledLink(Link);
+
 const PrivacyFooter = styled('div')({
   marginTop: '1rem'
 });
 
 const SignUp = (props: Props) => (
   <Fragment>
-    <h1>Sign Up</h1>
-    <h2>
-      or <Link to="/signin">Sign In</Link>
-    </h2>
+    <H1>Sign Up</H1>
+    <H2>
+      or <BrandedLink to="/signin">Sign In</BrandedLink>
+    </H2>
     {props.authProviders.map((provider) => (
       <ThirdPartyAuthButton
         action="Sign up"
@@ -46,9 +76,9 @@ const SignUp = (props: Props) => (
     <SignUpEmailPasswordForm onSubmit={props.handleValidSignUpCredentials} />
     <PrivacyFooter>
       By creating an account, you agree to our{' '}
-      <a href="https://www.parabol.co/privacy" target="_blank" rel="noopener noreferrer">
+      <A href="https://www.parabol.co/privacy" target="_blank" rel="noopener noreferrer">
         Privacy Policy
-      </a>.
+      </A>.
     </PrivacyFooter>
   </Fragment>
 );

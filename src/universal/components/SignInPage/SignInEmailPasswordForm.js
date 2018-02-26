@@ -14,6 +14,7 @@ import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
+import appTheme from 'universal/styles/theme/appTheme';
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
@@ -31,7 +32,14 @@ const FieldsContainer = styled('div')({
   marginBottom: '2rem'
 });
 
+const linkStyles = {
+  color: appTheme.brand.new.purple,
+  textDecoration: 'underline'
+};
+
 const ForgotPasswordLink = styled(Link)({
+  ...linkStyles,
+  ':hover': linkStyles,
   marginTop: '1rem',
   textAlign: 'center'
 });
