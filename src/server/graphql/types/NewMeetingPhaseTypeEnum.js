@@ -8,13 +8,16 @@ const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
   name: 'NewMeetingPhaseTypeEnum',
   description: 'The phase of the meeting',
   values: {
+    // Generic
     [LOBBY]: {},
     [CHECKIN]: {},
+    [SUMMARY]: {},
+    // Action
     [UPDATES]: {},
     [FIRST_CALL]: {},
     [AGENDA_ITEMS]: {},
     [LAST_CALL]: {},
-    [SUMMARY]: {},
+    // Retro
     [THINK]: {},
     [GROUP]: {},
     [VOTE]: {},

@@ -4,13 +4,11 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
-import MeetingUpdatesPrompt from 'universal/modules/meeting/components/MeetingUpdatesPrompt/MeetingUpdatesPrompt';
-import {LOBBY, UPDATES} from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import {withRouter} from 'react-router-dom';
 import styled from 'react-emotion';
 import {Helmet} from 'react-helmet';
+import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
 
 const MeetingContainer = styled('div')({
   backgroundColor: '#fff',
@@ -20,43 +18,13 @@ const MeetingContainer = styled('div')({
 
 class NewMeeting extends Component {
   render() {
-    const {viewer} = this.props;
+    const {localPhase, viewer} = this.props;
     const {team: {teamName}} = viewer;
     return (
       <MeetingContainer>
         <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
-        <Sidebar
-          gotoItem={this.gotoItem}
-          gotoAgendaItem={this.gotoAgendaItem}
-          localPhase={localPhase}
-          localPhaseItem={localPhaseItem}
-          isFacilitating={isFacilitating}
-          setAgendaInputRef={this.setAgendaInputRef}
-          team={team}
-        />
-        <MeetingMain hasBoxShadow>
-          <MeetingMainHeader>
-            <MeetingAvatarGroup
-              gotoItem={this.gotoItem}
-              gotoNext={this.gotoNext}
-              isFacilitating={isFacilitating}
-              localPhase={localPhase}
-              localPhaseItem={localPhaseItem}
-              team={team}
-            />
-            {localPhase === UPDATES &&
-            <MeetingUpdatesPrompt
-              agendaInputRef={this.agendaInputRef}
-              gotoNext={this.gotoNext}
-              localPhaseItem={localPhaseItem}
-              updateUserHasTasks={this.state.updateUserHasTasks}
-              team={team}
-            />
-            }
-          </MeetingMainHeader>
-          {localPhase === LOBBY && <MeetingLobby team={team} />}
-        </MeetingMain>
-      </MeetingLayout>
+        <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
+      </MeetingContainer>
     );
   }
 }
@@ -75,6 +43,7 @@ export default createFragmentContainer(
   ),
   graphql`
     fragment NewMeeting_viewer on User {
+      ...NewMeetingSidebar_viewer
       team(teamId: $teamId) {
         checkInGreeting {
           content
@@ -100,7 +69,7 @@ export default createFragmentContainer(
         newMeeting {
           id
           facilitatorId
-          phases {
+          stages {
             isComplete
             type
             isSingleView

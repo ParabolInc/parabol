@@ -231,3 +231,7 @@ export const ENTERPRISE = 'enterprise';
 /* Task Involvement Types */
 export const ASSIGNEE = 'ASSIGNEE';
 export const MENTIONEE = 'MENTIONEE';
+
+/* Meeting Types */
+export const ACTION = 'action';
+export const RETROSPECTIVE = 'retrospective';

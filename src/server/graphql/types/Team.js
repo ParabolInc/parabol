@@ -26,6 +26,8 @@ import {resolveOrganization} from 'server/graphql/resolvers';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
 import NewMeeting from 'server/graphql/types/NewMeeting';
+import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings';
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -116,11 +118,29 @@ const Team = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The current item number for the current phase for the meeting, 1-indexed'
     },
+    meetingSettings: {
+      type: TeamMeetingSettings,
+      args: {
+        meetingType: {
+          type: new GraphQLNonNull(MeetingTypeEnum),
+          description: 'the type of meeting for the settings'
+        }
+      },
+      description: 'The team-specific settings for running all available types of meetings',
+      resolve: async ({id: teamId}, {meetingType}, {dataLoader}) => {
+        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId);
+        return allSettings.find((settings) => settings.meetingType === meetingType);
+      }
+    },
+    newMeetingId: {
+      type: GraphQLID,
+      description: 'The unique Id of the active meeting'
+    },
     newMeeting: {
       type: NewMeeting,
       description: 'The new meeting in progress, if any',
       resolve: ({newMeetingId}, args, {dataLoader}) => {
-        return dataLoader.get('newMeetings').load(newMeetingId);
+        return newMeetingId ? dataLoader.get('newMeetings').load(newMeetingId) : null;
       }
     },
     tier: {
@@ -167,10 +187,6 @@ const Team = new GraphQLObjectType({
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId);
         return connectionFromTasks(tasks);
       }
-    },
-    retrosAvailable: {
-      type: GraphQLInt,
-      description: 'Retrospective meetings available (if not pro)'
     },
     softTeamMembers: {
       type: new GraphQLList(SoftTeamMember),

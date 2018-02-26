@@ -49,8 +49,9 @@
     "lint:fix": "eslint --fix 'src/**/*.js' 'webpack/*.js' ",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
     "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.graphql --watch",
-    "update-schema": "node ./src/server/utils/updateSchema.babel.js",
-    "postversion": "git push --follow-tags"
+    "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn flowgen",
+    "postversion": "git push --follow-tags",
+    "flowgen": "gql2flow -e -o ./src/universal/types/schema.flow.js ./build/schema.json"
   },
   "pre-commit": [],
   "devDependencies": {
@@ -155,6 +156,7 @@
     "express-jwt": "5.3.0",
     "fbjs": "^0.8.14",
     "fetch-ponyfill": "^4.1.0",
+    "gql2flow": "^0.4.5",
     "graphiql": "^0.11.2",
     "graphql": "^0.12.3",
     "graphql-redis-subscriptions": "^1.2.0",
@@ -208,6 +210,7 @@
     "redux-storage-whitelist-fn": "^4.0.1",
     "redux-thunk": "2.2.0",
     "rethinkdbdash": "^2.3.31",
+    "roman-numeral": "^0.2.6",
     "secure-compare": "^3.0.1",
     "serve-favicon": "^2.4.3",
     "shared-dataloader": "^0.1.0",

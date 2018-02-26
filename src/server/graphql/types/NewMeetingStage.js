@@ -3,9 +3,16 @@ import NewMeeting from 'server/graphql/types/NewMeeting';
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
 
-const NewMeetingPhase = new GraphQLObjectType({
-  name: 'NewMeetingPhase',
-  description: 'A meeting phase. On the client, this usually represents a single view',
+/*
+ * This entity is a denormalization of a MeetingPhaseItem & a PhaseItemInstance.
+ * a MeetingPhaseItem contains all the meeting-specific variables (eg isFacilitatorStage, isComplete)
+ * a PhaseItemInstance contains rules on how to handle the phase item for the given phase (eg isSingleView, isAutoAdvanced)
+ * By combining both into 1 entity, we reduce fidelity of the normalized form, but also reduce complexity
+ * Additionally, we increase flexibility in case different meetings want to handle PhaseItemInstances differently
+ */
+const NewMeetingStage = new GraphQLObjectType({
+  name: 'NewMeetingStage',
+  description: 'An instance of a meeting phase item. On the client, this usually represents a single view',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -13,14 +20,18 @@ const NewMeetingPhase = new GraphQLObjectType({
     },
     meeting: {
       type: NewMeeting,
-      description: 'The meeting this phase belongs to',
+      description: 'The meeting this stage belongs to',
       resolve: ({meetingId}, args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId);
       }
     },
+    isFacilitatorStage: {
+      type: GraphQLBoolean,
+      description: 'true if the facilitator is currently looking at the stage, else false'
+    },
     isComplete: {
       type: GraphQLBoolean,
-      description: 'true if the facilitator has completed this phase, else false'
+      description: 'true if the facilitator has completed this stage, else false'
     },
     type: {
       description: 'The type of the phase',
@@ -44,4 +55,4 @@ const NewMeetingPhase = new GraphQLObjectType({
   })
 });
 
-export default NewMeetingPhase;
+export default NewMeetingStage;
