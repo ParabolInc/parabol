@@ -5,7 +5,7 @@ import CustomPhaseItemTypeEnum from 'server/graphql/types/CustomPhaseItemTypeEnu
 import Team from 'server/graphql/types/Team';
 import {resolveTeam} from 'server/graphql/resolvers';
 
-export const customPhaseItemFields = {
+export const customPhaseItemFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
@@ -23,7 +23,7 @@ export const customPhaseItemFields = {
     description: 'The team that owns this customPhaseItem',
     resolve: resolveTeam
   }
-};
+});
 
 const resolveTypeLookup = {
   [RETRO_PHASE_ITEM]: RetroPhaseItem
@@ -31,7 +31,7 @@ const resolveTypeLookup = {
 
 const CustomPhaseItem = new GraphQLInterfaceType({
   name: 'CustomPhaseItem',
-  fields: () => customPhaseItemFields,
+  fields: customPhaseItemFields,
   resolveType: ({type}) => resolveTypeLookup[type]
 });
 

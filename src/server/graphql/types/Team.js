@@ -25,6 +25,7 @@ import {PENDING} from 'server/utils/serverConstants';
 import {resolveOrganization} from 'server/graphql/resolvers';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
+import NewMeeting from 'server/graphql/types/NewMeeting';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -115,6 +116,13 @@ const Team = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The current item number for the current phase for the meeting, 1-indexed'
     },
+    newMeeting: {
+      type: NewMeeting,
+      description: 'The new meeting in progress, if any',
+      resolve: ({newMeetingId}, args, {dataLoader}) => {
+        return dataLoader.get('newMeetings').load(newMeetingId);
+      }
+    },
     tier: {
       type: TierEnum,
       description: 'The level of access to features on the parabol site'
@@ -159,6 +167,10 @@ const Team = new GraphQLObjectType({
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId);
         return connectionFromTasks(tasks);
       }
+    },
+    retrosAvailable: {
+      type: GraphQLInt,
+      description: 'Retrospective meetings available (if not pro)'
     },
     softTeamMembers: {
       type: new GraphQLList(SoftTeamMember),

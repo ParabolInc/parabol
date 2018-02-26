@@ -4,8 +4,9 @@ import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
 import {resolveTeam} from 'server/graphql/resolvers';
 import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
+import Team from 'server/graphql/types/Team';
 
-export const newMeetingFields = {
+export const newMeetingFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'The unique meeting id. shortid.'
@@ -20,7 +21,7 @@ export const newMeetingFields = {
   },
   facilitatorId: {
     type: GraphQLID,
-    description: 'The teamMemberId of the most recent facilitator'
+    description: 'The teamMemberId (or anonymousId) of the most recent facilitator'
   },
   invitees: {
     type: new GraphQLList(MeetingInvitee)
@@ -29,10 +30,6 @@ export const newMeetingFields = {
     type: new GraphQLNonNull(GraphQLInt),
     description: 'The auto-incrementing meeting number for the team'
   },
-  // tasksCreated: {
-  //   type: new GraphQLList(MeetingTask),
-  //   description: 'A list of immutable tasks, as they were created in the meeting'
-  // },
   phases: {
     type: new GraphQLList(NewMeetingPhase),
     description: 'The phases that make up the meeting'
@@ -42,15 +39,16 @@ export const newMeetingFields = {
     description: 'The time the meeting summary was emailed to the team'
   },
   team: {
+    type: Team,
     description: 'The team that ran the meeting',
     resolve: resolveTeam
   }
-};
+});
 
 const NewMeeting = new GraphQLInterfaceType({
   name: 'NewMeeting',
   description: 'A team meeting history for all previous meetings',
-  fields: () => newMeetingFields,
+  fields: newMeetingFields,
   resolveType: (value) => {
     if (value.retroThoughtGroups) {
       return RetrospectiveMeeting;

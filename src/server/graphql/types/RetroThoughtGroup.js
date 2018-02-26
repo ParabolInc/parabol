@@ -3,6 +3,7 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroThought from 'server/graphql/types/RetroThought';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import {isSuperUser} from 'server/utils/authorization';
+import Team from 'server/graphql/types/Team';
 
 const RetroThoughtGroup = new GraphQLObjectType({
   name: 'RetroThoughtGroup',
@@ -35,7 +36,7 @@ const RetroThoughtGroup = new GraphQLObjectType({
       }
     },
     team: {
-      type: RetrospectiveMeeting,
+      type: Team,
       description: 'The team that is running the retro',
       resolve: async ({meetingId}, args, {dataLoader}) => {
         const meeting = dataLoader.get('newMeetings').load(meetingId);

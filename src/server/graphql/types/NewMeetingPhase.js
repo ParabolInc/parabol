@@ -26,6 +26,14 @@ const NewMeetingPhase = new GraphQLObjectType({
       description: 'The type of the phase',
       type: NewMeetingPhaseTypeEnum
     },
+    isSingleView: {
+      description: 'true if the meeting phase can only be viewed once (eg first call)',
+      type: GraphQLBoolean
+    },
+    isAutoAdvanced: {
+      description: 'true if the meeting phase automatically advances to the next (eg Phase1.part2 completes when part1 completes)',
+      type: GraphQLBoolean
+    },
     customPhaseItem: {
       description: 'The phase item that this phase represents',
       type: CustomPhaseItem,

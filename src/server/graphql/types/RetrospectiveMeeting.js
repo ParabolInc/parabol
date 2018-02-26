@@ -8,7 +8,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
   interfaces: () => [NewMeeting],
   description: 'A retrospective meeting',
   fields: () => ({
-    ...newMeetingFields,
+    ...newMeetingFields(),
     thoughtGroups: {
       type: new GraphQLList(RetroThoughtGroup)
     },

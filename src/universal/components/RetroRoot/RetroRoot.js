@@ -1,14 +1,61 @@
+import PropTypes from 'prop-types';
 import React from 'react';
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';
+import {cacheConfig} from 'universal/utils/constants';
+import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
+import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
+import TaskSubscription from 'universal/subscriptions/TaskSubscription';
+import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
+import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
+import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 
-export default () => (
-  <div
-    style={{
-      height: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      backgroundColor: 'rgba(256, 0, 0, 0.5)'
-    }}
-  >
-    <div style={{fontSize: '4rem', margin: 'auto'}}>~😇~</div>
-  </div>
-);
+// const query = graphql`
+//   query RetroRootQuery($teamId: ID!) {
+//     viewer {
+//       ...TeamSettings_viewer
+//     }
+//   }
+// `;
+
+const subscriptions = [
+  // AgendaItemSubscription,
+  NewAuthTokenSubscription,
+  NotificationSubscription,
+  OrganizationSubscription,
+  TaskSubscription,
+  TeamMemberSubscription,
+  TeamSubscription
+];
+
+const RetroRoot = ({atmosphere, match}) => {
+  const {params: {teamId}} = match;
+  return (
+    <QueryRenderer
+      cacheConfig={cacheConfig}
+      environment={atmosphere}
+      query={query}
+      variables={{teamId}}
+      subscriptions={subscriptions}
+      render={(readyState) => (
+        <RelayTransitionGroup
+          readyState={readyState}
+          error={<ErrorComponent height={'14rem'} />}
+          loading={<LoadingView minHeight="50vh" />}
+          ready={<TeamSettings />}
+        />
+      )}
+    />
+  );
+};
+
+RetroRoot.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
+  teamId: PropTypes.string.isRequired
+};
+
+export default withAtmosphere(RetroRoot);
