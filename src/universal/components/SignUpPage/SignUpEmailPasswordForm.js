@@ -52,15 +52,6 @@ const SignInEmailPasswordForm = (props: Props) => (
         underline
         disabled={props.submitting}
       />
-      <Field
-        component={InputField}
-        type="password"
-        placeholder="********"
-        label="Confirm Password:"
-        name="confirmedPassword"
-        underline
-        disabled={props.submitting}
-      />
     </FieldsContainer>
     <Button
       waiting={!props.valid || props.submitting}
@@ -79,12 +70,6 @@ const validate = (values) => {
   }
   if (!values.password) {
     validation.password = 'Enter a password.';
-  }
-  if (values.password !== values.confirmedPassword) {
-    validation.confirmedPassword = 'Passwords do not match';
-  }
-  if (!values.confirmedPassword) {
-    validation.confirmedPassword = 'Confirm your password.';
   }
   return validation;
 };

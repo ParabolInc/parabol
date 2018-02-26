@@ -17,8 +17,8 @@ import shouldValidate from 'universal/validation/shouldValidate';
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
-  submitting: boolean,
   onSubmit: (Credentials) => Promise<any>, // Provided by clients of the exported component
+  submitting: boolean,
   valid: boolean
 };
 
