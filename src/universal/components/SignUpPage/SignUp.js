@@ -3,13 +3,12 @@
  *
  * @flow
  */
-import type {StyledComponent, Tag} from 'react-emotion';
 import type {Credentials, ThirdPartyAuthProvider} from 'universal/types/auth';
 
 import React, {Fragment} from 'react';
 import styled from 'react-emotion';
-import {Link} from 'react-router-dom';
 
+import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
 import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
@@ -33,24 +32,12 @@ const linkStyles = {
   textDecoration: 'underline'
 };
 
-const newlyStyledLink = (tag: Tag): StyledComponent<*> => (
-  styled(tag)({
-    ...linkStyles,
-    ':hover': linkStyles,
-    ':focus': linkStyles
-  })
-);
-
-const H1 = styled('h1')(purple);
-
-const H2 = styled('h2')({
-  ...purple,
-  fontSize: '1.2rem'
+const A = styled('a')({
+  ...linkStyles,
+  ':hover': linkStyles,
+  marginTop: '1rem',
+  textAlign: 'center'
 });
-
-const A = newlyStyledLink('a');
-
-const BrandedLink = newlyStyledLink(Link);
 
 const PrivacyFooter = styled('div')({
   marginTop: '1rem'
@@ -58,10 +45,10 @@ const PrivacyFooter = styled('div')({
 
 const SignUp = (props: Props) => (
   <Fragment>
-    <H1>Sign Up</H1>
-    <H2>
-      or <BrandedLink to="/signin">Sign In</BrandedLink>
-    </H2>
+    <AuthHeader
+      heading="Sign Up"
+      secondaryAction={{relativeUrl: '/signin', displayName: 'Sign In'}}
+    />
     {props.authProviders.map((provider) => (
       <ThirdPartyAuthButton
         action="Sign up"
