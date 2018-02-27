@@ -10,7 +10,6 @@ const ContentTextHandler = {
     const textBlocks = parsedContent.blocks.map(({text}) => text);
     const fullText = textBlocks.join('\n');
     record.setValue(fullText, 'contentText');
-    // record.setValue(content, payload.handleKey);
   }
 };
 

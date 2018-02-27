@@ -8,7 +8,6 @@ import LandingContainer from 'universal/modules/landing/containers/Landing/Landi
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
-import SignIn from 'universal/components/SignIn/SignIn';
 import {StyleSheetServer as S} from 'aphrodite-local-styles/no-important';
 import A from 'universal/Atmosphere';
 

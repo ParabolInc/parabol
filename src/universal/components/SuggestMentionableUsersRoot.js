@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {cacheConfig} from 'universal/utils/constants';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';

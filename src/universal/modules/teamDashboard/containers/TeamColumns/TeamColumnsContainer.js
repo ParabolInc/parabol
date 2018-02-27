@@ -35,14 +35,8 @@ class TeamColumnsContainer extends Component {
     const contentFilterRegex = new RegExp(contentFilter);
     const contentFilteredEdges = contentFilter ?
       tasks.edges.filter(({node}) => {
-        const {blocks} = JSON.parse(node.content);
-        for (let ii = 0; ii < blocks.length; ii++) {
-          const block = blocks[ii];
-          if (block.text.match(contentFilterRegex)) {
-            return true;
-          }
-        }
-        return false;
+        const {contentText} = node;
+        return contentText && node.contentText.match(contentFilterRegex);
       }) : tasks.edges;
 
     const teamMemberFilteredEdges = teamMemberFilterId ?
@@ -105,7 +99,8 @@ export default createFragmentContainer(
           node {
             # grab these so we can sort correctly
             id
-            content
+            content @__clientField(handle: "contentText")
+            contentText 
             status
             sortOrder
             assignee {
