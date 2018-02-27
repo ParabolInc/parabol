@@ -27,6 +27,7 @@ const InputField = (props) => {
     readyOnly,
     shortcutHint,
     styles,
+    type,
     underline
   } = props;
 
@@ -65,6 +66,7 @@ const InputField = (props) => {
       <div className={css(styles.inputBlock)}>
         <input
           {...input}
+          type={type || 'text'}
           autoFocus={autoFocus}
           className={inputStyles}
           disabled={disabled || readyOnly}
@@ -106,9 +108,9 @@ InputField.propTypes = {
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
-    type: PropTypes.string,
     value: PropTypes.string
   }),
+  type: PropTypes.string,
   isWider: PropTypes.bool,
   styles: PropTypes.object,
   colorPalette: PropTypes.oneOf([

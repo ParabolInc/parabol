@@ -1,5 +1,5 @@
 /**
- * The form used for signing in via email/password.
+ * The form used for signing up via email/password.
  *
  * @flow
  */
@@ -7,7 +7,6 @@ import type {Credentials} from 'universal/types/auth';
 
 import React from 'react';
 import styled from 'react-emotion';
-import {Link} from 'react-router-dom';
 import {Field, reduxForm} from 'redux-form';
 
 import Button from 'universal/components/Button/Button';
@@ -31,18 +30,13 @@ const FieldsContainer = styled('div')({
   marginBottom: '2rem'
 });
 
-const ForgotPasswordLink = styled(Link)({
-  marginTop: '1rem',
-  textAlign: 'center'
-});
-
 const SignInEmailPasswordForm = (props: Props) => (
   <Form onSubmit={props.handleSubmit}>
     <FieldsContainer>
       <Field
-        type="email"
         autoFocus
         component={InputField}
+        type="email"
         placeholder="you@company.co"
         label="Email:"
         name="email"
@@ -50,8 +44,8 @@ const SignInEmailPasswordForm = (props: Props) => (
         disabled={props.submitting}
       />
       <Field
-        type="password"
         component={InputField}
+        type="password"
         placeholder="********"
         label="Password:"
         name="password"
@@ -63,11 +57,10 @@ const SignInEmailPasswordForm = (props: Props) => (
       disabled={!props.valid}
       waiting={props.submitting}
       type="submit"
-      label="Sign In"
-      title="Sign In"
+      label="Sign Up"
+      title="Sign Up"
       colorPalette="warm"
     />
-    <ForgotPasswordLink to="/reset-password">Forgot your password?</ForgotPasswordLink>
   </Form>
 );
 
@@ -82,4 +75,4 @@ const validate = (values) => {
   return validation;
 };
 
-export default reduxForm({form: 'signin', shouldValidate, validate})(SignInEmailPasswordForm);
+export default reduxForm({form: 'signup', shouldValidate, validate})(SignInEmailPasswordForm);

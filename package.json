@@ -200,7 +200,7 @@
     "react-transition-group": "https://github.com/mattkrick/react-transition-group/tarball/a514cd964a9c67cf5ed122eeeaccc6e3ad4ec53b",
     "react-virtualized": "^9.10.1",
     "redux": "^3.7.2",
-    "redux-form": "^7.2.0",
+    "redux-form": "^7.2.3",
     "redux-logger": "^3.0.6",
     "redux-raven-middleware": "^1.2.0",
     "redux-segment": "^1.6.2",

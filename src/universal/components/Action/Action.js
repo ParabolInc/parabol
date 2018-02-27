@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
-import DynamicHome from 'universal/components/DynamicHome/DynamicHome';
+import HomePage from 'universal/components/HomePage/HomePage';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
@@ -21,6 +21,7 @@ const dashWrapper = () => System.import('universal/components/DashboardWrapper/D
 const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot');
 const retroRoot = () => System.import('universal/components/RetroRoot/RetroRoot');
 const signInPage = () => System.import('universal/components/SignInPage/SignInPage');
+const signUpPage = () => System.import('universal/components/SignUpPage/SignUpPage');
 
 const Action = (props) => {
   const {styles} = props;
@@ -30,11 +31,14 @@ const Action = (props) => {
       <SocketHealthMonitor />
       <Switch>
         {__RELEASE_FLAGS__.newSignIn
-          ? <Route exact path="/" component={DynamicHome} />
+          ? <Route exact path="/" component={HomePage} />
           : <Route exact path="/" component={LandingContainer} />
         }
         {__RELEASE_FLAGS__.newSignIn &&
           <AsyncRoute exact path="/signin" mod={signInPage} />
+        }
+        {__RELEASE_FLAGS__.newSignIn &&
+          <AsyncRoute exact path="/signup" mod={signUpPage} />
         }
         <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
