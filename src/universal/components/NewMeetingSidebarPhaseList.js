@@ -19,20 +19,8 @@ import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSideb
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {phaseLabelLookup, phasesToExclude, phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups';
 
-const phaseTypeToPhaseGroup = {
-  [LOBBY]: LOBBY,
-  [CHECKIN]: CHECKIN,
-  [UPDATES]: UPDATES,
-  [FIRST_CALL]: AGENDA_ITEMS,
-  [AGENDA_ITEMS]: AGENDA_ITEMS,
-  [LAST_CALL]: AGENDA_ITEMS,
-  [SUMMARY]: SUMMARY,
-  [THINK]: THINK,
-  [GROUP]: GROUP,
-  [VOTE]: VOTE,
-  [DISCUSS]: DISCUSS
-};
 
 const NavList = styled('ul')({
   listStyle: 'none',
@@ -60,10 +48,12 @@ const NewMeetingSidebarPhaseList = (props) => {
   const isFacilitator = facilitatorId === viewerId;
   return (
     <NavList>
-      {phases.map((name, idx) => {
+      {phases
+        .filter((phase) => !phasesToExclude.includes(phase))
+        .map((name, idx) => {
         return (<NewMeetingSidebarPhaseListItem
           key={name}
-          name={name}
+          name={phaseLabelLookup[name]}
           listPrefix={`${romanNumeral.convert(idx + 1)}.`}
           isActive={localGroup === name}
           isFacilitatorPhaseGroup={facilitatorPhaseGroup === name}
