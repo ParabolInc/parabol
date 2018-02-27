@@ -6,7 +6,7 @@
 
 import type {Credentials} from 'universal/types/auth';
 import type {Dispatch} from 'redux';
-
+import promisify from 'es6-promisify';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
@@ -43,19 +43,12 @@ class SignUpPage extends Component<Props, State> {
   };
 
   auth0SignUp = ({email, password}: Credentials): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      this.webAuth.signup({
-        email,
-        password,
-        connection: 'Username-Password-Authentication',
-        responseType: 'token'
-      }, (error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
+    const signup = promisify(this.webAuth.signup, this.webAuth);
+    return signup({
+      email,
+      password,
+      connection: 'Username-Password-Authentication',
+      responseType: 'token'
     });
   };
 

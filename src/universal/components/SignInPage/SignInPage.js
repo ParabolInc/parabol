@@ -22,7 +22,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
-
+import promisify from 'es6-promisify';
 import SignIn from './SignIn';
 
 type Props = {
@@ -72,14 +72,8 @@ class SignInPage extends Component<Props, State> {
   };
 
   parseAuthResponse = (hash: string): Promise<AuthResponse> => {
-    return new Promise((resolve, reject) => {
-      this.webAuth.parseHash({hash}, (err, authResult) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(authResult);
-      });
-    });
+    const parseHash = promisify(this.webAuth.parseHash, this.webAuth);
+    return parseHash({hash});
   };
 
   resetState = () => {

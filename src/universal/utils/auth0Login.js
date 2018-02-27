@@ -9,19 +9,13 @@
 
 import type {Credentials} from 'universal/types/auth';
 import WebAuth from 'auth0-js';
+import promisify from 'es6-promisify';
 
-export default function auth0Login(webAuth: WebAuth, credentials: Credentials): Promise<void> {
-  return new Promise((resolve, reject) => {
-    webAuth.login({
-      ...credentials,
-      realm: 'Username-Password-Authentication',
-      responseType: 'token'
-    }, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    });
+export default async function auth0Login(webAuth: WebAuth, credentials: Credentials): Promise<void> {
+  const login = promisify(webAuth.login, webAuth);
+  return login({
+    ...credentials,
+    realm: 'Username-Password-Authentication',
+    responseType: 'token'
   });
 }
