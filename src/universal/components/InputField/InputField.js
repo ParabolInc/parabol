@@ -21,7 +21,7 @@ const InputField = (props) => {
     isLarger,
     isWider,
     label,
-    meta: {touched, error},
+    meta: {autofilled, dirty, error, invalid, touched},
     onButtonClick,
     placeholder,
     readyOnly,
@@ -75,7 +75,7 @@ const InputField = (props) => {
           ref={(c) => { ref = c; }}
         />
       </div>
-      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
+      {touched && !autofilled && dirty && invalid && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
       {shortcutHint && <FieldShortcutHint disabled={shortcutDisabled} hint={shortcutHint} />}
     </FieldBlock>
   );
