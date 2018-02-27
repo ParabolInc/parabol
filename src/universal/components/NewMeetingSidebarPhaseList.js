@@ -41,11 +41,11 @@ const isNavigable = (group, stages, isFacilitator) => {
 
 const NewMeetingSidebarPhaseList = (props) => {
   const {atmosphere: {viewerId}, localPhase, viewer: {team: {meetingSettings: {phases}, newMeeting}}} = props;
-  const {facilitatorId, stages = []} = newMeeting || {};
+  const {facilitatorUserId, stages = []} = newMeeting || {};
   const localGroup = phaseTypeToPhaseGroup[localPhase];
   const facilitatorStage = stages.find((stage) => stage.isFacilitatorStage);
   const facilitatorPhaseGroup = facilitatorStage ? phaseTypeToPhaseGroup[facilitatorStage.type] : LOBBY;
-  const isFacilitator = facilitatorId === viewerId;
+  const isFacilitator = facilitatorUserId === viewerId;
   return (
     <NavList>
       {phases
@@ -74,7 +74,7 @@ export default createFragmentContainer(
           phases
         }
         newMeeting {
-          facilitatorId
+          facilitatorUserId
           stages {
             isComplete
             type

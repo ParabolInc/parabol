@@ -51,6 +51,7 @@ const SidebarHeader = styled('div')({
 
 const SidebarParent = styled('div')({
   backgroundColor: appTheme.palette.mid10l,
+  boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 10px, rgba(0, 0, 0, 0.23) 0px 3px 10px',
   display: 'flex',
   flexDirection: 'column',
   padding: '2rem 0 0',
@@ -103,15 +104,6 @@ export default createFragmentContainer(
       team(teamId: $teamId) {
         teamId: id
         teamName: name
-        newMeeting {
-          id
-          facilitatorId
-          stages {
-            isComplete
-            isFacilitatorStage
-            type
-          }
-        }
       }
     }
   `

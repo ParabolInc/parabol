@@ -19,9 +19,9 @@ export const newMeetingFields = () => ({
     type: GraphQLISO8601Type,
     description: 'The timestamp the meeting officially ended'
   },
-  facilitatorId: {
+  facilitatorUserId: {
     type: GraphQLID,
-    description: 'The teamMemberId (or anonymousId) of the most recent facilitator'
+    description: 'The userId (or anonymousId) of the most recent facilitator'
   },
   invitees: {
     type: new GraphQLList(MeetingInvitee)

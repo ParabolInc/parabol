@@ -5,10 +5,12 @@ import withHotkey from 'react-hotkey-hoc';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import {withRouter} from 'react-router-dom';
+import {Route, Switch, withRouter} from 'react-router-dom';
 import styled from 'react-emotion';
 import {Helmet} from 'react-helmet';
 import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
+import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
+import NewMeetingLobby from 'universal/components/NewMeetingLobby';
 
 const MeetingContainer = styled('div')({
   backgroundColor: '#fff',
@@ -16,14 +18,49 @@ const MeetingContainer = styled('div')({
   height: '100vh'
 });
 
+const MeetingArea = styled('div')({
+  display: 'flex !important',
+  flex: 1,
+  flexDirection: 'column',
+  minWidth: '60rem',
+  width: '100%'
+});
+
+const MeetingAreaHeader = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex',
+  flexDirection: 'row-reverse',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  padding: '1rem',
+  width: '100%'
+});
+
 class NewMeeting extends Component {
   render() {
-    const {localPhase, viewer} = this.props;
-    const {team: {teamName}} = viewer;
+    const {localPhase, match, viewer} = this.props;
+    const {team} = viewer;
+    const {teamId, teamName} = team;
     return (
       <MeetingContainer>
         <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
         <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
+        <MeetingArea>
+          <MeetingAreaHeader>
+            <MeetingAvatarGroup
+              gotoItem={() => {}}
+              isFacilitating={false}
+              localPhase={localPhase}
+              localPhaseItem={null}
+              team={team}
+            />
+          </MeetingAreaHeader>
+          <Switch>
+            <Route path="/retro/:teamId" render={() => <NewMeetingLobby team={team}/>}/>
+          </Switch>
+        </MeetingArea>
       </MeetingContainer>
     );
   }
@@ -45,12 +82,14 @@ export default createFragmentContainer(
     fragment NewMeeting_viewer on User {
       ...NewMeetingSidebar_viewer
       team(teamId: $teamId) {
+        ...MeetingAvatarGroup_team
+        ...NewMeetingLobby_team
         checkInGreeting {
           content
           language
         }
         checkInQuestion
-        id
+        teamId: id
         teamName: name
         newMeetingId
         tier
@@ -68,7 +107,7 @@ export default createFragmentContainer(
         }
         newMeeting {
           id
-          facilitatorId
+          facilitatorUserId
           stages {
             isComplete
             type
