@@ -45,7 +45,8 @@ const PasswordResetForm = (props: Props) => {
         />
       </FieldsContainer>
       <Button
-        waiting={!props.valid || props.submitting}
+        disabled={!props.valid}
+        waiting={props.submitting}
         type="submit"
         label="Submit"
         title="Submit"
