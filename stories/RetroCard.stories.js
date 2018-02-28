@@ -3,43 +3,14 @@
  *
  * @flow
  */
-import type {Node} from 'react';
 
-import React, {Component} from 'react';
+import React from 'react';
 import styled from 'react-emotion';
 import {storiesOf} from '@storybook/react';
 
-import injectGlobals from 'universal/styles/hepha';
 import appTheme from 'universal/styles/theme/appTheme';
-import globalStyles from 'universal/styles/theme/globalStyles';
 
-// GLOBAL STYLES
-
-type GlobalStylesProps = {
-  render: () => Node
-};
-
-const FullPageWrapper = styled('div')({
-  height: '100vh',
-  padding: '1rem',
-  width: '100vw'
-});
-
-/**
- * Provides global style primitives so that comonents rendered in the storybook
- * look like those rendered in the app.
- */
-class StoryContainer extends Component<GlobalStylesProps> {
-  componentWillMount() {
-    injectGlobals(globalStyles);
-  }
-
-  render() {
-    return <FullPageWrapper>{this.props.render()}</FullPageWrapper>;
-  }
-}
-
-// RETRO CARD
+import StoryContainer from './components/StoryContainer';
 
 type Props = {
   contents: string
@@ -61,7 +32,7 @@ const RetroCardWrapper = styled('div')({
   minHeight: '1rem',
   overflow: 'auto',
   padding: '0.8rem',
-  width: '15rem'
+  width: '20rem'
 });
 
 const RetroCard = ({contents}: Props) => {
