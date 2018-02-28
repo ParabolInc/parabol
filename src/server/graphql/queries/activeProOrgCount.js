@@ -11,16 +11,14 @@ export default {
     requireSU(authToken);
 
     // RESOLUTION
+    //   per @mattkrick:
+    //
+    //     > stripe enforces at least 1 seat per customer,
+    //     > so there's no way a 1-person org could have an inactive person.
+    //
+    //   So, we can just count the pro-tier orgs:
     return r.table('Organization')
       .filter((org) => org('tier').eq('pro'))
-      .map((org) => org('orgUsers')
-        // calculate whether the org is active or not:
-        //   reduces [bool, bool, bool] => bool
-        //   where at least one false => true (active org)
-        //   all true => false (inactive org)
-        .fold(false, (acc, orgUser) => acc.or(r.not(orgUser('inactive'))))
-      )
-      // count true values in sequence (# of active orgs)
-      .count((possiblyActiveOrg) => possiblyActiveOrg);
+      .count();
   }
 };
