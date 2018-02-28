@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNEXT
+## Added
+- Client-side filtering behind the localFilter release flag
+
 ## v0.30.0 2018-Feb-28
 ## Added
 - activeProOrgCount and activeProUserCount queries
