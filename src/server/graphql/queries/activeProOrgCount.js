@@ -13,7 +13,7 @@ export default {
     // RESOLUTION
     return r.table('Organization')
       .filter((org) => org('tier').eq('pro'))
-      .map( (org) => org('orgUsers')
+      .map((org) => org('orgUsers')
         // calculate whether the org is active or not:
         //   reduces [bool, bool, bool] => bool
         //   where at least one false => true (active org)
@@ -21,6 +21,6 @@ export default {
         .fold(false, (acc, orgUser) => acc.or(r.not(orgUser('inactive'))))
       )
       // count true values in sequence (# of active orgs)
-      .count( (possiblyActiveOrg) => possiblyActiveOrg );
+      .count((possiblyActiveOrg) => possiblyActiveOrg);
   }
 };
