@@ -67,8 +67,11 @@ const Team = (props) => {
           {!isSettings &&
             <TeamCallsToAction teamId={teamId} />
           }
-          Filter:
-          <input onChange={updateFilter} />
+          {__RELEASE_FLAGS__.localFilter &&
+            <span>Filter:
+              <input onChange={updateFilter} />
+            </span>
+          }
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
           {isSettings ?
