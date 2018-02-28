@@ -16,10 +16,10 @@ const fontStylesItalic = {fontWeight: 400, fontStretch: 'normal', fontStyle: 'it
 const fontStylesSemiBold = {fontWeight: 600, fontStretch: 'normal', fontStyle: 'normal'};
 const fontStylesSemiBoldItalic = {fontWeight: 600, fontStretch: 'normal', fontStyle: 'italic'};
 
-const makeFont = (fontFamily, woffFile, style) => ({
+const makeFont = (fontFamily, woff2File, style) => ({
   ...style,
   fontFamily,
-  src: `url('${woffFile}') format('woff2')`
+  src: `url('${woff2File}') format('woff2')`
 });
 
 
