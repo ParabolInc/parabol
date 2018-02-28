@@ -31,14 +31,14 @@ const SummaryHeader = (props) => {
   const teamNameStyle = {
     ...textStyle,
     fontSize: '36px',
-    fontWeight: 700
+    fontWeight: 600
   };
   const meetingDate = makeDateString(createdAt, {showDay: true});
 
   const labelStyles = {
     color: appTheme.palette.dark70l,
     fontSize: '13px',
-    fontWeight: 700,
+    fontWeight: 600,
     padding: '0 0 16px',
     textAlign: 'center',
     textTransform: 'uppercase'

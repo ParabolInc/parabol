@@ -36,13 +36,13 @@ const message = {
 
 const linkStyles = {
   color: appTheme.palette.warm,
-  fontWeight: 700,
+  fontWeight: 600,
   textDecoration: 'none'
 };
 
 const greetingStyles = {
   color: appTheme.palette.cool,
-  fontWeight: 700,
+  fontWeight: 600,
   fontSize: '27px',
   lineHeight: '40px',
   textAlign: 'inherit'
@@ -139,7 +139,7 @@ const SummaryEmail = (props) => {
     cursor: 'pointer',
     display: 'block',
     fontSize: '14px',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '20px',
     margin: '0 auto',
     padding: '6px 0',

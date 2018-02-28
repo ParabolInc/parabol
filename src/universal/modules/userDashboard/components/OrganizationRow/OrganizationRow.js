@@ -114,7 +114,7 @@ const styleThunk = () => ({
   subHeader: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s4
   },
 

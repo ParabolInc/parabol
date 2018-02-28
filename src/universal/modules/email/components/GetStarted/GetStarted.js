@@ -6,7 +6,7 @@ import EmptySpace from '../EmptySpace/EmptySpace';
 const GetStarted = () => {
   const linkStyle = {
     color: appTheme.palette.cool,
-    fontWeight: 700
+    fontWeight: 600
   };
 
   const imageStyle = {
@@ -15,7 +15,7 @@ const GetStarted = () => {
 
   const headingStyle = {
     color: appTheme.palette.warm,
-    fontWeight: 700,
+    fontWeight: 600,
     textTransform: 'uppercase'
   };
 

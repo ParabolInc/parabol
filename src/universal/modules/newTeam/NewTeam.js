@@ -86,7 +86,7 @@ const styleThunk = () => ({
 
   helpHeading: {
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
+    fontWeight: 600,
     margin: 0
   },
 

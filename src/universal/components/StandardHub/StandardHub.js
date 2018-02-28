@@ -158,7 +158,7 @@ const styleThunk = () => ({
   name: {
     ...textOverflow,
     fontSize: appTheme.typography.sBase,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.375rem',
     maxWidth,
     paddingTop: '.125rem'

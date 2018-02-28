@@ -93,14 +93,14 @@ const styleThunk = () => ({
   invitedAt: {
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s4
   },
 
   infoLink: {
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s4,
 
     ':hover': {

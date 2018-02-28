@@ -30,7 +30,7 @@ const styleThunk = () => ({
     cursor: 'default',
     fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s5,
     padding: `${ui.fieldLabelGutter} 0 0`,
     textAlign: 'right'

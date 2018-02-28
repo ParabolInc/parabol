@@ -94,7 +94,7 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'inline-block',
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
+    fontWeight: 600,
     flex: 1,
     lineHeight: '1.625rem',
     verticalAlign: 'middle'

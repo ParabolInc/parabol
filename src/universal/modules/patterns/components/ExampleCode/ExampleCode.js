@@ -32,6 +32,6 @@ export default class ExampleCode extends Component {
 //   pre: {
 //     fontFamily: appTheme.typography.monospace,
 //     fontSize: '1.125rem',
-//     fontWeight: 700
+//     fontWeight: 600
 //   }
 // });

@@ -278,7 +278,7 @@ const label = {
   display: 'block',
   flex: 1,
   fontSize: appTheme.typography.s2,
-  fontWeight: 700,
+  fontWeight: 600,
   lineHeight: height,
   maxWidth: '100%',
   textAlign: 'left'

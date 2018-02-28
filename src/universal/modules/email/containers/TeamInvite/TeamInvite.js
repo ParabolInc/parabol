@@ -26,7 +26,7 @@ const boldLinkStyle = {
 
 const merryAndBold = {
   color: appTheme.palette.cool,
-  fontFamily: '"Merriweather", "Georgia", serif',
+  fontFamily: '"IBM Plex Serif", "Georgia", serif',
   fontStyle: 'italic',
   fontWeight: 'bold'
 };

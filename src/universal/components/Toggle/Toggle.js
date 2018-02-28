@@ -118,7 +118,7 @@ const styleThunk = () => ({
   label: {
     display: 'inline-block',
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     padding: '0 .5rem',
     textShadow: '0 1px 0 rgba(0, 0, 0, .2)'
   }
