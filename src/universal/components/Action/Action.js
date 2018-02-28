@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
-import DynamicHome from 'universal/components/DynamicHome/DynamicHome';
+import HomePage from 'universal/components/HomePage/HomePage';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
+import {StyleSheetServer as S} from 'aphrodite-local-styles/no-important';
+import A from 'universal/Atmosphere';
 
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
 const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
@@ -19,8 +21,10 @@ const signout = () => System.import('universal/containers/Signout/SignoutContain
 const notFound = () => System.import('universal/components/NotFound/NotFound');
 const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper');
 const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot');
+const resetPasswordPage = () => System.import('universal/components/ResetPasswordPage/ResetPasswordPage');
 const retroRoot = () => System.import('universal/components/RetroRoot/RetroRoot');
 const signInPage = () => System.import('universal/components/SignInPage/SignInPage');
+const signUpPage = () => System.import('universal/components/SignUpPage/SignUpPage');
 
 const Action = (props) => {
   const {styles} = props;
@@ -30,11 +34,17 @@ const Action = (props) => {
       <SocketHealthMonitor />
       <Switch>
         {__RELEASE_FLAGS__.newSignIn
-          ? <Route exact path="/" component={DynamicHome} />
+          ? <Route exact path="/" component={HomePage} />
           : <Route exact path="/" component={LandingContainer} />
         }
         {__RELEASE_FLAGS__.newSignIn &&
           <AsyncRoute exact path="/signin" mod={signInPage} />
+        }
+        {__RELEASE_FLAGS__.newSignIn &&
+          <AsyncRoute exact path="/signup" mod={signUpPage} />
+        }
+        {__RELEASE_FLAGS__.newSignIn &&
+          <AsyncRoute exact path="/reset-password" mod={resetPasswordPage} />
         }
         <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
@@ -68,6 +78,6 @@ const styleThunk = () => ({
   }
 });
 
-export Atmosphere from 'universal/Atmosphere';
-export {StyleSheetServer} from 'aphrodite-local-styles/no-important';
+export const Atmosphere = A;
+export const StyleSheetServer = S;
 export default withStyles(styleThunk)(Action);

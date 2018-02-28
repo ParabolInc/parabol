@@ -38,11 +38,31 @@ class AgendaList extends Component {
     visibleAgendaItemId: PropTypes.string,
     submittedCount: PropTypes.number,
     team: PropTypes.object.isRequired
-  };
+  }
 
   state = {
+    filteredAgendaItems: [],
     overflownAbove: false,
     overflownBelow: false
+  };
+
+  componentWillMount() {
+    this.setFilteredAgendaItems(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {team: {agendaItems, contentFilter}} = nextProps;
+    const {team: {agendaItems: oldAgendaItems, contentFilter: oldContentFilter}} = this.props;
+    if (agendaItems !== oldAgendaItems || contentFilter !== oldContentFilter) {
+      this.setFilteredAgendaItems(nextProps);
+    }
+  }
+
+  setFilteredAgendaItems = (props) => {
+    const {team: {agendaItems, contentFilter}} = props;
+    this.setState({
+      filteredAgendaItems: contentFilter ? agendaItems.filter(({content}) => content.match(contentFilter)) : agendaItems
+    });
   };
 
   setOverflowContainerElRef = (el) => {
@@ -155,7 +175,7 @@ class AgendaList extends Component {
       styles,
       team
     } = this.props;
-    const {overflownAbove, overflownBelow} = this.state;
+    const {filteredAgendaItems, overflownAbove, overflownBelow} = this.state;
     const {agendaItems} = team;
     const canNavigateItems = canNavigate && !disabled;
     dragState.clear();
@@ -164,13 +184,13 @@ class AgendaList extends Component {
     return connectDropTarget(
       <div className={css(styles.root)}>
         {overflownAbove && this.makeOverflownAboveShadow()}
-        {agendaItems.length > 0 ?
+        {filteredAgendaItems.length > 0 ?
           <div className={css(styles.inner)} ref={this.setOverflowContainerElRef}>
-            {agendaItems.map((item, idx) =>
+            {filteredAgendaItems.map((item, idx) =>
               (<AgendaItem
                 key={`agendaItem${item.id}`}
                 agendaItem={item}
-                agendaLength={agendaItems.length}
+                agendaLength={filteredAgendaItems.length}
                 agendaPhaseItem={agendaPhaseItem}
                 canNavigate={canNavigateItems}
                 disabled={disabled}
@@ -178,7 +198,7 @@ class AgendaList extends Component {
                 facilitatorPhase={facilitatorPhase}
                 gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
                 handleRemove={this.removeItemFactory(item.id)}
-                idx={idx}
+                idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
                 isCurrent={idx + 1 === agendaPhaseItem}
                 isFacilitator={idx + 1 === facilitatorPhaseItem}
                 localPhase={localPhase}
@@ -280,8 +300,10 @@ export default createFragmentContainer(
   )),
   graphql`
     fragment AgendaList_team on Team {
+      contentFilter
       agendaItems {
         id
+        content
         # need these 2 for the DnD
         isComplete
         sortOrder

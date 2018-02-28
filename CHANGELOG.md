@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNEXT
+## Added
+- Client-side filtering behind the localFilter release flag
+
+## v0.30.0 2018-Feb-28
+## Added
+- activeProOrgCount and activeProUserCount queries
+- Change the team a card belogs to from _My Dashboard_ (#1474)
+- Password recovery page (behind `newSignIn` release flag)
+- Retro CTA to team dashboard
+
+
 ## v0.29.0 2018-Feb-21
 ## Fixed
 - fixed withCoords

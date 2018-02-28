@@ -9,12 +9,8 @@ import publish from 'server/utils/publish';
 
 export default {
   type: ChangeTaskTeamPayload,
-  description: 'Update a task with a change in content, ownership, or status',
+  description: 'Change the team a task is associated with',
   args: {
-    // area: {
-    //   type: AreaEnum,
-    //   description: 'The part of the site where the creation occurred'
-    // },
     taskId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The task to change'
@@ -33,8 +29,6 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken);
     requireTeamMember(authToken, teamId);
-
-    // VALIDATION
     const task = await r.table('Task').get(taskId);
     if (!task) {
       throw new Error('Task not found');
@@ -68,8 +62,14 @@ export default {
         .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
         .orderBy({index: 'taskIdUpdatedAt'})
         .nth(-1)
+        .default(null)
         .do((taskHistoryRecord) => {
-          return r.table('TaskHistory').insert(taskHistoryRecord.merge(updates, {id: shortid.generate()}));
+          // prepopulated cards will not have a history
+          return r.branch(
+            taskHistoryRecord.ne(null),
+            r.table('TaskHistory').insert(taskHistoryRecord.merge(updates, {id: shortid.generate()})),
+            null
+          );
         })
     });
 
