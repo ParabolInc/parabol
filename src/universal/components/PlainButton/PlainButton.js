@@ -5,7 +5,9 @@ const PlainButton = styled('button')({
   background: 'inherit',
   border: 0,
   borderRadius: 0,
+  color: 'inherit',
   cursor: 'pointer',
+  fontSize: 'inherit',
   margin: 0,
   padding: 0
 });

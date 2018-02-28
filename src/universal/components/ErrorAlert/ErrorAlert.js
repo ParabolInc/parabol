@@ -12,6 +12,10 @@ import FontAwesome from 'react-fontawesome';
 
 import appTheme from 'universal/styles/theme/appTheme';
 
+type Props = {
+  message: string
+};
+
 const ErrorAlertWrapper = styled('div')({
   padding: '0.5rem 1rem',
   backgroundColor: appTheme.palette.warm20a,
@@ -22,7 +26,7 @@ const SpacedIcon = styled(FontAwesome)({
   marginRight: '1rem'
 });
 
-const ErrorAlert = ({message}: {message: string}) => {
+const ErrorAlert = ({message}: Props) => {
   return (
     <ErrorAlertWrapper role="alert">
       <SpacedIcon name="exclamation-circle" />

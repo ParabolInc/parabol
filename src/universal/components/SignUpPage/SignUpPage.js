@@ -14,7 +14,7 @@ import AuthPage from 'universal/components/AuthPage/AuthPage';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';
-import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
+import {AUTH0_DB_CONNECTION, THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
 import SignUp from './SignUp';
 
@@ -47,7 +47,7 @@ class SignUpPage extends Component<Props, State> {
     return signup({
       email,
       password,
-      connection: 'Username-Password-Authentication',
+      connection: AUTH0_DB_CONNECTION,
       responseType: 'token'
     });
   };
