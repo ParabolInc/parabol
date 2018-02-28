@@ -3,6 +3,8 @@
  *
  * @flow
  */
+import type {Credentials} from 'universal/types/auth';
+
 import React from 'react';
 import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
@@ -10,11 +12,13 @@ import {Field, reduxForm} from 'redux-form';
 
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
-  onSubmit: ({email: string, password: string}) => void, // Provided by clients of the exported component
+  onSubmit: (Credentials) => Promise<any>, // Provided by clients of the exported component
+  submitting: boolean,
   valid: boolean
 };
 
@@ -36,21 +40,28 @@ const SignInEmailPasswordForm = (props: Props) => (
   <Form onSubmit={props.handleSubmit}>
     <FieldsContainer>
       <Field
+        type="email"
         autoFocus
         component={InputField}
         placeholder="you@company.co"
         label="Email:"
         name="email"
+        underline
+        disabled={props.submitting}
       />
       <Field
+        type="password"
         component={InputField}
         placeholder="********"
         label="Password:"
         name="password"
+        underline
+        disabled={props.submitting}
       />
     </FieldsContainer>
     <Button
       disabled={!props.valid}
+      waiting={props.submitting}
       type="submit"
       label="Sign In"
       title="Sign In"
@@ -62,8 +73,8 @@ const SignInEmailPasswordForm = (props: Props) => (
 
 const validate = (values) => {
   const validation = {};
-  if (!values.email) {
-    validation.email = 'Enter an email address.';
+  if (!parseEmailAddressList(values.email)) {
+    validation.email = 'Enter a valid email address.';
   }
   if (!values.password) {
     validation.password = 'Enter a password.';

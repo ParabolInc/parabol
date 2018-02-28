@@ -223,3 +223,11 @@ export const ENTERPRISE = 'enterprise';
 /* Task Involvement Types */
 export const ASSIGNEE = 'ASSIGNEE';
 export const MENTIONEE = 'MENTIONEE';
+
+/* Third-party authentication providers */
+export const THIRD_PARTY_AUTH_PROVIDERS = [
+  {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
+];
+
+/* Default auth0 email/password db */
+export const AUTH0_DB_CONNECTION = 'Username-Password-Authentication';

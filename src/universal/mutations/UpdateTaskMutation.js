@@ -52,7 +52,7 @@ export const updateTaskTaskUpdater = (payload, store, viewerId, options) => {
   }
 
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id');
-  handleRemoveNotifications(removedNotificationId);
+  handleRemoveNotifications(removedNotificationId, store, viewerId);
 
   const privatizedTaskId = payload.getValue('privatizedTaskId');
   const taskUserId = getInProxy(task, 'userId');

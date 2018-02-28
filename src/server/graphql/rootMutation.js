@@ -11,6 +11,7 @@ import archiveTeam from 'server/graphql/mutations/archiveTeam';
 import cancelApproval from 'server/graphql/mutations/cancelApproval';
 import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite';
 import clearNotification from 'server/graphql/mutations/clearNotification';
+import changeTaskTeam from 'server/graphql/mutations/changeTaskTeam';
 import connectSocket from 'server/graphql/mutations/connectSocket';
 import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue';
 import createTask from 'server/graphql/mutations/createTask';
@@ -81,6 +82,7 @@ export default new GraphQLObjectType({
     archiveTeam,
     cancelApproval,
     cancelTeamInvite,
+    changeTaskTeam,
     clearNotification,
     connectSocket,
     createImposterToken,

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "0.29.0",
+  "version": "0.29.1-1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -156,7 +156,7 @@
     "express-jwt": "5.3.0",
     "fbjs": "^0.8.14",
     "fetch-ponyfill": "^4.1.0",
-    "graphiql": "^0.11.2",
+    "graphiql": "^0.11.11",
     "graphql": "^0.12.3",
     "graphql-redis-subscriptions": "^1.2.0",
     "graphql-relay": "^0.5.2",
@@ -202,7 +202,7 @@
     "react-transition-group": "https://github.com/mattkrick/react-transition-group/tarball/a514cd964a9c67cf5ed122eeeaccc6e3ad4ec53b",
     "react-virtualized": "^9.10.1",
     "redux": "^3.7.2",
-    "redux-form": "^7.2.0",
+    "redux-form": "^7.2.3",
     "redux-logger": "^3.0.6",
     "redux-raven-middleware": "^1.2.0",
     "redux-segment": "^1.6.2",

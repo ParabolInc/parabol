@@ -55,7 +55,6 @@ class AddSoftTeamMember extends Component {
     submitMutation: PropTypes.func.isRequired,
     onCompleted: PropTypes.func.isRequired,
     onError: PropTypes.func.isRequired,
-    setAddSoftAsActive: PropTypes.func.isRequired,
     styles: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired
   };
@@ -139,8 +138,7 @@ class AddSoftTeamMember extends Component {
     const {
       isActive,
       error,
-      styles,
-      setAddSoftAsActive
+      styles
     } = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
     const inputStyles = css(styles.input, isActive && styles.inputActive);
@@ -154,7 +152,6 @@ class AddSoftTeamMember extends Component {
               aria-label={labelText}
               className={inputStyles}
               onChange={this.onChange}
-              onFocus={setAddSoftAsActive}
               placeholder="name@company.co"
               ref={(c) => { this.inputRef = c; }}
               value={inviteeEmail}
