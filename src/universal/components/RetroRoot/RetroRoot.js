@@ -33,7 +33,6 @@ const subscriptions = [
 
 const RetroRoot = ({atmosphere, match}) => {
   const {params: {localPhase, teamId}} = match;
-  console.log('match', match)
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

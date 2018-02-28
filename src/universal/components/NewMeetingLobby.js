@@ -3,10 +3,11 @@ import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import StartMeetingMutation from 'universal/mutations/StartMeetingMutation';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import {PRO} from 'universal/utils/constants';
 import styled from 'react-emotion';
+import LoadableModal from 'universal/components/LoadableModal';
+import GetRetroAccessLoadable from 'universal/components/GetRetroAccessLoadable';
 
 const TitleHeader = styled('h2')({
   textTransform: 'uppercase'
@@ -44,18 +45,24 @@ const NewMeetingLobby = (props) => {
       {!isPro && !meetingsOffered &&
       <GetAccessCopy>
         <span>{'As a free user, you can start running retrospectives immediately with your team'}</span>
-        <Button
-          aria-label="Get Access Now"
-          buttonSize="large"
-          buttonStyle="solid"
-          colorPalette="cool"
-          depth={1}
-          isBlock
-          label="GET ACCESS NOW"
-          textTransform="uppercase"
+        <LoadableModal
+          LoadableComponent={GetRetroAccessLoadable}
+          maxWidth={350}
+          maxHeight={225}
+          toggle={<Button
+            aria-label="Get Access Now"
+            buttonSize="large"
+            buttonStyle="solid"
+            colorPalette="cool"
+            depth={1}
+            isBlock
+            label="GET ACCESS NOW"
+            textTransform="uppercase"
+          />}
         />
       </GetAccessCopy>
       }
+
       <Button
         buttonStyle="solid"
         colorPalette="cool"
