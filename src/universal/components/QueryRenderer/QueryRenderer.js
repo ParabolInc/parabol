@@ -19,6 +19,7 @@ import type {DataFrom} from 'react-relay/lib/ReactRelayQueryFetcher';
 import type {
   CacheConfig,
   GraphQLTaggedNode,
+  GraphQLSubscriptionConfig,
   IEnvironment,
   RelayContext,
   Snapshot,
@@ -39,12 +40,16 @@ export type RenderProps = {
   retry: ?() => void,
 };
 
+type Subscription = (environment: IEnvironment, queryVariables: Variables, subParams?: Object) => GraphQLSubscriptionConfig;
+
 export type Props = {
   cacheConfig?: ?CacheConfig,
   dataFrom?: DataFrom,
   environment: IEnvironment,
   query: ?GraphQLTaggedNode,
   render: (renderProps: RenderProps) => React.Node,
+  subscriptions: Array<Subscription>,
+  subParams: Object,
   variables: Variables,
 };
 
@@ -53,6 +58,7 @@ type State = {
   prevPropsVariables: Variables,
   prevQuery: ?GraphQLTaggedNode,
   queryFetcher: ReactRelayQueryFetcher,
+  queryKey: string,
   relayContextEnvironment: IEnvironment,
   relayContextVariables: Variables,
   renderProps: RenderProps,
@@ -61,7 +67,7 @@ type State = {
 
 const MAX_INT = 2147483647;
 const makeQueryKey = (name, variables) => JSON.stringify({name, variables});
-const isCacheable = (subs, cacheConfig = {}) => Boolean(subs || cacheConfig.force === false || cacheConfig.ttl);
+const isCacheable = (subs, cacheConfig: CacheConfig = {}) => Boolean(subs || cacheConfig.force === false || cacheConfig.ttl);
 
 class SafeQueryFetcher extends ReactRelayQueryFetcher {
   readyToGC() {
@@ -144,7 +150,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
 
   static timeouts = {};
 
-  static renewTTL(queryKey) {
+  static renewTTL(queryKey: string) {
     clearTimeout(ReactRelayQueryRenderer.timeouts[queryKey]);
     delete ReactRelayQueryRenderer.timeouts[queryKey];
   }
@@ -190,9 +196,9 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
     };
   }
 
-  _requestRelease() {
-    const {environment, cacheConfig = {}} = this.props;
-    const {ttl} = cacheConfig;
+  _requestRelease(): void {
+    const {environment, cacheConfig} = this.props;
+    const {ttl} = cacheConfig || {};
     const {queryKey, queryFetcher} = this.state;
     if (queryFetcher.readyToGC()) {
       environment.unregisterQuery(queryKey);
@@ -202,7 +208,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
     }
   }
 
-  _scheduleRelease(ttl, queryKey) {
+  _scheduleRelease(ttl?: number, queryKey: string): void {
     if (ttl !== undefined && ttl <= MAX_INT) {
       const {timeouts} = ReactRelayQueryRenderer;
       timeouts[queryKey] = setTimeout(() => {
@@ -330,7 +336,7 @@ function fetchQueryAndComputeStateFromProps(
       };
     }
   } else {
-    this._requestRelease();
+    queryFetcher.dispose();
 
     return {
       relayContextEnvironment: environment,
