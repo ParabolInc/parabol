@@ -41,6 +41,14 @@ export const LAST_CALL = 'lastcall';
 export const SUMMARY = 'summary';
 export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
 
+/* Retrospective Phases */
+export const THINK = 'think';
+export const GROUP = 'group';
+export const VOTE = 'vote';
+export const DISCUSS = 'discuss';
+
+export const RETRO_PHASE_ITEM = 'retroPhaseItem';
+
 /* Columns */
 export const ACTIVE = 'active';
 export const STUCK = 'stuck';
