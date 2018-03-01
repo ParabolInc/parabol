@@ -67,7 +67,7 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     flex: 1,
     fontSize: appTheme.typography.sBase,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.25',
     textAlign: 'right'
   },

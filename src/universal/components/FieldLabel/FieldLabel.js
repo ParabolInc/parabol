@@ -43,7 +43,7 @@ const styleThunk = (theme, {customStyles, fieldSize, indent, inline}) => {
       color: appTheme.palette.dark,
       display: 'block',
       fontSize: appTheme.typography.sBase,
-      fontWeight: 700,
+      fontWeight: 600,
       lineHeight: appTheme.typography.s5,
       padding: 0,
       // 1. Line up controls when inline

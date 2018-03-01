@@ -79,7 +79,7 @@ const styleThunk = (customTheme, props) => ({
   label: {
     display: 'inline-block',
     fontSize: props.fontSize || appTheme.typography.s3,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: props.lineHeight || appTheme.typography.s5,
     verticalAlign: 'middle'
   }

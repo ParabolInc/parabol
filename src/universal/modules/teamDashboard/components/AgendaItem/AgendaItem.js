@@ -187,7 +187,7 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s3,
     flex: 1,
     fontStyle: 'italic',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight,
     position: 'relative',
     wordBreak: 'break-word',
@@ -238,7 +238,7 @@ const styleThunk = () => ({
   },
 
   index: {
-    fontWeight: 700,
+    fontWeight: 600,
     height: '1.5rem',
     lineHeight,
     paddingRight: '.75rem',

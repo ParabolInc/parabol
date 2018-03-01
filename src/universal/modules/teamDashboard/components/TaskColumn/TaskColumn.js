@@ -300,7 +300,7 @@ const styleThunk = () => ({
   },
 
   statusLabel: {
-    fontWeight: 700,
+    fontWeight: 600,
     paddingTop: 2,
     textTransform: 'uppercase'
   },

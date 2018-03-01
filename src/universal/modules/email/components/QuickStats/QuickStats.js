@@ -41,7 +41,7 @@ const QuickStats = (props) => {
   const statLabel = {
     ...typeStyles,
     fontSize: '10px',
-    fontWeight: 700,
+    fontWeight: 600,
     textTransform: 'uppercase'
   };
 

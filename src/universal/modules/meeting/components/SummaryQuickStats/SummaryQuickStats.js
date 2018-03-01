@@ -81,7 +81,7 @@ const styleThunk = () => ({
     backgroundColor: '#fff',
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s5,
     padding: '1.25rem .75rem',
     position: 'relative',
@@ -101,7 +101,7 @@ const styleThunk = () => ({
   label: {
     ...ib,
     fontSize: appTheme.typography.s3,
-    fontWeight: 700,
+    fontWeight: 600,
     marginLeft: '.25rem'
   },
 

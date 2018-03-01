@@ -139,7 +139,7 @@ const styleThunk = () => ({
   contactLink: {
     display: 'block',
     fontSize: 0,
-    fontWeight: 700
+    fontWeight: 600
   },
 
   contactLinkLabel: {

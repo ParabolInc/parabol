@@ -66,7 +66,7 @@ const styleThunk = (theme, props) => ({
     display: 'flex',
     flexDirection: 'column',
     fontSize: appTheme.typography.s3,
-    fontWeight: 700,
+    fontWeight: 600,
     height: props.size,
     justifyContent: 'center',
     left: props.hasPanel ? '-1px' : 0,

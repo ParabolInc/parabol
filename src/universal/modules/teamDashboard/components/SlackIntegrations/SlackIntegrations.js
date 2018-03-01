@@ -184,7 +184,7 @@ const styleThunk = () => ({
   channelName: {
     color: ui.palette.cool,
     fontSize: appTheme.typography.s3,
-    fontWeight: 700
+    fontWeight: 600
   }
 });
 

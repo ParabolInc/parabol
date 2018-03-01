@@ -103,7 +103,7 @@ const styleThunk = () => ({
   prompt: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s5,
-    fontWeight: 700,
+    fontWeight: 600,
     margin: '2rem 0'
   },
 
@@ -116,7 +116,7 @@ const styleThunk = () => ({
   label: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s3,
-    fontWeight: 700,
+    fontWeight: 600,
     margin: '4rem 0 0',
     textTransform: 'uppercase'
   },

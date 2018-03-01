@@ -17,12 +17,12 @@ const ContactUs = (props) => {
   const headingStyle = {
     color: appTheme.palette.cool,
     fontSize: `${props.fontSize * 1.5}px`,
-    fontWeight: 700
+    fontWeight: 600
   };
 
   const linkStyle = {
     color: appTheme.palette.warm,
-    fontWeight: 700,
+    fontWeight: 600,
     textDecoration: 'none'
   };
 

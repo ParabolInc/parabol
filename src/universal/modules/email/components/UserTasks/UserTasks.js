@@ -28,7 +28,7 @@ const UserTasks = (props) => {
     display: 'inline-block',
     fontFamily: ui.emailFontFamily,
     fontSize: '14px',
-    fontWeight: 700,
+    fontWeight: 600,
     verticalAlign: 'middle'
   };
 
@@ -54,7 +54,7 @@ const UserTasks = (props) => {
     fontFamily: ui.emailFontFamily,
     fontSize: '14px',
     fontStyle: 'italic',
-    fontWeight: 700,
+    fontWeight: 600,
     padding: '0 0 8px'
   };
 

@@ -211,7 +211,7 @@ const styleThunk = () => ({
     fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.5rem',
     margin: 0,
     outline: 'none',

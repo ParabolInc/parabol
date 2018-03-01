@@ -206,7 +206,7 @@ const styleThunk = () => ({
 
   navListItem: {
     fontSize: 0,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '2.5rem'
   },
 
@@ -302,7 +302,7 @@ const styleThunk = () => ({
     fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s5,
     fontStyle: 'italic',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.5'
   }
 });

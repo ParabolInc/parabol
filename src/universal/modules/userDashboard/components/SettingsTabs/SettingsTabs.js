@@ -71,7 +71,7 @@
 //     bottom: 0,
 //     color: 'white',
 //     fontSize: '14px',
-//     fontWeight: 700,
+//     fontWeight: 600,
 //     height: '16px',
 //     cursor: 'default',
 //     position: 'absolute',

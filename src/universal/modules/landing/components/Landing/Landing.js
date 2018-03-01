@@ -271,7 +271,7 @@ const styleThunk = () => ({
 
   mainHeading: {
     fontSize: '1.75rem',
-    fontWeight: 700,
+    fontWeight: 600,
     margin: '0 0 .25em',
     textShadow,
 
@@ -286,7 +286,7 @@ const styleThunk = () => ({
 
   mainSubheading: {
     fontSize: '1rem',
-    fontWeight: 700,
+    fontWeight: 600,
     margin: '0 auto 1rem',
     maxWidth: '52rem',
     textShadow,
@@ -319,7 +319,7 @@ const styleThunk = () => ({
   sectionHeading: {
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s6,
-    fontWeight: 700,
+    fontWeight: 600,
     margin: '0 0 2rem',
     textTransform: 'uppercase',
 
@@ -382,7 +382,7 @@ const styleThunk = () => ({
     borderRadius: '100%',
     color: '#fff',
     fontSize: appTheme.typography.s6,
-    fontWeight: 700,
+    fontWeight: 600,
     height: '2rem',
     left: '50%',
     lineHeight: '2rem',
@@ -417,7 +417,7 @@ const styleThunk = () => ({
   cardCopy: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.sBase,
-    fontWeight: 700,
+    fontWeight: 600,
 
     [cardBreakpoint]: {
       fontSize: appTheme.typography.s5
@@ -460,7 +460,7 @@ const styleThunk = () => ({
     backgroundColor: appTheme.palette.dark,
     color: '#fff',
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.5',
     paddingBottom: '1rem',
     textAlign: 'center',
@@ -489,7 +489,7 @@ const styleThunk = () => ({
 
   footerLink: {
     color: 'inherit',
-    fontWeight: 700,
+    fontWeight: 600,
 
     // NOTE: Same styles for both :hover, :focus
     ':hover': {

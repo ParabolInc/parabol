@@ -121,7 +121,7 @@ const styleThunk = () => ({
   copy: {
     color: ui.palette.dark,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s5,
     margin: '1rem 0 .5rem'
   },
@@ -139,7 +139,7 @@ const styleThunk = () => ({
     borderRadius: ui.borderRadiusSmall,
     color: appTheme.palette.cool,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '2rem',
     margin: '0 1rem',
     textAlign: 'center'

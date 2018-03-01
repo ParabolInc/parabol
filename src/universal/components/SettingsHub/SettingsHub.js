@@ -87,7 +87,7 @@
 //   linkLabel: {
 //     display: 'inline-block',
 //     fontSize: appTheme.typography.s3,
-//     fontWeight: 700,
+//     fontWeight: 600,
 //     verticalAlign: 'middle'
 //   },
 //

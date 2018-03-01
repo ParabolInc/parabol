@@ -113,7 +113,7 @@ const styleThunk = () => ({
     borderTop: '1px solid rgba(255, 255, 255, .5)',
     cursor: 'default',
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     marginLeft: '1rem',
     padding: '1rem 0',
     textTransform: 'uppercase'
@@ -155,7 +155,7 @@ const styleThunk = () => ({
 
   addTeamLabel: {
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s4,
     padding: '.4375rem .5rem .4375rem 1rem',
     textTransform: 'uppercase'

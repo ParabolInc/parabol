@@ -174,7 +174,7 @@ const styleThunk = () => ({
 
   nameWithOwner: {
     color: ui.palette.cool,
-    fontWeight: 700
+    fontWeight: 600
   }
 });
 

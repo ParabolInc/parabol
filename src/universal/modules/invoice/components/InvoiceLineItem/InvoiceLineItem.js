@@ -119,7 +119,7 @@ const styleThunk = () => ({
     color: appTheme.palette.cool,
     cursor: 'pointer',
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s5,
     textTransform: 'uppercase'
   },

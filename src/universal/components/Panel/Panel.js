@@ -99,7 +99,7 @@ const styleThunk = (theme, {bgTheme, compact, depth}) => ({
 
   label: {
     color: appTheme.palette.dark,
-    fontWeight: 700,
+    fontWeight: 600,
     padding: `.75rem ${compact ? ui.panelCompactGutter : ui.panelGutter}`,
     textTransform: 'uppercase'
   },

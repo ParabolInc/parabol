@@ -171,7 +171,7 @@ const ui = {
     cursor: 'pointer',
     display: 'inline-block',
     fontFamily: appTheme.typography.sansSerif,
-    fontWeight: 700,
+    fontWeight: 600,
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
@@ -288,7 +288,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
-  emailFontFamily: '"Karla", -apple-system, BlinkMacSystemFont, Roboto, “Helvetica Neue”, Arial, sans-serif',
+  emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, “Helvetica Neue”, Arial, sans-serif',
   emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
     borderCollapse: 'collapse',
@@ -527,7 +527,7 @@ const ui = {
   // Tags
   // ---------------------------------------------------------------------------
   tagFontSize: '.75rem',
-  tagFontWeight: 700,
+  tagFontWeight: 600,
   tagGutter: '.75rem',
   tagHeight: '1rem',
   tagPadding: '0 .5rem',
