@@ -16,14 +16,8 @@ class Modal extends Component {
     isOpen: PropTypes.bool
   };
 
-  constructor(props) {
-    super(props);
-    this.el = document.createElement('div');
-    this.el.id = 'portal';
-  }
-
   componentWillMount() {
-    if (this.isOpen) {
+    if (this.props.isOpen) {
       this.setup();
     }
   }
@@ -43,6 +37,8 @@ class Modal extends Component {
   }
 
   setup() {
+    this.el = document.createElement('div');
+    this.el.id = 'portal';
     this.setState({
       isOpen: true
     });
@@ -58,10 +54,12 @@ class Modal extends Component {
   }
 
   teardown() {
-    document.body.removeChild(this.el);
-    document.removeEventListener('click', this.handleDocumentClick);
-    document.removeEventListener('touchstart', this.handleDocumentClick);
-    document.removeEventListener('keydown', this.handleKeydown);
+    if (this.el) {
+      document.body.removeChild(this.el);
+      document.removeEventListener('click', this.handleDocumentClick);
+      document.removeEventListener('touchstart', this.handleDocumentClick);
+      document.removeEventListener('keydown', this.handleKeydown);
+    }
   }
 
   handleKeydown = (e) => {
