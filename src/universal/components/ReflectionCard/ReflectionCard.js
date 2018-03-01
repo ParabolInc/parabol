@@ -15,6 +15,8 @@ import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/Re
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
 
+type Stage = 'positive' | 'negative' | 'change';
+
 type Props = {
   // The draft-js content for this card
   contentState: ContentState,
@@ -23,7 +25,7 @@ type Props = {
   // The action to take when this card is saved
   handleSave?: (editorState: EditorState) => any,
   // The stage of the meeting this was created during
-  stage?: 'positive' | 'negative' | 'change'
+  stage?: Stage
 };
 
 type State = {
@@ -50,6 +52,12 @@ const StageLabel = styled('div')({
   color: appTheme.palette.mid,
   padding: '0.4rem 0.8rem'
 });
+
+const stageDisplayNames = {
+  positive: "What's working?",
+  negative: 'Where did you get stuck?',
+  change: 'What might we do differently next time?'
+};
 
 export default class ReflectionCard extends Component<Props, State> {
   constructor(props: Props) {
@@ -141,7 +149,7 @@ export default class ReflectionCard extends Component<Props, State> {
           {this.renderCardContent()}
         </ReflectionCardMain>
         {canDelete && this.renderDelete()}
-        {stage && <StageLabel>{stage.toUpperCase()}</StageLabel>}
+        {stage && <StageLabel>{stageDisplayNames[stage]}</StageLabel>}
       </ReflectionCardWrapper>
     );
   }
