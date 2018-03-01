@@ -19,7 +19,7 @@ class AnimatedFade extends Component {
     const enterActive = css({
       opacity: '1 !important',
       transform: 'translate3d(0, 0, 0) !important',
-      transition: `all ${duration}ms ease-in !important`,
+      transition: `all ${duration}ms ease-in !important`
     });
 
     const exit = css({

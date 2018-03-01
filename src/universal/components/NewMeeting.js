@@ -58,7 +58,7 @@ class NewMeeting extends Component {
             />
           </MeetingAreaHeader>
           <Switch>
-            <Route path="/retro/:teamId" render={() => <NewMeetingLobby team={team}/>}/>
+            <Route path="/retro/:teamId" render={() => <NewMeetingLobby team={team} />} />
           </Switch>
         </MeetingArea>
       </MeetingContainer>

@@ -10,7 +10,7 @@ const ModalBoundary = styled('div')({
 const GetRetroAccess = (props) => {
   return (
     <ModalBoundary>Pay me now</ModalBoundary>
-  )
+  );
 };
 
 export default GetRetroAccess;

@@ -31,7 +31,7 @@ export const newMeetingFields = () => ({
     description: 'The auto-incrementing meeting number for the team'
   },
   stages: {
-    type: new GraphQLList(NewMeetingStage),
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingStage))),
     description: 'The stages that make up the meeting'
   },
   summarySentAt: {

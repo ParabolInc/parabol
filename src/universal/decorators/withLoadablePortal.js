@@ -24,7 +24,8 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
       maxHeight: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
-      ])
+      ]),
+      setOriginCoords: PropTypes.func
     };
     state = {
       isOpen: false,
@@ -52,7 +53,7 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
       this.setState({
         isOpen: true,
         isClosing: false
-      })
+      });
     };
 
     closePortal = (e) => {
@@ -96,7 +97,7 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
           if (this.state.isOpen) {
             this.closePortal();
           } else {
-            this.openPortal()
+            this.openPortal();
           }
           // if the modal was gonna do something, do it
           const {onClick} = toggle.props;
@@ -120,7 +121,12 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
         <React.Fragment>
           {this.smartToggle}
           <Modal clickToClose escToClose onClose={this.closePortal} isOpen={isOpen}>
-            <ComposedComponent isClosing={isClosing} closePortal={this.closePortal} terminatePortal={this.terminatePortal} {...this.props} />
+            <ComposedComponent
+              {...this.props}
+              isClosing={isClosing}
+              closePortal={this.closePortal}
+              terminatePortal={this.terminatePortal}
+            />
           </Modal>
         </React.Fragment>
       );

@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
@@ -8,6 +9,9 @@ import ui from 'universal/styles/ui';
 import makeHref from 'universal/utils/makeHref';
 import styled from 'react-emotion';
 import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList';
+
+import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
+import type {NewMeetingSidebar_viewer as Viewer} from './__generated__/NewMeetingSidebar_viewer.graphql';
 
 const BrandLogo = styled('img')({
   display: 'block',
@@ -42,7 +46,7 @@ const ShortUrl = styled('a')({
   '&:hover,:focus': {
     color: appTheme.palette.dark
   }
-})
+});
 
 const SidebarHeader = styled('div')({
   paddingLeft: '3.75rem',
@@ -69,7 +73,11 @@ const TeamDashboardLink = styled(Link)({
   lineHeight: '1.5'
 });
 
-const NewMeetingSidebar = (props) => {
+type Props = {
+  localPhase: NewMeetingPhaseTypeEnum,
+  viewer: Viewer
+}
+const NewMeetingSidebar = (props: Props) => {
   const {
     localPhase,
     viewer

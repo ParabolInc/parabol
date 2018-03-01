@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -12,6 +13,9 @@ import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscripti
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import NewMeeting from 'universal/components/NewMeeting';
+import {graphql} from 'react-relay';
+
+import type {Match} from 'react-router-dom';
 
 const query = graphql`
   query RetroRootQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
@@ -22,7 +26,6 @@ const query = graphql`
 `;
 
 const subscriptions = [
-  // AgendaItemSubscription,
   NewAuthTokenSubscription,
   NotificationSubscription,
   OrganizationSubscription,
@@ -31,7 +34,12 @@ const subscriptions = [
   TeamSubscription
 ];
 
-const RetroRoot = ({atmosphere, match}) => {
+type Props = {
+  atmosphere: Object,
+  match: Match
+};
+
+const RetroRoot = ({atmosphere, match}: Props) => {
   const {params: {localPhase, teamId}} = match;
   return (
     <QueryRenderer

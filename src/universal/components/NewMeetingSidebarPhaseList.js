@@ -1,26 +1,16 @@
 // @flow
 import React from 'react';
-import {
-  AGENDA_ITEMS,
-  CHECKIN,
-  DISCUSS,
-  FIRST_CALL,
-  GROUP,
-  LAST_CALL,
-  LOBBY,
-  SUMMARY,
-  THINK,
-  UPDATES,
-  VOTE
-} from 'universal/utils/constants';
+import {LOBBY} from 'universal/utils/constants';
 import styled from 'react-emotion';
 import romanNumeral from 'roman-numeral';
 import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSidebarPhaseListItem';
-import {createFragmentContainer} from 'react-relay';
+import {createFragmentContainer, graphql} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {phaseLabelLookup, phasesToExclude, phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups';
 
+import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
+import type {NewMeetingSidebarPhaseList_viewer as Viewer} from './__generated__/NewMeetingSidebarPhaseList_viewer.graphql';
 
 const NavList = styled('ul')({
   listStyle: 'none',
@@ -39,9 +29,16 @@ const isNavigable = (group, stages, isFacilitator) => {
   return firstStageIdxInGroup <= nextStageIdxInGroup;
 };
 
-const NewMeetingSidebarPhaseList = (props) => {
+type Props = {
+  atmosphere: Object,
+  localPhase: NewMeetingPhaseTypeEnum,
+  viewer: Viewer
+}
+
+const NewMeetingSidebarPhaseList = (props: Props) => {
   const {atmosphere: {viewerId}, localPhase, viewer: {team: {meetingSettings: {phases}, newMeeting}}} = props;
-  const {facilitatorUserId, stages = []} = newMeeting || {};
+  const {facilitatorUserId} = newMeeting || {};
+  const stages = newMeeting && newMeeting.stages || [];
   const localGroup = phaseTypeToPhaseGroup[localPhase];
   const facilitatorStage = stages.find((stage) => stage.isFacilitatorStage);
   const facilitatorPhaseGroup = facilitatorStage ? phaseTypeToPhaseGroup[facilitatorStage.type] : LOBBY;
@@ -51,18 +48,18 @@ const NewMeetingSidebarPhaseList = (props) => {
       {phases
         .filter((phase) => !phasesToExclude.includes(phase))
         .map((name, idx) => {
-        return (<NewMeetingSidebarPhaseListItem
-          key={name}
-          name={phaseLabelLookup[name]}
-          listPrefix={`${romanNumeral.convert(idx + 1)}.`}
-          isActive={localGroup === name}
-          isFacilitatorPhaseGroup={facilitatorPhaseGroup === name}
-          isNavigable={isNavigable(name, stages, isFacilitator)}
-          handleClick={() => {}}
-        />)
-      })}
+          return (<NewMeetingSidebarPhaseListItem
+            key={name}
+            name={phaseLabelLookup[name]}
+            listPrefix={`${romanNumeral.convert(idx + 1)}.`}
+            isActive={localGroup === name}
+            isFacilitatorPhaseGroup={facilitatorPhaseGroup === name}
+            isNavigable={isNavigable(name, stages, isFacilitator)}
+            handleClick={() => {}}
+          />);
+        })}
     </NavList>
-  )
+  );
 };
 
 export default createFragmentContainer(
@@ -77,6 +74,7 @@ export default createFragmentContainer(
           facilitatorUserId
           stages {
             isComplete
+            isFacilitatorStage
             type
           }
         }

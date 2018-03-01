@@ -34,7 +34,7 @@ const Team = new GraphQLObjectType({
   description: 'A team',
   fields: () => ({
     id: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'A shortid for the team'
     },
     createdAt: {
@@ -53,7 +53,10 @@ const Team = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The current or most recent meeting number (also the number of meetings the team has had'
     },
-    name: {type: GraphQLString, description: 'The name of the team'},
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The name of the team'
+    },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The organization to which the team belongs'
@@ -119,7 +122,7 @@ const Team = new GraphQLObjectType({
       description: 'The current item number for the current phase for the meeting, 1-indexed'
     },
     meetingSettings: {
-      type: TeamMeetingSettings,
+      type: new GraphQLNonNull(TeamMeetingSettings),
       args: {
         meetingType: {
           type: new GraphQLNonNull(MeetingTypeEnum),

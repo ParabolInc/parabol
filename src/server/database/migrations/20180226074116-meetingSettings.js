@@ -25,7 +25,7 @@ exports.up = async (r) => {
   }
   try {
     await Promise.all([
-      r.table('MeetingSettings').indexCreate('teamId'),
+      r.table('MeetingSettings').indexCreate('teamId')
     ]);
   } catch (e) {
     // noop
@@ -39,13 +39,13 @@ exports.up = async (r) => {
           id: shortid.generate(),
           meetingType: RETROSPECTIVE,
           teamId,
-          phases: [LOBBY, CHECKIN, THINK, GROUP, VOTE, DISCUSS, SUMMARY],
+          phases: [LOBBY, CHECKIN, THINK, GROUP, VOTE, DISCUSS, SUMMARY]
         },
         {
           id: shortid.generate(),
           meetingType: ACTION,
           teamId,
-          phases: [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY],
+          phases: [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY]
         },
       );
     });
@@ -58,7 +58,7 @@ exports.up = async (r) => {
 exports.down = async (r) => {
   try {
     await Promise.all([
-      r.tableDrop('MeetingSettings'),
+      r.tableDrop('MeetingSettings')
     ]);
   } catch (e) {
     // noop

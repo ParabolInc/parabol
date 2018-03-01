@@ -231,6 +231,7 @@
     "node": "^8.0.0 || ^9.4.0",
     "yarn": "^1.0.1"
   },
+  "eslintIgnore": ["schema.flow.js"],
   "jest": {
     "modulePaths": [
       "<rootDir>/src/"

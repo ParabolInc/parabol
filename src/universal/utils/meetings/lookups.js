@@ -21,7 +21,7 @@ export const phaseTypeToPhaseGroup = {
 /* These are excluded from the sidebar */
 export const phasesToExclude = [LOBBY, SUMMARY];
 
-/* These are the labels show to the viewer*/
+/* These are the labels show to the viewer */
 export const phaseLabelLookup = {
   [CHECKIN]: 'Social Check-In',
   [THINK]: 'Reflect',

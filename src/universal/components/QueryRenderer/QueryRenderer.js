@@ -49,7 +49,7 @@ export type Props = {
   query: ?GraphQLTaggedNode,
   render: (renderProps: RenderProps) => React.Node,
   subscriptions: Array<Subscription>,
-  subParams: Object,
+  subParams?: Object,
   variables: Variables,
 };
 

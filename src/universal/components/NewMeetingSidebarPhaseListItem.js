@@ -63,11 +63,16 @@ const GroupLabel = styled('span')({
   verticalAlign: 'middle'
 });
 
-// type Props = {
-//   name:
-// }
+type Props = {
+  handleClick: () => void,
+  name: string,
+  listPrefix: string,
+  isActive: boolean,
+  isFacilitatorPhaseGroup: boolean,
+  isNavigable: boolean
+};
 
-const NewMeetingSidebarPhaseListItem = (props) => {
+const NewMeetingSidebarPhaseListItem = (props: Props) => {
   const {handleClick, name, listPrefix, isActive, isFacilitatorPhaseGroup, isNavigable} = props;
   return (
     <li className={cx(navListItem, isFacilitatorPhaseGroup && facilitatorActiveNavListItem)}>
@@ -80,7 +85,7 @@ const NewMeetingSidebarPhaseListItem = (props) => {
         <GroupLabel>{name}</GroupLabel>
       </div>
     </li>
-  )
+  );
 };
 
 export default NewMeetingSidebarPhaseListItem;

@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLList, GraphQLObjectType} from 'graphql';
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
 import Team from 'server/graphql/types/Team';
 import {resolveTeam} from 'server/graphql/resolvers';
@@ -22,7 +22,7 @@ const TeamMeetingSettings = new GraphQLObjectType({
     },
     phases: {
       description: 'The broad phase types that will be addressed during the meeting',
-      type: new GraphQLList(NewMeetingPhaseTypeEnum)
+      type: new GraphQLNonNull(new GraphQLList(NewMeetingPhaseTypeEnum))
     },
     team: {
       description: 'The team these settings belong to',
