@@ -24,20 +24,9 @@ const FullPageWrapper = styled('div')({
   width: '100vw'
 });
 
-// const addFontAwesome = () => {
-//   const linkTag = document.createElement('link');
-//   linkTag.rel = 'stylesheet';
-//   linkTag.type = 'text/css';
-//   linkTag.href = '/static/css/font-awesome.css';
-//   if (document.head) {
-//     document.head.appendChild(linkTag);
-//   }
-// };
-
 export default class StoryContainer extends Component<Props> {
   componentWillMount() {
     injectGlobals(globalStyles);
-    // addFontAwesome();
   }
 
   render() {

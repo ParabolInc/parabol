@@ -4,7 +4,7 @@
  * @flow
  */
 
-import React from 'react';
+import React, {Component} from 'react';
 import styled from 'react-emotion';
 import FontAwesome from 'react-fontawesome';
 import {action} from '@storybook/addon-actions';
@@ -18,6 +18,10 @@ import StoryContainer from './components/StoryContainer';
 type Props = {
   contents: string,
   handleDelete: () => any
+};
+
+type State = {
+  hovering: boolean
 };
 
 const RetroBackground = styled('div')({
@@ -52,17 +56,29 @@ const DeleteButton = styled(PlainButton)({
   zIndex: 1
 });
 
-const RetroCard = ({contents, handleDelete}: Props) => {
-  const placeholder = 'My reflection thought...';
-  return (
-    <RetroCardWrapper>
-      <DeleteButton aria-label="Delete this reflection" onClick={handleDelete}>
-        <FontAwesome name="times-circle" />
-      </DeleteButton>
-      <RetroCardText>{contents || placeholder}</RetroCardText>
-    </RetroCardWrapper>
-  );
-};
+class RetroCard extends Component<Props, State> {
+  state = {
+    hovering: false
+  };
+
+  setHovering = (hovering) => () => {
+    this.setState({hovering});
+  };
+
+  render() {
+    const {contents, handleDelete} = this.props;
+    const {hovering} = this.state;
+    const placeholder = 'My reflection thought...';
+    return (
+      <RetroCardWrapper onMouseEnter={this.setHovering(true)} onMouseLeave={this.setHovering(false)}>
+        <DeleteButton aria-label="Delete this reflection" onClick={handleDelete}>
+          {hovering && <FontAwesome name="times-circle" />}
+        </DeleteButton>
+        <RetroCardText>{contents || placeholder}</RetroCardText>
+      </RetroCardWrapper>
+    );
+  }
+}
 
 // STORIES
 
