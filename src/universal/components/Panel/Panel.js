@@ -78,14 +78,14 @@ const styleThunk = (theme, {bgTheme, compact, depth}) => ({
     fontSize: appTheme.typography.s3,
     lineHeight: appTheme.typography.s5,
     margin: `${ui.panelMarginVertical} 0`,
-    paddingTop: '.1875rem',
+    // paddingTop: '.1875rem',
     position: 'relative',
-    width: '100%',
+    width: '100%'
 
-    '::after': {
-      ...cardBorderTop,
-      color: appTheme.palette.mid40l
-    }
+    // '::after': {
+    //   ...cardBorderTop,
+    //   color: appTheme.palette.mid40l
+    // }
   },
 
   depth: {

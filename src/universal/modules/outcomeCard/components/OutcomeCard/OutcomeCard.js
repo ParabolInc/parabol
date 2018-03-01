@@ -54,18 +54,23 @@ const OutcomeCard = (props) => {
   );
   const {integration, taskId} = task;
   const {service} = integration || {};
+  const statusTitle = `Card status: ${status}`;
+  const privateTitle = ', marked as #private';
+  const statusIndicatorTitle = isPrivate ? `${statusTitle}${privateTitle}` : statusTitle;
   return (
     <div className={rootStyles}>
       <TaskWatermark service={service} />
       <div className={css(styles.contentBlock)}>
-        <div className={css(styles.statusIndicatorBlock)}>
-          <OutcomeCardStatusIndicator status={status} />
-          {isPrivate && <OutcomeCardStatusIndicator status="private" />}
+        <div className={css(styles.cardTopMeta)}>
+          <div className={css(styles.statusIndicatorBlock)} title={statusIndicatorTitle}>
+            <OutcomeCardStatusIndicator status={status} />
+            {isPrivate && <OutcomeCardStatusIndicator status="private" />}
+          </div>
+          <EditingStatusContainer
+            isEditing={isEditing}
+            task={task}
+          />
         </div>
-        <EditingStatusContainer
-          isEditing={isEditing}
-          task={task}
-        />
         <TaskEditor
           editorRef={editorRef}
           editorState={editorState}
@@ -178,6 +183,12 @@ const styleThunk = () => ({
   //     color: labels.archived.color
   //   }
   // },
+
+  cardTopMeta: {
+    // display: 'flex',
+    // justifyContent: 'space-between'
+    paddingBottom: '.5rem'
+  },
 
   statusIndicatorBlock: {
     display: 'flex',

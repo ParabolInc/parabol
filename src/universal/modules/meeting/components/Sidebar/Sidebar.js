@@ -8,7 +8,7 @@ import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
-import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
+import logoMark from 'universal/styles/theme/images/brand/mark-primary.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, phaseArray, SUMMARY, UPDATES} from 'universal/utils/constants';
@@ -65,9 +65,6 @@ const Sidebar = (props) => {
   return (
     <div className={css(styles.sidebar)}>
       <div className={css(styles.sidebarHeader)}>
-        <div className={css(styles.brandBlock)}>
-          <img className={css(styles.brandLogo)} src={actionUIMark} />
-        </div>
         <Link
           className={css(styles.teamName)}
           to={`/team/${teamId}`}
@@ -140,6 +137,9 @@ const Sidebar = (props) => {
         </div>
         }
       </nav>
+      <div className={css(styles.brand)}>
+        <img className={css(styles.logo)} src={logoMark} />
+      </div>
     </div>
   );
 };
@@ -161,18 +161,15 @@ Sidebar.propTypes = {
 };
 
 const styleThunk = () => ({
-  brandLogo: {
-    display: 'block',
-    height: 'auto',
-    width: '100%'
+  logo: {
+    display: 'inline-block',
+    verticalAlign: 'top'
   },
 
-  brandBlock: {
-    display: 'block',
-    height: 'auto',
-    left: '1rem',
-    position: 'absolute',
-    width: '1.9375rem'
+  brand: {
+    fontSize: 0,
+    padding: '.75rem',
+    textAlign: 'center'
   },
 
   bullet: {

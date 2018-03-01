@@ -16,7 +16,8 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const iconStyle = {
-  color: appTheme.palette.dark,
+  // color: appTheme.palette.dark,
+  color: appTheme.palette.warm70l,
   display: 'block',
   fontSize: ui.iconSize2x,
   height: ui.iconSize2x,
@@ -25,7 +26,7 @@ const iconStyle = {
   pointerEvents: 'none',
   position: 'absolute',
   textAlign: 'right',
-  top: '.5rem',
+  top: '.4375rem',
   width: ui.iconSize2x,
   zIndex: 200
 };
@@ -117,7 +118,7 @@ class AgendaInputField extends Component {
           ref={this.innerRef}
           type="text"
         />
-        <FontAwesome name="plus-square-o" style={iconStyle} />
+        <FontAwesome name="plus-circle" style={iconStyle} />
       </form>
     );
   };
@@ -177,11 +178,17 @@ class AgendaInputField extends Component {
   }
 }
 
-const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.mid60l);
+// const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.mid60l);
+const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.warm);
+
+// const inputCustomStyles = {
+//   focus: {backgroundColor: appTheme.palette.light70l},
+//   active: {backgroundColor: appTheme.palette.light70l}
+// };
 
 const inputCustomStyles = {
-  focus: {backgroundColor: appTheme.palette.light70l},
-  active: {backgroundColor: appTheme.palette.light70l}
+  focus: {backgroundColor: ui.backgroundColor},
+  active: {backgroundColor: ui.backgroundColor}
 };
 
 const styleThunk = () => ({
@@ -202,16 +209,20 @@ const styleThunk = () => ({
   },
 
   input: {
+    // appearance: 'none',
+    // border: 0,
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
-    backgroundColor: 'transparent',
-    color: appTheme.palette.dark10d,
+    // backgroundColor: 'transparent',
+    // color: appTheme.palette.dark10d,
+
+    boxShadow: 'none',
+
+    color: appTheme.palette.warm,
     cursor: 'not-allowed',
     display: 'block',
-    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
-    fontStyle: 'italic',
-    fontWeight: 600,
+    fontWeight: 400,
     lineHeight: '1.5rem',
     margin: 0,
     outline: 'none',
@@ -220,13 +231,14 @@ const styleThunk = () => ({
     textIndent: '.1875rem',
     width: '100%',
     zIndex: 200,
-    ...makeFieldColorPalette('white', false),
+    ...makeFieldColorPalette('primary', false),
     ...inputPlaceholderStyles
   },
 
   inputNotDisabled: {
     cursor: 'text',
-    ...makeFieldColorPalette('white', true, inputCustomStyles)
+    // ...makeFieldColorPalette('primary', true, inputCustomStyles)
+    ...makeFieldColorPalette('primary', true)
   }
 });
 

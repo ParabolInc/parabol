@@ -199,6 +199,7 @@ class TaskColumn extends Component {
     return (
       <div className={columnStyles}>
         <div className={css(styles.columnHeader)}>
+          {this.makeAddTask()}
           <div className={css(styles.statusLabelBlock)}>
             <span className={css(styles.statusLabel)}>
               {label}
@@ -209,7 +210,6 @@ class TaskColumn extends Component {
             </span>
             }
           </div>
-          {this.makeAddTask()}
         </div>
         <div className={css(styles.columnBody)}>
           <ScrollZone className={css(styles.columnInner)}>
@@ -259,7 +259,7 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
-    padding: '.5rem 1rem',
+    padding: '.625rem 1rem .5rem',
     position: 'relative'
   },
 
@@ -273,7 +273,7 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    padding: '0 1rem',
+    padding: '.125rem 1rem 0',
     position: 'absolute',
     width: '100%'
   },
@@ -291,6 +291,7 @@ const styleThunk = () => ({
   },
 
   tasksCount: {
+    color: appTheme.palette.dark40a,
     marginLeft: '.5rem'
   }
 });

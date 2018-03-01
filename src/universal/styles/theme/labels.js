@@ -51,7 +51,7 @@ const labels = {
       slug: FUTURE
     },
     ...ARCHIVED,
-    ['private']: {
+    private: {
       color: stateColor.private,
       icon: 'clock-o',
       label: 'Future',

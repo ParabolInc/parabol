@@ -43,7 +43,7 @@ const MeetingAgendaLastCall = (props) => {
               marginBottom="2.5rem"
               marginTop=".5rem"
               scale="s5"
-              colorPalette="black"
+              colorPalette="dark"
             >
               <span>
                 {`Looks like you didn’t process any ${labelAgendaItems}.`}
@@ -55,11 +55,10 @@ const MeetingAgendaLastCall = (props) => {
             </Type> :
             <Type
               align="center"
-              bold
               marginBottom="2.5rem"
               marginTop=".5rem"
               scale="s5"
-              colorPalette="black"
+              colorPalette="dark"
             >
               {'We’ve worked on '}
               <span className={css(styles.highlight)}>
@@ -107,7 +106,7 @@ MeetingAgendaLastCall.propTypes = {
 
 const styleThunk = () => ({
   highlight: {
-    color: appTheme.palette.warm
+    fontWeight: 600
   },
 
   controlBlock: {

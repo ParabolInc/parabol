@@ -55,17 +55,13 @@ const Team = (props) => {
         key={`${teamId}UnpaidModal`}
       />
       <DashHeader hasOverlay={hasOverlay}>
-        <DashHeaderInfo title={DashHeaderInfoTitle}>
-          {!isSettings &&
-            <TeamCallsToAction teamId={teamId} />
-          }
-        </DashHeaderInfo>
+        <DashHeaderInfo title={DashHeaderInfoTitle} />
         <div className={css(styles.teamLinks)}>
           {isSettings ?
             <Button
               key="1"
               buttonStyle="flat"
-              colorPalette="warm"
+              colorPalette="dark"
               icon="arrow-circle-left"
               iconPlacement="left"
               isBlock
@@ -76,7 +72,7 @@ const Team = (props) => {
             <Button
               buttonSize="small"
               buttonStyle="flat"
-              colorPalette="warm"
+              colorPalette="dark"
               icon="cog"
               iconPlacement="left"
               key="2"
@@ -86,6 +82,9 @@ const Team = (props) => {
             />
           }
           <DashboardAvatars team={team} />
+          {!isSettings &&
+            <TeamCallsToAction teamId={teamId} />
+          }
         </div>
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">

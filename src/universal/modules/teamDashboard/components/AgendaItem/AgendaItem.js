@@ -130,7 +130,7 @@ const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
     // color: appTheme.palette.cool,
-    color: ui.colorText,
+    color: ui.palette.mid,
     display: 'flex',
     fontSize: appTheme.typography.s3,
     padding: '.5rem .5rem .5rem 0',
@@ -138,10 +138,12 @@ const styleThunk = () => ({
     width: '100%',
 
     ':hover': {
-      backgroundColor: appTheme.palette.dark20l
+      // backgroundColor: appTheme.palette.dark20l
+      backgroundColor: appTheme.palette.light50l
     },
     ':focus': {
-      backgroundColor: appTheme.palette.dark20l
+      // backgroundColor: appTheme.palette.dark20l
+      backgroundColor: appTheme.palette.light50l
     },
     ':hover > div': {
       opacity: 1
@@ -158,7 +160,7 @@ const styleThunk = () => ({
   },
 
   del: {
-    color: appTheme.palette.dark,
+    color: appTheme.palette.warm,
     cursor: 'pointer',
     height: '1.5rem',
     left: ui.meetingSidebarGutter,
@@ -188,7 +190,7 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s3,
     flex: 1,
     // fontStyle: 'italic',
-    fontWeight: 600,
+    fontWeight: 400,
     lineHeight,
     position: 'relative',
     wordBreak: 'break-word',
@@ -204,47 +206,68 @@ const styleThunk = () => ({
   },
 
   link: {
-    color: ui.colorText,
+    color: ui.palette.mid,
 
     ...makeHoverFocus({
       // color: ui.linkColor,
-      color: ui.colorText,
+      color: ui.palette.mid,
       textDecoration: 'none'
     })
   },
 
   itemLocal: {
-    color: appTheme.palette.dark70d
+    // backgroundColor: ui.navMenuLightBackgroundColorActive,
+    // color: appTheme.palette.dark70d
+    color: ui.colorText
   },
 
   descLocal: {
-    color: appTheme.palette.dark70d,
+    // color: appTheme.palette.dark70d,
+    // ':hover': {
+    //   color: appTheme.palette.dark
+    // },
+    // ':focus': {
+    //   color: appTheme.palette.dark
+    // }
+    color: ui.linkColor,
     ':hover': {
-      color: appTheme.palette.dark
+      color: ui.linkColorHover
     },
     ':focus': {
-      color: appTheme.palette.dark
+      color: ui.linkColorHover
     }
   },
 
   itemFacilitator: {
-    color: appTheme.palette.warm
+    // color: appTheme.palette.warm
+    backgroundColor: ui.navMenuLightBackgroundColorActive,
+    // color: appTheme.palette.dark70d
+    boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
+    color: ui.colorText
   },
 
   descFacilitator: {
-    color: appTheme.palette.warm,
+    // color: appTheme.palette.warm,
+    // ':hover': {
+    //   color: warmLinkHover
+    // },
+    // ':focus': {
+    //   color: warmLinkHover
+    // }
+    color: ui.linkColor,
     ':hover': {
-      color: warmLinkHover
+      color: ui.linkColorHover
     },
     ':focus': {
-      color: warmLinkHover
+      color: ui.linkColorHover
     }
   },
 
   index: {
-    fontWeight: 600,
+    fontWeight: 400,
     height: '1.5rem',
     lineHeight,
+    opacity: '.5',
     paddingRight: '.75rem',
     paddingTop: '.0625rem',
     textAlign: 'right',

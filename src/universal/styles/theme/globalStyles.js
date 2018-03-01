@@ -60,5 +60,13 @@ export default {
     overflow: 'auto'
   },
 
+  b: {
+    fontWeight: 600
+  },
+
+  strong: {
+    fontWeight: 600
+  },
+
   ...basePlaceholderStyles
 };

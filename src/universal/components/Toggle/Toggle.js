@@ -89,7 +89,7 @@ const styleThunk = () => ({
 
   // NOTE: modifies 'toggle'
   active: {
-    backgroundColor: appTheme.palette.cool,
+    backgroundColor: appTheme.brand.secondary.green, // TODO: theme-able?
     paddingLeft: gutter,
     paddingRight: size,
 

@@ -54,7 +54,6 @@ class OrgPlanSqueeze extends Component {
                 orgId={orgId}
                 toggle={toggle}
               />
-
             </div>
             {showCost ?
               <div className={css(styles.costHint)}>

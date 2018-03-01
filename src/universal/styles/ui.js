@@ -2,7 +2,7 @@
 // ui.js
 // -----------------------------------------------------------------------------
 
-import tinycolor from 'tinycolor2';
+// import tinycolor from 'tinycolor2';
 import appTheme from 'universal/styles/theme/appTheme';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import zIndexScale from 'universal/styles/helpers/zIndexScale';
@@ -277,19 +277,23 @@ const ui = {
 
   // Dashboards
   // ---------------------------------------------------------------------------
-  dashAgendaWidth: '15.125rem',
+  dashAgendaWidth: '15rem',
   dashBackgroundColor: backgroundColor,
-  dashBorderColor: 'rgba(0, 0, 0, .1)',
+  // dashBorderColor: 'rgba(0, 0, 0, .1)',
+  dashBorderColor: appTheme.palette.light90d,
   dashGutter: '1rem',
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
     fontFamily: appTheme.typography.serif,
-    fontSize: '1.75rem',
+    // fontSize: '1.75rem',
+    fontSize: '1.5rem',
     fontWeight: 600,
     lineHeight: '1.5'
   },
+  // dashMenuBorder: '1px solid rgba(255, 255, 255, .5)',
+  dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
   dashMenuHeight: '13.5625rem',
   dashMenuWidth: '10rem',
   dashMinWidth: '79rem',
@@ -361,6 +365,14 @@ const ui = {
       color: appTheme.palette.warm,
       focusBorderColor: appTheme.palette.warm80l,
       placeholder: makePlaceholderStyles(appTheme.palette.warm70l),
+      selection: appTheme.palette.warm20l
+    },
+    primary: {
+      backgroundColor: '#fff',
+      borderColor: 'transparent',
+      color: COLOR_TEXT,
+      focusBorderColor: appTheme.palette.warm70l,
+      placeholder: makePlaceholderStyles(appTheme.palette.warm),
       selection: appTheme.palette.warm20l
     },
     white: {
@@ -478,7 +490,9 @@ const ui = {
   // Nav
   // ---------------------------------------------------------------------------
 
+  navMenuLightBackgroundColorActive: appTheme.palette.light90l,
   navMenuFontSize: '.9375rem',
+  navMenuLineHeight: '1.25rem',
 
   // Notifications
   // ---------------------------------------------------------------------------
@@ -549,7 +563,7 @@ const ui = {
 
   // Tags
   // ---------------------------------------------------------------------------
-  tagFontSize: '.75rem',
+  tagFontSize: '.6875rem',
   tagFontWeight: 600,
   tagGutter: '.75rem',
   tagHeight: '1rem',

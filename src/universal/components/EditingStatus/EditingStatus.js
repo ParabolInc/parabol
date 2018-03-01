@@ -61,7 +61,7 @@ const styleThunk = (custom, {isEditing}) => ({
     fontWeight: 400,
     lineHeight: ui.cardEditingStatusLineHeight,
     padding: `.25rem ${ui.cardPaddingBase}`,
-    textAlign: 'right'
+    textAlign: 'left'
   }
 });
 

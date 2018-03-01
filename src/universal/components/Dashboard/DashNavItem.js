@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {NavLink} from 'react-router-dom';
 import DashNavItemBaseStyles from './DashNavItemBaseStyles';
@@ -45,6 +46,7 @@ const styleThunk = () => ({
 
   active: {
     backgroundColor: appTheme.palette.mid80d,
+    borderColor: `${ui.palette.white} !important`,
     cursor: 'default',
     textDecoration: 'none',
     ':hover': {

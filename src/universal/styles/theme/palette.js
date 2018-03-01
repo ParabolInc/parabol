@@ -11,7 +11,8 @@ const theme = {
   warm: brand.primary.orange,
   dark: brand.primary.darkGray,
   mid: brand.primary.purple,
-  light: brand.primary.silver
+  light: brand.primary.silver,
+  yellow: brand.secondary.yellow
 };
 
 // suffix 'a' results in transparent theme value

@@ -28,7 +28,7 @@ const MeetingAgendaFirstCall = (props) => {
           <MeetingPhaseHeading>
             {'Now, what do you need?'}
           </MeetingPhaseHeading>
-          <Type align="center" bold marginBottom="2.5rem" marginTop=".5rem" scale="s5" colorPalette="black">
+          <Type align="center" bold marginBottom="2.5rem" marginTop=".5rem" scale="s5" colorPalette="dark">
             {`(Time to add your ${AGENDA_ITEM_LABEL}s to the list.)`}
           </Type>
 

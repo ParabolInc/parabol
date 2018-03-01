@@ -65,6 +65,7 @@ NewTeam.propTypes = {
 
 const styleThunk = () => ({
   layout: {
+    backgroundColor: ui.backgroundColor,
     display: 'flex',
     minWidth: '60rem',
     width: '100%'

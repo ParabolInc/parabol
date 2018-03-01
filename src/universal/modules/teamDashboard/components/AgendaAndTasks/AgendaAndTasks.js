@@ -18,22 +18,22 @@ const AgendaAndTasks = (props) => {
     <div className={css(styles.root)}>
       <Helmet title={`${teamName} | Parabol`} />
       <div className={css(styles.headers)}>
-        <div className={css(styles.agendaLayout)}>
-          <AgendaHeader hideAgenda={hideAgenda} teamId={teamId} />
-        </div>
-        <div className={css(styles.tasksLayout)}>
+        <div className={css(styles.tasksLayout, styles.tasksLayoutHeader)}>
           <TeamTasksHeaderContainer team={team} />
+        </div>
+        <div className={css(styles.agendaLayout, !hideAgenda && styles.agendaLayoutOpen)}>
+          <AgendaHeader hideAgenda={hideAgenda} teamId={teamId} />
         </div>
       </div>
       <div className={css(styles.agendaAndTasks)}>
+        <div className={css(styles.tasksLayout, styles.tasksLayoutContent, !hideAgenda && styles.tasksLayoutShared)}>
+          <TeamColumnsContainer teamId={teamId} viewer={viewer} />
+        </div>
         {!hideAgenda &&
-        <div className={css(styles.agendaLayout)}>
+        <div className={css(styles.agendaLayout, !hideAgenda && styles.agendaLayoutOpen)}>
           <AgendaListAndInput canNavigate={false} context="dashboard" disabled={false} team={team} />
         </div>
         }
-        <div className={css(styles.tasksLayout, !hideAgenda && styles.tasksLayoutShared)}>
-          <TeamColumnsContainer teamId={teamId} viewer={viewer} />
-        </div>
       </div>
     </div>
   );
@@ -66,21 +66,32 @@ const styleThunk = () => ({
   },
 
   agendaLayout: {
-    borderRight: `2px solid ${borderColor}`,
     display: 'flex',
     flexDirection: 'column',
     maxWidth: ui.dashAgendaWidth,
     minWidth: ui.dashAgendaWidth
   },
 
+  agendaLayoutOpen: {
+    backgroundColor: ui.palette.white
+  },
+
   tasksLayout: {
-    borderTop: `1px solid ${ui.dashBorderColor}`,
     display: 'flex',
     flex: 1,
     flexDirection: 'column'
   },
+
   tasksLayoutShared: {
-    // paddingLeft: '1rem'
+    borderRight: `1px solid ${borderColor}`
+  },
+
+  tasksLayoutHeader: {
+    borderRight: `1px solid ${borderColor}`
+  },
+
+  tasksLayoutContent: {
+    borderTop: `1px solid ${borderColor}`
   }
 });
 

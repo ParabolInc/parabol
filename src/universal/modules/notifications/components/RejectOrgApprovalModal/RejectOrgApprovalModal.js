@@ -48,7 +48,7 @@ const RejectOrgApprovalModal = (props) => {
       <Type align="center" bold marginBottom=".5rem" scale="s6" colorPalette="mid">
         Care to say why?
       </Type>
-      <Type align="center" marginBottom="1rem" scale="sBase" colorPalette="black">
+      <Type align="center" marginBottom="1rem" scale="sBase" colorPalette="dark">
         Type a response below and <br />we’ll pass it along to {inviterName}.
       </Type>
       <form onSubmit={handleSubmit(onSubmit)}>

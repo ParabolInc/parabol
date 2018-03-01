@@ -27,6 +27,7 @@ const makeFlatTheme = (buttonStyle, color) => ({
   borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
   boxShadow: 'none !important',
   color,
+  fontWeight: 400,
 
   ':hover': {
     backgroundColor: appTheme.palette.mid10a,

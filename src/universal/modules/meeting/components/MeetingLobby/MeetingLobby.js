@@ -32,7 +32,7 @@ const MeetingLobby = (props) => {
         <div className={css(styles.helpText)}>
           {'Is the whole team here?'}
         </div>
-        <div className={css(styles.prompt)}>
+        <div className={css(styles.helpText)}>
           {'The person who presses “Start Meeting” will facilitate the meeting.'}<br />
           {'Everyone’s display automatically follows the Facilitator.'}
         </div>
@@ -94,17 +94,10 @@ const styleThunk = () => ({
 
   helpText: {
     color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s5,
+    fontSize: appTheme.typography.s4,
     fontWeight: 400,
     lineHeight: 1.5,
     margin: '1.75rem 0 0'
-  },
-
-  prompt: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s5,
-    fontWeight: 600,
-    margin: '2rem 0'
   },
 
   buttonBlock: {

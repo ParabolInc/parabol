@@ -74,7 +74,6 @@ const styleThunk = (theme, {avatarLarge}) => ({
 
   heading: {
     color: appTheme.palette.dark,
-    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s5,
     fontWeight: 600,
     lineHeight: '1.5',
