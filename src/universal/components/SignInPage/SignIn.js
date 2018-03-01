@@ -3,12 +3,11 @@
  *
  * @flow
  */
-
 import type {ThirdPartyAuthProvider, Credentials} from 'universal/types/auth';
 
 import React, {Fragment} from 'react';
-import {Link} from 'react-router-dom';
 
+import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
 import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
@@ -24,10 +23,10 @@ type Props = {
 
 export default (props: Props) => (
   <Fragment>
-    <h1>Sign In</h1>
-    <h2>
-      or <Link to="/signup">Sign Up</Link>
-    </h2>
+    <AuthHeader
+      heading="Sign In"
+      secondaryAction={{relativeUrl: '/signup', displayName: 'Sign Up'}}
+    />
     {props.authProviders.map((provider) => (
       <ThirdPartyAuthButton
         action="Sign in"

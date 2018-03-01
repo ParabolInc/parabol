@@ -3,10 +3,10 @@
  *
  * @flow
  */
-
+import promisify from 'es6-promisify';
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
 
+import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
 import AuthPage from 'universal/components/AuthPage/AuthPage';
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
 import {AUTH0_DB_CONNECTION} from 'universal/utils/constants';
@@ -29,17 +29,10 @@ export default class PasswordResetPage extends Component<Props, State> {
   webAuth = getWebAuth();
 
   auth0ChangePassword = ({email}: {email: string}): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      this.webAuth.changePassword({
-        connection: AUTH0_DB_CONNECTION,
-        email
-      }, (error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
+    const changePassword = promisify(this.webAuth.changePassword, this.webAuth);
+    return changePassword({
+      connection: AUTH0_DB_CONNECTION,
+      email
     });
   };
 
@@ -60,12 +53,10 @@ export default class PasswordResetPage extends Component<Props, State> {
     const {error, emailSent} = this.state;
     return (
       <AuthPage title="Reset Password | Parabol">
-        <h1>
-          Forgot your password?
-        </h1>
-        <h2>
-          <Link to="/signin">Back to Sign in</Link>
-        </h2>
+        <AuthHeader
+          heading="Forgot your password?"
+          secondaryAction={{relativeUrl: '/signin', displayName: 'Sign in'}}
+        />
         <HorizontalSeparator />
         <PasswordReset
           error={error}
