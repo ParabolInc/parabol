@@ -5,20 +5,13 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
 import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react';
 
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 
+import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
-
-const RetroBackground = styled('div')({
-  backgroundColor: '#F1F0FA',
-  padding: '1rem',
-  height: '100%',
-  width: '100%'
-});
 
 storiesOf('ReflectionCard', module)
   .add('with no contents', () => (

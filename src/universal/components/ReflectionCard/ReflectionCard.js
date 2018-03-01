@@ -8,7 +8,7 @@ import styled from 'react-emotion';
 import FontAwesome from 'react-fontawesome';
 
 import PlainButton from 'universal/components/PlainButton/PlainButton';
-import appTheme from 'universal/styles/theme/appTheme';
+import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 
 type Props = {
   contents: string,
@@ -18,16 +18,6 @@ type Props = {
 type State = {
   showDelete: boolean
 };
-
-const ReflectionCardWrapper = styled('div')({
-  backgroundColor: '#FFF',
-  borderRadius: 3,
-  boxShadow: '0 0 1px 1px rgba(0, 0, 0, .1)',
-  color: appTheme.palette.dark,
-  minHeight: '1rem',
-  position: 'relative',
-  width: '20rem'
-});
 
 const DeleteButton = styled(PlainButton)({
   backgroundColor: 'rgba(0, 0, 0, 0)',
