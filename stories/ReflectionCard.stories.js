@@ -7,6 +7,7 @@
 // $FlowFixMe
 import {ContentState} from 'draft-js';
 import React from 'react';
+import styled from 'react-emotion';
 import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react';
 
@@ -14,6 +15,15 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
+
+const ReflectionCardShowcase = styled('div')({
+  alignItems: 'start',
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr 1fr',
+  gridTemplateRows: '1fr 1fr 1fr',
+  height: '100%',
+  justifyItems: 'start'
+});
 
 storiesOf('ReflectionCard', module)
   .add('with no contents', () => (
@@ -64,13 +74,29 @@ storiesOf('ReflectionCard', module)
       )}
     />
   ))
-  .add('un-editable', () => (
+  .add('read-only', () => (
     <StoryContainer
       render={() => (
         <RetroBackground>
           <ReflectionCard
             contentState={ContentState.createFromText('I cannot be edited or removed!')}
           />
+        </RetroBackground>
+      )}
+    />
+  ))
+  .add('with-stage', () => (
+    <StoryContainer
+      render={() => (
+        <RetroBackground>
+          <ReflectionCardShowcase>
+            {[undefined, 'positive', 'negative', 'change'].map((stage) => (
+              <ReflectionCard
+                contentState={ContentState.createFromText('I cannot be edited or removed!')}
+                stage={stage}
+              />
+            ))}
+          </ReflectionCardShowcase>
         </RetroBackground>
       )}
     />

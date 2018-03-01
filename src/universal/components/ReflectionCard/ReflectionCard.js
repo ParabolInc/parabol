@@ -13,6 +13,7 @@ import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
+import appTheme from 'universal/styles/theme/appTheme';
 
 type Props = {
   // The draft-js content for this card
@@ -20,7 +21,9 @@ type Props = {
   // The action to take when this card is deleted
   handleDelete?: () => any,
   // The action to take when this card is saved
-  handleSave?: (editorState: EditorState) => any
+  handleSave?: (editorState: EditorState) => any,
+  // The stage of the meeting this was created during
+  stage?: 'positive' | 'negative' | 'change'
 };
 
 type State = {
@@ -37,10 +40,15 @@ const DeleteButton = styled(PlainButton)({
   zIndex: 1
 });
 
-const ReflectionCardText = styled('div')({
+const ReflectionCardMain = styled('div')({
   maxHeight: '10rem',
   overflow: 'auto',
   padding: '0.8rem'
+});
+
+const StageLabel = styled('div')({
+  color: appTheme.palette.mid,
+  padding: '0.4rem 0.8rem'
 });
 
 export default class ReflectionCard extends Component<Props, State> {
@@ -94,29 +102,46 @@ export default class ReflectionCard extends Component<Props, State> {
 
   deleteButton: ?HTMLElement;
 
-  render() {
-    const {handleDelete, handleSave} = this.props;
-    const {editorState, showDelete} = this.state;
+  renderCardContent = () => {
+    const {handleSave} = this.props;
+    const {editorState} = this.state;
+    return handleSave ? (
+      <EditorInputWrapper
+        ariaLabel="Edit this reflection"
+        editorState={editorState}
+        handleReturn={() => 'not-handled'}
+        onBlur={handleSave && (() => handleSave(editorState))}
+        placeholder="My reflection thought..."
+        setEditorState={this.setEditorState}
+      />
+    ) : (
+      <div>{editorState.getCurrentContent().getPlainText()}</div>
+    );
+  };
+
+  renderDelete = () => {
+    const {handleDelete} = this.props;
+    const {showDelete} = this.state;
     return (
-      <ReflectionCardWrapper onMouseEnter={handleDelete && this.showDelete} onMouseLeave={handleDelete && this.hideDelete}>
-        <ReflectionCardText>
-          {handleSave ? (
-            <EditorInputWrapper
-              editorState={editorState}
-              handleReturn={() => 'not-handled'}
-              onBlur={handleSave && (() => handleSave(editorState))}
-              placeholder="My reflection thought..."
-              setEditorState={this.setEditorState}
-            />
-          ) : (
-            <div>{editorState.getCurrentContent().getPlainText()}</div>
-          )}
-        </ReflectionCardText>
-        {handleDelete &&
-          <DeleteButton innerRef={this.saveDeleteButton} aria-label="Delete this reflection" onClick={handleDelete}>
-            {showDelete && <FontAwesome name="times-circle" />}
-          </DeleteButton>
-        }
+      <DeleteButton innerRef={this.saveDeleteButton} aria-label="Delete this reflection" onClick={handleDelete}>
+        {showDelete && <FontAwesome name="times-circle" />}
+      </DeleteButton>
+    );
+  };
+
+  render() {
+    const {handleDelete, stage} = this.props;
+    const canDelete = Boolean(handleDelete);
+    return (
+      <ReflectionCardWrapper
+        onMouseEnter={canDelete && this.showDelete}
+        onMouseLeave={canDelete && this.hideDelete}
+      >
+        <ReflectionCardMain>
+          {this.renderCardContent()}
+        </ReflectionCardMain>
+        {canDelete && this.renderDelete()}
+        {stage && <StageLabel>{stage.toUpperCase()}</StageLabel>}
       </ReflectionCardWrapper>
     );
   }

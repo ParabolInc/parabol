@@ -13,6 +13,7 @@ import entitizeText from 'universal/utils/draftjs/entitizeText';
 
 class EditorInputWrapper extends Component {
   static propTypes = {
+    ariaLabel: PropTypes.string,
     editorState: PropTypes.object.isRequired,
     handleBeforeInput: PropTypes.func,
     handleChange: PropTypes.func,
@@ -136,9 +137,10 @@ class EditorInputWrapper extends Component {
   };
 
   render() {
-    const {editorState, onBlur, placeholder, readOnly, innerRef} = this.props;
+    const {ariaLabel, editorState, onBlur, placeholder, readOnly, innerRef} = this.props;
     return (
       <Editor
+        ariaLabel={ariaLabel}
         blockStyleFn={this.blockStyleFn}
         editorState={editorState}
         handleBeforeInput={this.handleBeforeInput}
@@ -161,7 +163,6 @@ class EditorInputWrapper extends Component {
           this.editorRef = c;
         }}
       />
-
     );
   }
 }
