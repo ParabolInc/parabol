@@ -134,6 +134,7 @@ class OutcomeCardFooter extends Component {
         (<PlainButton
           aria-label="Assign this task to another team"
           onClick={this.selectAllQuestion}
+          style={{color: ui.colorText, fontSize: appTheme.typography.s1}}
         >
           {teamName}
         </PlainButton>) :
@@ -274,11 +275,11 @@ OutcomeCardFooter.propTypes = {
 
 const label = {
   ...textOverflow,
-  color: appTheme.palette.dark,
+  color: ui.colorText,
   display: 'block',
   flex: 1,
-  fontSize: appTheme.typography.s2,
-  fontWeight: 600,
+  fontSize: appTheme.typography.s1,
+  fontWeight: 400,
   lineHeight: height,
   maxWidth: '100%',
   textAlign: 'left'

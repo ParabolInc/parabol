@@ -52,6 +52,9 @@ const BUTTON_SIZE_SMALL = CONTROL_SIZE_SMALL;
 const BUTTON_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
 const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE;
 
+// Color (default for text)
+const COLOR_TEXT = appTheme.palette.dark10d;
+
 // Color palette
 const white = '#fff';
 const gray = appTheme.palette.mid20l;
@@ -235,6 +238,10 @@ const ui = {
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
   cardButtonHeight: '1.5rem',
+  cardContentFontSize: appTheme.typography.s3,
+  cardContentLineHeight: appTheme.typography.s5,
+  cardEditingStatusFontSize: '.6875rem',
+  cardEditingStatusLineHeight: appTheme.typography.sBase,
   cardMaxWidth: '17.5rem',
   cardMinHeight: '6.875rem',
   cardPaddingBase: '.5rem',
@@ -245,6 +252,10 @@ const ui = {
   // CTA Panels
   // ---------------------------------------------------------------------------
   ctaPanelButtonSize: BUTTON_SIZE_LARGE,
+
+  // Color (default for text)
+  // ---------------------------------------------------------------------------
+  colorText: COLOR_TEXT,
 
   // Controls
   // ---------------------------------------------------------------------------

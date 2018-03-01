@@ -201,8 +201,8 @@ class TaskEditor extends Component {
 
 const styleThunk = () => ({
   root: {
-    fontSize: '1rem',
-    lineHeight: '1.25rem',
+    fontSize: ui.cardContentFontSize,
+    lineHeight: ui.cardContentLineHeight,
     padding: `0 ${ui.cardPaddingBase}`
   },
 
