@@ -20,6 +20,10 @@ const Step3InviteeList = (props) => {
   const {atmosphere, dispatch, existingInvites, handleSubmit, invitees, history, styles, teamId} = props;
   const onInviteTeamSubmit = () => {
     const inviteeCount = invitees && invitees.length || 0;
+    const gotoTeamDash = () => {
+      history.push(`/team/${teamId}`);
+    };
+
     if (inviteeCount > 0) {
       const serverInvitees = invitees.map((invitee) => {
         const {email, fullName, task} = invitee;
@@ -29,9 +33,12 @@ const Step3InviteeList = (props) => {
           task
         };
       });
-      InviteTeamMembersMutation(atmosphere, {invitees: serverInvitees, teamId}, dispatch);
+      // We shouldn't need to wait until this mutation completes, but relay flags softTeamMembers for GC & then reruns
+      // the optimisticUpdater before the GC had a chance to clean it so it borks on the sentinel. Still a bug in v1.5.0.
+      InviteTeamMembersMutation(atmosphere, {invitees: serverInvitees, teamId}, dispatch, undefined, gotoTeamDash);
+    } else {
+      gotoTeamDash();
     }
-    history.push(`/team/${teamId}`); // redirect leader to their new team
 
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {
