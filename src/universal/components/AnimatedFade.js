@@ -1,14 +1,18 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+// @flow
+import * as React from 'react';
 import {CSSTransition} from 'react-transition-group';
 import {css} from 'react-emotion';
 
-class AnimatedFade extends Component {
-  static propTypes = {
-    children: PropTypes.any.isRequired,
-    styles: PropTypes.object
-  };
+const {Component} = React;
 
+type Props = {
+  children: React.Node,
+  duration?: number,
+  slide?: number
+};
+
+// eslint-disable-next-line
+class AnimatedFade extends Component<Props> {
   render() {
     const {children, duration = 100, slide = 32, ...props} = this.props;
 

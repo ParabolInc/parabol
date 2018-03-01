@@ -92,7 +92,7 @@
     "eslint-plugin-jest": "^20.0.3",
     "eslint-plugin-react": "^7.2.1",
     "file-loader": "^0.11.2",
-    "flow-bin": "^0.59.0",
+    "flow-bin": "^0.66.0",
     "glob": "^7.1.2",
     "jest": "^22.0.0",
     "jest-junit-reporter": "^1.0.1",
@@ -231,7 +231,9 @@
     "node": "^8.0.0 || ^9.4.0",
     "yarn": "^1.0.1"
   },
-  "eslintIgnore": ["schema.flow.js"],
+  "eslintIgnore": [
+    "schema.flow.js"
+  ],
   "jest": {
     "modulePaths": [
       "<rootDir>/src/"

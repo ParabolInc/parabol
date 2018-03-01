@@ -2,7 +2,10 @@ import React from 'react';
 import ui from 'universal/styles/ui';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import styled from 'react-emotion';
+
+import type {LoadablePortalProps} from 'universal/decorators/withLoadablePortal';
 import withLoadablePortal from 'universal/decorators/withLoadablePortal';
+import type {WithCoordsProps} from 'universal/decorators/withCoordsV2';
 
 const MenuBlock = styled('div')(({maxWidth}) => ({
   maxWidth,
@@ -24,7 +27,14 @@ const MenuContents = styled('div')(({maxHeight}) => ({
   width: '100%'
 }));
 
-const LoadableMenu = (props) => {
+type Props = {
+  LoadableComponent: React.Component,
+  queryVars?: Object,
+  ...LoadablePortalProps,
+  ...WithCoordsProps
+};
+
+const LoadableMenu = (props: Props) => {
   const {closePortal, coords, isClosing, setModalRef, LoadableComponent, queryVars, terminatePortal} = props;
   return (
     <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>

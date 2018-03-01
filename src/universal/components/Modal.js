@@ -12,7 +12,8 @@ class Modal extends Component {
     onClose: PropTypes.func,
     clickToClose: PropTypes.bool,
     escToClose: PropTypes.bool,
-    children: PropTypes.element.isRequired
+    children: PropTypes.element.isRequired,
+    isOpen: PropTypes.bool
   };
 
   constructor(props) {

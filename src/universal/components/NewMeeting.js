@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+// @flow
+import React from 'react';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
@@ -11,6 +12,9 @@ import {Helmet} from 'react-helmet';
 import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
 import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
 import NewMeetingLobby from 'universal/components/NewMeetingLobby';
+
+import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
+import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 
 const MeetingContainer = styled('div')({
   backgroundColor: '#fff',
@@ -38,33 +42,36 @@ const MeetingAreaHeader = styled('div')({
   width: '100%'
 });
 
-class NewMeeting extends Component {
-  render() {
-    const {localPhase, match, viewer} = this.props;
-    const {team} = viewer;
-    const {teamId, teamName} = team;
-    return (
-      <MeetingContainer>
-        <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
-        <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
-        <MeetingArea>
-          <MeetingAreaHeader>
-            <MeetingAvatarGroup
-              gotoItem={() => {}}
-              isFacilitating={false}
-              localPhase={localPhase}
-              localPhaseItem={null}
-              team={team}
-            />
-          </MeetingAreaHeader>
-          <Switch>
-            <Route path="/retro/:teamId" render={() => <NewMeetingLobby team={team} />} />
-          </Switch>
-        </MeetingArea>
-      </MeetingContainer>
-    );
-  }
+type Props = {
+  atmosphere: Object,
+  localPhase: NewMeetingPhaseTypeEnum,
+  viewer: Viewer
 }
+const NewMeeting = (props: Props) => {
+  const {localPhase, viewer} = props;
+  const {team} = viewer;
+  const {teamName} = team;
+  return (
+    <MeetingContainer>
+      <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
+      <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
+      <MeetingArea>
+        <MeetingAreaHeader>
+          <MeetingAvatarGroup
+            gotoItem={() => {}}
+            isFacilitating={false}
+            localPhase={localPhase}
+            localPhaseItem={null}
+            team={team}
+          />
+        </MeetingAreaHeader>
+        <Switch>
+          <Route path="/retro/:teamId" render={() => <NewMeetingLobby team={team} />} />
+        </Switch>
+      </MeetingArea>
+    </MeetingContainer>
+  );
+};
 
 export default createFragmentContainer(
   dragDropContext(HTML5Backend)(

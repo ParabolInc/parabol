@@ -1,8 +1,10 @@
+// @flow
 import React from 'react';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import withLoadablePortal from 'universal/decorators/withLoadablePortal';
+import type {LoadablePortalProps} from 'universal/decorators/withLoadablePortal';
 
 const ModalBlock = styled('div')({
   top: 0,
@@ -32,7 +34,13 @@ const Backdrop = styled('div')({
   position: 'fixed'
 });
 
-const LoadableModal = (props) => {
+type Props = {
+  LoadableComponent: typeof React.Component,
+  queryVars?: Object,
+  ...LoadablePortalProps
+};
+
+const LoadableModal = (props: Props) => {
   const {isClosing, closePortal, LoadableComponent, queryVars, terminatePortal} = props;
   return (
     <ModalBlock>

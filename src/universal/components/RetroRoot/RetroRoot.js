@@ -13,7 +13,6 @@ import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscripti
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import NewMeeting from 'universal/components/NewMeeting';
-import {graphql} from 'react-relay';
 
 import type {Match} from 'react-router-dom';
 

@@ -136,4 +136,10 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
   return options.withCoords ? withCoordsV2(LoadablePortal) : LoadablePortal;
 };
 
+export type LoadablePortalProps = {
+  isClosing: boolean,
+  closePortal: () => void,
+  terminatePortal: () => void
+};
+
 export default withLoadablePortal;

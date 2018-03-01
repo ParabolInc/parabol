@@ -1,13 +1,17 @@
-import React from 'react';
+// @flow
+import * as React from 'react';
 import {createFragmentContainer} from 'react-relay';
+import type {RouterHistory} from 'react-router-dom';
 import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import {PRO} from 'universal/utils/constants';
 import styled from 'react-emotion';
 import LoadableModal from 'universal/components/LoadableModal';
 import GetRetroAccessLoadable from 'universal/components/GetRetroAccessLoadable';
+import type {NewMeetingLobby_team as Team} from './__generated__/NewMeetingLobby_team.graphql';
 
 const TitleHeader = styled('h2')({
   textTransform: 'uppercase'
@@ -25,9 +29,16 @@ const GetAccessCopy = styled('div')({
   fontWeight: 300
 });
 
-const NewMeetingLobby = (props) => {
-  const {atmosphere, history, onError, onCompleted, submitMutation, submitting, team} = props;
-  const {meetingSettings: {meetingsOffered, meetingsRemaining}, teamId, teamName, tier} = team;
+type Props = {
+  atmosphere: Object,
+  history: RouterHistory,
+  team: Team,
+  ...MutationProps
+};
+
+const NewMeetingLobby = (props: Props) => {
+  const {submitMutation, submitting, team} = props;
+  const {meetingSettings: {meetingsOffered, meetingsRemaining}, teamName, tier} = team;
   const onStartMeetingClick = () => {
     submitMutation();
     // StartNewMeetingMutation(atmosphere, teamId, history, onError, onCompleted);

@@ -152,3 +152,14 @@ export default (ComposedComponent) => {
 
   return WithCoordsV2;
 };
+
+export type WithCoordsProps = {
+  coords: {
+    left?: number,
+    right?: number,
+    top?: number,
+    bottom?: number,
+  },
+  setModalRef: (component: any) => void,
+  setOriginCoords: ({top: number, left: number, width: number, height: number}) => void
+};

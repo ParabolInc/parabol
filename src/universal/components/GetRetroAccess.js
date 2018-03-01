@@ -7,7 +7,7 @@ const ModalBoundary = styled('div')({
   background: 'white'
 });
 
-const GetRetroAccess = (props) => {
+const GetRetroAccess = () => {
   return (
     <ModalBoundary>Pay me now</ModalBoundary>
   );
