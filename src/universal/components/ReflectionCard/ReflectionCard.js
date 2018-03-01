@@ -3,19 +3,28 @@
  *
  * @flow
  */
+// $FlowFixMe
+import {EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled from 'react-emotion';
 import FontAwesome from 'react-fontawesome';
 
+import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
+import editorDecorators from 'universal/components/TaskEditor/decorators';
 
 type Props = {
-  contents: string,
-  handleDelete?: () => any
+  // The draft-js content for this card
+  contentState: Object, // `Object` is yucky, but draft-js types are borked right now...
+  // The action to take when this card is deleted
+  handleDelete?: () => any,
+  // The action to take when this card is saved
+  handleSave?: (editorState: EditorState) => any
 };
 
 type State = {
+  editorState: EditorState,
   showDelete: boolean
 };
 
@@ -35,15 +44,21 @@ const ReflectionCardText = styled('div')({
 });
 
 export default class ReflectionCard extends Component<Props, State> {
-  state = {
-    showDelete: false
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      editorState: EditorState.createWithContent(
+        props.contentState,
+        editorDecorators(this.getEditorState)
+      ),
+      showDelete: false
+    };
+  }
 
   componentDidMount() {
     if (this.deleteButton) {
       this.deleteButton.addEventListener('focus', this.showDelete);
-    }
-    if (this.deleteButton) { // flow makes us check this twice...
+      // $FlowFixMe - flow wants us to wrap this in another if (deleteButton)
       this.deleteButton.addEventListener('blur', this.hideDelete);
     }
   }
@@ -56,6 +71,14 @@ export default class ReflectionCard extends Component<Props, State> {
       this.deleteButton.removeEventListener('blur', this.hideDelete);
     }
   }
+
+  getEditorState = () => (
+    this.state.editorState
+  );
+
+  setEditorState = (editorState: EditorState) => {
+    this.setState({editorState});
+  };
 
   showDelete = () => {
     this.setState({showDelete: true});
@@ -72,17 +95,28 @@ export default class ReflectionCard extends Component<Props, State> {
   deleteButton: ?HTMLElement;
 
   render() {
-    const {contents, handleDelete} = this.props;
-    const {showDelete} = this.state;
-    const placeholder = 'My reflection thought...';
+    const {handleDelete, handleSave} = this.props;
+    const {editorState, showDelete} = this.state;
     return (
       <ReflectionCardWrapper onMouseEnter={handleDelete && this.showDelete} onMouseLeave={handleDelete && this.hideDelete}>
+        <ReflectionCardText>
+          {handleSave ? (
+            <EditorInputWrapper
+              editorState={editorState}
+              handleReturn={() => 'not-handled'}
+              onBlur={handleSave && (() => handleSave(editorState))}
+              placeholder="My reflection thought..."
+              setEditorState={this.setEditorState}
+            />
+          ) : (
+            <div>{editorState.getCurrentContent().getPlainText()}</div>
+          )}
+        </ReflectionCardText>
         {handleDelete &&
           <DeleteButton innerRef={this.saveDeleteButton} aria-label="Delete this reflection" onClick={handleDelete}>
             {showDelete && <FontAwesome name="times-circle" />}
           </DeleteButton>
         }
-        <ReflectionCardText>{contents || placeholder}</ReflectionCardText>
       </ReflectionCardWrapper>
     );
   }

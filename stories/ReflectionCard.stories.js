@@ -4,6 +4,8 @@
  * @flow
  */
 
+// $FlowFixMe
+import {ContentState} from 'draft-js';
 import React from 'react';
 import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react';
@@ -18,7 +20,11 @@ storiesOf('ReflectionCard', module)
     <StoryContainer
       render={() => (
         <RetroBackground>
-          <ReflectionCard contents="" />
+          <ReflectionCard
+            contentState={ContentState.createFromText('')}
+            handleDelete={action('handle-delete')}
+            handleSave={action('handle-save')}
+          />
         </RetroBackground>
       )}
     />
@@ -27,7 +33,11 @@ storiesOf('ReflectionCard', module)
     <StoryContainer
       render={() => (
         <RetroBackground>
-          <ReflectionCard contents="One line of text." />
+          <ReflectionCard
+            contentState={ContentState.createFromText('One line of text.')}
+            handleDelete={action('handle-delete')}
+            handleSave={action('handle-save')}
+          />
         </RetroBackground>
       )}
     />
@@ -37,24 +47,30 @@ storiesOf('ReflectionCard', module)
       render={() => (
         <RetroBackground>
           <ReflectionCard
-            contents={
-              'This is a long observation. ' +
-              'I have a lot of feelings and want my team to know. ' +
-              "There's much to say, and I hope people have the patience to read this because it's, like, super important. " +
-              'At some point, this will get really long, and it should probably overflow by scrolling. ' +
-              "I hope folks don't get mad at me for writing so much. " +
-              'Seriously. When will I stop??'
+            contentState={
+              ContentState.createFromText(
+                'This is a long observation. ' +
+                'I have a lot of feelings and want my team to know. ' +
+                "There's much to say, and I hope people have the patience to read this because it's, like, super important. " +
+                'At some point, this will get really long, and it should probably overflow by scrolling. ' +
+                "I hope folks don't get mad at me for writing so much. " +
+                'Seriously. When will I stop??'
+              )
             }
+            handleDelete={action('handle-delete')}
+            handleSave={action('handle-save')}
           />
         </RetroBackground>
       )}
     />
   ))
-  .add('can delete', () => (
+  .add('un-editable', () => (
     <StoryContainer
       render={() => (
         <RetroBackground>
-          <ReflectionCard contents="Delete me!" handleDelete={action('clicked-delete')} />
+          <ReflectionCard
+            contentState={ContentState.createFromText('Delete me!')}
+          />
         </RetroBackground>
       )}
     />

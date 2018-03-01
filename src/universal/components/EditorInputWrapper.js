@@ -23,6 +23,7 @@ class EditorInputWrapper extends Component {
     handleReturn: PropTypes.func,
     keyBindingFn: PropTypes.func,
     placeholder: PropTypes.string,
+    onBlur: PropTypes.func,
     readOnly: PropTypes.bool,
     setEditorState: PropTypes.func.isRequired,
     innerRef: PropTypes.func,
@@ -135,7 +136,7 @@ class EditorInputWrapper extends Component {
   };
 
   render() {
-    const {editorState, placeholder, readOnly, innerRef} = this.props;
+    const {editorState, onBlur, placeholder, readOnly, innerRef} = this.props;
     return (
       <Editor
         blockStyleFn={this.blockStyleFn}
@@ -145,6 +146,7 @@ class EditorInputWrapper extends Component {
         handlePastedText={this.handlePastedText}
         handleReturn={this.handleReturn}
         keyBindingFn={this.keyBindingFn}
+        onBlur={onBlur}
         onChange={this.handleChange}
         onDownArrow={this.handleDownArrow}
         onEscape={this.handleEscape}
