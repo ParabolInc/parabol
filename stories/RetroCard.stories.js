@@ -21,7 +21,7 @@ type Props = {
 };
 
 type State = {
-  hovering: boolean
+  showDelete: boolean
 };
 
 const RetroBackground = styled('div')({
@@ -58,21 +58,49 @@ const DeleteButton = styled(PlainButton)({
 
 class RetroCard extends Component<Props, State> {
   state = {
-    hovering: false
+    showDelete: false
   };
 
-  setHovering = (hovering) => () => {
-    this.setState({hovering});
+  componentDidMount() {
+    if (this.deleteButton) {
+      this.deleteButton.addEventListener('focus', this.showDelete);
+    }
+    if (this.deleteButton) { // flow makes us check this twice...
+      this.deleteButton.addEventListener('blur', this.hideDelete);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.deleteButton) {
+      this.deleteButton.removeEventListener('focus', this.showDelete);
+    }
+    if (this.deleteButton) { // flow makes us check this twice...
+      this.deleteButton.removeEventListener('blur', this.hideDelete);
+    }
+  }
+
+  showDelete = () => {
+    this.setState({showDelete: true});
   };
+
+  hideDelete = () => {
+    this.setState({showDelete: false});
+  };
+
+  saveDeleteButton = (deleteButton: ?HTMLElement) => {
+    this.deleteButton = deleteButton;
+  };
+
+  deleteButton: ?HTMLElement;
 
   render() {
     const {contents, handleDelete} = this.props;
-    const {hovering} = this.state;
+    const {showDelete} = this.state;
     const placeholder = 'My reflection thought...';
     return (
-      <RetroCardWrapper onMouseEnter={this.setHovering(true)} onMouseLeave={this.setHovering(false)}>
-        <DeleteButton aria-label="Delete this reflection" onClick={handleDelete}>
-          {hovering && <FontAwesome name="times-circle" />}
+      <RetroCardWrapper onMouseEnter={this.showDelete} onMouseLeave={this.hideDelete}>
+        <DeleteButton innerRef={this.saveDeleteButton} aria-label="Delete this reflection" onClick={handleDelete}>
+          {showDelete && <FontAwesome name="times-circle" />}
         </DeleteButton>
         <RetroCardText>{contents || placeholder}</RetroCardText>
       </RetroCardWrapper>
