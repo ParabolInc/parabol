@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.30.1 2018-Mar-01
+## Fixed
+- Hotfix for #1817, no longer require active subscription to update credit card
+
+
 ## v0.30.0 2018-Feb-28
 ## Added
 - activeProOrgCount and activeProUserCount queries
