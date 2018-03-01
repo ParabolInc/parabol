@@ -6,14 +6,18 @@
 
 import React from 'react';
 import styled from 'react-emotion';
+import FontAwesome from 'react-fontawesome';
+import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react';
 
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 import appTheme from 'universal/styles/theme/appTheme';
 
 import StoryContainer from './components/StoryContainer';
 
 type Props = {
-  contents: string
+  contents: string,
+  handleDelete: () => any
 };
 
 const RetroBackground = styled('div')({
@@ -28,16 +32,36 @@ const RetroCardWrapper = styled('div')({
   borderRadius: 3,
   boxShadow: '0 0 1px 1px rgba(0, 0, 0, .1)',
   color: appTheme.palette.dark,
-  maxHeight: '10rem',
   minHeight: '1rem',
-  overflow: 'auto',
   padding: '0.8rem',
+  position: 'relative',
   width: '20rem'
 });
 
-const RetroCard = ({contents}: Props) => {
+const RetroCardText = styled('div')({
+  maxHeight: '10rem',
+  overflow: 'auto'
+});
+
+const DeleteButton = styled(PlainButton)({
+  backgroundColor: 'rgba(0, 0, 0, 0)',
+  color: 'red',
+  position: 'absolute',
+  top: '-0.5rem',
+  right: '-0.5rem',
+  zIndex: 1
+});
+
+const RetroCard = ({contents, handleDelete}: Props) => {
   const placeholder = 'My reflection thought...';
-  return <RetroCardWrapper>{contents || placeholder}</RetroCardWrapper>;
+  return (
+    <RetroCardWrapper>
+      <DeleteButton aria-label="Delete this reflection" onClick={handleDelete}>
+        <FontAwesome name="times-circle" />
+      </DeleteButton>
+      <RetroCardText>{contents || placeholder}</RetroCardText>
+    </RetroCardWrapper>
+  );
 };
 
 // STORIES
@@ -47,7 +71,10 @@ storiesOf('RetroCard', module)
     <StoryContainer
       render={() => (
         <RetroBackground>
-          <RetroCard contents="" />
+          <RetroCard
+            contents=""
+            handleDelete={action('clicked-delete')}
+          />
         </RetroBackground>
       )}
     />
@@ -56,7 +83,10 @@ storiesOf('RetroCard', module)
     <StoryContainer
       render={() => (
         <RetroBackground>
-          <RetroCard contents="One line of text." />
+          <RetroCard
+            contents="One line of text."
+            handleDelete={action('clicked-delete')}
+          />
         </RetroBackground>
       )}
     />
@@ -71,8 +101,10 @@ storiesOf('RetroCard', module)
               'I have a lot of feelings and want my team to know. ' +
               "There's much to say, and I hope people have the patience to read this because it's, like, super important. " +
               'At some point, this will get really long, and it should probably overflow by scrolling. ' +
-              "I hope folks don't get mad at me for writing so much."
+              "I hope folks don't get mad at me for writing so much. " +
+              'Seriously. When will I stop??'
             }
+            handleDelete={action('clicked-delete')}
           />
         </RetroBackground>
       )}
