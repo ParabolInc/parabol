@@ -14,7 +14,7 @@ import getDraftCoords from 'universal/utils/getDraftCoords';
 import linkify from 'universal/utils/linkify';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';
-import LoadableMenu from 'universal/components/LoadableMenu';
+import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal';
 
 const LoadableEditorLinkChanger = Loadable({
   loader: () => System.import(
@@ -181,7 +181,7 @@ const withLinks = (ComposedComponent) => {
       }
       this.undoLink = undefined;
       const {block, anchorOffset} = getAnchorLocation(editorState);
-      const entityKey = block.getEntityAt(anchorOffset - 1);
+      const entityKey = block.getEntityAt(Math.max(0, anchorOffset - 1));
       if (entityKey && !linkChangerData) {
         const contentState = editorState.getCurrentContent();
         const entity = contentState.getEntity(entityKey);
@@ -285,7 +285,7 @@ const withLinks = (ComposedComponent) => {
       }
       // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
-        <LoadableMenu
+        <LoadableDraftJSModal
           key="EditorLinkChanger"
           LoadableComponent={LoadableEditorLinkChanger}
           maxWidth={320}
@@ -324,7 +324,7 @@ const withLinks = (ComposedComponent) => {
       }
 
       return (
-        <LoadableMenu
+        <LoadableDraftJSModal
           key="EditorLinkViewer"
           LoadableComponent={LoadableEditorLinkViewer}
           maxWidth={400}

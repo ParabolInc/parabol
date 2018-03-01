@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Modal from 'universal/components/Modal';
 import PropTypes from 'prop-types';
 import isKeyboardEvent from 'universal/utils/isKeyboardEvent';
 import withCoordsV2 from 'universal/decorators/withCoordsV2';
@@ -120,14 +119,13 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
       return (
         <React.Fragment>
           {this.smartToggle}
-          <Modal clickToClose escToClose onClose={this.closePortal} isOpen={isOpen}>
-            <ComposedComponent
-              {...this.props}
-              isClosing={isClosing}
-              closePortal={this.closePortal}
-              terminatePortal={this.terminatePortal}
-            />
-          </Modal>
+          <ComposedComponent
+            {...this.props}
+            isOpen={isOpen}
+            isClosing={isClosing}
+            closePortal={this.closePortal}
+            terminatePortal={this.terminatePortal}
+          />
         </React.Fragment>
       );
     }
@@ -138,6 +136,7 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
 
 export type LoadablePortalProps = {
   isClosing: boolean,
+  isOpen: boolean,
   closePortal: () => void,
   terminatePortal: () => void
 };

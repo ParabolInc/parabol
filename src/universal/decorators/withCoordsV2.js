@@ -75,7 +75,7 @@ export default (ComposedComponent) => {
       }
     };
     updateModalCoords = () => {
-      if (!this.modalRef) return;
+      if (!this.modalRef || !this.originCoords) return;
       // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
       const {originAnchor, targetAnchor, marginFromOrigin = 0} = this.props;
       const modalCoords = this.modalRef.getBoundingClientRect();

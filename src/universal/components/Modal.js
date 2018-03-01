@@ -54,7 +54,7 @@ class Modal extends Component {
   }
 
   teardown() {
-    if (this.el) {
+    if (this.el && document.body.contains(this.el)) {
       document.body.removeChild(this.el);
       document.removeEventListener('click', this.handleDocumentClick);
       document.removeEventListener('touchstart', this.handleDocumentClick);

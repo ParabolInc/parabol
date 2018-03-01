@@ -3,8 +3,9 @@ import React from 'react';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
 import AnimatedFade from 'universal/components/AnimatedFade';
-import withLoadablePortal from 'universal/decorators/withLoadablePortal';
 import type {LoadablePortalProps} from 'universal/decorators/withLoadablePortal';
+import withLoadablePortal from 'universal/decorators/withLoadablePortal';
+import Modal from 'universal/components/Modal';
 
 const ModalBlock = styled('div')({
   top: 0,
@@ -41,18 +42,20 @@ type Props = {
 };
 
 const LoadableModal = (props: Props) => {
-  const {isClosing, closePortal, LoadableComponent, queryVars, terminatePortal} = props;
+  const {isClosing, isOpen, closePortal, LoadableComponent, queryVars, terminatePortal} = props;
   return (
-    <ModalBlock>
-      <AnimatedFade appear duration={200} slide={0} in={!isClosing} onExited={terminatePortal}>
-        <Backdrop onClick={closePortal} />
-      </AnimatedFade>
-      <AnimatedFade appear duration={200} slide={32} in={!isClosing} onExited={terminatePortal}>
-        <ModalContents>
-          <LoadableComponent {...queryVars} closePortal={closePortal} />
-        </ModalContents>
-      </AnimatedFade>
-    </ModalBlock>
+    <Modal clickToClose escToClose onClose={closePortal} isOpen={isOpen}>
+      <ModalBlock>
+        <AnimatedFade appear duration={200} slide={0} in={!isClosing} onExited={terminatePortal}>
+          <Backdrop onClick={closePortal} />
+        </AnimatedFade>
+        <AnimatedFade appear duration={200} slide={32} in={!isClosing} onExited={terminatePortal}>
+          <ModalContents>
+            <LoadableComponent {...queryVars} closePortal={closePortal} />
+          </ModalContents>
+        </AnimatedFade>
+      </ModalBlock>
+    </Modal>
   );
 };
 
