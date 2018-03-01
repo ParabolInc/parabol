@@ -69,7 +69,7 @@ storiesOf('ReflectionCard', module)
       render={() => (
         <RetroBackground>
           <ReflectionCard
-            contentState={ContentState.createFromText('Delete me!')}
+            contentState={ContentState.createFromText('I cannot be edited or removed!')}
           />
         </RetroBackground>
       )}
