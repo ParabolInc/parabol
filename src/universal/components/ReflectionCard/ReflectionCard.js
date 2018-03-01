@@ -4,7 +4,7 @@
  * @flow
  */
 // $FlowFixMe
-import {EditorState} from 'draft-js';
+import {EditorState, ContentState} from 'draft-js';
 import React, {Component} from 'react';
 import styled from 'react-emotion';
 import FontAwesome from 'react-fontawesome';
@@ -16,7 +16,7 @@ import editorDecorators from 'universal/components/TaskEditor/decorators';
 
 type Props = {
   // The draft-js content for this card
-  contentState: Object, // `Object` is yucky, but draft-js types are borked right now...
+  contentState: ContentState,
   // The action to take when this card is deleted
   handleDelete?: () => any,
   // The action to take when this card is saved
