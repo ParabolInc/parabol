@@ -129,7 +129,8 @@ const lineHeight = '1.5rem';
 const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
-    color: appTheme.palette.cool,
+    // color: appTheme.palette.cool,
+    color: ui.colorText,
     display: 'flex',
     fontSize: appTheme.typography.s3,
     padding: '.5rem .5rem .5rem 0',
@@ -183,10 +184,10 @@ const styleThunk = () => ({
   },
 
   content: {
-    fontFamily: appTheme.typography.serif,
+    // fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
     flex: 1,
-    fontStyle: 'italic',
+    // fontStyle: 'italic',
     fontWeight: 600,
     lineHeight,
     position: 'relative',
@@ -203,8 +204,11 @@ const styleThunk = () => ({
   },
 
   link: {
+    color: ui.colorText,
+
     ...makeHoverFocus({
-      color: ui.linkColor,
+      // color: ui.linkColor,
+      color: ui.colorText,
       textDecoration: 'none'
     })
   },
@@ -279,11 +283,13 @@ const styleThunk = () => ({
   },
 
   canNavigate: {
-    color: ui.linkColor,
+    // color: ui.linkColor,
+    color: ui.colorText,
 
     ...makeHoverFocus({
-      color: ui.linkColorHover,
+      // color: ui.linkColorHover,
       cursor: 'pointer',
+      opacity: '.5',
       textDecoration: 'underline'
     })
   }

@@ -1,7 +1,7 @@
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 export default {
-  color: appTheme.palette.warm,
+  color: ui.colorError,
   fontWeight: 600,
   textAlign: 'center'
 };

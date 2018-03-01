@@ -27,7 +27,7 @@ class OrgPlanSqueeze extends Component {
     const {showCost} = this.state;
     const toggle = (<Button
       buttonSize="medium"
-      colorPalette="cool"
+      colorPalette="warm"
       depth={2}
       isBlock
       label="Upgrade to the Pro Plan"
@@ -63,7 +63,7 @@ class OrgPlanSqueeze extends Component {
               <Button
                 buttonSize="small"
                 buttonStyle="flat"
-                colorPalette="cool"
+                colorPalette="warm"
                 icon="question-circle"
                 iconPlacement="right"
                 label="How much will it cost?"

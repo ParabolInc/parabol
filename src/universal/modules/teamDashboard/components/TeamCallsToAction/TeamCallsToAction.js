@@ -38,7 +38,6 @@ const TeamCallToAction = ({history, teamId}: Props) => {
         <Button
           buttonStyle="solid"
           colorPalette="warm"
-          depth={1}
           icon="users"
           iconPlacement="left"
           label="Start Action Meeting"
@@ -51,7 +50,6 @@ const TeamCallToAction = ({history, teamId}: Props) => {
           <Button
             buttonStyle="solid"
             colorPalette="warm"
-            depth={1}
             icon="users"
             iconPlacement="left"
             label="Start Retrospective"

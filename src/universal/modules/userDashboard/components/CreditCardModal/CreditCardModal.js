@@ -105,7 +105,7 @@ const CreditCardModal = (props) => {
           <div className={css(styles.buttonGroup)}>
             <div className={css(styles.updateButton)}>
               <Button
-                colorPalette="cool"
+                colorPalette="warm"
                 disabled={submitting}
                 isBlock
                 label={crudAction}

@@ -148,7 +148,6 @@ const boxShadowLocal = `${boxShadowBase} ${borderLocal}`;
 const styleThunk = () => ({
   meetingAvatarGroupRoot: {
     alignItems: 'flex-end',
-    backgroundColor: '#fff',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',

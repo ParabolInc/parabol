@@ -38,7 +38,8 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
-const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
+// const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
+const backgroundColor = appTheme.brand.primary.silver;
 
 // Small border radius for controls (inputs, buttons, etcs.)
 const borderRadiusSmall = '.125rem';
@@ -53,7 +54,8 @@ const BUTTON_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
 const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE;
 
 // Color (default for text)
-const COLOR_TEXT = appTheme.palette.dark10d;
+const COLOR_TEXT = appTheme.brand.primary.darkGray;
+const COLOR_ERROR = appTheme.brand.secondary.red;
 
 // Color palette
 const white = '#fff';
@@ -243,8 +245,9 @@ const ui = {
   cardEditingStatusFontSize: '.6875rem',
   cardEditingStatusLineHeight: appTheme.typography.sBase,
   cardMaxWidth: '17.5rem',
-  cardMinHeight: '6.875rem',
-  cardPaddingBase: '.5rem',
+  // cardMinHeight: '6.875rem',
+  cardMinHeight: '7.3125rem',
+  cardPaddingBase: '.9375rem', // was .5rem
   cardDragStyle: {
     boxShadow: shadow[3]
   },
@@ -255,6 +258,7 @@ const ui = {
 
   // Color (default for text)
   // ---------------------------------------------------------------------------
+  colorError: COLOR_ERROR,
   colorText: COLOR_TEXT,
 
   // Controls
@@ -280,9 +284,10 @@ const ui = {
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
   dashHeaderTitleStyles: {
-    color: appTheme.palette.dark,
+    color: COLOR_TEXT,
+    fontFamily: appTheme.typography.serif,
     fontSize: '1.75rem',
-    fontWeight: 400,
+    fontWeight: 600,
     lineHeight: '1.5'
   },
   dashMenuHeight: '13.5625rem',
@@ -427,8 +432,10 @@ const ui = {
 
   // Link
   // ---------------------------------------------------------------------------
-  linkColor: appTheme.palette.cool,
-  linkColorHover: tinycolor(appTheme.palette.cool).darken(15).toHexString(),
+  // linkColor: appTheme.palette.cool,
+  linkColor: COLOR_TEXT,
+  // linkColorHover: tinycolor(appTheme.palette.cool).darken(15).toHexString(),
+  linkColorHover: appTheme.palette.mid,
 
   // Meeting
   // ---------------------------------------------------------------------------
@@ -467,6 +474,11 @@ const ui = {
     MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS,
     MODAL_LAYOUT_VIEWPORT
   ],
+
+  // Nav
+  // ---------------------------------------------------------------------------
+
+  navMenuFontSize: '.9375rem',
 
   // Notifications
   // ---------------------------------------------------------------------------

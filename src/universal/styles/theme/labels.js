@@ -1,5 +1,22 @@
+import brand from 'universal/styles/theme/brand';
 import appTheme from 'universal/styles/theme/appTheme';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
+
+const stateColor = {
+  done: '#7C5FB0', // variant of primary purple, TODO: needs approximate generated palette value
+  stuck: '#FE7168', // variant of primary orange, TODO: needs approximate generated palette value
+  future: appTheme.palette.cool, // brand.primary.teal
+  active: brand.secondary.green, // TODO: needs generated palette value
+  archive: '#A2A1AC', // TODO: needs generated palette value (gray variant)
+  private: brand.secondary.yellow // TODO: needs generated palette value
+};
+
+const ARCHIVED = {
+  color: stateColor.archive,
+  icon: 'archive',
+  label: 'Archived',
+  slug: 'archived'
+};
 
 const labels = {
   taskStatus: {
@@ -10,42 +27,44 @@ const labels = {
       FUTURE
     ],
     [ACTIVE]: {
-      color: appTheme.palette.cool,
+      color: stateColor.active,
       icon: 'arrow-right',
       label: 'Active',
       slug: ACTIVE
     },
     [STUCK]: {
-      color: appTheme.palette.warm,
+      color: stateColor.stuck,
       icon: 'exclamation-triangle',
       label: 'Stuck',
       slug: STUCK
     },
     [DONE]: {
-      color: appTheme.palette.dark,
+      color: stateColor.done,
       icon: 'check',
       label: 'Done',
       slug: DONE
     },
     [FUTURE]: {
-      color: appTheme.palette.mid,
+      color: stateColor.future,
+      icon: 'clock-o',
+      label: 'Future',
+      slug: FUTURE
+    },
+    ...ARCHIVED,
+    ['private']: {
+      color: stateColor.private,
       icon: 'clock-o',
       label: 'Future',
       slug: FUTURE
     }
   },
   archive: {
-    color: appTheme.palette.dark10d,
+    color: stateColor.archive,
     icon: 'archive',
     label: 'Archive',
     slug: 'archive'
   },
-  archived: {
-    color: appTheme.palette.dark10d,
-    icon: 'archive',
-    label: 'Archived',
-    slug: 'archived'
-  },
+  ...ARCHIVED,
   task: {
     color: appTheme.palette.dark,
     icon: 'calendar',

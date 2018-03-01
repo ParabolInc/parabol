@@ -74,6 +74,7 @@ const styleThunk = () => ({
   },
 
   tasksLayout: {
+    borderTop: `1px solid ${ui.dashBorderColor}`,
     display: 'flex',
     flex: 1,
     flexDirection: 'column'

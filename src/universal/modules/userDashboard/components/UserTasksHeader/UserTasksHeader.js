@@ -30,13 +30,14 @@ const targetAnchor = {
   horizontal: 'right'
 };
 
+// <DashSectionHeading label="My Tasks" />
+
 const UserTasksHeader = (props) => {
   const {dispatch, styles, teams, teamFilterId, teamFilterName} = props;
   const toggle = <DashFilterToggle label={teamFilterName} />;
   // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
-      <DashSectionHeading icon="calendar" label="My Tasks" />
       <DashSectionControls>
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>

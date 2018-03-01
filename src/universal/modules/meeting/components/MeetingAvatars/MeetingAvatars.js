@@ -21,7 +21,6 @@ MeetingAvatars.propTypes = {
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',

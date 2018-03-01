@@ -14,7 +14,7 @@ const MeetingInProgressModal = (props) => {
   };
   return (
     <DashModal position="absolute" modalLayout={modalLayout} isClosing={isClosing} closeAfter={closeAfter}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
+      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="warm">
         Oh, hi there!
       </Type>
       <Type align="center" marginBottom="1rem" bold scale="s4">

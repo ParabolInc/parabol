@@ -177,7 +177,7 @@ const styleThunk = () => ({
 
   bullet: {
     display: 'inline-block',
-    fontSize: appTheme.typography.s4,
+    fontSize: ui.navMenuFontSize,
     marginRight: '.75rem',
     textAlign: 'right',
     verticalAlign: 'middle',
@@ -186,7 +186,7 @@ const styleThunk = () => ({
 
   label: {
     display: 'inline-block',
-    fontSize: appTheme.typography.s4,
+    fontSize: ui.navMenuFontSize,
     verticalAlign: 'middle'
   },
 
@@ -266,7 +266,8 @@ const styleThunk = () => ({
   },
 
   sidebar: {
-    backgroundColor: appTheme.palette.mid10l,
+    // backgroundColor: appTheme.palette.mid10l,
+    backgroundColor: ui.palette.white,
     display: 'flex',
     flexDirection: 'column',
     padding: '2rem 0 0',
@@ -297,11 +298,9 @@ const styleThunk = () => ({
   },
 
   teamName: {
-    color: appTheme.palette.cool,
+    color: ui.copyText,
     cursor: 'pointer',
-    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s5,
-    fontStyle: 'italic',
     fontWeight: 600,
     lineHeight: '1.5'
   }

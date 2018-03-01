@@ -215,7 +215,8 @@ const styleThunk = (theme, {borderRadius, buttonSize, buttonStyle, colorPalette,
     base: {
       ...ui.buttonBaseStyles,
       ...buttonSizeStyles,
-      borderRadius: borderRadius || ui.buttonBorderRadius,
+      // borderRadius: borderRadius || ui.buttonBorderRadius,
+      borderRadius: '5em',
       textTransform: textTransform || 'none',
       transition: `box-shadow ${ui.transition[0]}, transform ${ui.transition[0]}`
     },

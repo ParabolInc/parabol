@@ -289,7 +289,8 @@ const styleThunk = () => ({
   footer: {
     // NOTE: height = ui.cardButtonHeight + (ui.cardPaddingBase * 2)
     display: 'flex',
-    height: '2.5rem',
+    // height: '2.5rem',
+    height: '3.375rem',
     justifyContent: 'space-between',
     maxWidth: '100%',
     padding: ui.cardPaddingBase

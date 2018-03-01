@@ -114,7 +114,7 @@ class AddSlackChannel extends Component {
         <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
           <Button
             buttonSize="medium"
-            colorPalette="cool"
+            colorPalette="warm"
             isBlock
             label="Add Channel"
             onClick={this.handleAddChannel}

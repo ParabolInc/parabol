@@ -78,7 +78,7 @@ class MeetingAgendaItems extends Component {
                   </MeetingFacilitationHint> :
                   <Button
                     buttonStyle="flat"
-                    colorPalette="cool"
+                    colorPalette="warm"
                     icon="arrow-circle-right"
                     iconPlacement="right"
                     key={`agendaItem${localPhaseItem}`}

@@ -45,7 +45,7 @@ const NewTeam = (props) => {
           <Button
             buttonSize="small"
             buttonStyle="flat"
-            colorPalette="cool"
+            colorPalette="warm"
             icon="external-link-square"
             iconPlacement="right"
             label="Learn More"

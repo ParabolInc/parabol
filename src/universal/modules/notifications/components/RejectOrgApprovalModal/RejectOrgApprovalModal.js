@@ -61,7 +61,7 @@ const RejectOrgApprovalModal = (props) => {
         <div className={css(styles.buttonBlock)}>
           <Button
             aria-label={`Reject ${inviteeEmail} from the organization`}
-            colorPalette="cool"
+            colorPalette="warm"
             isBlock
             label={`Reject ${inviteeEmail}`}
             size={ui.modalButtonSize}

@@ -65,7 +65,7 @@ const Team = (props) => {
             <Button
               key="1"
               buttonStyle="flat"
-              colorPalette="cool"
+              colorPalette="warm"
               icon="arrow-circle-left"
               iconPlacement="left"
               isBlock
@@ -76,7 +76,7 @@ const Team = (props) => {
             <Button
               buttonSize="small"
               buttonStyle="flat"
-              colorPalette="cool"
+              colorPalette="warm"
               icon="cog"
               iconPlacement="left"
               key="2"

@@ -196,7 +196,7 @@ class AddGitHubRepo extends Component {
         </div>
         <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
           <Button
-            colorPalette="cool"
+            colorPalette="warm"
             isBlock
             label="Add Repo"
             buttonSize="medium"

@@ -19,7 +19,8 @@ type Props = {
   waiting: boolean
 };
 
-const {orange, purple, rose} = appTheme.brand.new;
+const {orange, purple} = appTheme.brand.primary;
+const {rose} = appTheme.brand.secondary;
 
 const makeGradient = (fromColor: string, toColor: string): string => (
   `linear-gradient(to right, ${fromColor} 0, ${toColor} 100%)`

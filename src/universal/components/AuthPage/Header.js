@@ -15,7 +15,7 @@ const HeaderContainer = styled('div')({
   flexDirection: 'row',
   alignItems: 'center',
   width: '100%',
-  backgroundColor: appTheme.brand.new.purple,
+  backgroundColor: appTheme.brand.primary.purple,
   color: 'white',
   fontFamily: appTheme.typography.sansSerif
 });

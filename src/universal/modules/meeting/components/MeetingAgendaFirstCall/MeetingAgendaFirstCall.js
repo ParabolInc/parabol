@@ -38,7 +38,7 @@ const MeetingAgendaFirstCall = (props) => {
             {!hideMoveMeetingControls ?
               <Button
                 buttonStyle="flat"
-                colorPalette="cool"
+                colorPalette="warm"
                 icon="arrow-circle-right"
                 iconPlacement="right"
                 label={`Let’s begin: ${phaseName}`}

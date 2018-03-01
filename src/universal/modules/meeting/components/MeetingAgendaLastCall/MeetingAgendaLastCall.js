@@ -77,7 +77,7 @@ const MeetingAgendaLastCall = (props) => {
                 aria-label="End Meeting"
                 buttonSize="large"
                 buttonStyle="solid"
-                colorPalette="cool"
+                colorPalette="warm"
                 depth={1}
                 isBlock
                 label="End Meeting"

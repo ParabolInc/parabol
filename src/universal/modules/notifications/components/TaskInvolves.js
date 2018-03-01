@@ -131,7 +131,7 @@ class TaskInvolves extends Component {
           <div className={css(styles.widerButton)}>
             <Button
               aria-label="Go to this board"
-              colorPalette="cool"
+              colorPalette="warm"
               isBlock
               label="Go to Board"
               buttonSize={ui.notificationButtonSize}

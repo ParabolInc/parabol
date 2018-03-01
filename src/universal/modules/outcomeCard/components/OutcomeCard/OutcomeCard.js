@@ -7,6 +7,7 @@ import TaskIntegrationLink from 'universal/components/TaskIntegrationLink';
 import TaskWatermark from 'universal/components/TaskWatermark';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
+import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator';
 import {cardBorderTop, cardRootStyles} from 'universal/styles/helpers';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
@@ -57,6 +58,10 @@ const OutcomeCard = (props) => {
     <div className={rootStyles}>
       <TaskWatermark service={service} />
       <div className={css(styles.contentBlock)}>
+        <div className={css(styles.statusIndicatorBlock)}>
+          <OutcomeCardStatusIndicator status={status} />
+          {isPrivate && <OutcomeCardStatusIndicator status="private" />}
+        </div>
         <EditingStatusContainer
           isEditing={isEditing}
           task={task}
@@ -112,37 +117,38 @@ OutcomeCard.propTypes = {
 const styleThunk = () => ({
   root: {
     ...cardRootStyles,
+    borderTop: 0,
     outline: 'none',
-    paddingTop: '.1875rem',
+    padding: `${ui.cardPaddingBase} 0 0`,
     transition: `box-shadow ${ui.transition[0]}`,
-    '::after': {
-      ...cardBorderTop
-    }
+    // '::after': {
+    //   ...cardBorderTop
+    // }
   },
 
-  [ACTIVE]: {
-    '::after': {
-      color: labels.taskStatus[ACTIVE].color
-    }
-  },
-
-  [STUCK]: {
-    '::after': {
-      color: labels.taskStatus[STUCK].color
-    }
-  },
-
-  [DONE]: {
-    '::after': {
-      color: labels.taskStatus[DONE].color
-    }
-  },
-
-  [FUTURE]: {
-    '::after': {
-      color: labels.taskStatus[FUTURE].color
-    }
-  },
+  // [ACTIVE]: {
+  //   '::after': {
+  //     color: labels.taskStatus[ACTIVE].color
+  //   }
+  // },
+  //
+  // [STUCK]: {
+  //   '::after': {
+  //     color: labels.taskStatus[STUCK].color
+  //   }
+  // },
+  //
+  // [DONE]: {
+  //   '::after': {
+  //     color: labels.taskStatus[DONE].color
+  //   }
+  // },
+  //
+  // [FUTURE]: {
+  //   '::after': {
+  //     color: labels.taskStatus[FUTURE].color
+  //   }
+  // },
 
   // hover before focus, it matters
 
@@ -164,13 +170,18 @@ const styleThunk = () => ({
   },
 
   isPrivate: {
-    backgroundColor: ui.privateCardBgColor
+    // backgroundColor: ui.privateCardBgColor
   },
 
-  isArchived: {
-    '::after': {
-      color: labels.archived.color
-    }
+  // isArchived: {
+  //   '::after': {
+  //     color: labels.archived.color
+  //   }
+  // },
+
+  statusIndicatorBlock: {
+    display: 'flex',
+    paddingLeft: ui.cardPaddingBase
   },
 
   contentBlock: {

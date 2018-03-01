@@ -21,7 +21,7 @@ const UnpaidTeamModal = (props) => {
     `Try reaching out to ${billingLeaderName}`;
   return (
     <DashModal position="absolute" modalLayout={modalLayout} isClosing={isClosing} closeAfter={closeAfter}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
+      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="warm">
         Oh dear…
       </Type>
       <Type align="center" bold marginBottom="1.5rem" scale="s4">

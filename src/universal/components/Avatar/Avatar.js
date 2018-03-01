@@ -94,7 +94,7 @@ const styleThunk = () => ({
 
   avatarImageBlock: {
     borderRadius: '100%',
-    boxShadow: ui.avatarDefaultBoxShadow,
+    // boxShadow: ui.avatarDefaultBoxShadow,
     display: 'block',
     height: 0,
     margin: '0 auto',

@@ -92,7 +92,7 @@ TaskColumns.defaultProps = {
 
 const styleThunk = () => ({
   root: {
-    borderTop: `1px solid ${ui.dashBorderColor}`,
+    // borderTop: `1px solid ${ui.dashBorderColor}`,
     display: 'flex',
     flex: '1',
     width: '100%'

@@ -52,9 +52,9 @@ const promptBreakpoint = ui.breakpoint.wider;
 
 const styleThunk = (theme, {avatarLarge}) => ({
   meetingPromptRoot: {
-    backgroundColor: appTheme.palette.mid10l,
-    borderRadius: '.5rem',
-    boxShadow: ui.shadow[2],
+    // backgroundColor: appTheme.palette.mid10l,
+    // borderRadius: '.5rem',
+    // boxShadow: ui.shadow[2],
     display: 'flex',
     overflow: 'hidden'
   },

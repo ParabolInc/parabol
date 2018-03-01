@@ -121,7 +121,7 @@ const ProviderRow = (props) => {
           <Button
             buttonSize="small"
             buttonStyle="solid"
-            colorPalette="cool"
+            colorPalette="warm"
             isBlock
             key="linkAccount"
             label="Link My Account"

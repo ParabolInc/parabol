@@ -33,7 +33,7 @@ const FieldsContainer = styled('div')({
 });
 
 const linkStyles = {
-  color: appTheme.brand.new.purple,
+  color: appTheme.brand.primary.purple,
   textDecoration: 'underline'
 };
 

@@ -42,7 +42,7 @@ const MeetingLobby = (props) => {
         <div className={css(styles.buttonBlock)}>
           <Button
             buttonStyle="solid"
-            colorPalette="cool"
+            colorPalette="warm"
             depth={1}
             isBlock
             label="Start Meeting"

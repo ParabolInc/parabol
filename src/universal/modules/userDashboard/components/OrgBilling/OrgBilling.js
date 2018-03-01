@@ -41,7 +41,7 @@ class OrgBilling extends Component {
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
       buttonSize="small"
-      colorPalette="cool"
+      colorPalette="warm"
       label="Update"
     />);
     return (
@@ -73,7 +73,7 @@ class OrgBilling extends Component {
                   <Button
                     buttonSize="medium"
                     buttonStyle="flat"
-                    colorPalette="cool"
+                    colorPalette="warm"
                     label="Load More"
                     onClick={this.loadMore}
                   />

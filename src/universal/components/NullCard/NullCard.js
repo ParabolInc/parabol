@@ -29,10 +29,12 @@ const styleThunk = () => ({
   root: {
     ...CreateCardRootStyles,
 
-    '::after': {
-      ...cardBorderTop,
-      color: appTheme.palette.mid40l
-    }
+    border: 0,
+
+    // '::after': {
+    //   ...cardBorderTop,
+    //   color: appTheme.palette.mid40l
+    // }
   }
 });
 

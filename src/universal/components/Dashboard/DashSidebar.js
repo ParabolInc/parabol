@@ -112,9 +112,10 @@ const styleThunk = () => ({
   navLabel: {
     borderTop: '1px solid rgba(255, 255, 255, .5)',
     cursor: 'default',
-    fontSize: appTheme.typography.s2,
+    fontSize: appTheme.typography.s1,
     fontWeight: 600,
     marginLeft: '1rem',
+    opacity: '.5',
     padding: '1rem 0',
     textTransform: 'uppercase'
   },

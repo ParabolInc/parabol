@@ -31,7 +31,7 @@ const styleThunk = () => ({
   link: {
     ...DashNavItemBaseStyles,
     ':hover': {
-      backgroundColor: appTheme.palette.dark50a,
+      backgroundColor: appTheme.palette.mid90d,
       color: 'inherit',
       cursor: 'pointer',
       textDecoration: 'none'
@@ -44,11 +44,11 @@ const styleThunk = () => ({
   },
 
   active: {
-    backgroundColor: appTheme.palette.dark,
+    backgroundColor: appTheme.palette.mid80d,
     cursor: 'default',
     textDecoration: 'none',
     ':hover': {
-      backgroundColor: appTheme.palette.dark,
+      backgroundColor: appTheme.palette.mid80d,
       color: 'inherit',
       cursor: 'pointer',
       textDecoration: 'none'
