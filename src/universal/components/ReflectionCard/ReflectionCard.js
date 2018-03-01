@@ -12,7 +12,7 @@ import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/Re
 
 type Props = {
   contents: string,
-  handleDelete: () => any
+  handleDelete?: () => any
 };
 
 type State = {
@@ -76,10 +76,12 @@ export default class ReflectionCard extends Component<Props, State> {
     const {showDelete} = this.state;
     const placeholder = 'My reflection thought...';
     return (
-      <ReflectionCardWrapper onMouseEnter={this.showDelete} onMouseLeave={this.hideDelete}>
-        <DeleteButton innerRef={this.saveDeleteButton} aria-label="Delete this reflection" onClick={handleDelete}>
-          {showDelete && <FontAwesome name="times-circle" />}
-        </DeleteButton>
+      <ReflectionCardWrapper onMouseEnter={handleDelete && this.showDelete} onMouseLeave={handleDelete && this.hideDelete}>
+        {handleDelete &&
+          <DeleteButton innerRef={this.saveDeleteButton} aria-label="Delete this reflection" onClick={handleDelete}>
+            {showDelete && <FontAwesome name="times-circle" />}
+          </DeleteButton>
+        }
         <ReflectionCardText>{contents || placeholder}</ReflectionCardText>
       </ReflectionCardWrapper>
     );

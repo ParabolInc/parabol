@@ -18,10 +18,7 @@ storiesOf('ReflectionCard', module)
     <StoryContainer
       render={() => (
         <RetroBackground>
-          <ReflectionCard
-            contents=""
-            handleDelete={action('clicked-delete')}
-          />
+          <ReflectionCard contents="" />
         </RetroBackground>
       )}
     />
@@ -30,10 +27,7 @@ storiesOf('ReflectionCard', module)
     <StoryContainer
       render={() => (
         <RetroBackground>
-          <ReflectionCard
-            contents="One line of text."
-            handleDelete={action('clicked-delete')}
-          />
+          <ReflectionCard contents="One line of text." />
         </RetroBackground>
       )}
     />
@@ -51,8 +45,16 @@ storiesOf('ReflectionCard', module)
               "I hope folks don't get mad at me for writing so much. " +
               'Seriously. When will I stop??'
             }
-            handleDelete={action('clicked-delete')}
           />
+        </RetroBackground>
+      )}
+    />
+  ))
+  .add('can delete', () => (
+    <StoryContainer
+      render={() => (
+        <RetroBackground>
+          <ReflectionCard contents="Delete me!" handleDelete={action('clicked-delete')} />
         </RetroBackground>
       )}
     />
