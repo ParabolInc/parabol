@@ -12,7 +12,7 @@ export default {
 
     // RESOLUTION
     return r.table('Organization')
-      .filter((org) => org('tier').eq('pro'))
+      .getAll('pro', {index: 'tier'})
       .concatMap((org) => org('orgUsers')('inactive'))
       .count((inactive) => r.not(inactive));
   }

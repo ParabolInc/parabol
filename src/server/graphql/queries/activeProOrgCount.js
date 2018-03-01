@@ -18,7 +18,7 @@ export default {
     //
     //   So, we can just count the pro-tier orgs:
     return r.table('Organization')
-      .filter((org) => org('tier').eq('pro'))
+      .getAll('pro', {index: 'tier'})
       .count();
   }
 };
