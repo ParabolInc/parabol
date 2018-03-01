@@ -1,6 +1,8 @@
 import {GraphQLInt} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {requireSU} from 'server/utils/authorization';
+import {PRO} from 'universal/utils/constants';
+
 
 export default {
   type: GraphQLInt,
@@ -18,7 +20,7 @@ export default {
     //
     //   So, we can just count the pro-tier orgs:
     return r.table('Organization')
-      .getAll('pro', {index: 'tier'})
+      .getAll(PRO, {index: 'tier'})
       .count();
   }
 };
