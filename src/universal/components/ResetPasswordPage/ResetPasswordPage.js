@@ -3,6 +3,7 @@
  *
  * @flow
  */
+import promisify from 'es6-promisify';
 import React, {Component} from 'react';
 
 import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
@@ -28,17 +29,10 @@ export default class PasswordResetPage extends Component<Props, State> {
   webAuth = getWebAuth();
 
   auth0ChangePassword = ({email}: {email: string}): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      this.webAuth.changePassword({
-        connection: AUTH0_DB_CONNECTION,
-        email
-      }, (error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
+    const changePassword = promisify(this.webAuth.changePassword, this.webAuth);
+    return changePassword({
+      connection: AUTH0_DB_CONNECTION,
+      email
     });
   };
 
