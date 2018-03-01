@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Children, cloneElement, Component} from 'react';
 import {MAX_INT} from 'universal/utils/constants';
-import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import Modal from 'universal/components/Modal';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -55,7 +54,8 @@ class Tooltip extends Component {
 
   state = {
     inTip: false,
-    inToggle: false
+    inToggle: false,
+    isClosing: false
   };
 
   componentDidMount() {
@@ -69,8 +69,7 @@ class Tooltip extends Component {
      * A "controlled" tooltip is a tooltip which appears and disappears when you
      * ask it to.  It is controlled via the required `isOpen` boolean prop.  It's
      * useful for providing feedback in response to particular events rather than
-     * hover/focus state.  If you want a tooltip that reacts to hover/focus state,
-     * use the `Tooltip` component.
+     * hover/focus state.
      */
     if (typeof this.props.isOpen === 'boolean') return child;
     return cloneElement(child, {
@@ -78,7 +77,8 @@ class Tooltip extends Component {
         const clientRect = e.currentTarget.getBoundingClientRect();
         const handleMouseEnter = () => {
           this.setState({
-            inToggle: true
+            inToggle: true,
+            isClosing: false
           });
           setOriginCoords(clientRect);
         };
@@ -94,7 +94,8 @@ class Tooltip extends Component {
       },
       onMouseLeave: (e) => {
         this.setState({
-          inToggle: false
+          inToggle: false,
+          isClosing: !this.state.inTip
         });
         const {onMouseLeave} = child.props;
         if (onMouseLeave) {
@@ -109,7 +110,8 @@ class Tooltip extends Component {
         }
         if (hideOnFocus) {
           this.setState({
-            inToggle: false
+            inToggle: false,
+            isClosing: !this.state.inTip
           });
           clearTimeout(this.delayTimer);
         }
@@ -120,45 +122,52 @@ class Tooltip extends Component {
   // this is useful if the tooltip is positioned over the toggle due to small screens, etc.
   makeSmartTip() {
     const {tip} = this.props;
-    const {inToggle} = this.state;
+    const {inToggle, isClosing} = this.state;
     return cloneElement(tip, {
       onMouseEnter: () => {
-        if (!inToggle) {
+        if (!inToggle && !isClosing) {
           this.setState({
-            inTip: true
+            inTip: true,
+            isClosing: false
           });
         }
       },
       onMouseLeave: () => {
         this.setState({
-          inTip: false
+          inTip: false,
+          isClosing: !this.state.inToggle
         });
       }
     });
   }
 
+  terminatePortal = () => {
+    this.setState({
+      inTip: false,
+      inToggle: false,
+      isClosing: false
+    })
+  };
+
   render() {
     const {coords, setModalRef} = this.props;
-    const {inTip, inToggle} = this.state;
-    const isOpen = inTip || inToggle || this.props.isOpen;
+    const {inTip, inToggle, isClosing} = this.state;
+    const isOpen = inTip || inToggle || isClosing || this.props.isOpen;
+
     return (
       <React.Fragment>
         <div ref={(c) => { this.childRef = c; }}>
           {this.makeSmartChildren()}
         </div>
-        <TransitionGroup appear component={null}>
-          {isOpen &&
-          <AnimatedFade>
-            <Modal>
-              <ModalBlock style={coords} innerRef={setModalRef}>
-                <ModalContents>
-                  {this.makeSmartTip()}
-                </ModalContents>
-              </ModalBlock>
-            </Modal>
+        <Modal isOpen={isOpen}>
+          <AnimatedFade appear duration={100} slide={8} in={!isClosing} onExited={this.terminatePortal}>
+            <ModalBlock style={coords} innerRef={setModalRef}>
+              <ModalContents>
+                {this.makeSmartTip()}
+              </ModalContents>
+            </ModalBlock>
           </AnimatedFade>
-          }
-        </TransitionGroup>
+        </Modal>
       </React.Fragment>
     );
   }

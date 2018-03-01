@@ -24,7 +24,7 @@ const OrgMembersRoot = ({atmosphere, orgId, org}) => {
       variables={{orgId, first: 10000}}
       render={({error, props: queryProps}) => {
         return (
-          <TransitionGroup appear component={null}>
+          <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {queryProps && <AnimatedFade key="1">
               <OrgMembers viewer={queryProps.viewer} orgId={orgId} org={org} />

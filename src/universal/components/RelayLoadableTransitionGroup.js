@@ -33,7 +33,7 @@ class RelayTransitionGroup extends Component {
       clearTimeout(this.delayTimer);
     }
     return (
-      <TransitionGroup appear component={null}>
+      <TransitionGroup appear component={React.Fragment}>
         <AnimatedFade>
           {props ?
             <LoadableComponent {...extraProps} viewer={props.viewer} /> :

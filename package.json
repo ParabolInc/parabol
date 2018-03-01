@@ -201,7 +201,7 @@
     "react-router": "4.2.0",
     "react-router-dom": "4.2.2",
     "react-test-renderer": "^16.0.0",
-    "react-transition-group": "https://github.com/mattkrick/react-transition-group/tarball/a514cd964a9c67cf5ed122eeeaccc6e3ad4ec53b",
+    "react-transition-group": "https://github.com/mattkrick/react-transition-group/tarball/d2dac2cb5de9a7757c6e430b2b90f200c34d5369",
     "react-virtualized": "^9.10.1",
     "redux": "^3.7.2",
     "redux-form": "^7.2.3",

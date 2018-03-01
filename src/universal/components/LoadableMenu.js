@@ -3,10 +3,11 @@ import ui from 'universal/styles/ui';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import styled from 'react-emotion';
 
-import type {LoadablePortalProps} from 'universal/decorators/withLoadablePortal';
-import withLoadablePortal from 'universal/decorators/withLoadablePortal';
 import type {WithCoordsProps} from 'universal/decorators/withCoordsV2';
 import Modal from 'universal/components/Modal';
+import withCoordsV2 from 'universal/decorators/withCoordsV2';
+import withToggledPortal from 'universal/decorators/withToggledPortal';
+import type {ToggledPortalProps} from 'universal/decorators/withToggledPortal';
 
 const MenuBlock = styled('div')(({maxWidth}) => ({
   maxWidth,
@@ -31,7 +32,7 @@ const MenuContents = styled('div')(({maxHeight}) => ({
 type Props = {
   LoadableComponent: React.Component,
   queryVars?: Object,
-  ...LoadablePortalProps,
+  ...ToggledPortalProps,
   ...WithCoordsProps
 };
 
@@ -50,4 +51,4 @@ const LoadableMenu = (props: Props) => {
   );
 };
 
-export default withLoadablePortal({withCoords: true})(LoadableMenu);
+export default withCoordsV2(withToggledPortal(LoadableMenu));
