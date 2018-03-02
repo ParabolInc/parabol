@@ -19,8 +19,6 @@ type Stage = 'positive' | 'negative' | 'change';
 type Props = {
   // The draft-js content for this card
   contentState: ContentState,
-  // The name of the user who is currently dragging this card to a new place, if any
-  userDragging?: string,
   // The action to take when this card is deleted
   handleDelete?: () => any,
   // The action to take when this card is saved
@@ -29,7 +27,9 @@ type Props = {
   // the under-the-mouse dragged card, or the sitting-where-it-came-from card.
   pulled?: boolean,
   // The stage of the meeting this was created during
-  stage?: Stage
+  stage?: Stage,
+  // The name of the user who is currently dragging this card to a new place, if any
+  userDragging?: string,
 };
 
 type State = {
@@ -64,13 +64,13 @@ const BottomRight = styled('div')({
   width: '100%'
 });
 
-const PulledDraggingWrapper = styled('div')({
-  transform: 'rotate(2deg)' // Just to differentiate this state for now
-});
-
-const TeammateDraggingWrapper = styled('div')({
-  opacity: 0.5
-});
+type DraggingWrapperProps = {
+  pulled?: boolean,
+  userDragging?: boolean
+};
+const DraggingWrapper = styled('div')(({pulled, userDragging}: DraggingWrapperProps) => ({
+  opacity: userDragging && !pulled && 0.5
+}));
 
 const TextButton = styled(PlainButton)({
   margin: '0 0.25rem',
@@ -134,16 +134,6 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   deleteButton: ?HTMLElement;
-
-  maybeGetDraggingWrapper = () => {
-    const {pulled, userDragging} = this.props;
-    if (userDragging && pulled) {
-      return PulledDraggingWrapper;
-    } else if (userDragging && !pulled) {
-      return TeammateDraggingWrapper;
-    }
-    return 'div';
-  };
 
   maybeRenderBottomBar = () => {
     const {stage} = this.props;
@@ -213,11 +203,11 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   render() {
-    const DraggingWrapper = this.maybeGetDraggingWrapper();
+    const {pulled, userDragging} = this.props;
     return (
-      <DraggingWrapper>
+      <DraggingWrapper pulled={pulled} userDragging={userDragging}>
         {this.maybeRenderUserDragging()}
-        <ReflectionCardWrapper>
+        <ReflectionCardWrapper pulled={pulled}>
           <ReflectionCardMain>
             {this.renderCardContent()}
           </ReflectionCardMain>
