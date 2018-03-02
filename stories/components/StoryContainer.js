@@ -37,6 +37,7 @@ export default class StoryContainer extends Component<Props> {
       color: appTheme.palette.dark,
       borderBottom: `1px solid ${appTheme.palette.mid}`,
       marginBottom: '1rem',
+      maxWidth: '50rem',
       paddingBottom: '0.5rem'
     };
     return Boolean(description) && (

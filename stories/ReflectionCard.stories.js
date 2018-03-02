@@ -103,13 +103,19 @@ storiesOf('ReflectionCard', module)
     <RetroBackground>
       <StoryContainer
         description={
-          'Shows the state of a card which is being dragged by a teammate. ' +
-          'The card sits where it it is being dragged from.'
+          'Shows the states of a card which is being dragged by a teammate or oneself. ' +
+          'When being dragged, the card is seen twice; where it is being dragged from, ' +
+          'and its current instance being pulled under the mouse'
         }
         render={() => (
           <Grid>
             <ReflectionCard
-              contentState={ContentState.createFromText('Read Only')}
+              contentState={ContentState.createFromText('Sitting in the "from" state')}
+              userDragging="Dan"
+            />
+            <ReflectionCard
+              contentState={ContentState.createFromText('Pulled under the mouse')}
+              pulled
               userDragging="Dan"
             />
           </Grid>

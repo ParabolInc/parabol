@@ -25,6 +25,9 @@ type Props = {
   handleDelete?: () => any,
   // The action to take when this card is saved
   handleSave?: (editorState: EditorState) => any,
+  // If the `userDragging` prop is provided, this states whether it serves as
+  // the under-the-mouse dragged card, or the sitting-where-it-came-from card.
+  pulled?: boolean,
   // The stage of the meeting this was created during
   stage?: Stage
 };
@@ -59,6 +62,14 @@ const BottomRight = styled('div')({
   flexShrink: 1.5,
   justifyContent: 'flex-end',
   width: '100%'
+});
+
+const PulledDraggingWrapper = styled('div')({
+  transform: 'rotate(2deg)' // Just to differentiate this state for now
+});
+
+const TeammateDraggingWrapper = styled('div')({
+  opacity: 0.5
 });
 
 const TextButton = styled(PlainButton)({
@@ -123,6 +134,16 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   deleteButton: ?HTMLElement;
+
+  maybeGetDraggingWrapper = () => {
+    const {pulled, userDragging} = this.props;
+    if (userDragging && pulled) {
+      return PulledDraggingWrapper;
+    } else if (userDragging && !pulled) {
+      return TeammateDraggingWrapper;
+    }
+    return 'div';
+  };
 
   maybeRenderBottomBar = () => {
     const {stage} = this.props;
@@ -192,9 +213,9 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   render() {
-    const {userDragging} = this.props;
+    const DraggingWrapper = this.maybeGetDraggingWrapper();
     return (
-      <div className={userDragging && css({opacity: 0.5})}>
+      <DraggingWrapper>
         {this.maybeRenderUserDragging()}
         <ReflectionCardWrapper>
           <ReflectionCardMain>
@@ -202,7 +223,7 @@ export default class ReflectionCard extends Component<Props, State> {
           </ReflectionCardMain>
           {this.maybeRenderBottomBar()}
         </ReflectionCardWrapper>
-      </div>
+      </DraggingWrapper>
     );
   }
 }
