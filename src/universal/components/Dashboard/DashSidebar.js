@@ -19,38 +19,40 @@ const DashSidebar = (props) => {
   return (
     <div className={css(styles.root)}>
       <StandardHub viewer={viewer} />
-      <nav className={css(styles.nav)}>
-        <div className={css(styles.navTop)}>
-          <div className={css(styles.singleNavItem)}>
-            <DashNavItem
-              location={location}
-              href="/me"
-              label="My Dashboard"
-            />
-          </div>
-          <div className={css(styles.navLabel)}>
-            {'My Teams'}
-          </div>
-        </div>
-        <div className={css(styles.navMain)}>
-          <DashNavList location={location} viewer={viewer} />
-        </div>
-        <div className={css(styles.navBottom)}>
-          <NavLink
-            className={css(styles.addTeam)}
-            activeClassName={css(styles.addTeamDisabled)}
-            title="Add New Team"
-            to="/newteam/1"
-          >
-            <div className={css(styles.addTeamIcon)}>
-              <FontAwesome name="plus-square" />
+      <div className={css(styles.navBlock)}>
+        <nav className={css(styles.nav)}>
+          <div className={css(styles.navTop)}>
+            <div className={css(styles.singleNavItem)}>
+              <DashNavItem
+                location={location}
+                href="/me"
+                label="My Dashboard"
+              />
             </div>
-            <div className={css(styles.addTeamLabel)}>
-              Add New Team
+            <div className={css(styles.navLabel)}>
+              {'My Teams'}
             </div>
-          </NavLink>
-        </div>
-      </nav>
+          </div>
+          <div className={css(styles.navMain)}>
+            <DashNavList location={location} viewer={viewer} />
+          </div>
+          <div className={css(styles.navBottom)}>
+            <NavLink
+              className={css(styles.addTeam)}
+              activeClassName={css(styles.addTeamDisabled)}
+              title="Add New Team"
+              to="/newteam/1"
+            >
+              <div className={css(styles.addTeamIcon)}>
+                <FontAwesome name="plus-square" />
+              </div>
+              <div className={css(styles.addTeamLabel)}>
+                Add New Team
+              </div>
+            </NavLink>
+          </div>
+        </nav>
+      </div>
       <div className={css(styles.brand)}>
         <a href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
           <img alt="Parabol" className={css(styles.logo)} src={logoMark} />
@@ -83,9 +85,18 @@ const styleThunk = () => ({
     minWidth: ui.dashSidebarWidth
   },
 
-  nav: {
-    display: 'flex',
+  navBlock: {
     flex: 1,
+    position: 'relative',
+  },
+
+  nav: {
+    left: 0,
+    top: 0,
+    maxHeight: '100%',
+    position: 'absolute',
+    display: 'flex',
+    // flex: 1,
     flexDirection: 'column',
     paddingBottom: '1.25rem',
     // paddingLeft: '3.75rem',
