@@ -9,8 +9,8 @@ import React from 'react';
 import styled from 'react-emotion';
 import {Field, reduxForm} from 'redux-form';
 
-import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
+import PrimaryButton from 'universal/components/PrimaryButton/PrimaryButton';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 
@@ -53,14 +53,9 @@ const SignInEmailPasswordForm = (props: Props) => (
         disabled={props.submitting}
       />
     </FieldsContainer>
-    <Button
-      disabled={!props.valid}
-      waiting={props.submitting}
-      type="submit"
-      label="Sign Up"
-      title="Sign Up"
-      colorPalette="warm"
-    />
+    <PrimaryButton disabled={!props.valid} waiting={props.submitting} type="submit">
+      Sign Up
+    </PrimaryButton>
   </Form>
 );
 

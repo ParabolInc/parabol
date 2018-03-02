@@ -38,6 +38,7 @@ export default {
     if (inactive) {
       const orgIds = userOrgs.map(({id}) => id);
       adjustUserCount(userId, orgIds, UNPAUSE_USER);
+      // TODO: re-identify
     }
 
     if (connectedSockets.length === 1) {

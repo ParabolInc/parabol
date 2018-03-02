@@ -27,6 +27,7 @@ export default ({action, waiting, provider, handleClick}: Props) => {
   return (
     <ButtonContainer>
       <Button
+        borderRadius="100px"
         type="button"
         title={label}
         label={label}
