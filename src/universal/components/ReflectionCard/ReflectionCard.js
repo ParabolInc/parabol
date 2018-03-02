@@ -6,7 +6,7 @@
 // $FlowFixMe
 import {EditorState, ContentState} from 'draft-js';
 import React, {Component, Fragment} from 'react';
-import styled from 'react-emotion';
+import styled, {css} from 'react-emotion';
 
 import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
@@ -19,6 +19,8 @@ type Stage = 'positive' | 'negative' | 'change';
 type Props = {
   // The draft-js content for this card
   contentState: ContentState,
+  // The name of the user who is currently dragging this card to a new place, if any
+  userDragging?: string,
   // The action to take when this card is deleted
   handleDelete?: () => any,
   // The action to take when this card is saved
@@ -158,6 +160,19 @@ export default class ReflectionCard extends Component<Props, State> {
     <BottomLeft>{getDisplayName(this.props.stage)}</BottomLeft>
   );
 
+  maybeRenderUserDragging = () => {
+    const {userDragging} = this.props;
+    const styles = {
+      color: appTheme.palette.warm,
+      textAlign: 'end'
+    };
+    return Boolean(userDragging) && (
+      <div className={css(styles)}>
+        {userDragging}
+      </div>
+    );
+  };
+
   renderCardContent = () => {
     const {handleSave} = this.props;
     const {editorState} = this.state;
@@ -177,13 +192,17 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   render() {
+    const {userDragging} = this.props;
     return (
-      <ReflectionCardWrapper>
-        <ReflectionCardMain>
-          {this.renderCardContent()}
-        </ReflectionCardMain>
-        {this.maybeRenderBottomBar()}
-      </ReflectionCardWrapper>
+      <div className={userDragging && css({opacity: 0.5})}>
+        {this.maybeRenderUserDragging()}
+        <ReflectionCardWrapper>
+          <ReflectionCardMain>
+            {this.renderCardContent()}
+          </ReflectionCardMain>
+          {this.maybeRenderBottomBar()}
+        </ReflectionCardWrapper>
+      </div>
     );
   }
 }

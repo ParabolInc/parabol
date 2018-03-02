@@ -18,35 +18,37 @@ import StoryContainer from './components/StoryContainer';
 
 storiesOf('ReflectionCard', module)
   .add('with no contents', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
           <ReflectionCard
             contentState={ContentState.createFromText('')}
             handleDelete={action('handle-delete')}
             handleSave={action('handle-save')}
           />
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
   ))
+
   .add('with one line', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
           <ReflectionCard
             contentState={ContentState.createFromText('One line of text.')}
             handleDelete={action('handle-delete')}
             handleSave={action('handle-save')}
           />
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
   ))
+
   .add('with many lines', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
           <ReflectionCard
             contentState={
               ContentState.createFromText(
@@ -61,25 +63,27 @@ storiesOf('ReflectionCard', module)
             handleDelete={action('handle-delete')}
             handleSave={action('handle-save')}
           />
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
   ))
+
   .add('read-only', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
           <ReflectionCard
             contentState={ContentState.createFromText('I cannot be edited or removed!')}
           />
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
   ))
-  .add('with-stage', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+
+  .add('with stage', () => (
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
           <Grid>
             {[undefined, 'positive', 'negative', 'change'].map((stage) => (
               <ReflectionCard
@@ -90,7 +94,26 @@ storiesOf('ReflectionCard', module)
               />
             ))}
           </Grid>
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
+  ))
+
+  .add('being dragged', () => (
+    <RetroBackground>
+      <StoryContainer
+        description={
+          'Shows the state of a card which is being dragged by a teammate. ' +
+          'The card sits where it it is being dragged from.'
+        }
+        render={() => (
+          <Grid>
+            <ReflectionCard
+              contentState={ContentState.createFromText('Read Only')}
+              userDragging="Dan"
+            />
+          </Grid>
+        )}
+      />
+    </RetroBackground>
   ));

@@ -7,14 +7,16 @@
 import type {Node} from 'react';
 
 import React, {Component} from 'react';
-import styled from 'react-emotion';
+import styled, {css} from 'react-emotion';
 
 import injectGlobals from 'universal/styles/hepha';
+import appTheme from 'universal/styles/theme/appTheme';
 import globalStyles from 'universal/styles/theme/globalStyles';
 
 import '../../static/css/font-awesome.css';
 
 type Props = {
+  description?: string,
   render: () => Node
 };
 
@@ -29,7 +31,27 @@ export default class StoryContainer extends Component<Props> {
     injectGlobals(globalStyles);
   }
 
+  maybeRenderDescription = () => {
+    const {description} = this.props;
+    const style = {
+      color: appTheme.palette.dark,
+      borderBottom: `1px solid ${appTheme.palette.mid}`,
+      marginBottom: '1rem',
+      paddingBottom: '0.5rem'
+    };
+    return Boolean(description) && (
+      <div className={css(style)}>
+        {description}
+      </div>
+    );
+  };
+
   render() {
-    return <FullPageWrapper>{this.props.render()}</FullPageWrapper>;
+    return (
+      <FullPageWrapper>
+        {this.maybeRenderDescription()}
+        {this.props.render()}
+      </FullPageWrapper>
+    );
   }
 }

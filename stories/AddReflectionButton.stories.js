@@ -15,13 +15,13 @@ import StoryContainer from './components/StoryContainer';
 
 storiesOf('AddReflectionButton', module)
   .add('adds a reflection', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
           <AddReflectionButton
             handleClick={action('handle-click-add-reflection')}
           />
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
   ));

@@ -16,14 +16,15 @@ import StoryContainer from './components/StoryContainer';
 
 storiesOf('ReflectionCardDropPreview', module)
   .add('with a height', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+    <RetroBackground>
+      <StoryContainer
+        description="Shows where a reflection card will drop"
+        render={() => (
           <Grid>
             <ReflectionCardDropPreview height="2rem" />
             <ReflectionCardDropPreview height="200px" />
           </Grid>
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
   ));

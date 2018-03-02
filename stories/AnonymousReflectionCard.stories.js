@@ -14,20 +14,20 @@ import StoryContainer from './components/StoryContainer';
 
 storiesOf('AnonymousReflectionCard', module)
   .add('being edited', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
           <AnonymousReflectionCard isEditing />
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
   ))
   .add('not being edited', () => (
-    <StoryContainer
-      render={() => (
-        <RetroBackground>
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
           <AnonymousReflectionCard />
-        </RetroBackground>
-      )}
-    />
+        )}
+      />
+    </RetroBackground>
   ));
