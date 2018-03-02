@@ -13,7 +13,7 @@ const getTraits = (userIds) => {
       email: r.row('email').default(''),
       id: r.row('id').default(''),
       name: r.row('preferredName').default(''),
-      parabol_id: r.row('id').default('')
+      parabolId: r.row('id').default('') // passed as a distinct trait name for HubSpot
     });
 };
 
