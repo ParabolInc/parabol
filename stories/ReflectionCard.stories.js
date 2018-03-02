@@ -92,7 +92,9 @@ storiesOf('ReflectionCard', module)
           <ReflectionCardShowcase>
             {[undefined, 'positive', 'negative', 'change'].map((stage) => (
               <ReflectionCard
-                contentState={ContentState.createFromText('I cannot be edited or removed!')}
+                contentState={ContentState.createFromText('Edit me!')}
+                handleDelete={action('handle-delete')}
+                handleSave={action('handle-save')}
                 stage={stage}
               />
             ))}

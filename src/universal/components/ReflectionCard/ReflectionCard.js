@@ -5,9 +5,8 @@
  */
 // $FlowFixMe
 import {EditorState, ContentState} from 'draft-js';
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import styled from 'react-emotion';
-import FontAwesome from 'react-fontawesome';
 
 import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
@@ -29,18 +28,9 @@ type Props = {
 };
 
 type State = {
-  editorState: EditorState,
-  showDelete: boolean
+  confirmingDelete: boolean,
+  editorState: EditorState
 };
-
-const DeleteButton = styled(PlainButton)({
-  backgroundColor: 'rgba(0, 0, 0, 0)',
-  color: 'red',
-  position: 'absolute',
-  top: '-0.5rem',
-  right: '-0.5rem',
-  zIndex: 1
-});
 
 const ReflectionCardMain = styled('div')({
   maxHeight: '10rem',
@@ -48,60 +38,81 @@ const ReflectionCardMain = styled('div')({
   padding: '0.8rem'
 });
 
-const StageLabel = styled('div')({
+const BottomBar = styled('div')({
+  alignItems: 'flex-start',
   color: appTheme.palette.mid,
+  display: 'flex',
+  fontSize: '0.9rem',
+  justifyContent: 'space-between',
   padding: '0.4rem 0.8rem'
 });
 
-const stageDisplayNames = {
-  positive: "What's working?",
-  negative: 'Where did you get stuck?',
-  change: 'What might we do differently next time?'
+const BottomLeft = styled('div')({
+  width: '100%'
+});
+
+const BottomRight = styled('div')({
+  alignSelf: 'flex-end',
+  display: 'flex',
+  flexShrink: 1.5,
+  justifyContent: 'flex-end',
+  width: '100%'
+});
+
+const TextButton = styled(PlainButton)({
+  margin: '0 0.25rem',
+  textDecoration: 'underline'
+});
+
+const getDisplayName = (stage: ?Stage): string => {
+  switch (stage) {
+    case 'positive':
+      return "What's working?";
+    case 'negative':
+      return 'Where did you get stuck?';
+    case 'change':
+      return 'What might we do differently next time?';
+    default:
+      return '';
+  }
 };
 
 export default class ReflectionCard extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      confirmingDelete: false,
       editorState: EditorState.createWithContent(
         props.contentState,
         editorDecorators(this.getEditorState)
-      ),
-      showDelete: false
+      )
     };
-  }
-
-  componentDidMount() {
-    if (this.deleteButton) {
-      this.deleteButton.addEventListener('focus', this.showDelete);
-      // $FlowFixMe - flow wants us to wrap this in another if (deleteButton)
-      this.deleteButton.addEventListener('blur', this.hideDelete);
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.deleteButton) {
-      this.deleteButton.removeEventListener('focus', this.showDelete);
-    }
-    if (this.deleteButton) { // flow makes us check this twice...
-      this.deleteButton.removeEventListener('blur', this.hideDelete);
-    }
   }
 
   getEditorState = () => (
     this.state.editorState
   );
 
+  setConfirmingDelete = () => {
+    this.setState({confirmingDelete: true});
+  };
+
   setEditorState = (editorState: EditorState) => {
     this.setState({editorState});
   };
 
-  showDelete = () => {
-    this.setState({showDelete: true});
+  canDelete = () => (
+    Boolean(this.props.handleDelete)
+  );
+
+  cancelDelete = () => {
+    this.setState({confirmingDelete: false});
   };
 
-  hideDelete = () => {
-    this.setState({showDelete: false});
+  confirmDelete = () => {
+    if (this.props.handleDelete) {
+      this.props.handleDelete();
+    }
   };
 
   saveDeleteButton = (deleteButton: ?HTMLElement) => {
@@ -110,6 +121,42 @@ export default class ReflectionCard extends Component<Props, State> {
 
   deleteButton: ?HTMLElement;
 
+  maybeRenderBottomBar = () => {
+    const {stage} = this.props;
+    if (!stage && !this.canDelete()) {
+      return null;
+    }
+    return (
+      <BottomBar>
+        {this.maybeRenderStage()}
+        {this.maybeRenderDeleteSection()}
+      </BottomBar>
+    );
+  };
+
+  maybeRenderDeleteSection = () => {
+    if (!this.canDelete()) {
+      return null;
+    }
+    const {confirmingDelete} = this.state;
+    return (
+      <BottomRight>
+        {confirmingDelete ? (
+          <Fragment>
+            <TextButton type="reset" onClick={this.cancelDelete}>Cancel</TextButton>
+            <TextButton type="submit" onClick={this.confirmDelete}>Confirm</TextButton>
+          </Fragment>
+        ) : (
+          <TextButton type="button" onClick={this.setConfirmingDelete}>Delete</TextButton>
+        )}
+      </BottomRight>
+    );
+  };
+
+  maybeRenderStage = () => (
+    <BottomLeft>{getDisplayName(this.props.stage)}</BottomLeft>
+  );
+
   renderCardContent = () => {
     const {handleSave} = this.props;
     const {editorState} = this.state;
@@ -117,6 +164,7 @@ export default class ReflectionCard extends Component<Props, State> {
       <EditorInputWrapper
         ariaLabel="Edit this reflection"
         editorState={editorState}
+        handleChange={this.cancelDelete}
         handleReturn={() => 'not-handled'}
         onBlur={handleSave && (() => handleSave(editorState))}
         placeholder="My reflection thought..."
@@ -127,29 +175,13 @@ export default class ReflectionCard extends Component<Props, State> {
     );
   };
 
-  renderDelete = () => {
-    const {handleDelete} = this.props;
-    const {showDelete} = this.state;
-    return (
-      <DeleteButton innerRef={this.saveDeleteButton} aria-label="Delete this reflection" onClick={handleDelete}>
-        {showDelete && <FontAwesome name="times-circle" />}
-      </DeleteButton>
-    );
-  };
-
   render() {
-    const {handleDelete, stage} = this.props;
-    const canDelete = Boolean(handleDelete);
     return (
-      <ReflectionCardWrapper
-        onMouseEnter={canDelete && this.showDelete}
-        onMouseLeave={canDelete && this.hideDelete}
-      >
+      <ReflectionCardWrapper>
         <ReflectionCardMain>
           {this.renderCardContent()}
         </ReflectionCardMain>
-        {canDelete && this.renderDelete()}
-        {stage && <StageLabel>{stageDisplayNames[stage]}</StageLabel>}
+        {this.maybeRenderBottomBar()}
       </ReflectionCardWrapper>
     );
   }
