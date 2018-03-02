@@ -26,6 +26,7 @@ const DashSidebar = (props) => {
               <DashNavItem
                 location={location}
                 href="/me"
+                icon="table"
                 label="My Dashboard"
               />
             </div>
@@ -44,10 +45,10 @@ const DashSidebar = (props) => {
               to="/newteam/1"
             >
               <div className={css(styles.addTeamIcon)}>
-                <FontAwesome name="plus-square" />
+                <FontAwesome name="plus-circle" />
               </div>
               <div className={css(styles.addTeamLabel)}>
-                Add New Team
+                {'Add New Team'}
               </div>
             </NavLink>
           </div>
@@ -87,18 +88,18 @@ const styleThunk = () => ({
 
   navBlock: {
     flex: 1,
-    position: 'relative',
+    position: 'relative'
   },
 
   nav: {
-    left: 0,
-    top: 0,
-    maxHeight: '100%',
-    position: 'absolute',
     display: 'flex',
     // flex: 1,
     flexDirection: 'column',
+    left: 0,
+    maxHeight: '100%',
     paddingBottom: '1.25rem',
+    position: 'absolute',
+    top: 0,
     // paddingLeft: '3.75rem',
     width: '100%'
   },
@@ -133,40 +134,46 @@ const styleThunk = () => ({
 
   addTeam: {
     ...linkBaseStyles,
+    alignItems: 'center',
+    borderLeft: `${ui.navMenuLeftBorderWidth} solid transparent`,
     cursor: 'pointer',
-    display: 'block',
-    margin: '.5rem 2rem 0',
+    display: 'flex',
+    margin: '.75rem 0 0',
+    opacity: '.65',
+    padding: '.625rem .5rem .625rem 2rem',
     position: 'relative',
     transition: `opacity ${ui.transition[0]}`,
     userSelect: 'none',
 
     ...makeHoverFocus({
       ...linkBaseStyles,
-      opacity: '.5'
+      backgroundColor: ui.navMenuDarkBackgroundColorHover,
+      opacity: 1
     })
   },
 
   addTeamDisabled: {
+    backgroundColor: ui.navMenuDarkBackgroundColorActive,
     cursor: 'default',
-    opacity: '.5'
+    opacity: 1,
+
+    ...makeHoverFocus({
+      backgroundColor: ui.navMenuDarkBackgroundColorActive,
+      opacity: 1
+    })
   },
 
   addTeamIcon: {
-    fontSize: '28px',
-    height: '28px',
-    lineHeight: '28px',
-    position: 'absolute',
-    right: '100%',
-    top: '1px',
-    width: '24px'
+    fontSize: ui.iconSize,
+    height: ui.iconSize,
+    lineHeight: ui.iconSize,
+    paddingLeft: '.1875rem',
+    width: '1.625rem'
   },
 
   addTeamLabel: {
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4,
-    padding: '.4375rem .5rem .4375rem 1rem',
-    textTransform: 'uppercase'
+    fontSize: ui.navMenuFontSize,
+    lineHeight: ui.navMenuLineHeight
   },
 
   brand: {

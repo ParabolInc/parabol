@@ -273,7 +273,7 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    padding: '.125rem 1rem 0',
+    padding: `.125rem ${ui.taskColumnPaddingInner} 0`,
     position: 'absolute',
     width: '100%'
   },

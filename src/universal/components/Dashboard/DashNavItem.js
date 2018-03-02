@@ -3,12 +3,22 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import {NavLink} from 'react-router-dom';
 import DashNavItemBaseStyles from './DashNavItemBaseStyles';
+import FontAwesome from 'react-fontawesome';
+import {textOverflow} from 'universal/styles/helpers';
 
 const DashNavItem = (props) => {
-  const {label, href, styles} = props;
+  const {label, href, icon, styles} = props;
+  const iconStyle = {
+    display: 'block',
+    fontSize: ui.iconSize,
+    height: ui.iconSize,
+    lineHeight: ui.iconSize,
+    opacity: '.5',
+    textAlign: 'left',
+    width: '1.625rem'
+  };
   return (
     <NavLink
       activeClassName={css(styles.link, styles.active)}
@@ -17,13 +27,17 @@ const DashNavItem = (props) => {
       title={label}
       to={href}
     >
-      {label}
+      {icon &&
+        <FontAwesome name={icon} style={iconStyle} />
+      }
+      <div className={css(styles.label)}>{label}</div>
     </NavLink>
   );
 };
 
 DashNavItem.propTypes = {
   href: PropTypes.string,
+  icon: PropTypes.string,
   label: PropTypes.string,
   styles: PropTypes.object
 };
@@ -32,7 +46,7 @@ const styleThunk = () => ({
   link: {
     ...DashNavItemBaseStyles,
     ':hover': {
-      backgroundColor: appTheme.palette.mid90d,
+      backgroundColor: ui.navMenuDarkBackgroundColorHover,
       color: 'inherit',
       cursor: 'pointer',
       textDecoration: 'none'
@@ -45,16 +59,21 @@ const styleThunk = () => ({
   },
 
   active: {
-    backgroundColor: appTheme.palette.mid80d,
+    backgroundColor: ui.navMenuDarkBackgroundColorActive,
     borderColor: `${ui.palette.white} !important`,
     cursor: 'default',
     textDecoration: 'none',
     ':hover': {
-      backgroundColor: appTheme.palette.mid80d,
+      backgroundColor: ui.navMenuDarkBackgroundColorActive,
       color: 'inherit',
       cursor: 'pointer',
       textDecoration: 'none'
     }
+  },
+
+  label: {
+    // ...textOverflow,
+    flex: 1
   }
 });
 

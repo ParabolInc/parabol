@@ -171,7 +171,7 @@ const styleThunk = () => ({
 
   // TODO: Cards need block containers, not margin (TA)
   cardBlock: {
-    marginBottom: '.5rem'
+    marginBottom: '.625rem'
   },
 
   isPrivate: {

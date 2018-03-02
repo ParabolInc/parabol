@@ -71,7 +71,9 @@ const bgThemeValues = {
 const styleThunk = (theme, {bgTheme, compact, depth}) => ({
   panel: {
     backgroundColor: bgTheme ? bgThemeValues[bgTheme] : bgThemeValues.white,
-    border: `1px solid ${ui.panelBorderColor}`,
+    // border: `1px solid ${ui.panelBorderColor}`,
+    // boxShadow: '0 1px 8px rgba(0, 0, 0, 0.15)',
+    boxShadow: ui.panelBoxShadow,
     borderRadius: ui.cardBorderRadius,
     display: 'flex',
     flexDirection: 'column',
@@ -89,7 +91,7 @@ const styleThunk = (theme, {bgTheme, compact, depth}) => ({
   },
 
   depth: {
-    boxShadow: ui.shadow[depth]
+    // boxShadow: ui.shadow[depth]
   },
 
   header: {
@@ -98,10 +100,11 @@ const styleThunk = (theme, {bgTheme, compact, depth}) => ({
   },
 
   label: {
-    color: appTheme.palette.dark,
+    // color: appTheme.palette.dark,
+    color: ui.colorText,
     fontWeight: 600,
     padding: `.75rem ${compact ? ui.panelCompactGutter : ui.panelGutter}`,
-    textTransform: 'uppercase'
+    // textTransform: 'uppercase'
   },
 
   controls: {

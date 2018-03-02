@@ -21,7 +21,7 @@ type Props = {
 const ButtonGroup = styled('div')({
   display: 'flex',
   minWidth: '14rem',
-  paddingLeft: '1rem'
+  paddingLeft: ui.dashGutter
 });
 
 const ButtonBlock = styled('div')({

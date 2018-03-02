@@ -114,6 +114,7 @@ const styleThunk = () => ({
     display: 'flex !important',
     maxWidth: ui.taskColumnsMaxWidth,
     minWidth: ui.taskColumnsMinWidth,
+    padding: `0 ${ui.taskColumnPaddingInner}`,
     width: '100%'
   }
 });

@@ -30,7 +30,7 @@ const styleThunk = () => ({
     borderBottom: `1px solid ${ui.dashBorderColor}`,
     display: 'flex',
     minHeight: '4.875rem',
-    padding: '0 1rem',
+    padding: `0 ${ui.dashGutter}`,
     width: '100%'
   },
 

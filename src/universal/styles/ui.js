@@ -112,7 +112,8 @@ const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
 // Panels
-const panelInnerBorderColor = appTheme.palette.mid30l;
+// const panelInnerBorderColor = appTheme.palette.mid30l;
+const panelInnerBorderColor = appTheme.palette.mid10l;
 
 // Placeholders
 const placeholderColor = appTheme.palette.dark50l;
@@ -281,7 +282,7 @@ const ui = {
   dashBackgroundColor: backgroundColor,
   // dashBorderColor: 'rgba(0, 0, 0, .1)',
   dashBorderColor: appTheme.palette.light90d,
-  dashGutter: '1rem',
+  dashGutter: '1.25rem',
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
   dashHeaderTitleStyles: {
@@ -490,9 +491,12 @@ const ui = {
   // Nav
   // ---------------------------------------------------------------------------
 
+  navMenuDarkBackgroundColorActive: appTheme.palette.mid80d,
+  navMenuDarkBackgroundColorHover: appTheme.palette.mid90d,
   navMenuLightBackgroundColorActive: appTheme.palette.light90l,
   navMenuFontSize: '.9375rem',
   navMenuLineHeight: '1.25rem',
+  navMenuLeftBorderWidth: '.1875rem',
 
   // Notifications
   // ---------------------------------------------------------------------------
@@ -500,6 +504,7 @@ const ui = {
 
   // Panels
   // ---------------------------------------------------------------------------
+  panelBoxShadow: '0 .125rem .25rem rgba(68, 66, 88, 0.05)', // based on dark palette color
   panelBorderColor: appTheme.palette.mid50l,
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
@@ -513,6 +518,7 @@ const ui = {
 
   // Task columns
   // ---------------------------------------------------------------------------
+  taskColumnPaddingInner: '.625rem',
   taskColumnsMaxWidth: '78.25rem',
   taskColumnsMinWidth: '48rem',
 
