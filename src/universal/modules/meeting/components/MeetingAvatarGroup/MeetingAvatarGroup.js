@@ -195,12 +195,10 @@ const styleThunk = () => ({
   },
 
   itemReadOnly: {
-    // marginRight: 0,
+    // Define
   },
 
   avatarBlockReadOnly: {
-    boxShadow: ui.avatarDefaultBoxShadow,
-
     ':hover': {
       opacity: '1'
     }
@@ -215,7 +213,7 @@ const styleThunk = () => ({
   },
 
   tagBlockReadOnly: {
-    // bottom: '-1.3125rem'
+    // Define
   }
 });
 

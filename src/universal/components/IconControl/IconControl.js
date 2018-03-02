@@ -61,7 +61,7 @@ const styleThunk = (customTheme, props) => ({
     border: 0,
     borderRadius: 0,
     boxShadow: 'none',
-    color: appTheme.palette.cool,
+    color: appTheme.palette.mid,
     cursor: 'pointer',
     fontFamily: appTheme.typography.sansSerif,
     fontSize: 0,

@@ -37,13 +37,6 @@ const targetAnchor = {
   horizontal: 'right'
 };
 
-const badgeColor = {
-  done: 'dark',
-  active: 'cool',
-  stuck: 'warm',
-  future: 'mid'
-};
-
 const handleAddTaskFactory = (atmosphere, status, teamId, userId, sortOrder) => () => {
   const newTask = {
     status,

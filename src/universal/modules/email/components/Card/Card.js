@@ -76,7 +76,7 @@ class Card extends Component {
               {/* card body */}
               <div style={contentStyle}>
                 <EmptySpace height={8} />
-                <div style={statusStyle}></div>
+                <div style={statusStyle} />
                 <EmptySpace height={8} />
                 <Editor readOnly editorState={editorState} />
               </div>

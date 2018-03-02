@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 
 const baseStyle = {
-  // color: appTheme.palette.cool, // TODO: theme-able?
   color: ui.colorText // TODO: theme-able?
 };
 

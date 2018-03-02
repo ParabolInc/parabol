@@ -8,11 +8,10 @@ import TaskWatermark from 'universal/components/TaskWatermark';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
 import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator';
-import {cardBorderTop, cardRootStyles} from 'universal/styles/helpers';
+import {cardRootStyles} from 'universal/styles/helpers';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
 import isTaskArchived from 'universal/utils/isTaskArchived';
 import isTaskPrivate from 'universal/utils/isTaskPrivate';
 import isTempId from 'universal/utils/relay/isTempId';
@@ -44,9 +43,6 @@ const OutcomeCard = (props) => {
   const rootStyles = css(
     styles.root,
     styles.cardBlock,
-    styles[status],
-    isPrivate && styles.isPrivate,
-    isArchived && styles.isArchived,
     // hover before focus, it matters
     cardHasHover && styles.cardHasHover,
     cardHasFocus && styles.cardHasFocus,
@@ -54,9 +50,10 @@ const OutcomeCard = (props) => {
   );
   const {integration, taskId} = task;
   const {service} = integration || {};
-  const statusTitle = `Card status: ${status}`;
+  const statusTitle = `Card status: ${labels.taskStatus[status].label}`;
   const privateTitle = ', marked as #private';
-  const statusIndicatorTitle = isPrivate ? `${statusTitle}${privateTitle}` : statusTitle;
+  const archivedTitle = ', set as #archived';
+  const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${isArchived ? archivedTitle : ''}`;
   return (
     <div className={rootStyles}>
       <TaskWatermark service={service} />
@@ -65,6 +62,7 @@ const OutcomeCard = (props) => {
           <div className={css(styles.statusIndicatorBlock)} title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={status} />
             {isPrivate && <OutcomeCardStatusIndicator status="private" />}
+            {isArchived && <OutcomeCardStatusIndicator status="archived" />}
           </div>
           <EditingStatusContainer
             isEditing={isEditing}
@@ -125,35 +123,8 @@ const styleThunk = () => ({
     borderTop: 0,
     outline: 'none',
     padding: `${ui.cardPaddingBase} 0 0`,
-    transition: `box-shadow ${ui.transition[0]}`,
-    // '::after': {
-    //   ...cardBorderTop
-    // }
+    transition: `box-shadow ${ui.transition[0]}`
   },
-
-  // [ACTIVE]: {
-  //   '::after': {
-  //     color: labels.taskStatus[ACTIVE].color
-  //   }
-  // },
-  //
-  // [STUCK]: {
-  //   '::after': {
-  //     color: labels.taskStatus[STUCK].color
-  //   }
-  // },
-  //
-  // [DONE]: {
-  //   '::after': {
-  //     color: labels.taskStatus[DONE].color
-  //   }
-  // },
-  //
-  // [FUTURE]: {
-  //   '::after': {
-  //     color: labels.taskStatus[FUTURE].color
-  //   }
-  // },
 
   // hover before focus, it matters
 
@@ -169,24 +140,11 @@ const styleThunk = () => ({
     boxShadow: 'none'
   },
 
-  // TODO: Cards need block containers, not margin (TA)
   cardBlock: {
     marginBottom: '.625rem'
   },
 
-  isPrivate: {
-    // backgroundColor: ui.privateCardBgColor
-  },
-
-  // isArchived: {
-  //   '::after': {
-  //     color: labels.archived.color
-  //   }
-  // },
-
   cardTopMeta: {
-    // display: 'flex',
-    // justifyContent: 'space-between'
     paddingBottom: '.5rem'
   },
 

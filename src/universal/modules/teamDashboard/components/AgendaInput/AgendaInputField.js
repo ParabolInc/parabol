@@ -16,7 +16,6 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const iconStyle = {
-  // color: appTheme.palette.dark,
   color: appTheme.palette.warm70l,
   display: 'block',
   fontSize: ui.iconSize2x,
@@ -178,18 +177,7 @@ class AgendaInputField extends Component {
   }
 }
 
-// const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.mid60l);
 const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.warm);
-
-// const inputCustomStyles = {
-//   focus: {backgroundColor: appTheme.palette.light70l},
-//   active: {backgroundColor: appTheme.palette.light70l}
-// };
-
-const inputCustomStyles = {
-  focus: {backgroundColor: ui.backgroundColor},
-  active: {backgroundColor: ui.backgroundColor}
-};
 
 const styleThunk = () => ({
   root: {
@@ -209,15 +197,9 @@ const styleThunk = () => ({
   },
 
   input: {
-    // appearance: 'none',
-    // border: 0,
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
-    // backgroundColor: 'transparent',
-    // color: appTheme.palette.dark10d,
-
     boxShadow: 'none',
-
     color: appTheme.palette.warm,
     cursor: 'not-allowed',
     display: 'block',
@@ -237,7 +219,6 @@ const styleThunk = () => ({
 
   inputNotDisabled: {
     cursor: 'text',
-    // ...makeFieldColorPalette('primary', true, inputCustomStyles)
     ...makeFieldColorPalette('primary', true)
   }
 });

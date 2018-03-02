@@ -4,8 +4,7 @@ import ui from 'universal/styles/ui';
 import {
   DashSectionControl,
   DashSectionControls,
-  DashSectionHeader,
-  DashSectionHeading
+  DashSectionHeader
 } from 'universal/components/Dashboard';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';

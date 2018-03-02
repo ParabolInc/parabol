@@ -6,7 +6,6 @@ import ui from 'universal/styles/ui';
 import {NavLink} from 'react-router-dom';
 import DashNavItemBaseStyles from './DashNavItemBaseStyles';
 import FontAwesome from 'react-fontawesome';
-import {textOverflow} from 'universal/styles/helpers';
 
 const DashNavItem = (props) => {
   const {label, href, icon, styles} = props;
@@ -72,7 +71,6 @@ const styleThunk = () => ({
   },
 
   label: {
-    // ...textOverflow,
     flex: 1
   }
 });

@@ -1,15 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const Features = (props) => {
-  const imageStyle = {
-    border: 0,
-    display: 'block'
-  };
-
   const copyStyle = {
     color: ui.colorText,
     fontSize: `${props.fontSize}px`,

@@ -1,14 +1,12 @@
-
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 
 const LabelHeading = styled('div')({
-  color: appTheme.palette.dark50a,
-  fontSize: '.75rem',
-  fontWeight: ui.typeSemiBold,
-  letterSpacing: '.03em',
-  lineHeight: '1rem',
+  color: ui.labelHeadingColor,
+  fontSize: ui.labelHeadingFontSize,
+  fontWeight: ui.labelHeadingFontWeight,
+  letterSpacing: ui.labelHeadingLetterSpacing,
+  lineHeight: ui.labelHeadingLineHeight,
   textTransform: 'uppercase'
 });
 

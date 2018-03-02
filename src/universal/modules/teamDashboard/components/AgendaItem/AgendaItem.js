@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import {DragSource as dragSource} from 'react-dnd';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import tinycolor from 'tinycolor2';
 import Avatar from 'universal/components/Avatar/Avatar';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
@@ -123,13 +122,11 @@ class AgendaItem extends Component {
   }
 }
 
-const warmLinkHover = tinycolor(appTheme.palette.warm).darken(15).toHexString();
 const lineHeight = '1.5rem';
 
 const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
-    // color: appTheme.palette.cool,
     color: ui.palette.mid,
     display: 'flex',
     fontSize: appTheme.typography.s3,
@@ -138,11 +135,9 @@ const styleThunk = () => ({
     width: '100%',
 
     ':hover': {
-      // backgroundColor: appTheme.palette.dark20l
       backgroundColor: appTheme.palette.light50l
     },
     ':focus': {
-      // backgroundColor: appTheme.palette.dark20l
       backgroundColor: appTheme.palette.light50l
     },
     ':hover > div': {
@@ -186,10 +181,8 @@ const styleThunk = () => ({
   },
 
   content: {
-    // fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
     flex: 1,
-    // fontStyle: 'italic',
     fontWeight: 400,
     lineHeight,
     position: 'relative',
@@ -209,26 +202,16 @@ const styleThunk = () => ({
     color: ui.palette.mid,
 
     ...makeHoverFocus({
-      // color: ui.linkColor,
       color: ui.palette.mid,
       textDecoration: 'none'
     })
   },
 
   itemLocal: {
-    // backgroundColor: ui.navMenuLightBackgroundColorActive,
-    // color: appTheme.palette.dark70d
     color: ui.colorText
   },
 
   descLocal: {
-    // color: appTheme.palette.dark70d,
-    // ':hover': {
-    //   color: appTheme.palette.dark
-    // },
-    // ':focus': {
-    //   color: appTheme.palette.dark
-    // }
     color: ui.linkColor,
     ':hover': {
       color: ui.linkColorHover
@@ -239,21 +222,12 @@ const styleThunk = () => ({
   },
 
   itemFacilitator: {
-    // color: appTheme.palette.warm
     backgroundColor: ui.navMenuLightBackgroundColorActive,
-    // color: appTheme.palette.dark70d
     boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
     color: ui.colorText
   },
 
   descFacilitator: {
-    // color: appTheme.palette.warm,
-    // ':hover': {
-    //   color: warmLinkHover
-    // },
-    // ':focus': {
-    //   color: warmLinkHover
-    // }
     color: ui.linkColor,
     ':hover': {
       color: ui.linkColorHover
@@ -306,11 +280,9 @@ const styleThunk = () => ({
   },
 
   canNavigate: {
-    // color: ui.linkColor,
     color: ui.colorText,
 
     ...makeHoverFocus({
-      // color: ui.linkColorHover,
       cursor: 'pointer',
       opacity: '.5',
       textDecoration: 'underline'

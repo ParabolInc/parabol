@@ -162,7 +162,6 @@ const ui = {
 
   // Avatars
   // ---------------------------------------------------------------------------
-  avatarDefaultBoxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
 
   // Breakpoints
   // ---------------------------------------------------------------------------
@@ -446,6 +445,14 @@ const ui = {
   },
   invoicePanelGutterSmall: '.75rem',
   invoicePanelGutterLarge: '1.25rem',
+
+  // Label Headings
+  // ---------------------------------------------------------------------------
+  labelHeadingColor: appTheme.palette.dark50a,
+  labelHeadingFontSize: '.75rem',
+  labelHeadingFontWeight: TYPE_SEMIBOLD,
+  labelHeadingLineHeight: '1rem',
+  labelHeadingLetterSpacing: '.03em',
 
   // Link
   // ---------------------------------------------------------------------------

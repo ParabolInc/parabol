@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';

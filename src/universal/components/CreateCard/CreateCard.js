@@ -5,7 +5,6 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import CreateCardRootStyles from './CreateCardRootStyles';
-import {cardBorderTop} from 'universal/styles/helpers';
 
 const CreateCard = (props) => {
   const {

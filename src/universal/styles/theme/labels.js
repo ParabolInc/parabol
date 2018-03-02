@@ -50,7 +50,9 @@ const labels = {
       label: 'Future',
       slug: FUTURE
     },
-    ...ARCHIVED,
+    archived: {
+      ...ARCHIVED
+    },
     private: {
       color: stateColor.private,
       icon: 'clock-o',
@@ -64,7 +66,9 @@ const labels = {
     label: 'Archive',
     slug: 'archive'
   },
-  ...ARCHIVED,
+  archived: {
+    ...ARCHIVED
+  },
   task: {
     color: appTheme.palette.dark,
     icon: 'calendar',

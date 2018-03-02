@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 
 // inline styles so oy-vey doesn't barf when making emails using draft-js cards
 const style = {
-  // color: appTheme.palette.warm, // TODO: theme-able?
   color: ui.colorText, // TODO: theme-able?
   fontWeight: 600
 };

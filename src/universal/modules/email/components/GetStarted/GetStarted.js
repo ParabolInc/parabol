@@ -9,10 +9,6 @@ const GetStarted = () => {
     fontWeight: 600
   };
 
-  const imageStyle = {
-    border: 0
-  };
-
   const headingStyle = {
     color: ui.colorText,
     fontWeight: 600,
@@ -31,7 +27,7 @@ const GetStarted = () => {
           <td style={cellStyle}>
             <EmptySpace height={8} />
             <span style={headingStyle}>Getting Started</span><br />
-            Read <a
+            {'Read '}<a
               href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
               rel="noopener noreferrer"
               style={linkStyle}
