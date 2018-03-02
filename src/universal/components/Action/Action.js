@@ -8,6 +8,8 @@ import LandingContainer from 'universal/modules/landing/containers/Landing/Landi
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import withStyles from 'universal/styles/withStyles';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
+import {StyleSheetServer as S} from 'aphrodite-local-styles/no-important';
+import A from 'universal/Atmosphere';
 
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
 const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
@@ -76,6 +78,6 @@ const styleThunk = () => ({
   }
 });
 
-export Atmosphere from 'universal/Atmosphere';
-export {StyleSheetServer} from 'aphrodite-local-styles/no-important';
+export const Atmosphere = A;
+export const StyleSheetServer = S;
 export default withStyles(styleThunk)(Action);

@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql} from 'react-relay';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import SlackIntegrations from 'universal/modules/teamDashboard/components/SlackIntegrations/SlackIntegrations';
 import {DEFAULT_TTL, SLACK} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
 import {connect} from 'react-redux';

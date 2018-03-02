@@ -1,10 +1,11 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
+import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const NotifyDenial = new GraphQLObjectType({
   name: 'NotifyDenial',
   description: 'A notification alerting the user that their request was denied by the org billing leader',
-  interfaces: () => [Notification],
+  interfaces: () => [Notification, TeamNotification],
   fields: () => ({
     reason: {
       type: new GraphQLNonNull(GraphQLString),
