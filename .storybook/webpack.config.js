@@ -9,13 +9,6 @@ const path = require('path');
 
 const webpack = require('webpack');
 
-const root = process.cwd();
-
-const clientInclude = [
-  path.join(root, 'src', 'client'),
-  path.join(root, 'src', 'universal')
-];
-
 module.exports = {
   plugins: [
     // your custom plugins
@@ -31,6 +24,6 @@ module.exports = {
     ]
   },
   resolve: {
-    modules: [path.join(root, 'src'), 'node_modules']
+    modules: [path.join(process.cwd(), 'src'), 'node_modules']
   }
 };
