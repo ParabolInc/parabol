@@ -1,6 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 import segmentIo from 'server/utils/segmentIo';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
+import {toSnakeCaseObject} from 'universal/utils/toSnakeCase';
+import countTiersForUserId from 'server/graphql/queries/helpers/countTiersForUserId';
 
 const getTraits = (userIds) => {
   const r = getRethink();
@@ -25,6 +27,24 @@ const getSegmentProps = (userIds, teamId) => {
   return resolvePromiseObj({
     traitsArr: getTraits(userIds),
     orgId: getOrgId(teamId)
+  });
+};
+
+export const sendSegmentIdentify = async (maybeUserIds) => {
+  const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds];
+  const traitsArr = await getTraits(userIds);
+  traitsArr.forEach(async (traitsWithId) => {
+    const {id: userId, ...traits} = traitsWithId;
+    const tiersCountTraits = toSnakeCaseObject(
+      await countTiersForUserId(userId)
+    );
+    segmentIo.identify({
+      userId,
+      traits: {
+        ...traits,
+        ...tiersCountTraits
+      }
+    });
   });
 };
 
