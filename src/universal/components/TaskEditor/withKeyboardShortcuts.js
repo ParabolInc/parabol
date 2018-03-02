@@ -44,7 +44,7 @@ const withKeyboardShortcuts = (ComposedComponent) => {
           return result;
         }
       }
-      if (e.key === 'X' && hasCommandModifier(e)) {
+      if (hasCommandModifier(e) && e.shiftKey && e.key === 'x') {
         return 'strikethrough';
       }
       return undefined;
