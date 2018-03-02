@@ -4,6 +4,8 @@ import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import publish from 'server/utils/publish';
+import {ORGANIZATION, TEAM} from 'universal/utils/constants';
 
 export default {
   type: UpdateCreditCardPayload,
@@ -18,7 +20,9 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve(source, {orgId, stripeToken}, {authToken}) {
+  async resolve(source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
+    const operationId = dataLoader.share();
+    const subOptions = {mutatorId, operationId};
     const r = getRethink();
     const now = new Date();
 
@@ -38,18 +42,28 @@ export default {
     // RESOLUTION
     const customer = await stripe.customers.update(stripeId, {source: stripeToken});
     const creditCard = getCCFromCustomer(customer);
-    await r({
-      updatedCC: r.table('Organization').get(orgId).update({
+    const {updatedTeams} = await r({
+      updatedOrg: r.table('Organization').get(orgId).update({
         creditCard,
         updatedAt: now
       }),
-      updatedTeam: r.table('Team')
+      updatedTeams: r.table('Team')
         .getAll(orgId, {index: 'orgId'})
         .update({
           isPaid: true,
           updatedAt: now
-        })
+        }, {returnChanges: true})('changes')('new_val')
+        .default([])
     });
+
+    const teamIds = updatedTeams.map(({id}) => id);
+    const data = {teamIds, orgId};
+
+    teamIds.forEach((teamId) => {
+      publish(TEAM, teamId, UpdateCreditCardPayload, data, subOptions);
+    });
+
+    publish(ORGANIZATION, orgId, UpdateCreditCardPayload, data, subOptions);
 
     return {creditCard};
   }

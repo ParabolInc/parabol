@@ -91,12 +91,16 @@ export const resolveSoftTeamMembers = async ({softTeamMemberIds, softTeamMembers
   return teamMembers.filter((teamMember) => tms.includes(teamMember.teamId));
 };
 
-export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
-  return teamId ? dataLoader.get('teams').load(teamId) : team;
+export const resolveTeam = async ({team, teamId}, args, {authToken, dataLoader}) => {
+  const teamDoc = teamId ? await dataLoader.get('teams').load(teamId) : team;
+  const {tms} = authToken;
+  return tms.includes(teamDoc.id) ? teamDoc : null;
 };
 
-export const resolveTeams = ({teamIds, teams}, args, {dataLoader}) => {
-  return (teamIds && teamIds.length > 0) ? dataLoader.get('teams').loadMany(teamIds) : teams;
+export const resolveTeams = async ({teamIds, teams}, args, {authToken, dataLoader}) => {
+  const {tms} = authToken;
+  const teamDocs = (teamIds && teamIds.length > 0) ? await dataLoader.get('teams').loadMany(teamIds) : teams;
+  return teamDocs.filter((team) => tms.includes(team.id));
 };
 
 export const resolveTeamMember = ({teamMemberId, teamMember}, args, {dataLoader}) => {
