@@ -13,8 +13,10 @@ import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscripti
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
 import NewMeeting from 'universal/components/NewMeeting';
-
-import type {Match} from 'react-router-dom';
+import type {Dispatch} from 'redux';
+import type {Location, Match, RouterHistory} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
 
 const query = graphql`
   query RetroRootQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
@@ -35,10 +37,13 @@ const subscriptions = [
 
 type Props = {
   atmosphere: Object,
-  match: Match
+  dispatch: Dispatch<*>,
+  location: Location,
+  match: Match,
+  history: RouterHistory
 };
 
-const RetroRoot = ({atmosphere, match}: Props) => {
+const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
   const {params: {localPhase, teamId}} = match;
   return (
     <QueryRenderer
@@ -47,6 +52,7 @@ const RetroRoot = ({atmosphere, match}: Props) => {
       query={query}
       variables={{teamId, meetingType: RETROSPECTIVE}}
       subscriptions={subscriptions}
+      subParams={{dispatch, history, location}}
       render={(readyState) => (
         <RelayTransitionGroup
           readyState={readyState}
@@ -59,4 +65,4 @@ const RetroRoot = ({atmosphere, match}: Props) => {
   );
 };
 
-export default withAtmosphere(RetroRoot);
+export default withAtmosphere(connect()(withRouter(RetroRoot)));
