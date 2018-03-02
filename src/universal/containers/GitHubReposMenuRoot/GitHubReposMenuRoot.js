@@ -1,8 +1,6 @@
 /* eslint-disable no-undef */
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql} from 'react-relay';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
@@ -12,6 +10,7 @@ import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubs
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';

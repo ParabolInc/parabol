@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql} from 'react-relay';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {cacheConfig} from 'universal/utils/constants';
 import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';
 import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 
 const query = graphql`
   query OutcomeCardAssignMenuRootQuery($teamId: ID!) {
