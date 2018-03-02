@@ -23,6 +23,8 @@ type Props = {
   handleDelete?: () => any,
   // The action to take when this card is saved
   handleSave?: (editorState: EditorState) => any,
+  // True when this card is being hovered over by a valid drag source
+  hovered?: boolean,
   // If the `userDragging` prop is provided, this states whether it serves as
   // the under-the-mouse dragged card, or the sitting-where-it-came-from card.
   pulled?: boolean,
@@ -64,12 +66,14 @@ const BottomRight = styled('div')({
   width: '100%'
 });
 
-type DraggingWrapperProps = {
+type DnDStylesWrapperProps = {
+  hovered?: boolean,
   pulled?: boolean,
   userDragging?: boolean
 };
-const DraggingWrapper = styled('div')(({pulled, userDragging}: DraggingWrapperProps) => ({
-  opacity: userDragging && !pulled && 0.5
+
+const DnDStylesWrapper = styled('div')(({hovered, pulled, userDragging}: DnDStylesWrapperProps) => ({
+  opacity: ((userDragging && !pulled) || hovered) && 0.6
 }));
 
 const TextButton = styled(PlainButton)({
@@ -203,9 +207,9 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   render() {
-    const {pulled, userDragging} = this.props;
+    const {hovered, pulled, userDragging} = this.props;
     return (
-      <DraggingWrapper pulled={pulled} userDragging={userDragging}>
+      <DnDStylesWrapper pulled={pulled} userDragging={userDragging} hovered={hovered}>
         {this.maybeRenderUserDragging()}
         <ReflectionCardWrapper pulled={pulled}>
           <ReflectionCardMain>
@@ -213,7 +217,7 @@ export default class ReflectionCard extends Component<Props, State> {
           </ReflectionCardMain>
           {this.maybeRenderBottomBar()}
         </ReflectionCardWrapper>
-      </DraggingWrapper>
+      </DnDStylesWrapper>
     );
   }
 }

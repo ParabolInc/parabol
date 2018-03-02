@@ -99,7 +99,7 @@ storiesOf('ReflectionCard', module)
     </RetroBackground>
   ))
 
-  .add('being dragged', () => (
+  .add('drag states', () => (
     <RetroBackground>
       <StoryContainer
         description={
@@ -117,6 +117,10 @@ storiesOf('ReflectionCard', module)
               contentState={ContentState.createFromText('Pulled under the mouse')}
               pulled
               userDragging="Dan"
+            />
+            <ReflectionCard
+              contentState={ContentState.createFromText('Hovered over by another card')}
+              hovered
             />
           </Grid>
         )}
