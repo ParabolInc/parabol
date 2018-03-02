@@ -1,7 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {createFragmentContainer} from 'react-relay';
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import {DashContent, DashHeader, DashHeaderInfo, DashMain} from 'universal/components/Dashboard';
@@ -13,12 +13,14 @@ import UnpaidTeamModalRoot from 'universal/modules/teamDashboard/containers/Unpa
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
 const initialValues = {teamName: ''};
 
 const Team = (props) => {
   const {
+    atmosphere,
     children,
     hasMeetingAlert,
     isSettings,
@@ -27,8 +29,14 @@ const Team = (props) => {
     team
   } = props;
   if (!team) return <LoadingView />;
-
   const {teamId, teamName, isPaid, meetingId} = team;
+  const updateFilter = (e) => {
+    const nextValue = e.target.value;
+    commitLocalUpdate(atmosphere, (store) => {
+      const teamProxy = store.get(teamId);
+      teamProxy.setValue(nextValue, 'contentFilter');
+    });
+  };
   const hasActiveMeeting = Boolean(meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
   initialValues.teamName = teamName;
@@ -55,7 +63,13 @@ const Team = (props) => {
         key={`${teamId}UnpaidModal`}
       />
       <DashHeader hasOverlay={hasOverlay}>
-        <DashHeaderInfo title={DashHeaderInfoTitle} />
+        <DashHeaderInfo title={DashHeaderInfoTitle}>
+          {__RELEASE_FLAGS__.localFilter &&
+            <span>Filter:
+              <input onChange={updateFilter} />
+            </span>
+          }
+        </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
           {isSettings ?
             <Button
@@ -95,6 +109,7 @@ const Team = (props) => {
 };
 
 Team.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   children: PropTypes.any,
   hasMeetingAlert: PropTypes.bool,
   isSettings: PropTypes.bool.isRequired,
@@ -111,9 +126,10 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withRouter(withStyles(styleThunk)(Team)),
+  withAtmosphere(withRouter(withStyles(styleThunk)(Team))),
   graphql`
     fragment Team_team on Team {
+      contentFilter
       teamId: id
       teamName: name
       isPaid

@@ -1,20 +1,13 @@
-import React, {Component} from 'react';
-import Modal from 'universal/components/Modal';
+import React from 'react';
 import ui from 'universal/styles/ui';
 import AnimatedFade from 'universal/components/AnimatedFade';
-import {TransitionGroup} from 'react-transition-group';
-import PropTypes from 'prop-types';
-import withCoordsV2 from 'universal/decorators/withCoordsV2';
-import isKeyboardEvent from 'universal/utils/isKeyboardEvent';
 import styled from 'react-emotion';
 
-/*
- * Replaces the react-portal-hoc with React16s built-in portal
- * Accept a react-loadable to ensure separation of concerns
- * */
+import type {LoadablePortalProps} from 'universal/decorators/withLoadablePortal';
+import withLoadablePortal from 'universal/decorators/withLoadablePortal';
+import type {WithCoordsProps} from 'universal/decorators/withCoordsV2';
+import Modal from 'universal/components/Modal';
 
-
-// Aphrodite loads styles async, which make for erroneous height/width calculations.
 const MenuBlock = styled('div')(({maxWidth}) => ({
   maxWidth,
   padding: '.25rem 0',
@@ -35,114 +28,26 @@ const MenuContents = styled('div')(({maxHeight}) => ({
   width: '100%'
 }));
 
-class LoadableMenu extends Component {
-  static propTypes = {
-    toggle: PropTypes.any,
-    LoadableComponent: PropTypes.func.isRequired,
-    setOriginCoords: PropTypes.func.isRequired,
-    setModalRef: PropTypes.func.isRequired,
-    coords: PropTypes.object.isRequired,
-    queryVars: PropTypes.object,
-    maxWidth: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string
-    ]),
-    maxHeight: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string
-    ])
-  };
-  state = {
-    isOpen: false
-  };
+type Props = {
+  LoadableComponent: React.Component,
+  queryVars?: Object,
+  ...LoadablePortalProps,
+  ...WithCoordsProps
+};
 
-  componentWillMount() {
-    const {toggle, LoadableComponent} = this.props;
-    if (toggle) {
-      this.smartToggle = this.makeSmartToggle(toggle);
-    } else {
-      LoadableComponent.preload();
-      this.state.isOpen = true;
-    }
-  }
+const LoadableMenu = (props: Props) => {
+  const {closePortal, coords, isClosing, isOpen, setModalRef, LoadableComponent, queryVars, terminatePortal} = props;
+  return (
+    <Modal clickToClose escToClose onClose={closePortal} isOpen={isOpen}>
+      <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>
+        <MenuBlock style={coords} innerRef={setModalRef}>
+          <MenuContents>
+            <LoadableComponent {...queryVars} closePortal={closePortal} />
+          </MenuContents>
+        </MenuBlock>
+      </AnimatedFade>
+    </Modal>
+  );
+};
 
-  componentWillReceiveProps(nextProps) {
-    const {toggle} = nextProps;
-    if (this.props.toggle !== toggle) {
-      this.smartToggle = this.makeSmartToggle(toggle);
-    }
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    const {isOpen} = nextState;
-    const {onOpen, onClose} = nextProps;
-    if (isOpen !== this.state.isOpen) {
-      if (isOpen && onOpen) {
-        // onOpen();
-      } else if (!isOpen && onClose) {
-        // onClose();
-      }
-    }
-  }
-
-  closePortal = (e) => {
-    this.setState({
-      isOpen: false
-    });
-    if (isKeyboardEvent(e) && this.toggleRef) {
-      this.toggleRef.focus();
-    }
-  };
-
-  makeSmartToggle(toggle) {
-    // strings are plain DOM nodes
-    const refProp = typeof toggle.type === 'string' ? 'ref' : 'innerRef';
-    return React.cloneElement(toggle, {
-      'aria-haspopup': 'true',
-      'aria-expanded': this.state.isOpen,
-      onClick: (e) => {
-        const {setOriginCoords, LoadableComponent} = this.props;
-        LoadableComponent.preload();
-        setOriginCoords(e.currentTarget.getBoundingClientRect());
-        this.setState({isOpen: !this.state.isOpen});
-        // if the menu was gonna do something, do it
-        const {onClick} = toggle.props;
-        if (onClick) {
-          onClick(e);
-        }
-      },
-      onMouseEnter: () => {
-        const {LoadableComponent} = this.props;
-        LoadableComponent.preload();
-      },
-      [refProp]: (c) => {
-        this.toggleRef = c;
-      }
-    });
-  }
-
-  render() {
-    const {isOpen} = this.state;
-    const {coords, setModalRef, LoadableComponent, queryVars} = this.props;
-    return (
-      <React.Fragment>
-        {this.smartToggle}
-        <TransitionGroup appear component={null}>
-          {isOpen &&
-          <AnimatedFade>
-            <Modal clickToClose escToClose onClose={this.closePortal}>
-              <MenuBlock style={coords} innerRef={setModalRef}>
-                <MenuContents>
-                  <LoadableComponent {...queryVars} closePortal={this.closePortal} />
-                </MenuContents>
-              </MenuBlock>
-            </Modal>
-          </AnimatedFade>
-          }
-        </TransitionGroup>
-      </React.Fragment>
-    );
-  }
-}
-
-export default withCoordsV2(LoadableMenu);
+export default withLoadablePortal({withCoords: true})(LoadableMenu);

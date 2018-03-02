@@ -8,6 +8,7 @@ import getInProxy from 'universal/utils/relay/getInProxy';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import ContentFilterHandler from 'universal/utils/relay/ContentFilterHandler';
 
 graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {
@@ -44,6 +45,7 @@ export const updateTaskTaskUpdater = (payload, store, viewerId, options) => {
 
   const addedNotification = payload.getLinkedRecord('addedNotification');
   handleAddNotifications(addedNotification, store, viewerId);
+  ContentFilterHandler.update(store, {dataID: task.getDataID(), fieldKey: 'content'});
   if (options) {
     popInvolvementToast(addedNotification, options);
   }
