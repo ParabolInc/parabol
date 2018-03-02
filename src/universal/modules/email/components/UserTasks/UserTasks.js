@@ -50,7 +50,7 @@ const UserTasks = (props) => {
   };
 
   const presentLabelStyles = {
-    color: present ? appTheme.palette.cool : appTheme.palette.cool10g,
+    color: present ? appTheme.brand.secondary.green : appTheme.palette.mid50l,
     fontFamily: ui.emailFontFamily,
     fontSize: '14px',
     fontStyle: 'italic',

@@ -41,7 +41,7 @@ const linkStyles = {
 };
 
 const greetingStyles = {
-  color: appTheme.palette.cool,
+  color: ui.colorText,
   fontWeight: 600,
   fontSize: '27px',
   lineHeight: '40px',
