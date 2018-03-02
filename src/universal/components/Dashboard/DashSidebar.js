@@ -18,7 +18,7 @@ const DashSidebar = (props) => {
   const {location, styles, viewer} = props;
   return (
     <div className={css(styles.root)}>
-      <StandardHub viewer={viewer} />
+      <StandardHub location={location} viewer={viewer} />
       <nav className={css(styles.nav)}>
         <div className={css(styles.navTop)}>
           <div className={css(styles.singleNavItem)}>
