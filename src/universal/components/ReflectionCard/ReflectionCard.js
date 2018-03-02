@@ -110,6 +110,7 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   confirmDelete = () => {
+    this.setState({confirmingDelete: false});
     if (this.props.handleDelete) {
       this.props.handleDelete();
     }
