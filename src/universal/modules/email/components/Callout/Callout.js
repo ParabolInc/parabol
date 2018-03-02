@@ -48,7 +48,7 @@ Callout.propTypes = {
 
 Callout.defaultProps = {
   fontSize: 24,
-  fontWeight: 600,
+  fontWeight: 400,
   lineHeight: 1.5,
   padding: 32,
   vSpacing: 32,

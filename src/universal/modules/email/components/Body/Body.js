@@ -14,7 +14,7 @@ const Body = (props) => {
   } = props;
 
   const cellStyle = {
-    color: appTheme.palette.dark,
+    color: ui.colorText,
     backgroundColor: ui.emailBodyColor,
     fontFamily: ui.emailFontFamily,
     fontSize: `${fontSize}px`,

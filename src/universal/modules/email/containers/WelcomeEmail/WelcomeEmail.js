@@ -25,6 +25,10 @@ const emailLink = {
   textDecoration: 'none'
 };
 
+const boldStyle = {
+  fontWeight: ui.typeSemiBold
+};
+
 const WelcomeEmail = (props) => {
   const {email} = props;
 
@@ -35,11 +39,11 @@ const WelcomeEmail = (props) => {
 
       <Body lineHeight={1.5}>
         <Callout vSpacing={0}>
-          Hi <a href={`mailto:${email}`} style={emailLink}>{email}</a>,<br />
-          We’re <i>so glad</i> you’re here!!
+          {'Hi '}<a href={`mailto:${email}`} style={emailLink}>{email}</a>,<br />
+          {'We’re '}<i>{'so glad'}</i>{' you’re here!!'}
         </Callout>
         <EmptySpace height={48} />
-        <b>Parabol</b> is a place where you can:
+        <b style={boldStyle}>{'Parabol'}</b>{' is a place where you can:'}
         <EmptySpace height={32} />
         <Features vSpacing={0} />
         <EmptySpace height={32} />

@@ -5,7 +5,6 @@ import ui from 'universal/styles/ui';
 
 const Button = (props) => {
   const cellStyle = {
-    backgroundColor: `${props.backgroundColor}`,
     color: '#FFFFFF',
     fontWeight: 'bold',
     padding: 0,
@@ -14,7 +13,7 @@ const Button = (props) => {
 
   const linkStyle = {
     backgroundColor: `${props.backgroundColor}`,
-    borderRadius: '2px',
+    borderRadius: '4em',
     color: '#FFFFFF',
     display: 'block',
     fontFamily: ui.emailFontFamily,

@@ -3,10 +3,7 @@ import React from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const Header = (props) => {
-  const {
-    imgProvider,
-    variant
-  } = props;
+  const {imgProvider} = props;
 
   const tableStyle = {
     borderCollapse: 'collapse'
@@ -19,7 +16,7 @@ const Header = (props) => {
   };
 
   const emailHeaderStyle = {
-    backgroundColor: variant === 'dark' ? appTheme.palette.dark : appTheme.palette.mid10l,
+    backgroundColor: appTheme.palette.mid,
     borderCollapse: 'collapse',
     color: '#FFFFFF',
     paddingBottom: '20px',
@@ -27,7 +24,7 @@ const Header = (props) => {
     textAlign: 'center'
   };
 
-  const variantLogo = `email-header-branding${variant === 'light' ? '-light' : ''}`;
+  const variantLogo = 'email-header-branding-white';
   const provider = imgProvider === 'hubspot' ?
     'https://email.parabol.co/hubfs/app-emails/' :
     '/static/images/email/email-header-branding/';
@@ -43,7 +40,7 @@ const Header = (props) => {
               height={56}
               src={imageSrc}
               style={imageStyle}
-              width={262}
+              width={209}
             />
           </td>
         </tr>
@@ -56,16 +53,11 @@ Header.propTypes = {
   imgProvider: PropTypes.oneOf([
     'app',
     'hubspot'
-  ]),
-  variant: PropTypes.oneOf([
-    'dark',
-    'light'
   ])
 };
 
 Header.defaultProps = {
-  imgProvider: 'app',
-  variant: 'dark'
+  imgProvider: 'app'
 };
 
 export default Header;

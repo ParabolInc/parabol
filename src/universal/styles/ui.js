@@ -129,6 +129,10 @@ const transition = [
   '3200ms ease-in'
 ];
 
+// Type
+const TYPE_REGULAR = 400;
+const TYPE_SEMIBOLD = 600;
+
 // Shadows
 // NOTE: levels increase on a scale of 2x
 const shadow = [
@@ -454,6 +458,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   meetingSidebarGutter: '.5rem',
   meetingSidebarWidth: '15rem',
+  meetingSplashGutter: '4.5rem',
 
   // Menus
   // ---------------------------------------------------------------------------
@@ -590,6 +595,11 @@ const ui = {
   // Transitions
   // ---------------------------------------------------------------------------
   transition,
+
+  // Typography
+  // ---------------------------------------------------------------------------
+  typeRegular: TYPE_REGULAR,
+  typeSemiBold: TYPE_SEMIBOLD,
 
   // Generic zIndex scale
   // ---------------------------------------------------------------------------

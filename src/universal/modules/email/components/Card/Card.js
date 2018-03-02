@@ -48,42 +48,37 @@ class Card extends Component {
     const contentStyle = {
       backgroundColor,
       borderColor: ui.cardBorderColor,
-      borderRadius: '0 0 4px 4px',
+      borderRadius: '4px',
       borderStyle: 'solid',
-      borderWidth: '0 1px 1px',
+      borderWidth: '1px',
       boxSizing: 'content-box',
       color: appTheme.palette.dark,
       fontFamily: ui.emailFontFamily,
-      fontSize: '16px',
-      minHeight: '80px',
+      fontSize: '14px',
+      minHeight: '88px',
       lineHeight: '20px',
-      padding: '4px 8px',
+      padding: '4px 12px 12px',
       textAlign: 'left'
     };
 
-    const borderTopStyle = {
+    const statusStyle = {
       backgroundColor: labels.taskStatus[status].color,
-      borderRadius: '4px 4px 0 0',
-      padding: 0
+      borderRadius: '4px',
+      height: '4px',
+      width: '30px'
     };
 
     return (
       <table style={ui.emailTableBase} width="100%">
         <tbody>
-          {/* card styled top border */}
-          <tr>
-            <td style={borderTopStyle}>
-              <EmptySpace height={4} />
-            </td>
-          </tr>
-          {/* card body */}
           <tr>
             <td style={cellStyle}>
+              {/* card body */}
               <div style={contentStyle}>
-                <Editor
-                  readOnly
-                  editorState={editorState}
-                />
+                <EmptySpace height={8} />
+                <div style={statusStyle}></div>
+                <EmptySpace height={8} />
+                <Editor readOnly editorState={editorState} />
               </div>
             </td>
           </tr>

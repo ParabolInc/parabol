@@ -5,9 +5,11 @@ import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
 import withStyles from 'universal/styles/withStyles';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {css} from 'aphrodite-local-styles/no-important';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
@@ -25,30 +27,33 @@ const MeetingAgendaFirstCall = (props) => {
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
-          <MeetingPhaseHeading>
-            {'Now, what do you need?'}
-          </MeetingPhaseHeading>
-          <Type align="center" bold marginBottom="2.5rem" marginTop=".5rem" scale="s5" colorPalette="dark">
-            {`(Time to add your ${AGENDA_ITEM_LABEL}s to the list.)`}
-          </Type>
+          <div className={css(styles.main)}>
 
-          <AgendaShortcutHint />
+            <MeetingPhaseHeading>
+              {'Now, what do you need?'}
+            </MeetingPhaseHeading>
 
-          <div className={css(styles.controlBlock)}>
-            {!hideMoveMeetingControls ?
-              <Button
-                buttonStyle="flat"
-                colorPalette="warm"
-                icon="arrow-circle-right"
-                iconPlacement="right"
-                label={`Let’s begin: ${phaseName}`}
-                onClick={gotoNext}
-                buttonSize="large"
-              /> :
-              <MeetingFacilitationHint>
-                {'Waiting for'} <b>{facilitatorName}</b> {`to start the ${phaseName}`}
-              </MeetingFacilitationHint>
-            }
+            <MeetingCopy>
+              {`Time to add your ${AGENDA_ITEM_LABEL}s to the list.`}
+            </MeetingCopy>
+
+            <AgendaShortcutHint />
+
+            <div className={css(styles.controlBlock)}>
+              {!hideMoveMeetingControls ?
+                <Button
+                  colorPalette="warm"
+                  icon="arrow-circle-right"
+                  iconPlacement="right"
+                  label={`Let’s begin: ${phaseName}`}
+                  onClick={gotoNext}
+                  buttonSize="large"
+                /> :
+                <MeetingFacilitationHint>
+                  {'Waiting for'} <b>{facilitatorName}</b> {`to start the ${phaseName}`}
+                </MeetingFacilitationHint>
+              }
+            </div>
           </div>
         </MeetingSection>
       </MeetingSection>
@@ -64,6 +69,11 @@ MeetingAgendaFirstCall.propTypes = {
 };
 
 const styleThunk = () => ({
+  main: {
+    paddingLeft: ui.meetingSplashGutter,
+    width: '100%'
+  },
+
   highlight: {
     color: appTheme.palette.warm
   },

@@ -5,7 +5,7 @@ import EmptySpace from '../EmptySpace/EmptySpace';
 
 const GetStarted = () => {
   const linkStyle = {
-    color: appTheme.palette.cool,
+    color: appTheme.palette.warm,
     fontWeight: 600
   };
 
@@ -14,7 +14,7 @@ const GetStarted = () => {
   };
 
   const headingStyle = {
-    color: appTheme.palette.warm,
+    color: ui.colorText,
     fontWeight: 600,
     textTransform: 'uppercase'
   };
@@ -29,12 +29,6 @@ const GetStarted = () => {
       <tbody>
         <tr>
           <td style={cellStyle}>
-            <img
-              height="48"
-              src="/static/images/email/email-icon-star@2x.png"
-              style={imageStyle}
-              width="48"
-            />
             <EmptySpace height={8} />
             <span style={headingStyle}>Getting Started</span><br />
             Read <a
