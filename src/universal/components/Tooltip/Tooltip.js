@@ -32,7 +32,19 @@ const ModalContents = styled('div')(({maxHeight}) => ({
   width: '100%'
 }));
 
-
+/*
+ * A surprisingly complex little sucker.
+ * Functional criteria includes:
+ * - Can be triggered by a toggle (like hovering over a button)
+ * - Can be triggered by an event if fed an `isOpen` property (like a "copy meeting url")
+ * - If event-triggered, `props.isOpen` is represented as either `state.isOpen` or `state.isClosing` (for animations)
+ * - If event-triggered, hovering on the tip itself has no effect on when it closes (no strong opinion on changing this logic)
+ * - If toggle-triggered, it pops open if the cursor is hovered for a defined period of time (default 0)
+ * - If hovered off, should animate out
+ * - If hovered off the toggle and onto the tip itself (eg small screen), it should stay open until moved off the tip & toggle
+ * - If hovered off while the tip is opening, the tip should close smoothly
+ * - If hovered off & back on while it's going away, it should not reopen
+ */
 class Tooltip extends Component {
   static propTypes = {
     isOpen: PropTypes.bool,
@@ -79,12 +91,6 @@ class Tooltip extends Component {
   makeSmartChildren() {
     const {delay, setOriginCoords, children, hideOnFocus} = this.props;
     const child = Children.only(children);
-    /**
-     * A "controlled" tooltip is a tooltip which appears and disappears when you
-     * ask it to.  It is controlled via the required `isOpen` boolean prop.  It's
-     * useful for providing feedback in response to particular events rather than
-     * hover/focus state.
-     */
     if (typeof this.props.isOpen === 'boolean') return child;
     return cloneElement(child, {
       onMouseEnter: (e) => {
