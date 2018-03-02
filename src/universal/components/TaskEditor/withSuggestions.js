@@ -8,7 +8,7 @@ import getDraftCoords from 'universal/utils/getDraftCoords';
 import getAnchorLocation from './getAnchorLocation';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';
-import LoadableMenu from 'universal/components/LoadableMenu';
+import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal';
 
 const LoadableEditorSuggestions = Loadable({
   loader: () => System.import(
@@ -213,10 +213,11 @@ const withSuggestions = (ComposedComponent) => {
         setTimeout(() => {
           this.forceUpdate();
         });
+        return null;
       }
       if (suggestionType === 'mention') {
         return (
-          <LoadableMenu
+          <LoadableDraftJSModal
             LoadableComponent={LoadableMentionableUsersRoot}
             maxWidth={500}
             maxHeight={200}
@@ -236,7 +237,7 @@ const withSuggestions = (ComposedComponent) => {
         );
       }
       return (
-        <LoadableMenu
+        <LoadableDraftJSModal
           LoadableComponent={LoadableEditorSuggestions}
           maxWidth={500}
           maxHeight={200}

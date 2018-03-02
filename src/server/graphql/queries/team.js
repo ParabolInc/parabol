@@ -3,7 +3,7 @@ import Team from 'server/graphql/types/Team';
 import {requireTeamMember} from 'server/utils/authorization';
 
 export default {
-  type: Team,
+  type: new GraphQLNonNull(Team),
   description: 'A query for a team',
   args: {
     teamId: {

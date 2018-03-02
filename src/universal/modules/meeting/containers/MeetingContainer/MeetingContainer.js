@@ -298,7 +298,6 @@ class MeetingContainer extends Component {
           <MeetingMainHeader>
             <MeetingAvatarGroup
               gotoItem={this.gotoItem}
-              gotoNext={this.gotoNext}
               isFacilitating={isFacilitating}
               localPhase={localPhase}
               localPhaseItem={localPhaseItem}

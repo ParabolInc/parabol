@@ -5,22 +5,43 @@ import PropTypes from 'prop-types';
 /*
  * A lightweight wrapper around React16s createPortal function
  * Listens for an ESC key press or a click outside the modal
+ * Takes an isOpen prop. For delayed DOM removal, (like animations) use complex isOpen logic in the parent
  */
 class Modal extends Component {
   static propTypes = {
     onClose: PropTypes.func,
     clickToClose: PropTypes.bool,
     escToClose: PropTypes.bool,
-    children: PropTypes.element.isRequired
+    children: PropTypes.element.isRequired,
+    isOpen: PropTypes.bool
   };
 
-  constructor(props) {
-    super(props);
-    this.el = document.createElement('div');
-    this.el.id = 'portal';
+  componentWillMount() {
+    if (this.props.isOpen) {
+      this.setup();
+    }
   }
 
-  componentWillMount() {
+  componentWillReceiveProps(nextProps) {
+    const {isOpen} = nextProps;
+    if (isOpen === this.props.isOpen) return;
+    if (isOpen) {
+      this.setup();
+    } else {
+      this.teardown();
+    }
+  }
+
+  componentWillUnmount() {
+    this.teardown();
+  }
+
+  setup() {
+    this.el = document.createElement('div');
+    this.el.id = 'portal';
+    this.setState({
+      isOpen: true
+    });
     const {clickToClose, escToClose} = this.props;
     if (clickToClose) {
       document.addEventListener('click', this.handleDocumentClick);
@@ -32,11 +53,13 @@ class Modal extends Component {
     document.body.appendChild(this.el);
   }
 
-  componentWillUnmount() {
-    document.body.removeChild(this.el);
-    document.removeEventListener('click', this.handleDocumentClick);
-    document.removeEventListener('touchstart', this.handleDocumentClick);
-    document.removeEventListener('keydown', this.handleKeydown);
+  teardown() {
+    if (this.el && document.body.contains(this.el)) {
+      document.body.removeChild(this.el);
+      document.removeEventListener('click', this.handleDocumentClick);
+      document.removeEventListener('touchstart', this.handleDocumentClick);
+      document.removeEventListener('keydown', this.handleKeydown);
+    }
   }
 
   handleKeydown = (e) => {
@@ -53,11 +76,11 @@ class Modal extends Component {
   };
 
   render() {
-    const {children} = this.props;
-    return createPortal(
+    const {children, isOpen} = this.props;
+    return isOpen ? createPortal(
       children,
       this.el
-    );
+    ) : null;
   }
 }
 
