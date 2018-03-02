@@ -27,7 +27,7 @@ const AddReflectionButton = (props: Props) => (
 );
 
 export default styled(AddReflectionButton)({
-  border: `2px dashed ${appTheme.palette.mid}`,
+  border: `2px dashed ${appTheme.palette.mid30a}`,
   borderRadius: 3,
   color: appTheme.palette.dark,
   padding: '0.8rem',
