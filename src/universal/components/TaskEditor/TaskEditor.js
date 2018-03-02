@@ -12,6 +12,10 @@ import './Draft.css';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
+import withFontSizes from './withFontSizes';
+import customStyleMap from './customStyleMap';
+
+
 
 class TaskEditor extends Component {
   static propTypes = {
@@ -178,6 +182,7 @@ class TaskEditor extends Component {
       <div className={rootStyles}>
         <Editor
           blockStyleFn={this.blockStyleFn}
+          customStyleMap={customStyleMap}
           editorState={editorState}
           handleBeforeInput={this.handleBeforeInput}
           handleKeyCommand={this.handleKeyCommand}
@@ -231,9 +236,11 @@ const styleThunk = () => ({
 export default withSuggestions(
   withLinks(
     withMarkdown(
-      withKeyboardShortcuts(
-        withStyles(styleThunk)(
-          TaskEditor
+      withFontSizes(
+        withKeyboardShortcuts(
+          withStyles(styleThunk)(
+            TaskEditor
+          )
         )
       )
     )
