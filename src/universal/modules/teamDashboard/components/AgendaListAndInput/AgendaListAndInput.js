@@ -6,7 +6,7 @@ import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {phaseArray, AGENDA_ITEMS} from 'universal/utils/constants';
+import {AGENDA_ITEMS, phaseArray} from 'universal/utils/constants';
 
 const meetingOnAgendaItem = (props) => (
   props.facilitatorPhase === AGENDA_ITEMS && props.facilitatorPhaseItem != null
@@ -38,7 +38,8 @@ class AgendaListAndInput extends Component {
   };
 
   state = {
-    visibleAgendaItemId: this.props.team.agendaItems[this.props.facilitatorPhaseItem - 1].id
+    visibleAgendaItemId: this.props.facilitatorPhaseItem === undefined ? null :
+      this.props.team.agendaItems[this.props.facilitatorPhaseItem - 1].id
   };
 
   componentDidMount() {
