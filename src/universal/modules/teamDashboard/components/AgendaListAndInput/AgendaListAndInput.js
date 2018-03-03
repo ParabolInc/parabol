@@ -38,7 +38,7 @@ class AgendaListAndInput extends Component {
   };
 
   state = {
-    visibleAgendaItemId: null
+    visibleAgendaItemId: this.props.team.agendaItems[this.props.facilitatorPhaseItem - 1].id
   };
 
   componentDidMount() {
