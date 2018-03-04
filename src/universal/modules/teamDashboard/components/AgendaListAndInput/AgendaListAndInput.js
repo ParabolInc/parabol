@@ -37,10 +37,14 @@ class AgendaListAndInput extends Component {
     team: PropTypes.object.isRequired
   };
 
-  state = {
-    visibleAgendaItemId: this.props.facilitatorPhaseItem === undefined ? null :
-      this.props.team.agendaItems[this.props.facilitatorPhaseItem - 1].id
-  };
+  constructor(props) {
+    super(props);
+    const {facilitatorPhaseItem, team: {agendaItems}} = props;
+    const agendaItem = meetingOnAgendaItem(props) && agendaItems[facilitatorPhaseItem - 1];
+    this.state = {
+      visibleAgendaItemId: agendaItem ? agendaItem.id : null
+    };
+  }
 
   componentDidMount() {
     if (meetingOnAgendaItem(this.props)) {
