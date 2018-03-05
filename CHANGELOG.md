@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.30.2 2018-Mar-05
+## Fixed
+- Don't log out when a bad invite token is attempted
+- Keep dispatch after logout
+- Show welcome toast to new team members (missing dispatch)
+
 ## v0.30.1 2018-Mar-01
 ## Fixed
 - Hotfix for #1817, no longer require active subscription to update credit card

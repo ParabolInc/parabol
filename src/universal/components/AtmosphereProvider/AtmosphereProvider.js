@@ -8,7 +8,10 @@ const mapStateToProps = (state) => ({authToken: state.auth.token});
 let atmosphere = new Atmosphere();
 
 export const resetAtmosphere = () => {
+  // super dirty, we'll remove it in the next chore PR when we remove auth from redux
+  const {dispatch} = atmosphere;
   atmosphere = new Atmosphere();
+  atmosphere.dispatch = dispatch;
 };
 
 class AtmosphereProvider extends Component {
