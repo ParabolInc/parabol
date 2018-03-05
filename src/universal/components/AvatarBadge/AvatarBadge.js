@@ -94,8 +94,7 @@ const styleThunk = () => ({
   },
 
   online: {
-    // color: appTheme.palette.cool // TODO: need palette version?
-    color: appTheme.brand.secondary.green
+    color: appTheme.brand.secondary.green // TODO: theme-able?
   },
 
   srOnly: {
