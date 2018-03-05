@@ -58,7 +58,7 @@ class TeamArchiveSqueeze extends Component {
               {isBillingLeader ?
                 <Button
                   buttonSize="medium"
-                  colorPalette="cool"
+                  colorPalette="warm"
                   depth={1}
                   label={`Upgrade to the ${PRO_LABEL} Plan`}
                   onClick={handleUpgrade}
@@ -139,7 +139,7 @@ const styleThunk = () => ({
   contactLink: {
     display: 'block',
     fontSize: 0,
-    fontWeight: 700
+    fontWeight: 600
   },
 
   contactLinkLabel: {

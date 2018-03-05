@@ -27,6 +27,7 @@ const DashNavTeam = (props) => {
       <DashNavItem
         href={`/team/${team.id}`}
         label={team.name}
+        icon={team.isPaid && 'group'}
       />
     </div>
   );

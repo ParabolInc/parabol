@@ -7,7 +7,7 @@ import {MEETING_NAME} from 'universal/utils/constants';
 
 const ContactUs = (props) => {
   const cellStyle = {
-    color: appTheme.palette.dark,
+    color: ui.textColor,
     fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
     lineHeight: `${props.lineHeight}`,
@@ -15,14 +15,14 @@ const ContactUs = (props) => {
   };
 
   const headingStyle = {
-    color: appTheme.palette.cool,
+    color: ui.textColor,
     fontSize: `${props.fontSize * 1.5}px`,
-    fontWeight: 700
+    fontWeight: 600
   };
 
   const linkStyle = {
     color: appTheme.palette.warm,
-    fontWeight: 700,
+    fontWeight: 600,
     textDecoration: 'none'
   };
 

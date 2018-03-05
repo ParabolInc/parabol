@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserTasksHeaderContainer from 'universal/modules/userDashboard/containers/UserTasksHeader/UserTasksHeaderContainer';
@@ -64,10 +65,10 @@ const styleThunk = () => ({
   },
 
   headerCopy: {
-    color: appTheme.palette.mid,
+    color: ui.colorText,
     flex: 1,
-    fontSize: appTheme.typography.sBase,
-    fontWeight: 700,
+    fontSize: appTheme.typography.s2,
+    fontWeight: 600,
     lineHeight: '1.25',
     textAlign: 'right'
   },

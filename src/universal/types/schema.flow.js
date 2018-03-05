@@ -19,7 +19,21 @@ export type GraphQLResponseErrorLocation = {
 export type Query = {
   activeProOrgCount: ?number;
   activeProUserCount: ?number;
+  countTiersForUser: ?UserTiersCount;
   viewer: ?User;
+}
+
+/**
+  A count of the number of account tiers a user belongs to.
+*/
+export type UserTiersCount = {
+  /** The number of personal orgs the user is active upon */
+  tierPersonalCount: ?number;
+  /** The number of pro orgs the user is active upon */
+  tierProCount: ?number;
+  /** The number of pro orgs the user holds the role of Billing Leader */
+  tierProBillingLeaderCount: ?number;
+  user: ?User;
 }
 
 /**

@@ -55,7 +55,7 @@ class CopyShortLink extends Component {
             aria-label={callToAction}
             buttonSize="small"
             buttonStyle="inverted"
-            colorPalette="cool"
+            colorPalette="warm"
             title={callToAction}
             icon="copy"
             iconPlacement="left"

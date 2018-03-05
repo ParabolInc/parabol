@@ -59,7 +59,7 @@ const SlackIntegrations = (props) => {
           <Button
             buttonSize="small"
             buttonStyle="flat"
-            colorPalette="cool"
+            colorPalette="warm"
             label="Refresh Token"
             onClick={openOauth}
           />
@@ -81,7 +81,7 @@ const SlackIntegrations = (props) => {
               <Button
                 buttonSize="medium"
                 buttonStyle="solid"
-                colorPalette="cool"
+                colorPalette="warm"
                 label="Authorize Slack to Add a Channel"
                 onClick={openOauth}
               />
@@ -184,7 +184,7 @@ const styleThunk = () => ({
   channelName: {
     color: ui.palette.cool,
     fontSize: appTheme.typography.s3,
-    fontWeight: 700
+    fontWeight: 600
   }
 });
 

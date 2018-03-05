@@ -20,7 +20,7 @@ type Props = {
 };
 
 const purple = {
-  color: appTheme.brand.new.purple
+  color: appTheme.brand.primary.purple
 };
 
 const H1 = styled('h1')(purple);

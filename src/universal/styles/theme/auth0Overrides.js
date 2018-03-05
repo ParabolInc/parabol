@@ -41,7 +41,7 @@ export default {
 
   'body #a0-lock.a0-theme-default .a0-switch span': {
     color: appTheme.palette.dark,
-    fontWeight: 700
+    fontWeight: 600
   },
 
   // eslint-disable-next-line max-len

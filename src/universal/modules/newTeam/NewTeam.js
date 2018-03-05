@@ -45,7 +45,7 @@ const NewTeam = (props) => {
           <Button
             buttonSize="small"
             buttonStyle="flat"
-            colorPalette="cool"
+            colorPalette="warm"
             icon="external-link-square"
             iconPlacement="right"
             label="Learn More"
@@ -65,6 +65,7 @@ NewTeam.propTypes = {
 
 const styleThunk = () => ({
   layout: {
+    backgroundColor: ui.backgroundColor,
     display: 'flex',
     minWidth: '60rem',
     width: '100%'
@@ -86,7 +87,7 @@ const styleThunk = () => ({
 
   helpHeading: {
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
+    fontWeight: 600,
     margin: 0
   },
 

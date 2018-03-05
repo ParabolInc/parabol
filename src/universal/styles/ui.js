@@ -2,7 +2,7 @@
 // ui.js
 // -----------------------------------------------------------------------------
 
-import tinycolor from 'tinycolor2';
+// import tinycolor from 'tinycolor2';
 import appTheme from 'universal/styles/theme/appTheme';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import zIndexScale from 'universal/styles/helpers/zIndexScale';
@@ -38,7 +38,8 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
-const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
+// const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
+const backgroundColor = appTheme.brand.primary.silver;
 
 // Small border radius for controls (inputs, buttons, etcs.)
 const borderRadiusSmall = '.125rem';
@@ -51,6 +52,10 @@ const borderRadiusLarge = '.5rem';
 const BUTTON_SIZE_SMALL = CONTROL_SIZE_SMALL;
 const BUTTON_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
 const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE;
+
+// Color (default for text)
+const COLOR_TEXT = appTheme.brand.primary.darkGray;
+const COLOR_ERROR = appTheme.brand.secondary.red;
 
 // Color palette
 const white = '#fff';
@@ -107,7 +112,8 @@ const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
 // Panels
-const panelInnerBorderColor = appTheme.palette.mid30l;
+// const panelInnerBorderColor = appTheme.palette.mid30l;
+const panelInnerBorderColor = appTheme.palette.mid10l;
 
 // Placeholders
 const placeholderColor = appTheme.palette.dark50l;
@@ -122,6 +128,10 @@ const transition = [
   '1600ms ease-in',
   '3200ms ease-in'
 ];
+
+// Type
+const TYPE_REGULAR = 400;
+const TYPE_SEMIBOLD = 600;
 
 // Shadows
 // NOTE: levels increase on a scale of 2x
@@ -152,7 +162,6 @@ const ui = {
 
   // Avatars
   // ---------------------------------------------------------------------------
-  avatarDefaultBoxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
 
   // Breakpoints
   // ---------------------------------------------------------------------------
@@ -171,7 +180,7 @@ const ui = {
     cursor: 'pointer',
     display: 'inline-block',
     fontFamily: appTheme.typography.sansSerif,
-    fontWeight: 700,
+    fontWeight: 600,
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
@@ -235,9 +244,14 @@ const ui = {
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
   cardButtonHeight: '1.5rem',
+  cardContentFontSize: appTheme.typography.s3,
+  cardContentLineHeight: appTheme.typography.s5,
+  cardEditingStatusFontSize: '.6875rem',
+  cardEditingStatusLineHeight: appTheme.typography.sBase,
   cardMaxWidth: '17.5rem',
-  cardMinHeight: '6.875rem',
-  cardPaddingBase: '.5rem',
+  // cardMinHeight: '6.875rem',
+  cardMinHeight: '7.3125rem',
+  cardPaddingBase: '.9375rem', // was .5rem
   cardDragStyle: {
     boxShadow: shadow[3]
   },
@@ -245,6 +259,11 @@ const ui = {
   // CTA Panels
   // ---------------------------------------------------------------------------
   ctaPanelButtonSize: BUTTON_SIZE_LARGE,
+
+  // Color (default for text)
+  // ---------------------------------------------------------------------------
+  colorError: COLOR_ERROR,
+  colorText: COLOR_TEXT,
 
   // Controls
   // ---------------------------------------------------------------------------
@@ -262,18 +281,23 @@ const ui = {
 
   // Dashboards
   // ---------------------------------------------------------------------------
-  dashAgendaWidth: '15.125rem',
+  dashAgendaWidth: '15rem',
   dashBackgroundColor: backgroundColor,
-  dashBorderColor: 'rgba(0, 0, 0, .1)',
-  dashGutter: '1rem',
+  // dashBorderColor: 'rgba(0, 0, 0, .1)',
+  dashBorderColor: appTheme.palette.light90d,
+  dashGutter: '1.25rem',
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
   dashHeaderTitleStyles: {
-    color: appTheme.palette.dark,
-    fontSize: '1.75rem',
-    fontWeight: 400,
+    color: COLOR_TEXT,
+    fontFamily: appTheme.typography.serif,
+    // fontSize: '1.75rem',
+    fontSize: '1.5rem',
+    fontWeight: 600,
     lineHeight: '1.5'
   },
+  // dashMenuBorder: '1px solid rgba(255, 255, 255, .5)',
+  dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
   dashMenuHeight: '13.5625rem',
   dashMenuWidth: '10rem',
   dashMinWidth: '79rem',
@@ -288,7 +312,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
-  emailFontFamily: '"Karla", -apple-system, BlinkMacSystemFont, Roboto, “Helvetica Neue”, Arial, sans-serif',
+  emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, “Helvetica Neue”, Arial, sans-serif',
   emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
     borderCollapse: 'collapse',
@@ -345,6 +369,14 @@ const ui = {
       color: appTheme.palette.warm,
       focusBorderColor: appTheme.palette.warm80l,
       placeholder: makePlaceholderStyles(appTheme.palette.warm70l),
+      selection: appTheme.palette.warm20l
+    },
+    primary: {
+      backgroundColor: '#fff',
+      borderColor: 'transparent',
+      color: COLOR_TEXT,
+      focusBorderColor: appTheme.palette.warm70l,
+      placeholder: makePlaceholderStyles(appTheme.palette.warm),
       selection: appTheme.palette.warm20l
     },
     white: {
@@ -414,15 +446,26 @@ const ui = {
   invoicePanelGutterSmall: '.75rem',
   invoicePanelGutterLarge: '1.25rem',
 
+  // Label Headings
+  // ---------------------------------------------------------------------------
+  labelHeadingColor: appTheme.palette.dark50a,
+  labelHeadingFontSize: '.75rem',
+  labelHeadingFontWeight: TYPE_SEMIBOLD,
+  labelHeadingLineHeight: '1rem',
+  labelHeadingLetterSpacing: '.03em',
+
   // Link
   // ---------------------------------------------------------------------------
-  linkColor: appTheme.palette.cool,
-  linkColorHover: tinycolor(appTheme.palette.cool).darken(15).toHexString(),
+  // linkColor: appTheme.palette.cool,
+  linkColor: COLOR_TEXT,
+  // linkColorHover: tinycolor(appTheme.palette.cool).darken(15).toHexString(),
+  linkColorHover: appTheme.palette.mid,
 
   // Meeting
   // ---------------------------------------------------------------------------
   meetingSidebarGutter: '.5rem',
   meetingSidebarWidth: '15rem',
+  meetingSplashGutter: '4.5rem',
 
   // Menus
   // ---------------------------------------------------------------------------
@@ -457,12 +500,23 @@ const ui = {
     MODAL_LAYOUT_VIEWPORT
   ],
 
+  // Nav
+  // ---------------------------------------------------------------------------
+
+  navMenuDarkBackgroundColorActive: appTheme.palette.mid80d,
+  navMenuDarkBackgroundColorHover: appTheme.palette.mid90d,
+  navMenuLightBackgroundColorActive: appTheme.palette.light90l,
+  navMenuFontSize: '.9375rem',
+  navMenuLineHeight: '1.25rem',
+  navMenuLeftBorderWidth: '.1875rem',
+
   // Notifications
   // ---------------------------------------------------------------------------
   notificationButtonSize: BUTTON_SIZE_SMALL,
 
   // Panels
   // ---------------------------------------------------------------------------
+  panelBoxShadow: '0 .125rem .25rem rgba(68, 66, 88, 0.05)', // based on dark palette color
   panelBorderColor: appTheme.palette.mid50l,
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
@@ -476,6 +530,7 @@ const ui = {
 
   // Task columns
   // ---------------------------------------------------------------------------
+  taskColumnPaddingInner: '.625rem',
   taskColumnsMaxWidth: '78.25rem',
   taskColumnsMinWidth: '48rem',
 
@@ -526,8 +581,8 @@ const ui = {
 
   // Tags
   // ---------------------------------------------------------------------------
-  tagFontSize: '.75rem',
-  tagFontWeight: 700,
+  tagFontSize: '.6875rem',
+  tagFontWeight: 600,
   tagGutter: '.75rem',
   tagHeight: '1rem',
   tagPadding: '0 .5rem',
@@ -547,6 +602,11 @@ const ui = {
   // Transitions
   // ---------------------------------------------------------------------------
   transition,
+
+  // Typography
+  // ---------------------------------------------------------------------------
+  typeRegular: TYPE_REGULAR,
+  typeSemiBold: TYPE_SEMIBOLD,
 
   // Generic zIndex scale
   // ---------------------------------------------------------------------------

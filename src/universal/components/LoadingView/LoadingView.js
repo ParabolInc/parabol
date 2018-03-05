@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Pato from 'universal/styles/theme/images/graphics/pato.svg';
 
@@ -79,7 +80,7 @@ const styleThunk = (theme, minHeight) => ({
   heading: {
     color: appTheme.palette.warm,
     fontSize: appTheme.typography.s7,
-    fontWeight: 700,
+    fontWeight: 600,
     margin: '0 0 2rem'
   },
 
@@ -107,9 +108,9 @@ const styleThunk = (theme, minHeight) => ({
   },
 
   message: {
-    color: appTheme.palette.cool,
+    color: ui.colorText,
     fontSize: appTheme.typography.s5,
-    fontWeight: 700,
+    fontWeight: 600,
     margin: '.5rem 0 0'
   }
 });

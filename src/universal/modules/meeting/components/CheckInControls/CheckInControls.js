@@ -69,17 +69,17 @@ const styleThunk = () => ({
   control: {
     cursor: 'pointer',
     display: 'block',
-    fontSize: appTheme.typography.s5,
+    fontSize: appTheme.typography.s4,
     lineHeight: '1.5'
   },
 
   nextControl: {
-    color: appTheme.palette.cool,
+    color: appTheme.brand.secondary.green, // TODO: theme-able?
     marginBottom: '.5rem'
   },
 
   skipControl: {
-    color: appTheme.palette.warm
+    color: appTheme.brand.secondary.red // TODO: theme-able?
   },
 
   controlBlock: {
@@ -89,6 +89,7 @@ const styleThunk = () => ({
   },
 
   label: {
+    color: ui.colorText,
     display: 'inline-block',
     paddingLeft: '.5rem',
     verticalAlign: 'middle',

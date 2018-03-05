@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import {DragSource as dragSource} from 'react-dnd';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import tinycolor from 'tinycolor2';
 import Avatar from 'universal/components/Avatar/Avatar';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
@@ -123,13 +122,12 @@ class AgendaItem extends Component {
   }
 }
 
-const warmLinkHover = tinycolor(appTheme.palette.warm).darken(15).toHexString();
 const lineHeight = '1.5rem';
 
 const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
-    color: appTheme.palette.cool,
+    color: ui.palette.mid,
     display: 'flex',
     fontSize: appTheme.typography.s3,
     padding: '.5rem .5rem .5rem 0',
@@ -137,10 +135,10 @@ const styleThunk = () => ({
     width: '100%',
 
     ':hover': {
-      backgroundColor: appTheme.palette.dark20l
+      backgroundColor: appTheme.palette.light50l
     },
     ':focus': {
-      backgroundColor: appTheme.palette.dark20l
+      backgroundColor: appTheme.palette.light50l
     },
     ':hover > div': {
       opacity: 1
@@ -157,7 +155,7 @@ const styleThunk = () => ({
   },
 
   del: {
-    color: appTheme.palette.dark,
+    color: appTheme.palette.warm,
     cursor: 'pointer',
     height: '1.5rem',
     left: ui.meetingSidebarGutter,
@@ -183,11 +181,9 @@ const styleThunk = () => ({
   },
 
   content: {
-    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
     flex: 1,
-    fontStyle: 'italic',
-    fontWeight: 700,
+    fontWeight: 400,
     lineHeight,
     position: 'relative',
     wordBreak: 'break-word',
@@ -203,44 +199,49 @@ const styleThunk = () => ({
   },
 
   link: {
+    color: ui.palette.mid,
+
     ...makeHoverFocus({
-      color: ui.linkColor,
+      color: ui.palette.mid,
       textDecoration: 'none'
     })
   },
 
   itemLocal: {
-    color: appTheme.palette.dark70d
+    color: ui.colorText
   },
 
   descLocal: {
-    color: appTheme.palette.dark70d,
+    color: ui.linkColor,
     ':hover': {
-      color: appTheme.palette.dark
+      color: ui.linkColorHover
     },
     ':focus': {
-      color: appTheme.palette.dark
+      color: ui.linkColorHover
     }
   },
 
   itemFacilitator: {
-    color: appTheme.palette.warm
+    backgroundColor: ui.navMenuLightBackgroundColorActive,
+    boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
+    color: ui.colorText
   },
 
   descFacilitator: {
-    color: appTheme.palette.warm,
+    color: ui.linkColor,
     ':hover': {
-      color: warmLinkHover
+      color: ui.linkColorHover
     },
     ':focus': {
-      color: warmLinkHover
+      color: ui.linkColorHover
     }
   },
 
   index: {
-    fontWeight: 700,
+    fontWeight: 400,
     height: '1.5rem',
     lineHeight,
+    opacity: '.5',
     paddingRight: '.75rem',
     paddingTop: '.0625rem',
     textAlign: 'right',
@@ -279,11 +280,11 @@ const styleThunk = () => ({
   },
 
   canNavigate: {
-    color: ui.linkColor,
+    color: ui.colorText,
 
     ...makeHoverFocus({
-      color: ui.linkColorHover,
       cursor: 'pointer',
+      opacity: '.5',
       textDecoration: 'underline'
     })
   }

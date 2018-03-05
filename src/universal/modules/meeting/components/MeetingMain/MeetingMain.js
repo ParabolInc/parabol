@@ -37,7 +37,8 @@ const styleThunk = () => ({
 
   hasBoxShadow: {
     // similar to shadow[2] (depth .25rem, blur-radius .5rem)
-    boxShadow: 'inset .25rem 0 .5rem rgba(0, 0, 0, .25), inset 0 0 .0625rem rgba(0, 0, 0, .15)'
+    // boxShadow: 'inset .25rem 0 .5rem rgba(0, 0, 0, .25), inset 0 0 .0625rem rgba(0, 0, 0, .15)'
+    boxShadow: 'inset .0625rem 0 0 rgba(0, 0, 0, .05)'
   }
 });
 

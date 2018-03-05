@@ -5,7 +5,6 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import CreateCardRootStyles from './CreateCardRootStyles';
-import {cardBorderTop} from 'universal/styles/helpers';
 
 const CreateCard = (props) => {
   const {
@@ -44,19 +43,18 @@ CreateCard.propTypes = {
 const styleThunk = () => ({
   root: {
     ...CreateCardRootStyles,
+    backgroundColor: 'transparent',
+    border: `1px dashed ${appTheme.palette.mid30l}`,
+    boxShadow: 'none',
     paddingLeft: 0,
-    paddingRight: 0,
-
-    '::after': {
-      ...cardBorderTop,
-      color: appTheme.palette.mid40l
-    }
+    paddingRight: 0
   },
 
   hasControls: {
-    '::after': {
-      color: appTheme.palette.mid
-    },
+    ...CreateCardRootStyles,
+    borderTop: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
     ':hover': {
       boxShadow: ui.shadow[1]
     },
@@ -68,7 +66,7 @@ const styleThunk = () => ({
   controlsBlock: {
     alignContent: 'center',
     alignSelf: 'stretch',
-    color: appTheme.palette.cool,
+    color: appTheme.palette.mid,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -77,18 +75,18 @@ const styleThunk = () => ({
     width: '100%',
 
     ':hover': {
-      color: appTheme.palette.cool80d,
+      color: appTheme.palette.mid80d,
       cursor: 'pointer'
     },
     ':focus': {
-      color: appTheme.palette.cool80d,
+      color: appTheme.palette.mid80d,
       cursor: 'pointer'
     }
   },
 
   label: {
     fontSize: appTheme.typography.s4,
-    fontWeight: 700
+    fontWeight: 600
   },
 
   hint: {

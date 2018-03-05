@@ -39,14 +39,14 @@ const UserNoNewOutcomes = (props) => {
     borderRadius: '4px',
     fontFamily: ui.emailFontFamily,
     fontSize: '18px',
-    fontWeight: 700
+    fontWeight: 600
   };
 
   const attendingStyles = {
     fontFamily: ui.emailFontFamily,
     fontSize: members.length === 1 ? '14px' : '13px',
     fontStyle: 'italic',
-    fontWeight: 700,
+    fontWeight: 600,
     padding: '0 0 8px'
   };
 

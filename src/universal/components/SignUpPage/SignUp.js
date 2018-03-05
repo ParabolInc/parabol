@@ -24,7 +24,7 @@ type Props = {
 };
 
 const purple = {
-  color: appTheme.brand.new.purple
+  color: appTheme.brand.primary.purple
 };
 
 const linkStyles = {

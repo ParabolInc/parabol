@@ -38,7 +38,7 @@ const EditingStatus = (props) => {
   const isEditing = editors.length > otherEditors.length;
   const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated';
   return (
-    <div className={css(styles.timestamp)} onClick={handleClick} title={title}>
+    <div className={css(styles.cardEditingStatus)} onClick={handleClick} title={title}>
       {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
     </div>
   );
@@ -54,14 +54,14 @@ EditingStatus.propTypes = {
 };
 
 const styleThunk = (custom, {isEditing}) => ({
-  timestamp: {
+  cardEditingStatus: {
     color: appTheme.palette.dark80l,
     cursor: isEditing ? 'default' : 'pointer',
-    fontSize: appTheme.typography.s2,
+    fontSize: ui.cardEditingStatusFontSize,
     fontWeight: 400,
-    lineHeight: appTheme.typography.s4,
+    lineHeight: ui.cardEditingStatusLineHeight,
     padding: `.25rem ${ui.cardPaddingBase}`,
-    textAlign: 'right'
+    textAlign: 'left'
   }
 });
 

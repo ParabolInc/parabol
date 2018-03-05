@@ -59,7 +59,7 @@ class MeetingUpdates extends Component {
             {showMoveMeetingControls &&
               <Button
                 buttonStyle="flat"
-                colorPalette="cool"
+                colorPalette="warm"
                 icon="arrow-circle-right"
                 iconPlacement="right"
                 key={`update${localPhaseItem}`}

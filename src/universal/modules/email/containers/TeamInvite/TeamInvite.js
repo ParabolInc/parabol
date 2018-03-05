@@ -7,11 +7,11 @@ import Body from '../../components/Body/Body';
 import Header from '../../components/Header/Header';
 import Callout from '../../components/Callout/Callout';
 import Footer from '../../components/Footer/Footer';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 
-const colorCool = {
-  color: appTheme.palette.cool
+const textColor = {
+  color: ui.colorText
 };
 
 const colorWarm = {
@@ -20,19 +20,11 @@ const colorWarm = {
 
 const boldLinkStyle = {
   color: appTheme.palette.warm,
-  fontWeight: 'bold',
   textDecoration: 'none'
 };
 
-const merryAndBold = {
-  color: appTheme.palette.cool,
-  fontFamily: '"Merriweather", "Georgia", serif',
-  fontStyle: 'italic',
-  fontWeight: 'bold'
-};
-
 const teamNameStyle = {
-  ...merryAndBold,
+  color: ui.colorText,
   fontSize: '36px'
 };
 
@@ -45,11 +37,11 @@ const ruleStyle = {
 };
 
 const calloutTextStyle = {
-  color: appTheme.palette.dark
+  color: ui.colorText
 };
 
 const secondaryMessage = {
-  color: appTheme.palette.dark,
+  color: ui.colorText,
   fontSize: '20px',
   lineHeight: '30px'
 };
@@ -80,7 +72,7 @@ const TeamInvite = (props) => {
               </td>
               <td style={{paddingLeft: '16px', textAlign: 'left'}}>
                 {inviterName}<br />
-                <a href={`mailto:${inviterEmail}`} style={{...colorCool, fontSize: '14px'}}>{inviterEmail}</a>
+                <a href={`mailto:${inviterEmail}`} style={{...textColor, fontSize: '14px'}}>{inviterEmail}</a>
               </td>
             </tr>
           </tbody>
@@ -90,10 +82,10 @@ const TeamInvite = (props) => {
             <tr>
               <td style={{paddingLeft: '16px', paddingRight: '16px'}}>
                 <Callout fontSize={18} width="100%">
-                  <b style={calloutTextStyle}>
-                    Hi <a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{nameOrEmail}</a>!<br />
-                    {inviterName} has invited you to join a team on Parabol:
-                  </b>
+                  <span style={calloutTextStyle}>
+                    {'Hi '}<a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{nameOrEmail}</a>!<br />
+                    {inviterName}{' has invited you to join a team on Parabol:'}
+                  </span>
                   <EmptySpace height={12} />
                   <span style={teamNameStyle}>{teamName}</span>
                 </Callout>
@@ -102,10 +94,10 @@ const TeamInvite = (props) => {
           </tbody>
         </table>
         <Button backgroundColor={appTheme.palette.warm} url={inviteLink}>
-          Join Team
+          {'Join Team'}
         </Button>
         <EmptySpace height={16} />
-        Or go to: <a href={inviteLink} style={colorWarm}>{inviteLink}</a>
+        {'Or go to: '}<a href={inviteLink} style={colorWarm}>{inviteLink}</a>
         <EmptySpace height={32} />
         <div style={ruleStyle} />
         <EmptySpace height={32} />
@@ -116,13 +108,13 @@ const TeamInvite = (props) => {
             style={boldLinkStyle}
             title="How to Navigate Uncertainty using the Action Rhythm"
           >
-            develop a weekly rhythm
-          </a>.<br />
-          <a href={inviteLink} style={boldLinkStyle}>Add a task to the board</a> to get started.
+            {'develop a weekly rhythm'}
+          </a>{'.'}<br />
+          <a href={inviteLink} style={boldLinkStyle}>{'Add a task to the board'}</a>{' to get started.'}
         </div>
         <EmptySpace height={32} />
       </Body>
-      <Footer color={appTheme.palette.dark} />
+      <Footer color={ui.colorText} />
     </Layout>
   );
 };

@@ -55,7 +55,7 @@ const GitHubIntegrations = (props) => {
           <Button
             buttonSize="small"
             buttonStyle="flat"
-            colorPalette="cool"
+            colorPalette="warm"
             label={`Refresh Token for ${providerUserName}`}
             onClick={openOauth}
           />
@@ -77,7 +77,7 @@ const GitHubIntegrations = (props) => {
               <Button
                 buttonSize="medium"
                 buttonStyle="solid"
-                colorPalette="cool"
+                colorPalette="warm"
                 label="Authorize GitHub to Add a Repo"
                 onClick={openOauth}
               />
@@ -174,7 +174,7 @@ const styleThunk = () => ({
 
   nameWithOwner: {
     color: ui.palette.cool,
-    fontWeight: 700
+    fontWeight: 600
   }
 });
 

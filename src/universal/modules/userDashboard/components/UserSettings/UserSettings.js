@@ -76,7 +76,7 @@ const UserSettings = (props) => {
                     isBlock
                     label="Update"
                     buttonSize={controlSize}
-                    colorPalette="cool"
+                    colorPalette="warm"
                     type="submit"
                   />
                 </div>

@@ -83,7 +83,7 @@ const styleThunk = () => ({
   },
 
   value: {
-    fontWeight: 700
+    fontWeight: 600
   }
 });
 

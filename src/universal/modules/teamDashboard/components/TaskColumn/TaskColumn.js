@@ -2,11 +2,9 @@ import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import withScrolling from 'react-dnd-scrollzone';
-import FontAwesome from 'react-fontawesome';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
 import AddTaskButton from 'universal/components/AddTaskButton/AddTaskButton';
-import Badge from 'universal/components/Badge/Badge';
 import DraggableTask from 'universal/containers/TaskCard/DraggableTask';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import sortOrderBetween from 'universal/dnd/sortOrderBetween';
@@ -14,7 +12,6 @@ import {Menu, MenuItem} from 'universal/modules/menu';
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation';
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import {overflowTouch} from 'universal/styles/helpers';
-import taskStatusStyles from 'universal/styles/helpers/taskStatusStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import themeLabels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
@@ -38,13 +35,6 @@ const originAnchor = {
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
-};
-
-const badgeColor = {
-  done: 'dark',
-  active: 'cool',
-  stuck: 'warm',
-  future: 'mid'
 };
 
 const handleAddTaskFactory = (atmosphere, status, teamId, userId, sortOrder) => () => {
@@ -202,20 +192,17 @@ class TaskColumn extends Component {
     return (
       <div className={columnStyles}>
         <div className={css(styles.columnHeader)}>
+          {this.makeAddTask()}
           <div className={css(styles.statusLabelBlock)}>
-            <span className={css(styles.statusIcon, styles[status])}>
-              <FontAwesome name={themeLabels.taskStatus[status].icon} />
-            </span>
-            <span className={css(styles.statusLabel, styles[status])}>
+            <span className={css(styles.statusLabel)}>
               {label}
             </span>
             {(tasks.length > 0) &&
-            <span className={css(styles.statusBadge)}>
-              <Badge colorPalette={badgeColor[status]} flat value={tasks.length} />
+            <span className={css(styles.tasksCount)}>
+              {tasks.length}
             </span>
             }
           </div>
-          {this.makeAddTask()}
         </div>
         <div className={css(styles.columnBody)}>
           <ScrollZone className={css(styles.columnInner)}>
@@ -244,7 +231,7 @@ class TaskColumn extends Component {
 
 const styleThunk = () => ({
   column: {
-    borderLeft: `2px dashed ${ui.dashBorderColor}`,
+    // borderLeft: `2px dashed ${ui.dashBorderColor}`,
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
@@ -265,7 +252,7 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
-    padding: '.5rem 1rem',
+    padding: '.625rem 1rem .5rem',
     position: 'relative'
   },
 
@@ -279,7 +266,7 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    padding: '0 1rem',
+    padding: `.125rem ${ui.taskColumnPaddingInner} 0`,
     position: 'absolute',
     width: '100%'
   },
@@ -288,28 +275,18 @@ const styleThunk = () => ({
     alignItems: 'center',
     display: 'flex',
     flex: 1,
-    fontSize: appTheme.typography.s3
-  },
-
-  statusIcon: {
-    fontSize: '14px',
-    marginRight: '.25rem',
-    paddingTop: 1,
-    textAlign: 'center',
-    verticalAlign: 'middle'
+    fontSize: appTheme.typography.sBase
   },
 
   statusLabel: {
-    fontWeight: 700,
-    paddingTop: 2,
-    textTransform: 'uppercase'
+    fontWeight: 600,
+    textTransform: 'capitalize'
   },
 
-  statusBadge: {
+  tasksCount: {
+    color: appTheme.palette.dark40a,
     marginLeft: '.5rem'
-  },
-
-  ...taskStatusStyles('color')
+  }
 });
 
 export default connect()(

@@ -39,7 +39,7 @@ const ServiceRow = (props) => {
             />
             <div className={css(styles.manageService)}>
               <Button
-                colorPalette="cool"
+                colorPalette="warm"
                 label="Refresh Token"
                 buttonSize="small"
                 buttonStyle="flat"
@@ -54,7 +54,7 @@ const ServiceRow = (props) => {
               />
             </div>
           </div> :
-          <Button colorPalette="cool" label="Add Integration" buttonSize="small" buttonStyle="solid" onClick={openOauth} />
+          <Button colorPalette="warm" label="Add Integration" buttonSize="small" buttonStyle="solid" onClick={openOauth} />
       }
     </Row>
   );
@@ -94,7 +94,7 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'inline-block',
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
+    fontWeight: 600,
     flex: 1,
     lineHeight: '1.625rem',
     verticalAlign: 'middle'

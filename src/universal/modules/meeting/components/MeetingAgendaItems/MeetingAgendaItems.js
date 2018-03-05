@@ -56,9 +56,9 @@ class MeetingAgendaItems extends Component {
     const agendaItem = agendaItems[localPhaseItem - 1];
     const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id);
     const isLast = agendaItems.length === localPhaseItem;
-    const heading = (<span>{currentTeamMember.preferredName}: <i
+    const heading = (<span>{currentTeamMember.preferredName}: <span
       style={{color: ui.palette.warm}}
-    >“{agendaItem.content}”</i></span>);
+    >“{agendaItem.content}”</span></span>);
     return (
       <MeetingMain>
         <MeetingSection flexToFill paddingBottom="2rem">
@@ -78,7 +78,7 @@ class MeetingAgendaItems extends Component {
                   </MeetingFacilitationHint> :
                   <Button
                     buttonStyle="flat"
-                    colorPalette="cool"
+                    colorPalette="warm"
                     icon="arrow-circle-right"
                     iconPlacement="right"
                     key={`agendaItem${localPhaseItem}`}

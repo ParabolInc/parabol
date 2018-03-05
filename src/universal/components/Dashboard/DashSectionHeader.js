@@ -22,7 +22,7 @@ const styleThunk = () => ({
   root: {
     display: 'flex',
     maxWidth: ui.taskColumnsMaxWidth,
-    padding: '1rem',
+    padding: `1rem ${ui.dashGutter}`,
     position: 'relative',
     width: '100%'
   }

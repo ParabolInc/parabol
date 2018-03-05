@@ -1,14 +1,14 @@
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 
 const DashNavItemBaseStyles = {
-  // backgroundColor: ui.dashSidebarBackgroundColor,
-  borderRadius: `${ui.buttonBorderRadius} 0 0 ${ui.buttonBorderRadius}`,
+  borderLeft: '.1875rem solid transparent',
   color: 'inherit',
-  display: 'block',
-  fontSize: appTheme.typography.s4,
-  margin: '.5rem 0',
-  padding: '.3125rem .5rem .3125rem 1rem',
+  display: 'flex',
+  alignItems: 'center',
+  fontSize: ui.navMenuFontSize,
+  fontWeight: 600,
+  lineHeight: ui.navMenuLineHeight,
+  padding: '.625rem .5rem .625rem 2rem',
   transition: `background-color ${ui.transition[0]}`,
   userSelect: 'none',
   width: '100%'

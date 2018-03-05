@@ -82,6 +82,18 @@ const assignTargetAnchor = {
 
 const height = ui.cardButtonHeight;
 
+const label = {
+  ...textOverflow,
+  color: ui.colorText,
+  display: 'block',
+  flex: 1,
+  fontSize: appTheme.typography.s1,
+  fontWeight: 400,
+  lineHeight: height,
+  maxWidth: '100%',
+  textAlign: 'left'
+};
+
 class OutcomeCardFooter extends Component {
   constructor(props) {
     super(props);
@@ -129,11 +141,18 @@ class OutcomeCardFooter extends Component {
       cardIsActive && styles.activeAvatar
     );
     const {error} = this.state;
+    const teamToggleStyle = {
+      ...label,
+      color: ui.colorText,
+      fontSize: appTheme.typography.s1,
+      textAlign: 'left'
+    };
     const ownerAvatarOrTeamName = (
       showTeam ?
         (<PlainButton
           aria-label="Assign this task to another team"
           onClick={this.selectAllQuestion}
+          style={teamToggleStyle}
         >
           {teamName}
         </PlainButton>) :
@@ -272,23 +291,12 @@ OutcomeCardFooter.propTypes = {
   toggleMenuState: PropTypes.func.isRequired
 };
 
-const label = {
-  ...textOverflow,
-  color: appTheme.palette.dark,
-  display: 'block',
-  flex: 1,
-  fontSize: appTheme.typography.s2,
-  fontWeight: 700,
-  lineHeight: height,
-  maxWidth: '100%',
-  textAlign: 'left'
-};
-
 const styleThunk = () => ({
   footer: {
     // NOTE: height = ui.cardButtonHeight + (ui.cardPaddingBase * 2)
     display: 'flex',
-    height: '2.5rem',
+    // height: '2.5rem',
+    height: '3.375rem',
     justifyContent: 'space-between',
     maxWidth: '100%',
     padding: ui.cardPaddingBase

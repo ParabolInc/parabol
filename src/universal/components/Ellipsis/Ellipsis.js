@@ -60,7 +60,7 @@ const styleThunk = () => ({
     animationIterationCount: 'infinite',
     animationName: keyframesOpacity,
     display: 'inline-block',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: 'inherit',
     verticalAlign: 'baseline'
   },

@@ -4,7 +4,7 @@ import React from 'react';
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
-import {DashContent, DashHeader, DashHeaderInfo, DashMain} from 'universal/components/Dashboard';
+import {DashContent, DashHeader, DashHeaderInfo, DashMain, DashSearchControl} from 'universal/components/Dashboard';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
@@ -64,13 +64,8 @@ const Team = (props) => {
       />
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
-          {!isSettings &&
-            <TeamCallsToAction teamId={teamId} />
-          }
           {__RELEASE_FLAGS__.localFilter &&
-            <span>Filter:
-              <input onChange={updateFilter} />
-            </span>
+            !isSettings && <DashSearchControl onChange={updateFilter} placeholder="Search Tasks and Agenda Topics" />
           }
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
@@ -78,7 +73,7 @@ const Team = (props) => {
             <Button
               key="1"
               buttonStyle="flat"
-              colorPalette="cool"
+              colorPalette="dark"
               icon="arrow-circle-left"
               iconPlacement="left"
               isBlock
@@ -89,7 +84,7 @@ const Team = (props) => {
             <Button
               buttonSize="small"
               buttonStyle="flat"
-              colorPalette="cool"
+              colorPalette="dark"
               icon="cog"
               iconPlacement="left"
               key="2"
@@ -99,6 +94,9 @@ const Team = (props) => {
             />
           }
           <DashboardAvatars team={team} />
+          {!isSettings &&
+            <TeamCallsToAction teamId={teamId} />
+          }
         </div>
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">

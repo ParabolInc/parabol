@@ -140,17 +140,17 @@ const styleThunk = () => ({
 
   toPay: {
     color: appTheme.palette.cool,
-    fontWeight: 700
+    fontWeight: 600
   },
 
   paid: {
     color: appTheme.palette.mid,
-    fontWeight: 700
+    fontWeight: 600
   },
 
   unpaid: {
     color: appTheme.palette.warm,
-    fontWeight: 700
+    fontWeight: 600
   },
   invoiceTitle: {
     color: ui.rowHeadingColor,
@@ -163,7 +163,7 @@ const styleThunk = () => ({
   subHeader: {
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s4
   },
 
@@ -186,7 +186,7 @@ const styleThunk = () => ({
   infoLink: {
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s4,
 
     ':hover': {

@@ -40,7 +40,7 @@ const KickedOut = (props) => {
       <div className={css(styles.button)}>
         <Button
           aria-label={clearNotificationLabel}
-          colorPalette="cool"
+          colorPalette="warm"
           waiting={submitting}
           isBlock
           label="OK"

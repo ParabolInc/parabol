@@ -27,7 +27,7 @@ class OrgPlanSqueeze extends Component {
     const {showCost} = this.state;
     const toggle = (<Button
       buttonSize="medium"
-      colorPalette="cool"
+      colorPalette="warm"
       depth={2}
       isBlock
       label="Upgrade to the Pro Plan"
@@ -54,7 +54,6 @@ class OrgPlanSqueeze extends Component {
                 orgId={orgId}
                 toggle={toggle}
               />
-
             </div>
             {showCost ?
               <div className={css(styles.costHint)}>
@@ -63,7 +62,7 @@ class OrgPlanSqueeze extends Component {
               <Button
                 buttonSize="small"
                 buttonStyle="flat"
-                colorPalette="cool"
+                colorPalette="warm"
                 icon="question-circle"
                 iconPlacement="right"
                 label="How much will it cost?"
@@ -121,7 +120,7 @@ const styleThunk = () => ({
   copy: {
     color: ui.palette.dark,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s5,
     margin: '1rem 0 .5rem'
   },
@@ -139,7 +138,7 @@ const styleThunk = () => ({
     borderRadius: ui.borderRadiusSmall,
     color: appTheme.palette.cool,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '2rem',
     margin: '0 1rem',
     textAlign: 'center'

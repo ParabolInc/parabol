@@ -20,7 +20,7 @@ const MenuLabel = styled('div')({
   borderBottom: `1px solid ${appTheme.palette.mid30l}`,
   color: ui.palette.dark,
   fontSize: ui.menuItemFontSize,
-  fontWeight: 700,
+  fontWeight: 600,
   lineHeight: ui.menuItemHeight,
   marginBottom: ui.menuGutterVertical,
   padding: `0 ${ui.menuGutterHorizontal}`

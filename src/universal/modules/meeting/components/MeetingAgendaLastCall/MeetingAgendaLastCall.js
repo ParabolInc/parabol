@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
@@ -31,65 +32,50 @@ const MeetingAgendaLastCall = (props) => {
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
-          <MeetingPhaseHeading>
+          <div className={css(styles.main)}>
+            <MeetingPhaseHeading>
+              {agendaItemCount === 0 ?
+                <span>{`No ${labelAgendaItems}?`}</span> :
+                <span>{'Last Call:'}</span>
+              }
+            </MeetingPhaseHeading>
             {agendaItemCount === 0 ?
-              <span>{`No ${labelAgendaItems}?`}</span> :
-              <span>{'Last Call:'}</span>
+              <MeetingCopy>
+                <span>
+                  {`Looks like you didn’t process any ${labelAgendaItems}.`}
+                  <br />
+                  {`You can add ${labelAgendaItems} in the left sidebar before ending the meeting.`}
+                  <br />
+                  {'Simply tap on any items you create to process them.'}
+                </span>
+              </MeetingCopy> :
+              <MeetingCopy>
+                {'We’ve worked on '}
+                <b>{`${agendaItemCount} ${plural(agendaItemCount, AGENDA_ITEM_LABEL)}`}</b>
+                {' so far—need anything else?'}
+              </MeetingCopy>
             }
-          </MeetingPhaseHeading>
-          {agendaItemCount === 0 ?
-            <Type
-              align="center"
-              marginBottom="2.5rem"
-              marginTop=".5rem"
-              scale="s5"
-              colorPalette="black"
-            >
-              <span>
-                {`Looks like you didn’t process any ${labelAgendaItems}.`}
-                <br />
-                {`You can add ${labelAgendaItems} in the left sidebar before ending the meeting.`}
-                <br />
-                {'Simply tap on any items you create to process them.'}
-              </span>
-            </Type> :
-            <Type
-              align="center"
-              bold
-              marginBottom="2.5rem"
-              marginTop=".5rem"
-              scale="s5"
-              colorPalette="black"
-            >
-              {'We’ve worked on '}
-              <span className={css(styles.highlight)}>
-                {`${agendaItemCount} ${plural(agendaItemCount, AGENDA_ITEM_LABEL)}`}
-              </span>
-              {' so far—need anything else?'}
-            </Type>
-          }
 
-          <AgendaShortcutHint />
+            <AgendaShortcutHint />
 
-          <div className={css(styles.controlBlock)}>
-            {!hideMoveMeetingControls &&
-              <Button
-                aria-label="End Meeting"
-                buttonSize="large"
-                buttonStyle="solid"
-                colorPalette="cool"
-                depth={1}
-                isBlock
-                label="End Meeting"
-                onClick={gotoNext}
-                textTransform="uppercase"
-              />
-            }
-          </div>
-          <div className={css(styles.hintBlock)}>
-            <MeetingFacilitationHint>
-              {'Waiting for'} <b>{hintName}</b> {'to move on'}
-            </MeetingFacilitationHint>
+            <div className={css(styles.controlBlock)}>
+              {!hideMoveMeetingControls &&
+                <Button
+                  aria-label="End Meeting"
+                  buttonSize="large"
+                  buttonStyle="solid"
+                  colorPalette="warm"
+                  depth={1}
+                  label="End Action Meeting"
+                  onClick={gotoNext}
+                />
+              }
+            </div>
+            <div className={css(styles.hintBlock)}>
+              <MeetingFacilitationHint>
+                {'Waiting for'} <b>{hintName}</b> {'to move on'}
+              </MeetingFacilitationHint>
+            </div>
           </div>
         </MeetingSection>
       </MeetingSection>
@@ -106,12 +92,17 @@ MeetingAgendaLastCall.propTypes = {
 };
 
 const styleThunk = () => ({
+  main: {
+    paddingLeft: ui.meetingSplashGutter,
+    width: '100%'
+  },
+
   highlight: {
-    color: appTheme.palette.warm
+    fontWeight: 600
   },
 
   controlBlock: {
-    margin: '0 auto',
+    margin: '0',
     padding: '2.25rem 0 1rem',
     width: '12rem'
   },
@@ -124,7 +115,6 @@ const styleThunk = () => ({
   },
 
   hintBlock: {
-    textAlign: 'center',
     width: '100%'
   }
 });

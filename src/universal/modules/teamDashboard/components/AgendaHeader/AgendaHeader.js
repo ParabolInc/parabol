@@ -19,7 +19,7 @@ const AgendaHeader = (props) => {
   const label = `Agenda Queue${hideAgenda ? '...' : ''}`;
   return (
     <div className={css(styles.root)} onClick={toggleHide}>
-      <DashSectionHeading icon="comment" label={label} />
+      <DashSectionHeading label={label} />
     </div>
   );
 };
@@ -38,7 +38,7 @@ AgendaHeader.propTypes = {
 const styleThunk = () => ({
   root: {
     cursor: 'pointer',
-    padding: '1rem 1rem 1rem 2.375rem',
+    padding: '1rem 1rem 1rem 3.75rem',
     width: '100%',
     maxWidth: ui.dashAgendaWidth,
     minWidth: ui.dashAgendaWidth
