@@ -100,7 +100,7 @@ export const resolveTeam = async ({team, teamId}, args, {authToken, dataLoader})
 export const resolveTeams = async ({teamIds, teams}, args, {authToken, dataLoader}) => {
   const {tms} = authToken;
   const teamDocs = (teamIds && teamIds.length > 0) ? await dataLoader.get('teams').loadMany(teamIds) : teams;
-  return teamDocs.filter((team) => tms.includes(team.id));
+  return Array.isArray(teamDocs) ? teamDocs.filter((team) => tms.includes(team.id)) : null;
 };
 
 export const resolveTeamMember = ({teamMemberId, teamMember}, args, {dataLoader}) => {

@@ -64,6 +64,6 @@ export default {
 
     publish(ORGANIZATION, orgId, UpdateCreditCardPayload, data, subOptions);
 
-    return {creditCard};
+    return data;
   }
 };
