@@ -9,7 +9,7 @@ import {
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
-import segmentIo from 'server/utils/segmentIo';
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 
 const login = {
   type: LoginPayload,
@@ -59,23 +59,16 @@ const login = {
     };
     await r.table('User').insert(newUser);
     /*
-     * From segment docs:
-     *
-     * We recommend calling identify a single time when the
-     * user’s account is first created, and only identifying
-     * again later when their traits change.
-     *
-     * see: https://segment.com/docs/sources/server/node/
-     */
-    segmentIo.identify({
-      userId: newUser.id,
-      traits: {
-        avatar: newUser.picture,
-        createdAt: newUser.createdAt,
-        email: newUser.email,
-        name: newUser.preferredName
-      }
-    });
+    * From segment docs:
+    *
+    * We recommend calling identify a single time when the
+    * user’s account is first created, and only identifying
+    * again later when their traits change.
+    *
+    * see: https://segment.com/docs/sources/server/node/
+    */
+    await sendSegmentIdentify(newUser.id);
+
     // don't await
     setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
     return {userId: viewerId};

@@ -52,6 +52,7 @@ const makePropColors = (buttonStyle, colorPalette) => {
 class Button extends Component {
   static propTypes = {
     'aria-label': PropTypes.string,
+    borderRadius: PropTypes.string,
     colorPalette: PropTypes.oneOf(ui.paletteOptions),
     // depth: up to 3 + 1 (for :hover, :focus) = up to ui.shadow[4]
     depth: PropTypes.oneOf([0, 1, 2, 3]),
@@ -206,7 +207,7 @@ class Button extends Component {
   }
 }
 
-const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabled, textTransform}) => {
+const styleThunk = (theme, {borderRadius, buttonSize, buttonStyle, colorPalette, depth, disabled, textTransform}) => {
   const size = buttonSize || ui.buttonSizeOptions[1];
   const buttonSizeStyles = ui.buttonSizeStyles[size];
   return ({
@@ -214,7 +215,7 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
     base: {
       ...ui.buttonBaseStyles,
       ...buttonSizeStyles,
-      borderRadius: ui.buttonBorderRadius,
+      borderRadius: borderRadius || ui.buttonBorderRadius,
       textTransform: textTransform || 'none',
       transition: `box-shadow ${ui.transition[0]}, transform ${ui.transition[0]}`
     },

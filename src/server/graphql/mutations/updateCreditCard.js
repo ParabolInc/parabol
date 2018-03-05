@@ -32,10 +32,9 @@ export default {
     requireOrgLeader(userOrgDoc);
 
     // VALIDATION
-    const {stripeId, stripeSubscriptionId} = await r.table('Organization')
-      .get(orgId)
-      .pluck('stripeId', 'stripeSubscriptionId');
-    if (!stripeSubscriptionId) {
+    const {stripeId} = await r.table('Organization').get(orgId);
+
+    if (!stripeId) {
       throw new Error('Cannot call this without an active stripe subscription');
     }
 

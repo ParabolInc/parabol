@@ -9,6 +9,8 @@ import {
 import stripe from 'server/billing/stripe';
 import shortid from 'shortid';
 import {toEpochSeconds} from 'server/utils/epochTime';
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
+
 
 const changePause = (inactive) => (orgIds, userId) => {
   const r = getRethink();
@@ -121,4 +123,6 @@ export default async function adjustUserCount(userId, orgInput, type) {
   }, []);
 
   await Promise.all(stripePromises);
+  // publish any changes to user traits (like tier counts) to segment:
+  await sendSegmentIdentify(userId);
 }
