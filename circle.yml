@@ -55,7 +55,12 @@ stages:
 
       - type: shell
         name: Database migration (testing)
-        command: npm run db:migrate-testing
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+          else
+            npm run db:migrate-testing
+          fi
 
       - type: shell
         name: DevOps checkout
@@ -69,31 +74,52 @@ stages:
       - type: shell
         name: E2E test dependencies
         command: |
-          apt-get update && apt-get -yq install unzip libnss3 libgconf-2-4
-          npm run test:e2e-deps
+          if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+          else
+            apt-get update && apt-get -yq install unzip libnss3 libgconf-2-4
+            npm run test:e2e-deps
+          fi
 
       - type: shell
         name: E2E test build
         command: |
-          cp $DEVOPS_WORKDIR/environments/e2e ./.env
-          npm run db:migrate
-          npm run build
+          if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+          else
+            cp $DEVOPS_WORKDIR/environments/e2e ./.env
+            npm run db:migrate
+            npm run build
+          fi
 
       - type: shell
         name: NPM lint
-        command: npm run lint
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+          else
+            npm run lint
+          fi
 
       - type: shell
         name: NPM run test
         command: |
-          npm run test
-          mkdir test-report ; mv test-report.xml test-report
+          if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+          else
+            npm run test
+            mkdir test-report ; mv test-report.xml test-report
+          fi
 
       - type: shell
         name: E2E test run
         command: |
-          export SELENIUM_REMOTE_URL='http://localhost:4444/wd/hub'
-          npm run test:e2e
+          if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+          else
+            export SELENIUM_REMOTE_URL='http://localhost:4444/wd/hub'
+            npm run test:e2e
+          fi
 
       - type: shell
         name: Pre-build environment configuration
