@@ -26,6 +26,8 @@ type Props = {
   handleSave?: (editorState: EditorState) => any,
   // True when this card is being hovered over by a valid drag source
   hovered?: boolean,
+  // True when the current user is the one dragging this card
+  iAmDragging?: boolean,
   // If the `userDragging` prop is provided, this states whether it serves as
   // the under-the-mouse dragged card, or the sitting-where-it-came-from card.
   pulled?: boolean,
@@ -43,7 +45,7 @@ type State = {
 type DnDStylesWrapperProps = {
   hovered?: boolean,
   pulled?: boolean,
-  userDragging?: boolean
+  iAmDragging?: boolean
 };
 
 const BottomBar = styled('div')({
@@ -55,8 +57,8 @@ const BottomBar = styled('div')({
   padding: '0.4rem 0.8rem'
 });
 
-const DnDStylesWrapper = styled('div')(({hovered, pulled, userDragging}: DnDStylesWrapperProps) => ({
-  opacity: ((userDragging && !pulled) || hovered) && 0.6
+const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperProps) => ({
+  opacity: ((iAmDragging && !pulled)) && 0.6
 }));
 
 const ReflectionCardMain = styled('div')({
@@ -134,12 +136,12 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   maybeRenderUserDragging = () => {
-    const {userDragging} = this.props;
+    const {pulled, userDragging} = this.props;
     const styles = {
       color: appTheme.palette.warm,
       textAlign: 'end'
     };
-    return Boolean(userDragging) && (
+    return (userDragging && !pulled) && (
       <div className={css(styles)}>
         {userDragging}
       </div>
@@ -172,11 +174,18 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   render() {
-    const {hovered, pulled, userDragging} = this.props;
+    const {hovered, iAmDragging, pulled, userDragging} = this.props;
+    const holdingPlace = Boolean(userDragging && !pulled);
     return (
-      <DnDStylesWrapper pulled={pulled} userDragging={userDragging} hovered={hovered}>
+      <DnDStylesWrapper pulled={pulled} iAmDragging={iAmDragging} hovered={hovered}>
         {this.maybeRenderUserDragging()}
-        <ReflectionCardWrapper pulled={pulled} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+        <ReflectionCardWrapper
+          holdingPlace={holdingPlace}
+          hoveringOver={hovered}
+          pulled={pulled}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+        >
           <ReflectionCardMain>
             {this.renderCardContent()}
           </ReflectionCardMain>

@@ -20,7 +20,7 @@ type DeleteButtonProps = {
 };
 
 const deleteButtonStyles = {
-  backgroundColor: 'rgba(1, 1, 1, 0)',
+  backgroundColor: 'rgba(0, 0, 0, 0)',
   color: appTheme.palette.warm,
   padding: '0.1rem',
   position: 'absolute',

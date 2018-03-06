@@ -111,8 +111,13 @@ storiesOf('ReflectionCard', module)
         render={() => (
           <Grid>
             <ReflectionCard
-              contentState={ContentState.createFromText('Sitting in the "from" state')}
+              contentState={ContentState.createFromText('Holding the original place for me as I drag')}
+              iAmDragging
               userDragging="Dan"
+            />
+            <ReflectionCard
+              contentState={ContentState.createFromText('Holding the original place for another user as they drag')}
+              userDragging="Terry"
             />
             <ReflectionCard
               contentState={ContentState.createFromText('Pulled under the mouse')}
