@@ -14,6 +14,7 @@ const DashSearch = styled('div')({
 
 const DashSearchIcon = styled(FontAwesome)({
   color: appTheme.palette.dark60l,
+  fontSize: ui.iconSize,
   marginRight: '.5rem'
 });
 
