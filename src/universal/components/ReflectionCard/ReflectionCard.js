@@ -5,14 +5,15 @@
  */
 // $FlowFixMe
 import {EditorState, ContentState} from 'draft-js';
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import styled, {css} from 'react-emotion';
 
 import EditorInputWrapper from 'universal/components/EditorInputWrapper';
-import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
+
+import ReflectionCardDeleteButton from './ReflectionCardDeleteButton';
 
 type Stage = 'positive' | 'negative' | 'change';
 
@@ -35,15 +36,15 @@ type Props = {
 };
 
 type State = {
-  confirmingDelete: boolean,
-  editorState: EditorState
+  editorState: EditorState,
+  mouseOver: boolean
 };
 
-const ReflectionCardMain = styled('div')({
-  maxHeight: '10rem',
-  overflow: 'auto',
-  padding: '0.8rem'
-});
+type DnDStylesWrapperProps = {
+  hovered?: boolean,
+  pulled?: boolean,
+  userDragging?: boolean
+};
 
 const BottomBar = styled('div')({
   alignItems: 'flex-start',
@@ -54,31 +55,14 @@ const BottomBar = styled('div')({
   padding: '0.4rem 0.8rem'
 });
 
-const BottomLeft = styled('div')({
-  width: '100%'
-});
-
-const BottomRight = styled('div')({
-  alignSelf: 'flex-end',
-  display: 'flex',
-  flexShrink: 1.5,
-  justifyContent: 'flex-end',
-  width: '100%'
-});
-
-type DnDStylesWrapperProps = {
-  hovered?: boolean,
-  pulled?: boolean,
-  userDragging?: boolean
-};
-
 const DnDStylesWrapper = styled('div')(({hovered, pulled, userDragging}: DnDStylesWrapperProps) => ({
   opacity: ((userDragging && !pulled) || hovered) && 0.6
 }));
 
-const TextButton = styled(PlainButton)({
-  margin: '0 0.25rem',
-  textDecoration: 'underline'
+const ReflectionCardMain = styled('div')({
+  maxHeight: '10rem',
+  overflow: 'auto',
+  padding: '0.8rem'
 });
 
 const getDisplayName = (stage: ?Stage): string => {
@@ -102,17 +86,14 @@ export default class ReflectionCard extends Component<Props, State> {
       editorState: EditorState.createWithContent(
         props.contentState,
         editorDecorators(this.getEditorState)
-      )
+      ),
+      mouseOver: false
     };
   }
 
   getEditorState = () => (
     this.state.editorState
   );
-
-  setConfirmingDelete = () => {
-    this.setState({confirmingDelete: true});
-  };
 
   setEditorState = (editorState: EditorState) => {
     this.setState({editorState});
@@ -122,58 +103,35 @@ export default class ReflectionCard extends Component<Props, State> {
     Boolean(this.props.handleDelete)
   );
 
-  cancelDelete = () => {
-    this.setState({confirmingDelete: false});
-  };
-
-  confirmDelete = () => {
-    this.setState({confirmingDelete: false});
+  delete = () => {
     if (this.props.handleDelete) {
       this.props.handleDelete();
     }
   };
 
-  saveDeleteButton = (deleteButton: ?HTMLElement) => {
+  saveDeleteButton = (deleteButton: ?HTMLButtonElement) => {
     this.deleteButton = deleteButton;
   };
 
-  deleteButton: ?HTMLElement;
+  deleteButton: ?HTMLButtonElement;
 
-  maybeRenderBottomBar = () => {
+  maybeRenderDelete = () => {
+    const {mouseOver} = this.state;
+    return this.canDelete() && (
+      <ReflectionCardDeleteButton
+        innerRef={this.saveDeleteButton}
+        isVisible={mouseOver}
+        onBlur={() => this.setState({mouseOver: false})}
+        onClick={this.delete}
+        onFocus={() => this.setState({mouseOver: true})}
+      />
+    );
+  };
+
+  maybeRenderStage = () => {
     const {stage} = this.props;
-    if (!stage && !this.canDelete()) {
-      return null;
-    }
-    return (
-      <BottomBar>
-        {this.maybeRenderStage()}
-        {this.maybeRenderDeleteSection()}
-      </BottomBar>
-    );
+    return stage && <BottomBar>{getDisplayName(this.props.stage)}</BottomBar>;
   };
-
-  maybeRenderDeleteSection = () => {
-    if (!this.canDelete()) {
-      return null;
-    }
-    const {confirmingDelete} = this.state;
-    return (
-      <BottomRight>
-        {confirmingDelete ? (
-          <Fragment>
-            <TextButton type="reset" onClick={this.cancelDelete}>Cancel</TextButton>
-            <TextButton type="submit" onClick={this.confirmDelete}>Confirm</TextButton>
-          </Fragment>
-        ) : (
-          <TextButton type="button" onClick={this.setConfirmingDelete}>Delete</TextButton>
-        )}
-      </BottomRight>
-    );
-  };
-
-  maybeRenderStage = () => (
-    <BottomLeft>{getDisplayName(this.props.stage)}</BottomLeft>
-  );
 
   maybeRenderUserDragging = () => {
     const {userDragging} = this.props;
@@ -188,6 +146,14 @@ export default class ReflectionCard extends Component<Props, State> {
     );
   };
 
+  handleMouseEnter = () => {
+    this.setState({mouseOver: true});
+  };
+
+  handleMouseLeave = () => {
+    this.setState({mouseOver: false});
+  };
+
   renderCardContent = () => {
     const {handleSave} = this.props;
     const {editorState} = this.state;
@@ -195,7 +161,6 @@ export default class ReflectionCard extends Component<Props, State> {
       <EditorInputWrapper
         ariaLabel="Edit this reflection"
         editorState={editorState}
-        handleChange={this.cancelDelete}
         handleReturn={() => 'not-handled'}
         onBlur={handleSave && (() => handleSave(editorState))}
         placeholder="My reflection thought..."
@@ -211,11 +176,12 @@ export default class ReflectionCard extends Component<Props, State> {
     return (
       <DnDStylesWrapper pulled={pulled} userDragging={userDragging} hovered={hovered}>
         {this.maybeRenderUserDragging()}
-        <ReflectionCardWrapper pulled={pulled}>
+        <ReflectionCardWrapper pulled={pulled} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
           <ReflectionCardMain>
             {this.renderCardContent()}
           </ReflectionCardMain>
-          {this.maybeRenderBottomBar()}
+          {this.maybeRenderStage()}
+          {this.maybeRenderDelete()}
         </ReflectionCardWrapper>
       </DnDStylesWrapper>
     );

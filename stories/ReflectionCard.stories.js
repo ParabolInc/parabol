@@ -90,6 +90,7 @@ storiesOf('ReflectionCard', module)
                 contentState={ContentState.createFromText('Edit me!')}
                 handleDelete={action('handle-delete')}
                 handleSave={action('handle-save')}
+                key={stage || 'undefined'}
                 stage={stage}
               />
             ))}
