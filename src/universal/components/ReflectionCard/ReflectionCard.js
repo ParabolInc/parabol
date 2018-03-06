@@ -1,8 +1,10 @@
 /**
- * Renders a fully visible retrospective reflection card.
+ * The reflection card presentational component.
  *
  * @flow
  */
+import type {Stage} from 'universal/types/retro';
+
 // $FlowFixMe
 import {EditorState, ContentState} from 'draft-js';
 import React, {Component} from 'react';
@@ -15,9 +17,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton';
 
-type Stage = 'positive' | 'negative' | 'change';
-
-type Props = {
+export type Props = {|
   // The draft-js content for this card
   contentState: ContentState,
   // The action to take when this card is deleted
@@ -28,14 +28,17 @@ type Props = {
   hovered?: boolean,
   // True when the current user is the one dragging this card
   iAmDragging?: boolean,
-  // If the `userDragging` prop is provided, this states whether it serves as
-  // the under-the-mouse dragged card, or the sitting-where-it-came-from card.
+  // The unique ID of this reflection card
+  id: string,
+  // Provided by react-dnd
+  isDragging?: boolean,
+  // States whether it serves as a drag preview.
   pulled?: boolean,
   // The stage of the meeting this was created during
-  stage?: Stage,
+  stage?: ?Stage,
   // The name of the user who is currently dragging this card to a new place, if any
   userDragging?: string,
-};
+|};
 
 type State = {
   editorState: EditorState,
@@ -136,12 +139,12 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   maybeRenderUserDragging = () => {
-    const {pulled, userDragging} = this.props;
+    const {isDragging, pulled, userDragging} = this.props;
     const styles = {
       color: appTheme.palette.warm,
       textAlign: 'end'
     };
-    return (userDragging && !pulled) && (
+    return (isDragging && !pulled) && (
       <div className={css(styles)}>
         {userDragging}
       </div>

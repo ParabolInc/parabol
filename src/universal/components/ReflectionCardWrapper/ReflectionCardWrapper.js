@@ -13,14 +13,15 @@ import without from 'universal/utils/without';
 type Props = {
   // true when the card is being dragged, and rendering the placeholder of the original location
   holdingPlace?: boolean,
-  // true when this is being pulled under the mouse
-  pulled?: boolean,
   // true when this is being hovered over by another card
-  hoveringOver?: boolean
+  hoveringOver?: boolean,
+  // true when this is being pulled under the mouse
+  pulled?: boolean
 }
 
 const ReflectionCardWrapper = (props: Props) => {
   const borderRadius = 3;
+  const passedOnProps = without(props, 'holdingPlace', 'hoveringOver', 'pulled');
   const styles = {
     backgroundColor: props.hoveringOver ? '#f8f7fa' : '#FFF',
     borderRadius,
@@ -37,11 +38,11 @@ const ReflectionCardWrapper = (props: Props) => {
     <div aria-label="Retrospective reflection" className={css(styles)}>
       <div
         className={css({borderRadius, boxShadow: `0 0 0 1px ${appTheme.palette.warm}`})}
-        {...without(props, 'pulled')}
+        {...passedOnProps}
       />
     </div>
   ) : (
-    <div aria-label="Retrospective reflection" className={css(styles)} {...without(props, 'pulled')} />
+    <div aria-label="Retrospective reflection" className={css(styles)} {...passedOnProps} />
   );
 };
 

@@ -7,6 +7,9 @@
 import type {Node} from 'react';
 
 import React, {Component} from 'react';
+// $FlowFixMe
+import {DragDropContextProvider} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import styled, {css} from 'react-emotion';
 
 import injectGlobals from 'universal/styles/hepha';
@@ -49,10 +52,12 @@ export default class StoryContainer extends Component<Props> {
 
   render() {
     return (
-      <FullPageWrapper>
-        {this.maybeRenderDescription()}
-        {this.props.render()}
-      </FullPageWrapper>
+      <DragDropContextProvider backend={HTML5Backend}>
+        <FullPageWrapper>
+          {this.maybeRenderDescription()}
+          {this.props.render()}
+        </FullPageWrapper>
+      </DragDropContextProvider>
     );
   }
 }
