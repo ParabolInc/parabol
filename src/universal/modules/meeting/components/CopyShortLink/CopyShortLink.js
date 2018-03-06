@@ -4,6 +4,7 @@ import Button from 'universal/components/Button/Button';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
 import voidClick from 'universal/utils/voidClick';
+import styled from 'react-emotion';
 
 class CopyShortLink extends Component {
   static propTypes = {
@@ -55,12 +56,13 @@ class CopyShortLink extends Component {
             aria-label={callToAction}
             buttonSize="small"
             buttonStyle="inverted"
-            colorPalette="warm"
+            colorPalette="cool"
             title={callToAction}
             icon="copy"
             iconPlacement="left"
             label={url}
             onClick={voidClick}
+            style="flat"
           />
         </CopyToClipboard>
       </Tooltip>

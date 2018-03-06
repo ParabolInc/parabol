@@ -65,7 +65,6 @@ const MeetingAgendaLastCall = (props) => {
                   buttonSize="large"
                   buttonStyle="solid"
                   colorPalette="warm"
-                  depth={1}
                   label="End Action Meeting"
                   onClick={gotoNext}
                 />

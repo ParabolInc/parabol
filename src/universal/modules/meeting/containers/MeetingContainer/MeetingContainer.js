@@ -290,6 +290,7 @@ class MeetingContainer extends Component {
           gotoAgendaItem={this.gotoAgendaItem}
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
+          inSync={inSync}
           isFacilitating={isFacilitating}
           setAgendaInputRef={this.setAgendaInputRef}
           team={team}

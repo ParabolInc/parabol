@@ -7,8 +7,8 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import {textOverflow} from 'universal/styles/helpers';
-import appTheme from 'universal/styles/theme/appTheme';
 import logoMark from 'universal/styles/theme/images/brand/mark-primary.svg';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, phaseArray, SUMMARY, UPDATES} from 'universal/utils/constants';
@@ -18,6 +18,7 @@ const Sidebar = (props) => {
   const {
     gotoItem,
     gotoAgendaItem,
+    inSync,
     isFacilitating,
     localPhase,
     localPhaseItem,
@@ -52,9 +53,9 @@ const Sidebar = (props) => {
     inAgendaGroup(localPhase) && styles.navListItemLinkActive,
     !canNavigateTo(FIRST_CALL) && styles.navListItemLinkDisabled
   );
-  const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
-  const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
-  const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
+  const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && !inSync && styles.navListItemMeetingMarker);
+  const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && !inSync && styles.navListItemMeetingMarker);
+  const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && !inSync && styles.navListItemMeetingMarker);
   const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS);
   const agendaListDisabled = meetingPhase === CHECKIN;
   // Phase labels
@@ -82,8 +83,8 @@ const Sidebar = (props) => {
               onClick={() => gotoItem(null, CHECKIN)}
               title={checkinLabel}
             >
-              <span className={css(styles.bullet)}>i.</span>
-              <span className={css(styles.label)}>{checkinLabel}</span>
+              <span className={css(styles.navItemBullet)}>{'1'}</span>
+              <span className={css(styles.navItemLabel)}>{checkinLabel}</span>
             </div>
           </li>
           <li className={updatesNavItemStyles}>
@@ -92,8 +93,8 @@ const Sidebar = (props) => {
               onClick={() => gotoItem(null, UPDATES)}
               title={updatesLabel}
             >
-              <span className={css(styles.bullet)}>ii.</span>
-              <span className={css(styles.label)}>{updatesLabel}</span>
+              <span className={css(styles.navItemBullet)}>{'2'}</span>
+              <span className={css(styles.navItemLabel)}>{updatesLabel}</span>
             </div>
           </li>
           <li className={agendaNavItemStyles}>
@@ -102,8 +103,8 @@ const Sidebar = (props) => {
               onClick={() => gotoItem(null, FIRST_CALL)}
               title={agendaitemsLabel}
             >
-              <span className={css(styles.bullet)}>iii.</span>
-              <span className={css(styles.label)}>{agendaitemsLabel}</span>
+              <span className={css(styles.navItemBullet)}>{'3'}</span>
+              <span className={css(styles.navItemLabel)}>{agendaitemsLabel}</span>
             </div>
           </li>
           {localPhase === SUMMARY &&
@@ -113,8 +114,8 @@ const Sidebar = (props) => {
               onClick={() => gotoItem(null, SUMMARY)}
               title={summaryLabel}
             >
-              <span className={css(styles.bullet)}>{' '}</span>
-              <span className={css(styles.label)}>{summaryLabel}</span>
+              <span className={css(styles.navItemBullet)}>{' '}</span>
+              <span className={css(styles.navItemLabel)}>{summaryLabel}</span>
             </div>
           </li>
           }
@@ -149,6 +150,7 @@ Sidebar.propTypes = {
   agendaPhaseItem: PropTypes.number,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
+  inSync: PropTypes.bool,
   isFacilitating: PropTypes.bool,
   gotoItem: PropTypes.func.isRequired,
   gotoAgendaItem: PropTypes.func.isRequired,
@@ -172,16 +174,23 @@ const styleThunk = () => ({
     textAlign: 'center'
   },
 
-  bullet: {
+  navItemBullet: {
+    backgroundColor: appTheme.palette.mid,
+    borderRadius: '100%',
+    color: ui.palette.white,
     display: 'inline-block',
-    fontSize: ui.navMenuFontSize,
+    fontSize: '.6875rem',
+    fontWeight: ui.typeSemiBold,
+    height: '1.5rem',
+    lineHeight: '1.5rem',
+    marginLeft: '1.3125rem',
     marginRight: '.75rem',
-    textAlign: 'right',
+    textAlign: 'center',
     verticalAlign: 'middle',
-    width: '3rem'
+    width: '1.5rem'
   },
 
-  label: {
+  navItemLabel: {
     display: 'inline-block',
     fontSize: ui.navMenuFontSize,
     verticalAlign: 'middle'
@@ -208,6 +217,7 @@ const styleThunk = () => ({
   },
 
   navListItemLink: {
+    borderLeft: `${ui.navMenuLeftBorderWidth} solid transparent`,
     color: appTheme.palette.dark60l,
     cursor: 'pointer',
     textDecoration: 'none',
@@ -252,6 +262,8 @@ const styleThunk = () => ({
   },
 
   navListItemLinkActive: {
+    backgroundColor: ui.navMenuLightBackgroundColorActive,
+    borderLeftColor: ui.palette.mid,
     color: appTheme.palette.dark
   },
 
@@ -283,7 +295,7 @@ const styleThunk = () => ({
     display: 'block',
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.sBase,
-    paddingRight: ui.meetingSidebarGutter,
+    paddingRight: '1.5rem',
     textDecoration: 'none',
 
     ':hover': {

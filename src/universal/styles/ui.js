@@ -463,6 +463,7 @@ const ui = {
 
   // Meeting
   // ---------------------------------------------------------------------------
+  meetingCopyFontSize: '.9375rem',
   meetingSidebarGutter: '.5rem',
   meetingSidebarWidth: '15rem',
   meetingSplashGutter: '4.5rem',
