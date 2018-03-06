@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
 import {resolveTeam} from 'server/graphql/resolvers';
-import NewMeetingStage from 'server/graphql/types/NewMeetingStage';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import Team from 'server/graphql/types/Team';
+import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
 
 export const newMeetingFields = () => ({
   id: {
@@ -30,9 +30,9 @@ export const newMeetingFields = () => ({
     type: new GraphQLNonNull(GraphQLInt),
     description: 'The auto-incrementing meeting number for the team'
   },
-  stages: {
-    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingStage))),
-    description: 'The stages that make up the meeting'
+  phases: {
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
+    description: 'The phases the meeting will go through, including all phase-specific state'
   },
   summarySentAt: {
     type: GraphQLISO8601Type,

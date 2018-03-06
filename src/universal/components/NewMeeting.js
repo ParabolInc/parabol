@@ -98,7 +98,7 @@ export default createFragmentContainer(
         checkInQuestion
         teamId: id
         teamName: name
-        newMeetingId
+        meetingId
         tier
         teamMembers(sortBy: "checkInOrder") {
           id

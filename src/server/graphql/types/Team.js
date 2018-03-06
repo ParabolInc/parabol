@@ -135,15 +135,11 @@ const Team = new GraphQLObjectType({
         return allSettings.find((settings) => settings.meetingType === meetingType);
       }
     },
-    newMeetingId: {
-      type: GraphQLID,
-      description: 'The unique Id of the active meeting'
-    },
     newMeeting: {
       type: NewMeeting,
       description: 'The new meeting in progress, if any',
-      resolve: ({newMeetingId}, args, {dataLoader}) => {
-        return newMeetingId ? dataLoader.get('newMeetings').load(newMeetingId) : null;
+      resolve: ({meetingId}, args, {dataLoader}) => {
+        return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null;
       }
     },
     tier: {
