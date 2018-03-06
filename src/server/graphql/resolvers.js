@@ -64,9 +64,10 @@ export const resolveOrgApproval = ({orgApprovalId, orgApproval}, args, {dataLoad
 
 export const resolveTask = async ({task, taskId}, args, {authToken, dataLoader}) => {
   const taskDoc = taskId ? await dataLoader.get('tasks').load(taskId) : task;
-  const {userId, tags} = taskDoc;
+  const {userId, tags, teamId} = taskDoc;
   const isViewer = userId === getUserId(authToken);
-  return (isViewer || !tags.includes('private')) ? taskDoc : null;
+  const isViewerOnTeam = authToken.tms.includes(teamId);
+  return (isViewer || (!tags.includes('private') && isViewerOnTeam)) ? taskDoc : null;
 };
 
 export const resolveTasks = async ({taskIds}, args, {authToken, dataLoader}) => {

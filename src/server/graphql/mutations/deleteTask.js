@@ -21,13 +21,16 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    // format of id is teamId::shortId
-    const [teamId] = taskId.split('::');
+    const task = await r.table('Task').get(taskId);
+    if (!task) {
+      throw new Error('Task does not exist');
+    }
+    const {teamId} = task;
     requireTeamMember(authToken, teamId);
 
     // RESOLUTION
-    const {task, subscribedUserIds} = await r({
-      task: r.table('Task').get(taskId).delete({returnChanges: true})('changes')(0)('old_val').default(null),
+    const {subscribedUserIds} = await r({
+      task: r.table('Task').get(taskId).delete(),
       taskHistory: r.table('TaskHistory')
         .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
         .delete(),
@@ -36,9 +39,6 @@ export default {
         .filter({isNotRemoved: true})('userId')
         .coerceTo('array')
     });
-    if (!task) {
-      throw new Error('Task does not exist');
-    }
     const {content, tags, userId: taskUserId} = task;
 
     // handle notifications

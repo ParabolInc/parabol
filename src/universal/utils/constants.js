@@ -41,6 +41,14 @@ export const LAST_CALL = 'lastcall';
 export const SUMMARY = 'summary';
 export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
 
+/* Retrospective Phases */
+export const THINK = 'think';
+export const GROUP = 'group';
+export const VOTE = 'vote';
+export const DISCUSS = 'discuss';
+
+export const RETRO_PHASE_ITEM = 'retroPhaseItem';
+
 /* Columns */
 export const ACTIVE = 'active';
 export const STUCK = 'stuck';
@@ -223,3 +231,15 @@ export const ENTERPRISE = 'enterprise';
 /* Task Involvement Types */
 export const ASSIGNEE = 'ASSIGNEE';
 export const MENTIONEE = 'MENTIONEE';
+
+/* Third-party authentication providers */
+export const THIRD_PARTY_AUTH_PROVIDERS = [
+  {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
+];
+
+/* Default auth0 email/password db */
+export const AUTH0_DB_CONNECTION = 'Username-Password-Authentication';
+
+/* Meeting Types */
+export const ACTION = 'action';
+export const RETROSPECTIVE = 'retrospective';

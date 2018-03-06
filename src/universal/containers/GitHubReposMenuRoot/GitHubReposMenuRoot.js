@@ -1,8 +1,6 @@
 /* eslint-disable no-undef */
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql} from 'react-relay';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
@@ -12,6 +10,7 @@ import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubs
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';
@@ -55,11 +54,11 @@ const GitHubReposMenuRoot = (rootProps) => {
     atmosphere,
     handleAddTask,
     taskId,
+    teamId,
     setError,
     clearError,
     closePortal
   } = rootProps;
-  const [teamId] = taskId.split('::');
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -84,6 +83,7 @@ GitHubReposMenuRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   handleAddTask: PropTypes.func,
   taskId: PropTypes.string.isRequired,
+  teamId: PropTypes.string.isRequired,
   viewer: PropTypes.object,
   setError: PropTypes.func.isRequired,
   clearError: PropTypes.func.isRequired,

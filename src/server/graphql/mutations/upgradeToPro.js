@@ -9,6 +9,7 @@ import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants';
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 
 export default {
   type: UpgradeToProPayload,
@@ -94,6 +95,8 @@ export default {
       const teamData = {orgId, teamIds: [teamId]};
       publish(TEAM, teamId, UpgradeToProPayload, teamData, subOptions);
     });
+    // the count of this users tier stats just changed, update:
+    await sendSegmentIdentify(userId);
     return data;
   }
 };
