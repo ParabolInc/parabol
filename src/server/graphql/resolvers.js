@@ -91,16 +91,20 @@ export const resolveSoftTeamMembers = async ({softTeamMemberIds, softTeamMembers
   return teamMembers.filter((teamMember) => tms.includes(teamMember.teamId));
 };
 
-export const resolveTeam = async ({team, teamId}, args, {authToken, dataLoader}) => {
-  const teamDoc = teamId ? await dataLoader.get('teams').load(teamId) : team;
-  const {tms} = authToken;
-  return tms.includes(teamDoc.id) ? teamDoc : null;
+export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
+  // TODO figure out how to lock this down without using the tms, since the mutation may have invalidated it
+  return teamId ? dataLoader.get('teams').load(teamId) : team;
+  // const teamDoc = teamId ? await dataLoader.get('teams').load(teamId) : team;
+  // const {tms} = authToken;
+  // return tms.includes(teamDoc.id) ? teamDoc : null;
 };
 
-export const resolveTeams = async ({teamIds, teams}, args, {authToken, dataLoader}) => {
-  const {tms} = authToken;
-  const teamDocs = (teamIds && teamIds.length > 0) ? await dataLoader.get('teams').loadMany(teamIds) : teams;
-  return Array.isArray(teamDocs) ? teamDocs.filter((team) => tms.includes(team.id)) : null;
+export const resolveTeams = ({teamIds, teams}, args, {dataLoader}) => {
+  // TODO figure out how to lock this down without using the tms, since the mutation may have invalidated it
+  return (teamIds && teamIds.length > 0) ? dataLoader.get('teams').loadMany(teamIds) : teams;
+  // const {tms} = authToken;
+  // const teamDocs = (teamIds && teamIds.length > 0) ? await dataLoader.get('teams').loadMany(teamIds) : teams;
+  // return Array.isArray(teamDocs) ? teamDocs.filter((team) => tms.includes(team.id)) : null;
 };
 
 export const resolveTeamMember = ({teamMemberId, teamMember}, args, {dataLoader}) => {
@@ -117,7 +121,7 @@ export const resolveUser = ({userId, user}, args, {dataLoader}) => {
 };
 
 
-/* Special resolvesr */
+/* Special resolvers */
 
 export const makeResolve = (idName, docName, dataLoaderName) => (source, args, {dataLoader}) => {
   const idValue = source[idName];
