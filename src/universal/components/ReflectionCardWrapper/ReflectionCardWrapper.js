@@ -8,13 +8,14 @@ import React from 'react';
 import styled from 'react-emotion';
 
 import appTheme from 'universal/styles/theme/appTheme';
+import without from 'universal/utils/without';
 
 type Props = {
   pulled?: boolean
 }
 
 const ReflectionCardWrapper = styled(
-  (props) => <div aria-label="Retrospective reflection" {...props} />
+  (props) => <div aria-label="Retrospective reflection" {...without(props, 'pulled')} />
 )(({pulled}: Props) => ({
   backgroundColor: '#FFF',
   borderRadius: 3,
