@@ -10,7 +10,7 @@ const DashSearch = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flex: 1
-})
+});
 
 const DashSearchIcon = styled(FontAwesome)({
   color: appTheme.palette.dark60l,
