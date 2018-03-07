@@ -23,7 +23,7 @@ const subscriptions = [
 ];
 
 const UserSettingsRoot = (props) => {
-  const {atmosphere, match: {params: {teamId}}} = props;
+  const {atmosphere, dispatch, history, location, match: {params: {teamId}}} = props;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -31,6 +31,7 @@ const UserSettingsRoot = (props) => {
       query={query}
       variables={{teamId}}
       subscriptions={subscriptions}
+      subParams={{dispatch, history, location}}
       render={(readyState) => (
         <RelayTransitionGroup
           readyState={readyState}
@@ -45,6 +46,9 @@ const UserSettingsRoot = (props) => {
 
 UserSettingsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   teams: PropTypes.array
 };
