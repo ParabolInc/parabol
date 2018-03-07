@@ -1,13 +1,32 @@
 import {commitMutation} from 'react-relay';
 
-const mutation = graphql`
-  mutation UpdateCreditCardMutation($orgId: ID!, $stripeToken: ID!) {
-    updateCreditCard(orgId: $orgId, stripeToken: $stripeToken) {
+graphql`
+  fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload{
+    organization {
       creditCard {
         brand
         last4
         expiry
       }
+      updatedAt
+    }
+  }
+`;
+
+graphql`
+  fragment UpdateCreditCardMutation_team on UpdateCreditCardPayload{
+    teamsUpdated {
+      isPaid
+      updatedAt
+    }
+  }
+`;
+
+const mutation = graphql`
+  mutation UpdateCreditCardMutation($orgId: ID!, $stripeToken: ID!) {
+    updateCreditCard(orgId: $orgId, stripeToken: $stripeToken) {
+      ...UpdateCreditCardMutation_organization @relay(mask: false)
+      ...UpdateCreditCardMutation_team @relay(mask: false)
     }
   }
 `;

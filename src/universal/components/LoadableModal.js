@@ -3,9 +3,9 @@ import React from 'react';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
 import AnimatedFade from 'universal/components/AnimatedFade';
-import type {LoadablePortalProps} from 'universal/decorators/withLoadablePortal';
-import withLoadablePortal from 'universal/decorators/withLoadablePortal';
 import Modal from 'universal/components/Modal';
+import withToggledPortal from 'universal/decorators/withToggledPortal';
+import type {ToggledPortalProps} from 'universal/decorators/withToggledPortal';
 
 const ModalBlock = styled('div')({
   top: 0,
@@ -38,7 +38,7 @@ const Backdrop = styled('div')({
 type Props = {
   LoadableComponent: typeof React.Component,
   queryVars?: Object,
-  ...LoadablePortalProps
+  ...ToggledPortalProps
 };
 
 const LoadableModal = (props: Props) => {
@@ -59,4 +59,4 @@ const LoadableModal = (props: Props) => {
   );
 };
 
-export default withLoadablePortal()(LoadableModal);
+export default withToggledPortal(LoadableModal);

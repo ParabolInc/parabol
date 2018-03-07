@@ -26,7 +26,7 @@ const TeamArchiveSqueezeRoot = ({atmosphere, orgId, tasksAvailableCount, teamId}
       variables={{teamId, first: 40}}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear component={null}>
+          <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">

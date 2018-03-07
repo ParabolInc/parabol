@@ -14,6 +14,7 @@ const subscription = graphql`
       ...ApproveToOrgMutation_organization
       ...SetOrgUserRoleMutationAdded_organization
       ...SetOrgUserRoleMutationRemoved_organization
+      ...UpdateCreditCardMutation_organization
       ...UpdateOrgMutation_organization
       ...UpgradeToProMutation_organization
       ...RemoveOrgUserMutation_organization
@@ -46,6 +47,8 @@ const OrganizationSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'RemoveOrgUserPayload':
           removeOrgUserOrganizationUpdater(payload, store, viewerId);
+          break;
+        case 'UpdateCreditCardPayload':
           break;
         default:
           console.error('OrganizationSubscription case fail', type);
