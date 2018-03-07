@@ -57,6 +57,7 @@ const styleThunk = (custom, {isEditing}) => ({
   cardEditingStatus: {
     color: appTheme.palette.dark80l,
     cursor: isEditing ? 'default' : 'pointer',
+    display: 'inline-block',
     fontSize: ui.cardEditingStatusFontSize,
     fontWeight: 400,
     lineHeight: ui.cardEditingStatusLineHeight,

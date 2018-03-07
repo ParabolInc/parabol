@@ -15,7 +15,7 @@ class MenuWithShortcuts extends Component {
 
   state = {
     active: null,
-    smartChildren: null,
+    smartChildren: null
   }
 
   componentWillMount() {
