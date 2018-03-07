@@ -46,7 +46,7 @@ const PromoteToBillingLeader = (props) => {
       <div className={css(styles.widerButton)}>
         <Button
           aria-label="Go to the Organization page"
-          colorPalette="cool"
+          colorPalette="warm"
           isBlock
           label="See Organization"
           buttonSize={ui.notificationButtonSize}

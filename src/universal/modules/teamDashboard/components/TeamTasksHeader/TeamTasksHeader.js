@@ -61,7 +61,7 @@ const TeamTasksHeader = (props) => {
   };
   return (
     <DashSectionHeader>
-      <DashSectionHeading icon="calendar" label="Team Tasks" />
+      <DashSectionHeading label="Team Tasks" />
       <DashSectionControls>
         {/* TODO: needs link to archive */}
         <DashSectionControl>

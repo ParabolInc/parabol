@@ -154,7 +154,7 @@ const styleThunk = () => ({
   inputLabel: {
     display: 'block',
     fontSize: '.9375rem',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '2rem',
     marginRight: '.5rem'
   },

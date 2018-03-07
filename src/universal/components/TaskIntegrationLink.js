@@ -32,7 +32,7 @@ const styleThunk = () => ({
   demoLink: {
     color: ui.palette.cool,
     display: 'block',
-    fontWeight: 700,
+    fontWeight: 600,
     fontSize: '1rem',
     lineHeight: '1.25rem',
     padding: '0 .5rem'

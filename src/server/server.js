@@ -87,10 +87,11 @@ app.post('/graphql', jwt({
 }), graphQLHandler);
 
 // HTTP Intranet GraphQL endpoint:
+const intranetGraphQLHandler = intranetHttpGraphQLHandler(sharedDataLoader);
 app.post('/intranet-graphql', jwt({
   secret: new Buffer(INTRANET_JWT_SECRET, 'base64'),
   credentialsRequired: true
-}), intranetHttpGraphQLHandler);
+}), intranetGraphQLHandler);
 
 // server-side rendering for emails
 if (!PROD) {

@@ -28,7 +28,7 @@ const LeaveOrgModal = (props) => {
   const undoStr = 'To undo it, you’ll have to ask another Billing Leader to re-add you';
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
+      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="warm">
         Are you sure?
       </Type>
       <Type align="center" bold marginBottom="1.5rem" scale="s4">

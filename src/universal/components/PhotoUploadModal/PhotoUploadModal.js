@@ -29,7 +29,7 @@ const PhotoUploadModal = (props) => {
       {children}
       <div className={css(styles.done)}>
         <Button
-          colorPalette="cool"
+          colorPalette="warm"
           icon="check-circle"
           iconPlacement="right"
           label="Done"

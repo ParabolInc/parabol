@@ -28,7 +28,7 @@ const QuickStats = (props) => {
   };
 
   const statStyles = {
-    backgroundColor: appTheme.palette.mid10l,
+    backgroundColor: appTheme.palette.light,
     padding: '8px 0 12px',
     textAlign: 'center'
   };
@@ -41,7 +41,7 @@ const QuickStats = (props) => {
   const statLabel = {
     ...typeStyles,
     fontSize: '10px',
-    fontWeight: 700,
+    fontWeight: 600,
     textTransform: 'uppercase'
   };
 

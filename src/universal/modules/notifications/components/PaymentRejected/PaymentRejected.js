@@ -30,7 +30,7 @@ const PaymentRejected = (props) => {
         <Button
           aria-label="Go to the billing page to update billing information"
           buttonSize={ui.notificationButtonSize}
-          colorPalette="cool"
+          colorPalette="warm"
           isBlock
           label="See Billing"
           type="submit"

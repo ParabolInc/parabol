@@ -6,22 +6,25 @@ import FontAwesome from 'react-fontawesome';
 import ui from 'universal/styles/ui';
 
 const iconStyle = {
-  fontSize: ui.iconSize2x,
+  display: 'block',
+  fontSize: ui.iconSize,
   height: '1.5rem',
   lineHeight: '1.5rem',
-  paddingTop: '1px'
+  textAlign: 'center',
+  width: '1.5rem'
 };
 
 const AddTaskButton = (props) => {
   const {styles, label, onClick} = props;
   return (
-    <FontAwesome
-      className={css(styles.addIcon)}
-      name="plus-square-o"
-      onClick={onClick}
-      style={iconStyle}
-      title={`Add a Task set to ${label}`}
-    />
+    <div className={css(styles.addRoot)} onClick={onClick}>
+      <FontAwesome
+        className={css(styles.addIcon)}
+        name="plus"
+        style={iconStyle}
+        title={`Add a Task set to ${label}`}
+      />
+    </div>
   );
 };
 
@@ -32,6 +35,15 @@ AddTaskButton.propTypes = {
 };
 
 const styleThunk = () => ({
+  addRoot: {
+    backgroundColor: ui.palette.white,
+    borderRadius: '100%',
+    height: '1.5rem',
+    lineHeight: '1.5rem',
+    marginRight: '.625rem',
+    width: '1.5rem'
+  },
+
   addIcon: {
     ':hover': {
       cursor: 'pointer',

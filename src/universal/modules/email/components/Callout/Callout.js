@@ -38,7 +38,7 @@ Callout.propTypes = {
   fontSize: PropTypes.number,
   fontWeight: PropTypes.oneOf([
     400,
-    700
+    600
   ]),
   lineHeight: PropTypes.number,
   padding: PropTypes.number,
@@ -48,7 +48,7 @@ Callout.propTypes = {
 
 Callout.defaultProps = {
   fontSize: 24,
-  fontWeight: 700,
+  fontWeight: 400,
   lineHeight: 1.5,
   padding: 32,
   vSpacing: 32,

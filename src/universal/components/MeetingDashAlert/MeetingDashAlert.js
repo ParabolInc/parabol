@@ -54,7 +54,7 @@ const styleThunk = () => ({
   },
 
   message: {
-    fontWeight: 700,
+    fontWeight: 600,
     paddingLeft: '1rem'
   }
 });

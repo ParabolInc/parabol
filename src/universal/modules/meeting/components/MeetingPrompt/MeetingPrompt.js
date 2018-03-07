@@ -52,9 +52,9 @@ const promptBreakpoint = ui.breakpoint.wider;
 
 const styleThunk = (theme, {avatarLarge}) => ({
   meetingPromptRoot: {
-    backgroundColor: appTheme.palette.mid10l,
-    borderRadius: '.5rem',
-    boxShadow: ui.shadow[2],
+    // backgroundColor: appTheme.palette.mid10l,
+    // borderRadius: '.5rem',
+    // boxShadow: ui.shadow[2],
     display: 'flex',
     overflow: 'hidden'
   },
@@ -74,9 +74,8 @@ const styleThunk = (theme, {avatarLarge}) => ({
 
   heading: {
     color: appTheme.palette.dark,
-    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s5,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.5',
     margin: 0,
     padding: 0,
@@ -90,7 +89,7 @@ const styleThunk = (theme, {avatarLarge}) => ({
   subHeading: {
     color: appTheme.palette.dark90l,
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.5',
     margin: 0,
     padding: 0,

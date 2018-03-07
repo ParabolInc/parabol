@@ -58,7 +58,7 @@ const styleThunk = () => ({
   },
 
   label: {
-    fontWeight: 700
+    fontWeight: 600
   }
 });
 export default withStyles(styleThunk)(Tab);

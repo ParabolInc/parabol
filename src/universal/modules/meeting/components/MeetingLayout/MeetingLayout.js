@@ -3,6 +3,7 @@ import React from 'react';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 
 const MeetingLayout = (props) => {
   const {children, styles, title} = props;
@@ -22,7 +23,8 @@ MeetingLayout.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
+    backgroundColor: ui.backgroundColor,
     display: 'flex !important',
     height: '100vh'
   }

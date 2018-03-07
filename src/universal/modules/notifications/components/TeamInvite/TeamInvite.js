@@ -45,7 +45,7 @@ const TeamInvite = (props) => {
         <Button
           aria-label="Accept team invitation"
           buttonSize={ui.notificationButtonSize}
-          colorPalette="cool"
+          colorPalette="warm"
           isBlock
           label="Accept"
           onClick={accept}

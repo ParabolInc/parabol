@@ -12,7 +12,7 @@ const link = {
   ...inlineBlockStyle,
   color: appTheme.palette.dark,
   fontSize: appTheme.typography.s3,
-  fontWeight: 700,
+  fontWeight: 600,
   height: ui.dashSectionHeaderLineHeight,
   paddingTop: '1px',
 

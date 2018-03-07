@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const baseStyle = {
-  color: appTheme.palette.cool
+  color: ui.colorText // TODO: theme-able?
 };
 
 const EditorLink = (getEditorState) => class _EditorLink extends Component {
@@ -38,7 +38,8 @@ const EditorLink = (getEditorState) => class _EditorLink extends Component {
     const {hasFocus} = this.state;
     const style = {
       ...baseStyle,
-      cursor: hasFocus ? 'text' : 'pointer'
+      cursor: hasFocus ? 'text' : 'pointer',
+      textDecoration: 'underline'
     };
     return (
       <span data-offset-key={offsetkey} style={style} onMouseOver={this.onMouseOver} onMouseDown={this.onClick}>

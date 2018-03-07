@@ -13,7 +13,7 @@ const EmptyOrgsCallOut = (props) => {
   const gotoNewTeam = () => { history.push('/newteam'); };
   const button = (
     <Button
-      colorPalette="cool"
+      colorPalette="warm"
       label="Start a New Organization"
       onClick={gotoNewTeam}
       size={ui.ctaPanelButtonSize}

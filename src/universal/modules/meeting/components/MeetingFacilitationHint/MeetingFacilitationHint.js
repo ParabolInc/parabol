@@ -4,7 +4,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
-import Type from 'universal/components/Type/Type';
 
 const MeetingFacilitationHint = (props) => {
   const {
@@ -16,12 +15,10 @@ const MeetingFacilitationHint = (props) => {
   const ellipsis = showEllipsis && <Ellipsis />;
   return (
     <div className={css(styles.facilitationHint)}>
-      <Type align="center" scale="s4" colorPalette="mid">
-        {showParens && '('}
-        {children}
-        {ellipsis}
-        {showParens && ')'}
-      </Type>
+      {showParens && '('}
+      {children}
+      {ellipsis}
+      {showParens && ')'}
     </div>
   );
 };
@@ -40,10 +37,13 @@ MeetingFacilitationHint.defaultProps = {
 
 const styleThunk = () => ({
   facilitationHint: {
-    backgroundColor: appTheme.palette.mid10l,
-    borderRadius: '.25rem',
+    // backgroundColor: appTheme.palette.mid10l,
+    // borderRadius: '.25rem',
+    color: appTheme.palette.dark60a,
     display: 'inline-block',
-    padding: '.3125rem 1rem .375rem'
+    fontSize: appTheme.typography.s2,
+    lineHeight: appTheme.typography.s5,
+    textAlign: 'center'
   }
 });
 

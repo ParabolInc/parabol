@@ -28,7 +28,7 @@ const UserTasks = (props) => {
     display: 'inline-block',
     fontFamily: ui.emailFontFamily,
     fontSize: '14px',
-    fontWeight: 700,
+    fontWeight: 600,
     verticalAlign: 'middle'
   };
 
@@ -50,11 +50,11 @@ const UserTasks = (props) => {
   };
 
   const presentLabelStyles = {
-    color: present ? appTheme.palette.cool : appTheme.palette.cool10g,
+    color: present ? appTheme.brand.secondary.green : appTheme.palette.mid50l,
     fontFamily: ui.emailFontFamily,
     fontSize: '14px',
     fontStyle: 'italic',
-    fontWeight: 700,
+    fontWeight: 600,
     padding: '0 0 8px'
   };
 

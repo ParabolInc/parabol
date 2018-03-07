@@ -6,6 +6,7 @@ export DashLayout from './DashLayout.js';
 export DashMain from './DashMain.js';
 export DashModal from './DashModal.js';
 export DashNavItem from './DashNavItem.js';
+export DashSearchControl from './DashSearchControl.js';
 export DashSectionHeading from './DashSectionHeading.js';
 export DashSectionControl from './DashSectionControl.js';
 export DashSectionControls from './DashSectionControls.js';

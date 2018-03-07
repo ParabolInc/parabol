@@ -118,7 +118,7 @@ const maxWidth = '6.5rem';
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
-    borderBottom: '2px solid rgba(0, 0, 0, .10)',
+    borderBottom: ui.dashMenuBorder,
     display: 'flex',
     minHeight: '4.875rem',
     padding: '1rem',
@@ -158,7 +158,7 @@ const styleThunk = () => ({
   name: {
     ...textOverflow,
     fontSize: appTheme.typography.sBase,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.375rem',
     maxWidth,
     paddingTop: '.125rem'

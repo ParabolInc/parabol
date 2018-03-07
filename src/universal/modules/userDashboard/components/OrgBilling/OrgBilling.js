@@ -41,7 +41,7 @@ class OrgBilling extends Component {
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
       buttonSize="small"
-      colorPalette="cool"
+      colorPalette="warm"
       label="Update"
     />);
     return (
@@ -73,7 +73,7 @@ class OrgBilling extends Component {
                   <Button
                     buttonSize="medium"
                     buttonStyle="flat"
-                    colorPalette="cool"
+                    colorPalette="warm"
                     label="Load More"
                     onClick={this.loadMore}
                   />
@@ -116,7 +116,7 @@ const styleThunk = () => ({
   },
 
   creditCardProvider: {
-    fontWeight: 700,
+    fontWeight: 600,
     marginRight: '.5rem'
   },
 
@@ -125,7 +125,7 @@ const styleThunk = () => ({
   },
 
   creditCardExpiresLabel: {
-    fontWeight: 700,
+    fontWeight: 600,
     marginRight: '.5rem'
   },
 
@@ -140,7 +140,7 @@ const styleThunk = () => ({
     color: appTheme.palette.cool,
     display: 'flex',
     fontSize: '1.25rem',
-    fontWeight: 700,
+    fontWeight: 600,
     justifyContent: 'center',
     textTransform: 'uppercase',
     paddingBottom: ui.panelGutter
@@ -156,7 +156,7 @@ const styleThunk = () => ({
     textAlign: 'center'
   },
   unsubscribe: {
-    fontWeight: 700,
+    fontWeight: 600,
     color: appTheme.palette.mid
   }
 });

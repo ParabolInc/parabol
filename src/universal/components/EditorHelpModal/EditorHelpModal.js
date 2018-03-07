@@ -273,7 +273,7 @@ const styleThunk = () => ({
   headerLabel: {
     color: ui.palette.dark,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s4,
     padding: '1rem .5rem .25rem',
     textAlign: 'left',
