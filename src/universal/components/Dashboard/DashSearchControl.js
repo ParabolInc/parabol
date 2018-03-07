@@ -23,7 +23,7 @@ const DashSearchInput = styled('input')({
   display: 'block',
   border: 0,
   fontSize: '.875rem',
-  maxWidth: '20%',
+  maxWidth: '13rem',
   outline: 'none',
   padding: 0,
   width: '100%',
