@@ -11,7 +11,7 @@ import logoMark from 'universal/styles/theme/images/brand/mark-primary.svg';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, phaseArray, SUMMARY, UPDATES} from 'universal/utils/constants';
+import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, phaseArray, SUMMARY, UPDATES, LAST_CALL} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
 
 const Sidebar = (props) => {
@@ -38,6 +38,21 @@ const Sidebar = (props) => {
     const meetingPhaseInfo = actionMeeting[meetingPhase];
     return Boolean(meetingPhaseInfo.index >= (phaseInfo.index - adjustForFacilitator));
   };
+
+  // Nav item bullet states
+  const checkInBulletStyles = css(
+    styles.navItemBullet,
+    facilitatorPhase === CHECKIN && styles.navItemBulletPhase
+  );
+  const updatesBulletStyles = css(
+    styles.navItemBullet,
+    facilitatorPhase === UPDATES && styles.navItemBulletPhase
+  );
+  const agendaBulletStyles = css(
+    styles.navItemBullet,
+    inAgendaGroup(facilitatorPhase) && styles.navItemBulletPhase
+  );
+
   const checkInLinkStyles = css(
     styles.navListItemLink,
     localPhase === CHECKIN && styles.navListItemLinkActive,
@@ -50,12 +65,15 @@ const Sidebar = (props) => {
   );
   const agendaLinkStyles = css(
     styles.navListItemLink,
-    inAgendaGroup(localPhase) && styles.navListItemLinkActive,
+    localPhase === (FIRST_CALL || LAST_CALL) && styles.navListItemLinkActive,
+    // inAgendaGroup(localPhase) && styles.navListItemLinkActive,
     !canNavigateTo(FIRST_CALL) && styles.navListItemLinkDisabled
   );
-  const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && !inSync && styles.navListItemMeetingMarker);
-  const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && !inSync && styles.navListItemMeetingMarker);
-  const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && !inSync && styles.navListItemMeetingMarker);
+
+  // const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
+  // const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
+  // const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
+
   const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS);
   const agendaListDisabled = meetingPhase === CHECKIN;
   // Phase labels
@@ -77,33 +95,33 @@ const Sidebar = (props) => {
       </div>
       <nav className={css(styles.nav)}>
         <ul className={css(styles.navList)}>
-          <li className={checkInNavItemStyles}>
+          <li className={css(styles.navListItem)}>
             <div
               className={checkInLinkStyles}
               onClick={() => gotoItem(null, CHECKIN)}
               title={checkinLabel}
             >
-              <span className={css(styles.navItemBullet)}>{'1'}</span>
+              <span className={checkInBulletStyles}>{'1'}</span>
               <span className={css(styles.navItemLabel)}>{checkinLabel}</span>
             </div>
           </li>
-          <li className={updatesNavItemStyles}>
+          <li className={css(styles.navListItem)}>
             <div
               className={updatesLinkStyles}
               onClick={() => gotoItem(null, UPDATES)}
               title={updatesLabel}
             >
-              <span className={css(styles.navItemBullet)}>{'2'}</span>
+              <span className={updatesBulletStyles}>{'2'}</span>
               <span className={css(styles.navItemLabel)}>{updatesLabel}</span>
             </div>
           </li>
-          <li className={agendaNavItemStyles}>
+          <li className={css(styles.navListItem)}>
             <div
               className={agendaLinkStyles}
               onClick={() => gotoItem(null, FIRST_CALL)}
               title={agendaitemsLabel}
             >
-              <span className={css(styles.navItemBullet)}>{'3'}</span>
+              <span className={agendaBulletStyles}>{'3'}</span>
               <span className={css(styles.navItemLabel)}>{agendaitemsLabel}</span>
             </div>
           </li>
@@ -130,6 +148,7 @@ const Sidebar = (props) => {
             facilitatorPhase={facilitatorPhase}
             facilitatorPhaseItem={facilitatorPhaseItem}
             gotoAgendaItem={gotoAgendaItem}
+            inSync={inSync}
             localPhase={localPhase}
             localPhaseItem={localPhaseItem}
             setAgendaInputRef={setAgendaInputRef}
@@ -190,6 +209,10 @@ const styleThunk = () => ({
     width: '1.5rem'
   },
 
+  navItemBulletPhase: {
+    backgroundColor: appTheme.palette.warm,
+  },
+
   navItemLabel: {
     display: 'inline-block',
     fontSize: ui.navMenuFontSize,
@@ -218,53 +241,41 @@ const styleThunk = () => ({
 
   navListItemLink: {
     borderLeft: `${ui.navMenuLeftBorderWidth} solid transparent`,
-    color: appTheme.palette.dark60l,
+    color: ui.colorText,
     cursor: 'pointer',
     textDecoration: 'none',
     userSelect: 'none',
 
     ':hover': {
-      color: appTheme.palette.dark
+      backgroundColor: ui.navMenuLightBackgroundColorHover
     },
     ':focus': {
-      color: appTheme.palette.dark
+      backgroundColor: ui.navMenuLightBackgroundColorHover
     }
   },
 
   navListItemLinkDisabled: {
-    color: appTheme.palette.dark60l,
     cursor: 'not-allowed',
-    opacity: '.65',
 
     ':hover': {
-      color: appTheme.palette.dark60l
+      backgroundColor: 'transparent'
     },
     ':focus': {
-      color: appTheme.palette.dark60l
-    }
-  },
-
-  navListItemMeetingMarker: {
-    position: 'relative',
-
-    '::after': {
-      backgroundColor: appTheme.palette.warm,
-      borderRadius: '100%',
-      display: 'block',
-      content: '""',
-      height: '.75rem',
-      marginTop: '-.375rem',
-      position: 'absolute',
-      right: '-.375rem',
-      top: '50%',
-      width: '.75rem'
+      backgroundColor: 'transparent'
     }
   },
 
   navListItemLinkActive: {
     backgroundColor: ui.navMenuLightBackgroundColorActive,
     borderLeftColor: ui.palette.mid,
-    color: appTheme.palette.dark
+    color: appTheme.palette.dark,
+
+    ':hover': {
+      backgroundColor: ui.navMenuLightBackgroundColorActive
+    },
+    ':focus': {
+      backgroundColor: ui.navMenuLightBackgroundColorActive
+    }
   },
 
   agendaListBlock: {

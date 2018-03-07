@@ -508,6 +508,7 @@ const ui = {
   navMenuDarkBackgroundColorActive: appTheme.palette.mid80d,
   navMenuDarkBackgroundColorHover: appTheme.palette.mid90d,
   navMenuLightBackgroundColorActive: appTheme.palette.light90l,
+  navMenuLightBackgroundColorHover: appTheme.palette.light50l,
   navMenuFontSize: '.9375rem',
   navMenuLineHeight: '1.25rem',
   navMenuLeftBorderWidth: '.1875rem',

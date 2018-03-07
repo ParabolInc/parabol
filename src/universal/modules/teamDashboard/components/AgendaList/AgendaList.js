@@ -32,6 +32,7 @@ class AgendaList extends Component {
     facilitatorPhase: PropTypes.oneOf(phaseArray),
     facilitatorPhaseItem: PropTypes.number,
     gotoAgendaItem: PropTypes.func,
+    inSync: PropTypes.bool,
     localPhase: PropTypes.oneOf(phaseArray),
     localPhaseItem: PropTypes.number,
     styles: PropTypes.object,
@@ -169,6 +170,7 @@ class AgendaList extends Component {
       facilitatorPhase,
       facilitatorPhaseItem,
       gotoAgendaItem,
+      inSync,
       localPhase,
       localPhaseItem,
       visibleAgendaItemId,
@@ -199,6 +201,7 @@ class AgendaList extends Component {
                 gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
                 handleRemove={this.removeItemFactory(item.id)}
                 idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                inSync={inSync}
                 isCurrent={idx + 1 === agendaPhaseItem}
                 isFacilitator={idx + 1 === facilitatorPhaseItem}
                 localPhase={localPhase}

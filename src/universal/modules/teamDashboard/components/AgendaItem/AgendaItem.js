@@ -32,6 +32,7 @@ class AgendaItem extends Component {
     ensureVisible: PropTypes.bool,
     handleRemove: PropTypes.func,
     idx: PropTypes.number,
+    inSync: PropTypes.bool,
     isCurrent: PropTypes.bool,
     isComplete: PropTypes.bool,
     isFacilitator: PropTypes.bool,
@@ -71,6 +72,7 @@ class AgendaItem extends Component {
       connectDragSource,
       disabled,
       idx,
+      inSync,
       isCurrent,
       isFacilitator,
       handleRemove,
@@ -127,7 +129,7 @@ class AgendaItem extends Component {
 
 const lineHeight = '1.5rem';
 
-const styleThunk = () => ({
+const styleThunk = (custom, {inSync}) => ({
   root: {
     backgroundColor: 'transparent',
     color: ui.palette.mid,
@@ -211,6 +213,9 @@ const styleThunk = () => ({
   },
 
   itemLocal: {
+    // color: ui.colorText
+    backgroundColor: ui.navMenuLightBackgroundColorActive,
+    boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
     color: ui.colorText
   },
 
@@ -225,18 +230,18 @@ const styleThunk = () => ({
   },
 
   itemFacilitator: {
-    backgroundColor: ui.navMenuLightBackgroundColorActive,
-    boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
-    color: ui.colorText
+    // backgroundColor: ui.navMenuLightBackgroundColorActive,
+    // boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
+    color: !inSync && ui.palette.warm
   },
 
   descFacilitator: {
-    color: ui.linkColor,
+    color: !inSync ? ui.palette.warm : ui.linkColor,
     ':hover': {
-      color: ui.linkColorHover
+      color: !inSync ? ui.palette.warm : ui.linkColorHover
     },
     ':focus': {
-      color: ui.linkColorHover
+      color: !inSync ? ui.palette.warm : ui.linkColorHover
     }
   },
 
