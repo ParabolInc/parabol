@@ -109,7 +109,8 @@ class Button extends Component {
       this.setState({pressedDown: false});
     }
     // We don’t want 'focus' styles to linger after the click (TA)
-    e.currentTarget.blur();
+    // wait till next tick because other components might need to use the button as the relativeTarget when they get blurred
+    setTimeout(() => e.currentTarget.blur());
   };
 
   onMouseLeave = (e) => {
