@@ -79,7 +79,7 @@ const questions = [
   'If you could get advice from anyone in the world today, who would you ask?',
   'If you had an expert personal assistant today, what would you have them do?',
   'What’s something about the next teammate that you appreciate?',
-  '"Show & Tell" something in the room that you really like.',
+  '“Show & Tell” something in the room that you really like.',
   'What’s got your attention today?'
 ];
 
