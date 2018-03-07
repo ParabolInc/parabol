@@ -81,7 +81,7 @@ const popJoinedYourTeamToast = (payload, dispatch) => {
   }));
 };
 
-export const acceptTeamInviteTeamUpdater = (payload, store, viewerId, dispatch) => {
+export const acceptTeamInviteTeamUpdater = (payload, store, viewerId, {dispatch}) => {
   const team = payload.getLinkedRecord('team');
   handleAddTeams(team, store, viewerId);
 
@@ -118,7 +118,7 @@ const AcceptTeamInviteMutation = (environment, notificationId, dispatch, onError
     variables: {notificationId},
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInviteNotification');
-      acceptTeamInviteTeamUpdater(payload, store, viewerId, dispatch);
+      acceptTeamInviteTeamUpdater(payload, store, viewerId, {dispatch});
     },
     onCompleted,
     onError

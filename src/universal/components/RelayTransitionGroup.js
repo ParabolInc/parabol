@@ -32,7 +32,7 @@ class RelayTransitionGroup extends Component {
       child = loading;
     }
     return (
-      <TransitionGroup appear component={null}>
+      <TransitionGroup appear component={React.Fragment}>
         <AnimatedFade key={key} exit={key !== 'Loading'} unmountOnExit={key === 'Loading'}>
           {child}
         </AnimatedFade>

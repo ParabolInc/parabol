@@ -185,17 +185,17 @@ const styleThunk = () => ({
     width: 32,
 
     ...makeHoverFocus({
-      backgroundColor: appTheme.palette.dark,
+      backgroundColor: ui.navMenuDarkBackgroundColorHover,
       textDecoration: 'none !important'
     })
   },
 
   notificationsWithBadge: {
-    backgroundColor: appTheme.palette.dark50a
+    backgroundColor: ui.navMenuDarkBackgroundColorHover
   },
 
   notificationsActive: {
-    backgroundColor: `${appTheme.palette.dark} !important`,
+    backgroundColor: `${ui.navMenuDarkBackgroundColorActive} !important`,
     textDecoration: 'none !important'
   },
 

@@ -13,8 +13,9 @@ import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
 import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
 import NewMeetingLobby from 'universal/components/NewMeetingLobby';
 
-import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
+import type {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
 const MeetingContainer = styled('div')({
   backgroundColor: '#fff',
@@ -45,10 +46,11 @@ const MeetingAreaHeader = styled('div')({
 type Props = {
   atmosphere: Object,
   localPhase: NewMeetingPhaseTypeEnum,
+  meetingType: MeetingTypeEnum,
   viewer: Viewer
 }
 const NewMeeting = (props: Props) => {
-  const {localPhase, viewer} = props;
+  const {localPhase, meetingType, viewer} = props;
   const {team} = viewer;
   const {teamName} = team;
   return (
@@ -66,7 +68,10 @@ const NewMeeting = (props: Props) => {
           />
         </MeetingAreaHeader>
         <Switch>
-          <Route path="/retro/:teamId" render={() => <NewMeetingLobby team={team} />} />
+          <Route
+            path={`/${meetingTypeToSlug[meetingType]}/:teamId`}
+            render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
+          />
         </Switch>
       </MeetingArea>
     </MeetingContainer>
@@ -98,7 +103,7 @@ export default createFragmentContainer(
         checkInQuestion
         teamId: id
         teamName: name
-        newMeetingId
+        meetingId
         tier
         teamMembers(sortBy: "checkInOrder") {
           id
@@ -115,16 +120,10 @@ export default createFragmentContainer(
         newMeeting {
           id
           facilitatorUserId
-          stages {
-            isComplete
-            type
-            isSingleView
-            isAutoAdvanced
-            customPhaseItem {
-              ...on RetroPhaseItem {
-                title
-                question
-              }
+          phases {
+            phaseType
+            stages {
+              isComplete
             }
           }
           ... on RetrospectiveMeeting {

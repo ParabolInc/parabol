@@ -121,7 +121,7 @@ class AgendaList extends Component {
           position: 'relative',
           top: '-1px',
           boxShadow: '0 1px 1px rgba(0, 0, 0, 0.25)',
-          height: '1px'
+          minHeight: '1px'
         }}
       />
     );
@@ -134,7 +134,7 @@ class AgendaList extends Component {
           position: 'relative',
           top: '1px',
           boxShadow: '0 -1px 1px rgba(0, 0, 0, 0.25)',
-          height: '1px'
+          minHeight: '1px'
         }}
       />
     );

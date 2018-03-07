@@ -64,9 +64,7 @@ const Team = (props) => {
       />
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
-          {__RELEASE_FLAGS__.localFilter &&
-            !isSettings && <DashSearchControl onChange={updateFilter} placeholder="Search Tasks and Agenda Topics" />
-          }
+          {!isSettings && <DashSearchControl onChange={updateFilter} placeholder="Search Tasks and Agenda Topics" />}
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
           {isSettings ?

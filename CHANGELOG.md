@@ -4,9 +4,41 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNEXT
+## v0.31.0 2018-Mar-07
 ## Added
 - Client-side filtering behind the localFilter release flag
+- A complete style makeover!
+- React storybook!
+- Retro cards inside storybook
+- Hubspot tiering traits
+- Retro meeting lobby (front-end without UI)
+
+## Fixed
+- Intranet GraphQL Ping query
+- Auto-endMeeting now has dataloader and does not throw
+- Notification bell highlighting goes away correctly #1806
+- Team payment status is propagated in real time, no need for a refresh #1821
+- Some links would refuse to be entered into a task #1791
+- Wrong optimistic task when creating a task for someone else #1665
+- Modal appears correctly and menu items inside it close correctly #1801
+- Agenda doesn't jitter on the bottom #1734
+- Agenda scrolls correctly #1802
+
+## Removed
+- Lengthy tests before deploying to development server
+
+
+## v0.30.2 2018-Mar-05
+## Fixed
+- Don't log out when a bad invite token is attempted
+- Keep dispatch after logout
+- Show welcome toast to new team members (missing dispatch)
+
+
+## v0.30.1 2018-Mar-01
+## Fixed
+- Hotfix for #1817, no longer require active subscription to update credit card
+
 
 ## v0.30.0 2018-Feb-28
 ## Added

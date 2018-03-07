@@ -1,8 +1,9 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import RetroThoughtGroup from 'server/graphql/types/RetroThoughtGroup';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
+import {getUserId, isSuperUser} from 'server/utils/authorization';
 
 const RetroThought = new GraphQLObjectType({
   name: 'RetroThought',
@@ -17,8 +18,19 @@ const RetroThought = new GraphQLObjectType({
       description: 'The timestamp the meeting was created'
     },
     creatorId: {
-      description: 'The teamMemberId that created the thought (or unique Id if not a team member)',
-      type: GraphQLID
+      description: 'The userId that created the thought (or unique Id if not a team member)',
+      type: GraphQLID,
+      resolve: ({creatorId}, args, {authToken}) => {
+        return isSuperUser(authToken) ? creatorId : undefined;
+      }
+    },
+    isViewerCreator: {
+      description: 'true if the viewer (userId) is the creator of the retro thought, else false',
+      type: GraphQLBoolean,
+      resolve: ({creatorId}, args, {authToken}) => {
+        const viewerId = getUserId(authToken);
+        return viewerId === creatorId;
+      }
     },
     content: {
       description: 'The stringified draft-js content',

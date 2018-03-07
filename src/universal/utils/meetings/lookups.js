@@ -1,5 +1,5 @@
 import {
-  AGENDA_ITEMS, CHECKIN, DISCUSS, FIRST_CALL, GROUP, LAST_CALL, LOBBY, SUMMARY, THINK, UPDATES,
+  AGENDA_ITEMS, CHECKIN, DISCUSS, FIRST_CALL, GROUP, LAST_CALL, LOBBY, RETROSPECTIVE, SUMMARY, THINK, UPDATES,
   VOTE
 } from 'universal/utils/constants';
 
@@ -18,9 +18,6 @@ export const phaseTypeToPhaseGroup = {
   [DISCUSS]: DISCUSS
 };
 
-/* These are excluded from the sidebar */
-export const phasesToExclude = [LOBBY, SUMMARY];
-
 /* These are the labels show to the viewer */
 export const phaseLabelLookup = {
   [CHECKIN]: 'Social Check-In',
@@ -28,4 +25,12 @@ export const phaseLabelLookup = {
   [GROUP]: 'Theme',
   [VOTE]: 'Vote',
   [DISCUSS]: 'Discuss'
+};
+
+export const meetingTypeToSlug = {
+  [RETROSPECTIVE]: 'retro'
+};
+
+export const phaseTypeToSlug = {
+  [CHECKIN]: 'checkin'
 };

@@ -9,6 +9,7 @@ import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilita
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 import {removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
+import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -27,12 +28,18 @@ const subscription = graphql`
       ...RemoveOrgUserMutation_team
       ...RequestFacilitatorMutation_team
       ...StartMeetingMutation_team
+      ...StartNewMeetingMutation_team
       ...UpdateCheckInQuestionMutation_team
+      ...UpdateCreditCardMutation_team
       ...UpdateTeamNameMutation_team
       ...UpgradeToProMutation_organization
     }
   }
 `;
+
+const onNextHandlers = {
+  StartNewMeetingMutation: startNewMeetingTeamOnNext
+};
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
   const {dispatch, history, location} = subParams;
@@ -47,7 +54,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       switch (type) {
         case 'AcceptTeamInvitePayload':
         case 'AcceptTeamInviteEmailPayload':
-          acceptTeamInviteTeamUpdater(payload, store, viewerId);
+          acceptTeamInviteTeamUpdater(payload, store, viewerId, options);
           break;
         case 'AddOrgCreatorPayload':
           addOrgMutationNotificationUpdater(payload, store, viewerId, options);
@@ -96,12 +103,23 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'StartMeetingPayload':
           break;
+        case 'StartNewMeetingMutation':
+          break;
+        case 'UpdateCreditCardPayload':
+          break;
         case 'UpdateCheckInQuestionPayload':
           break;
         case 'UpgradeToProPayload':
           break;
         default:
           console.error('TeamSubscription case fail', type);
+      }
+    },
+    onNext: ({teamSubscription}) => {
+      const {__typename: type} = teamSubscription;
+      const handler = onNextHandlers[type];
+      if (handler) {
+        handler(teamSubscription, {...subParams, environment});
       }
     }
   };

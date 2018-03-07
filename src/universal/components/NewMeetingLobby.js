@@ -12,6 +12,8 @@ import styled from 'react-emotion';
 import LoadableModal from 'universal/components/LoadableModal';
 import GetRetroAccessLoadable from 'universal/components/GetRetroAccessLoadable';
 import type {NewMeetingLobby_team as Team} from './__generated__/NewMeetingLobby_team.graphql';
+import type {MeetingTypeEnum} from 'universal/types/schema.flow';
+import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation';
 
 const TitleHeader = styled('h2')({
   textTransform: 'uppercase'
@@ -32,18 +34,20 @@ const GetAccessCopy = styled('div')({
 type Props = {
   atmosphere: Object,
   history: RouterHistory,
+  meetingType: MeetingTypeEnum,
   team: Team,
   ...MutationProps
 };
 
 const NewMeetingLobby = (props: Props) => {
-  const {submitMutation, submitting, team} = props;
-  const {meetingSettings: {meetingsOffered, meetingsRemaining}, teamName, tier} = team;
+  const {atmosphere, history, onError, onCompleted, meetingType, submitMutation, submitting, team} = props;
+  const {meetingSettings: {meetingsOffered, meetingsRemaining}, teamId, teamName, tier} = team;
   const onStartMeetingClick = () => {
     submitMutation();
-    // StartNewMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
+    StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted);
   };
   const isPro = tier === PRO;
+  const canStartMeeting = isPro || meetingsRemaining > 0;
   return (
     <React.Fragment>
       <TitleHeader>{'Retro Meeting Lobby'}</TitleHeader>
@@ -78,7 +82,7 @@ const NewMeetingLobby = (props: Props) => {
         buttonStyle="solid"
         colorPalette="cool"
         depth={1}
-        disabled={!meetingsRemaining}
+        disabled={canStartMeeting}
         isBlock
         label="Start Retro Meeting"
         onClick={onStartMeetingClick}

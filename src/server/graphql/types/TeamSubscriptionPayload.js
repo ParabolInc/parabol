@@ -10,10 +10,12 @@ import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPa
 import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
 import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPayload';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
+import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
+import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 
 
 const types = [
@@ -27,9 +29,11 @@ const types = [
   PromoteFacilitatorPayload,
   RequestFacilitatorPayload,
   StartMeetingPayload,
+  StartNewMeetingPayload,
   RemoveOrgUserPayload,
   RemoveTeamMemberPayload,
   UpdateCheckInQuestionPayload,
+  UpdateCreditCardPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload
 ];

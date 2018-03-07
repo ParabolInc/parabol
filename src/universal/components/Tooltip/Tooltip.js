@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Children, cloneElement, Component} from 'react';
 import {MAX_INT} from 'universal/utils/constants';
-import {TransitionGroup} from 'react-transition-group';
 import AnimatedFade from 'universal/components/AnimatedFade';
 import Modal from 'universal/components/Modal';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -33,7 +32,19 @@ const ModalContents = styled('div')(({maxHeight}) => ({
   width: '100%'
 }));
 
-
+/*
+ * A surprisingly complex little sucker.
+ * Functional criteria includes:
+ * - Can be triggered by a toggle (like hovering over a button)
+ * - Can be triggered by an event if fed an `isOpen` property (like a "copy meeting url")
+ * - If event-triggered, `props.isOpen` is represented as either `state.isOpen` or `state.isClosing` (for animations)
+ * - If event-triggered, hovering on the tip itself has no effect on when it closes (no strong opinion on changing this logic)
+ * - If toggle-triggered, it pops open if the cursor is hovered for a defined period of time (default 0)
+ * - If hovered off, should animate out
+ * - If hovered off the toggle and onto the tip itself (eg small screen), it should stay open until moved off the tip & toggle
+ * - If hovered off while the tip is opening, the tip should close smoothly
+ * - If hovered off & back on while it's going away, it should not reopen
+ */
 class Tooltip extends Component {
   static propTypes = {
     isOpen: PropTypes.bool,
@@ -50,68 +61,87 @@ class Tooltip extends Component {
 
   constructor(props) {
     super(props);
-    this.delayTimer = null;
+    this.delayOpen = null;
   }
 
   state = {
     inTip: false,
-    inToggle: false
+    inToggle: false,
+    isClosing: false,
+    canClose: false
   };
 
   componentDidMount() {
     this.props.setOriginCoords(this.childRef.getBoundingClientRect());
   }
 
+  componentWillReceiveProps(nextProps) {
+    const {isOpen, setOriginCoords} = nextProps;
+    if (this.props.isOpen !== isOpen) {
+      if (isOpen) {
+        setOriginCoords(this.childRef.getBoundingClientRect());
+      } else {
+        this.setState({
+          isClosing: true
+        });
+      }
+    }
+  }
+
   makeSmartChildren() {
     const {delay, setOriginCoords, children, hideOnFocus} = this.props;
     const child = Children.only(children);
-    /**
-     * A "controlled" tooltip is a tooltip which appears and disappears when you
-     * ask it to.  It is controlled via the required `isOpen` boolean prop.  It's
-     * useful for providing feedback in response to particular events rather than
-     * hover/focus state.  If you want a tooltip that reacts to hover/focus state,
-     * use the `Tooltip` component.
-     */
     if (typeof this.props.isOpen === 'boolean') return child;
     return cloneElement(child, {
       onMouseEnter: (e) => {
-        const clientRect = e.currentTarget.getBoundingClientRect();
+        const clientRect = e.target.getBoundingClientRect();
         const handleMouseEnter = () => {
-          this.setState({
-            inToggle: true
-          });
           setOriginCoords(clientRect);
+          this.setState({
+            inToggle: true,
+            isClosing: false,
+            canClose: false
+          });
         };
         const {onMouseEnter} = child.props;
         if (onMouseEnter) {
           onMouseEnter(e);
         }
         if (delay > 0 && delay <= MAX_INT) {
-          this.delayTimer = setTimeout(handleMouseEnter, delay);
+          this.delayOpen = setTimeout(handleMouseEnter, delay);
         } else {
           handleMouseEnter();
         }
       },
       onMouseLeave: (e) => {
-        this.setState({
-          inToggle: false
+        // wait tick to see if the cursor goes in the tip
+        setTimeout(() => {
+          this.setState({
+            inToggle: false,
+            isClosing: this.state.canClose && !this.state.inTip
+          });
         });
         const {onMouseLeave} = child.props;
         if (onMouseLeave) {
           onMouseLeave(e);
         }
-        clearTimeout(this.delayTimer);
+        clearTimeout(this.delayOpen);
+        this.delayOpen = undefined;
       },
       onFocus: (e) => {
         const {onFocus} = child.props;
         if (onFocus) {
           onFocus(e);
         }
+        const {canClose, inToggle, inTip} = this.state;
         if (hideOnFocus) {
           this.setState({
-            inToggle: false
+            inToggle: false,
+            inTip: false,
+            isClosing: canClose && (inToggle || inTip)
           });
-          clearTimeout(this.delayTimer);
+          clearTimeout(this.delayOpen);
+          this.delayOpen = undefined;
         }
       }
     });
@@ -120,45 +150,72 @@ class Tooltip extends Component {
   // this is useful if the tooltip is positioned over the toggle due to small screens, etc.
   makeSmartTip() {
     const {tip} = this.props;
-    const {inToggle} = this.state;
+    const {isClosing} = this.state;
     return cloneElement(tip, {
       onMouseEnter: () => {
-        if (!inToggle) {
+        // ignore the event if the movement was too slow (eliminates jitter)
+        if (!isClosing) {
           this.setState({
             inTip: true
           });
         }
       },
       onMouseLeave: () => {
-        this.setState({
-          inTip: false
+        if (this.props.isOpen) return;
+        setTimeout(() => {
+          const {canClose, inTip, inToggle} = this.state;
+          if (inTip) {
+            this.setState({
+              inTip: false,
+              isClosing: canClose && !inToggle
+            });
+          }
         });
       }
     });
   }
 
+  terminatePortal = () => {
+    this.setState({
+      inTip: false,
+      inToggle: false,
+      isClosing: false,
+      canClose: false
+    });
+  };
+
+  makeCloseable = () => {
+    this.setState({
+      canClose: true
+    });
+  };
+
   render() {
     const {coords, setModalRef} = this.props;
-    const {inTip, inToggle} = this.state;
-    const isOpen = inTip || inToggle || this.props.isOpen;
+    const {inTip, inToggle, isClosing} = this.state;
+    const isOpen = inTip || inToggle || isClosing || this.props.isOpen;
+
     return (
       <React.Fragment>
         <div ref={(c) => { this.childRef = c; }}>
           {this.makeSmartChildren()}
         </div>
-        <TransitionGroup appear component={null}>
-          {isOpen &&
-          <AnimatedFade>
-            <Modal>
-              <ModalBlock style={coords} innerRef={setModalRef}>
-                <ModalContents>
-                  {this.makeSmartTip()}
-                </ModalContents>
-              </ModalBlock>
-            </Modal>
+        <Modal isOpen={isOpen}>
+          <AnimatedFade
+            appear
+            duration={100}
+            slide={8}
+            in={!isClosing}
+            onEntered={this.makeCloseable}
+            onExited={this.terminatePortal}
+          >
+            <ModalBlock style={coords} innerRef={setModalRef}>
+              <ModalContents>
+                {this.makeSmartTip()}
+              </ModalContents>
+            </ModalBlock>
           </AnimatedFade>
-          }
-        </TransitionGroup>
+        </Modal>
       </React.Fragment>
     );
   }

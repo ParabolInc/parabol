@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import isKeyboardEvent from 'universal/utils/isKeyboardEvent';
-import withCoordsV2 from 'universal/decorators/withCoordsV2';
 import getDisplayName from 'universal/utils/getDisplayName';
 
 /*
@@ -9,11 +8,11 @@ import getDisplayName from 'universal/utils/getDisplayName';
  * Provides an isClosing prop to children for animations
  * */
 
-const withLoadablePortal = (options = {}) => (ComposedComponent) => {
-  class LoadablePortal extends Component {
-    static displayName = `WithLoadablePortal(${getDisplayName(ComposedComponent)})`;
+const withToggledPortal = (ComposedComponent) => {
+  class ToggledPortal extends Component {
+    static displayName = `ToggledPortal(${getDisplayName(ComposedComponent)})`;
     static propTypes = {
-      toggle: PropTypes.any,
+      toggle: PropTypes.any.isRequired,
       LoadableComponent: PropTypes.func.isRequired,
       queryVars: PropTypes.object,
       maxWidth: PropTypes.oneOfType([
@@ -32,13 +31,8 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
     };
 
     componentWillMount() {
-      const {toggle, LoadableComponent} = this.props;
-      if (toggle) {
-        this.smartToggle = this.makeSmartToggle(toggle);
-      } else {
-        LoadableComponent.preload();
-        this.state.isOpen = true;
-      }
+      const {toggle} = this.props;
+      this.smartToggle = this.makeSmartToggle(toggle);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -59,13 +53,6 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
       this.setState({
         isClosing: true
       });
-      // avoid using this with animations in children because the animation setTimeout will get set before this one does, which means
-      // it can cause a flicker. Better to just call terminatePortal in the child or set closeAfter to trigger a little before (hacky)
-      if (options.closeAfter) {
-        setTimeout(() => {
-          this.terminatePortal();
-        }, options.closeAfter);
-      }
 
       if (isKeyboardEvent(e) && this.toggleRef) {
         this.toggleRef.focus();
@@ -73,7 +60,7 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
     };
 
     terminatePortal = () => {
-      if (this.state.isClosing || this.state.isOpen) {
+      if (this.state.isOpen) {
         this.setState({
           isClosing: false,
           isOpen: false
@@ -89,7 +76,9 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
         'aria-expanded': this.state.isOpen,
         onClick: (e) => {
           const {setOriginCoords, LoadableComponent} = this.props;
-          LoadableComponent.preload();
+          if (LoadableComponent) {
+            LoadableComponent.preload();
+          }
           if (setOriginCoords) {
             setOriginCoords(e.currentTarget.getBoundingClientRect());
           }
@@ -106,7 +95,9 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
         },
         onMouseEnter: () => {
           const {LoadableComponent} = this.props;
-          LoadableComponent.preload();
+          if (LoadableComponent) {
+            LoadableComponent.preload();
+          }
         },
         [refProp]: (c) => {
           this.toggleRef = c;
@@ -131,14 +122,14 @@ const withLoadablePortal = (options = {}) => (ComposedComponent) => {
     }
   }
 
-  return options.withCoords ? withCoordsV2(LoadablePortal) : LoadablePortal;
+  return ToggledPortal;
 };
 
-export type LoadablePortalProps = {
+export type ToggledPortalProps = {
   isClosing: boolean,
   isOpen: boolean,
   closePortal: () => void,
   terminatePortal: () => void
 };
 
-export default withLoadablePortal;
+export default withToggledPortal;

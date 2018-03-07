@@ -10,13 +10,17 @@ export const customPhaseItemFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
-  type: {
+  phaseItemType: {
     type: CustomPhaseItemTypeEnum,
     description: 'The type of phase item'
   },
   isActive: {
     type: GraphQLBoolean,
     description: 'true if the phase item is currently used by the team, else false'
+  },
+  teamId: {
+    type: new GraphQLNonNull(GraphQLID),
+    description: 'foreign key. use the team field'
   },
   team: {
     type: Team,
@@ -32,7 +36,7 @@ const resolveTypeLookup = {
 const CustomPhaseItem = new GraphQLInterfaceType({
   name: 'CustomPhaseItem',
   fields: customPhaseItemFields,
-  resolveType: ({type}) => resolveTypeLookup[type]
+  resolveType: ({phaseItemType}) => resolveTypeLookup[phaseItemType]
 });
 
 export default CustomPhaseItem;

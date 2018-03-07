@@ -65,10 +65,10 @@ const mutation = graphql`
   }
 `;
 
-export const acceptTeamInviteEmailTeamUpdater = (payload, store, viewerId, dispatch) => {
+export const acceptTeamInviteEmailTeamUpdater = (payload, store, viewerId, {dispatch}) => {
   const error = payload.getLinkedRecord('error');
   handleToastError(error, dispatch);
-  acceptTeamInviteTeamUpdater(payload, store, viewerId, dispatch);
+  acceptTeamInviteTeamUpdater(payload, store, viewerId, {dispatch});
 };
 
 const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, history, onError) => {
@@ -78,13 +78,14 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
     variables: {inviteToken},
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInviteEmail');
-      acceptTeamInviteEmailTeamUpdater(payload, store, viewerId, dispatch);
+      acceptTeamInviteEmailTeamUpdater(payload, store, viewerId, {dispatch});
     },
     onError,
     onCompleted: (data) => {
       const {acceptTeamInviteEmail: {error, team, authToken, user}} = data;
       if (error) {
-        history.push('/signout');
+        // give them the benefit of the doubt & don't sign them out
+        history.push('/');
       } else {
         const {id: teamId} = team;
         const {tms} = jwtDecode(authToken);

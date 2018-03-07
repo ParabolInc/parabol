@@ -282,6 +282,7 @@ const withLinks = (ComposedComponent) => {
         setTimeout(() => {
           this.forceUpdate();
         });
+        return null;
       }
       // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
@@ -321,6 +322,7 @@ const withLinks = (ComposedComponent) => {
         setTimeout(() => {
           this.forceUpdate();
         });
+        return null;
       }
 
       return (

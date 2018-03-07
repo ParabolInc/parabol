@@ -1,17 +1,21 @@
-import {GraphQLObjectType} from 'graphql';
-import CreditCard from 'server/graphql/types/CreditCard';
+import {GraphQLList, GraphQLObjectType} from 'graphql';
+import Organization from 'server/graphql/types/Organization';
+import {resolveOrganization, resolveTeams} from 'server/graphql/resolvers';
+import Team from 'server/graphql/types/Team';
 
 const UpdateCreditCardPayload = new GraphQLObjectType({
   name: 'UpdateCreditCardPayload',
   fields: () => ({
-    creditCard: {
-      type: CreditCard,
-      description: 'the credit card details that got updated'
+    organization: {
+      type: Organization,
+      description: 'The organization that received the updated credit card',
+      resolve: resolveOrganization
+    },
+    teamsUpdated: {
+      type: new GraphQLList(Team),
+      description: 'The teams that are now paid up',
+      resolve: resolveTeams
     }
-    // upcomingInvoice: {
-    //  type: Invoice,
-    //  description: 'The new upcoming invoice'
-    // }
   })
 });
 

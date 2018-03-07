@@ -98,7 +98,7 @@ const CreateTaskMutation = (environment, newTask, area, onError, onCompleted) =>
         teamId,
         userId,
         createdAt: now,
-        createdBy: userId,
+        createdBy: viewerId,
         updatedAt: now,
         tags: [],
         assigneeId,
