@@ -19,7 +19,21 @@ export type GraphQLResponseErrorLocation = {
 export type Query = {
   activeProOrgCount: ?number;
   activeProUserCount: ?number;
+  countTiersForUser: ?UserTiersCount;
   viewer: ?User;
+}
+
+/**
+  A count of the number of account tiers a user belongs to.
+*/
+export type UserTiersCount = {
+  /** The number of personal orgs the user is active upon */
+  tierPersonalCount: ?number;
+  /** The number of pro orgs the user is active upon */
+  tierProCount: ?number;
+  /** The number of pro orgs the user holds the role of Billing Leader */
+  tierProBillingLeaderCount: ?number;
+  user: ?User;
 }
 
 /**
@@ -1698,8 +1712,10 @@ export type UpdateAgendaItemPayload = {
 }
 
 export type UpdateCreditCardPayload = {
-  /** the credit card details that got updated */
-  creditCard: ?CreditCard;
+  /** The organization that received the updated credit card */
+  organization: ?Organization;
+  /** The teams that are now paid up */
+  teamsUpdated: ?Array<Team>;
 }
 
 export type UpdateOrgInput = {
@@ -1808,7 +1824,7 @@ export type NotificationSubscriptionPayload = AddOrgPayload | AddTeamPayload | A
 
 export type OrgApprovalSubscriptionPayload = ApproveToOrgPayload | CancelApprovalPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload;
 
-export type OrganizationSubscriptionPayload = AddOrgPayload | ApproveToOrgPayload | RemoveOrgUserPayload | SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload | UpdateOrgPayload | UpgradeToProPayload;
+export type OrganizationSubscriptionPayload = AddOrgPayload | ApproveToOrgPayload | RemoveOrgUserPayload | SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload | UpdateCreditCardPayload | UpdateOrgPayload | UpgradeToProPayload;
 
 export type SetOrgUserRoleAddedPayload = {
   organization: ?Organization;
@@ -1834,7 +1850,7 @@ export type AddProviderPayload = {
   teamMember: ?TeamMember;
 }
 
-export type TeamSubscriptionPayload = AcceptTeamInviteEmailPayload | AcceptTeamInviteNotificationPayload | AddTeamPayload | ArchiveTeamPayload | EndMeetingPayload | KillMeetingPayload | MoveMeetingPayload | PromoteFacilitatorPayload | RequestFacilitatorPayload | StartMeetingPayload | RemoveOrgUserPayload | RemoveTeamMemberPayload | UpdateCheckInQuestionPayload | UpdateTeamNamePayload | UpgradeToProPayload;
+export type TeamSubscriptionPayload = AcceptTeamInviteEmailPayload | AcceptTeamInviteNotificationPayload | AddTeamPayload | ArchiveTeamPayload | EndMeetingPayload | KillMeetingPayload | MoveMeetingPayload | PromoteFacilitatorPayload | RequestFacilitatorPayload | StartMeetingPayload | RemoveOrgUserPayload | RemoveTeamMemberPayload | UpdateCheckInQuestionPayload | UpdateCreditCardPayload | UpdateTeamNamePayload | UpgradeToProPayload;
 
 export type TeanMemberSubscriptionPayload = AcceptTeamInviteNotificationPayload | AcceptTeamInviteEmailPayload | CancelApprovalPayload | CancelTeamInvitePayload | RemoveTeamMemberPayload | InviteTeamMembersPayload | MeetingCheckInPayload | PromoteToTeamLeadPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | UpdateUserProfilePayload;
 

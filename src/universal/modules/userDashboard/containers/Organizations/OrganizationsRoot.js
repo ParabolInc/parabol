@@ -29,7 +29,7 @@ const OrganizationsRoot = (props) => {
       query={query}
       render={({error, props: renderProps}) => {
         return (
-          <TransitionGroup appear component={null}>
+          <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
             {renderProps &&
             <AnimatedFade key="1">

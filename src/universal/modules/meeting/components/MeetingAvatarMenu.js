@@ -73,7 +73,8 @@ const styleThunk = () => ({
     fontWeight: 700,
     lineHeight: ui.menuItemHeight,
     marginBottom: ui.menuGutterVertical,
-    padding: `0 ${ui.menuGutterHorizontal}`
+    padding: `0 ${ui.menuGutterHorizontal}`,
+    userSelect: 'none'
   }
 });
 

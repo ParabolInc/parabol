@@ -28,6 +28,7 @@ const subscription = graphql`
       ...RequestFacilitatorMutation_team
       ...StartMeetingMutation_team
       ...UpdateCheckInQuestionMutation_team
+      ...UpdateCreditCardMutation_team
       ...UpdateTeamNameMutation_team
       ...UpgradeToProMutation_organization
     }
@@ -95,6 +96,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           requestFacilitatorTeamUpdater(payload, options);
           break;
         case 'StartMeetingPayload':
+          break;
+        case 'UpdateCreditCardPayload':
           break;
         case 'UpdateCheckInQuestionPayload':
           break;

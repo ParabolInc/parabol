@@ -14,6 +14,7 @@ import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQues
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
+import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 
 
 const types = [
@@ -30,6 +31,7 @@ const types = [
   RemoveOrgUserPayload,
   RemoveTeamMemberPayload,
   UpdateCheckInQuestionPayload,
+  UpdateCreditCardPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload
 ];

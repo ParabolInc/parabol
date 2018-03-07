@@ -12,6 +12,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
+import {requestIdleCallback} from 'universal/utils/requestIdleCallback';
 
 const taskSource = {
   beginDrag(props) {
@@ -44,20 +45,22 @@ class AgendaItem extends Component {
   };
 
   componentDidMount() {
-    this.scrollToIfNeeded();
+    if (this.props.ensureVisible) {
+      requestIdleCallback(() => {
+        // does not force centering; no animation for initial load
+        this.el.scrollIntoViewIfNeeded();
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
     if (!prevProps.ensureVisible && this.props.ensureVisible) {
-      this.scrollToIfNeeded();
+      // without RIC only gets called ~20% of the time in Chrome64 on Ubuntu 16.04 if behavior: smooth
+      requestIdleCallback(() => {
+        this.el.scrollIntoView({behavior: 'smooth'});
+      });
     }
   }
-
-  scrollToIfNeeded = () => {
-    if (this.props.ensureVisible && this.el) {
-      this.el.scrollIntoView({behavior: 'smooth'});
-    }
-  };
 
   el = null;
 

@@ -6,6 +6,7 @@ import SetOrgUserRoleRemovedPayload from 'server/graphql/types/SetOrgUserRoleRem
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
+import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 
 const types = [
   AddOrgPayload,
@@ -13,6 +14,7 @@ const types = [
   RemoveOrgUserPayload,
   SetOrgUserRoleAddedPayload,
   SetOrgUserRoleRemovedPayload,
+  UpdateCreditCardPayload,
   UpdateOrgPayload,
   UpgradeToProPayload
 ];
