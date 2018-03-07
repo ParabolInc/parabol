@@ -5,6 +5,8 @@ import {resolveTeam} from 'server/graphql/resolvers';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import Team from 'server/graphql/types/Team';
 import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
+import {RETROSPECTIVE} from 'universal/utils/constants';
 
 export const newMeetingFields = () => ({
   id: {
@@ -19,6 +21,10 @@ export const newMeetingFields = () => ({
     type: GraphQLISO8601Type,
     description: 'The timestamp the meeting officially ended'
   },
+  facilitatorStageId: {
+    type: GraphQLID,
+    description: 'The location of the facilitator in the meeting'
+  },
   facilitatorUserId: {
     type: GraphQLID,
     description: 'The userId (or anonymousId) of the most recent facilitator'
@@ -29,6 +35,9 @@ export const newMeetingFields = () => ({
   meetingNumber: {
     type: new GraphQLNonNull(GraphQLInt),
     description: 'The auto-incrementing meeting number for the team'
+  },
+  meetingType: {
+    type: new GraphQLNonNull(MeetingTypeEnum)
   },
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
@@ -45,16 +54,15 @@ export const newMeetingFields = () => ({
   }
 });
 
+const resolveTypeLookup = {
+  [RETROSPECTIVE]: RetrospectiveMeeting
+};
+
 const NewMeeting = new GraphQLInterfaceType({
   name: 'NewMeeting',
   description: 'A team meeting history for all previous meetings',
   fields: newMeetingFields,
-  resolveType: (value) => {
-    if (value.retroThoughtGroups) {
-      return RetrospectiveMeeting;
-    }
-    return undefined;
-  }
+  resolveType: ({meetingType}) => resolveTypeLookup[meetingType]
 });
 
 export default NewMeeting;

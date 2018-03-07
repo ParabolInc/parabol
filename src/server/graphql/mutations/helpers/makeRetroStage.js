@@ -1,7 +1,6 @@
-import {CHECKIN} from 'universal/utils/constants';
 import shortid from 'shortid';
 
-const makeRetroStage = async (phaseType, meetingId, isFacilitatorPhase) => {
+const makeRetroStage = (phaseType, meetingId, isFacilitatorPhase) => {
   return {
     id: shortid.generate(),
     meetingId,

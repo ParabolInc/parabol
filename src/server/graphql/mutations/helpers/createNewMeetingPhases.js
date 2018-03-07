@@ -18,7 +18,7 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
   }
   const {phaseTypes} = meetingSettings;
 
-  return phaseTypes.map((phaseType, idx) => {
+  return Promise.all(phaseTypes.map(async (phaseType, idx) => {
     const isFacilitatorPhase = idx === 0;
     if (phaseType === CHECKIN) {
       return {
@@ -26,7 +26,7 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
         phaseType,
         checkInGreeting: makeCheckinGreeting(meetingCount, teamId),
         checkInQuestion: convertToTaskContent(makeCheckinQuestion(meetingCount, teamId)),
-        stages: makeCheckinStages(teamId, meetingId, dataLoader, isFacilitatorPhase)
+        stages: await makeCheckinStages(teamId, meetingId, dataLoader, isFacilitatorPhase)
       };
     }
     if (phaseType === THINK || phaseType === GROUP || phaseType === VOTE) {
@@ -44,7 +44,7 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
       };
     }
     throw new Error('Unhandled phaseType', phaseType);
-  });
+  }));
 };
 
 export default createNewMeetingPhases;

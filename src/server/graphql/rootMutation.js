@@ -42,6 +42,7 @@ import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite';
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack';
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole';
 import startMeeting from 'server/graphql/mutations/startMeeting';
+import startNewMeeting from 'server/graphql/mutations/startNewMeeting';
 import stripeCreateInvoice from 'server/graphql/mutations/stripeCreateInvoice';
 import stripeFailPayment from 'server/graphql/mutations/stripeFailPayment';
 import stripeSucceedPayment from 'server/graphql/mutations/stripeSucceedPayment';
@@ -120,6 +121,7 @@ export default new GraphQLObjectType({
     segmentEventTrack,
     setOrgUserRole,
     startMeeting,
+    startNewMeeting,
     stripeCreateInvoice,
     stripeFailPayment,
     stripeSucceedPayment,

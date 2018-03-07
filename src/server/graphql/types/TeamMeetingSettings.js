@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull} from 'graphql';
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLInterfaceType} from 'graphql';
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
 import Team from 'server/graphql/types/Team';
 import {resolveTeam} from 'server/graphql/resolvers';
@@ -20,7 +20,7 @@ export const teamMeetingSettingsFields = () => ({
     description: 'The type of meeting these settings apply to',
     type: MeetingTypeEnum
   },
-  phases: {
+  phaseTypes: {
     description: 'The broad phase types that will be addressed during the meeting',
     type: new GraphQLNonNull(new GraphQLList(NewMeetingPhaseTypeEnum))
   },
@@ -42,7 +42,7 @@ const TeamMeetingSettings = new GraphQLInterfaceType({
   fields: teamMeetingSettingsFields,
   resolveType: (({meetingType}) => {
     return resolveTypeLookup[meetingType];
-  }
+  })
 });
 
 export default TeamMeetingSettings;

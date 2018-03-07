@@ -4,7 +4,7 @@ import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload'
 import {getUserId, requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
-import {RETROSPECTIVE, TEAM} from 'universal/utils/constants';
+import {TEAM} from 'universal/utils/constants';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import extendNewMeetingForType from 'server/graphql/mutations/helpers/extendNewMeetingForType';
 import createNewMeetingPhases from 'server/graphql/mutations/helpers/createNewMeetingPhases';
@@ -48,14 +48,18 @@ export default {
 
     // RESOLUTION
     const meetingId = shortid.generate();
+    const phases = await createNewMeetingPhases(teamId, meetingId, meetingCount, meetingType, dataLoader);
+    const facilitatorStageId = phases[0] && phases[0].stages[0] && phases[0].stages[0].id;
     const newMeetingBase = {
       id: meetingId,
       createdAt: now,
       facilitatorUserId: viewerId,
+      facilitatorStageId,
       meetingNumber: meetingCount + 1,
-      phases: await createNewMeetingPhases(teamId, meetingId, meetingCount, meetingType, dataLoader)
+      meetingType,
+      phases
     };
-    const newMeeting = extendNewMeetingForType(newMeetingBase, RETROSPECTIVE);
+    const newMeeting = extendNewMeetingForType(newMeetingBase);
     await r({
       team: r.table('Team').get(teamId)
         .update({meetingId}),

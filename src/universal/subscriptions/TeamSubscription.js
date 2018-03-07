@@ -9,6 +9,7 @@ import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilita
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 import {removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
+import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -27,6 +28,7 @@ const subscription = graphql`
       ...RemoveOrgUserMutation_team
       ...RequestFacilitatorMutation_team
       ...StartMeetingMutation_team
+      ...StartNewMeetingMutation_team
       ...UpdateCheckInQuestionMutation_team
       ...UpdateCreditCardMutation_team
       ...UpdateTeamNameMutation_team
@@ -34,6 +36,10 @@ const subscription = graphql`
     }
   }
 `;
+
+const onNextHandlers = {
+  StartNewMeetingMutation: startNewMeetingTeamOnNext
+};
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
   const {dispatch, history, location} = subParams;
@@ -97,6 +103,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'StartMeetingPayload':
           break;
+        case 'StartNewMeetingMutation':
+          break;
         case 'UpdateCreditCardPayload':
           break;
         case 'UpdateCheckInQuestionPayload':
@@ -105,6 +113,13 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         default:
           console.error('TeamSubscription case fail', type);
+      }
+    },
+    onNext: ({teamSubscription}) => {
+      const {__typename: type} = teamSubscription;
+      const handler = onNextHandlers[type];
+      if (handler) {
+        handler(teamSubscription, {...subParams, environment});
       }
     }
   };

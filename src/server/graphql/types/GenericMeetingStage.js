@@ -5,7 +5,9 @@ const GenericMeetingStage = new GraphQLObjectType({
   name: 'GenericMeetingStage',
   description: 'A stage of a meeting that has no extra state. Only used for single-stage phases',
   interfaces: () => [NewMeetingStage],
-  fields: newMeetingStageFields
+  fields: () => ({
+    ...newMeetingStageFields()
+  })
 });
 
 export default GenericMeetingStage;

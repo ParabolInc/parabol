@@ -6,7 +6,7 @@ exports.up = async (r) => {
       .filter({
         title: 'Change'
       })
-      .delete()
+      .delete();
   } catch (e) {
     // noop
   }
@@ -17,8 +17,8 @@ exports.up = async (r) => {
         return customPhaseItem.merge({
           phaseItemType: customPhaseItem('type')
         })
-          .without('type')
-      })
+          .without('type');
+      });
   } catch (e) {
     // noop
   }
@@ -30,8 +30,8 @@ exports.up = async (r) => {
           .merge({
             phaseTypes: settings('phases').difference([LOBBY, SUMMARY])
           })
-          .without('phases')
-      })
+          .without('phases');
+      });
   } catch (e) {
     // noop
   }
@@ -45,8 +45,8 @@ exports.down = async (r) => {
         return customPhaseItem.merge({
           type: customPhaseItem('type')
         })
-          .without('phaseItemType')
-      })
+          .without('phaseItemType');
+      });
   } catch (e) {
     // noop
   }
@@ -58,9 +58,9 @@ exports.down = async (r) => {
           .merge({
             phases: settings('phaseTypes')
           })
-          .without('phaseTypes')
-      })
-  } catch(e) {
+          .without('phaseTypes');
+      });
+  } catch (e) {
     // noop
   }
 };

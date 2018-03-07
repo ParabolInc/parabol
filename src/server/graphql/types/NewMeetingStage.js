@@ -4,6 +4,7 @@ import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnu
 import {CHECKIN, DISCUSS, GROUP, THINK, VOTE} from 'universal/utils/constants';
 import TeamMemberStage from 'server/graphql/types/TeamMemberStage';
 import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
+import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage';
 
 /*
  * Each meeting has many phases.
@@ -33,10 +34,10 @@ export const newMeetingStageFields = () => ({
       return dataLoader.get('newMeetings').load(meetingId);
     }
   },
-  isFacilitatorStage: {
-    type: GraphQLBoolean,
-    description: 'true if the facilitator is currently looking at the stage, else false'
-  },
+  // isFacilitatorStage: {
+  //   type: GraphQLBoolean,
+  //   description: 'true if the facilitator is currently looking at the stage, else false'
+  // },
   isComplete: {
     type: GraphQLBoolean,
     description: 'true if the facilitator has completed this stage, else false'
@@ -44,15 +45,15 @@ export const newMeetingStageFields = () => ({
   phaseType: {
     description: 'The type of the phase',
     type: NewMeetingPhaseTypeEnum
-  },
-  isViewOnce: {
-    description: 'true if the meeting phase can only be viewed once (eg first call)',
-    type: GraphQLBoolean
-  },
-  isAutoAdvanced: {
-    description: 'true if the meeting phase automatically advances to the next (eg Phase1.part2 completes when part1 completes)',
-    type: GraphQLBoolean
   }
+  // isViewOnce: {
+  //   description: 'true if the meeting phase can only be viewed once (eg first call)',
+  //   type: GraphQLBoolean
+  // },
+  // isAutoAdvanced: {
+  //   description: 'true if the meeting phase automatically advances to the next (eg Phase1.part2 completes when part1 completes)',
+  //   type: GraphQLBoolean
+  // }
 });
 
 const resolveTypeLookup = {
@@ -60,7 +61,7 @@ const resolveTypeLookup = {
   [THINK]: GenericMeetingStage,
   [GROUP]: GenericMeetingStage,
   [VOTE]: GenericMeetingStage,
-  [DISCUSS]: GenericMeetingStage
+  [DISCUSS]: RetroDiscussStage
 };
 
 const NewMeetingStage = new GraphQLInterfaceType({

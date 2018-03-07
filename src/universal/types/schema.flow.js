@@ -296,8 +296,6 @@ export type Team = {
   meetingPhaseItem: ?number;
   /** The team-specific settings for running all available types of meetings */
   meetingSettings: TeamMeetingSettings;
-  /** The unique Id of the active meeting */
-  newMeetingId: ?string;
   /** The new meeting in progress, if any */
   newMeeting: ?NewMeeting;
   /** The level of access to features on the parabol site */
@@ -374,23 +372,12 @@ export type MeetingTypeEnum = "action" | "retrospective";
 /**
   The team settings for a specific type of meeting
 */
-export type TeamMeetingSettings = {
-  /** The total number of meetings given to the team */
-  meetingsOffered: ?number;
-  /** Number of meetings that can be run (if not pro) */
-  meetingsRemaining: ?number;
-  /** The type of meeting these settings apply to */
-  meetingType: ?MeetingTypeEnum;
-  /** The broad phase types that will be addressed during the meeting */
-  phases: Array<NewMeetingPhaseTypeEnum>;
-  /** The team these settings belong to */
-  team: ?Team;
-}
+export type TeamMeetingSettings = RetrospectiveMeetingSettings | ActionMeetingSettings;
 
 /**
   The phase of the meeting
 */
-export type NewMeetingPhaseTypeEnum = "lobby" | "checkin" | "summary" | "updates" | "firstcall" | "agendaitems" | "lastcall" | "think" | "group" | "vote" | "discuss";
+export type NewMeetingPhaseTypeEnum = "checkin" | "updates" | "firstcall" | "agendaitems" | "lastcall" | "think" | "group" | "vote" | "discuss";
 
 /**
   A team meeting history for all previous meetings
@@ -473,27 +460,12 @@ export type TeamMember = {
 
 export type Assignee = TeamMember | SoftTeamMember;
 
+export type NewMeetingPhase = CheckInPhase | ThinkPhase | DiscussPhase | GenericMeetingPhase;
+
 /**
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
-export type NewMeetingStage = {
-  /** shortid */
-  id: string;
-  /** The meeting this stage belongs to */
-  meeting: ?NewMeeting;
-  /** true if the facilitator is currently looking at the stage, else false */
-  isFacilitatorStage: ?boolean;
-  /** true if the facilitator has completed this stage, else false */
-  isComplete: ?boolean;
-  /** The type of the phase */
-  type: ?NewMeetingPhaseTypeEnum;
-  /** true if the meeting phase can only be viewed once (eg first call) */
-  isSingleView: ?boolean;
-  /** true if the meeting phase automatically advances to the next (eg Phase1.part2 completes when part1 completes) */
-  isAutoAdvanced: ?boolean;
-  /** The phase item that this phase represents */
-  customPhaseItem: ?CustomPhaseItem;
-}
+export type NewMeetingStage = TeamMemberStage | GenericMeetingStage | RetroDiscussStage;
 
 /**
   The pay tier of the team
@@ -1057,6 +1029,8 @@ export type Mutation = {
   setOrgUserRole: ?SetOrgUserRolePayload;
   /** Start a meeting from the lobby */
   startMeeting: ?StartMeetingPayload;
+  /** Start a new meeting */
+  startNewMeeting: ?StartNewMeetingPayload;
   /** When stripe tells us an invoice is ready, create a pretty version */
   stripeCreateInvoice: ?boolean;
   /** When stripe tells us an invoice payment failed, update it in our DB */
@@ -1672,6 +1646,11 @@ export type StartMeetingPayload = {
   team: ?Team;
 }
 
+export type StartNewMeetingPayload = {
+  team: ?Team;
+  meeting: ?NewMeeting;
+}
+
 export type StripeFailPaymentPayload = {
   organization: ?Organization;
   /** The notification to billing leaders stating the payment was rejected */
@@ -1850,24 +1829,74 @@ export type AddProviderPayload = {
   teamMember: ?TeamMember;
 }
 
-export type TeamSubscriptionPayload = AcceptTeamInviteEmailPayload | AcceptTeamInviteNotificationPayload | AddTeamPayload | ArchiveTeamPayload | EndMeetingPayload | KillMeetingPayload | MoveMeetingPayload | PromoteFacilitatorPayload | RequestFacilitatorPayload | StartMeetingPayload | RemoveOrgUserPayload | RemoveTeamMemberPayload | UpdateCheckInQuestionPayload | UpdateCreditCardPayload | UpdateTeamNamePayload | UpgradeToProPayload;
+export type TeamSubscriptionPayload = AcceptTeamInviteEmailPayload | AcceptTeamInviteNotificationPayload | AddTeamPayload | ArchiveTeamPayload | EndMeetingPayload | KillMeetingPayload | MoveMeetingPayload | PromoteFacilitatorPayload | RequestFacilitatorPayload | StartMeetingPayload | StartNewMeetingPayload | RemoveOrgUserPayload | RemoveTeamMemberPayload | UpdateCheckInQuestionPayload | UpdateCreditCardPayload | UpdateTeamNamePayload | UpgradeToProPayload;
 
 export type TeanMemberSubscriptionPayload = AcceptTeamInviteNotificationPayload | AcceptTeamInviteEmailPayload | CancelApprovalPayload | CancelTeamInvitePayload | RemoveTeamMemberPayload | InviteTeamMembersPayload | MeetingCheckInPayload | PromoteToTeamLeadPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | UpdateUserProfilePayload;
 
 /**
-  A notification alerting the user that they have been promoted (to team or org leader)
+  The meeting phase where all team members check in one-by-one
 */
-export type NotifyPromoteToOrgLeader = {
-  organization: ?Organization;
-  /** A shortid for the notification */
-  id: ?string;
-  /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
-  /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
-  /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+export type CheckInPhase = {
+  /** shortid */
+  id: string;
+  /** The type of phase */
+  phaseType: ?NewMeetingPhaseTypeEnum;
+  stages: Array<TeamMemberStage>;
+  /** The checkIn greeting (fun language) */
+  checkInGreeting: MeetingGreeting;
+  /** The checkIn question of the week (draft-js format) */
+  checkInQuestion: string;
+}
+
+/**
+  A stage that 
+*/
+export type TeamMemberStage = {
+  /** shortid */
+  id: string;
+  /** foreign key. try using meeting */
+  meetingId: string;
+  /** The meeting this stage belongs to */
+  meeting: ?NewMeeting;
+  /** true if the facilitator has completed this stage, else false */
+  isComplete: ?boolean;
+  /** The type of the phase */
+  phaseType: ?NewMeetingPhaseTypeEnum;
+  /** foreign key. use teamMember */
+  teamMemberId: string;
+  /** The team member that is the focus for this phase item */
+  teamMember: ?TeamMember;
+}
+
+/**
+  The meeting phase where all team members check in one-by-one
+*/
+export type ThinkPhase = {
+  /** shortid */
+  id: string;
+  /** The type of phase */
+  phaseType: ?NewMeetingPhaseTypeEnum;
+  stages: Array<GenericMeetingStage>;
+  /** foreign key. use focusedPhaseItem */
+  focusedPhaseItemId: ?string;
+  /** the phase item that the facilitator wants the group to focus on */
+  focusedPhaseItem: ?RetroPhaseItem;
+}
+
+/**
+  A stage of a meeting that has no extra state. Only used for single-stage phases
+*/
+export type GenericMeetingStage = {
+  /** shortid */
+  id: string;
+  /** foreign key. try using meeting */
+  meetingId: string;
+  /** The meeting this stage belongs to */
+  meeting: ?NewMeeting;
+  /** true if the facilitator has completed this stage, else false */
+  isComplete: ?boolean;
+  /** The type of the phase */
+  phaseType: ?NewMeetingPhaseTypeEnum;
 }
 
 /**
@@ -1877,9 +1906,11 @@ export type RetroPhaseItem = {
   /** shortid */
   id: string;
   /** The type of phase item */
-  type: ?CustomPhaseItemTypeEnum;
+  phaseItemType: ?CustomPhaseItemTypeEnum;
   /** true if the phase item is currently used by the team, else false */
   isActive: ?boolean;
+  /** foreign key. use the team field */
+  teamId: string;
   /** The team that owns this customPhaseItem */
   team: ?Team;
   /** The title of the phase of the retrospective. Often a short version of the question */
@@ -1889,29 +1920,34 @@ export type RetroPhaseItem = {
 }
 
 /**
-  A retrospective meeting
+  The meeting phase where all team members discuss the topics with the most votes
 */
-export type RetrospectiveMeeting = {
-  /** The unique meeting id. shortid. */
+export type DiscussPhase = {
+  /** shortid */
   id: string;
-  /** The timestamp the meeting was created */
-  createdAt: ?any;
-  /** The timestamp the meeting officially ended */
-  endedAt: ?any;
-  /** The userId (or anonymousId) of the most recent facilitator */
-  facilitatorUserId: ?string;
-  invitees: ?Array<MeetingInvitee>;
-  /** The auto-incrementing meeting number for the team */
-  meetingNumber: number;
-  /** The stages that make up the meeting */
-  stages: Array<NewMeetingStage>;
-  /** The time the meeting summary was emailed to the team */
-  summarySentAt: ?any;
-  /** The team that ran the meeting */
-  team: ?Team;
-  thoughtGroups: ?Array<RetroThoughtGroup>;
-  /** The thoughts generated during the think phase of the retro */
-  thoughts: ?Array<RetroThought>;
+  /** The type of phase */
+  phaseType: ?NewMeetingPhaseTypeEnum;
+  stages: Array<RetroDiscussStage>;
+}
+
+/**
+  The stage where the team discusses a single theme
+*/
+export type RetroDiscussStage = {
+  /** shortid */
+  id: string;
+  /** foreign key. try using meeting */
+  meetingId: string;
+  /** The meeting this stage belongs to */
+  meeting: ?NewMeeting;
+  /** true if the facilitator has completed this stage, else false */
+  isComplete: ?boolean;
+  /** The type of the phase */
+  phaseType: ?NewMeetingPhaseTypeEnum;
+  /** foreign key. use thoughtGroup */
+  thoughtGroupId: ?string;
+  /** the group that is the focal point of the discussion */
+  thoughtGroup: ?RetroThoughtGroup;
 }
 
 /**
@@ -1944,8 +1980,10 @@ export type RetroThought = {
   id: string;
   /** The timestamp the meeting was created */
   createdAt: ?any;
-  /** The teamMemberId that created the thought (or unique Id if not a team member) */
+  /** The userId that created the thought (or unique Id if not a team member) */
   creatorId: ?string;
+  /** true if the viewer (userId) is the creator of the retro thought, else false */
+  isViewerCreator: ?boolean;
   /** The stringified draft-js content */
   content: ?string;
   /** The foreign key to link a thought to its meeting */
@@ -1961,4 +1999,94 @@ export type RetroThought = {
   meeting: ?RetrospectiveMeeting;
   /** The team that is running the meeting that contains this thought */
   team: ?RetrospectiveMeeting;
+}
+
+/**
+  A retrospective meeting
+*/
+export type RetrospectiveMeeting = {
+  /** The unique meeting id. shortid. */
+  id: string;
+  /** The timestamp the meeting was created */
+  createdAt: ?any;
+  /** The timestamp the meeting officially ended */
+  endedAt: ?any;
+  /** The location of the facilitator in the meeting */
+  facilitatorStageId: ?string;
+  /** The userId (or anonymousId) of the most recent facilitator */
+  facilitatorUserId: ?string;
+  invitees: ?Array<MeetingInvitee>;
+  /** The auto-incrementing meeting number for the team */
+  meetingNumber: number;
+  meetingType: MeetingTypeEnum;
+  /** The phases the meeting will go through, including all phase-specific state */
+  phases: Array<NewMeetingPhase>;
+  /** The time the meeting summary was emailed to the team */
+  summarySentAt: ?any;
+  /** The team that ran the meeting */
+  team: ?Team;
+  thoughtGroups: ?Array<RetroThoughtGroup>;
+  /** The thoughts generated during the think phase of the retro */
+  thoughts: ?Array<RetroThought>;
+}
+
+/**
+  An all-purpose meeting phase with no extra state
+*/
+export type GenericMeetingPhase = {
+  /** shortid */
+  id: string;
+  /** The type of phase */
+  phaseType: ?NewMeetingPhaseTypeEnum;
+  stages: Array<GenericMeetingStage>;
+}
+
+/**
+  A notification alerting the user that they have been promoted (to team or org leader)
+*/
+export type NotifyPromoteToOrgLeader = {
+  organization: ?Organization;
+  /** A shortid for the notification */
+  id: ?string;
+  /** *The unique organization ID for this notification. Can be blank for targeted notifications */
+  orgId: ?string;
+  /** The datetime to activate the notification & send it to the client */
+  startAt: ?any;
+  type: ?NotificationEnum;
+  /** *The userId that should see this notification */
+  userIds: ?Array<string>;
+}
+
+/**
+  The retro-specific meeting settings
+*/
+export type RetrospectiveMeetingSettings = {
+  /** The total number of meetings given to the team */
+  meetingsOffered: ?number;
+  /** Number of meetings that can be run (if not pro) */
+  meetingsRemaining: ?number;
+  /** The type of meeting these settings apply to */
+  meetingType: ?MeetingTypeEnum;
+  /** The broad phase types that will be addressed during the meeting */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+  /** The team these settings belong to */
+  team: ?Team;
+  /** the team-specific questions to ask during a retro */
+  phaseItems: ?Array<CustomPhaseItem>;
+}
+
+/**
+  The action-specific meeting settings
+*/
+export type ActionMeetingSettings = {
+  /** The total number of meetings given to the team */
+  meetingsOffered: ?number;
+  /** Number of meetings that can be run (if not pro) */
+  meetingsRemaining: ?number;
+  /** The type of meeting these settings apply to */
+  meetingType: ?MeetingTypeEnum;
+  /** The broad phase types that will be addressed during the meeting */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+  /** The team these settings belong to */
+  team: ?Team;
 }
