@@ -232,7 +232,20 @@ const styleThunk = (custom, {inSync}) => ({
   itemFacilitator: {
     // backgroundColor: ui.navMenuLightBackgroundColorActive,
     // boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
-    color: !inSync && ui.palette.warm
+    color: !inSync && ui.palette.warm,
+    position: 'relative',
+    '::after': {
+      backgroundColor: !inSync ? ui.palette.warm : 'transparent',
+      borderRadius: '100%',
+      content: '""',
+      display: 'block',
+      left: '.875rem',
+      marginTop: '-.1875rem',
+      position: 'absolute',
+      height: '.375rem',
+      top: '50%',
+      width: '.375rem'
+    }
   },
 
   descFacilitator: {
