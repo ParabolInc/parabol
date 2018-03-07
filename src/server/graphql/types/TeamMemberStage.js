@@ -5,7 +5,7 @@ import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMe
 
 const TeamMemberStage = new GraphQLObjectType({
   name: 'TeamMemberStage',
-  description: 'A stage that ',
+  description: 'A stage that focuses on a single team member',
   interfaces: () => [NewMeetingStage],
   fields: () => ({
     ...newMeetingStageFields(),
