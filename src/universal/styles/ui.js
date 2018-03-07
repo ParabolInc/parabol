@@ -116,7 +116,8 @@ const MODAL_LAYOUT_VIEWPORT = 'viewport';
 const panelInnerBorderColor = appTheme.palette.mid10l;
 
 // Placeholders
-const placeholderColor = appTheme.palette.dark50l;
+const placeholderColor = appTheme.palette.dark70l;
+const placeholderColorFocusActive = appTheme.palette.dark30l;
 
 // Transitions
 // NOTE: increases on a scale of 2x
@@ -527,6 +528,7 @@ const ui = {
   // Placeholders
   // ---------------------------------------------------------------------------
   placeholderColor,
+  placeholderColorFocusActive,
 
   // Task columns
   // ---------------------------------------------------------------------------
