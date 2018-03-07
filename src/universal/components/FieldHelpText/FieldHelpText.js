@@ -41,7 +41,7 @@ const styleThunk = (theme, {fieldSize, indent}) => {
     },
 
     error: {
-      color: appTheme.palette.warm
+      color: ui.colorError
     }
   });
 };

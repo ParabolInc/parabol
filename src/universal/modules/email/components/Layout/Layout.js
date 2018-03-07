@@ -20,7 +20,7 @@ const Layout = (props) => {
     msoTableLspace: '0pt',
     msoTableRspace: '0pt',
     borderCollapse: 'collapse',
-    fontFamily: '"Karla", "Helvetica Neue", sans-serif',
+    fontFamily: '"IBM Plex Sans", "Helvetica Neue", sans-serif',
     margin: '0px auto',
     textAlign: 'center'
   };

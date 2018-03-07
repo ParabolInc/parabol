@@ -19,7 +19,7 @@ const RemoveTeamMemberModal = (props) => {
   };
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
+      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="warm">
         Are you sure?
       </Type>
       <Type align="center" bold marginBottom="1.5rem" scale="s4">

@@ -30,7 +30,7 @@ const styleThunk = () => ({
   ...mentionBaseStyles,
 
   value: {
-    fontWeight: 700,
+    fontWeight: 600,
     minWidth: '4.5rem'
   }
 });

@@ -22,7 +22,7 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'block',
     fontSize: appTheme.typography.s6,
-    fontWeight: 700,
+    fontWeight: 600,
     textAlign: 'center'
   }
 });

@@ -3,9 +3,9 @@ import React from 'react';
 import {Type} from 'universal/components';
 
 const MeetingPhaseHeading = (props) => {
-  const {children} = props;
+  const {align, children} = props;
   return (
-    <Type align="center" bold family="serif" scale="s7" colorPalette="warm">
+    <Type align={align} bold family="serif" scale="s7" colorPalette="dark">
       {children}
     </Type>
   );
@@ -13,7 +13,16 @@ const MeetingPhaseHeading = (props) => {
 
 
 MeetingPhaseHeading.propTypes = {
+  align: PropTypes.oneOf([
+    'left',
+    'center',
+    'right'
+  ]),
   children: PropTypes.any
+};
+
+MeetingPhaseHeading.defaultProps = {
+  align: 'left'
 };
 
 export default MeetingPhaseHeading;

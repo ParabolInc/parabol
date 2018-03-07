@@ -34,7 +34,7 @@ const styleThunk = () => ({
     color: appTheme.palette.warm,
     fontFamily: appTheme.typography.serif,
     fontSize: '2rem',
-    fontWeight: 700,
+    fontWeight: 600,
     margin: 0,
     padding: 0
   }

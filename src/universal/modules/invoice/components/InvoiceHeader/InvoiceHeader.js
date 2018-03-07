@@ -40,7 +40,7 @@ const styleThunk = () => ({
   header: {
     alignItems: 'center',
     display: 'flex',
-    fontWeight: 700
+    fontWeight: 600
   },
 
   logoPanel: {

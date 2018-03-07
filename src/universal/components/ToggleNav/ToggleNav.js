@@ -84,7 +84,7 @@ const styleThunk = () => ({
     cursor: 'pointer',
     flex: 1,
     fontSize: appTheme.typography.s3,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.625rem',
     textAlign: 'center',
     textDecoration: 'none',

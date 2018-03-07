@@ -24,7 +24,7 @@ const Type = (props) => {
 
   const styleTag = {
     textAlign: align,
-    fontWeight: bold ? 700 : null,
+    fontWeight: bold ? 600 : null,
     display: display === 'inlineBlock' ? 'inline-block' : display,
     verticalAlign: display === 'inlineBlock' ? 'middle' : null,
     fontFamily: appTheme.typography[family],

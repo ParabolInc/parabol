@@ -47,7 +47,7 @@ const styleThunk = (customTheme, {colorPalette}) => ({
     borderRadius: '1rem',
     color: '#fff',
     fontSize: appTheme.typography.s1,
-    fontWeight: 700,
+    fontWeight: 600,
     height: '1rem',
     lineHeight: '1rem',
     minWidth: '1rem',

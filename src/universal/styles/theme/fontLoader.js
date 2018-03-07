@@ -1,50 +1,46 @@
-import karlaWoff2 from 'universal/styles/theme/fonts/Karla-regular.woff2';
-import karlaItalicWoff2 from 'universal/styles/theme/fonts/Karla-italic.woff2';
-import karlaBoldWoff2 from 'universal/styles/theme/fonts/Karla-700.woff2';
-import karalaBoldItalicWoff2 from 'universal/styles/theme/fonts/Karla-700italic.woff2';
-import merriweatherWoff2 from 'universal/styles/theme/fonts/Merriweather-regular.woff2';
-import merriweatherItalicWoff2 from 'universal/styles/theme/fonts/Merriweather-italic.woff2';
-import merriweatherBoldWoff2 from 'universal/styles/theme/fonts/Merriweather-700.woff2';
-import merriweatherBoldItalicWoff2 from 'universal/styles/theme/fonts/Merriweather-700italic.woff2';
 
-import karlaTrueType from 'universal/styles/theme/fonts/Karla-regular.ttf';
-import karlaItalicTrueType from 'universal/styles/theme/fonts/Karla-italic.ttf';
-import karlaBoldTrueType from 'universal/styles/theme/fonts/Karla-700.ttf';
-import karalaBoldItalicTrueType from 'universal/styles/theme/fonts/Karla-700italic.ttf';
-import merriweatherTrueType from 'universal/styles/theme/fonts/Merriweather-regular.ttf';
-import merriweatherItalicTrueType from 'universal/styles/theme/fonts/Merriweather-italic.ttf';
-import merriweatherBoldTrueType from 'universal/styles/theme/fonts/Merriweather-700.ttf';
-import merriweatherBoldItalicTrueType from 'universal/styles/theme/fonts/Merriweather-700italic.ttf';
+// releases: https://github.com/IBM/plex/releases
+// currently using: Web.zip from https://github.com/IBM/plex/releases/tag/v1.0.1
+
+import plexMonoRegularWoff2 from 'universal/styles/theme/fonts/IBMPlexMono-Regular.woff2';
+import plexMonoSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexMono-SemiBold.woff2';
+import plexSansItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-Italic.woff2';
+import plexSansRegularWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-Regular.woff2';
+import plexSansSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-SemiBold.woff2';
+import plexSansSemiBoldItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-SemiBoldItalic.woff2';
+import plexSerifSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexSerif-SemiBold.woff2';
+import plexSerifSemiBoldItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSerif-SemiBoldItalic.woff2';
 
 const fontStylesRegular = {fontWeight: 400, fontStretch: 'normal', fontStyle: 'normal'};
 const fontStylesItalic = {fontWeight: 400, fontStretch: 'normal', fontStyle: 'italic'};
-const fontStylesBold = {fontWeight: 700, fontStretch: 'normal', fontStyle: 'normal'};
-const fontStylesBoldItalic = {fontWeight: 700, fontStretch: 'normal', fontStyle: 'italic'};
+const fontStylesSemiBold = {fontWeight: 600, fontStretch: 'normal', fontStyle: 'normal'};
+const fontStylesSemiBoldItalic = {fontWeight: 600, fontStretch: 'normal', fontStyle: 'italic'};
 
-const makeFont = (fontFamily, woffFile, ttfFile, style) => ({
+const makeFont = (fontFamily, woff2File, style) => ({
   ...style,
   fontFamily,
-  src: `url('${woffFile}') format('woff2'), url('${ttfFile}') format('truetype')`
+  src: `url('${woff2File}') format('woff2')`
 });
 
 
-const karla = makeFont('Karla', karlaWoff2, karlaTrueType, fontStylesRegular);
-const karlaItalic = makeFont('Karla', karlaItalicWoff2, karlaItalicTrueType, fontStylesItalic);
-const karlaBold = makeFont('Karla', karlaBoldWoff2, karlaBoldTrueType, fontStylesBold);
-const karlaBoldItalic = makeFont('Karla', karalaBoldItalicWoff2, karalaBoldItalicTrueType, fontStylesBoldItalic);
+const plexMonoRegular = makeFont('IBM Plex Mono', plexMonoRegularWoff2, fontStylesRegular);
+const plexMonoSemiBold = makeFont('IBM Plex Mono', plexMonoSemiBoldWoff2, fontStylesSemiBold);
 
-const merriweather = makeFont('Merriweather', merriweatherWoff2, merriweatherTrueType, fontStylesRegular);
-const merriweatherItalic = makeFont('Merriweather', merriweatherItalicWoff2, merriweatherItalicTrueType, fontStylesItalic);
-const merriweatherBold = makeFont('Merriweather', merriweatherBoldWoff2, merriweatherBoldTrueType, fontStylesBold);
-const merriweatherBoldItalic = makeFont('Merriweather', merriweatherBoldItalicWoff2, merriweatherBoldItalicTrueType, fontStylesBoldItalic);
+const plexSansItalic = makeFont('IBM Plex Sans', plexSansItalicWoff2, fontStylesItalic);
+const plexSansRegular = makeFont('IBM Plex Sans', plexSansRegularWoff2, fontStylesRegular);
+const plexSansSemiBold = makeFont('IBM Plex Sans', plexSansSemiBoldWoff2, fontStylesSemiBold);
+const plexSansSemiBoldItalic = makeFont('IBM Plex Sans', plexSansSemiBoldItalicWoff2, fontStylesSemiBoldItalic);
+
+const plexSerifSemiBold = makeFont('IBM Plex Serif', plexSerifSemiBoldWoff2, fontStylesSemiBold);
+const plexSerifSemiBoldItalic = makeFont('IBM Plex Serif', plexSerifSemiBoldItalicWoff2, fontStylesSemiBoldItalic);
 
 export default [
-  karla,
-  karlaItalic,
-  karlaBold,
-  karlaBoldItalic,
-  merriweather,
-  merriweatherItalic,
-  merriweatherBold,
-  merriweatherBoldItalic
+  plexMonoRegular,
+  plexMonoSemiBold,
+  plexSansItalic,
+  plexSansRegular,
+  plexSansSemiBold,
+  plexSansSemiBoldItalic,
+  plexSerifSemiBold,
+  plexSerifSemiBoldItalic
 ];

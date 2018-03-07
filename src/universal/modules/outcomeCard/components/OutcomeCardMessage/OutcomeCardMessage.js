@@ -66,7 +66,7 @@ const styleThunk = (theme, {colorPalette}) => ({
     borderRadius: ui.borderRadiusSmall,
     color: '#fff',
     display: 'block',
-    fontWeight: 700,
+    fontWeight: 600,
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s4,
     padding: ui.cardPaddingBase,

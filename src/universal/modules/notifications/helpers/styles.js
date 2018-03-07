@@ -11,7 +11,7 @@ export default {
   },
   messageVar: {
     color: appTheme.palette.cool,
-    fontWeight: 700
+    fontWeight: 600
   },
   messageSub: {
     color: appTheme.palette.dark10d,
@@ -55,7 +55,7 @@ export default {
     width: '1.5rem'
   },
   ownerName: {
-    fontWeight: 700,
+    fontWeight: 600,
     paddingLeft: '.375rem'
   }
 };

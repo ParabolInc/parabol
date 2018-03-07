@@ -19,7 +19,8 @@ type Props = {
   waiting: boolean
 };
 
-const {orange, purple, rose} = appTheme.brand.new;
+const {purple} = appTheme.brand.primary;
+const {red, rose} = appTheme.brand.secondary;
 
 const makeGradient = (fromColor: string, toColor: string): string => (
   `linear-gradient(to right, ${fromColor} 0, ${toColor} 100%)`
@@ -27,7 +28,7 @@ const makeGradient = (fromColor: string, toColor: string): string => (
 
 const focusedButtonStyles = {
   backgroundImage: makeGradient(
-    tinycolor(orange).darken(3),
+    tinycolor(red).darken(3),
     tinycolor(rose).darken(3)
   ),
   boxShadow: `0 0 0 2px ${purple}`,
@@ -50,7 +51,7 @@ const PrimaryButton = styled(WaitableButton)((props: Props) => {
     cursor = 'pointer';
   }
   return {
-    backgroundImage: makeGradient(orange, rose),
+    backgroundImage: makeGradient(red, rose),
     borderRadius: '100px',
     fontWeight: 'bold',
     color: 'white',
@@ -61,13 +62,13 @@ const PrimaryButton = styled(WaitableButton)((props: Props) => {
     ':visited': focusedButtonStyles,
     ':hover': {
       backgroundImage: makeGradient(
-        tinycolor(orange).darken(3),
+        tinycolor(red).darken(3),
         tinycolor(rose).darken(3)
       )
     },
     ':disabled': {
       backgroundImage: makeGradient(
-        tinycolor(orange).desaturate().lighten(),
+        tinycolor(red).desaturate().lighten(),
         tinycolor(rose).desaturate().lighten()
       )
     }

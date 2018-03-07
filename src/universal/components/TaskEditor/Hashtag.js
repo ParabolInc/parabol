@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 // inline styles so oy-vey doesn't barf when making emails using draft-js cards
 const style = {
-  color: appTheme.palette.cool,
-  fontWeight: 700
+  color: ui.colorText, // TODO: theme-able?
+  fontWeight: 600
 };
 
 const Hashtag = (props) => {

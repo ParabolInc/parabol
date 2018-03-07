@@ -207,7 +207,7 @@ const styleThunk = () => ({
   failedStamp: {
     color: appTheme.palette.warm,
     fontSize: '2.5rem',
-    fontWeight: 700,
+    fontWeight: 600,
     left: '50%',
     opacity: 0.5,
     position: 'absolute',
@@ -236,7 +236,7 @@ const styleThunk = () => ({
   label: {
     color: appTheme.palette.dark50l,
     fontSize: appTheme.typography.s3,
-    fontWeight: 700,
+    fontWeight: 600,
     textTransform: 'uppercase'
   },
 
@@ -260,7 +260,7 @@ const styleThunk = () => ({
 
   heading: {
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: '1.5',
 
     [breakpoint]: {
@@ -319,7 +319,7 @@ const styleThunk = () => ({
   amountLine: {
     ...ui.invoiceItemBaseStyles,
     fontSize: appTheme.typography.s6,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s7
   },
 

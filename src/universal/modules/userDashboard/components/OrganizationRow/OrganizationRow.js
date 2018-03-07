@@ -31,6 +31,7 @@ const OrganizationRow = (props) => {
   } = props;
   const orgAvatar = picture || defaultOrgAvatar;
   const label = isBillingLeader ? 'Settings and Billing' : 'Create New Team';
+  const icon = isBillingLeader ? 'cog' : 'plus';
   const onRowClickUrl = isBillingLeader ? `/me/organizations/${orgId}` : `/newteam/${orgId}`;
   const onRowClick = () => history.push(onRowClickUrl);
   const totalUsers = activeUserCount + inactiveUserCount;
@@ -59,6 +60,7 @@ const OrganizationRow = (props) => {
           buttonStyle="flat"
           colorPalette="dark"
           label={label}
+          icon={icon}
           onClick={onRowClick}
           buttonSize="small"
         />
@@ -114,7 +116,7 @@ const styleThunk = () => ({
   subHeader: {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s2,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: appTheme.typography.s4
   },
 

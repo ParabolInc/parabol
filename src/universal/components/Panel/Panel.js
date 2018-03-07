@@ -4,7 +4,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import {cardBorderTop} from 'universal/styles/helpers';
 
 const Panel = (props) => {
   const {
@@ -50,8 +49,6 @@ Panel.propTypes = {
   children: PropTypes.any,
   compact: PropTypes.bool,
   controls: PropTypes.any,
-  // depth: up to ui.shadow[4]
-  depth: PropTypes.oneOf([0, 1, 2, 3]),
   hasHeader: PropTypes.bool,
   hideFirstRowBorder: PropTypes.bool,
   label: PropTypes.any,
@@ -68,28 +65,18 @@ const bgThemeValues = {
   white: '#fff'
 };
 
-const styleThunk = (theme, {bgTheme, compact, depth}) => ({
+const styleThunk = (theme, {bgTheme, compact}) => ({
   panel: {
     backgroundColor: bgTheme ? bgThemeValues[bgTheme] : bgThemeValues.white,
-    border: `1px solid ${ui.panelBorderColor}`,
+    boxShadow: ui.panelBoxShadow,
     borderRadius: ui.cardBorderRadius,
     display: 'flex',
     flexDirection: 'column',
     fontSize: appTheme.typography.s3,
     lineHeight: appTheme.typography.s5,
     margin: `${ui.panelMarginVertical} 0`,
-    paddingTop: '.1875rem',
     position: 'relative',
-    width: '100%',
-
-    '::after': {
-      ...cardBorderTop,
-      color: appTheme.palette.mid40l
-    }
-  },
-
-  depth: {
-    boxShadow: ui.shadow[depth]
+    width: '100%'
   },
 
   header: {
@@ -98,8 +85,11 @@ const styleThunk = (theme, {bgTheme, compact, depth}) => ({
   },
 
   label: {
-    color: appTheme.palette.dark,
-    fontWeight: 700,
+    color: ui.labelHeadingColor,
+    fontSize: ui.labelHeadingFontSize,
+    fontWeight: ui.labelHeadingFontWeight,
+    letterSpacing: ui.labelHeadingLetterSpacing,
+    lineHeight: ui.labelHeadingLineHeight,
     padding: `.75rem ${compact ? ui.panelCompactGutter : ui.panelGutter}`,
     textTransform: 'uppercase'
   },

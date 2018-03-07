@@ -24,5 +24,5 @@ export default {
   // The retrospective meeting
   retro: false,
   // the filter bar at the top of the team dash
-  localFilter: false
+  localFilter: true
 };

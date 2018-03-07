@@ -19,11 +19,13 @@ export default (sharedDataLoader) => async (req, res) => {
   res.send(result);
 };
 
-export const intranetHttpGraphQLHandler = async (req, res) => {
+export const intranetHttpGraphQLHandler = (sharedDataLoader) => async (req, res) => {
   const {query, variables} = req.body;
   const authToken = req.user || {};
+  const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken));
   const context = {authToken};
   const result = await graphql(IntranetSchema, query, {}, context, variables);
+  dataLoader.dispose();
   if (result.errors) {
     console.log('DEBUG intranet-GraphQL Error:', result.errors);
   }

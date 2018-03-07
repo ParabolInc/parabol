@@ -1,23 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const Features = (props) => {
-  const imageStyle = {
-    border: 0,
-    display: 'block'
-  };
-
   const copyStyle = {
-    color: appTheme.palette.cool,
+    color: ui.colorText,
     fontSize: `${props.fontSize}px`,
     fontWeight: 'bold',
     lineHeight: `${props.lineHeight}`,
-    paddingBottom: '16px',
-    paddingLeft: '16px',
-    paddingTop: '16px',
+    paddingBottom: '8px',
+    paddingTop: '8px',
     textAlign: 'left'
   };
 
@@ -27,40 +20,16 @@ const Features = (props) => {
       <table style={ui.emailTableBase}>
         <tbody>
           <tr>
-            <td width="64">
-              <img
-                style={imageStyle}
-                src="/static/images/email/email-icon-map@2x.png"
-                height="64"
-                width="64"
-              />
-            </td>
             <td style={copyStyle}>
               {'Build team momentum by '}<br />{'creating achievable weekly goals'}
             </td>
           </tr>
           <tr>
-            <td width="64">
-              <img
-                style={imageStyle}
-                src="/static/images/email/email-icon-group-check@2x.png"
-                height="64"
-                width="64"
-              />
-            </td>
             <td style={copyStyle}>
               {'Establish clear ownership '}<br />{'and accountability'}
             </td>
           </tr>
           <tr>
-            <td width="64">
-              <img
-                style={imageStyle}
-                src="/static/images/email/email-icon-megaphone@2x.png"
-                height="64"
-                width="64"
-              />
-            </td>
             <td style={copyStyle}>
               {'Automatically share progress '}<br />{'inside and outside your team'}
             </td>

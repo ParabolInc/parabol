@@ -32,7 +32,7 @@ class TeamColumnsContainer extends Component {
 
   filterTasks(props) {
     const {teamMemberFilterId, viewer: {tasks, team: {contentFilter, teamMembers}}} = props;
-    const contentFilterRegex = new RegExp(contentFilter);
+    const contentFilterRegex = new RegExp(contentFilter, 'i');
     const contentFilteredEdges = contentFilter ?
       tasks.edges.filter(({node}) => {
         const {contentText} = node;
@@ -100,7 +100,7 @@ export default createFragmentContainer(
             # grab these so we can sort correctly
             id
             content @__clientField(handle: "contentText")
-            contentText 
+            contentText
             status
             sortOrder
             assignee {

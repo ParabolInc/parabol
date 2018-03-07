@@ -60,7 +60,7 @@ const RequestNewUser = (props) => {
         <div className={css(styles.button)}>
           <Button
             aria-label="Accept new user"
-            colorPalette="cool"
+            colorPalette="warm"
             isBlock
             label="Accept"
             buttonSize={ui.notificationButtonSize}

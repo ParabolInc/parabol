@@ -20,7 +20,7 @@ export default {
   },
 
   body: {
-    color: appTheme.palette.dark10d,
+    color: ui.colorText,
     fontFamily: appTheme.typography.sansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased',
@@ -58,6 +58,14 @@ export default {
   pre: {
     maxWidth: '100%',
     overflow: 'auto'
+  },
+
+  b: {
+    fontWeight: 600
+  },
+
+  strong: {
+    fontWeight: 600
   },
 
   ...basePlaceholderStyles

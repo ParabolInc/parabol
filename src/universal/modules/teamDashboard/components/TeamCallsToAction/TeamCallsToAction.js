@@ -11,6 +11,7 @@ import styled from 'react-emotion';
 import {withRouter} from 'react-router-dom';
 
 import Button from 'universal/components/Button/Button';
+import ui from 'universal/styles/ui';
 
 type Props = {
   teamId: TeamID,
@@ -18,11 +19,14 @@ type Props = {
 };
 
 const ButtonGroup = styled('div')({
-  display: 'flex'
+  display: 'flex',
+  minWidth: '14rem',
+  paddingLeft: ui.dashGutter
 });
 
 const ButtonBlock = styled('div')({
-  margin: '0 0.5em'
+  margin: '0 .5em',
+  width: '100%'
 });
 
 const TeamCallToAction = ({history, teamId}: Props) => {
@@ -38,9 +42,9 @@ const TeamCallToAction = ({history, teamId}: Props) => {
         <Button
           buttonStyle="solid"
           colorPalette="warm"
-          depth={1}
           icon="users"
           iconPlacement="left"
+          isBlock
           label="Start Action Meeting"
           onClick={goToMeetingLobby}
           buttonSize="small"
@@ -51,7 +55,6 @@ const TeamCallToAction = ({history, teamId}: Props) => {
           <Button
             buttonStyle="solid"
             colorPalette="warm"
-            depth={1}
             icon="users"
             iconPlacement="left"
             label="Start Retrospective"

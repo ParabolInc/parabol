@@ -4,6 +4,7 @@ import ui from 'universal/styles/ui';
 const CreateCardRootStyles = {
   ...cardRootStyles,
   alignItems: 'center',
+  border: 0,
   display: 'flex !important',
   justifyContent: 'center',
   // TODO: Cards need block containers, not margin (TA)

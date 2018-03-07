@@ -18,7 +18,7 @@ HelpTextMyRound.propTypes = {
 
 const styleThunk = () => ({
   helpText: {
-    fontWeight: 700,
+    fontWeight: 600,
     userSelect: 'none'
   }
 });

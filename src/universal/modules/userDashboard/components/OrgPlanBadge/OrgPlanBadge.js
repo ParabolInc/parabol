@@ -7,7 +7,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {PERSONAL, PRO} from 'universal/utils/constants';
 
-const StarIcon = () => <StackedIcon top="star-o" bottom="star" color={appTheme.palette.light60d} />;
+const StarIcon = () => <StackedIcon top="star-o" bottom="star" color={appTheme.palette.yellow60d} />;
 
 const OrgPlanBadge = (props) => {
   const {planType, styles} = props;
@@ -78,9 +78,9 @@ const styleThunk = () => ({
 
   badgePro: {
     ...badgeBase,
-    backgroundColor: appTheme.palette.light80d,
-    border: `.125rem solid ${appTheme.palette.light70d}`,
-    color: appTheme.palette.light40d
+    backgroundColor: appTheme.palette.yellow80d,
+    border: `.125rem solid ${appTheme.palette.yellow70d}`,
+    color: appTheme.palette.yellow40d
   }
 });
 
