@@ -4,9 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNEXT
+## v0.31.0 2018-Mar-07
 ## Added
 - Client-side filtering behind the localFilter release flag
+
+## v0.30.2 2018-Mar-05
+## Fixed
+- Don't log out when a bad invite token is attempted
+- Keep dispatch after logout
+- Show welcome toast to new team members (missing dispatch)
+
+## v0.30.1 2018-Mar-01
+## Fixed
+- Hotfix for #1817, no longer require active subscription to update credit card
+
 
 ## v0.30.0 2018-Feb-28
 ## Added
