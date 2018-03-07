@@ -110,7 +110,9 @@ class Button extends Component {
     }
     // We don’t want 'focus' styles to linger after the click (TA)
     // wait till next tick because other components might need to use the button as the relativeTarget when they get blurred
-    setTimeout(() => e.currentTarget.blur());
+    // pull the target out of the event so react can recycle the event
+    const {currentTarget} = e;
+    setTimeout(() => currentTarget.blur());
   };
 
   onMouseLeave = (e) => {
