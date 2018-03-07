@@ -38,7 +38,8 @@ const styleThunk = () => ({
   emptyTeams: {
     fontSize: appTheme.typography.sBase,
     fontStyle: 'italic',
-    padding: '0 0 .125rem 1rem'
+    padding: '0 0 .125rem 1rem',
+    textAlign: 'center'
   }
 });
 
