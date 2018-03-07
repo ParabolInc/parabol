@@ -43,6 +43,7 @@ type Props = {
   history: RouterHistory
 };
 
+const meetingType = RETROSPECTIVE;
 const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
   const {params: {localPhase, teamId}} = match;
   return (
@@ -50,7 +51,7 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
-      variables={{teamId, meetingType: RETROSPECTIVE}}
+      variables={{teamId, meetingType}}
       subscriptions={subscriptions}
       subParams={{dispatch, history, location}}
       render={(readyState) => (
@@ -58,7 +59,7 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight="50vh" />}
-          ready={<NewMeeting localPhase={localPhase} />}
+          ready={<NewMeeting localPhase={localPhase} meetingType={meetingType} />}
         />
       )}
     />

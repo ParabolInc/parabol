@@ -7,7 +7,7 @@ import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSideb
 import {createFragmentContainer, graphql} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {phaseLabelLookup, phasesToExclude, phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups';
+import {phaseLabelLookup, phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups';
 
 import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeetingSidebarPhaseList_viewer as Viewer} from './__generated__/NewMeetingSidebarPhaseList_viewer.graphql';
@@ -36,7 +36,7 @@ type Props = {
 }
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
-  const {atmosphere: {viewerId}, localPhase, viewer: {team: {meetingSettings: {phases}, newMeeting}}} = props;
+  const {atmosphere: {viewerId}, localPhase, viewer: {team: {meetingSettings: {phaseTypes}, newMeeting}}} = props;
   const {facilitatorUserId} = newMeeting || {};
   const stages = newMeeting && newMeeting.stages || [];
   const localGroup = phaseTypeToPhaseGroup[localPhase];
@@ -45,8 +45,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
   const isFacilitator = facilitatorUserId === viewerId;
   return (
     <NavList>
-      {phases
-        .filter((phase) => !phasesToExclude.includes(phase))
+      {phaseTypes
         .map((name, idx) => {
           return (<NewMeetingSidebarPhaseListItem
             key={name}
@@ -68,14 +67,16 @@ export default createFragmentContainer(
     fragment NewMeetingSidebarPhaseList_viewer on User {
       team(teamId: $teamId) {
         meetingSettings(meetingType: $meetingType) {
-          phases
+          phaseTypes
         }
         newMeeting {
           facilitatorUserId
-          stages {
-            isComplete
-            isFacilitatorStage
-            type
+          facilitatorStageId
+          phases {
+            phaseType
+            stages {
+              isComplete
+            }
           }
         }
       }

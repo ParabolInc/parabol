@@ -22,7 +22,7 @@ const RetroThoughtGroup = new GraphQLObjectType({
       description: 'The title of the grouping of the retrospective thoughts'
     },
     retroThoughts: {
-      type: new GraphQLList(RetroThought),
+      type: new GraphQLList(new GraphQLNonNull(RetroThought)),
       description: 'The thoughts that belong in the group',
       resolve: ({id: retroGroupId}, args, {dataLoader}) => {
         return dataLoader.get('retroThoughtsByGroupId').load(retroGroupId);
