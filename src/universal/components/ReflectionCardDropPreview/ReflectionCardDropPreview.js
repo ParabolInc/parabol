@@ -14,7 +14,7 @@ type Props = {
 };
 
 const ReflectionCardDropPreview = styled('div')(({height}: Props) => ({
-  backgroundColor: appTheme.palette.mid20a,
+  backgroundColor: appTheme.palette.light90g,
   borderRadius: 3,
   height,
   width: '20rem'
