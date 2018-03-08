@@ -57,6 +57,10 @@
   },
   "pre-commit": [],
   "devDependencies": {
+    "@storybook/addon-actions": "^3.3.14",
+    "@storybook/addon-links": "^3.3.14",
+    "@storybook/addons": "^3.3.14",
+    "@storybook/react": "^3.3.14",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.1.1",
@@ -120,11 +124,7 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.5.4",
     "webpack-dev-middleware": "^1.12.0",
-    "webpack-hot-middleware": "^2.18.2",
-    "@storybook/react": "^3.3.14",
-    "@storybook/addon-actions": "^3.3.14",
-    "@storybook/addon-links": "^3.3.14",
-    "@storybook/addons": "^3.3.14"
+    "webpack-hot-middleware": "^2.18.2"
   },
   "dependencies": {
     "@babel/plugin-syntax-export-default-from": "^7.0.0-beta.40",
@@ -184,8 +184,8 @@
     "node-fetch": "^1.7.2",
     "oy-vey": "0.9.0",
     "prop-types": "^15.5.10",
-    "raven": "^1.1.4",
-    "raven-js": "^3.17.0",
+    "raven": "^2.4.2",
+    "raven-js": "^3.23.1",
     "react": "^16.2.0",
     "react-addons-css-transition-group": "^15.4.2",
     "react-async-hoc": "^0.4.1",

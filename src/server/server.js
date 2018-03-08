@@ -5,7 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import favicon from 'serve-favicon';
-import raven from 'raven';
+import Raven from 'raven';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
 import {clientSecret as secretKey} from './utils/auth0Helpers';
@@ -22,7 +22,10 @@ import SharedDataLoader from 'shared-dataloader';
 import {Server} from 'uws';
 import http from 'http';
 import startMemwatch from 'server/utils/startMemwatch';
+import packageJSON from '../../package.json';
+import jwtFields from 'universal/utils/jwtFields';
 
+const {version} = packageJSON;
 // Import .env and expand variables:
 getDotenv();
 
@@ -58,10 +61,14 @@ if (!PROD) {
   app.use(require('webpack-hot-middleware')(compiler)); // eslint-disable-line import/no-extraneous-dependencies
   /* eslint-enable global-require */
 }
-
+Raven.config(process.env.SENTRY_DSN, {
+  release: version,
+  environment: process.env.NODE_ENV,
+  parseUser: jwtFields
+}).install();
 // setup middleware
 // sentry.io request handler capture middleware, must be first:
-app.use(raven.requestHandler(process.env.SENTRY_DSN));
+app.use(Raven.requestHandler());
 app.use(bodyParser.json({
   verify: (req, res, buf) => {
     if (req.originalUrl.startsWith('/stripe')) {
@@ -110,7 +117,7 @@ app.post('/webhooks/github', handleGitHubWebhooks);
 app.get('*', createSSR);
 
 // sentry.io global exception error handling middleware:
-// app.use(raven.middleware.express.errorHandler(process.env.SENTRY_DSN));
+// app.use(Raven.errorHandler());
 
 // handle sockets
 wss.on('connection', connectionHandler(sharedDataLoader));
