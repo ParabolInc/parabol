@@ -10,7 +10,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 type Props = {
   // Height of this drop shadow - should be computed from the height of the
   // reflection card being dragged.
-  height: string
+  height: number | string
 };
 
 const ReflectionCardDropPreview = styled('div')(({height}: Props) => ({

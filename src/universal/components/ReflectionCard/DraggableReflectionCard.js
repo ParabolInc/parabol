@@ -7,7 +7,8 @@ import type {Node} from 'react';
 import type {Props as ReflectionCardProps} from './ReflectionCard';
 import type {ReflectionID} from 'universal/types/retro';
 
-import React from 'react';
+import React, {Component} from 'react';
+import {findDOMNode} from 'react-dom';
 import {DragSource, DropTarget} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
 
@@ -16,6 +17,12 @@ import {REFLECTION_CARD} from 'universal/utils/constants';
 import without from 'universal/utils/without';
 
 import ReflectionCard from './ReflectionCard';
+import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
+
+type DragItem = {
+  id: ReflectionID,
+  height: number
+};
 
 type Props = {
   ...ReflectionCardProps,
@@ -27,28 +34,58 @@ type Props = {
   handleBeginDrag: (draggedCardId: ReflectionID) => any,
   handleDrop: (draggedCardId: ReflectionID, droppedCardId: ReflectionID) => any,
   isDragging: boolean,
-  isOver: boolean
+  isOver: boolean,
+  item: ?DragItem
 };
 
-const DraggableReflectionCard = (props: Props) => {
-  const reflectionCardProps = {
-    ...without(props, 'connectDragSource'),
-    hovered: props.isOver && props.canDrop
-  };
-  props.connectDragPreview(getEmptyImage());
-  const connect = compose(props.connectDragSource, props.connectDropTarget);
-  return connect(
-    <div style={{display: 'inline-block'}}>
-      <ReflectionCard {...reflectionCardProps} />
-    </div>
-  );
-};
+class DraggableReflectionCard extends Component<Props> {
+  render() {
+    const {
+      canDrop,
+      connectDragPreview,
+      connectDragSource,
+      connectDropTarget,
+      contentState,
+      id,
+      isOver,
+      item,
+      stage
+    } = this.props;
+    const reflectionCardProps = {
+      ...without(this.props, 'connectDragSource'),
+      hovered: isOver && canDrop
+    };
+    connectDragPreview(getEmptyImage());
+    const connect = compose(connectDragSource, connectDropTarget);
+    if (item) {
+      console.log('item height:', item.height);
+    }
+    return connect(
+      isOver && canDrop ? (
+        <div style={{display: 'inline-block'}}>
+          <ReflectionGroup
+            reflections={[
+              {id, content: contentState, stage}
+            ]}
+            hoveredHeight={item ? item.height : 0}
+          />
+        </div>
+      ) : (
+        <div style={{display: 'inline-block'}}>
+          <ReflectionCard {...reflectionCardProps} />
+        </div>
+      )
+    );
+  }
+}
 
 const dragSpec = {
-  beginDrag(props: Props) {
+  beginDrag(props: Props, monitor, component): DragItem {
     const {handleBeginDrag, id} = props;
+    const domNode = findDOMNode(component); // eslint-disable-line react/no-find-dom-node
+    const height = domNode instanceof Element ? domNode.clientHeight : 0;
     handleBeginDrag(id);
-    return {id};
+    return {id, height};
   },
 
   endDrag(props: Props, monitor) {
@@ -82,6 +119,7 @@ const dropSpec = {
 const dropCollect = (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver({shallow: true}),
+  item: monitor.getItem(),
   canDrop: monitor.canDrop()
 });
 
