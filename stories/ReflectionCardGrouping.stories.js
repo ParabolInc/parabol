@@ -8,6 +8,7 @@ import type {Reflection, ReflectionID} from 'universal/types/retro';
 // $FlowFixMe
 import {ContentState} from 'draft-js';
 import React, {Component} from 'react';
+import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react';
 
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
@@ -43,12 +44,19 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
     }
   };
 
-  handleBeginDrag = (cardId: 'card1' | 'card2') => {
-    this.setState({[cardId]: true});
+  handleCancelDrag = (cardId: 'card1' | 'card2') => {
+    this.setState({[cardId]: false});
+    action('cancel-drag')(cardId);
   };
 
-  handleEndDrag = (cardId: 'card1' | 'card2') => {
-    this.setState({[cardId]: false});
+  handleBeginDrag = (cardId: 'card1' | 'card2') => {
+    this.setState({[cardId]: true});
+    action('begin-drag')(cardId);
+  };
+
+  handleDrop = (draggedId: 'card1' | 'card2', droppedId: 'card1' | 'card2') => {
+    this.setState({[draggedId]: false});
+    action('drop')(draggedId, droppedId);
   };
 
   render() {
@@ -64,16 +72,18 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
             <div>
               <Grid>
                 <DraggableReflectionCard
+                  handleCancelDrag={this.handleCancelDrag}
                   handleBeginDrag={this.handleBeginDrag}
-                  handleEndDrag={this.handleEndDrag}
+                  handleDrop={this.handleDrop}
                   id={card1.id}
                   iAmDragging={card1DragState}
                   contentState={card1.content}
                   userDragging={card1DragState && 'Dan'}
                 />
                 <DraggableReflectionCard
+                  handleCancelDrag={this.handleCancelDrag}
                   handleBeginDrag={this.handleBeginDrag}
-                  handleEndDrag={this.handleEndDrag}
+                  handleDrop={this.handleDrop}
                   iAmDragging={card2DragState}
                   id={card2.id}
                   contentState={card2.content}
