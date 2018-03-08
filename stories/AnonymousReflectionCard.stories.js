@@ -25,7 +25,7 @@ const obfuscate = (content: string): string => (
     .join('')
 );
 
-storiesOf('AnonymousReflectionCard', module)
+storiesOf('Anonymous Reflection Card', module)
   .add('being edited', () => (
     <RetroBackground>
       <StoryContainer

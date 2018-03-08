@@ -14,7 +14,7 @@ import Grid from './components/Grid';
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
 
-storiesOf('ReflectionCardDropPreview', module)
+storiesOf('Reflection Card Drop Preview', module)
   .add('with a height', () => (
     <RetroBackground>
       <StoryContainer
