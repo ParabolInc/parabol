@@ -110,6 +110,7 @@ const styleThunk = () => ({
 
   urlBlock: {
     margin: '3rem 0 0',
+    display: 'inline-block',
     verticalAlign: 'middle'
   }
 });

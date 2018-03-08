@@ -57,6 +57,8 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
         case 'CancelTeamInvitePayload':
           cancelTeamInviteTaskUpdater(payload, store, viewerId);
           break;
+        case 'CreateGitHubIssuePayload':
+          break;
         case 'ChangeTaskTeamPayload':
           changeTaskTeamTaskUpdater(payload, store, viewerId);
           break;
@@ -85,7 +87,7 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
           updateTaskTaskUpdater(payload, store, viewerId, {dispatch, history, location});
           break;
         default:
-          console.error('TeamSubscription case fail', type);
+          console.error('TaskSubscription case fail', type);
       }
     }
   };

@@ -23,7 +23,7 @@ const withToggledPortal = (ComposedComponent) => {
         PropTypes.number,
         PropTypes.string
       ]),
-      setOriginCoords: PropTypes.func
+      setOriginRef: PropTypes.func
     };
     state = {
       isOpen: false,
@@ -75,12 +75,12 @@ const withToggledPortal = (ComposedComponent) => {
         'aria-haspopup': 'true',
         'aria-expanded': this.state.isOpen,
         onClick: (e) => {
-          const {setOriginCoords, LoadableComponent} = this.props;
+          const {setOriginRef, LoadableComponent} = this.props;
           if (LoadableComponent) {
             LoadableComponent.preload();
           }
-          if (setOriginCoords) {
-            setOriginCoords(e.currentTarget.getBoundingClientRect());
+          if (setOriginRef) {
+            setOriginRef(e.currentTarget);
           }
           if (this.state.isOpen) {
             this.closePortal();
