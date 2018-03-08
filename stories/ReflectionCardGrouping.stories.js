@@ -68,7 +68,7 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
       const newGroup = {
         id: `reflection${this.ids.next().value}`,
         name: '',
-        reflections: [this.getReflectionById(droppedId), this.getReflectionById(draggedId)].filter(Boolean)
+        reflections: [this.getReflectionById(draggedId), this.getReflectionById(droppedId)].filter(Boolean)
       };
       return {
         dragging: {[draggedId]: false},

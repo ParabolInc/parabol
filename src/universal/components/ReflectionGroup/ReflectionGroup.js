@@ -20,30 +20,40 @@ const ReflectionGroupWrapper = styled('div')({
   position: 'relative'
 });
 
-const reverse = <T>(arr: Array<T>): Array<T> => (
-  arr.slice().reverse()
-);
-
-const ReflectionGroup = ({hoveredHeight, reflections}: Props) => (
-  <ReflectionGroupWrapper>
-    {hoveredHeight && <ReflectionCardDropPreview height={hoveredHeight} />}
-    {reverse(reflections).map((reflection, index) => (
-      <div
-        className={css({
-          position: 'absolute',
-          top: `${(index + 1) / (reflections.length + 1)}rem`
-        })}
-        key={reflection.id}
-      >
-        <ReflectionCard
-          contentState={reflection.content}
-          hovered={Boolean(hoveredHeight)}
-          id={reflection.id}
-          stage={reflection.stage}
-        />
-      </div>
-    ))}
-  </ReflectionGroupWrapper>
-);
+const ReflectionGroup = ({hoveredHeight, reflections}: Props) => {
+  const isHovering = Boolean(hoveredHeight);
+  const filteredSet = reflections.slice(0, 5);
+  return (
+    <ReflectionGroupWrapper>
+      {hoveredHeight &&
+        <div
+          className={css({
+            position: 'absolute',
+            transform: `scale(${1 - (0.05 * (filteredSet.length))})`
+          })}
+        >
+          <ReflectionCardDropPreview height={hoveredHeight} />
+        </div>
+      }
+      {filteredSet.map((reflection, index) => (
+        <div
+          className={css({
+            position: 'absolute',
+            transform: `scale(${1 - (0.05 * (filteredSet.length - index - 1))})`,
+            top: `${((index + (isHovering ? 1 : 0)) / (filteredSet.length + (isHovering ? 1 : 0))) * 1.5}rem`
+          })}
+          key={reflection.id}
+        >
+          <ReflectionCard
+            contentState={reflection.content}
+            hovered={isHovering}
+            id={reflection.id}
+            stage={reflection.stage}
+          />
+        </div>
+      ))}
+    </ReflectionGroupWrapper>
+  );
+};
 
 export default ReflectionGroup;
