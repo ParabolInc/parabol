@@ -41,6 +41,7 @@ const MeetingAgendaFirstCall = (props) => {
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls ?
                 <Button
+                  buttonStyle="primary"
                   colorPalette="warm"
                   icon="arrow-circle-right"
                   iconPlacement="right"

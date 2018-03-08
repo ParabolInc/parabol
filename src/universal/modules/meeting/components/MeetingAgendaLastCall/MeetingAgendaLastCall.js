@@ -63,7 +63,7 @@ const MeetingAgendaLastCall = (props) => {
                 <Button
                   aria-label="End Meeting"
                   buttonSize="large"
-                  buttonStyle="solid"
+                  buttonStyle="primary"
                   colorPalette="warm"
                   label="End Action Meeting"
                   onClick={gotoNext}

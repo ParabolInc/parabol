@@ -6,6 +6,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
 import MeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/MeetingCheckInPrompt';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
@@ -51,11 +52,7 @@ const MeetingCheckin = (props) => {
           team={team}
         />
         <div className={css(styles.base)}>
-          {showMoveMeetingControls ?
-            <CheckInControls
-              checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
-              nextMemberName={nextMember && nextMember.preferredName}
-            /> :
+          {!showMoveMeetingControls &&
             <div className={css(styles.hint)}>
               <MeetingFacilitationHint showEllipsis={!nextMember || !isMyMeetingSection}>
                 {nextMember ?
@@ -72,6 +69,15 @@ const MeetingCheckin = (props) => {
           }
         </div>
       </MeetingSection>
+      {showMoveMeetingControls &&
+        <MeetingControlBar>
+          <CheckInControls
+            checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
+            currentMemberName={currentMember.preferredName}
+            nextMemberName={nextMember && nextMember.preferredName}
+          />
+        </MeetingControlBar>
+      }
     </MeetingMain>
   );
 };

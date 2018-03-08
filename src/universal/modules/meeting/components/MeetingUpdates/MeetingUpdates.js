@@ -6,6 +6,7 @@ import Button from 'universal/components/Button/Button';
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import withStyles from 'universal/styles/withStyles';
 import {MEETING} from 'universal/utils/constants';
@@ -55,20 +56,6 @@ class MeetingUpdates extends Component {
     return (
       <MeetingMain>
         <MeetingSection flexToFill>
-          <div className={css(styles.layout)}>
-            {showMoveMeetingControls &&
-              <Button
-                buttonStyle="flat"
-                colorPalette="warm"
-                icon="arrow-circle-right"
-                iconPlacement="right"
-                key={`update${localPhaseItem}`}
-                label={isLastMember ? `Advance to the ${nextPhaseName}` : 'Next teammate '}
-                onClick={gotoNext}
-                buttonSize="medium"
-              />
-            }
-          </div>
           <div className={css(styles.body)}>
             <TaskColumns
               alignColumns="center"
@@ -80,6 +67,20 @@ class MeetingUpdates extends Component {
             />
           </div>
         </MeetingSection>
+        {showMoveMeetingControls &&
+          <MeetingControlBar>
+            <Button
+              buttonStyle="flat"
+              colorPalette="warm"
+              icon="arrow-circle-right"
+              iconPlacement="right"
+              key={`update${localPhaseItem}`}
+              label={isLastMember ? `Advance to the ${nextPhaseName}` : 'Next teammate '}
+              onClick={gotoNext}
+              buttonSize="medium"
+            />
+          </MeetingControlBar>
+        }
       </MeetingMain>
     );
   }

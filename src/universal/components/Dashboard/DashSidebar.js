@@ -4,6 +4,7 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {NavLink} from 'react-router-dom';
+import {LogoBlock} from 'universal/components';
 import tinycolor from 'tinycolor2';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
 import StandardHub from 'universal/components/StandardHub/StandardHub';
@@ -54,11 +55,7 @@ const DashSidebar = (props) => {
           </div>
         </nav>
       </div>
-      <div className={css(styles.brand)}>
-        <a href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
-          <img alt="Parabol" className={css(styles.logo)} src={logoMark} />
-        </a>
-      </div>
+      <LogoBlock theme="white" />
     </div>
   );
 };
@@ -178,7 +175,7 @@ const styleThunk = () => ({
 
   brand: {
     fontSize: 0,
-    padding: '.75rem',
+    padding: '.75rem 0 1.25rem',
     textAlign: 'center'
   },
 

@@ -12,6 +12,7 @@ const CheckInControls = (props) => {
   const {
     bindHotkey,
     checkInPressFactory,
+    currentMemberName,
     nextMemberName,
     styles
   } = props;
@@ -45,13 +46,13 @@ const CheckInControls = (props) => {
       <div className={css(styles.control, styles.nextControl)} onClick={handleOnClickPresent}>
         <FontAwesome name="check-circle" style={nextIcon} />
         <span className={css(styles.label)}>
-          <u>{'H'}</u>{'ere – '}{nextMemberName ? `move to ${nextMemberName}` : `move to ${nextPhaseName}`}
+          {`${currentMemberName} is `}<u>{'h'}</u>{'ere – '}{nextMemberName ? `Move to ${nextMemberName}` : `move to ${nextPhaseName}`}
         </span>
       </div>
       <div className={css(styles.control, styles.skipControl)} onClick={handleOnClickAbsent}>
         <FontAwesome name="minus-circle" style={skipIcon} />
         <span className={css(styles.label)}>
-          <u>{'N'}</u>{'ot here – '}{nextMemberName ? `skip to ${nextMemberName}` : `skip to ${nextPhaseName}`}
+          {`${currentMemberName} is `}<u>{'n'}</u>{'ot here – '}{nextMemberName ? `Skip to ${nextMemberName}` : `skip to ${nextPhaseName}`}
         </span>
       </div>
     </div>
@@ -61,6 +62,7 @@ const CheckInControls = (props) => {
 CheckInControls.propTypes = {
   bindHotkey: PropTypes.func.isRequired,
   checkInPressFactory: PropTypes.func.isRequired,
+  currentMemberName: PropTypes.string,
   nextMemberName: PropTypes.string,
   styles: PropTypes.object
 };
@@ -69,13 +71,13 @@ const styleThunk = () => ({
   control: {
     cursor: 'pointer',
     display: 'block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.5'
+    fontSize: appTheme.typography.s3,
+    lineHeight: '1.5',
+    margin: '0 2rem'
   },
 
   nextControl: {
     color: appTheme.brand.secondary.green, // TODO: theme-able?
-    marginBottom: '.5rem'
   },
 
   skipControl: {
@@ -83,9 +85,7 @@ const styleThunk = () => ({
   },
 
   controlBlock: {
-    display: 'inline-block',
-    paddingTop: '1rem',
-    textAlign: 'left'
+    display: 'flex'
   },
 
   label: {

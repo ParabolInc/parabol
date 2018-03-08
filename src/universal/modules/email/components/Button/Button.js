@@ -6,7 +6,7 @@ import ui from 'universal/styles/ui';
 const Button = (props) => {
   const cellStyle = {
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontWeight: 600,
     padding: 0,
     textAlign: 'center'
   };
@@ -17,7 +17,7 @@ const Button = (props) => {
     color: '#FFFFFF',
     display: 'block',
     fontFamily: ui.emailFontFamily,
-    fontWeight: 'bold',
+    fontWeight: 600,
     paddingBottom: `${props.vPadding}px`,
     paddingTop: `${props.vPadding}px`,
     textDecoration: 'none',

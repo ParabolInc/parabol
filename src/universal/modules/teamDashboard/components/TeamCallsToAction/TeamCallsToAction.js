@@ -40,7 +40,7 @@ const TeamCallToAction = ({history, teamId}: Props) => {
     <ButtonGroup>
       <ButtonBlock>
         <Button
-          buttonStyle="solid"
+          buttonStyle="primary"
           colorPalette="warm"
           icon="users"
           iconPlacement="left"
@@ -53,7 +53,7 @@ const TeamCallToAction = ({history, teamId}: Props) => {
       {__RELEASE_FLAGS__.retro &&
         <ButtonBlock>
           <Button
-            buttonStyle="solid"
+            buttonStyle="primary"
             colorPalette="warm"
             icon="users"
             iconPlacement="left"

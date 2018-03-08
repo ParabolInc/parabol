@@ -7,7 +7,7 @@ const Features = (props) => {
   const copyStyle = {
     color: ui.colorText,
     fontSize: `${props.fontSize}px`,
-    fontWeight: 'bold',
+    fontWeight: 600,
     lineHeight: `${props.lineHeight}`,
     paddingBottom: '8px',
     paddingTop: '8px',

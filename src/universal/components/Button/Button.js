@@ -39,6 +39,10 @@ const makeFlatTheme = (buttonStyle, color) => ({
   }
 });
 
+const makePrimaryTheme = () => ({
+  ...ui.buttonStylesPrimary
+});
+
 const makePropColors = (buttonStyle, colorPalette) => {
   const color = ui.palette[colorPalette];
   const baseTextColor = buttonStyle === 'inverted' ? color : ui.palette.white;
@@ -46,6 +50,9 @@ const makePropColors = (buttonStyle, colorPalette) => {
     ui.palette.dark : baseTextColor;
   if (buttonStyle === 'flat' || buttonStyle === 'outlined') {
     return makeFlatTheme(buttonStyle, color);
+  }
+  if (buttonStyle === 'primary') {
+    return makePrimaryTheme();
   }
   return makeSolidTheme(color, textColor, buttonStyle);
 };
@@ -69,10 +76,11 @@ class Button extends Component {
     onMouseLeave: PropTypes.func,
     buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
     buttonStyle: PropTypes.oneOf([
-      'solid',
-      'outlined',
+      'flat',
       'inverted',
-      'flat'
+      'outlined',
+      'primary',
+      'solid'
     ]),
     styles: PropTypes.object,
     textTransform: PropTypes.oneOf([
@@ -218,7 +226,6 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
     base: {
       ...ui.buttonBaseStyles,
       ...buttonSizeStyles,
-      borderRadius: '4em',
       textTransform: textTransform || 'none',
       transition: `box-shadow ${ui.transition[0]}, transform ${ui.transition[0]}`
     },
@@ -271,6 +278,7 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
     },
 
     pressedDown: {
+      boxShadow: ui.shadow[depth - 1],
       transform: 'translate(0, .125rem)'
     },
 

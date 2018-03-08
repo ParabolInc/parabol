@@ -1,33 +1,37 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {Ellipsis, Type} from 'universal/components';
+import {Ellipsis} from 'universal/components';
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles';
 import makeUsername from 'universal/utils/makeUsername';
+import styled from 'react-emotion';
+import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
+
+const CardBlock = styled('div')({
+  ...CreateCardRootStyles,
+  border: 0
+});
+
+const AddingHint = styled('div')({
+  color: ui.hintFontColor,
+  fontSize: ui.cardContentFontSize,
+  textAlign: 'center'
+});
 
 const NullCard = (props) => {
-  const {styles, preferredName} = props;
+  const {preferredName} = props;
   const username = makeUsername(preferredName);
   return (
-    <div className={css(styles.root)}>
-      <Type align="center" bold scale="s3" colorPalette="mid">
-        {'@'}{username}<br />{'is adding a Task'}<Ellipsis />
-      </Type>
-    </div>
+    <CardBlock>
+      <AddingHint align="center" scale="s3" colorPalette="dark">
+        {'@'}{username}{' is adding a Task'}<Ellipsis />
+      </AddingHint>
+    </CardBlock>
   );
 };
 
 NullCard.propTypes = {
-  styles: PropTypes.object,
   preferredName: PropTypes.string
 };
 
-const styleThunk = () => ({
-  root: {
-    ...CreateCardRootStyles,
-    border: 0
-  }
-});
-
-export default withStyles(styleThunk)(NullCard);
+export default NullCard;

@@ -8,10 +8,9 @@
 
 import React from 'react';
 import styled from 'react-emotion';
-import tinycolor from 'tinycolor2';
 
 import PlainButton from 'universal/components/PlainButton/PlainButton';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 // Passes through any additional props to `PlainButton`, which is just a <button>.
 type Props = {
@@ -19,20 +18,9 @@ type Props = {
   waiting: boolean
 };
 
-const {purple} = appTheme.brand.primary;
-const {red, rose} = appTheme.brand.secondary;
-
-const makeGradient = (fromColor: string, toColor: string): string => (
-  `linear-gradient(to right, ${fromColor} 0, ${toColor} 100%)`
-);
-
 const focusedButtonStyles = {
-  backgroundImage: makeGradient(
-    tinycolor(red).darken(3),
-    tinycolor(rose).darken(3)
-  ),
-  boxShadow: `0 0 0 2px ${purple}`,
-  outline: 0
+  backgroundImage: ui.gradientWarmDarkened,
+  boxShadow: ui.shadow[0]
 };
 
 // Respects the "waiting" prop by disabling the button.
@@ -51,26 +39,19 @@ const PrimaryButton = styled(WaitableButton)((props: Props) => {
     cursor = 'pointer';
   }
   return {
-    backgroundImage: makeGradient(red, rose),
-    borderRadius: '100px',
-    fontWeight: 'bold',
-    color: 'white',
+    ...ui.buttonBaseStyles,
+    backgroundImage: ui.gradientWarm,
+    color: ui.palette.white,
     cursor,
-    padding: '0.85rem 1.5rem',
+    padding: '0.75rem 1em',
     ':active': focusedButtonStyles,
     ':focus': focusedButtonStyles,
     ':visited': focusedButtonStyles,
     ':hover': {
-      backgroundImage: makeGradient(
-        tinycolor(red).darken(3),
-        tinycolor(rose).darken(3)
-      )
+      backgroundImage: ui.gradientWarmDarkened
     },
     ':disabled': {
-      backgroundImage: makeGradient(
-        tinycolor(red).desaturate().lighten(),
-        tinycolor(rose).desaturate().lighten()
-      )
+      backgroundImage: ui.gradientWarmLightened
     }
   };
 });

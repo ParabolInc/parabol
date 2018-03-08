@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
+import {LabelHeading, LogoBlock} from 'universal/components';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import {textOverflow} from 'universal/styles/helpers';
 import logoMark from 'universal/styles/theme/images/brand/mark-primary.svg';
@@ -65,7 +67,8 @@ const Sidebar = (props) => {
   );
   const agendaLinkStyles = css(
     styles.navListItemLink,
-    localPhase === (FIRST_CALL || LAST_CALL) && styles.navListItemLinkActive,
+    localPhase === FIRST_CALL && styles.navListItemLinkActive,
+    localPhase === LAST_CALL && styles.navListItemLinkActive,
     // inAgendaGroup(localPhase) && styles.navListItemLinkActive,
     !canNavigateTo(FIRST_CALL) && styles.navListItemLinkDisabled
   );
@@ -80,7 +83,7 @@ const Sidebar = (props) => {
   const checkinLabel = actionMeeting.checkin.name;
   const updatesLabel = actionMeeting.updates.name;
   const agendaitemsLabel = actionMeeting.agendaitems.name;
-  const summaryLabel = actionMeeting.summary.name;
+
   return (
     <div className={css(styles.sidebar)}>
       <div className={css(styles.sidebarHeader)}>
@@ -91,7 +94,10 @@ const Sidebar = (props) => {
         >
           {teamName}
         </Link>
-        <a className={css(styles.shortUrl)} href={relativeLink}>{shortUrl}</a>
+        <CopyShortLink icon="link" label="Meeting Link" url={relativeLink} />
+      </div>
+      <div className={css(styles.agendaLabelBlock)}>
+        <LabelHeading>{'Action Meeting'}</LabelHeading>
       </div>
       <nav className={css(styles.nav)}>
         <ul className={css(styles.navList)}>
@@ -125,21 +131,12 @@ const Sidebar = (props) => {
               <span className={css(styles.navItemLabel)}>{agendaitemsLabel}</span>
             </div>
           </li>
-          {localPhase === SUMMARY &&
-          <li className={css(styles.navListItem, styles.navListItemLinkActive)}>
-            <div
-              className={css(styles.navListItemLink, styles.navListItemLinkActive)}
-              onClick={() => gotoItem(null, SUMMARY)}
-              title={summaryLabel}
-            >
-              <span className={css(styles.navItemBullet)}>{' '}</span>
-              <span className={css(styles.navItemLabel)}>{summaryLabel}</span>
-            </div>
-          </li>
-          }
         </ul>
         {localPhase !== SUMMARY &&
         <div className={css(styles.agendaListBlock)}>
+          <div className={css(styles.agendaLabelBlock)}>
+            <LabelHeading>{'Agenda Topics'}</LabelHeading>
+          </div>
           <AgendaListAndInput
             agendaPhaseItem={agendaPhaseItem}
             canNavigate={agendaListCanNavigate}
@@ -157,9 +154,7 @@ const Sidebar = (props) => {
         </div>
         }
       </nav>
-      <div className={css(styles.brand)}>
-        <img className={css(styles.logo)} src={logoMark} />
-      </div>
+      <LogoBlock theme="primary" />
     </div>
   );
 };
@@ -189,7 +184,7 @@ const styleThunk = () => ({
 
   brand: {
     fontSize: 0,
-    padding: '.75rem',
+    padding: '.75rem 0 1.25rem',
     textAlign: 'center'
   },
 
@@ -210,7 +205,7 @@ const styleThunk = () => ({
   },
 
   navItemBulletPhase: {
-    backgroundColor: appTheme.palette.warm,
+    backgroundImage: ui.gradientWarm
   },
 
   navItemLabel: {
@@ -223,7 +218,6 @@ const styleThunk = () => ({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    margin: '2rem 0 0',
     width: '100%'
   },
 
@@ -285,12 +279,18 @@ const styleThunk = () => ({
     width: '100%'
   },
 
+  agendaLabelBlock: {
+    borderTop: `.0625rem solid ${ui.palette.light}`,
+    margin: '1.25rem 0 0 3.75rem',
+    padding: '1rem 0'
+  },
+
   sidebar: {
     // backgroundColor: appTheme.palette.mid10l,
     backgroundColor: ui.palette.white,
     display: 'flex',
     flexDirection: 'column',
-    padding: '2rem 0 0',
+    padding: '1.25rem 0 0',
     maxWidth: ui.meetingSidebarWidth,
     minWidth: ui.meetingSidebarWidth
   },

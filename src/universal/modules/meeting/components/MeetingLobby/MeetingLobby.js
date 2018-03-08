@@ -46,7 +46,7 @@ const MeetingLobby = (props) => {
         </MeetingCopy>
         <div className={css(styles.buttonBlock)}>
           <Button
-            buttonStyle="solid"
+            buttonStyle="primary"
             colorPalette="warm"
             label="Start Action Meeting"
             onClick={onStartMeetingClick}

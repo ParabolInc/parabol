@@ -52,6 +52,8 @@ const styleThunk = () => ({
 
   hasControls: {
     ...CreateCardRootStyles,
+    backgroundColor: appTheme.palette.mid10a,
+    boxShadow: 'none',
     borderTop: 0,
     paddingLeft: 0,
     paddingRight: 0,
@@ -85,12 +87,12 @@ const styleThunk = () => ({
   },
 
   label: {
-    fontSize: appTheme.typography.s4,
+    fontSize: ui.cardContentFontSize,
     fontWeight: 600
   },
 
   hint: {
-    fontSize: appTheme.typography.s2
+    fontSize: ui.cardContentFontSize
   }
 });
 

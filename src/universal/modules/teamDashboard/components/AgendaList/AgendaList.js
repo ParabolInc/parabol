@@ -106,7 +106,7 @@ class AgendaList extends Component {
     const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting';
     return (<div className={css(styles.emptyBlock)}>
       <div className={css(styles.emptyEmoji)}>
-          🤓
+        🤓
       </div>
       <div className={css(styles.emptyMessage)}>
         {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}<b><i>{'upcoming vacation'}</i></b>{'.”'}
@@ -247,7 +247,7 @@ const styleThunk = () => ({
   emptyEmoji: {
     fontSize: appTheme.typography.s4,
     minWidth: '2rem',
-    paddingLeft: '.75rem'
+    paddingLeft: '1.375rem'
   },
 
   emptyMessage: {
