@@ -3,7 +3,8 @@ import React, {Children, cloneElement, Component} from 'react';
 import {css} from 'react-emotion';
 
 const isValidMenuItem = (menuItem) => {
-  return menuItem && typeof menuItem.type !== 'string' && menuItem.type.name === 'MenuItemWithShortcuts';
+  // since uglifier takes away the type name, you must pass in a notMenuItem boolean to a non-menu-item component
+  return menuItem && typeof menuItem.type !== 'string' && !menuItem.props.notMenuItem;
 };
 
 class MenuWithShortcuts extends Component {
@@ -14,35 +15,23 @@ class MenuWithShortcuts extends Component {
   };
 
   state = {
-    active: null,
-    smartChildren: null
+    active: null
   }
 
   componentWillMount() {
     const {children} = this.props;
-    const smartChildren = this.makeSmartChildren(children);
-    const childArr = Children.toArray(smartChildren);
+    const childArr = Children.toArray(children);
     const startIdx = childArr.findIndex((child) => isValidMenuItem(child));
     this.state.active = startIdx;
-    this.state.smartChildren = smartChildren;
   }
 
   componentDidMount() {
     this.menuRef.focus();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {children} = nextProps;
-    if (children !== this.props.children) {
-      this.setState({
-        smartChildren: this.makeSmartChildren(children)
-      });
-    }
-  }
-
   setActiveIndex = (idx) => {
-    const {active, smartChildren} = this.state;
-    const children = Children.toArray(smartChildren);
+    const {active} = this.state;
+    const children = Children.toArray(this.props.children);
     let nextIdx;
     if (active < idx) {
       for (let ii = idx; ii < children.length; ii++) {
@@ -67,9 +56,8 @@ class MenuWithShortcuts extends Component {
     });
   }
 
-  makeSmartChildren(children) {
+  makeSmartChildren(children, active) {
     const {closePortal} = this.props;
-    const {active} = this.state;
     return Children.map(children, (child, idx) => {
       if (isValidMenuItem(child)) {
         const activate = () => this.setActiveIndex(idx);
@@ -80,7 +68,8 @@ class MenuWithShortcuts extends Component {
   }
 
   handleKeyDown = (e) => {
-    const {active, smartChildren} = this.state;
+    const {active} = this.state;
+    const {children} = this.props;
     const {closePortal} = this.props;
     let handled;
     if (e.key === 'ArrowDown') {
@@ -90,7 +79,7 @@ class MenuWithShortcuts extends Component {
       handled = true;
       this.setActiveIndex(active - 1);
     } else if (e.key === 'Enter') {
-      const smartChild = Children.toArray(smartChildren)[active];
+      const smartChild = Children.toArray(children)[active];
       if (smartChild && smartChild.props.onClick) {
         handled = true;
         smartChild.props.onClick();
@@ -106,8 +95,8 @@ class MenuWithShortcuts extends Component {
   };
 
   render() {
-    const {ariaLabel} = this.props;
-    const {smartChildren} = this.state;
+    const {ariaLabel, children} = this.props;
+    const {active} = this.state;
     return (
       <div
         role="menu"
@@ -117,7 +106,7 @@ class MenuWithShortcuts extends Component {
         ref={(c) => { this.menuRef = c; }}
         className={css({outline: 0})}
       >
-        {smartChildren}
+        {this.makeSmartChildren(children, active)}
       </div>
     );
   }

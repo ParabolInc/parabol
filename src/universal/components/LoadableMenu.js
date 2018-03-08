@@ -10,7 +10,6 @@ import type {ToggledPortalProps} from 'universal/decorators/withToggledPortal';
 import withToggledPortal from 'universal/decorators/withToggledPortal';
 
 const MenuBlock = styled('div')({
-  minWidth: 200,
   padding: '.25rem 0',
   position: 'absolute',
   zIndex: ui.ziMenu
@@ -20,7 +19,6 @@ const MenuContents = styled('div')({
   backgroundColor: ui.menuBackgroundColor,
   borderRadius: ui.menuBorderRadius,
   boxShadow: ui.menuBoxShadow,
-  minHeight: 200,
   outline: 0,
   overflowY: 'auto',
   paddingBottom: ui.menuGutterVertical,
