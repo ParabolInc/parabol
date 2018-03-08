@@ -31,7 +31,7 @@ const ReflectionGroup = ({hoveredHeight, reflections}: Props) => (
       <div
         className={css({
           position: 'absolute',
-          top: `${(index + 1) * (1 / reflections.length)}rem`
+          top: `${(index + 1) / (reflections.length + 1)}rem`
         })}
         key={reflection.id}
       >
