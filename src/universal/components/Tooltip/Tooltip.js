@@ -56,7 +56,7 @@ class Tooltip extends Component {
     maxWidth: PropTypes.number,
     tip: PropTypes.any.isRequired,
     setModalRef: PropTypes.func.isRequired,
-    setOriginCoords: PropTypes.func.isRequired
+    setOriginRef: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -72,14 +72,14 @@ class Tooltip extends Component {
   };
 
   componentDidMount() {
-    this.props.setOriginCoords(this.childRef.getBoundingClientRect());
+    this.props.setOriginRef(this.childRef);
   }
 
   componentWillReceiveProps(nextProps) {
-    const {isOpen, setOriginCoords} = nextProps;
+    const {isOpen, setOriginRef} = nextProps;
     if (this.props.isOpen !== isOpen) {
       if (isOpen) {
-        setOriginCoords(this.childRef.getBoundingClientRect());
+        setOriginRef(this.childRef);
       } else {
         this.setState({
           isClosing: true
@@ -89,14 +89,13 @@ class Tooltip extends Component {
   }
 
   makeSmartChildren() {
-    const {delay, setOriginCoords, children, hideOnFocus} = this.props;
+    const {delay, setOriginRef, children, hideOnFocus} = this.props;
     const child = Children.only(children);
     if (typeof this.props.isOpen === 'boolean') return child;
     return cloneElement(child, {
       onMouseEnter: (e) => {
-        const clientRect = e.target.getBoundingClientRect();
         const handleMouseEnter = () => {
-          setOriginCoords(clientRect);
+          setOriginRef(e.target);
           this.setState({
             inToggle: true,
             isClosing: false,

@@ -3,7 +3,8 @@ import React, {Children, cloneElement, Component} from 'react';
 import {css} from 'react-emotion';
 
 const isValidMenuItem = (menuItem) => {
-  return menuItem && typeof menuItem.type !== 'string' && menuItem.type.name === 'MenuItemWithShortcuts';
+  // since uglifier takes away the type name, you must pass in a notMenuItem boolean to a non-menu-item component
+  return menuItem && typeof menuItem.type !== 'string' && !menuItem.props.notMenuItem;
 };
 
 class MenuWithShortcuts extends Component {

@@ -31,6 +31,7 @@ export default (ComposedComponent) => {
         bottom: PropTypes.number
       }),
       targetAnchor: PropTypes.object,
+      maxHeight: PropTypes.number.isRequired,
       minWidth: PropTypes.number,
       marginFromOrigin: PropTypes.number
     };
@@ -53,7 +54,8 @@ export default (ComposedComponent) => {
         if (!this.originCoords ||
           this.originCoords.top !== originCoords.top ||
           this.originCoords.left !== originCoords.left) {
-          this.setOriginCoords(originCoords);
+          this.originCoords = originCoords;
+          this.updateModalCoords();
         }
       }
     }
@@ -62,10 +64,13 @@ export default (ComposedComponent) => {
       window.removeEventListener('resize', this.resizeWindow, {passive: true});
     }
 
-    setOriginCoords = (originCoords) => {
-      this.originCoords = originCoords;
-      this.updateModalCoords();
-    };
+    setOriginRef = (c) => {
+      if (c) {
+        this.originRef = c;
+        this.updateModalCoords();
+      }
+    }
+
     setModalRef = (c) => {
       if (c) {
         this.modalRef = c;
@@ -75,19 +80,23 @@ export default (ComposedComponent) => {
       }
     };
     updateModalCoords = () => {
-      if (!this.modalRef || !this.originCoords) return;
+      if (!this.modalRef || (!this.originCoords && !this.originRef)) return;
       // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
-      const {originAnchor, targetAnchor, marginFromOrigin = 0} = this.props;
+      const {originAnchor, targetAnchor, marginFromOrigin = 0, maxHeight} = this.props;
       const modalCoords = this.modalRef.getBoundingClientRect();
       const modalWidth = modalCoords.width;
-      const modalHeight = modalCoords.height;
+      // Heuristic: if the modal is larger than 50% of the max size, it's probably loaded
+      const modalHeight = modalCoords.height < 0.5 * maxHeight ? maxHeight : modalCoords.height;
       const nextCoords = {
         left: undefined,
         top: undefined,
         right: undefined,
         bottom: undefined
       };
-
+      // a vertical scroll can bork this originCoords, so use the ref to recalculate
+      if (this.originRef) {
+        this.originCoords = this.originRef.getBoundingClientRect();
+      }
       const originLeftOffset = getOffset(originAnchor.horizontal, this.originCoords.width);
       const {scrollX, scrollY, innerWidth, innerHeight} = window;
       if (targetAnchor.horizontal !== 'right') {
@@ -145,7 +154,7 @@ export default (ComposedComponent) => {
         {...this.props}
         coords={coords}
         setModalRef={this.setModalRef}
-        setOriginCoords={this.setOriginCoords}
+        setOriginRef={this.setOriginRef}
       />);
     }
   }
@@ -161,5 +170,5 @@ export type WithCoordsProps = {
     bottom?: number,
   },
   setModalRef: (component: any) => void,
-  setOriginCoords: ({top: number, left: number, width: number, height: number}) => void
+  setOriginRef: (component: any) => void
 };

@@ -8,7 +8,7 @@ import {OLD_MEETING_AGE} from 'server/utils/serverConstants';
 const endOldMeetings = {
   type: GraphQLInt,
   description: 'close all meetings that started before the given threshold',
-  resolve: async (source, args, {authToken}) => {
+  resolve: async (source, args, {authToken, dataLoader}) => {
     const r = getRethink();
 
     // AUTH
@@ -28,7 +28,7 @@ const endOldMeetings = {
         .pluck('teamId', 'userId')
       ); // join by team leader userId
     const promises = idPairs.map(async ({teamId, userId}) => {
-      await endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}});
+      await endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader});
       sendSegmentEvent('endOldMeeting', userId, {teamId});
     });
     await Promise.all(promises);
