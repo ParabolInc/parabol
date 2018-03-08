@@ -10,6 +10,7 @@ import {ContentState, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled, {css} from 'react-emotion';
 
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import ReflectionCardDropPreview from 'universal/components/ReflectionCardDropPreview/ReflectionCardDropPreview';
 
@@ -21,11 +22,26 @@ type Props = {
   reflections: Array<Reflection>
 };
 
-const ReflectionGroupWrapper = styled('div')({
-  position: 'relative'
+type State = {
+  isExpanded: boolean
+};
+
+const ExpandButton = styled(PlainButton)({
+  height: '100%',
+  width: '100%'
 });
 
-class ReflectionGroup extends Component<Props> {
+const ReflectionGroupWrapper = styled('div')({
+  position: 'relative',
+  height: '100%',
+  width: '100%'
+});
+
+class ReflectionGroup extends Component<Props, State> {
+  state = {
+    isExpanded: false
+  };
+
   getVisibleReflections = () => (
     this.props.reflections.slice(
       0,
@@ -33,13 +49,21 @@ class ReflectionGroup extends Component<Props> {
     )
   );
 
+  collapse = () => {
+    this.setState({isExpanded: false});
+  };
+
+  expand = () => {
+    this.setState({isExpanded: true});
+  };
+
   isHovering = (): boolean => (
     Boolean(this.props.hoveredHeight)
   );
 
   maybeRenderDropPlaceholder = () => {
     const {hoveredHeight} = this.props;
-    if (!this.isHovering) {
+    if (!this.isHovering()) {
       return null;
     }
     const visibleReflections = this.getVisibleReflections();
@@ -54,7 +78,13 @@ class ReflectionGroup extends Component<Props> {
     );
   };
 
-  renderReflection = (reflection: Reflection, index: number) => {
+  renderCollapsed = () => (
+    <ExpandButton onClick={this.expand}>
+      {this.getVisibleReflections().map(this.renderCollapsedReflection)}
+    </ExpandButton>
+  );
+
+  renderCollapsedReflection = (reflection: Reflection, index: number) => {
     const visibleReflections = this.getVisibleReflections();
     const isHovering = this.isHovering();
     const styles = {
@@ -74,11 +104,26 @@ class ReflectionGroup extends Component<Props> {
     );
   };
 
+  renderExpanded = () => (
+    <div>
+      {this.props.reflections.map((reflection) => (
+        <div className={css({marginBottom: 8})} key={reflection.id}>
+          <ReflectionCard
+            contentState={reflection.content}
+            id={reflection.id}
+            stage={reflection.stage}
+          />
+        </div>
+      ))}
+    </div>
+  );
+
   render() {
+    const {isExpanded} = this.state;
     return (
       <ReflectionGroupWrapper>
         {this.maybeRenderDropPlaceholder()}
-        {this.getVisibleReflections().map(this.renderReflection)}
+        {isExpanded ? this.renderExpanded() : this.renderCollapsed()}
       </ReflectionGroupWrapper>
     );
   }

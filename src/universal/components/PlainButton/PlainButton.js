@@ -15,7 +15,8 @@ const PlainButton = styled('button')({
   ':focus': {
     outline: 0,
     boxShadow: `0 0 1px 1px ${appTheme.palette.mid}`
-  }
+  },
+  textAlign: 'inherit'
 });
 
 export default PlainButton;
