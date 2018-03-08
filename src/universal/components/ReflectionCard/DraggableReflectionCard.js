@@ -57,9 +57,6 @@ class DraggableReflectionCard extends Component<Props> {
     };
     connectDragPreview(getEmptyImage());
     const connect = compose(connectDragSource, connectDropTarget);
-    if (item) {
-      console.log('item height:', item.height);
-    }
     return connect(
       isOver && canDrop ? (
         <div style={{display: 'inline-block'}}>

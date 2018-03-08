@@ -37,7 +37,7 @@ const ReflectionGroup = ({hoveredHeight, reflections}: Props) => (
       >
         <ReflectionCard
           contentState={reflection.content}
-          hovered
+          hovered={Boolean(hoveredHeight)}
           id={reflection.id}
           stage={reflection.stage}
         />

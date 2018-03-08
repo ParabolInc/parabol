@@ -3,7 +3,7 @@
  *
  * @flow
  */
-import type {Reflection, ReflectionID} from 'universal/types/retro';
+import type {Reflection, ReflectionID, ReflectionGroup as ReflectionGroupT} from 'universal/types/retro';
 
 // $FlowFixMe
 import {ContentState} from 'draft-js';
@@ -13,57 +13,73 @@ import {storiesOf} from '@storybook/react';
 
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
 import ReflectionGroupingDragLayer from 'universal/components/ReflectionGroupingDragLayer/ReflectionGroupingDragLayer';
+import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
+import count from 'universal/utils/count';
 
 import Grid from './components/Grid';
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
 
 type DragAndDropStoryState = {
-  card1: boolean,
-  card2: boolean
+  dragging: {[ReflectionID]: boolean},
+  reflections: Array<Reflection>,
+  groups: Array<ReflectionGroupT>
 };
 
 class DragAndDropStory extends Component<*, DragAndDropStoryState> {
   state = {
-    card1: false,
-    card2: false
-  };
-
-  getReflectionById = (id: ReflectionID): Reflection => {
-    return this.cards[id];
-  };
-
-  cards = {
-    card1: {
-      id: 'card1',
-      content: ContentState.createFromText('My pithy reflection is to be heard')
+    dragging: {
+      card1: false,
+      card2: false
     },
-    card2: {
-      id: 'card2',
-      content: ContentState.createFromText('No, MY reflection shall be heard loudest!!!')
-    }
+    groups: [],
+    reflections: [
+      {
+        id: 'card1',
+        content: ContentState.createFromText('My pithy reflection is to be heard'),
+        stage: null
+      },
+      {
+        id: 'card2',
+        content: ContentState.createFromText('No, MY reflection shall be heard loudest!!!'),
+        stage: null
+      }
+    ]
   };
 
-  handleCancelDrag = (cardId: 'card1' | 'card2') => {
-    this.setState({[cardId]: false});
+  getReflectionById = (id: ReflectionID): ?Reflection => {
+    return this.state.reflections.find((reflection) => reflection.id === id);
+  };
+
+  ids = count();
+
+  handleCancelDrag = (cardId: ReflectionID) => {
+    this.setState({dragging: {[cardId]: false}});
     action('cancel-drag')(cardId);
   };
 
-  handleBeginDrag = (cardId: 'card1' | 'card2') => {
-    this.setState({[cardId]: true});
+  handleBeginDrag = (cardId: ReflectionID) => {
+    this.setState({dragging: {[cardId]: true}});
     action('begin-drag')(cardId);
   };
 
-  handleDrop = (draggedId: 'card1' | 'card2', droppedId: 'card1' | 'card2') => {
-    this.setState({[draggedId]: false});
+  handleDrop = (draggedId: ReflectionID, droppedId: ReflectionID) => {
+    this.setState((state: DragAndDropStoryState) => {
+      const newGroup = {
+        id: `reflection${this.ids.next().value}`,
+        name: '',
+        reflections: [this.getReflectionById(droppedId), this.getReflectionById(draggedId)].filter(Boolean)
+      };
+      return {
+        dragging: {[draggedId]: false},
+        reflections: state.reflections.filter((reflection) => !([draggedId, droppedId]).includes(reflection.id)),
+        groups: [...state.groups, newGroup]
+      };
+    });
     action('drop')(draggedId, droppedId);
   };
 
   render() {
-    const card1 = this.cards.card1;
-    const card2 = this.cards.card2;
-    const card1DragState = this.state.card1;
-    const card2DragState = this.state.card2;
     return (
       <RetroBackground>
         <StoryContainer
@@ -71,24 +87,24 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
           render={() => (
             <div>
               <Grid>
-                <DraggableReflectionCard
-                  handleCancelDrag={this.handleCancelDrag}
-                  handleBeginDrag={this.handleBeginDrag}
-                  handleDrop={this.handleDrop}
-                  id={card1.id}
-                  iAmDragging={card1DragState}
-                  contentState={card1.content}
-                  userDragging={card1DragState && 'Dan'}
-                />
-                <DraggableReflectionCard
-                  handleCancelDrag={this.handleCancelDrag}
-                  handleBeginDrag={this.handleBeginDrag}
-                  handleDrop={this.handleDrop}
-                  iAmDragging={card2DragState}
-                  id={card2.id}
-                  contentState={card2.content}
-                  userDragging={card2DragState && 'Dan'}
-                />
+                {this.state.reflections.map((reflection) => (
+                  <DraggableReflectionCard
+                    contentState={reflection.content}
+                    handleCancelDrag={this.handleCancelDrag}
+                    handleBeginDrag={this.handleBeginDrag}
+                    handleDrop={this.handleDrop}
+                    id={reflection.id}
+                    iAmDragging={this.state.dragging[reflection.id]}
+                    key={reflection.id}
+                    userDragging={this.state.dragging[reflection.id] && 'Dan'}
+                  />
+                ))}
+                {this.state.groups.map((group) => (
+                  <ReflectionGroup
+                    reflections={group.reflections}
+                    key={group.id}
+                  />
+                ))}
               </Grid>
               <ReflectionGroupingDragLayer getReflectionById={this.getReflectionById} />
             </div>
