@@ -24,7 +24,7 @@ type ItemType =
 type Point = { x: number, y: number };
 
 type DnDProps = {|
-  currentOffset: Point,
+  currentOffset: ?Point,
   isDragging: boolean,
   item: Item,
   itemType: ItemType,
@@ -47,6 +47,9 @@ const DragLayerWrapper = styled('div')({
 
 class ReflectionGroupingDragLayer extends Component<Props> {
   absolutelyPosition = (element: Element<*>) => {
+    if (!this.props.currentOffset) {
+      return null;
+    }
     const {x, y} = this.props.currentOffset;
     const positionedStyles = css({
       transform: `translate3d(${x}px, ${y}px, 0px)`
