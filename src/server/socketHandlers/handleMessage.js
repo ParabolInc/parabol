@@ -46,8 +46,10 @@ const handleMessage = (connectionContext) => async (message) => {
       wsRelaySubscribeHandler(connectionContext, parsedMessage);
     } else {
       const result = await wsGraphQLHandler(connectionContext, parsedMessage);
-      const resultType = result.errors ? GQL_ERROR : GQL_DATA;
-      sendMessage(socket, resultType, result, opId);
+      // TODO Until we rewrite the client (because Apollo is wrong) don't send errors
+      // Even if the data is 99% good, the Apollo client nulls out the data, which brings blank screens and sads.
+      // const resultType = result.errors ? GQL_ERROR : GQL_DATA;
+      sendMessage(socket, GQL_DATA, result, opId);
     }
   } else if (type === GQL_STOP) {
     relayUnsubscribe(subs, opId);

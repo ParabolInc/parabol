@@ -11,10 +11,7 @@ export default (sharedDataLoader) => async (req, res) => {
   const result = await graphql(Schema, query, {}, context, variables);
   dataLoader.dispose();
   if (result.errors) {
-    console.log('DEBUG GraphQL Error:', result.errors);
-  }
-  if (Array.isArray(result.errors)) {
-    result.errors = result.errors.map((err) => ({message: err.message}));
+    console.log('DEBUG GraphQL Error HTTP:', result.errors);
   }
   res.send(result);
 };
