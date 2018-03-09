@@ -30,6 +30,9 @@ export type Props = {|
   iAmDragging?: boolean,
   // The unique ID of this reflection card
   id: string,
+  // Whether we're "collapsed" e.g. in a stack of cards.  This allows us to truncate to a constant height,
+  // Simplifying style computations.
+  isCollapsed?: boolean,
   // Provided by react-dnd
   isDragging?: boolean,
   // States whether it serves as a drag preview.
@@ -63,12 +66,6 @@ const BottomBar = styled('div')({
 const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperProps) => ({
   opacity: ((iAmDragging && !pulled)) && 0.6
 }));
-
-const ReflectionCardMain = styled('div')({
-  maxHeight: '10rem',
-  overflow: 'auto',
-  padding: '0.8rem'
-});
 
 const getDisplayName = (stage: ?Stage): string => {
   switch (stage) {
@@ -134,8 +131,8 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   maybeRenderStage = () => {
-    const {stage} = this.props;
-    return stage && <BottomBar>{getDisplayName(this.props.stage)}</BottomBar>;
+    const {isCollapsed, stage} = this.props;
+    return !isCollapsed && stage && <BottomBar>{getDisplayName(this.props.stage)}</BottomBar>;
   };
 
   maybeRenderUserDragging = () => {
@@ -160,19 +157,31 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   renderCardContent = () => {
-    const {handleSave} = this.props;
+    const {handleSave, isCollapsed} = this.props;
     const {editorState} = this.state;
-    return handleSave ? (
-      <EditorInputWrapper
-        ariaLabel="Edit this reflection"
-        editorState={editorState}
-        handleReturn={() => 'not-handled'}
-        onBlur={handleSave && (() => handleSave(editorState))}
-        placeholder="My reflection thought..."
-        setEditorState={this.setEditorState}
-      />
-    ) : (
-      <div>{editorState.getCurrentContent().getPlainText()}</div>
+    const styles: Object = {
+      maxHeight: '10rem',
+      overflow: 'auto',
+      padding: '0.8rem'
+    };
+    if (isCollapsed) {
+      styles.height = '3rem';
+    }
+    return (
+      <div className={css(styles)}>
+        {handleSave ? (
+          <EditorInputWrapper
+            ariaLabel="Edit this reflection"
+            editorState={editorState}
+            handleReturn={() => 'not-handled'}
+            onBlur={handleSave && (() => handleSave(editorState))}
+            placeholder="My reflection thought..."
+            setEditorState={this.setEditorState}
+          />
+        ) : (
+          <div>{editorState.getCurrentContent().getPlainText()}</div>
+        )}
+      </div>
     );
   };
 
@@ -189,9 +198,7 @@ export default class ReflectionCard extends Component<Props, State> {
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
         >
-          <ReflectionCardMain>
-            {this.renderCardContent()}
-          </ReflectionCardMain>
+          {this.renderCardContent()}
           {this.maybeRenderStage()}
           {this.maybeRenderDelete()}
         </ReflectionCardWrapper>

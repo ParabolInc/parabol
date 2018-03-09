@@ -8,6 +8,7 @@ import React from 'react';
 import {css} from 'react-emotion';
 
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 import without from 'universal/utils/without';
 
 type Props = {
@@ -31,7 +32,7 @@ const ReflectionCardWrapper = (props: Props) => {
     color: appTheme.palette.dark,
     minHeight: '1rem',
     position: 'relative',
-    width: '20rem'
+    width: ui.retroCardWidth
   };
 
   return props.holdingPlace ? (

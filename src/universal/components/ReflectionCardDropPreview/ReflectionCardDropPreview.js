@@ -6,6 +6,7 @@
 import styled from 'react-emotion';
 
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 type Props = {
   // Height of this drop shadow - should be computed from the height of the
@@ -17,7 +18,7 @@ const ReflectionCardDropPreview = styled('div')(({height}: Props) => ({
   backgroundColor: appTheme.palette.light90g,
   borderRadius: 3,
   height,
-  width: '20rem'
+  width: ui.retroCardWidth
 }));
 
 export default ReflectionCardDropPreview;

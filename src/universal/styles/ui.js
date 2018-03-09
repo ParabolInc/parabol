@@ -628,7 +628,11 @@ const ui = {
   ziMenu: zIndexScale(4),
   ziCardDragLayer: zIndexScale(6),
   ziRejoinFacilitatorButton: zIndexScale(4),
-  ziTooltip: zIndexScale(4)
+  ziTooltip: zIndexScale(4),
+
+  // Retro cards
+  // ---------------------------------------------------------------------------
+  retroCardWidth: '20rem' // width for reflection cards and reflection groups
 };
 
 export default ui;

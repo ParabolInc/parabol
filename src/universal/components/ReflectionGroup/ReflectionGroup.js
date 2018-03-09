@@ -8,7 +8,7 @@ import type {Reflection} from 'universal/types/retro';
 // $FlowFixMe
 import {ContentState, EditorState} from 'draft-js';
 import React, {Component} from 'react';
-import styled, {css} from 'react-emotion';
+import {css} from 'react-emotion';
 
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
@@ -29,22 +29,6 @@ type State = {
   editorState: EditorState,
   isExpanded: boolean
 };
-
-const ExpandButton = styled(PlainButton)({
-  height: '100%',
-  width: '100%'
-});
-
-const ReflectionGroupWrapper = styled('div')({
-  height: '100%',
-  width: '100%'
-});
-
-const ReflectionGroupCollapsedWrapper = styled('div')({
-  position: 'relative',
-  height: '100%',
-  width: '100%'
-});
 
 class ReflectionGroup extends Component<Props, State> {
   constructor(props: Props) {
@@ -92,7 +76,6 @@ class ReflectionGroup extends Component<Props, State> {
     }
     const visibleReflections = this.getVisibleReflections();
     const styles = {
-      position: 'absolute',
       transform: `scale(${1 - (0.05 * (visibleReflections.length))})`
     };
     return (
@@ -115,20 +98,18 @@ class ReflectionGroup extends Component<Props, State> {
   };
 
   renderCollapsed = () => (
-    <ReflectionGroupCollapsedWrapper>
-      <ExpandButton aria-label="Expand this reflection group" onClick={this.expand}>
-        {this.getVisibleReflections().map(this.renderCollapsedReflection)}
-      </ExpandButton>
-    </ReflectionGroupCollapsedWrapper>
+    <PlainButton aria-label="Expand this reflection group" onClick={this.expand}>
+      {this.getVisibleReflections().map(this.renderCollapsedReflection)}
+    </PlainButton>
   );
 
   renderCollapsedReflection = (reflection: Reflection, index: number) => {
     const visibleReflections = this.getVisibleReflections();
     const isHovering = this.isHovering();
     const styles = {
-      position: 'absolute',
-      transform: `scale(${1 - (0.05 * (visibleReflections.length - index - 1))})`,
-      top: `${((index + (isHovering ? 1 : 0)) / (visibleReflections.length + (isHovering ? 1 : 0))) * 1.5}rem`
+      transform:
+        `translateY(${(isHovering ? index + 1 : index) * -80}%) ` +
+        `scale(${1 - (0.05 * (visibleReflections.length - index - 1))})`
     };
     return (
       <div className={css(styles)} key={reflection.id}>
@@ -136,6 +117,7 @@ class ReflectionGroup extends Component<Props, State> {
           contentState={reflection.content}
           hovered={isHovering}
           id={reflection.id}
+          isCollapsed
           stage={reflection.stage}
         />
       </div>
@@ -159,11 +141,11 @@ class ReflectionGroup extends Component<Props, State> {
   render() {
     const {isExpanded} = this.state;
     return (
-      <ReflectionGroupWrapper>
+      <div>
         {this.maybeRenderTitleEditor()}
         {this.maybeRenderDropPlaceholder()}
         {isExpanded ? this.renderExpanded() : this.renderCollapsed()}
-      </ReflectionGroupWrapper>
+      </div>
     );
   }
 }
