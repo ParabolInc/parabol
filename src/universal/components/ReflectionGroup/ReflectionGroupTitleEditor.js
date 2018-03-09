@@ -3,34 +3,51 @@
  *
  * @flow
  */
-// $FlowFixMe
-import {EditorState} from 'draft-js';
 import React from 'react';
-import styled from 'react-emotion';
+import {css} from 'react-emotion';
+import {Field, reduxForm} from 'redux-form';
 
-import EditorInputWrapper from 'universal/components/EditorInputWrapper';
+import InputField from 'universal/components/InputField/InputField';
+import shouldValidate from 'universal/validation/shouldValidate';
 
-type Props = {
-  editorState: EditorState,
-  handleSave: (editorState: EditorState) => any,
-  setEditorState: (editorState: EditorState) => any
+type formValues = {
+  title: ?string
 };
 
-const ReflectionGroupNameEditorWrapper = styled('div')({
-  height: '1rem',
-  marginBottom: 8
-});
+type Props = {
+  form: string,
+  handleSubmit: (formValues) => any,
+  onSubmit:(formValues) => any,
+  title: ?string
+};
 
-const ReflectionGroupNameEditor = ({editorState, handleSave, setEditorState}: Props) => (
-  <ReflectionGroupNameEditorWrapper>
-    <EditorInputWrapper
-      ariaLabel="Edit this reflection group title"
-      editorState={editorState}
-      onBlur={handleSave && (() => handleSave(editorState))}
-      placeholder="Theme..."
-      setEditorState={setEditorState}
+const TITLE_FIELD_NAME = 'title';
+
+const ReflectionGroupTitleEditor = ({handleSubmit, title}: Props) => (
+  <form onSubmit={handleSubmit}>
+    <Field
+      className={css({backgroundColor: 'inherit'})}
+      component={InputField}
+      fieldSize="small"
+      name={TITLE_FIELD_NAME}
+      placeholder="This group's theme..."
+      type="text"
+      underline
+      value={title}
     />
-  </ReflectionGroupNameEditorWrapper>
+  </form>
 );
 
-export default ReflectionGroupNameEditor;
+const validate = (values: formValues) => {
+  const errors: Object = {};
+  const cleanedTitle = (values[TITLE_FIELD_NAME] || '').trim();
+  if (!cleanedTitle) {
+    errors[TITLE_FIELD_NAME] = '(Enter a title!)';
+  }
+  return errors;
+};
+
+export default reduxForm({
+  shouldValidate,
+  validate
+})(ReflectionGroupTitleEditor);

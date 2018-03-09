@@ -101,6 +101,8 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
                 ))}
                 {this.state.groups.map((group) => (
                   <ReflectionGroup
+                    id={group.id}
+                    handleSaveTitle={action('save-title')}
                     reflections={group.reflections}
                     key={group.id}
                   />

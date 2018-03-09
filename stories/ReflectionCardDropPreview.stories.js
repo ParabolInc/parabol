@@ -15,14 +15,13 @@ import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
 
 storiesOf('Reflection Card Drop Preview', module)
-  .add('with a height', () => (
+  .add('has a constant height', () => (
     <RetroBackground>
       <StoryContainer
         description="Shows where a reflection card will drop"
         render={() => (
           <Grid>
-            <ReflectionCardDropPreview height="2rem" />
-            <ReflectionCardDropPreview height="200px" />
+            <ReflectionCardDropPreview />
           </Grid>
         )}
       />

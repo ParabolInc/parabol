@@ -22,29 +22,36 @@ storiesOf('Reflection Group', module)
   .add('with a few cards', () => (
     <RetroBackground>
       <StoryContainer
-        description="Note: we only render the top five cards in the collapsed state"
+        description="Note: we only render the top four cards in the collapsed state"
         render={() => (
           <Grid>
             <ReflectionGroup
               handleSaveTitle={action('save-title')}
+              id={newId()}
               reflections={[
                 {id: newId(), content: ContentState.createFromText('This is the bottom card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('This is the top card'), stage: null}
               ]}
-              title={ContentState.createFromText('')}
+              title={''}
             />
             <ReflectionGroup
               handleSaveTitle={action('save-title')}
+              id={newId()}
               reflections={[
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('This one has a lot to say! Fortunately it does not screw up the translation computation.'), stage: null},
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('This one has a lot to say! Fortunately it does not screw up the translation computation.'),
+                  stage: null
+                },
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}
               ]}
-              title={ContentState.createFromText('')}
+              title={''}
             />
             <ReflectionGroup
               handleSaveTitle={action('save-title')}
+              id={newId()}
               reflections={[
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
@@ -56,7 +63,7 @@ storiesOf('Reflection Group', module)
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}
               ]}
-              title={ContentState.createFromText('')}
+              title={''}
             />
           </Grid>
         )}
@@ -71,12 +78,13 @@ storiesOf('Reflection Group', module)
           <Grid>
             <ReflectionGroup
               handleSaveTitle={action('save-title')}
+              id={newId()}
               hoveredHeight={40}
               reflections={[
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}
               ]}
-              title={ContentState.createFromText('')}
+              title={''}
             />
           </Grid>
         )}

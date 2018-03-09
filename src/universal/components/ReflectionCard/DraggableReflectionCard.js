@@ -8,9 +8,9 @@ import type {Props as ReflectionCardProps} from './ReflectionCard';
 import type {ReflectionID} from 'universal/types/retro';
 
 import React, {Component} from 'react';
-import {findDOMNode} from 'react-dom';
 import {DragSource, DropTarget} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
+import shortId from 'shortid';
 
 import compose from 'universal/utils/compose';
 import {REFLECTION_CARD} from 'universal/utils/constants';
@@ -19,9 +19,10 @@ import without from 'universal/utils/without';
 import ReflectionCard from './ReflectionCard';
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
 
+const newId = () => shortId.generate();
+
 type DragItem = {
-  id: ReflectionID,
-  height: number
+  id: ReflectionID
 };
 
 type Props = {
@@ -34,8 +35,7 @@ type Props = {
   handleBeginDrag: (draggedCardId: ReflectionID) => any,
   handleDrop: (draggedCardId: ReflectionID, droppedCardId: ReflectionID) => any,
   isDragging: boolean,
-  isOver: boolean,
-  item: ?DragItem
+  isOver: boolean
 };
 
 class DraggableReflectionCard extends Component<Props> {
@@ -48,7 +48,6 @@ class DraggableReflectionCard extends Component<Props> {
       contentState,
       id,
       isOver,
-      item,
       stage
     } = this.props;
     const reflectionCardProps = {
@@ -61,10 +60,11 @@ class DraggableReflectionCard extends Component<Props> {
       isOver && canDrop ? (
         <div style={{display: 'inline-block'}}>
           <ReflectionGroup
+            id={newId()}
             reflections={[
               {id, content: contentState, stage}
             ]}
-            hoveredHeight={item ? item.height : 0}
+            hovered
           />
         </div>
       ) : (
@@ -77,12 +77,10 @@ class DraggableReflectionCard extends Component<Props> {
 }
 
 const dragSpec = {
-  beginDrag(props: Props, monitor, component): DragItem {
+  beginDrag(props: Props): DragItem {
     const {handleBeginDrag, id} = props;
-    const domNode = findDOMNode(component); // eslint-disable-line react/no-find-dom-node
-    const height = domNode instanceof Element ? domNode.clientHeight : 0;
     handleBeginDrag(id);
-    return {id, height};
+    return {id};
   },
 
   endDrag(props: Props, monitor) {
