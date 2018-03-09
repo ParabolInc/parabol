@@ -10,8 +10,10 @@ import makeAppLink from 'server/utils/makeAppLink';
 /**
  * Takes a JWT auth token payload, modifies the `tms` (teams) field with the
  * provided value, and returns a signed JWT with the updated field.
+ * The whole token is required to ensure things like rol transfer over
  */
-const makeAuthTokenObj = (sub, tms) => {
+const makeAuthTokenObj = (tokenProps = {}) => {
+  const {sub, tms} = tokenProps;
   if (!sub || !tms) {
     throw new Error('Must provide valid auth token with `sub` or `tms`');
   }
@@ -21,12 +23,11 @@ const makeAuthTokenObj = (sub, tms) => {
   const exp = toEpochSeconds(now + JWT_LIFESPAN);
   const iat = toEpochSeconds(now);
   return {
-    sub,
+    ...tokenProps,
     aud: clientId,
     iss: makeAppLink(),
     exp,
-    iat,
-    tms
+    iat
   };
 };
 
