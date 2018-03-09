@@ -6,14 +6,20 @@
 import type {Reflection, ReflectionGroupID} from 'universal/types/retro';
 
 // $FlowFixMe
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {css} from 'react-emotion';
+import {CSSTransition} from 'react-transition-group';
 
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import ReflectionCardDropPreview from 'universal/components/ReflectionCardDropPreview/ReflectionCardDropPreview';
 
 import ReflectionGroupTitleEditor from './ReflectionGroupTitleEditor';
+
+const animationTimeout = {
+  enter: 200,
+  exit: 200
+};
 
 type Props = {
   handleSaveTitle?: (string) => any,
@@ -35,6 +41,11 @@ class ReflectionGroup extends Component<Props, State> {
       isExpanded: false
     };
   }
+
+  getAnimatedCardsStyles = (extraStyles: ?Object) => ({
+    transition: `transform ${animationTimeout.enter / 1000}s ease`,
+    ...extraStyles
+  });
 
   getVisibleReflections = () => (
     this.props.reflections.slice(
@@ -79,19 +90,19 @@ class ReflectionGroup extends Component<Props, State> {
   };
 
   renderCollapsed = () => (
-    <PlainButton aria-label="Expand this reflection group" onClick={this.expand}>
+    <Fragment>
       {this.getVisibleReflections().map(this.renderCollapsedReflection)}
-    </PlainButton>
+    </Fragment>
   );
 
   renderCollapsedReflection = (reflection: Reflection, index: number) => {
     const {hovered} = this.props;
     const visibleReflections = this.getVisibleReflections();
-    const styles = {
+    const styles = this.getAnimatedCardsStyles({
       transform:
         `translateY(${(hovered ? index + 1 : index) * -80}%) ` +
         `scale(${1 - (0.05 * (visibleReflections.length - index - 1))})`
-    };
+    });
     return (
       <div className={css(styles)} key={reflection.id}>
         <ReflectionCard
@@ -106,9 +117,9 @@ class ReflectionGroup extends Component<Props, State> {
   };
 
   renderExpanded = () => (
-    <PlainButton aria-label="Collapse this reflection group" onClick={this.collapse}>
+    <Fragment>
       {this.props.reflections.map((reflection) => (
-        <div className={css({marginBottom: 8})} key={reflection.id}>
+        <div className={css(this.getAnimatedCardsStyles({marginBottom: 8}))} key={reflection.id}>
           <ReflectionCard
             contentState={reflection.content}
             id={reflection.id}
@@ -116,7 +127,7 @@ class ReflectionGroup extends Component<Props, State> {
           />
         </div>
       ))}
-    </PlainButton>
+    </Fragment>
   );
 
   render() {
@@ -125,7 +136,14 @@ class ReflectionGroup extends Component<Props, State> {
       <div>
         {this.maybeRenderHeader()}
         {this.maybeRenderDropPlaceholder()}
-        {isExpanded ? this.renderExpanded() : this.renderCollapsed()}
+        <PlainButton
+          aria-label={isExpanded ? 'Collapse this reflection group' : 'Expand this reflection group'}
+          onClick={isExpanded ? this.collapse : this.expand}
+        >
+          <CSSTransition name="reflection-group-accordion" timeout={animationTimeout}>
+            {isExpanded ? this.renderExpanded() : this.renderCollapsed()}
+          </CSSTransition>
+        </PlainButton>
       </div>
     );
   }
