@@ -17,14 +17,14 @@ const sendErrorToSentry = (authToken, key, keys, indexedResults) => {
   const error = new Error('Dataloader key not found');
   const breadcrumb = {
     message: 'Dataloader key not found',
-    category: 'graphql',
+    category: 'dataloader',
     data: {
       key,
       keys,
       indexedResults
     }
-  }
-  sendSentryEvent(error, authToken, breadcrumb)
+  };
+  sendSentryEvent(error, authToken, breadcrumb);
 };
 
 const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (results, authToken) => {

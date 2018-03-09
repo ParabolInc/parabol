@@ -13,13 +13,13 @@ const sendSegmentEvent = async (event, authToken, breadcrumb) => {
   }
   Raven.context(() => {
     if (user) {
-      Raven.setContext({user})
+      Raven.setContext({user});
     }
     if (breadcrumb) {
       Raven.captureBreadcrumb(breadcrumb);
     }
     Raven.captureException(event);
-  })
+  });
 };
 
 export default sendSegmentEvent;
