@@ -106,7 +106,7 @@ class ReflectionGroup extends Component<Props, State> {
   };
 
   renderExpanded = () => (
-    <div>
+    <PlainButton aria-label="Collapse this reflection group" onClick={this.collapse}>
       {this.props.reflections.map((reflection) => (
         <div className={css({marginBottom: 8})} key={reflection.id}>
           <ReflectionCard
@@ -116,7 +116,7 @@ class ReflectionGroup extends Component<Props, State> {
           />
         </div>
       ))}
-    </div>
+    </PlainButton>
   );
 
   render() {
