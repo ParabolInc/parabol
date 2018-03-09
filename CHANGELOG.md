@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.31.0 2018-Mar-07
+## v1.0.0 2018-Mar-07
 ## Added
 - Client-side filtering behind the localFilter release flag
 - A complete style makeover!
