@@ -77,7 +77,7 @@ const styleThunk = () => ({
   },
 
   nextControl: {
-    color: appTheme.brand.secondary.green, // TODO: theme-able?
+    color: appTheme.brand.secondary.green // TODO: theme-able?
   },
 
   skipControl: {

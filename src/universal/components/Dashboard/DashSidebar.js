@@ -10,7 +10,6 @@ import DashNavList from 'universal/components/DashNavList/DashNavList';
 import StandardHub from 'universal/components/StandardHub/StandardHub';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import appTheme from 'universal/styles/theme/appTheme';
-import logoMark from 'universal/styles/theme/images/brand/mark-white.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import DashNavItem from './DashNavItem';
@@ -55,7 +54,7 @@ const DashSidebar = (props) => {
           </div>
         </nav>
       </div>
-      <LogoBlock theme="white" />
+      <LogoBlock variant="white" />
     </div>
   );
 };
@@ -171,17 +170,6 @@ const styleThunk = () => ({
   addTeamLabel: {
     fontSize: ui.navMenuFontSize,
     lineHeight: ui.navMenuLineHeight
-  },
-
-  brand: {
-    fontSize: 0,
-    padding: '.75rem 0 1.25rem',
-    textAlign: 'center'
-  },
-
-  logo: {
-    display: 'inline-block',
-    verticalAlign: 'top'
   }
 });
 

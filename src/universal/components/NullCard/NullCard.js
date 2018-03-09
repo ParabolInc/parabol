@@ -5,7 +5,6 @@ import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles';
 import makeUsername from 'universal/utils/makeUsername';
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 
 const CardBlock = styled('div')({
   ...CreateCardRootStyles,

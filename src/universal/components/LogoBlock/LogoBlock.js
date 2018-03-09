@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
-import React from 'react';;
+import React from 'react';
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import logoMarkPrimary from 'universal/styles/theme/images/brand/mark-primary.svg';
 import logoMarkWhite from 'universal/styles/theme/images/brand/mark-white.svg';
 
-const Block = styled('div')(({theme}) => ({
+const Block = styled('div')(({variant}) => ({
   alignItems: 'center',
-  borderTop: theme === 'primary' && `.0625rem solid ${appTheme.palette.mid10a}`,
+  borderTop: variant === 'primary' && `.0625rem solid ${appTheme.palette.mid10a}`,
   boxSizing: 'content-box',
   display: 'flex',
   height: ui.meetingControlBarHeight,
@@ -25,8 +25,8 @@ const Image = styled('img')({
 });
 
 const LogoBlock = (props) => {
-  const {theme} = props;
-  const logoSrc = theme === 'primary' ? logoMarkPrimary : logoMarkWhite;
+  const {variant} = props;
+  const logoSrc = variant === 'primary' ? logoMarkPrimary : logoMarkWhite;
   return (
     <Block>
       <Anchor href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
@@ -37,7 +37,7 @@ const LogoBlock = (props) => {
 };
 
 LogoBlock.propTypes = {
-  theme: PropTypes.oneOf([
+  variant: PropTypes.oneOf([
     'primary',
     'white'
   ])

@@ -349,6 +349,7 @@ class MeetingContainer extends Component {
             gotoNext={this.gotoNext}
             hideMoveMeetingControls={hideMoveMeetingControls}
             localPhaseItem={localPhaseItem}
+            showMoveMeetingControls={showMoveMeetingControls}
             viewer={viewer}
           />
           }

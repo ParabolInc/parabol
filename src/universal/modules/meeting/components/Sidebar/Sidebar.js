@@ -8,13 +8,10 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
-import {textOverflow} from 'universal/styles/helpers';
-import logoMark from 'universal/styles/theme/images/brand/mark-primary.svg';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, phaseArray, SUMMARY, UPDATES, LAST_CALL} from 'universal/utils/constants';
-import makeHref from 'universal/utils/makeHref';
 
 const Sidebar = (props) => {
   const {
@@ -31,7 +28,6 @@ const Sidebar = (props) => {
   const {teamId, teamName, agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase} = team;
 
   const relativeLink = `/meeting/${teamId}`;
-  const shortUrl = makeHref(relativeLink);
   const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
     agendaItems.findIndex((a) => a.isComplete === false) + 1 : 0;
   const canNavigateTo = (phase) => {
@@ -154,7 +150,7 @@ const Sidebar = (props) => {
         </div>
         }
       </nav>
-      <LogoBlock theme="primary" />
+      <LogoBlock variant="primary" />
     </div>
   );
 };
@@ -177,17 +173,6 @@ Sidebar.propTypes = {
 };
 
 const styleThunk = () => ({
-  logo: {
-    display: 'inline-block',
-    verticalAlign: 'top'
-  },
-
-  brand: {
-    fontSize: 0,
-    padding: '.75rem 0 1.25rem',
-    textAlign: 'center'
-  },
-
   navItemBullet: {
     backgroundColor: appTheme.palette.mid,
     borderRadius: '100%',
@@ -298,23 +283,6 @@ const styleThunk = () => ({
   sidebarHeader: {
     paddingLeft: '3.75rem',
     position: 'relative'
-  },
-
-  shortUrl: {
-    ...textOverflow,
-    color: appTheme.palette.dark10d,
-    display: 'block',
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.sBase,
-    paddingRight: '1.5rem',
-    textDecoration: 'none',
-
-    ':hover': {
-      color: appTheme.palette.dark
-    },
-    ':focus': {
-      color: appTheme.palette.dark
-    }
   },
 
   teamName: {

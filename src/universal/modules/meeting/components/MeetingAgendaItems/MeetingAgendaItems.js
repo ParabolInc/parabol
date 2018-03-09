@@ -9,6 +9,7 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -48,6 +49,7 @@ class MeetingAgendaItems extends Component {
       gotoNext,
       hideMoveMeetingControls,
       localPhaseItem,
+      showMoveMeetingControls,
       styles,
       viewer: {team}
     } = this.props;
@@ -72,20 +74,10 @@ class MeetingAgendaItems extends Component {
                 />
               </div>
               <div className={css(styles.nav)}>
-                {hideMoveMeetingControls ?
+                {hideMoveMeetingControls &&
                   <MeetingFacilitationHint>
                     {'Waiting for'} <b>{facilitatorName}</b> {`to wrap up the ${actionMeeting.agendaitems.name}`}
-                  </MeetingFacilitationHint> :
-                  <Button
-                    buttonStyle="flat"
-                    colorPalette="warm"
-                    icon="arrow-circle-right"
-                    iconPlacement="right"
-                    key={`agendaItem${localPhaseItem}`}
-                    label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
-                    onClick={gotoNext}
-                    buttonSize="medium"
-                  />
+                  </MeetingFacilitationHint>
                 }
               </div>
               <MeetingAgendaCards
@@ -99,6 +91,20 @@ class MeetingAgendaItems extends Component {
           {/* */}
         </MeetingSection>
         {/* */}
+        {showMoveMeetingControls &&
+          <MeetingControlBar>
+            <Button
+              buttonStyle="flat"
+              colorPalette="warm"
+              icon="arrow-circle-right"
+              iconPlacement="right"
+              key={`agendaItem${localPhaseItem}`}
+              label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
+              onClick={gotoNext}
+              buttonSize="medium"
+            />
+          </MeetingControlBar>
+        }
       </MeetingMain>
     );
   }
@@ -109,6 +115,7 @@ MeetingAgendaItems.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   hideMoveMeetingControls: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
+  showMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object.isRequired,
   viewer: PropTypes.object
 };
