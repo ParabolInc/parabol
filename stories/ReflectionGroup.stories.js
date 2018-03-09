@@ -7,6 +7,7 @@
 import {ContentState} from 'draft-js';
 import React from 'react';
 import shortid from 'shortid';
+import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react';
 
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
@@ -25,20 +26,25 @@ storiesOf('Reflection Group', module)
         render={() => (
           <Grid>
             <ReflectionGroup
+              handleSaveTitle={action('save-title')}
               reflections={[
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}
               ]}
+              title={ContentState.createFromText('')}
             />
             <ReflectionGroup
+              handleSaveTitle={action('save-title')}
               reflections={[
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}
               ]}
+              title={ContentState.createFromText('')}
             />
             <ReflectionGroup
+              handleSaveTitle={action('save-title')}
               reflections={[
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
@@ -50,6 +56,7 @@ storiesOf('Reflection Group', module)
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}
               ]}
+              title={ContentState.createFromText('')}
             />
           </Grid>
         )}
@@ -63,11 +70,13 @@ storiesOf('Reflection Group', module)
         render={() => (
           <Grid>
             <ReflectionGroup
+              handleSaveTitle={action('save-title')}
+              hoveredHeight={40}
               reflections={[
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}
               ]}
-              hoveredHeight={40}
+              title={ContentState.createFromText('')}
             />
           </Grid>
         )}

@@ -13,16 +13,20 @@ import styled, {css} from 'react-emotion';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import ReflectionCardDropPreview from 'universal/components/ReflectionCardDropPreview/ReflectionCardDropPreview';
+import editorDecorators from 'universal/components/TaskEditor/decorators';
+
+import ReflectionGroupTitleEditor from './ReflectionGroupTitleEditor';
 
 type Props = {
-  handleSaveName: (editorState: EditorState) => any,
+  handleSaveTitle?: (editorState: EditorState) => any,
   hoveredHeight?: number,
-  name: ?ContentState,
+  title?: ContentState,
   // Note: `reflections` is treated as a stack where the "top" is the end of the array.
   reflections: Array<Reflection>
 };
 
 type State = {
+  editorState: EditorState,
   isExpanded: boolean
 };
 
@@ -32,14 +36,34 @@ const ExpandButton = styled(PlainButton)({
 });
 
 const ReflectionGroupWrapper = styled('div')({
+  height: '100%',
+  width: '100%'
+});
+
+const ReflectionGroupCollapsedWrapper = styled('div')({
   position: 'relative',
   height: '100%',
   width: '100%'
 });
 
 class ReflectionGroup extends Component<Props, State> {
-  state = {
-    isExpanded: false
+  constructor(props: Props) {
+    super(props);
+    const decorators = editorDecorators(this.getEditorState);
+    this.state = {
+      editorState: props.title
+        ? EditorState.createWithContent(props.title, decorators)
+        : EditorState.createEmpty(decorators),
+      isExpanded: false
+    };
+  }
+
+  setEditorState = (editorState: EditorState) => {
+    this.setState({editorState});
+  };
+
+  getEditorState = () => {
+    return this.state.editorState;
   };
 
   getVisibleReflections = () => (
@@ -78,10 +102,24 @@ class ReflectionGroup extends Component<Props, State> {
     );
   };
 
+  maybeRenderTitleEditor = () => {
+    const {handleSaveTitle} = this.props;
+    const {editorState} = this.state;
+    return handleSaveTitle && (
+      <ReflectionGroupTitleEditor
+        editorState={editorState}
+        handleSave={handleSaveTitle}
+        setEditorState={this.setEditorState}
+      />
+    );
+  };
+
   renderCollapsed = () => (
-    <ExpandButton onClick={this.expand}>
-      {this.getVisibleReflections().map(this.renderCollapsedReflection)}
-    </ExpandButton>
+    <ReflectionGroupCollapsedWrapper>
+      <ExpandButton aria-label="Expand this reflection group" onClick={this.expand}>
+        {this.getVisibleReflections().map(this.renderCollapsedReflection)}
+      </ExpandButton>
+    </ReflectionGroupCollapsedWrapper>
   );
 
   renderCollapsedReflection = (reflection: Reflection, index: number) => {
@@ -122,6 +160,7 @@ class ReflectionGroup extends Component<Props, State> {
     const {isExpanded} = this.state;
     return (
       <ReflectionGroupWrapper>
+        {this.maybeRenderTitleEditor()}
         {this.maybeRenderDropPlaceholder()}
         {isExpanded ? this.renderExpanded() : this.renderCollapsed()}
       </ReflectionGroupWrapper>

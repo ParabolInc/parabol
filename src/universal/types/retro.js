@@ -20,6 +20,6 @@ export type Reflection = {
 
 export type ReflectionGroup = {
   id: ReflectionGroupID,
-  name: string,
+  title: string,
   reflections: Array<Reflection>
 };
