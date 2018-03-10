@@ -10,10 +10,14 @@ import OrgApproval from 'server/graphql/types/OrgApproval';
 import {getUserId} from 'server/utils/authorization';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 import Task from 'server/graphql/types/Task';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const RejectOrgApprovalPayload = new GraphQLObjectType({
   name: 'RejectOrgApprovalPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     removedOrgApprovals: {
       type: new GraphQLList(OrgApproval),
       description: 'The list of org approvals to remove. There may be multiple if many inviters requested the same email',

@@ -7,6 +7,8 @@ export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
 };
 
+export const isAuthenticated = (authToken) => Boolean(authToken);
+
 export const isSuperUser = (authToken) => {
   const userId = getUserId(authToken);
   return userId && authToken.rol === 'su';
@@ -22,19 +24,23 @@ export const getIsTeamLead = (teamMemberId) => {
   return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run();
 };
 
-export const requireAuth = (authToken) => {
-  if (!authToken) {
-    throw new Error('Unauthorized. Must be logged in for this action.');
-  }
-};
-
-/*
- * Won't return a teamMember if it's a super user
- */
 export const requireSU = (authToken) => {
   if (!isSuperUser(authToken)) {
     throw new Error('Unauthorized. Must be a super user to run this query.');
   }
+};
+
+export const sendNotAuthenticatedAccessError = (authToken, returnValue) => {
+  const message = 'You must be logged in for this action.';
+  const breadcrumb = {
+    message,
+    category: 'Unauthenticated Access'
+  };
+  sendSentryEvent(authToken, breadcrumb);
+  return returnValue !== undefined ? returnValue : {
+    title: 'Not logged in',
+    message
+  };
 };
 
 export const sendTeamAccessError = (authToken, teamId, returnValue) => {
@@ -43,7 +49,7 @@ export const sendTeamAccessError = (authToken, teamId, returnValue) => {
     message,
     category: 'Unauthorized Access',
     data: {teamId}
-  }
+  };
   sendSentryEvent(authToken, breadcrumb);
   return returnValue !== undefined ? returnValue : {
     title: 'Not on team',

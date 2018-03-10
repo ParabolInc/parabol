@@ -7,8 +7,12 @@ import Invitation from 'server/graphql/types/Invitation';
 import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 export const addTeamFields = {
+  error: {
+    type: StandardMutationError
+  },
   team: {
     type: Team,
     resolve: resolveTeam

@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput';
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
-import {getUserId, requireAuth} from 'server/utils/authorization';
+import {getUserId, isAuthenticated, sendNotAuthenticatedAccessError} from 'server/utils/authorization';
 import {handleSchemaErrors} from 'server/utils/utils';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import publish from 'server/utils/publish';
@@ -24,7 +24,7 @@ const updateUserProfile = {
     const subOptions = {operationId, mutatorId};
 
     // AUTH
-    requireAuth(authToken);
+    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError();
     const userId = getUserId(authToken);
 
     // VALIDATION

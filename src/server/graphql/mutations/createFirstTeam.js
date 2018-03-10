@@ -4,7 +4,7 @@ import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
 import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader';
 import CreateFirstTeamPayload from 'server/graphql/types/CreateFirstTeamPayload';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
-import {getUserId, requireAuth} from 'server/utils/authorization';
+import {getUserId, isAuthenticated, sendNotAuthenticatedAccessError} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -26,7 +26,7 @@ export default {
     const r = getRethink();
 
     // AUTH
-    requireAuth(authToken);
+    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError();
     const viewerId = getUserId(authToken);
 
     // VALIDATION

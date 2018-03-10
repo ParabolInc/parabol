@@ -16,10 +16,14 @@ import User from 'server/graphql/types/User';
 import OrganizationMember from 'server/graphql/types/OrganizationMember';
 import Notification from 'server/graphql/types/Notification';
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const RemoveOrgUserPayload = new GraphQLObjectType({
   name: 'RemoveOrgUserPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     organization: {
       type: Organization,
       resolve: resolveOrganization,

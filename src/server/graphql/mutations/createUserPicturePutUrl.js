@@ -1,6 +1,6 @@
 import {GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
 import CreateUserPicturePutUrlPayload from 'server/graphql/types/CreateUserPicturePutUrlPayload';
-import {getUserId, requireAuth} from 'server/utils/authorization';
+import {getUserId, isAuthenticated, sendNotAuthenticatedAccessError} from 'server/utils/authorization';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
 import {validateAvatarUpload} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -20,7 +20,7 @@ const createUserPicturePutUrl = {
   },
   resolve: async (source, {contentType, contentLength}, {authToken}) => {
     // AUTH
-    requireAuth(authToken);
+    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError();
     const userId = getUserId(authToken);
 
     // VALIDATION

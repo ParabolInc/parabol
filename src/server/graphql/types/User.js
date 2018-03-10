@@ -24,11 +24,11 @@ import Meeting from 'server/graphql/types/Meeting';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
-import {getUserId, isTeamMember, requireAuth, sendTeamAccessError} from 'server/utils/authorization';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import organization from 'server/graphql/queries/organization';
 import tasks from 'server/graphql/queries/tasks';
 import archivedTasks from 'server/graphql/queries/archivedTasks';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -145,7 +145,6 @@ const User = new GraphQLObjectType({
         }
       },
       async resolve(source, {meetingId}, {authToken, dataLoader}) {
-        requireAuth(authToken);
         const meeting = await dataLoader.get('meetings').load(meetingId);
         if (!meeting) {
           throw new Error('Meeting ID not found');
