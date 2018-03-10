@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
-import {getUserId, requireTeamLead} from 'server/utils/authorization';
+import {getUserId, isTeamLead, sendTeamLeadAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
@@ -22,10 +22,10 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const myUserId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     const {teamId} = fromTeamMemberId(teamMemberId);
-    const myTeamMemberId = toTeamMemberId(teamId, myUserId);
-    await requireTeamLead(myTeamMemberId);
+    const myTeamMemberId = toTeamMemberId(teamId, viewerId);
+    if (!await isTeamLead(viewerId, teamId)) return sendTeamLeadAccessError(authToken, teamId);
 
     // VALIDATION
     const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);

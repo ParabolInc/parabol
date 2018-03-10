@@ -2,6 +2,7 @@ import {BILLING_LEADER} from 'universal/utils/constants';
 import {qualifyingTiers, tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import getRethink from '../database/rethinkDriver';
 import sendSentryEvent from 'server/utils/sendSentryEvent';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -17,6 +18,12 @@ export const isSuperUser = (authToken) => {
 export const isTeamMember = (authToken, teamId) => {
   const {tms} = authToken;
   return Array.isArray(tms) && tms.includes(teamId);
+};
+
+export const isTeamLead = async (userId, teamId) => {
+  const r = getRethink();
+  const teamMemberId = toTeamMemberId(teamId, userId);
+  return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run();
 };
 
 export const getIsTeamLead = (teamMemberId) => {
@@ -57,13 +64,18 @@ export const sendTeamAccessError = (authToken, teamId, returnValue) => {
   };
 };
 
-export const requireTeamLead = async (teamMemberId) => {
-  const r = getRethink();
-  const teamMember = await r.table('TeamMember').get(teamMemberId);
-  if (!teamMember || !teamMember.isLead) {
-    throw new Error('Unauthorized. Only the team leader promote someone to lead');
-  }
-  return teamMember;
+export const sendTeamLeadAccessError = (authToken, teamId, returnValue) => {
+  const message = `You are not the team lead for ${teamId}`;
+  const breadcrumb = {
+    message,
+    category: 'Unauthorized Access',
+    data: {teamId}
+  };
+  sendSentryEvent(authToken, breadcrumb);
+  return returnValue !== undefined ? returnValue : {
+    title: 'Not team lead',
+    message
+  };
 };
 
 // undefined orgId will disable the filter

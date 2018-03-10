@@ -2,11 +2,10 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember';
 import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, requireTeamLead} from 'server/utils/authorization';
+import {getUserId, isTeamLead, sendTeamLeadAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   type: RemoveTeamMemberPayload,
@@ -26,8 +25,7 @@ export default {
     const {userId, teamId} = fromTeamMemberId(teamMemberId);
     const isSelf = viewerId === userId;
     if (!isSelf) {
-      const myTeamMemberId = toTeamMemberId(teamId, viewerId);
-      await requireTeamLead(myTeamMemberId);
+      if (!await isTeamLead(viewerId, teamId)) return sendTeamLeadAccessError(authToken, teamId);
     }
 
     // RESOLUTION
