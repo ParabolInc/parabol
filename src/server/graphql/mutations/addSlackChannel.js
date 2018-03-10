@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
 import insertSlackChannel from 'server/safeMutations/insertSlackChannel';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {SLACK} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
@@ -37,7 +37,7 @@ export default {
     // AUTH
     // TODO replace teamMemberId with teamId, no need for the userId here?
     const {teamId} = fromTeamMemberId(teamMemberId);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
 

@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload';
-import {requireTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {SLACK} from 'universal/utils/constants';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 
 export default {
   name: 'RemoveSlackChannel',
@@ -25,7 +25,7 @@ export default {
       throw new Error(`${slackGlobalId} does not exist`);
     }
     const {teamId, isActive} = integration;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     if (!isActive) {

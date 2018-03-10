@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
-import {getUserId, isTeamMember, teamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {CHECKIN, TEAM} from 'universal/utils/constants';
@@ -26,7 +26,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    if (!isTeamMember(authToken, teamId)) return teamAccessError(teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const facilitatorId = `${userId}::${teamId}`;

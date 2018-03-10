@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload';
 
 export default {
@@ -12,7 +12,7 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const channelName = `slackChannelRemoved.${teamId}`;

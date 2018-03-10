@@ -1,6 +1,7 @@
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {qualifyingTiers, tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import getRethink from '../database/rethinkDriver';
+import sendSentryEvent from 'server/utils/sendSentryEvent';
 
 export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -36,17 +37,19 @@ export const requireSU = (authToken) => {
   }
 };
 
-export const requireTeamMember = (authToken, teamId) => {
-  const teams = authToken.tms || [];
-  if (!teams.includes(teamId)) {
-    throw new Error(`You do not have access to team ${teamId}`);
+export const sendTeamAccessError = (authToken, teamId, returnValue) => {
+  const message = `You do not have access to team ${teamId}`;
+  const breadcrumb = {
+    message,
+    category: 'Unauthorized Access',
+    data: {teamId}
   }
+  sendSentryEvent(authToken, breadcrumb);
+  return returnValue !== undefined ? returnValue : {
+    title: 'Not on team',
+    message
+  };
 };
-
-export const teamAccessError = (teamId) => ({
-  title: 'Not on team',
-  message: `You do not have access to team ${teamId}`
-});
 
 export const requireOrgLeaderOrTeamMember = async (authToken, teamId) => {
   const r = getRethink();

@@ -2,12 +2,12 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddAgendaItemPayload from 'server/graphql/types/AddAgendaItemPayload';
 import CreateAgendaItemInput from 'server/graphql/types/CreateAgendaItemInput';
-import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {AGENDA_ITEM} from 'universal/utils/constants';
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 
 export default {
   type: AddAgendaItemPayload,
@@ -25,7 +25,7 @@ export default {
 
     // AUTH
     const {teamId} = newAgendaItem;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     const schema = makeAgendaItemSchema();

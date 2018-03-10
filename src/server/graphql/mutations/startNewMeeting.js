@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {TEAM} from 'universal/utils/constants';
@@ -31,7 +31,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     const {team, meetingCount} = await r({

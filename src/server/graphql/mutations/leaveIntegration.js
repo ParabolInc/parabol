@@ -3,7 +3,7 @@ import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
 import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 
@@ -27,7 +27,7 @@ export default {
       throw new Error('That integration does not exist');
     }
     const {adminUserId, teamId, userIds} = integration;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     if (!authToken.tms.includes(teamId)) {

@@ -6,12 +6,12 @@ import StandardMutationError from 'server/graphql/types/StandardMutationError';
 const StartMeetingPayload = new GraphQLObjectType({
   name: 'StartMeetingPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     team: {
       type: Team,
       resolve: resolveTeam
-    },
-    error: {
-      type: StandardMutationError
     }
   })
 });

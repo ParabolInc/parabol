@@ -3,7 +3,6 @@ import sendSentryEvent from 'server/utils/sendSentryEvent';
 const sendGraphQLErrorResult = (protocol, firstError, query, variables, authToken) => {
   const message = `${protocol} GraphQL Error`;
   if (process.env.NODE_ENV !== 'production') {
-    const error = new Error(message);
     const breadcrumb = {
       message,
       category: 'graphql',
@@ -13,7 +12,7 @@ const sendGraphQLErrorResult = (protocol, firstError, query, variables, authToke
         firstError
       }
     };
-    sendSentryEvent(error, authToken, breadcrumb);
+    sendSentryEvent(authToken, breadcrumb);
   } else {
     console.error(message, firstError);
   }

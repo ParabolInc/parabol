@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdatedTeamInput from 'server/graphql/types/UpdatedTeamInput';
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import {TEAM} from 'universal/utils/constants';
@@ -24,7 +24,7 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    requireTeamMember(authToken, updatedTeam.id);
+    if (!isTeamMember(authToken, updatedTeam.id)) return sendTeamAccessError(authToken, updatedTeam.id);
 
     // VALIDATION
     const {errors, data: {id: teamId, name}} = updateTeamNameValidation()(updatedTeam);

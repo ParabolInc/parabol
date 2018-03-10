@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ProviderMap from 'server/graphql/types/ProviderMap';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import {CURRENT_PROVIDERS, SLACK} from 'universal/utils/constants';
 
 const getUserReduction = (service, reduction, userId) => {
@@ -25,7 +25,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
 
 
     // RESOLUTION

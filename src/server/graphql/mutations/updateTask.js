@@ -6,7 +6,7 @@ import publishChangeNotifications from 'server/graphql/mutations/helpers/publish
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import UpdateTaskInput from 'server/graphql/types/UpdateTaskInput';
 import UpdateTaskPayload from 'server/graphql/types/UpdateTaskPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -45,7 +45,7 @@ export default {
       throw new Error('Task does not exist');
     }
     const {teamId} = task;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     const schema = makeTaskSchema();
@@ -107,7 +107,10 @@ export default {
         });
     }
     const {newTask, teamMembers} = await r({
-      newTask: r.table('Task').get(taskId).update(taskUpdates, {returnChanges: true})('changes')(0)('new_val').default(null),
+      newTask: r.table('Task')
+        .get(taskId)
+        .update(taskUpdates, {returnChanges: true})('changes')(0)('new_val')
+        .default(null),
       history: taskHistory,
       teamMembers: r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})

@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPayload';
-import {requireTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 
 export default {
   type: PromoteFacilitatorPayload,
@@ -25,7 +25,7 @@ export default {
 
     // AUTH
     const [, teamId] = facilitatorId.split('::');
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     const facilitatorMembership = await dataLoader.get('teamMembers').load(facilitatorId);

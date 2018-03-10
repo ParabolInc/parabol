@@ -2,10 +2,14 @@ import {GraphQLObjectType} from 'graphql';
 import {resolveNotificationForViewer} from 'server/graphql/resolvers';
 import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves';
 import Task from 'server/graphql/types/Task';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const DeleteTaskPayload = new GraphQLObjectType({
   name: 'DeleteTaskPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     task: {
       type: Task,
       description: 'The task that was deleted'

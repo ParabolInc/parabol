@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {NOTIFICATION, ORG_APPROVAL, TASK, REQUEST_NEW_USER, TEAM_MEMBER} from 'universal/utils/constants';
+import {NOTIFICATION, ORG_APPROVAL, REQUEST_NEW_USER, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
@@ -26,7 +26,7 @@ export default {
     // AUTH
     const orgApprovalDoc = await r.table('OrgApproval').get(orgApprovalId);
     const {email, orgId, teamId} = orgApprovalDoc;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const {removedRequestNotification} = await r({

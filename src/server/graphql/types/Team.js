@@ -20,7 +20,6 @@ import OrgApproval from 'server/graphql/types/OrgApproval';
 import {TaskConnection} from 'server/graphql/types/Task';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
-import {requireTeamMember} from 'server/utils/authorization';
 import {PENDING} from 'server/utils/serverConstants';
 import {resolveOrganization} from 'server/graphql/resolvers';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
@@ -28,6 +27,7 @@ import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -182,7 +182,7 @@ const Team = new GraphQLObjectType({
       },
       description: 'All of the tasks for this team',
       async resolve({id: teamId}, args, {authToken, dataLoader}) {
-        requireTeamMember(authToken, teamId);
+        if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId);
         return connectionFromTasks(tasks);
       }

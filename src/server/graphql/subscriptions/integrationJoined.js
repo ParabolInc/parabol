@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import JoinIntegrationPayload from 'server/graphql/types/JoinIntegrationPayload';
 import IntegrationService from 'server/graphql/types/IntegrationService';
 
@@ -16,7 +16,7 @@ export default {
   },
   subscribe: (source, {service, teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const channelName = `integrationJoined.${teamId}.${service}`;

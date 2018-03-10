@@ -4,7 +4,7 @@ import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {TaskConnection} from 'server/graphql/types/Task';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import {PERSONAL} from 'universal/utils/constants';
 
 export default {
@@ -25,7 +25,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
 
     // RESOLUTION
     const teamMemberId = `${userId}::${teamId}`;

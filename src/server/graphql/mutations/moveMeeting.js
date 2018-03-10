@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
 import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {AGENDA_ITEM, AGENDA_ITEMS, CHECKIN, TEAM} from 'universal/utils/constants';
@@ -34,7 +34,7 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // BAILOUT
     if (force) {

@@ -4,7 +4,7 @@ import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore'
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateTaskInput from 'server/graphql/types/CreateTaskInput';
 import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -39,7 +39,7 @@ export default {
     const {errors, data: validNewTask} = schema({content: 1, ...newTask});
     handleSchemaErrors(errors);
     const {teamId, userId, content} = validNewTask;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, userId);

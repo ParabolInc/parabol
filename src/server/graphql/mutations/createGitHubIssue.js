@@ -3,7 +3,7 @@ import {stateToMarkdown} from 'draft-js-export-markdown';
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {GITHUB, TASK} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
@@ -74,7 +74,7 @@ export default {
       throw new Error('That task no longer exists');
     }
     const {teamId} = task;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     const viewerId = getUserId(authToken);

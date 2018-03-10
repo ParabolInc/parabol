@@ -3,7 +3,7 @@ import {fromGlobalId, toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
@@ -46,7 +46,7 @@ export default {
     const r = getRethink();
 
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const {id: dbProviderId} = fromGlobalId(providerId);

@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, TASK, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
@@ -30,7 +30,7 @@ export default {
     if (!teamId) {
       throw new Error('Invitation not found!');
     }
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const {removedTeamInviteNotification} = await r({

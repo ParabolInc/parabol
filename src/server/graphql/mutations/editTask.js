@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import EditTaskPayload from 'server/graphql/types/EditTaskPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TASK} from 'universal/utils/constants';
 
@@ -25,7 +25,7 @@ export default {
     const task = await dataLoader.get('tasks').load(taskId);
     const viewerId = getUserId(authToken);
     const {tags, teamId, userId: taskUserId} = task;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     // grab the task to see if it's private, don't share with other if it is

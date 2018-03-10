@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
-import {requireTeamCanUpdateCheckInQuestion, requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember, requireTeamCanUpdateCheckInQuestion, sendTeamAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
@@ -25,7 +25,7 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     await requireTeamCanUpdateCheckInQuestion(teamId);
 
     // VALIDATION
