@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import getDisplayName from 'universal/utils/getDisplayName';
+import firstErrorMessage from 'universal/utils/relay/firstErrorMessage';
 
 // Serves as a lightweight alternative for redux-form when we just have a button or something
 export default (ComposedComponent) => {
@@ -21,11 +22,12 @@ export default (ComposedComponent) => {
       this._mounted = false;
     }
 
-    onCompleted = () => {
+    onCompleted = (res, errors) => {
       if (this._mounted) {
         this.setState({
           submitting: false,
-          error: undefined
+          // if provided, errors will only include a generic "Server Error" message
+          error: firstErrorMessage(errors)
         });
       }
     };

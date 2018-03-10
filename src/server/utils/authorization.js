@@ -11,6 +11,11 @@ export const isSuperUser = (authToken) => {
   return userId && authToken.rol === 'su';
 };
 
+export const isTeamMember = (authToken, teamId) => {
+  const {tms} = authToken;
+  return Array.isArray(tms) && tms.includes(teamId);
+};
+
 export const getIsTeamLead = (teamMemberId) => {
   const r = getRethink();
   return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run();
@@ -37,6 +42,11 @@ export const requireTeamMember = (authToken, teamId) => {
     throw new Error(`You do not have access to team ${teamId}`);
   }
 };
+
+export const teamAccessError = (teamId) => ({
+  title: 'Not on team',
+  message: `You do not have access to team ${teamId}`
+});
 
 export const requireOrgLeaderOrTeamMember = async (authToken, teamId) => {
   const r = getRethink();
