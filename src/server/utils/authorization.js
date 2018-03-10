@@ -57,28 +57,6 @@ export const sendTeamAccessError = (authToken, teamId, returnValue) => {
   };
 };
 
-export const requireOrgLeaderOrTeamMember = async (authToken, teamId) => {
-  const r = getRethink();
-  const teams = authToken.tms || [];
-  if (!teams.includes(teamId)) {
-    const userId = getUserId(authToken);
-    const isOrgLeader = await r.table('Team').get(teamId)('orgId').default(null)
-      .do((orgId) => {
-        return r.table('User').get(userId)('userOrgs')
-          .filter({
-            id: orgId,
-            role: BILLING_LEADER
-          })
-          .count()
-          .eq(1)
-          .default(false);
-      });
-    if (!isOrgLeader) {
-      throw new Error(`Unauthorized to view details for team ${teamId} with token ${JSON.stringify(authToken)}`);
-    }
-  }
-};
-
 export const requireTeamLead = async (teamMemberId) => {
   const r = getRethink();
   const teamMember = await r.table('TeamMember').get(teamMemberId);
