@@ -3,55 +3,43 @@
  *
  * @flow
  */
+import type {ThirdPartyAuthProvider, Credentials} from 'universal/types/auth';
 
-import React from 'react';
-import styled from 'react-emotion';
-import {Link} from 'react-router-dom';
+import React, {Fragment} from 'react';
 
-import appTheme from 'universal/styles/theme/appTheme';
-
-import ThirdPartySignInButton from './ThirdPartySignInButton';
-import Separator from './Separator';
+import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
+import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
+import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
+import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
 import SignInEmailPasswordForm from './SignInEmailPasswordForm';
 
-type AuthProvider = {
-  iconName: string,
-  displayName: string,
-  auth0Connection: string
-};
-
 type Props = {
-  authProviders: Array<AuthProvider>,
-  hasError?: boolean,
+  authProviders: Array<ThirdPartyAuthProvider>,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
-  handleSubmitCredentials: ({email: string, password: string}) => void
+  handleSubmitCredentials: (Credentials) => Promise<any>,
+  error: ?string,
+  isSubmitting: boolean
 };
-
-const SignInContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  height: '100%',
-  fontFamily: appTheme.typography.sansSerif
-});
 
 export default (props: Props) => (
-  <SignInContainer>
-    <h1>Sign In</h1>
-    <h2>
-      or <Link to="/signup">Sign Up</Link>
-    </h2>
-    {props.hasError &&
-      <p>Oops! There was a problem signing you in. Please try again.</p>
-    }
+  <Fragment>
+    <AuthHeader
+      heading="Sign In"
+      secondaryAction={{relativeUrl: '/signup', displayName: 'Sign Up'}}
+    />
     {props.authProviders.map((provider) => (
-      <ThirdPartySignInButton
+      <ThirdPartyAuthButton
+        action="Sign in"
+        waiting={props.isSubmitting}
         key={provider.displayName}
         provider={provider}
         handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
       />
     ))}
-    <Separator text="or" />
+    <HorizontalSeparator text="or" />
+    {props.error &&
+      <ErrorAlert message={props.error} />
+    }
     <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />
-  </SignInContainer>
+  </Fragment>
 );

@@ -19,23 +19,31 @@ const mapStateToProps = (state, props) => {
 
 class TeamColumnsContainer extends Component {
   componentWillMount() {
-    this.filterByTeamMember(this.props);
+    this.filterTasks(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    const {teamMemberFilterId: oldFilter, viewer: {tasks: oldTasks}} = this.props;
-    const {teamMemberFilterId, viewer: {tasks}} = nextProps;
-    if (oldFilter !== teamMemberFilterId || oldTasks !== tasks) {
-      this.filterByTeamMember(nextProps);
+    const {teamMemberFilterId: oldFilter, viewer: {tasks: oldTasks, team: {contentFilter: oldContentFilter}}} = this.props;
+    const {teamMemberFilterId, viewer: {tasks, team: {contentFilter}}} = nextProps;
+    if (oldFilter !== teamMemberFilterId || oldTasks !== tasks || oldContentFilter !== contentFilter) {
+      this.filterTasks(nextProps);
     }
   }
 
-  filterByTeamMember(props) {
-    const {teamMemberFilterId, viewer: {tasks, team: {teamMembers}}} = props;
-    const edges = teamMemberFilterId ?
-      tasks.edges.filter(({node}) => node.assignee.id === teamMemberFilterId) :
-      tasks.edges;
-    const edgesWithTeamMembers = edges.map((edge) => {
+  filterTasks(props) {
+    const {teamMemberFilterId, viewer: {tasks, team: {contentFilter, teamMembers}}} = props;
+    const contentFilterRegex = new RegExp(contentFilter);
+    const contentFilteredEdges = contentFilter ?
+      tasks.edges.filter(({node}) => {
+        const {contentText} = node;
+        return contentText && node.contentText.match(contentFilterRegex);
+      }) : tasks.edges;
+
+    const teamMemberFilteredEdges = teamMemberFilterId ?
+      contentFilteredEdges.filter(({node}) => node.assignee.id === teamMemberFilterId) :
+      contentFilteredEdges;
+
+    const edgesWithTeamMembers = teamMemberFilteredEdges.map((edge) => {
       return {
         ...edge,
         node: {
@@ -79,6 +87,7 @@ export default createFragmentContainer(
   graphql`
     fragment TeamColumnsContainer_viewer on User {
       team(teamId: $teamId) {
+        contentFilter
         teamMembers(sortBy: "preferredName") {
           id
           picture
@@ -90,6 +99,8 @@ export default createFragmentContainer(
           node {
             # grab these so we can sort correctly
             id
+            content @__clientField(handle: "contentText")
+            contentText 
             status
             sortOrder
             assignee {

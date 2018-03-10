@@ -4,11 +4,12 @@ import Notification, {notificationInterfaceFields} from 'server/graphql/types/No
 import Task from 'server/graphql/types/Task';
 import TaskInvolvementType from 'server/graphql/types/TaskInvolvementType';
 import TeamMember from 'server/graphql/types/TeamMember';
+import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const NotifyTaskInvolves = new GraphQLObjectType({
   name: 'NotifyTaskInvolves',
   description: 'A notification sent to someone who was just added to a team',
-  interfaces: () => [Notification],
+  interfaces: () => [Notification, TeamNotification],
   fields: () => ({
     ...notificationInterfaceFields,
     involvement: {

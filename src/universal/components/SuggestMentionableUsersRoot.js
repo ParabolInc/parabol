@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {graphql} from 'react-relay';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {cacheConfig} from 'universal/utils/constants';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';

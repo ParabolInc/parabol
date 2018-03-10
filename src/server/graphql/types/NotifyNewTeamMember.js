@@ -3,11 +3,12 @@ import {resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
+import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const NotifyNewTeamMember = new GraphQLObjectType({
   name: 'NotifyNewTeamMember',
   description: 'A notification sent to someone who was just added to a team',
-  interfaces: () => [Notification],
+  interfaces: () => [Notification, TeamNotification],
   fields: () => ({
     ...notificationInterfaceFields,
     team: {

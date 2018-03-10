@@ -3,11 +3,12 @@ import {resolveTeam} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
+import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const NotifyInviteeApproved = new GraphQLObjectType({
   name: 'NotifyInviteeApproved',
   description: 'A notification sent to a user when the person they invited got approved by the org leader',
-  interfaces: () => [Notification],
+  interfaces: () => [Notification, TeamNotification],
   fields: () => ({
     inviteeEmail: {
       type: new GraphQLNonNull(GraphQLString),

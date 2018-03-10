@@ -4,28 +4,30 @@
  * @flow
  */
 
+import type {ThirdPartyAuthProvider} from 'universal/types/auth';
+
 import React from 'react';
 import styled from 'react-emotion';
 
 import Button from 'universal/components/Button/Button';
 
 type Props = {
+  action: 'Sign in' | 'Sign up',
+  waiting?: boolean,
   handleClick: () => void,
-  provider: {
-    iconName: string,
-    displayName: string
-  }
+  provider: ThirdPartyAuthProvider
 };
 
 const ButtonContainer = styled('div')({
   paddingTop: '.5rem'
 });
 
-export default ({provider, handleClick}: Props) => {
-  const label = `Sign in with ${provider.displayName}`;
+export default ({action, waiting, provider, handleClick}: Props) => {
+  const label = `${action} with ${provider.displayName}`;
   return (
     <ButtonContainer>
       <Button
+        borderRadius="100px"
         type="button"
         title={label}
         label={label}
@@ -33,6 +35,7 @@ export default ({provider, handleClick}: Props) => {
         iconPlacement="left"
         colorPalette="gray"
         onClick={handleClick}
+        waiting={waiting}
       />
     </ButtonContainer>
   );

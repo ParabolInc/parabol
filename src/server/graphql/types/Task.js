@@ -22,7 +22,7 @@ const Task = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: GraphQLID,
-      description: 'A shortid for the task teamId::shortid'
+      description: 'shortid'
     },
     agendaId: {
       type: GraphQLID,

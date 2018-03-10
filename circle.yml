@@ -58,16 +58,6 @@ stages:
         command: npm run db:migrate-testing
 
       - type: shell
-        name: NPM lint
-        command: npm run lint
-
-      - type: shell
-        name: NPM run test
-        command: |
-          npm run test
-          mkdir test-report ; mv test-report.xml test-report
-
-      - type: shell
         name: DevOps checkout
         command: |
           ssh-agent $(
@@ -88,6 +78,16 @@ stages:
           cp $DEVOPS_WORKDIR/environments/e2e ./.env
           npm run db:migrate
           npm run build
+
+      - type: shell
+        name: NPM lint
+        command: npm run lint
+
+      - type: shell
+        name: NPM run test
+        command: |
+          npm run test
+          mkdir test-report ; mv test-report.xml test-report
 
       - type: shell
         name: E2E test run

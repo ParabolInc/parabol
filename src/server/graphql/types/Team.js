@@ -24,13 +24,17 @@ import {requireTeamMember} from 'server/utils/authorization';
 import {PENDING} from 'server/utils/serverConstants';
 import {resolveOrganization} from 'server/graphql/resolvers';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
+import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
+import NewMeeting from 'server/graphql/types/NewMeeting';
+import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings';
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 
 const Team = new GraphQLObjectType({
   name: 'Team',
   description: 'A team',
   fields: () => ({
     id: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'A shortid for the team'
     },
     createdAt: {
@@ -49,7 +53,10 @@ const Team = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The current or most recent meeting number (also the number of meetings the team has had'
     },
-    name: {type: GraphQLString, description: 'The name of the team'},
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The name of the team'
+    },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The organization to which the team belongs'
@@ -70,6 +77,12 @@ const Team = new GraphQLObjectType({
     checkInQuestion: {
       type: GraphQLString,
       description: 'The checkIn question of the week'
+    },
+    customPhaseItems: {
+      type: new GraphQLList(CustomPhaseItem),
+      resolve: ({id: teamId}, args, {dataLoader}) => {
+        return dataLoader.get('customPhaseItemsByTeamId').load(teamId);
+      }
     },
     meetingId: {
       type: GraphQLID,
@@ -107,6 +120,31 @@ const Team = new GraphQLObjectType({
     meetingPhaseItem: {
       type: GraphQLInt,
       description: 'The current item number for the current phase for the meeting, 1-indexed'
+    },
+    meetingSettings: {
+      type: new GraphQLNonNull(TeamMeetingSettings),
+      args: {
+        meetingType: {
+          type: new GraphQLNonNull(MeetingTypeEnum),
+          description: 'the type of meeting for the settings'
+        }
+      },
+      description: 'The team-specific settings for running all available types of meetings',
+      resolve: async ({id: teamId}, {meetingType}, {dataLoader}) => {
+        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId);
+        return allSettings.find((settings) => settings.meetingType === meetingType);
+      }
+    },
+    newMeetingId: {
+      type: GraphQLID,
+      description: 'The unique Id of the active meeting'
+    },
+    newMeeting: {
+      type: NewMeeting,
+      description: 'The new meeting in progress, if any',
+      resolve: ({newMeetingId}, args, {dataLoader}) => {
+        return newMeetingId ? dataLoader.get('newMeetings').load(newMeetingId) : null;
+      }
     },
     tier: {
       type: TierEnum,

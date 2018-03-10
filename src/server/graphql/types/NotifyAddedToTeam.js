@@ -2,11 +2,12 @@ import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graph
 import {resolveTeam} from 'server/graphql/resolvers';
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
 import Team from 'server/graphql/types/Team';
+import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const NotifyAddedToTeam = new GraphQLObjectType({
   name: 'NotifyAddedToTeam',
   description: 'A notification sent to someone who was just added to a team',
-  interfaces: () => [Notification],
+  interfaces: () => [Notification, TeamNotification],
   fields: () => ({
     ...notificationInterfaceFields,
     authToken: {

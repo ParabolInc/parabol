@@ -6,7 +6,6 @@ import DashSidebar from 'universal/components/Dashboard/DashSidebar';
 import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
 import TaskSubscription from 'universal/subscriptions/TaskSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
@@ -16,6 +15,7 @@ import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscr
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext as dragDropContext} from 'react-dnd';
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 
 const query = graphql`
   query DashboardWrapperQuery {

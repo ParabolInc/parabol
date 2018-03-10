@@ -57,7 +57,26 @@ export default class RethinkDataLoader {
   constructor(authToken, dataloaderOptions = {}) {
     this.authToken = authToken;
     this.dataloaderOptions = dataloaderOptions;
+    this.customPhaseItemsByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink();
+      const customPhaseItems = await r.table('CustomPhaseItem')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.customPhaseItems, customPhaseItems);
+      return teamIds.map((teamId) => {
+        return customPhaseItems.filter((phaseItem) => phaseItem.teamId === teamId);
+      });
+    }, this.dataloaderOptions);
     // doing this ugly stuff in the constructor because class properties are created before constructor is called
+    this.meetingSettingsByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink();
+      const meetingSettings = await r.table('MeetingSettings')
+        .getAll(r.args(teamIds), {index: 'teamId'});
+      primeStandardLoader(this.meetingSettings, meetingSettings);
+      return teamIds.map((teamId) => {
+        return meetingSettings.filter((settings) => settings.teamId === teamId);
+      });
+    }, this.dataloaderOptions);
     this.orgsByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink();
       const orgs = await r.table('Organization')
@@ -65,6 +84,25 @@ export default class RethinkDataLoader {
       primeStandardLoader(this.organizations, orgs);
       return userIds.map((userId) => {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
+      });
+    }, this.dataloaderOptions);
+    this.retroThoughtsByGroupId = makeCustomLoader(async (thoughtGroupIds) => {
+      const r = getRethink();
+      const retroThoughts = await r.table('RetroThought')
+        .getAll(r.args(thoughtGroupIds), {index: 'thoughtGroupId'});
+      primeStandardLoader(this.retroThoughts, retroThoughts);
+      return thoughtGroupIds.map((thoughtGroupId) => {
+        return retroThoughts.filter((retroThought) => retroThought.thoughtGroupId === thoughtGroupId);
+      });
+    }, this.dataloaderOptions);
+    this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink();
+      const softTeamMembers = await r.table('SoftTeamMember')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.softTeamMembers, softTeamMembers);
+      return teamIds.map((teamId) => {
+        return softTeamMembers.filter((softTeamMember) => softTeamMember.teamId === teamId);
       });
     }, this.dataloaderOptions);
     this.tasksByTeamId = makeCustomLoader(async (teamIds) => {
@@ -95,16 +133,6 @@ export default class RethinkDataLoader {
       primeStandardLoader(this.tasks, tasks);
       return userIds.map(() => tasks);
     }, this.dataloaderOptions);
-    this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
-      const r = getRethink();
-      const softTeamMembers = await r.table('SoftTeamMember')
-        .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter({isActive: true});
-      primeStandardLoader(this.softTeamMembers, softTeamMembers);
-      return teamIds.map((teamId) => {
-        return softTeamMembers.filter((softTeamMember) => softTeamMember.teamId === teamId);
-      });
-    }, this.dataloaderOptions);
     this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
       const teamMembers = await r.table('TeamMember')
@@ -132,14 +160,19 @@ export default class RethinkDataLoader {
   }
 
   agendaItems = makeStandardLoader('AgendaItem');
+  customPhaseItems = makeStandardLoader('CustomPhaseItem');
   invitations = makeStandardLoader('Invitation');
-  organizations = makeStandardLoader('Organization');
-  orgApprovals = makeStandardLoader('OrgApproval');
   meetings = makeStandardLoader('Meeting');
+  meetingSettings = makeStandardLoader('MeetingSettings');
+  newMeetings = makeStandardLoader('NewMeeting');
   notifications = makeStandardLoader('Notification');
-  tasks = makeStandardLoader('Task');
+  orgApprovals = makeStandardLoader('OrgApproval');
+  organizations = makeStandardLoader('Organization');
+  retroThoughtGroups = makeStandardLoader('RetroThoughtGroup');
+  retroThoughts = makeStandardLoader('RetroThought');
   softTeamMembers = makeStandardLoader('SoftTeamMember');
-  teams = makeStandardLoader('Team');
+  tasks = makeStandardLoader('Task');
   teamMembers = makeStandardLoader('TeamMember');
+  teams = makeStandardLoader('Team');
   users = makeStandardLoader('User');
 }

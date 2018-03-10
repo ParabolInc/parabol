@@ -1,29 +1,15 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
+import styled from 'react-emotion';
 
-import withStyles from 'universal/styles/withStyles';
-
-const PlainButton = ({styles, ...props}) => (
-  <button className={css(styles.root)} {...props}>
-    {props.children}
-  </button>
-);
-
-PlainButton.propTypes = {
-  children: PropTypes.node,
-  styles: PropTypes.object.isRequired
-};
-
-const styleThunk = () => ({
-  root: {
-    appearance: 'none',
-    background: 'inherit',
-    border: 0,
-    borderRadius: 0,
-    margin: 0,
-    padding: 0
-  }
+const PlainButton = styled('button')({
+  appearance: 'none',
+  background: 'inherit',
+  border: 0,
+  borderRadius: 0,
+  color: 'inherit',
+  cursor: 'pointer',
+  fontSize: 'inherit',
+  margin: 0,
+  padding: 0
 });
 
-export default withStyles(styleThunk)(PlainButton);
+export default PlainButton;

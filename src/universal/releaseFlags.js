@@ -19,5 +19,10 @@
  */
 
 export default {
-  newSignIn: false
+  // The single-page embedded signin
+  newSignIn: false,
+  // The retrospective meeting
+  retro: false,
+  // the filter bar at the top of the team dash
+  localFilter: false
 };

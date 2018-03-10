@@ -1,53 +1,57 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+// @flow
+import * as React from 'react';
 import {CSSTransition} from 'react-transition-group';
-import withStyles from 'universal/styles/withStyles';
+import {css} from 'react-emotion';
 
-class AnimatedFade extends Component {
-  static propTypes = {
-    children: PropTypes.any.isRequired,
-    styles: PropTypes.object
-  }
-  state = {ready: false};
+const {Component} = React;
 
-  componentWillMount() {
-    this._mounted = true;
-    // This is required because aphrodite loads async. updating it to push styles in sync will fix this
-    // calling css below injects them into the stylesheet & then waiting till the next tick gives it time to flush
-    setTimeout(() => {
-      if (this._mounted) {
-        this.setState({ready: true});
-      }
-    });
-  }
+type Props = {
+  children: React.Node,
+  duration?: number,
+  slide?: number
+};
 
-  componentWillUnmount() {
-    this._mounted = false;
-  }
-
+// eslint-disable-next-line
+class AnimatedFade extends Component<Props> {
   render() {
-    const {children, styles, ...props} = this.props;
-    const classNames = {
-      appear: css(styles.enter),
-      appearActive: css(styles.enterActive),
-      enter: css(styles.enter),
-      enterActive: css(styles.enterActive),
-      exit: css(styles.exit),
-      exitActive: css(styles.exitActive)
-    };
-    if (!this.state.ready) {
-      // CSSTransition doesn't play well with null
-      return <div />;
-    }
+    const {children, duration = 100, slide = 32, ...props} = this.props;
 
+    const enter = css({
+      opacity: 0,
+      transform: `translate3d(0, ${slide}px, 0)`
+    });
+    const enterActive = css({
+      opacity: '1 !important',
+      transform: 'translate3d(0, 0, 0) !important',
+      transition: `all ${duration}ms ease-in !important`
+    });
+
+    const exit = css({
+      opacity: 1,
+      transform: 'translate3d(0, 0, 0)'
+    });
+
+    const exitActive = css({
+      opacity: '0 !important',
+      transform: `translate3d(0, ${-slide}px, 0) !important`,
+      transition: `all ${duration}ms ease-in !important`
+    });
+
+    const classNames = {
+      appear: enter,
+      appearActive: enterActive,
+      enter,
+      enterActive,
+      exit,
+      exitActive
+    };
     return (
       <CSSTransition
         {...props}
         classNames={classNames}
         timeout={{
-          enter: 100,
-          exit: 100
+          enter: duration,
+          exit: duration
         }}
       >
         {children}
@@ -56,28 +60,4 @@ class AnimatedFade extends Component {
   }
 }
 
-const styleThunk = () => ({
-  enter: {
-    opacity: 0,
-    transform: 'translate3d(0, 10px, 0)'
-  },
-
-  enterActive: {
-    opacity: 1,
-    transform: 'translate3d(0, 0, 0)',
-    transition: 'all 100ms ease-in'
-  },
-
-  exit: {
-    opacity: 1,
-    transform: 'translate3d(0, 0, 0)'
-  },
-
-  exitActive: {
-    opacity: 0,
-    transform: 'translate3d(0, -32px, 0)',
-    transition: 'all 100ms ease-out'
-  }
-});
-
-export default withStyles(styleThunk)(AnimatedFade);
+export default AnimatedFade;

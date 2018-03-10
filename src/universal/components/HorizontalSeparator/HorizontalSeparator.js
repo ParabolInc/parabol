@@ -5,7 +5,7 @@
  * @flow
  */
 
-import React from 'react';
+import React, {Fragment} from 'react';
 import styled from 'react-emotion';
 
 import appTheme from 'universal/styles/theme/appTheme';
@@ -31,14 +31,25 @@ const RightSeparator = styled('div')({
   marginLeft: '0.5rem'
 });
 
+const FullSeparator = styled('div')({
+  ...separatorLineStyles,
+  width: '20rem'
+});
+
 type Props = {
-  text: string
+  text?: string
 };
 
 export default ({text}: Props) => (
   <SeparatorContainer>
-    <LeftSeparator />
-    {text}
-    <RightSeparator />
+    {text ? (
+      <Fragment>
+        <LeftSeparator />
+        {text}
+        <RightSeparator />
+      </Fragment>
+    ) : (
+      <FullSeparator />
+    )}
   </SeparatorContainer>
 );

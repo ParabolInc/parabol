@@ -9,12 +9,21 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 
+const iconStyles = {
+  color: appTheme.palette.light,
+  fontSize: `${ui.iconSize} !important`,
+  position: 'absolute',
+  right: '100%',
+  textAlign: 'center',
+  width: 24
+};
+
 const DashNavTeam = (props) => {
   const {styles, team} = props;
   return (
     <div className={css(styles.iconAndLink)}>
       {!team.isPaid &&
-      <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment" />}
+      <FontAwesome name="warning" styles={iconStyles} title="Team is disabled for nonpayment" />}
       <DashNavItem
         href={`/team/${team.id}`}
         label={team.name}
@@ -33,15 +42,6 @@ const styleThunk = () => ({
     alignItems: 'center',
     display: 'flex',
     position: 'relative'
-  },
-
-  itemIcon: {
-    color: appTheme.palette.light,
-    fontSize: `${ui.iconSize} !important`,
-    position: 'absolute',
-    right: '100%',
-    textAlign: 'center',
-    width: 24
   }
 });
 

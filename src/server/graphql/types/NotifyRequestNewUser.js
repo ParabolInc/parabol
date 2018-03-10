@@ -4,11 +4,12 @@ import Notification, {notificationInterfaceFields} from 'server/graphql/types/No
 import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification';
 import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
+import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const NotifyRequestNewUser = new GraphQLObjectType({
   name: 'NotifyRequestNewUser',
   description: 'A notification sent to a user concerning an invitation (request, joined)',
-  interfaces: () => [Notification, OrganizationAddedNotification],
+  interfaces: () => [Notification, OrganizationAddedNotification, TeamNotification],
   fields: () => ({
     inviterUserId: {
       type: new GraphQLNonNull(GraphQLID),

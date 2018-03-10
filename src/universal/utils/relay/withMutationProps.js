@@ -69,6 +69,15 @@ export default (ComposedComponent) => {
   };
 };
 
+export type MutationProps = {
+  dirty: boolean,
+  error: any,
+  onCompleted: () => void,
+  onError: () => void,
+  setDirty: () => void,
+  submitMutation: () => void,
+  submitting: boolean
+};
 // const propTypes = {
 //  setDirty: PropTypes.func.isRequired,
 //  error: PropTypes.any,

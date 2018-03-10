@@ -43,7 +43,7 @@ export default {
 
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, userId);
-    const taskId = `${teamId}::${shortid.generate()}`;
+    const taskId = shortid.generate();
     const {entityMap} = JSON.parse(content);
     const tags = getTagsFromEntityMap(entityMap);
     const task = {

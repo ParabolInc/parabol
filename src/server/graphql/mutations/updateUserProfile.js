@@ -3,11 +3,11 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput';
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
 import {getUserId, requireAuth} from 'server/utils/authorization';
-import segmentIo from 'server/utils/segmentIo';
 import {handleSchemaErrors} from 'server/utils/utils';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import publish from 'server/utils/publish';
 import {NOTIFICATION, TEAM_MEMBER} from 'universal/utils/constants';
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -58,15 +58,7 @@ const updateUserProfile = {
     //   .catch(console.warn.bind(console));
     // }
     //
-    segmentIo.identify({
-      userId: user.id,
-      traits: {
-        avatar: user.picture,
-        createdAt: user.createdAt,
-        email: user.email,
-        name: user.preferredName
-      }
-    });
+    await sendSegmentIdentify(user.id);
     const teamMemberIds = teamMembers.map(({id}) => id);
     const teamIds = teamMembers.map(({teamId}) => teamId);
     const data = {userId, teamMemberIds};

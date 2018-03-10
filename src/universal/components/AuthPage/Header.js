@@ -8,21 +8,20 @@ import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
 
 import appTheme from 'universal/styles/theme/appTheme';
-import parabolLogo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
+import parabolLogo from 'universal/styles/theme/images/brand/logo.svg';
 
 const HeaderContainer = styled('div')({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  height: '4rem',
   width: '100%',
-  backgroundColor: appTheme.brand.greyBlue,
+  backgroundColor: appTheme.brand.new.purple,
   color: 'white',
   fontFamily: appTheme.typography.sansSerif
 });
 
 const HeaderBrand = styled('div')({
-  paddingLeft: '1rem'
+  padding: '0.8rem 1rem 0.6rem'
 });
 
 export default () => (

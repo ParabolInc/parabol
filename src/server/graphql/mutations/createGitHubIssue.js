@@ -69,15 +69,15 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const [teamId] = taskId.split('::');
-    requireTeamMember(authToken, teamId);
-
-    // VALIDATION
-    const viewerId = getUserId(authToken);
     const task = await r.table('Task').get(taskId);
     if (!task) {
       throw new Error('That task no longer exists');
     }
+    const {teamId} = task;
+    requireTeamMember(authToken, teamId);
+
+    // VALIDATION
+    const viewerId = getUserId(authToken);
     if (task.integration && task.integration.service) {
       throw new Error(`That task is already linked to ${task.integration.service}`);
     }

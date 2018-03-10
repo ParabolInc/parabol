@@ -1,39 +1,33 @@
 /**
- * The sign-in page.  Hosts 3rd part signin, email/password signin, and
- * also functions as the callback handler for the Auth0 OIDC response.
+ * The sign-in page.  Hosts 3rd party signin, email/password signin, and also
+ * functions as the callback handler for the Auth0 OIDC response.
  *
  * @flow
  */
-import type {Dispatch} from 'redux';
-import type {RouterHistory, Location} from 'react-router-dom';
 
-import {WebAuth} from 'auth0-js';
-import React, {Component} from 'react';
-import styled from 'react-emotion';
+import type {Node} from 'react';
+import type {RouterHistory, Location} from 'react-router-dom';
+import type {Dispatch} from 'redux';
+import type {AuthResponse, Credentials} from 'universal/types/auth';
+
+import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
+import AuthPage from 'universal/components/AuthPage/AuthPage';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-
-import Header from './Header';
+import auth0Login from 'universal/utils/auth0Login';
+import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
+import getWebAuth from 'universal/utils/getWebAuth';
+import promisify from 'es6-promisify';
 import SignIn from './SignIn';
-
-type Credentials = {
-  email: string,
-  password: string
-};
-
-type ParsedAuthResponse = {
-  idToken: string,
-  idTokenPayload: Object
-};
 
 type Props = {
   atmosphere: Object,
   dispatch: Dispatch<*>,
-  hasSession: boolean,
   history: RouterHistory,
   location: Location,
   webAuth: Object
@@ -41,34 +35,19 @@ type Props = {
 
 type State = {
   loggingIn: boolean,
-  error: ?Error
+  error: ?string,
+  submittingCredentials: boolean
 };
-
-const PageContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column'
-});
-
-const ErrorContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  height: '100%'
-});
 
 class SignInPage extends Component<Props, State> {
   state = {
     error: null,
-    loggingIn: false
+    loggingIn: false,
+    submittingCredentials: false
   };
 
   componentDidMount() {
-    this.maybeRedirectToApp();
     this.maybeCaptureAuthResponse();
-  }
-
-  componentDidUpdate() {
-    this.maybeRedirectToApp();
   }
 
   getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
@@ -78,68 +57,43 @@ class SignInPage extends Component<Props, State> {
     });
   };
 
-  maybeRedirectToApp = () => {
-    const {hasSession, history, location} = this.props;
-    if (hasSession) {
-      const parsedSearch = new URLSearchParams(location.search);
-      const pathToVisit = parsedSearch.get('redirectTo') || '/me';
-      history.replace(pathToVisit);
-    }
-  };
-
   maybeCaptureAuthResponse = async () => {
     // If we've received an auth response, log us in
     const {hash} = this.props.location;
     if (hash) {
       this.setState({loggingIn: true});
-      const authResponse = await this.parseAuthResponse(hash);
       try {
-        this.saveToken(authResponse);
+        const authResponse = await this.parseAuthResponse(hash);
+        this.appSignIn(authResponse);
       } catch (error) {
-        this.setState({error});
+        this.setState({error: error.error_description});
       }
     }
   };
 
-  parseAuthResponse = (hash: string): Promise<ParsedAuthResponse> => {
-    return new Promise((resolve, reject) => {
-      this.webAuth.parseHash({hash}, (err, authResult) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(authResult);
-      });
-    });
+  parseAuthResponse = (hash: string): Promise<AuthResponse> => {
+    const parseHash = promisify(this.webAuth.parseHash, this.webAuth);
+    return parseHash({hash});
   };
 
   resetState = () => {
     this.setState({loggingIn: false, error: null});
   };
 
-  saveToken = (response: ParsedAuthResponse): void => {
+  appSignIn = (response: AuthResponse): void => {
     signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
   };
 
-  webAuth = new WebAuth({
-    domain: __ACTION__.auth0Domain,
-    clientID: __ACTION__.auth0,
-    redirectUri: window.location.href,
-    scope: 'openid rol tms bet'
-  });
+  webAuth = getWebAuth();
 
-  authProviders = [
-    {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
-  ];
-
-  handleSubmitCredentials = ({email, password}: Credentials) => {
-    this.webAuth.login({
-      email,
-      password,
-      realm: 'Username-Password-Authentication',
-      responseType: 'token'
-    }, (error) => {
-      this.setState({error});
-    });
+  handleSubmitCredentials = async (credentials: Credentials) => {
+    this.setState({submittingCredentials: true, error: null});
+    try {
+      await auth0Login(this.webAuth, credentials);
+    } catch (error) {
+      this.setState({error: error.error_description});
+    }
+    this.setState({submittingCredentials: false});
   };
 
   renderLoading = () => {
@@ -148,56 +102,56 @@ class SignInPage extends Component<Props, State> {
 
   renderLoadingError = () => {
     return (
-      <PageContainer>
-        <Header />
-        <ErrorContainer>
-          <h1>
-            🤭 Oops!
-          </h1>
-          <p>
-            We had some trouble signing you in!
-          </p>
-          <p>
-            Try going back to the <Link to="/signin" onClick={this.resetState}>Sign in page</Link> in order to sign in again.
-          </p>
-        </ErrorContainer>
-      </PageContainer>
+      <Fragment>
+        <h1>
+          🤭 Oops!
+        </h1>
+        <p>
+          We had some trouble signing you in!
+        </p>
+        <p>
+          Try going back to the <Link to="/signin" onClick={this.resetState}>Sign in page</Link> in order to sign in again.
+        </p>
+      </Fragment>
+    );
+  };
+
+  renderSignIn = () => {
+    const {error, submittingCredentials} = this.state;
+    return (
+      <SignIn
+        authProviders={THIRD_PARTY_AUTH_PROVIDERS}
+        getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
+        handleSubmitCredentials={this.handleSubmitCredentials}
+        error={error}
+        isSubmitting={submittingCredentials}
+      />
     );
   };
 
   render() {
     const {loggingIn, error} = this.state;
 
+    let pageContent: Node;
     if (loggingIn && !error) {
-      return this.renderLoading();
-    }
-    if (loggingIn && error) {
-      return this.renderLoadingError();
+      pageContent = this.renderLoading();
+    } else if (loggingIn && error) {
+      pageContent = this.renderLoadingError();
+    } else {
+      pageContent = this.renderSignIn();
     }
     return (
-      <PageContainer>
-        <Header />
-        <SignIn
-          hasError={Boolean(error)}
-          authProviders={this.authProviders}
-          getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
-          handleSubmitCredentials={this.handleSubmitCredentials}
-        />
-      </PageContainer>
+      <AuthPage title="Sign In | Parabol">
+        {pageContent}
+      </AuthPage>
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  hasSession: Boolean(state.auth.obj.sub)
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  dispatch
-});
-
 export default withAtmosphere(
-  withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(SignInPage)
+  loginWithToken(
+    withRouter(
+      connect()(SignInPage)
+    )
   )
 );

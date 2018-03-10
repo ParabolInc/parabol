@@ -21,12 +21,13 @@ const InputField = (props) => {
     isLarger,
     isWider,
     label,
-    meta: {touched, error},
+    meta: {autofilled, dirty, error, invalid, touched},
     onButtonClick,
     placeholder,
     readyOnly,
     shortcutHint,
     styles,
+    type,
     underline
   } = props;
 
@@ -65,6 +66,7 @@ const InputField = (props) => {
       <div className={css(styles.inputBlock)}>
         <input
           {...input}
+          type={type || 'text'}
           autoFocus={autoFocus}
           className={inputStyles}
           disabled={disabled || readyOnly}
@@ -73,7 +75,7 @@ const InputField = (props) => {
           ref={(c) => { ref = c; }}
         />
       </div>
-      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
+      {touched && !autofilled && dirty && invalid && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
       {shortcutHint && <FieldShortcutHint disabled={shortcutDisabled} hint={shortcutHint} />}
     </FieldBlock>
   );
@@ -106,9 +108,9 @@ InputField.propTypes = {
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
-    type: PropTypes.string,
     value: PropTypes.string
   }),
+  type: PropTypes.string,
   isWider: PropTypes.bool,
   styles: PropTypes.object,
   colorPalette: PropTypes.oneOf([
