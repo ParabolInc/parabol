@@ -11,9 +11,9 @@ import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 import fetch from 'node-fetch';
 import {
-  sendGitHubAdministratorError, sendGitHubPassedThoughError, sendGitHubProviderNotFoundError,
-  sendTeamAccessError
+  sendGitHubAdministratorError, sendGitHubPassedThoughError, sendTeamAccessError
 } from 'server/utils/authorizationErrors';
+import {sendGitHubProviderNotFoundError} from 'server/utils/docNotFoundErrors';
 
 const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) => {
   const endpoint = `https://api.github.com/repos/${nameWithOwner}/hooks`;

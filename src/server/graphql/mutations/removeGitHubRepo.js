@@ -2,11 +2,13 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
-import {getIsTeamLead, getUserId, isTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamLead, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendTeamAccessError, sendTeamLeadAccessError} from 'server/utils/authorizationErrors';
+import {sendAlreadyRemovedIntegrationError} from 'server/utils/alreadyMutatedErrors';
+import {sendGitHubProviderNotFoundError} from 'server/utils/docNotFoundErrors';
 
 
 export default {
@@ -23,26 +25,17 @@ export default {
     const {id} = fromGlobalId(githubGlobalId);
 
     // AUTH
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     const integration = await r.table(GITHUB).get(id);
-    if (!integration) {
-      // no UI for this
-      throw new Error(`${githubGlobalId} does not exist`);
-    }
+    if (!integration) return sendGitHubProviderNotFoundError(authToken, {globalId: githubGlobalId});
     const {teamId, isActive, userIds, nameWithOwner} = integration;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
-    if (!isActive) {
-      // no UI for this
-      throw new Error(`${githubGlobalId} has already been removed`);
-    }
+    if (!isActive) return sendAlreadyRemovedIntegrationError(authToken, githubGlobalId);
 
-    if (!userIds.includes(userId)) {
-      const isTeamLead = await getIsTeamLead(`${userId}::${teamId}`);
-      if (!isTeamLead) {
-        throw new Error('You must be part of the integration or the team lead to remove this');
-      }
+    if (!userIds.includes(viewerId)) {
+      if (!await isTeamLead(viewerId, teamId)) return sendTeamLeadAccessError(authToken, teamId);
     }
 
     // RESOLUTION

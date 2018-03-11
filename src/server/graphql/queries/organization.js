@@ -20,7 +20,8 @@ export default {
     const {orgUsers} = org;
     const myOrgUser = orgUsers.find((user) => user.id === viewerId);
     if (!myOrgUser || myOrgUser.role !== BILLING_LEADER) {
-      throw new Error('Must be a billing leader');
+      // silently fail
+      return null;
     }
 
     // RESOLUTION

@@ -10,6 +10,8 @@ import extendNewMeetingForType from 'server/graphql/mutations/helpers/extendNewM
 import createNewMeetingPhases from 'server/graphql/mutations/helpers/createNewMeetingPhases';
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendAlreadyStartedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: StartNewMeetingPayload,
@@ -43,13 +45,21 @@ export default {
         .default(0)
     });
 
-    if (team.meetingId) {
-      throw new Error('A meeting has already been started!');
-    }
+    if (team.meetingId) return sendAlreadyStartedMeetingError(authToken, teamId)
 
     // RESOLUTION
     const meetingId = shortid.generate();
-    const phases = await createNewMeetingPhases(teamId, meetingId, meetingCount, meetingType, dataLoader);
+    let phases;
+    try {
+      phases = await createNewMeetingPhases(teamId, meetingId, meetingCount, meetingType, dataLoader);
+    } catch (e) {
+      const breadcrumb = {
+        message: e.message,
+        category: 'Start new meeting',
+        data: {teamId}
+      };
+      return sendAuthRaven(authToken, 'Something went wrong', breadcrumb);
+    }
     const facilitatorStageId = phases[0] && phases[0].stages[0] && phases[0].stages[0].id;
     const newMeetingBase = {
       id: meetingId,

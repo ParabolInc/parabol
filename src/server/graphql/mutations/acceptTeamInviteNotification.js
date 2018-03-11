@@ -9,7 +9,7 @@ import {INVITATION, NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'univ
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
-import {sendNotificationAccessError} from 'server/utils/authorizationErrors';
+import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: AcceptTeamInviteNotificationPayload,

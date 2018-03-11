@@ -6,7 +6,7 @@ import publish from 'server/utils/publish';
 import {TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors';
+import {sendTeamLeadAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors';
 
 export default {
   type: PromoteToTeamLeadPayload,
@@ -24,14 +24,14 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    const {teamId} = fromTeamMemberId(teamMemberId);
+    const {teamId, userId} = fromTeamMemberId(teamMemberId);
     const myTeamMemberId = toTeamMemberId(teamId, viewerId);
     if (!await isTeamLead(viewerId, teamId)) return sendTeamLeadAccessError(authToken, teamId);
 
     // VALIDATION
     const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
     if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
-      throw new Error(`Member ${teamMemberId} is not on the team`);
+      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId});
     }
 
     // RESOLUTION

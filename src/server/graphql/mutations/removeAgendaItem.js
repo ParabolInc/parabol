@@ -5,6 +5,7 @@ import publish from 'server/utils/publish';
 import {AGENDA_ITEM} from 'universal/utils/constants';
 import {isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendAgendaItemNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: RemoveAgendaItemPayload,
@@ -29,9 +30,7 @@ export default {
     const agendaItem = await r.table('AgendaItem').get(agendaItemId)
       .delete({returnChanges: true})('changes')(0)('old_val')
       .default(null);
-    if (!agendaItem) {
-      throw new Error('Agenda item does not exist');
-    }
+    if (!agendaItem) return sendAgendaItemNotFoundError(authToken, agendaItemId);
     const data = {agendaItem};
     publish(AGENDA_ITEM, teamId, RemoveAgendaItemPayload, data, subOptions);
     return data;

@@ -16,6 +16,8 @@ import makeTaskSchema from 'universal/validation/makeTaskSchema';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendTaskNotFoundError, sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors';
+import {sendAlreadyUpdatedTaskError} from 'server/utils/alreadyMutatedErrors';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -42,9 +44,7 @@ export default {
     const viewerId = getUserId(authToken);
     const {id: taskId} = updatedTask;
     const task = await r.table('Task').get(taskId);
-    if (!task) {
-      throw new Error('Task does not exist');
-    }
+    if (!task) return sendTaskNotFoundError(authToken, taskId);
     const {teamId} = task;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
@@ -56,9 +56,7 @@ export default {
     if (assigneeId) {
       const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember';
       const res = r.table(table).get(assigneeId);
-      if (!res) {
-        throw new Error('AssigneeId not found', assigneeId);
-      }
+      if (!res) return sendTeamMemberNotFoundError(authToken, teamId, assigneeId)
     }
 
     // RESOLUTION
@@ -121,9 +119,7 @@ export default {
         .coerceTo('array')
     });
     const usersToIgnore = getUsersToIgnore(area, teamMembers);
-    if (!newTask) {
-      throw new Error('Task already updated or does not exist');
-    }
+    if (!newTask) return sendAlreadyUpdatedTaskError(authToken, taskId);
 
     // send task updated messages
     const isPrivate = newTask.tags.includes('private');

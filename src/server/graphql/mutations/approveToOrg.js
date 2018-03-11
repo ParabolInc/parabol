@@ -29,12 +29,14 @@ export default {
     // RESOLUTION
     const subOptions = {mutatorId, operationId};
     const {
+      error,
       removedRequestNotifications,
       removedOrgApprovals,
       newInvitations,
       inviteeApprovedNotifications,
       teamInviteNotifications
     } = await approveToOrg(email, orgId, viewerId, dataLoader);
+    if (error) return {error};
 
     const invitationIds = newInvitations.map(({id}) => id);
 

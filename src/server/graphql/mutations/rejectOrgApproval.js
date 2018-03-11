@@ -17,6 +17,7 @@ import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTea
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -40,9 +41,7 @@ export default {
     const {notificationId} = args;
     const viewerId = getUserId(authToken);
     const rejectionNotification = await r.table('Notification').get(notificationId);
-    if (!rejectionNotification) {
-      throw new Error(`Notification ${notificationId} no longer exists!`);
-    }
+    if (!rejectionNotification) return sendNotificationAccessError(authToken, notificationId);
     const {orgId, inviteeEmail} = rejectionNotification;
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
     if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);

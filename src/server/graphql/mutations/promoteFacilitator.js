@@ -4,7 +4,9 @@ import PromoteFacilitatorPayload from 'server/graphql/types/PromoteFacilitatorPa
 import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import {isTeamMember} from 'server/utils/authorization';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 export default {
   type: PromoteFacilitatorPayload,
@@ -25,13 +27,13 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const [, teamId] = facilitatorId.split('::');
+    const {userId, teamId} = fromTeamMemberId(facilitatorId);
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     const facilitatorMembership = await dataLoader.get('teamMembers').load(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
-      throw new Error('facilitator is not active on that team');
+      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId});
     }
 
     // RESOLUTION

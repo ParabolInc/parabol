@@ -7,6 +7,7 @@ import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION} from 'universal/utils/constants';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   name: 'ResendTeamInvite',
@@ -25,7 +26,7 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const invitation = await r.table('Invitation').get(inviteId);
-    if (!invitation) throw new Error('Invitation not found!');
+    if (!invitation) return sendInvitationNotFoundError(authToken, inviteId);
 
     const {email, fullName, orgId, teamId} = invitation;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);

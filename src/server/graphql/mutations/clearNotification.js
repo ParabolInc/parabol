@@ -4,7 +4,7 @@ import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayl
 import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {NOTIFICATION} from 'universal/utils/constants';
-import {sendNotificationAccessError} from 'server/utils/authorizationErrors';
+import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: ClearNotificationPayload,

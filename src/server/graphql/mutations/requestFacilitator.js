@@ -5,6 +5,7 @@ import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendAlreadyCurrentFacilitatorError} from 'server/utils/alreadyMutatedErrors';
 
 export default {
   name: 'RequestFacilitator',
@@ -26,9 +27,7 @@ export default {
     // VALIDATION
     const requestorId = toTeamMemberId(teamId, viewerId);
     const {activeFacilitator} = await dataLoader.get('teams').load(teamId);
-    if (activeFacilitator === requestorId) {
-      throw new Error('You are already the facilitator');
-    }
+    if (activeFacilitator === requestorId) return sendAlreadyCurrentFacilitatorError(authToken, requestorId);
 
     // RESOLUTION
     const [currentFacilitatorUserId] = activeFacilitator.split('::');

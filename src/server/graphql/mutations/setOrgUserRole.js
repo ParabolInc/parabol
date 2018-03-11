@@ -7,6 +7,7 @@ import shortid from 'shortid';
 import {BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER} from 'universal/utils/constants';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: SetOrgUserRolePayload,
@@ -36,7 +37,12 @@ export default {
 
     // VALIDATION
     if (role && role !== BILLING_LEADER) {
-      throw new Error('invalid role');
+      const breadcrumb = {
+        message: 'Invalid role',
+        category: 'Unauthorized Access',
+        data: {role, orgId, userId}
+      };
+      return sendAuthRaven(authToken, 'Set org user role', breadcrumb);
     }
     // if someone is leaving, make sure there is someone else to take their place
     if (userId === authToken.sub) {
@@ -46,7 +52,12 @@ export default {
         })
         .count();
       if (leaderCount === 1) {
-        throw new Error('You’re the last leader, you can’t give that up');
+        const breadcrumb = {
+          message: 'You’re the last leader, you can’t give that up',
+          category: 'Unauthorized Access',
+          data: {role, orgId, userId}
+        };
+        return sendAuthRaven(authToken, 'Set org user role', breadcrumb);
       }
     }
 

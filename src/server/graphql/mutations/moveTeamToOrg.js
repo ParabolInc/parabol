@@ -4,6 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {getUserId, isSuperUser} from 'server/utils/authorization';
 import {ADD_USER} from 'server/utils/serverConstants';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: GraphQLString,
@@ -34,16 +35,31 @@ export default {
     const {userOrgs} = user;
     const isBillingLeaderForOrg = userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER);
     if (!isBillingLeaderForOrg && !su) {
-      throw new Error('You must be a billing leader for the organization you want to move the team to', orgId);
+      const breadcrumb = {
+        message: 'You must be a billing leader for the organization you want to move the team to',
+        category: 'Move Team To Org',
+        data: {teamId, orgId}
+      };
+      return sendAuthRaven(authToken, 'Move failed', breadcrumb);
     }
     const {orgId: currentOrgId} = team;
     const isBillingLeaderForTeam = userOrgs.find((userOrg) => userOrg.id === currentOrgId && userOrg.role === BILLING_LEADER);
     if (!isBillingLeaderForTeam && !su) {
-      throw new Error('You must be a billing leader for the org that owns that team', teamId);
+      const breadcrumb = {
+        message: 'You must be a billing leader for the org that owns that team',
+        category: 'Move Team To Org',
+        data: {teamId, orgId}
+      };
+      return sendAuthRaven(authToken, 'Move failed', breadcrumb);
     }
 
     if (orgId === currentOrgId && !su) {
-      throw new Error('That team already belongs to the organization', orgId);
+      const breadcrumb = {
+        message: 'That team already belongs to the organization',
+        category: 'Move Team To Org',
+        data: {teamId, orgId}
+      };
+      return sendAuthRaven(authToken, 'Move failed', breadcrumb);
     }
 
     // RESOLUTION

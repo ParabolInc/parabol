@@ -35,3 +35,48 @@ export const sendIntegrationNotFoundError = (authToken, integrationId) => {
   };
   return sendAuthRaven(authToken, 'Integration not found', breadcrumb);
 };
+
+export const sendAgendaItemNotFoundError = (authToken, agendaItemId) => {
+  const breadcrumb = {
+    message: `AgendaItem ${agendaItemId} does not exist`,
+    category: 'Not found',
+    data: {agendaItemId}
+  };
+  return sendAuthRaven(authToken, 'AgendaItem not found', breadcrumb);
+};
+
+export const sendNotificationAccessError = (authToken, notificationId, returnValue) => {
+  const breadcrumb = {
+    message: `Notification ${notificationId} does not exist`,
+    category: 'Not found',
+    data: {notificationId}
+  };
+  return sendAuthRaven(authToken, 'Notification not found', breadcrumb, returnValue);
+};
+
+export const sendGitHubProviderNotFoundError = (authToken, data, returnValue) => {
+  const breadcrumb = {
+    message: 'No GitHub Provider found! Try refreshing your token',
+    category: 'Not found',
+    data
+  };
+  return sendAuthRaven(authToken, 'GitHub Account Not Found', breadcrumb, returnValue);
+};
+
+export const sendSlackProviderNotFoundError = (authToken, data, returnValue) => {
+  const breadcrumb = {
+    message: 'No Slack Provider found! Try refreshing your token',
+    category: 'Not found',
+    data
+  };
+  return sendAuthRaven(authToken, 'Slack Account Not Found', breadcrumb, returnValue);
+};
+
+export const sendMeetingNotFoundError = (authToken, meetingId, returnValue) => {
+  const breadcrumb = {
+    message: 'Meeting ID not found',
+    category: 'Not found',
+    data: {meetingId}
+  };
+  return sendAuthRaven(authToken, 'Meeting Not Found', breadcrumb, returnValue);
+};

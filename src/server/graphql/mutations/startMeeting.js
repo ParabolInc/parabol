@@ -9,7 +9,8 @@ import {CHECKIN, TEAM} from 'universal/utils/constants';
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   type: StartMeetingPayload,
@@ -30,10 +31,10 @@ export default {
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
-    const facilitatorId = `${userId}::${teamId}`;
+    const facilitatorId = toTeamMemberId(teamId, userId);
     const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
-      throw new Error('facilitator is not active on that team');
+      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId});
     }
 
     const now = new Date();

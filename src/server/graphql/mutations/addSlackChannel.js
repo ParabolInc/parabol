@@ -8,9 +8,9 @@ import {SLACK} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import fetch from 'node-fetch';
 import {
-  sendSlackChannelArchivedError, sendSlackPassedThoughError, sendSlackProviderNotFoundError,
-  sendTeamAccessError
+  sendSlackChannelArchivedError, sendSlackPassedThoughError, sendTeamAccessError
 } from 'server/utils/authorizationErrors';
+import {sendSlackProviderNotFoundError} from 'server/utils/docNotFoundErrors';
 
 // TODO get rid of input and only request teamId not teamMemberId
 const AddSlackChannelInput = new GraphQLInputObjectType({

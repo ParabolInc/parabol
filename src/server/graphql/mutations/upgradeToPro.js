@@ -11,6 +11,7 @@ import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import {sendAlreadyProTierError} from 'server/utils/alreadyMutatedErrors';
 
 export default {
   type: UpgradeToProPayload,
@@ -41,9 +42,7 @@ export default {
       .get(orgId)
       .pluck('orgUsers', 'stripeId', 'stripeSubscriptionId');
 
-    if (startingSubId) {
-      throw new Error('You are already pro!');
-    }
+    if (startingSubId) return sendAlreadyProTierError(authToken, orgId);
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId

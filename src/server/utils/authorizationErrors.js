@@ -63,22 +63,7 @@ export const sendOrgLeadOfUserAccessError = (authToken, userId, returnValue) => 
   return sendAuthRaven(authToken, 'Not billing leader for user', breadcrumb, returnValue);
 };
 
-export const sendNotificationAccessError = (authToken, notificationId, returnValue) => {
-  const breadcrumb = {
-    message: `Notification ${notificationId} does not exist`,
-    category: 'Unauthorized Access',
-    data: {notificationId}
-  };
-  return sendAuthRaven(authToken, 'Notification not found', breadcrumb, returnValue);
-};
 
-export const sendGitHubProviderNotFoundError = (authToken, data, returnValue) => {
-  const breadcrumb = {
-    message: 'No GitHub Provider found! Try refreshing your token',
-    category: 'Unauthorized Access'
-  };
-  return sendAuthRaven(authToken, 'GitHub Account Not Found', breadcrumb, returnValue);
-};
 
 export const sendGitHubAdministratorError = (authToken, nameWithOwner, returnValue) => {
   const breadcrumb = {
@@ -98,13 +83,7 @@ export const sendGitHubPassedThoughError = (authToken, errors, returnValue) => {
   return sendAuthRaven(authToken, 'GitHub Error', breadcrumb, returnValue);
 }
 
-export const sendSlackProviderNotFoundError = (authToken, data, returnValue) => {
-  const breadcrumb = {
-    message: 'No Slack Provider found! Try refreshing your token',
-    category: 'Unauthorized Access'
-  };
-  return sendAuthRaven(authToken, 'Slack Account Not Found', breadcrumb, returnValue);
-};
+
 
 export const sendSlackChannelArchivedError = (authToken, name, returnValue) => {
   const breadcrumb = {
@@ -121,4 +100,13 @@ export const sendSlackPassedThoughError = (authToken, error, returnValue) => {
     category: 'Slack Error'
   };
   return sendAuthRaven(authToken, 'Slack Error', breadcrumb, returnValue);
+}
+
+export const sendTeamMemberNotOnTeamError = (authToken, {teamId, userId}) => {
+  const breadcrumb = {
+    message: 'That user is not active on the team',
+    category: 'Team member not active',
+    data: {teamId, userId}
+  };
+  return sendAuthRaven(authToken, 'Well that is weird', breadcrumb);
 }

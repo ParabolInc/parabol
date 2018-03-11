@@ -30,6 +30,7 @@ import tasks from 'server/graphql/queries/tasks';
 import archivedTasks from 'server/graphql/queries/archivedTasks';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -148,7 +149,7 @@ const User = new GraphQLObjectType({
       async resolve(source, {meetingId}, {authToken, dataLoader}) {
         const meeting = await dataLoader.get('meetings').load(meetingId);
         if (!meeting) {
-          throw new Error('Meeting ID not found');
+          return sendMeetingNotFoundError(authToken, meetingId);
         }
         if (!isTeamMember(authToken, meeting.teamId)) return sendTeamAccessError(authToken, meeting.teamId, null);
         return meeting;

@@ -8,6 +8,7 @@ import publish from 'server/utils/publish';
 import {ORGANIZATION, TEAM} from 'universal/utils/constants';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: UpdateCreditCardPayload,
@@ -37,7 +38,12 @@ export default {
     const {stripeId} = await r.table('Organization').get(orgId);
 
     if (!stripeId) {
-      throw new Error('Cannot call this without an active stripe subscription');
+      const breadcrumb = {
+        message: 'Cannot update credit card without an active stripe subscription',
+        category: 'Billing',
+        data: {orgId}
+      };
+      return sendAuthRaven(authToken, 'Something went wrong', breadcrumb);
     }
 
     // RESOLUTION
