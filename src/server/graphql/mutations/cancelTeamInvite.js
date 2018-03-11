@@ -9,6 +9,7 @@ import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   name: 'CancelTeamInvite',
@@ -29,7 +30,7 @@ export default {
     // AUTH
     const {email, teamId} = await r.table('Invitation').get(invitationId).default({});
     if (!teamId) {
-      throw new Error('Invitation not found!');
+      return sendInvitationNotFoundError(authToken, invitationId);
     }
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 

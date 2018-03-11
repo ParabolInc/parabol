@@ -8,6 +8,7 @@ import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import shortid from 'shortid';
 import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants';
 import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors';
+import {sendAlreadyArchivedTeamError} from 'server/utils/alreadyMutatedErrors';
 
 export default {
   type: ArchiveTeamPayload,
@@ -51,7 +52,7 @@ export default {
     });
 
     if (!team) {
-      throw new Error('Team was already archived');
+      return sendAlreadyArchivedTeamError(authToken, teamId);
     }
 
     const notifications = users

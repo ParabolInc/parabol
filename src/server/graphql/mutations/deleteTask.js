@@ -6,6 +6,7 @@ import publish from 'server/utils/publish';
 import {NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: DeleteTaskPayload,
@@ -24,7 +25,7 @@ export default {
     // AUTH
     const task = await r.table('Task').get(taskId);
     if (!task) {
-      throw new Error('Task does not exist');
+      return sendTaskNotFoundError(authToken, taskId);
     }
     const {teamId} = task;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);

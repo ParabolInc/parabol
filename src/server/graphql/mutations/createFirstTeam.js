@@ -13,6 +13,7 @@ import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import addSeedTasks from './helpers/addSeedTasks';
 import createFirstTeamValidation from './helpers/createFirstTeamValidation';
 import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: CreateFirstTeamPayload,
@@ -36,7 +37,11 @@ export default {
       .pluck('id', 'preferredName', 'userOrgs');
 
     if (user.userOrgs && user.userOrgs.length > 0) {
-      throw new Error('cannot use createFirstTeam when already part of an org');
+      const breadcrumb = {
+        message: 'Cannot use createFirstTeam when already part of an org',
+        category: 'Unauthorized access'
+      };
+      return sendAuthRaven(authToken, 'Oops', breadcrumb);
     }
 
     const schema = createFirstTeamValidation();

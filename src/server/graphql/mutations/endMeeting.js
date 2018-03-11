@@ -11,6 +11,7 @@ import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: EndMeetingPayload,
@@ -35,7 +36,12 @@ export default {
       .nth(0)
       .default({endedAt: r.now()});
     if (meeting.endedAt) {
-      throw new Error('Meeting already ended!');
+      const breadcrumb = {
+        message: 'Meeting already ended!',
+        category: 'Meeting ended',
+        data: {teamId}
+      };
+      return sendAuthRaven(authToken, 'Meeting already ended', breadcrumb);
     }
 
     // RESOLUTION
