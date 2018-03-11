@@ -78,6 +78,21 @@ export const sendTeamLeadAccessError = (authToken, teamId, returnValue) => {
   };
 };
 
+export const sendOrgLeadAccessError = (authToken, userOrgDoc, returnValue) => {
+  const orgId = userOrgDoc ? userOrgDoc.id : 'unknown organization';
+  const message = `You are not the billing leader for ${orgId}`;
+  const breadcrumb = {
+    message,
+    category: 'Unauthorized Access',
+    data: {orgId}
+  };
+  sendSentryEvent(authToken, breadcrumb);
+  return returnValue !== undefined ? returnValue : {
+    title: 'Not billing leader',
+    message
+  };
+};
+
 // undefined orgId will disable the filter
 export const getUserOrgDoc = (userId, orgId = '') => {
   const r = getRethink();
@@ -90,13 +105,6 @@ export const getUserOrgDoc = (userId, orgId = '') => {
 
 export const isBillingLeader = (userOrgDoc) => {
   return (userOrgDoc && userOrgDoc.role === BILLING_LEADER);
-};
-
-export const requireOrgLeader = (userOrgDoc) => {
-  const legit = isBillingLeader(userOrgDoc);
-  if (!legit) {
-    throw new Error('Unauthorized. User is not a Billing Leader for that organization');
-  }
 };
 
 export const requireOrgLeaderOfUser = async (authToken, userId) => {

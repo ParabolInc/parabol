@@ -2,11 +2,12 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput';
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
-import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import {ORGANIZATION} from 'universal/utils/constants';
 import updateOrgValidation from './helpers/updateOrgValidation';
+import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),
@@ -26,7 +27,7 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, updatedOrg.id);
-    requireOrgLeader(userOrgDoc);
+    if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const schema = updateOrgValidation();

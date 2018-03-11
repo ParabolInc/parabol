@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import rejectOrgApprovalValidation from 'server/graphql/mutations/helpers/rejectOrgApprovalValidation';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
-import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -15,6 +15,7 @@ import promiseAllObj from 'universal/utils/promiseAllObj';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
+import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -43,7 +44,7 @@ export default {
     }
     const {orgId, inviteeEmail} = rejectionNotification;
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
-    requireOrgLeader(userOrgDoc);
+    if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const {data: {reason}, errors} = rejectOrgApprovalValidation()(args);

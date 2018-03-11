@@ -1,9 +1,10 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
 import CreatePicturePutUrlPayload from 'server/graphql/types/CreatePicturePutUrlPayload';
-import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
 import {validateAvatarUpload} from 'server/utils/utils';
 import shortid from 'shortid';
+import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 
 const createOrgPicturePutUrl = {
   type: CreatePicturePutUrlPayload,
@@ -26,7 +27,7 @@ const createOrgPicturePutUrl = {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    requireOrgLeader(userOrgDoc);
+    if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const ext = validateAvatarUpload(contentType, contentLength);

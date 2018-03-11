@@ -3,13 +3,13 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
-import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import publish from 'server/utils/publish';
-import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants';
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
+import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 
 export default {
   type: UpgradeToProPayload,
@@ -33,7 +33,7 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    requireOrgLeader(userOrgDoc);
+    if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r.table('Organization')

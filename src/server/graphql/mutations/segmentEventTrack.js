@@ -1,10 +1,14 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql';
 import SegmentEventTrackOptions from 'server/graphql/types/SegmentEventTrackOptions';
 import {
-  getUserId, getUserOrgDoc, isTeamMember, requireOrgLeader,
+  getUserId,
+  getUserOrgDoc,
+  isTeamMember,
+  sendOrgLeadAccessError,
   sendTeamAccessError
 } from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 
 
 export default {
@@ -29,7 +33,7 @@ export default {
     }
     if (orgId) {
       const userOrgDoc = await getUserOrgDoc(userId, orgId);
-      requireOrgLeader(userOrgDoc);
+      if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc, true);
     }
 
     // RESOLUTION
