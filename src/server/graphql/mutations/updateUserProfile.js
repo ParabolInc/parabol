@@ -3,12 +3,12 @@ import getRethink from 'server/database/rethinkDriver';
 import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput';
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
 import {getUserId, isAuthenticated} from 'server/utils/authorization';
-import {handleSchemaErrors} from 'server/utils/utils';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import publish from 'server/utils/publish';
 import {NOTIFICATION, TEAM_MEMBER} from 'universal/utils/constants';
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -31,7 +31,7 @@ const updateUserProfile = {
     // VALIDATION
     const schema = makeUserServerSchema();
     const {data: validUpdatedUser, errors} = schema(updatedUser);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const updates = {

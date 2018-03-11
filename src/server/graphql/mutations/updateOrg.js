@@ -4,11 +4,11 @@ import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput';
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
 import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {handleSchemaErrors} from 'server/utils/utils';
 import {ORGANIZATION} from 'universal/utils/constants';
 import updateOrgValidation from './helpers/updateOrgValidation';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),
@@ -33,7 +33,7 @@ export default {
     // VALIDATION
     const schema = updateOrgValidation();
     const {errors, data: {id: orgId, ...org}} = schema(updatedOrg);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const dbUpdate = {

@@ -8,7 +8,6 @@ import UpdateTaskInput from 'server/graphql/types/UpdateTaskInput';
 import UpdateTaskPayload from 'server/graphql/types/UpdateTaskPayload';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {TASK} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
@@ -18,6 +17,7 @@ import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendTaskNotFoundError, sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyUpdatedTaskError} from 'server/utils/alreadyMutatedErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -51,7 +51,7 @@ export default {
     // VALIDATION
     const schema = makeTaskSchema();
     const {errors, data: validUpdatedTask} = schema(updatedTask);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
     const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedTask;
     if (assigneeId) {
       const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember';

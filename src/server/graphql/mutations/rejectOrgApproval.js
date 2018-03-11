@@ -5,7 +5,6 @@ import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayl
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
@@ -18,6 +17,7 @@ import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -48,7 +48,7 @@ export default {
 
     // VALIDATION
     const {data: {reason}, errors} = rejectOrgApprovalValidation()(args);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const deniedByName = await r.table('User').get(viewerId)('preferredName').default('A Billing Leader');

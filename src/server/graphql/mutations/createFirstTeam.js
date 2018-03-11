@@ -7,13 +7,13 @@ import NewTeamInput from 'server/graphql/types/NewTeamInput';
 import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import addSeedTasks from './helpers/addSeedTasks';
 import createFirstTeamValidation from './helpers/createFirstTeamValidation';
 import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
 import sendAuthRaven from 'server/utils/sendAuthRaven';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: CreateFirstTeamPayload,
@@ -46,7 +46,7 @@ export default {
 
     const schema = createFirstTeamValidation();
     const {data: {name}, errors} = schema(newTeam);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const orgId = shortid.generate();

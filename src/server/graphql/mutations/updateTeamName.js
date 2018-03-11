@@ -4,10 +4,10 @@ import UpdatedTeamInput from 'server/graphql/types/UpdatedTeamInput';
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
 import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {handleSchemaErrors} from 'server/utils/utils';
 import {TEAM} from 'universal/utils/constants';
 import updateTeamNameValidation from './helpers/updateTeamNameValidation';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 
 export default {
@@ -29,7 +29,7 @@ export default {
 
     // VALIDATION
     const {errors, data: {id: teamId, name}} = updateTeamNameValidation()(updatedTeam);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const dbUpdate = {

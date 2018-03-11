@@ -8,12 +8,12 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {NEW_AUTH_TOKEN, NOTIFICATION, TEAM, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import addTeamValidation from './helpers/addTeamValidation';
 import {sendOrgAccessError} from 'server/utils/authorizationErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: AddTeamPayload,
@@ -39,7 +39,7 @@ export default {
 
     // VALIDATION
     const {data: {invitees, newTeam}, errors} = addTeamValidation()(args);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const teamId = shortid.generate();
