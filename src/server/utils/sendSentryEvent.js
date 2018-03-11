@@ -11,7 +11,7 @@ type DataloaderData = {
 
 type GraphQLData = {
   query: string,
-  variables?: { [name: string]: $FlowFixMe },
+  variables?: { [name: string]: any },
   firstError?: any
 };
 

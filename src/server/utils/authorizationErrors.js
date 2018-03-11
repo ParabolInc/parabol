@@ -51,6 +51,20 @@ export const sendTeamLeadAccessError = (authToken, teamId, returnValue) => {
     message
   };
 };
+export const sendTeamPaidTierError = (authToken, teamId, returnValue) => {
+  const message = 'That feature is not available to teams on the personal plan';
+  const breadcrumb = {
+    message,
+    category: 'Unauthorized Access',
+    data: {teamId}
+  };
+  sendSentryEvent(authToken, breadcrumb);
+  return returnValue !== undefined ? returnValue : {
+    title: 'Not available',
+    message
+  };
+};
+
 export const sendOrgLeadAccessError = (authToken, userOrgDoc, returnValue) => {
   const orgId = userOrgDoc ? userOrgDoc.id : 'unknown organization';
   const message = `You are not the billing leader for ${orgId}`;

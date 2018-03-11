@@ -1,5 +1,4 @@
-import {BILLING_LEADER} from 'universal/utils/constants';
-import {qualifyingTiers, tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
+import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants';
 import getRethink from '../database/rethinkDriver';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
@@ -14,9 +13,6 @@ export const isSuperUser = (authToken) => {
   return userId && authToken.rol === 'su';
 };
 
-export const isOrgMember = (authToken, userOrgDoc, userId) => {
-
-}
 export const isTeamMember = (authToken, teamId) => {
   const {tms} = authToken;
   return Array.isArray(tms) && tms.includes(teamId);
@@ -76,19 +72,10 @@ export const isOrgLeaderOfUser = async (authToken, userId) => {
     });
 };
 
-export const requireTeamCanUpdateCheckInQuestion = async (teamId) => {
+export const isPaidTier = async (teamId) => {
   const r = getRethink();
-
-  const {tier} = await r
+  const tier = await r
     .table('Team')
-    .get(teamId)
-    .pluck('tier');
-
-  if (!tierSupportsUpdateCheckInQuestion(tier)) {
-    throw new Error(
-      `Unauthorized. Team billing tier must be one of {${qualifyingTiers.join(', ')}} to update the Check-in question. ` +
-      `Actual tier is '${tier}'.`
-    );
-  }
-  return true;
+    .get(teamId)('tier');
+  return tier !== PERSONAL;
 };
