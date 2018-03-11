@@ -4,8 +4,9 @@ import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import {TaskConnection} from 'server/graphql/types/Task';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {PERSONAL} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: TaskConnection,

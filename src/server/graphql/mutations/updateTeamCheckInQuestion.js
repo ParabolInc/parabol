@@ -1,10 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
-import {isTeamMember, requireTeamCanUpdateCheckInQuestion, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember, requireTeamCanUpdateCheckInQuestion} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: UpdateCheckInQuestionPayload,

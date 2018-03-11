@@ -3,12 +3,13 @@ import getRethink from 'server/database/rethinkDriver';
 import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
 import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
+import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
+import {sendNotificationAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: AcceptTeamInviteNotificationPayload,
@@ -27,7 +28,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken);
     const notification = await r.table('Notification').get(notificationId);
-    requireNotificationOwner(viewerId, notification);
+    if (!notification || !notification.userIds.includes(viewerId)) return sendNotificationAccessError(authToken, notificationId);
 
     // RESOLUTION
     const {inviteeEmail, teamId} = notification;

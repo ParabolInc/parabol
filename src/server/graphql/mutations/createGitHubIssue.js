@@ -3,13 +3,14 @@ import {stateToMarkdown} from 'draft-js-export-markdown';
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {GITHUB, TASK} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 import fetch from 'node-fetch';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 // const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
 //  if (!creatorProvider) return false;

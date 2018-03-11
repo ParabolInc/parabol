@@ -1,8 +1,9 @@
 import {GraphQLString} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {getUserId, isAuthenticated, sendNotAuthenticatedAccessError} from 'server/utils/authorization';
+import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: GraphQLString,

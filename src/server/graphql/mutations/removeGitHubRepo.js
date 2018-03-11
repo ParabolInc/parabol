@@ -2,10 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
-import {getIsTeamLead, getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getIsTeamLead, getUserId, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 
 export default {

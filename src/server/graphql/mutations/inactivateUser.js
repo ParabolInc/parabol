@@ -1,10 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import {requireOrgLeaderOfUser} from 'server/utils/authorization';
+import {isOrgLeaderOfUser} from 'server/utils/authorization';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import {MAX_MONTHLY_PAUSES, PAUSE_USER} from 'server/utils/serverConstants';
 import {PERSONAL} from 'universal/utils/constants';
+import {sendOrgLeadOfUserAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: GraphQLBoolean,
@@ -19,7 +20,8 @@ export default {
     const r = getRethink();
 
     // AUTH
-    await requireOrgLeaderOfUser(authToken, userId);
+    if (!await isOrgLeaderOfUser(authToken, userId)) return sendOrgLeadOfUserAccessError(authToken, userId, false);
+
     const orgDocs = await r.table('Organization')
       .getAll(userId, {index: 'orgUsers'})
       .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId', 'tier');

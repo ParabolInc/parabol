@@ -3,11 +3,12 @@ import {fromGlobalId, toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
 import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 
 const getPayload = async (service, integrationChanges, teamId, userId) => {

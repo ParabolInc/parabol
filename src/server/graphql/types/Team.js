@@ -27,7 +27,8 @@ import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 const Team = new GraphQLObjectType({
   name: 'Team',

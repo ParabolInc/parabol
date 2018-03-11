@@ -5,7 +5,7 @@ import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, getUserOrgDoc, requireUserInOrg} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -13,6 +13,7 @@ import shortid from 'shortid';
 import {NEW_AUTH_TOKEN, NOTIFICATION, TEAM, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import addTeamValidation from './helpers/addTeamValidation';
+import {sendOrgAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: AddTeamPayload,
@@ -34,7 +35,7 @@ export default {
     const {orgId} = args.newTeam;
     const viewerId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
-    requireUserInOrg(userOrgDoc, viewerId, orgId);
+    if (!userOrgDoc) return sendOrgAccessError(authToken, orgId);
 
     // VALIDATION
     const {data: {invitees, newTeam}, errors} = addTeamValidation()(args);

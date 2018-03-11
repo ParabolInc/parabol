@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import AddProviderPayload from 'server/graphql/types/AddProviderPayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 
 export default {

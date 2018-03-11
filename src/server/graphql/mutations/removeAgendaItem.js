@@ -3,7 +3,8 @@ import getRethink from 'server/database/rethinkDriver';
 import RemoveAgendaItemPayload from 'server/graphql/types/RemoveAgendaItemPayload';
 import publish from 'server/utils/publish';
 import {AGENDA_ITEM} from 'universal/utils/constants';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: RemoveAgendaItemPayload,

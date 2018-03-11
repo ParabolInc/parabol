@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import approveToOrg from 'server/safeMutations/approveToOrg';
-import {getUserId, getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, ORGANIZATION} from 'universal/utils/constants';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
-
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: ApproveToOrgPayload,

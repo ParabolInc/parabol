@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
-import {getUserId, isTeamLead, sendTeamLeadAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: PromoteToTeamLeadPayload,

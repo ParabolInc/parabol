@@ -2,11 +2,12 @@ import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
 import insertSlackChannel from 'server/safeMutations/insertSlackChannel';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {SLACK} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import fetch from 'node-fetch';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 // TODO get rid of input and only request teamId not teamMemberId
 const AddSlackChannelInput = new GraphQLInputObjectType({

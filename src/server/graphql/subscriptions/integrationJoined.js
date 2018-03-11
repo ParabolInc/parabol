@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import JoinIntegrationPayload from 'server/graphql/types/JoinIntegrationPayload';
 import IntegrationService from 'server/graphql/types/IntegrationService';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(JoinIntegrationPayload),

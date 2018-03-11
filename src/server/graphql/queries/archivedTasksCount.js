@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: GraphQLInt,

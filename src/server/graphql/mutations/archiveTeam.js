@@ -2,11 +2,12 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, isTeamLead, sendTeamLeadAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import shortid from 'shortid';
 import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants';
+import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: ArchiveTeamPayload,

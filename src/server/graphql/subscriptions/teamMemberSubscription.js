@@ -1,8 +1,9 @@
 import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import TeamMemberSubscriptionPayload from 'server/graphql/types/TeamMemberSubscriptionPayload';
-import {getUserId, isAuthenticated, sendNotAuthenticatedAccessError} from 'server/utils/authorization';
+import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import {TEAM_MEMBER} from 'universal/utils/constants';
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(TeamMemberSubscriptionPayload),

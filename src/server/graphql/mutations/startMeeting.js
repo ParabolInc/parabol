@@ -2,13 +2,14 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {CHECKIN, TEAM} from 'universal/utils/constants';
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: StartMeetingPayload,

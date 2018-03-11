@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {TEAM} from 'universal/utils/constants';
@@ -9,6 +9,7 @@ import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import extendNewMeetingForType from 'server/graphql/mutations/helpers/extendNewMeetingForType';
 import createNewMeetingPhases from 'server/graphql/mutations/helpers/createNewMeetingPhases';
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: StartNewMeetingPayload,

@@ -1,8 +1,9 @@
 import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import NotificationSubscriptionPayload from 'server/graphql/types/NotificationSubscriptionPayload';
-import {getUserId, isAuthenticated, sendNotAuthenticatedAccessError} from 'server/utils/authorization';
+import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import {NOTIFICATION} from 'universal/utils/constants';
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(NotificationSubscriptionPayload),

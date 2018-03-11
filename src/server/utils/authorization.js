@@ -1,7 +1,6 @@
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {qualifyingTiers, tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import getRethink from '../database/rethinkDriver';
-import sendSentryEvent from 'server/utils/sendSentryEvent';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export const getUserId = (authToken) => {
@@ -15,6 +14,9 @@ export const isSuperUser = (authToken) => {
   return userId && authToken.rol === 'su';
 };
 
+export const isOrgMember = (authToken, userOrgDoc, userId) => {
+
+}
 export const isTeamMember = (authToken, teamId) => {
   const {tms} = authToken;
   return Array.isArray(tms) && tms.includes(teamId);
@@ -37,62 +39,6 @@ export const requireSU = (authToken) => {
   }
 };
 
-export const sendNotAuthenticatedAccessError = (authToken, returnValue) => {
-  const message = 'You must be logged in for this action.';
-  const breadcrumb = {
-    message,
-    category: 'Unauthenticated Access'
-  };
-  sendSentryEvent(authToken, breadcrumb);
-  return returnValue !== undefined ? returnValue : {
-    title: 'Not logged in',
-    message
-  };
-};
-
-export const sendTeamAccessError = (authToken, teamId, returnValue) => {
-  const message = `You do not have access to team ${teamId}`;
-  const breadcrumb = {
-    message,
-    category: 'Unauthorized Access',
-    data: {teamId}
-  };
-  sendSentryEvent(authToken, breadcrumb);
-  return returnValue !== undefined ? returnValue : {
-    title: 'Not on team',
-    message
-  };
-};
-
-export const sendTeamLeadAccessError = (authToken, teamId, returnValue) => {
-  const message = `You are not the team lead for ${teamId}`;
-  const breadcrumb = {
-    message,
-    category: 'Unauthorized Access',
-    data: {teamId}
-  };
-  sendSentryEvent(authToken, breadcrumb);
-  return returnValue !== undefined ? returnValue : {
-    title: 'Not team lead',
-    message
-  };
-};
-
-export const sendOrgLeadAccessError = (authToken, userOrgDoc, returnValue) => {
-  const orgId = userOrgDoc ? userOrgDoc.id : 'unknown organization';
-  const message = `You are not the billing leader for ${orgId}`;
-  const breadcrumb = {
-    message,
-    category: 'Unauthorized Access',
-    data: {orgId}
-  };
-  sendSentryEvent(authToken, breadcrumb);
-  return returnValue !== undefined ? returnValue : {
-    title: 'Not billing leader',
-    message
-  };
-};
-
 // undefined orgId will disable the filter
 export const getUserOrgDoc = (userId, orgId = '') => {
   const r = getRethink();
@@ -107,20 +53,18 @@ export const isBillingLeader = (userOrgDoc) => {
   return (userOrgDoc && userOrgDoc.role === BILLING_LEADER);
 };
 
-export const requireOrgLeaderOfUser = async (authToken, userId) => {
+export const isOrgLeaderOfUser = async (authToken, userId) => {
   const r = getRethink();
-  const isLeaderOfUser = await r.table('User')
+  return r.table('User')
     .get(authToken.sub)('userOrgs')
     .filter({
       role: BILLING_LEADER
-    })
-    .map((userOrg) => userOrg('id'))
+    })('id')
     .do((leaderOrgs) => {
       return {
         leaderOrgs,
         memberOrgs: r.table('User')
-          .get(userId)('userOrgs')
-          .map((userOrg) => userOrg('id'))
+          .get(userId)('userOrgs')('id')
       };
     })
     .do((res) => {
@@ -130,22 +74,6 @@ export const requireOrgLeaderOfUser = async (authToken, userId) => {
         .count()
         .lt(res('leaderOrgs').count().add(res('memberOrgs').count()));
     });
-  if (!isLeaderOfUser) {
-    throw new Error('Unauthorized. Only an Billing Leader of a user can set this');
-  }
-  return true;
-};
-
-export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
-  if (!userOrgDoc) {
-    throw new Error(`Unauthorized. ${userId} does not belong in org ${orgId}`);
-  }
-  return true;
-};
-
-export const requireNotificationOwner = (userId, notification) => {
-  if (notification && notification.userIds.includes(userId)) return true;
-  throw new Error('Notification not found!');
 };
 
 export const requireTeamCanUpdateCheckInQuestion = async (teamId) => {

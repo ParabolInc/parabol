@@ -1,8 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import EditTaskPayload from 'server/graphql/types/EditTaskPayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TASK} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: EditTaskPayload,

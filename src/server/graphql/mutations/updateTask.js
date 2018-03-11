@@ -6,7 +6,7 @@ import publishChangeNotifications from 'server/graphql/mutations/helpers/publish
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import UpdateTaskInput from 'server/graphql/types/UpdateTaskInput';
 import UpdateTaskPayload from 'server/graphql/types/UpdateTaskPayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -15,6 +15,7 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import makeTaskSchema from 'universal/validation/makeTaskSchema';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 const DEBOUNCE_TIME = ms('5m');
 

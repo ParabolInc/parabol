@@ -28,7 +28,8 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import organization from 'server/graphql/queries/organization';
 import tasks from 'server/graphql/queries/tasks';
 import archivedTasks from 'server/graphql/queries/archivedTasks';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 const User = new GraphQLObjectType({
   name: 'User',

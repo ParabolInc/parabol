@@ -1,13 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {NOTIFICATION, ORG_APPROVAL, REQUEST_NEW_USER, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: CancelApprovalPayload,

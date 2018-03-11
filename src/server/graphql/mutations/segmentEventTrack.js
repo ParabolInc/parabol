@@ -3,12 +3,10 @@ import SegmentEventTrackOptions from 'server/graphql/types/SegmentEventTrackOpti
 import {
   getUserId,
   getUserOrgDoc,
-  isTeamMember,
-  sendOrgLeadAccessError,
-  sendTeamAccessError
-} from 'server/utils/authorization';
+  isTeamMember} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
+import {sendOrgLeadAccessError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 
 export default {

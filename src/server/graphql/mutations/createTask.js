@@ -4,7 +4,7 @@ import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore'
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateTaskInput from 'server/graphql/types/CreateTaskInput';
 import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -13,6 +13,7 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import makeTaskSchema from 'universal/validation/makeTaskSchema';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: CreateTaskPayload,

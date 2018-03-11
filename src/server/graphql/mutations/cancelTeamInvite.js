@@ -1,13 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, TASK, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   name: 'CancelTeamInvite',

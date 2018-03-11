@@ -1,9 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   name: 'RequestFacilitator',

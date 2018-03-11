@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import rejectOrgApprovalValidation from 'server/graphql/mutations/helpers/rejectOrgApprovalValidation';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
-import {getUserId, getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
@@ -16,6 +16,7 @@ import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembe
 import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: RejectOrgApprovalPayload,

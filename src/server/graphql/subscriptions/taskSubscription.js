@@ -1,8 +1,9 @@
 import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import TaskSubscriptionPayload from 'server/graphql/types/TaskSubscriptionPayload';
-import {getUserId, isAuthenticated, sendNotAuthenticatedAccessError} from 'server/utils/authorization';
+import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import {TASK} from 'universal/utils/constants';
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
 
 const taskSubscription = {
   type: new GraphQLNonNull(TaskSubscriptionPayload),

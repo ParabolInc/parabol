@@ -3,9 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import getInviterInfoAndTeamName from 'server/graphql/mutations/helpers/inviteTeamMembers/getInviterInfoAndTeamName';
 import ResendTeamInvitePayload from 'server/graphql/types/ResendTeamInvitePayload';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   name: 'ResendTeamInvite',

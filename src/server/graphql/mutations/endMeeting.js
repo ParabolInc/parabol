@@ -5,11 +5,12 @@ import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEm
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: EndMeetingPayload,

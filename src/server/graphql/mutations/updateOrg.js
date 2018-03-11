@@ -2,12 +2,13 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput';
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
-import {getUserId, getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import {ORGANIZATION} from 'universal/utils/constants';
 import updateOrgValidation from './helpers/updateOrgValidation';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),

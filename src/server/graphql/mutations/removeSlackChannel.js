@@ -4,7 +4,8 @@ import getRethink from 'server/database/rethinkDriver';
 import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload';
 import getPubSub from 'server/utils/getPubSub';
 import {SLACK} from 'universal/utils/constants';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   name: 'RemoveSlackChannel',

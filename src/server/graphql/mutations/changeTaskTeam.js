@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ChangeTaskTeamPayload from 'server/graphql/types/ChangeTaskTeamPayload';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import shortid from 'shortid';
 import removeEntityKeepText from 'universal/utils/draftjs/removeEntityKeepText';
 import {TASK, TASK_INVOLVES} from 'universal/utils/constants';
 import publish from 'server/utils/publish';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: ChangeTaskTeamPayload,

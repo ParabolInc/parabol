@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ProviderMap from 'server/graphql/types/ProviderMap';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {CURRENT_PROVIDERS, SLACK} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 const getUserReduction = (service, reduction, userId) => {
   if (service === SLACK) {

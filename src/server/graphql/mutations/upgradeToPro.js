@@ -3,13 +3,14 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
-import {getUserId, getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import publish from 'server/utils/publish';
 import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: UpgradeToProPayload,

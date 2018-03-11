@@ -3,9 +3,10 @@ import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import JoinIntegrationPayload from 'server/graphql/types/JoinIntegrationPayload';
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
-import {getUserId, isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(JoinIntegrationPayload),

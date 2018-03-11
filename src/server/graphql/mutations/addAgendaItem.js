@@ -7,7 +7,8 @@ import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {AGENDA_ITEM} from 'universal/utils/constants';
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: AddAgendaItemPayload,

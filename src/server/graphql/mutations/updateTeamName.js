@@ -2,11 +2,12 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdatedTeamInput from 'server/graphql/types/UpdatedTeamInput';
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
-import {isTeamMember, sendTeamAccessError} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {handleSchemaErrors} from 'server/utils/utils';
 import {TEAM} from 'universal/utils/constants';
 import updateTeamNameValidation from './helpers/updateTeamNameValidation';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 
 export default {

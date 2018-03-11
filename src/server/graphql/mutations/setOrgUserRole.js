@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload';
-import {getUserOrgDoc, sendOrgLeadAccessError} from 'server/utils/authorization';
+import {getUserOrgDoc} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER} from 'universal/utils/constants';
 import isBillingLeader from 'server/graphql/queries/isBillingLeader';
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: SetOrgUserRolePayload,
