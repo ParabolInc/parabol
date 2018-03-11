@@ -30,7 +30,7 @@ const ReflectionGroupTitleEditor = ({handleSubmit, title}: Props) => (
       component={InputField}
       fieldSize="small"
       name={TITLE_FIELD_NAME}
-      placeholder="This group's theme..."
+      placeholder="Group theme..."
       type="text"
       underline
       value={title}

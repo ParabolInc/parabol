@@ -9,6 +9,7 @@ const PlainButton = styled('button')({
   borderRadius: 0,
   color: 'inherit',
   cursor: 'pointer',
+  fontFamily: 'inherit',
   fontSize: 'inherit',
   margin: 0,
   padding: 0,

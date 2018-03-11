@@ -79,7 +79,7 @@ storiesOf('Reflection Group', module)
             <ReflectionGroup
               handleSaveTitle={action('save-title')}
               id={newId()}
-              hoveredHeight={40}
+              hovered
               reflections={[
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}

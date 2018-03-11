@@ -3,6 +3,7 @@
  *
  * @flow
  */
+import type {Element} from 'react';
 import type {Reflection, ReflectionGroupID} from 'universal/types/retro';
 
 // $FlowFixMe
@@ -11,14 +12,16 @@ import {css} from 'react-emotion';
 import {CSSTransition} from 'react-transition-group';
 
 import PlainButton from 'universal/components/PlainButton/PlainButton';
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
+import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
 import ReflectionCardDropPreview from 'universal/components/ReflectionCardDropPreview/ReflectionCardDropPreview';
 
 import ReflectionGroupTitleEditor from './ReflectionGroupTitleEditor';
 
+const animationTime = 200;
+
 const animationTimeout = {
-  enter: 200,
-  exit: 200
+  enter: animationTime,
+  exit: animationTime
 };
 
 type Props = {
@@ -47,12 +50,36 @@ class ReflectionGroup extends Component<Props, State> {
     ...extraStyles
   });
 
+  getCardElements = () => {
+    const {hovered} = this.props;
+    const {isExpanded} = this.state;
+    const reflections = isExpanded ? this.props.reflections : this.getVisibleReflections();
+    const cardElements = reflections.map((reflection) => ({
+      element: this.renderReflection(reflection),
+      key: reflection.id
+    }));
+    return hovered ? (
+      [
+        {element: <ReflectionCardDropPreview />, key: 'reflection-card-drop-preview'},
+        ...cardElements
+      ]
+    ) : (
+      cardElements
+    );
+  };
+
+  getCollapsedItemCount = () => (
+    this.getVisibleReflections().length + (this.props.hovered ? 1 : 0)
+  );
+
   getVisibleReflections = () => (
     this.props.reflections.slice(
       0,
-      this.props.hovered ? 3 : 4
+      this.props.hovered ? this.maxCollapsedItems - 1 : this.maxCollapsedItems
     )
   );
+
+  maxCollapsedItems = 4;
 
   collapse = () => {
     this.setState({isExpanded: false});
@@ -61,12 +88,6 @@ class ReflectionGroup extends Component<Props, State> {
   expand = () => {
     this.setState({isExpanded: true});
   };
-
-  maybeRenderDropPlaceholder = () => (
-    this.props.hovered && (
-      <ReflectionCardDropPreview />
-    )
-  );
 
   maybeRenderHeader = () => {
     const {handleSaveTitle, id, reflections, title} = this.props;
@@ -89,42 +110,47 @@ class ReflectionGroup extends Component<Props, State> {
     );
   };
 
-  renderCollapsed = () => (
-    <Fragment>
-      {this.getVisibleReflections().map(this.renderCollapsedReflection)}
-    </Fragment>
+  renderReflection = (reflection: Reflection) => (
+    <DraggableReflectionCard
+      contentState={reflection.content}
+      handleBeginDrag={console.log}
+      handleCancelDrag={console.log}
+      handleDrop={console.log}
+      hovered={this.props.hovered}
+      id={reflection.id}
+      isCollapsed={!this.state.isExpanded}
+      stage={reflection.stage}
+    />
   );
 
-  renderCollapsedReflection = (reflection: Reflection, index: number) => {
-    const {hovered} = this.props;
-    const visibleReflections = this.getVisibleReflections();
+  renderCollapsedCards = () => {
+    return (
+      <Fragment>
+        {this.getCardElements().map(({element, key}, index) => (
+          this.renderCollapsedElement(element, key, index)
+        ))}
+      </Fragment>
+    );
+  };
+
+  renderCollapsedElement = (element: Element<*>, key: string, index: number) => {
     const styles = this.getAnimatedCardsStyles({
       transform:
-        `translateY(${(hovered ? index + 1 : index) * -80}%) ` +
-        `scale(${1 - (0.05 * (visibleReflections.length - index - 1))})`
+        `translateY(${index * -80}%) ` +
+        `scale(${1 - (0.05 * (this.getCollapsedItemCount() - index - 1))})`
     });
     return (
-      <div className={css(styles)} key={reflection.id}>
-        <ReflectionCard
-          contentState={reflection.content}
-          hovered={hovered}
-          id={reflection.id}
-          isCollapsed
-          stage={reflection.stage}
-        />
+      <div className={css(styles)} key={key}>
+        {element}
       </div>
     );
   };
 
-  renderExpanded = () => (
+  renderExpandedCards = () => (
     <Fragment>
-      {this.props.reflections.map((reflection) => (
-        <div className={css(this.getAnimatedCardsStyles({marginBottom: 8}))} key={reflection.id}>
-          <ReflectionCard
-            contentState={reflection.content}
-            id={reflection.id}
-            stage={reflection.stage}
-          />
+      {this.getCardElements().map(({element, key}) => (
+        <div className={css(this.getAnimatedCardsStyles({marginBottom: 8}))} key={key}>
+          {element}
         </div>
       ))}
     </Fragment>
@@ -135,13 +161,12 @@ class ReflectionGroup extends Component<Props, State> {
     return (
       <div>
         {this.maybeRenderHeader()}
-        {this.maybeRenderDropPlaceholder()}
         <PlainButton
           aria-label={isExpanded ? 'Collapse this reflection group' : 'Expand this reflection group'}
           onClick={isExpanded ? this.collapse : this.expand}
         >
           <CSSTransition name="reflection-group-accordion" timeout={animationTimeout}>
-            {isExpanded ? this.renderExpanded() : this.renderCollapsed()}
+            {isExpanded ? this.renderExpandedCards() : this.renderCollapsedCards()}
           </CSSTransition>
         </PlainButton>
       </div>
