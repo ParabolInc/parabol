@@ -36,7 +36,10 @@ const countTiersForUserId = (userId) => {
           acc('tierProBillingLeaderCount'),
           r.branch(
             org('tier').default(PERSONAL).eq(PRO),
-            org('orgUsers').count((ou) => ou('role').eq('billingLeader')),
+            org('orgUsers').count((ou) => r.and(
+              ou('id').eq(userId),
+              ou('role').default('').eq('billingLeader')
+            )),
             0
           )
         )
