@@ -57,7 +57,6 @@ LeaveOrgModal.propTypes = {
   onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
-  error: PropTypes.any,
   submitting: PropTypes.bool,
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,

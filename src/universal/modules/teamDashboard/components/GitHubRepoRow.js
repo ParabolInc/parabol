@@ -90,7 +90,7 @@ class GitHubRepoRow extends Component {
             }
           </div>
         </IntegrationRow>
-        {error && <div className={css(styles.errorRow)}>{error}</div>}
+        {error && <div className={css(styles.errorRow)}>{error.message}</div>}
       </div>
     );
   }

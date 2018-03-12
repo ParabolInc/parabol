@@ -14,6 +14,7 @@ import formError from 'universal/styles/helpers/formError';
 import withStyles from 'universal/styles/withStyles';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import step2Validation from './step2Validation';
+import getGraphQLError from 'universal/utils/relay/getGraphQLError';
 
 const validate = (values) => {
   const welcomeSchema = step2Validation();
@@ -22,21 +23,29 @@ const validate = (values) => {
 
 const Step2TeamName = (props) => {
   const {atmosphere, error, dispatch, handleSubmit, preferredName, styles, submitting, teamName} = props;
-  const onTeamNameSubmit = async (submissionData) => {
-    const {data: {teamName: normalizedTeamName}} = step2Validation()(submissionData);
-    const onError = (err) => {
-      throw new SubmissionError(err);
-    };
-    const onCompleted = (res) => {
-      const {createFirstTeam: {jwt: newToken, team: {id: teamId}, teamLead: {id: teamMemberId}, user}} = res;
-      atmosphere.setAuthToken(newToken);
-      dispatch(setWelcomeTeam({teamId, teamMemberId}));
-      dispatch(updateCompleted(2));
-      dispatch(nextPage());
-      dispatch(setAuthToken(newToken, user));
-    };
-    const newTeam = {name: normalizedTeamName};
-    CreateFirstTeamMutation(atmosphere, newTeam, onError, onCompleted);
+  const onTeamNameSubmit = (submissionData) => {
+    return new Promise((resolve, reject) => {
+      const {data: {teamName: normalizedTeamName}} = step2Validation()(submissionData);
+      const onError = (err) => {
+        reject(new SubmissionError(err));
+      };
+      const onCompleted = (res, errors) => {
+        const serverError = getGraphQLError(res, errors);
+        if (serverError) {
+          onError(serverError.message);
+          return;
+        }
+        const {createFirstTeam: {jwt: newToken, team: {id: teamId}, teamLead: {id: teamMemberId}, user}} = res;
+        atmosphere.setAuthToken(newToken);
+        dispatch(setWelcomeTeam({teamId, teamMemberId}));
+        dispatch(updateCompleted(2));
+        dispatch(nextPage());
+        dispatch(setAuthToken(newToken, user));
+        resolve();
+      };
+      const newTeam = {name: normalizedTeamName};
+      CreateFirstTeamMutation(atmosphere, newTeam, onError, onCompleted);
+    });
   };
   return (
     <div style={{width: '100%'}}>
