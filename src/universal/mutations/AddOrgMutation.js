@@ -36,6 +36,9 @@ graphql`
 const mutation = graphql`
   mutation AddOrgMutation($newTeam: NewTeamInput!, $invitees: [Invitee!], $orgName: String!) {
     addOrg(newTeam: $newTeam, invitees: $invitees, orgName: $orgName) {
+      error {
+        message
+      }
       ...AddOrgMutation_organization @relay(mask: false)
     }
   }

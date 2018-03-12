@@ -55,6 +55,9 @@ graphql`
 const mutation = graphql`
   mutation ApproveToOrgMutation($email: String!, $orgId: ID!) {
     approveToOrg(email: $email, orgId: $orgId) {
+      error {
+        message
+      }
       ...ApproveToOrgMutation_organization @relay(mask: false)    
       ...ApproveToOrgMutation_orgApproval @relay(mask: false)
       ...ApproveToOrgMutation_invitation @relay(mask: false)

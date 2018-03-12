@@ -11,6 +11,9 @@ graphql`
 const mutation = graphql`
   mutation UpdateTeamNameMutation($updatedTeam: UpdatedTeamInput!) {
     updateTeamName(updatedTeam: $updatedTeam) {
+      error {
+        message
+      }
       ...UpdateTeamNameMutation_team @relay(mask:false)
     }
   }

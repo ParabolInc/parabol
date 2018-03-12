@@ -54,6 +54,9 @@ graphql`
 const mutation = graphql`
   mutation AcceptTeamInviteMutation($notificationId: ID!) {
     acceptTeamInviteNotification(notificationId: $notificationId) {
+      error {
+        message
+      }
       ...AcceptTeamInviteMutation_team @relay(mask: false)
     }
   }

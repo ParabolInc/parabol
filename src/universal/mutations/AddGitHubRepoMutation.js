@@ -8,6 +8,9 @@ import incrementIntegrationCount from 'universal/utils/relay/incrementIntegratio
 const mutation = graphql`
   mutation AddGitHubRepoMutation($nameWithOwner: String!, $teamId: ID!) {
     addGitHubRepo(nameWithOwner: $nameWithOwner, teamId: $teamId) {
+      error {
+        message
+      }
       repo {
         id
         adminUserId

@@ -23,6 +23,9 @@ graphql`
 const mutation = graphql`
   mutation AddAgendaItemMutation($newAgendaItem: CreateAgendaItemInput!) {
     addAgendaItem(newAgendaItem: $newAgendaItem) {
+      error {
+        message
+      }
       ...AddAgendaItemMutation_agendaItem @relay(mask: false)
     }
   }

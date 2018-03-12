@@ -13,6 +13,9 @@ graphql`
 const mutation = graphql`
   mutation RemoveAgendaItemMutation($agendaItemId: ID!) {
     removeAgendaItem(agendaItemId: $agendaItemId) {
+      error {
+        message
+      }
       ...RemoveAgendaItemMutation_agendaItem @relay(mask: false)
     }
   }

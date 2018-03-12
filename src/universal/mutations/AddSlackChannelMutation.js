@@ -7,6 +7,9 @@ import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 const mutation = graphql`
   mutation AddSlackChannelMutation($input: AddSlackChannelInput!) {
     addSlackChannel(input: $input) {
+      error {
+        message
+      }
       channel {
         channelId
         channelName

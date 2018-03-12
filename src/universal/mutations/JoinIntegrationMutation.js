@@ -4,6 +4,9 @@ import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMemb
 const mutation = graphql`
   mutation JoinIntegrationMutation($globalId: ID!) {
     joinIntegration(globalId: $globalId) {
+      error {
+        message
+      }
       globalId
       teamMember {
         id

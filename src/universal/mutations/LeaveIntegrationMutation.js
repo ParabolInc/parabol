@@ -7,6 +7,9 @@ import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
 const mutation = graphql`
   mutation LeaveIntegrationMutation($globalId: ID!) {
     leaveIntegration(globalId: $globalId) {
+      error {
+        message
+      }
       globalId
       userId
     }

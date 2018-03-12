@@ -20,6 +20,9 @@ graphql`
 const mutation = graphql`
   mutation PromoteFacilitatorMutation($facilitatorId: ID!, $disconnectedFacilitatorId: ID) {
     promoteFacilitator(facilitatorId: $facilitatorId, disconnectedFacilitatorId: $disconnectedFacilitatorId) {
+      error {
+        message
+      }
       ...PromoteFacilitatorMutation_team @relay(mask: false)
     }
   }

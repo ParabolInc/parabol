@@ -23,6 +23,9 @@ graphql`
 const mutation = graphql`
   mutation DeleteTaskMutation($taskId: ID!) {
     deleteTask(taskId: $taskId) {
+      error {
+        message
+      }
       ...DeleteTaskMutation_notification @relay(mask: false)
       ...DeleteTaskMutation_task @relay(mask: false)
       

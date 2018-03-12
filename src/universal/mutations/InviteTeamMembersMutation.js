@@ -86,6 +86,9 @@ graphql`
 const mutation = graphql`
   mutation InviteTeamMembersMutation($teamId: ID!, $invitees: [Invitee!]!) {
     inviteTeamMembers(invitees: $invitees, teamId: $teamId) {
+      error {
+        message
+      }
       ...InviteTeamMembersMutation_invitation @relay(mask: false)
       ...InviteTeamMembersMutation_notification @relay(mask:false)
       ...InviteTeamMembersMutation_orgApproval @relay(mask: false)

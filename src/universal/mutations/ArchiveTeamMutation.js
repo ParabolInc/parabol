@@ -23,6 +23,9 @@ graphql`
 const mutation = graphql`
   mutation ArchiveTeamMutation($teamId: ID!) {
     archiveTeam(teamId: $teamId) {
+      error {
+        message
+      }
       ...ArchiveTeamMutation_team @relay(mask: false)
     }
   }

@@ -42,6 +42,9 @@ graphql`
 const mutation = graphql`
   mutation CancelApprovalMutation($orgApprovalId: ID!) {
     cancelApproval(orgApprovalId: $orgApprovalId) {
+      error {
+        message
+      }
       ...CancelApprovalMutation_notification @relay(mask: false)
       ...CancelApprovalMutation_orgApproval @relay(mask: false)
       ...CancelApprovalMutation_teamMember @relay(mask: false)

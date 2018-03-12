@@ -17,6 +17,9 @@ graphql`
 const mutation = graphql`
   mutation KillMeetingMutation($teamId: ID!) {
     killMeeting(teamId: $teamId) {
+      error {
+        message
+      }
       ...KillMeetingMutation_team @relay(mask: false)
     }
   }

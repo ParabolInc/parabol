@@ -3,6 +3,9 @@ import {commitMutation} from 'react-relay';
 const mutation = graphql`
   mutation LoginMutation($auth0Token: String!) {
     login(auth0Token: $auth0Token) {
+      error {
+        message
+      }
       user {
         ...UserAnalyticsFrag @relay(mask: false)
       }

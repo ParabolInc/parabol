@@ -34,6 +34,9 @@ graphql`
 const mutation = graphql`
   mutation UpdateTaskMutation($updatedTask: UpdateTaskInput!) {
     updateTask(updatedTask: $updatedTask) {
+      error {
+        message
+      }
       ...UpdateTaskMutation_task @relay (mask: false)
     }
   }

@@ -45,6 +45,9 @@ graphql`
 const mutation = graphql`
   mutation CancelTeamInviteMutation($invitationId: ID!) {
     cancelTeamInvite(invitationId: $invitationId) {
+      error {
+        message
+      }
       ...CancelTeamInviteMutation_invitation @relay(mask: false)
       ...CancelTeamInviteMutation_notification @relay(mask: false)
       ...CancelTeamInviteMutation_teamMember @relay(mask: false)

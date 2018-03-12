@@ -13,6 +13,9 @@ graphql`
 const mutation = graphql`
   mutation ClearNotificationMutation($notificationId: ID!) {
     clearNotification(notificationId: $notificationId) {
+      error {
+        message
+      }
       ...ClearNotificationMutation_notification @relay(mask: false)
     }
   }

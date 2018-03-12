@@ -26,6 +26,9 @@ graphql`
 const mutation = graphql`
   mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Invitee!]) {
     addTeam(newTeam: $newTeam, invitees: $invitees) {
+      error {
+        message
+      }
       ...AddTeamMutation_team @relay(mask: false)
     }
   }

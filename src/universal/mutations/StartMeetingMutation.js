@@ -26,6 +26,9 @@ graphql`
 const mutation = graphql`
   mutation StartMeetingMutation($teamId: ID!) {
     startMeeting(teamId: $teamId) {
+      error {
+        message
+      }
       ...StartMeetingMutation_team @relay(mask: false)
     }
   }

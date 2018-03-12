@@ -6,6 +6,9 @@ import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {
     removeProvider(providerId: $providerId teamId: $teamId) {
+      error {
+        message
+      }
       providerRow {
         service
         accessToken

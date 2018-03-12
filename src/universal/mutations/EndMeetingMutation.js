@@ -34,6 +34,9 @@ graphql`
 const mutation = graphql`
   mutation EndMeetingMutation($teamId: ID!) {
     endMeeting(teamId: $teamId) {
+      error {
+        message
+      }
       ...EndMeetingMutation_team @relay(mask: false)
       ...EndMeetingMutation_task @relay(mask: false)
     }

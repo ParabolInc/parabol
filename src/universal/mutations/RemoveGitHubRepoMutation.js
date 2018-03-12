@@ -6,6 +6,9 @@ import incrementIntegrationCount from 'universal/utils/relay/incrementIntegratio
 const mutation = graphql`
   mutation RemoveGitHubRepoMutation($githubGlobalId: ID!) {
     removeGitHubRepo(githubGlobalId: $githubGlobalId) {
+      error {
+        message
+      }
       deletedId
     }
   }

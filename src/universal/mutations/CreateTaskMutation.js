@@ -48,6 +48,9 @@ graphql`
 const mutation = graphql`
   mutation CreateTaskMutation($newTask: CreateTaskInput!, $area: AreaEnum) {
     createTask(newTask: $newTask, area: $area) {
+      error {
+        message
+      }
       ...CreateTaskMutation_task @relay(mask: false)
     }
   }
