@@ -33,6 +33,7 @@ const ClearNotificationMutation = (environment, notificationId, onError, onCompl
     variables: {notificationId},
     updater: (store) => {
       const payload = store.getRootField('clearNotification');
+      if (!payload) return;
       clearNotificationNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {

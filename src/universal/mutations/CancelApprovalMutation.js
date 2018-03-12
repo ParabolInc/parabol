@@ -80,6 +80,7 @@ const CancelApprovalMutation = (environment, orgApprovalId, teamId, onError, onC
     variables: {orgApprovalId},
     updater: (store) => {
       const payload = store.getRootField('cancelApproval');
+      if (!payload) return;
       cancelApprovalNotificationUpdater(payload, store, viewerId);
       cancelApprovalOrgApprovalUpdater(payload, store);
       cancelApprovalTeamMemberUpdater(payload, store);

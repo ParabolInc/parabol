@@ -73,6 +73,7 @@ const UpdateTaskMutation = (environment, updatedTask, area, onCompleted, onError
     },
     updater: (store) => {
       const payload = store.getRootField('updateTask');
+      if (!payload) return;
       updateTaskTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {

@@ -29,6 +29,7 @@ const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId) => {
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('removeSlackChannel');
+      if (!payload) return;
       const deletedId = payload.getValue('deletedId');
       removeSlackChannelUpdater(viewer, teamId, deletedId);
     },

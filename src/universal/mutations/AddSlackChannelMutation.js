@@ -43,7 +43,9 @@ const AddSlackChannelMutation = (environment, payload, teamMemberId, onError, on
       }
     },
     updater: (store) => {
-      const slackIntegration = store.getRootField('addSlackChannel').getLinkedRecord('channel');
+      const payload = store.getRoot('addSlackChannel');
+      if (!payload) return;
+      const slackIntegration = payload.getLinkedRecord('channel');
       const {teamId} = fromTeamMemberId(teamMemberId);
       addSlackChannelUpdater(store, viewerId, teamId, slackIntegration);
     },

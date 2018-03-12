@@ -49,6 +49,7 @@ const ChangeTaskTeamMutation = (environment, variables, onError, onCompleted) =>
     variables,
     updater: (store) => {
       const payload = store.getRootField('changeTaskTeam');
+      if (!payload) return;
       changeTaskTeamTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {

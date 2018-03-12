@@ -54,6 +54,7 @@ const PromoteFacilitatorMutation = (environment, variables, dispatch, onError, o
     variables,
     updater: (store) => {
       const payload = store.getRootField('promoteFacilitator');
+      if (!payload) return;
       promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
     },
     optimisticUpdater: (store) => {

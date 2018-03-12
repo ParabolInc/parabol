@@ -33,6 +33,7 @@ const RemoveGitHubRepoMutation = (environment, githubGlobalId, teamId) => {
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('removeGitHubRepo');
+      if (!payload) return;
       const deletedId = payload.getValue('deletedId');
       removeGitHubRepoUpdater(viewer, teamId, deletedId);
     },

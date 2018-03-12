@@ -64,6 +64,7 @@ const AddTeamMutation = (environment, variables, options, onCompleted, onError) 
     variables,
     updater: (store) => {
       const payload = store.getRootField('addTeam');
+      if (!payload) return;
       addTeamTeamUpdater(payload, store, viewerId, options);
     },
     optimisticUpdater: (store) => {

@@ -51,6 +51,7 @@ const LeaveIntegrationMutation = (environment, globalId, teamId, onError, onComp
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('leaveIntegration');
+      if (!payload) return;
       leaveIntegrationUpdater(store, viewer, teamId, payload);
     },
     optimisticUpdater: (store) => {

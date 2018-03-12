@@ -83,6 +83,7 @@ const CancelTeamInviteMutation = (environment, invitationId, teamId, onError, on
     variables: {invitationId},
     updater: (store) => {
       const payload = store.getRootField('cancelTeamInvite');
+      if (!payload) return;
       cancelTeamInviteInvitationUpdater(payload, store);
       cancelTeamInviteNotificationUpdater(payload, store, viewerId);
       cancelTeamInviteTeamMemberUpdater(payload, store);

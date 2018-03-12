@@ -35,6 +35,7 @@ const JoinIntegrationMutation = (environment, globalId, teamId, onError, onCompl
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('joinIntegration');
+      if (!payload) return;
       joinIntegrationUpdater(store, viewer, teamId, payload);
     },
     optimisticUpdater: (store) => {

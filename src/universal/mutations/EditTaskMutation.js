@@ -39,6 +39,7 @@ const EditTaskMutation = (environment, taskId, isEditing, onCompleted, onError) 
     variables: {taskId, isEditing},
     updater: (store) => {
       const payload = store.getRootField('editTask');
+      if (!payload) return;
       editTaskTaskUpdater(payload, store);
     },
     optimisticUpdater: (store) => {

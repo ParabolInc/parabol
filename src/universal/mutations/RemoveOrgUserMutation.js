@@ -172,6 +172,7 @@ const RemoveOrgUserMutation = (environment, orgId, userId, onError, onCompleted)
     variables: {orgId, userId},
     updater: (store) => {
       const payload = store.getRootField('removeOrgUser');
+      if (!payload) return;
       removeOrgUserOrganizationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {

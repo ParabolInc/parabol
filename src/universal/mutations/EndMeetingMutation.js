@@ -63,6 +63,7 @@ const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) 
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('endMeeting');
+      if (!payload) return;
       endMeetingTeamUpdater(payload, {history});
       endMeetingTaskUpdater(payload, store, viewerId);
     },

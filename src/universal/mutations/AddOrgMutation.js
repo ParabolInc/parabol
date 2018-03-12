@@ -77,6 +77,7 @@ const AddOrgMutation = (environment, variables, options, onError, onCompleted) =
     variables,
     updater: (store) => {
       const payload = store.getRootField('addOrg');
+      if (!payload) return;
       addOrgMutationOrganizationUpdater(payload, store, viewerId, {...options, store, environment});
     },
     onCompleted,

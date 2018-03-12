@@ -32,6 +32,7 @@ const RemoveAgendaItemMutation = (environment, agendaItemId, onError, onComplete
     variables: {agendaItemId},
     updater: (store) => {
       const payload = store.getRootField('removeAgendaItem');
+      if (!payload) return;
       removeAgendaItemUpdater(payload, store);
     },
     optimisticUpdater: (store) => {

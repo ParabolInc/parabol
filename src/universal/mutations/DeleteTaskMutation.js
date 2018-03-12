@@ -51,6 +51,7 @@ const DeleteTaskMutation = (environment, taskId, teamId, onError, onCompleted) =
     variables: {taskId},
     updater: (store) => {
       const payload = store.getRootField('deleteTask');
+      if (!payload) return;
       deleteTaskNotificationUpdater(payload, store, viewerId);
       deleteTaskTaskUpdater(payload, store, viewerId);
     },

@@ -121,6 +121,7 @@ const AcceptTeamInviteMutation = (environment, notificationId, dispatch, onError
     variables: {notificationId},
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInviteNotification');
+      if (!payload) return;
       acceptTeamInviteTeamUpdater(payload, store, viewerId, {dispatch});
     },
     onCompleted,

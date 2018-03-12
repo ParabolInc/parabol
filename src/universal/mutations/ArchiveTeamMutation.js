@@ -77,6 +77,7 @@ const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted)
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('archiveTeam');
+      if (!payload) return;
       archiveTeamTeamUpdater(payload, store, viewerId, {...options, store, environment});
     },
     onCompleted,

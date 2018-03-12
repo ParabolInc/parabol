@@ -124,6 +124,7 @@ const ApproveToOrgMutation = (environment, email, orgId, onError, onCompleted) =
     variables: {email, orgId},
     updater: (store) => {
       const payload = store.getRootField('approveToOrg');
+      if (!payload) return;
       approveToOrgOrganizationUpdater(payload, store, viewerId);
       approveToOrgOrgApprovalUpdater(payload, store);
       approveToOrgInvitationUpdater(payload, store);

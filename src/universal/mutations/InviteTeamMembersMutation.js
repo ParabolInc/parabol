@@ -248,6 +248,7 @@ const InviteTeamMembersMutation = (environment, variables, dispatch, onError, on
     variables,
     updater: (store) => {
       const payload = store.getRootField('inviteTeamMembers');
+      if (!payload) return;
       inviteTeamMembersInvitationUpdater(payload, store);
       popInvitationToast(payload, dispatch);
       inviteTeamMembersOrgApprovalUpdater(payload, store);

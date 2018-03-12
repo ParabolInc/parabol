@@ -88,6 +88,7 @@ const CreateTaskMutation = (environment, newTask, area, onError, onCompleted) =>
     },
     updater: (store) => {
       const payload = store.getRootField('createTask');
+      if (!payload) return;
       createTaskTaskUpdater(payload, store, viewerId, isEditing);
     },
     optimisticUpdater: (store) => {
