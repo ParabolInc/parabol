@@ -3,7 +3,12 @@
  *
  * @flow
  */
-import type {Reflection, ReflectionID, ReflectionGroup as ReflectionGroupT} from 'universal/types/retro';
+import type {
+  Reflection,
+  ReflectionID,
+  ReflectionGroup as ReflectionGroupT,
+  ReflectionGroupID
+} from 'universal/types/retro';
 
 // $FlowFixMe
 import {ContentState} from 'draft-js';
@@ -13,7 +18,7 @@ import {storiesOf} from '@storybook/react';
 
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
 import ReflectionGroupingDragLayer from 'universal/components/ReflectionGroupingDragLayer/ReflectionGroupingDragLayer';
-import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
+import DroppableReflectionGroup from 'universal/components/ReflectionGroup/DroppableReflectionGroup';
 import count from 'universal/utils/count';
 
 import Grid from './components/Grid';
@@ -30,7 +35,8 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
   state = {
     dragging: {
       card1: false,
-      card2: false
+      card2: false,
+      card3: false
     },
     groups: [],
     reflections: [
@@ -42,6 +48,11 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
       {
         id: 'card2',
         content: ContentState.createFromText('No, MY reflection shall be heard loudest!!!'),
+        stage: null
+      },
+      {
+        id: 'card3',
+        content: ContentState.createFromText('Wait, what about me?'),
         stage: null
       }
     ]
@@ -63,10 +74,10 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
     action('begin-drag')(cardId);
   };
 
-  handleDrop = (draggedId: ReflectionID, droppedId: ReflectionID) => {
+  handleCardOnCardDrop = (draggedId: ReflectionID, droppedId: ReflectionID) => {
     this.setState((state: DragAndDropStoryState) => {
       const newGroup = {
-        id: `reflection${this.ids.next().value}`,
+        id: `group-${this.ids.next().value}`,
         title: '',
         reflections: [this.getReflectionById(draggedId), this.getReflectionById(droppedId)].filter(Boolean)
       };
@@ -77,6 +88,24 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
       };
     });
     action('drop')(draggedId, droppedId);
+  };
+
+  handleCardOnGroupDrop = (draggedId: ReflectionID, groupId: ReflectionGroupID) => {
+    this.setState((state: DragAndDropStoryState) => {
+      const newGroups = state.groups.map((group) => (
+        group.id === groupId ? ({
+          ...group,
+          reflections: [...group.reflections, this.getReflectionById(draggedId)].filter(Boolean)
+        }) : (
+          group
+        )
+      ));
+      return {
+        dragging: {[draggedId]: false},
+        reflections: state.reflections.filter((reflection) => reflection.id !== draggedId),
+        groups: newGroups
+      };
+    });
   };
 
   render() {
@@ -92,7 +121,7 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
                     contentState={reflection.content}
                     handleCancelDrag={this.handleCancelDrag}
                     handleBeginDrag={this.handleBeginDrag}
-                    handleDrop={this.handleDrop}
+                    handleDrop={this.handleCardOnCardDrop}
                     id={reflection.id}
                     iAmDragging={this.state.dragging[reflection.id]}
                     key={reflection.id}
@@ -100,8 +129,9 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
                   />
                 ))}
                 {this.state.groups.map((group) => (
-                  <ReflectionGroup
+                  <DroppableReflectionGroup
                     id={group.id}
+                    handleDrop={this.handleCardOnGroupDrop}
                     handleSaveTitle={action('save-title')}
                     reflections={group.reflections}
                     key={group.id}

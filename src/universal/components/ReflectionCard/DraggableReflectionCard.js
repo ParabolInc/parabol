@@ -86,11 +86,7 @@ const dragSpec = {
   endDrag(props: Props, monitor) {
     if (!monitor.didDrop()) {
       props.handleCancelDrag(props.id);
-      return;
     }
-    const {id: droppedId} = monitor.getDropResult();
-    const {handleDrop, id: draggedId} = props;
-    handleDrop(draggedId, droppedId);
   }
 };
 
@@ -105,9 +101,14 @@ const dropSpec = {
     return props.id !== monitor.getItem().id;
   },
 
-  // Makes the id of the card-dropped-into available in the dragSpec's endDrag method.
-  drop(props: Props) {
-    return {id: props.id};
+  // Makes the card-dropped-into available in the dragSpec's endDrag method.
+  drop(props: Props, monitor) {
+    if (monitor.didDrop()) {
+      return;
+    }
+    const {id: droppedId} = monitor.getItem();
+    const {handleDrop, id: draggedId} = props;
+    handleDrop(draggedId, droppedId);
   }
 };
 

@@ -246,3 +246,4 @@ export const RETROSPECTIVE = 'retrospective';
 
 /* Retro meeting types */
 export const REFLECTION_CARD = 'REFLECTION_CARD';
+export const REFLECTION_GROUP = 'REFLECTION_GROUP';

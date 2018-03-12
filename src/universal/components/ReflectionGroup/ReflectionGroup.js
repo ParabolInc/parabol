@@ -12,6 +12,7 @@ import {css} from 'react-emotion';
 import {CSSTransition} from 'react-transition-group';
 
 import PlainButton from 'universal/components/PlainButton/PlainButton';
+import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
 import ReflectionCardDropPreview from 'universal/components/ReflectionCardDropPreview/ReflectionCardDropPreview';
 
@@ -24,7 +25,7 @@ const animationTimeout = {
   exit: animationTime
 };
 
-type Props = {
+export type Props = {
   handleSaveTitle?: (string) => any,
   hovered?: boolean,
   id: ReflectionGroupID,
@@ -110,18 +111,29 @@ class ReflectionGroup extends Component<Props, State> {
     );
   };
 
-  renderReflection = (reflection: Reflection) => (
-    <DraggableReflectionCard
-      contentState={reflection.content}
-      handleBeginDrag={console.log}
-      handleCancelDrag={console.log}
-      handleDrop={console.log}
-      hovered={this.props.hovered}
-      id={reflection.id}
-      isCollapsed={!this.state.isExpanded}
-      stage={reflection.stage}
-    />
-  );
+  renderReflection = (reflection: Reflection) => {
+    const {isExpanded} = this.state;
+    return isExpanded ? (
+      <DraggableReflectionCard
+        contentState={reflection.content}
+        handleBeginDrag={console.log}
+        handleCancelDrag={console.log}
+        handleDrop={console.log}
+        hovered={this.props.hovered}
+        id={reflection.id}
+        isCollapsed={!this.state.isExpanded}
+        stage={reflection.stage}
+      />
+    ) : (
+      <ReflectionCard
+        contentState={reflection.content}
+        hovered={this.props.hovered}
+        id={reflection.id}
+        isCollapsed={!this.state.isExpanded}
+        stage={reflection.stage}
+      />
+    );
+  };
 
   renderCollapsedCards = () => {
     return (
