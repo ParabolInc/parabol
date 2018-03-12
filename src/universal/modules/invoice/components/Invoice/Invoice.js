@@ -210,6 +210,8 @@ const styleThunk = () => ({
     fontWeight: 600,
     left: '50%',
     opacity: 0.5,
+    // don't let it cover up any buttons
+    pointerEvents: 'none',
     position: 'absolute',
     textAlign: 'center',
     textTransform: 'uppercase',
