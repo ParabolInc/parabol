@@ -2,13 +2,12 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import Invitee from 'server/graphql/types/Invitee';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
-import {getUserId, getUserOrgDoc, isTeamMember} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import getRethink from 'server/database/rethinkDriver';
-import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
@@ -33,7 +32,7 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       const orgId = await r.table('Team').get(teamId)('orgId');
       const userOrgDoc = await getUserOrgDoc(authToken, orgId);
-      if (!isBillingLeader(userOrgDoc)) {
+      if (!isOrgBillingLeader(userOrgDoc)) {
         return sendTeamAccessError(authToken, teamId);
       }
     }

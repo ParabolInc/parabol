@@ -40,7 +40,7 @@ export const getUserOrgDoc = (userId, orgId = '') => {
     .run();
 };
 
-export const isBillingLeader = (userOrgDoc) => {
+export const isOrgBillingLeader = (userOrgDoc) => {
   return (userOrgDoc && userOrgDoc.role === BILLING_LEADER);
 };
 

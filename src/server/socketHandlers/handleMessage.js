@@ -46,7 +46,8 @@ const handleMessage = (connectionContext) => async (message) => {
       wsRelaySubscribeHandler(connectionContext, parsedMessage);
     } else {
       const result = await wsGraphQLHandler(connectionContext, parsedMessage);
-      sendMessage(socket, GQL_DATA, result, opId);
+      const messageType = result.data ? GQL_DATA : GQL_ERROR;
+      sendMessage(socket, messageType, result, opId);
     }
   } else if (type === GQL_STOP) {
     relayUnsubscribe(subs, opId);

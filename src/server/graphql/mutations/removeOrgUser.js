@@ -4,11 +4,10 @@ import getRethink from 'server/database/rethinkDriver';
 import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserOrgDoc} from 'server/utils/authorization';
+import {getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {REMOVE_USER} from 'server/utils/serverConstants';
 import {NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
-import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 const removeOrgUser = {
@@ -32,7 +31,7 @@ const removeOrgUser = {
 
     // AUTH
     const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
-    if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // RESOLUTION
     const teamIds = await r.table('Team')

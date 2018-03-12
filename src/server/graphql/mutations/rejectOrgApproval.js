@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import rejectOrgApprovalValidation from 'server/graphql/mutations/helpers/rejectOrgApprovalValidation';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
-import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
@@ -14,7 +14,6 @@ import promiseAllObj from 'universal/utils/promiseAllObj';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
-import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors';
 import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
@@ -44,7 +43,7 @@ export default {
     if (!rejectionNotification) return sendNotificationAccessError(authToken, notificationId);
     const {orgId, inviteeEmail} = rejectionNotification;
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
-    if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const {data: {reason}, errors} = rejectOrgApprovalValidation()(args);

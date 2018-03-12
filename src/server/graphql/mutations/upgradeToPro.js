@@ -3,13 +3,12 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
-import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import publish from 'server/utils/publish';
 import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants';
-import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 import {sendAlreadyProTierError} from 'server/utils/alreadyMutatedErrors';
 
@@ -35,7 +34,7 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r.table('Organization')

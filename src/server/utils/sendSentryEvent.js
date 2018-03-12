@@ -35,6 +35,10 @@ type AuthToken = {
 }
 
 const sendSegmentEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb) => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(breadcrumb);
+    return;
+  }
   const r = getRethink();
   let user;
   if (authToken) {

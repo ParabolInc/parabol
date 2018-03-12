@@ -1,10 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import approveToOrg from 'server/safeMutations/approveToOrg';
-import {getUserId, getUserOrgDoc} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, ORGANIZATION} from 'universal/utils/constants';
-import isBillingLeader from 'server/graphql/queries/isBillingLeader';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
@@ -24,7 +23,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
-    if (!isBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // RESOLUTION
     const subOptions = {mutatorId, operationId};
