@@ -46,7 +46,7 @@ const DragLayerWrapper = styled('div')({
 });
 
 class ReflectionGroupingDragLayer extends Component<Props> {
-  absolutelyPosition = (element: Element<*>) => {
+  position = (element: Element<*>) => {
     if (!this.props.currentOffset) {
       return null;
     }
@@ -69,7 +69,7 @@ class ReflectionGroupingDragLayer extends Component<Props> {
       if (!reflection) {
         return null;
       }
-      return this.absolutelyPosition(
+      return this.position(
         <ReflectionCard
           contentState={reflection.content}
           id={id}

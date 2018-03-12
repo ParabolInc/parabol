@@ -16,7 +16,10 @@ const compose = (...fns: Array<SingleArityFn>): MultiArityFn => (...args: Array<
   if (!fns.length) {
     return args;
   }
-  return fns.slice(1).reduce((acc, fn) => fn(acc), fns[0](...args));
+  return fns
+    .slice(1)
+    .filter((item) => typeof item === 'function')
+    .reduce((acc, fn) => fn(acc), fns[0](...args));
 };
 
 export default compose;

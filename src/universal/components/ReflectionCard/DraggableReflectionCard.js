@@ -27,6 +27,7 @@ type DragItem = {
 
 type Props = {
   ...ReflectionCardProps,
+  receiveDrops: ?boolean,
   canDrop: boolean,
   connectDragPreview: (Node) => Node,
   connectDragSource: (Node) => Node,
@@ -41,6 +42,7 @@ type Props = {
 class DraggableReflectionCard extends Component<Props> {
   render() {
     const {
+      receiveDrops,
       canDrop,
       connectDragPreview,
       connectDragSource,
@@ -52,10 +54,11 @@ class DraggableReflectionCard extends Component<Props> {
     } = this.props;
     const reflectionCardProps = {
       ...without(this.props, 'connectDragSource'),
-      hovered: isOver && canDrop
+      hovered: receiveDrops && isOver && canDrop
     };
     connectDragPreview(getEmptyImage());
-    const connect = compose(connectDragSource, connectDropTarget);
+    const dndDecorators = receiveDrops ? [connectDragSource, connectDropTarget] : [connectDragSource];
+    const connect = compose(...dndDecorators);
     return connect(
       isOver && canDrop ? (
         <div style={{display: 'inline-block'}}>
@@ -98,7 +101,7 @@ const dragCollect = (connect, monitor) => ({
 
 const dropSpec = {
   canDrop(props: Props, monitor) {
-    return props.id !== monitor.getItem().id;
+    return monitor.isOver() && props.id !== monitor.getItem().id;
   },
 
   // Makes the card-dropped-into available in the dragSpec's endDrag method.
@@ -106,8 +109,8 @@ const dropSpec = {
     if (monitor.didDrop()) {
       return;
     }
-    const {id: droppedId} = monitor.getItem();
-    const {handleDrop, id: draggedId} = props;
+    const {id: draggedId} = monitor.getItem();
+    const {handleDrop, id: droppedId} = props;
     handleDrop(draggedId, droppedId);
   }
 };

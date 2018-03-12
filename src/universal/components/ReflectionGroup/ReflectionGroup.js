@@ -39,11 +39,14 @@ type State = {
 };
 
 class ReflectionGroup extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isExpanded: false
-    };
+  state = {
+    isExpanded: false
+  };
+
+  componentWillReceiveProps(nextProps: Props) {
+    if (this.state.isExpanded && nextProps.hovered) {
+      this.setState({isExpanded: false});
+    }
   }
 
   getAnimatedCardsStyles = (extraStyles: ?Object) => ({
