@@ -28,25 +28,29 @@ const labels = {
     ],
     [ACTIVE]: {
       color: stateColor.active,
-      icon: 'arrow-right',
+      // icon: 'arrow-right',
+      icon: 'dot-circle-o',
       label: 'Active',
       slug: ACTIVE
     },
     [STUCK]: {
       color: stateColor.stuck,
-      icon: 'exclamation-triangle',
+      // icon: 'exclamation-triangle',
+      icon: 'dot-circle-o',
       label: 'Stuck',
       slug: STUCK
     },
     [DONE]: {
       color: stateColor.done,
-      icon: 'check',
+      // icon: 'check',
+      icon: 'dot-circle-o',
       label: 'Done',
       slug: DONE
     },
     [FUTURE]: {
       color: stateColor.future,
-      icon: 'clock-o',
+      // icon: 'clock-o',
+      icon: 'dot-circle-o',
       label: 'Future',
       slug: FUTURE
     },

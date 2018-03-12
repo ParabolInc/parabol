@@ -46,10 +46,11 @@ class OutcomeCardStatusMenu extends Component {
         const {color, icon, label} = labels.taskStatus[status];
         return (
           <MenuItemWithShortcuts
+            dot
             icon={icon}
             iconColor={color}
             key={status}
-            label={<div className={css(styles.label)}>{'Move to '}<b style={{color}}>{label}</b></div>}
+            label={<div className={css(styles.label)}>{`Move to ${label}`}</div>}
             onClick={this.handleTaskUpdateFactory(status)}
             closePortal={closePortal}
           />
@@ -58,14 +59,18 @@ class OutcomeCardStatusMenu extends Component {
     listItems.push(<MenuItemHR key="HR1" />);
     listItems.push(isPrivate ?
       (<MenuItemWithShortcuts
+        dot
         icon="lock"
+        iconColor={labels.taskStatus.private.color}
         key="private"
         label={<div className={css(styles.label)}>{'Remove '}<b>{'#private'}</b></div>}
         onClick={removeContentTag('private')}
         closePortal={closePortal}
       />) :
       (<MenuItemWithShortcuts
+        dot
         icon="lock"
+        iconColor={labels.taskStatus.private.color}
         key="private"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>}
         onClick={this.makeAddTagToTask('#private')}
@@ -74,14 +79,18 @@ class OutcomeCardStatusMenu extends Component {
     );
     listItems.push(isAgenda ?
       (<MenuItemWithShortcuts
+        dot
         icon="times"
+        iconColor={ui.colorError}
         key="delete"
         label={<div className={css(styles.label)}>{'Delete this Task'}</div>}
         onClick={this.deleteOutcome}
         closePortal={closePortal}
       />) :
       (<MenuItemWithShortcuts
+        dot
         icon="archive"
+        iconColor={labels.taskStatus.archived.color}
         key="archive"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>}
         onClick={this.makeAddTagToTask('#archived')}

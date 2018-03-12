@@ -289,6 +289,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
+  cardBoxShadow: shadow[0],
   cardButtonHeight: '1.5rem',
   cardContentFontSize: '.9375rem',
   cardContentLineHeight: '1.375rem',
@@ -478,6 +479,7 @@ const ui = {
   // Hints
   // ---------------------------------------------------------------------------
   hintFontColor: COLOR_TEXT_LIGHT,
+  hintFontSize: appTheme.typography.s2,
 
   // Icons
   // ---------------------------------------------------------------------------

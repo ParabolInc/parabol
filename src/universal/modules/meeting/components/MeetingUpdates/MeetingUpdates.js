@@ -49,6 +49,7 @@ class MeetingUpdates extends Component {
     const {tasks} = this.state;
     const self = teamMembers.find((m) => m.isSelf);
     const currentTeamMember = teamMembers[localPhaseItem - 1];
+    const nextTeamMember = teamMembers[localPhaseItem];
     const isLastMember = localPhaseItem === teamMembers.length;
     const nextPhaseName = actionMeeting.agendaitems.name;
     const myTeamMemberId = self && self.id;
@@ -75,7 +76,7 @@ class MeetingUpdates extends Component {
               icon="arrow-circle-right"
               iconPlacement="right"
               key={`update${localPhaseItem}`}
-              label={isLastMember ? `Advance to the ${nextPhaseName}` : 'Next teammate '}
+              label={isLastMember ? `Advance to the ${nextPhaseName}` : `Move to ${nextTeamMember.preferredName}`}
               onClick={gotoNext}
               buttonSize="medium"
             />

@@ -44,6 +44,7 @@ class MenuItemWithShortcuts extends Component {
     avatar: PropTypes.string,
     children: PropTypes.any,
     closePortal: PropTypes.func,
+    dot: PropTypes.bool,
     icon: PropTypes.string,
     iconColor: PropTypes.string,
     isActive: PropTypes.bool,
@@ -83,6 +84,7 @@ class MenuItemWithShortcuts extends Component {
     const {
       avatar,
       children,
+      dot,
       icon,
       iconColor,
       isActive,
@@ -94,6 +96,17 @@ class MenuItemWithShortcuts extends Component {
       <div className={cx(labelStyle, (avatar || icon) && iconLabelStyle)}>{label}</div> : label;
     const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
     const titleStr = title || titleFallbackStr;
+    const makeDot = () =>
+      (<div
+        className={css({
+          backgroundColor: iconColor || 'inherit',
+          borderRadius: '.375rem',
+          height: '.375rem',
+          marginLeft: ui.menuGutterHorizontal,
+          marginRight: ui.menuGutterInner,
+          width: '.375rem'
+        })}
+      />);
     const makeIcon = () =>
       (<FontAwesome
         name={icon}
@@ -129,7 +142,8 @@ class MenuItemWithShortcuts extends Component {
         onClick={this.handleClick}
       >
         {avatar && makeAvatar()}
-        {!avatar && icon && makeIcon()}
+        {!avatar && icon && !dot && makeIcon()}
+        {!avatar && dot && makeDot()}
         {children ? React.cloneElement(children, {isActive, menuRef}) : labelEl}
       </div>
     );

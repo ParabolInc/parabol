@@ -88,9 +88,7 @@ class MeetingAgendaItems extends Component {
               <EditorHelpModalContainer />
             </div>
           </MeetingSection>
-          {/* */}
         </MeetingSection>
-        {/* */}
         {showMoveMeetingControls &&
           <MeetingControlBar>
             <Button
