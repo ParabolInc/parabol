@@ -6,7 +6,7 @@ import Raven from 'raven';
 type DataloaderData = {
   key: string,
   keys: Array<string>,
-  indexedResults: Map
+  indexedResults: Map<string, any>
 }
 
 type GraphQLData = {
