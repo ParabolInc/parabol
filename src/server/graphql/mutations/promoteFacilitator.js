@@ -5,7 +5,6 @@ import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import {isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors';
-import sendAuthRaven from 'server/utils/sendAuthRaven';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 export default {

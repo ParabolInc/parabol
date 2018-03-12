@@ -72,8 +72,7 @@ class Step1PreferredName extends Component {
         resolve();
       };
       UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted);
-    })
-
+    });
   };
 
   render() {

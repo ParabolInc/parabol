@@ -10,4 +10,4 @@ const sanitizeGraphQLErrors = (res) => {
   };
 };
 
-export default sanitizeGraphQLErrors
+export default sanitizeGraphQLErrors;

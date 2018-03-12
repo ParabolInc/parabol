@@ -101,7 +101,6 @@ export default {
             data: {teamId}
           };
           return sendAuthRaven(authToken, 'Oh dear', breadcrumb);
-
         }
       } else if (nextPhaseItem) {
         const breadcrumb = {

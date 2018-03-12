@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql';
 import CreatePicturePutUrlPayload from 'server/graphql/types/CreatePicturePutUrlPayload';
 import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
-import {validateAvatarUpload} from 'server/utils/utils';
+import validateAvatarUpload from 'server/utils/validateAvatarUpload';
 import shortid from 'shortid';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 

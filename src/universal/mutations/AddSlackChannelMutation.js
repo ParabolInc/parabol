@@ -31,9 +31,9 @@ export const addSlackChannelUpdater = (store, viewerId, teamId, newSlackIntegrat
   incrementIntegrationCount(viewer, teamId, SLACK, 1);
 };
 
-const AddSlackChannelMutation = (environment, payload, teamMemberId, onError, onCompleted) => {
+const AddSlackChannelMutation = (environment, channelPayload, teamMemberId, onError, onCompleted) => {
   const {viewerId} = environment;
-  const {channelId, channelName} = payload;
+  const {channelId, channelName} = channelPayload;
   return commitMutation(environment, {
     mutation,
     variables: {

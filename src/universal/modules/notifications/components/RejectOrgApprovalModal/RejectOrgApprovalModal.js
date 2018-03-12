@@ -50,9 +50,9 @@ const RejectOrgApprovalModal = (props) => {
           resolve();
           closePortal();
         }
-      }
+      };
       RejectOrgApprovalMutation(atmosphere, variables, onError, onCompleted);
-    })
+    });
   };
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>

@@ -56,7 +56,7 @@ export default {
     if (assigneeId) {
       const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember';
       const res = r.table(table).get(assigneeId);
-      if (!res) return sendTeamMemberNotFoundError(authToken, teamId, assigneeId)
+      if (!res) return sendTeamMemberNotFoundError(authToken, teamId, assigneeId);
     }
 
     // RESOLUTION

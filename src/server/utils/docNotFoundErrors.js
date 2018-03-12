@@ -11,7 +11,7 @@ export const sendTaskNotFoundError = (authToken, taskId) => {
 
 export const sendTeamMemberNotFoundError = (authToken, teamId, userId) => {
   const breadcrumb = {
-    message: `Team member does not exist`,
+    message: 'Team member does not exist',
     category: 'Not found',
     data: {teamId, userId}
   };

@@ -9,4 +9,4 @@ const sendFailedInputValidation = (authToken, errors) => {
   return sendAuthRaven(authToken, 'Server validation error', breadcrumb);
 };
 
-export default sendFailedInputValidation
+export default sendFailedInputValidation;

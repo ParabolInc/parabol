@@ -34,7 +34,7 @@ export const sendAlreadyArchivedTeamError = (authToken, teamId) => {
     data: {teamId}
   };
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
-}
+};
 
 export const sendAlreadyInactivatedUserError = (authToken, userId) => {
   const breadcrumb = {
@@ -43,7 +43,7 @@ export const sendAlreadyInactivatedUserError = (authToken, userId) => {
     data: {userId}
   };
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
-}
+};
 
 export const sendAlreadyCurrentFacilitatorError = (authToken, facilitatorId) => {
   const breadcrumb = {
@@ -52,7 +52,7 @@ export const sendAlreadyCurrentFacilitatorError = (authToken, facilitatorId) => 
     data: {facilitatorId}
   };
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
-}
+};
 
 export const sendAlreadyStartedMeetingError = (authToken, teamId) => {
   const breadcrumb = {
@@ -61,7 +61,7 @@ export const sendAlreadyStartedMeetingError = (authToken, teamId) => {
     data: {teamId}
   };
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
-}
+};
 
 export const sendAlreadyUpdatedTaskError = (authToken, taskId) => {
   const breadcrumb = {
@@ -70,7 +70,7 @@ export const sendAlreadyUpdatedTaskError = (authToken, taskId) => {
     data: {taskId}
   };
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
-}
+};
 
 export const sendAlreadyProTierError = (authToken, orgId) => {
   const breadcrumb = {
@@ -79,5 +79,5 @@ export const sendAlreadyProTierError = (authToken, orgId) => {
     data: {orgId}
   };
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
-}
+};
 

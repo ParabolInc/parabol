@@ -8,7 +8,7 @@ import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendIntegrationNotFoundError} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyJoinedIntegrationError, sendAlreadyUpdatedIntegrationError} from 'server/utils/alreadyMutatedErrors';
+import {sendAlreadyUpdatedIntegrationError} from 'server/utils/alreadyMutatedErrors';
 import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
@@ -34,7 +34,7 @@ export default {
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId)
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     if (!userIds.includes(userId)) {
       const breadcrumb = {

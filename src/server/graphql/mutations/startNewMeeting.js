@@ -45,7 +45,7 @@ export default {
         .default(0)
     });
 
-    if (team.meetingId) return sendAlreadyStartedMeetingError(authToken, teamId)
+    if (team.meetingId) return sendAlreadyStartedMeetingError(authToken, teamId);
 
     // RESOLUTION
     const meetingId = shortid.generate();

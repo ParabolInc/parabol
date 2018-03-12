@@ -64,7 +64,6 @@ export const sendOrgLeadOfUserAccessError = (authToken, userId, returnValue) => 
 };
 
 
-
 export const sendGitHubAdministratorError = (authToken, nameWithOwner, returnValue) => {
   const breadcrumb = {
     message: `You must be an administrator of ${nameWithOwner} to integrate`,
@@ -81,8 +80,7 @@ export const sendGitHubPassedThoughError = (authToken, errors, returnValue) => {
     category: 'GitHub Error'
   };
   return sendAuthRaven(authToken, 'GitHub Error', breadcrumb, returnValue);
-}
-
+};
 
 
 export const sendSlackChannelArchivedError = (authToken, name, returnValue) => {
@@ -100,7 +98,7 @@ export const sendSlackPassedThoughError = (authToken, error, returnValue) => {
     category: 'Slack Error'
   };
   return sendAuthRaven(authToken, 'Slack Error', breadcrumb, returnValue);
-}
+};
 
 export const sendTeamMemberNotOnTeamError = (authToken, {teamId, userId}) => {
   const breadcrumb = {
@@ -109,4 +107,4 @@ export const sendTeamMemberNotOnTeamError = (authToken, {teamId, userId}) => {
     data: {teamId, userId}
   };
   return sendAuthRaven(authToken, 'Well that is weird', breadcrumb);
-}
+};
