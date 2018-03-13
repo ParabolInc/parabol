@@ -15,6 +15,7 @@ import shouldValidate from 'universal/validation/shouldValidate';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeSubmitButton from '../WelcomeSubmitButton/WelcomeSubmitButton';
 import step1Validation from './step1Validation';
+import getGraphQLError from 'universal/utils/relay/getGraphQLError';
 
 const validate = (values) => {
   const welcomeSchema = step1Validation();
@@ -51,19 +52,27 @@ class Step1PreferredName extends Component {
     }
   }
 
-  onPreferredNameSubmit = async (submissionData) => {
-    const {atmosphere, dispatch} = this.props;
-    const {data: {preferredName}} = step1Validation()(submissionData);
-    const updatedUser = {preferredName};
-    const onError = (err) => {
-      throw new SubmissionError(err);
-    };
-    const onCompleted = () => {
-      dispatch(updateCompleted(1));
-      dispatch(nextPage());
-      SendClientSegmentEventMutation(atmosphere, 'Welcome Step1 Completed');
-    };
-    UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted);
+  onPreferredNameSubmit = (submissionData) => {
+    return new Promise((resolve, reject) => {
+      const {atmosphere, dispatch} = this.props;
+      const {data: {preferredName}} = step1Validation()(submissionData);
+      const updatedUser = {preferredName};
+      const onError = (err) => {
+        reject(new SubmissionError(err));
+      };
+      const onCompleted = (res, errors) => {
+        const serverError = getGraphQLError(res, errors);
+        if (serverError) {
+          onError(serverError);
+          return;
+        }
+        dispatch(updateCompleted(1));
+        dispatch(nextPage());
+        SendClientSegmentEventMutation(atmosphere, 'Welcome Step1 Completed');
+        resolve();
+      };
+      UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted);
+    });
   };
 
   render() {

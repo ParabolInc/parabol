@@ -6,6 +6,9 @@ import incrementIntegrationCount from 'universal/utils/relay/incrementIntegratio
 const mutation = graphql`
   mutation RemoveGitHubRepoMutation($githubGlobalId: ID!) {
     removeGitHubRepo(githubGlobalId: $githubGlobalId) {
+      error {
+        message
+      }
       deletedId
     }
   }
@@ -30,6 +33,7 @@ const RemoveGitHubRepoMutation = (environment, githubGlobalId, teamId) => {
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('removeGitHubRepo');
+      if (!payload) return;
       const deletedId = payload.getValue('deletedId');
       removeGitHubRepoUpdater(viewer, teamId, deletedId);
     },

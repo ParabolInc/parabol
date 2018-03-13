@@ -6,6 +6,9 @@ import {SLACK} from 'universal/utils/constants';
 const mutation = graphql`
   mutation RemoveSlackChannelMutation($slackGlobalId: ID!) {
     removeSlackChannel(slackGlobalId: $slackGlobalId) {
+      error {
+        message
+      }
       deletedId
     }
   }
@@ -26,6 +29,7 @@ const RemoveSlackChannelMutation = (environment, slackGlobalId, teamId) => {
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('removeSlackChannel');
+      if (!payload) return;
       const deletedId = payload.getValue('deletedId');
       removeSlackChannelUpdater(viewer, teamId, deletedId);
     },

@@ -39,15 +39,15 @@ const handleMessage = (connectionContext) => async (message) => {
     // this GQL_START logic will be simplified when we move to persisted queries
   } else if (type === GQL_START) {
     if (!isQueryProvided(payload)) {
-      sendMessage(socket, GQL_ERROR, {errors: [new Error('No payload provided')]}, opId);
+      sendMessage(socket, GQL_ERROR, {errors: [{message: 'No payload provided'}]}, opId);
       return;
     }
     if (isSubscriptionPayload(payload)) {
       wsRelaySubscribeHandler(connectionContext, parsedMessage);
     } else {
       const result = await wsGraphQLHandler(connectionContext, parsedMessage);
-      const resultType = result.errors ? GQL_ERROR : GQL_DATA;
-      sendMessage(socket, resultType, result, opId);
+      const messageType = result.data ? GQL_DATA : GQL_ERROR;
+      sendMessage(socket, messageType, result, opId);
     }
   } else if (type === GQL_STOP) {
     relayUnsubscribe(subs, opId);

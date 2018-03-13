@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import TeamMember from 'server/graphql/types/TeamMember';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 
 export default {
   type: TeamMember,
@@ -16,7 +16,8 @@ export default {
     const r = getRethink();
 
     // AUTH
-    await requireTeamMember(authToken, teamId);
+    // TODO return proper payload
+    if (!isTeamMember(authToken, teamId)) return null;
 
     // RESOLUTION
     const userId = getUserId(authToken);

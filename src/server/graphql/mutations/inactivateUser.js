@@ -1,10 +1,13 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
-import {requireOrgLeaderOfUser} from 'server/utils/authorization';
+import {isOrgLeaderOfUser} from 'server/utils/authorization';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import {MAX_MONTHLY_PAUSES, PAUSE_USER} from 'server/utils/serverConstants';
 import {PERSONAL} from 'universal/utils/constants';
+import {sendOrgLeadOfUserAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
+import {sendAlreadyInactivatedUserError} from 'server/utils/alreadyMutatedErrors';
 
 export default {
   type: GraphQLBoolean,
@@ -19,14 +22,15 @@ export default {
     const r = getRethink();
 
     // AUTH
-    await requireOrgLeaderOfUser(authToken, userId);
+    if (!await isOrgLeaderOfUser(authToken, userId)) return sendOrgLeadOfUserAccessError(authToken, userId, false);
+
     const orgDocs = await r.table('Organization')
       .getAll(userId, {index: 'orgUsers'})
       .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId', 'tier');
     const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId);
     if (!firstOrgUser) {
       // no userOrgs means there were no changes, which means inactive was already true
-      throw new Error('That user is already inactive. cannot inactivate twice');
+      return sendAlreadyInactivatedUserError(authToken, userId);
     }
     const hookPromises = orgDocs.map((orgDoc) => {
       const {periodStart, periodEnd, stripeSubscriptionId, tier} = orgDoc;
@@ -46,7 +50,12 @@ export default {
     const pausesByOrg = await Promise.all(hookPromises);
     const triggeredPauses = Math.max(...pausesByOrg);
     if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
-      throw new Error('Max monthly pauses exceeded for this user');
+      const breadcrumb = {
+        message: 'Max monthly pauses exceeded for this user',
+        category: 'Pauses exceeded',
+        data: {userId}
+      };
+      return sendAuthRaven(authToken, 'Easy there', breadcrumb);
     }
 
     // TODO ping the user to see if they're currently online

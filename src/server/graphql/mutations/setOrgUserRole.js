@@ -1,10 +1,12 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload';
-import {getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER} from 'universal/utils/constants';
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: SetOrgUserRolePayload,
@@ -30,11 +32,16 @@ export default {
     const subOptions = {mutatorId, operationId};
     // AUTH
     const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
-    requireOrgLeader(userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     if (role && role !== BILLING_LEADER) {
-      throw new Error('invalid role');
+      const breadcrumb = {
+        message: 'Invalid role',
+        category: 'Unauthorized Access',
+        data: {role, orgId, userId}
+      };
+      return sendAuthRaven(authToken, 'Set org user role', breadcrumb);
     }
     // if someone is leaving, make sure there is someone else to take their place
     if (userId === authToken.sub) {
@@ -44,7 +51,12 @@ export default {
         })
         .count();
       if (leaderCount === 1) {
-        throw new Error('You’re the last leader, you can’t give that up');
+        const breadcrumb = {
+          message: 'You’re the last leader, you can’t give that up',
+          category: 'Unauthorized Access',
+          data: {role, orgId, userId}
+        };
+        return sendAuthRaven(authToken, 'Set org user role', breadcrumb);
       }
     }
 

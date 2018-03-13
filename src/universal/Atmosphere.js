@@ -116,11 +116,12 @@ export default class Atmosphere extends Environment {
       this.subscriptionClient.operations[opId] = {
         options: payload,
         handler: (errors, result) => {
-          if (errors) {
-            reject(errors[0]);
-          } else {
-            delete this.subscriptionClient.operations[opId];
+          // errors only exist if GQL_ERROR is sent
+          delete this.subscriptionClient.operations[opId];
+          if (result) {
             resolve(result);
+          } else {
+            reject(errors && errors[0]);
           }
         }
       };
@@ -144,12 +145,7 @@ export default class Atmosphere extends Environment {
         variables
       })
     });
-    const resJson = await res.json();
-    const {errors} = resJson;
-    if (errors) {
-      throw new Error(errors[0].message);
-    }
-    return resJson;
+    return res.json();
   };
 
   setSocket = () => {

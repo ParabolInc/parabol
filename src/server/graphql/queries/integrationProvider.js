@@ -1,9 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import Provider from 'server/graphql/types/Provider';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
 import IntegrationService from 'server/graphql/types/IntegrationService';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: Provider,
@@ -23,7 +24,7 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
 
     // RESOLUTION
     return r.table('Provider')

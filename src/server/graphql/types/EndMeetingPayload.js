@@ -3,10 +3,14 @@ import {resolveMeeting, resolveTeam} from 'server/graphql/resolvers';
 import Team from 'server/graphql/types/Team';
 import Task from 'server/graphql/types/Task';
 import Meeting from 'server/graphql/types/Meeting';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const EndMeetingPayload = new GraphQLObjectType({
   name: 'EndMeetingPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     team: {
       type: Team,
       resolve: resolveTeam

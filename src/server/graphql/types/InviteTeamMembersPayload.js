@@ -14,12 +14,16 @@ import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 import Task from 'server/graphql/types/Task';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 
 const InviteTeamMembersPayload = new GraphQLObjectType({
   name: 'InviteTeamMembersPayload',
   description: 'A list of all the possible outcomes when trying to invite a team member',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     team: {
       type: Team,
       description: 'The team the inviter is inviting the invitee to',

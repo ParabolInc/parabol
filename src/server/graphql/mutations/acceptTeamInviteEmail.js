@@ -5,13 +5,13 @@ import validateInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamM
 import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
 import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId} from 'server/utils/authorization';
+import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInviteEmailPayload),
@@ -31,7 +31,7 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    requireAuth(authToken);
+    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError();
 
     // VALIDATION
     const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);

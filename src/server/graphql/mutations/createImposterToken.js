@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import CreateImposterTokenPayload from 'server/graphql/types/CreateImposterTokenPayload';
 import {requireSU} from 'server/utils/authorization';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 const createImposterToken = {
   type: CreateImposterTokenPayload,
@@ -18,7 +19,12 @@ const createImposterToken = {
     // VALIDATION
     const user = await dataLoader.get('users').load(userId);
     if (!user) {
-      throw new Error(`User ${userId} does not exist`);
+      const breadcrumb = {
+        message: `User ${userId} does not exist`,
+        category: 'Impersonate',
+        data: {userId}
+      };
+      return sendAuthRaven(authToken, 'Listen here guy', breadcrumb);
     }
 
     // RESOLUTION

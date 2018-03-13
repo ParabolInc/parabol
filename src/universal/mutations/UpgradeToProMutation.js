@@ -28,6 +28,9 @@ graphql`
 const mutation = graphql`
   mutation UpgradeToProMutation($orgId: ID!, $stripeToken: ID!) {
     upgradeToPro(orgId: $orgId, stripeToken: $stripeToken) {
+      error {
+        message
+      }
       ...UpgradeToProMutation_organization @relay(mask:false)
       ...UpgradeToProMutation_team @relay(mask:false)
     }

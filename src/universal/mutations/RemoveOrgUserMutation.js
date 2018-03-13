@@ -76,6 +76,9 @@ graphql`
 const mutation = graphql`
   mutation RemoveOrgUserMutation($userId: ID!, $orgId: ID!) {
     removeOrgUser(userId: $userId, orgId: $orgId) {
+      error {
+        message
+      }
       ...RemoveOrgUserMutation_organization @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_teamMember @relay(mask: false)
@@ -169,6 +172,7 @@ const RemoveOrgUserMutation = (environment, orgId, userId, onError, onCompleted)
     variables: {orgId, userId},
     updater: (store) => {
       const payload = store.getRootField('removeOrgUser');
+      if (!payload) return;
       removeOrgUserOrganizationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {

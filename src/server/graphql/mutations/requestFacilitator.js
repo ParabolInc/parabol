@@ -1,9 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendAlreadyCurrentFacilitatorError} from 'server/utils/alreadyMutatedErrors';
 
 export default {
   name: 'RequestFacilitator',
@@ -20,14 +22,12 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     const requestorId = toTeamMemberId(teamId, viewerId);
     const {activeFacilitator} = await dataLoader.get('teams').load(teamId);
-    if (activeFacilitator === requestorId) {
-      throw new Error('You are already the facilitator');
-    }
+    if (activeFacilitator === requestorId) return sendAlreadyCurrentFacilitatorError(authToken, requestorId);
 
     // RESOLUTION
     const [currentFacilitatorUserId] = activeFacilitator.split('::');

@@ -5,7 +5,6 @@ import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
-import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
@@ -49,7 +48,7 @@ describe('removeTeamMember', () => {
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 
-  test('throw if the caller is not self or team lead', async () => {
+  test('return error if the caller is not self or team lead', async () => {
     // reassigns their tasks
 
     // deactivates providers
@@ -74,12 +73,11 @@ describe('removeTeamMember', () => {
     const dataLoader = makeDataLoader(authToken);
     // TEST
     const teamMemberId = mockDB.db.teamMember[7].id;
-    await expectAsyncToThrow(
-      removeTeamMember.resolve(
-        undefined,
-        {teamMemberId},
-        {authToken, dataLoader}
-      )
-    );
+    const res = await removeTeamMember.resolve(
+      undefined,
+      {teamMemberId},
+      {authToken, dataLoader}
+    )
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
   });
 });

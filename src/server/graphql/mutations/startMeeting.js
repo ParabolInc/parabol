@@ -2,13 +2,15 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {CHECKIN, TEAM} from 'universal/utils/constants';
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
+import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
   type: StartMeetingPayload,
@@ -26,13 +28,13 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
-    const facilitatorId = `${userId}::${teamId}`;
+    const facilitatorId = toTeamMemberId(teamId, userId);
     const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
-      throw new Error('facilitator is not active on that team');
+      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId});
     }
 
     const now = new Date();

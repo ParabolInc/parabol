@@ -2,11 +2,13 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import Invitee from 'server/graphql/types/Invitee';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
-import {getUserId, requireOrgLeaderOrTeamMember} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
+import getRethink from 'server/database/rethinkDriver';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -24,10 +26,17 @@ export default {
   },
   async resolve(source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
+    const r = getRethink();
 
     // AUTH
-    await requireOrgLeaderOrTeamMember(authToken, teamId);
     const viewerId = getUserId(authToken);
+    if (!isTeamMember(authToken, teamId)) {
+      const orgId = await r.table('Team').get(teamId)('orgId').default('');
+      const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
+      if (!isOrgBillingLeader(userOrgDoc)) {
+        return sendTeamAccessError(authToken, teamId);
+      }
+    }
 
     // RESOLUTION
     const subOptions = {mutatorId, operationId};

@@ -20,12 +20,13 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
 
 const sendFreshTokenIfNeeded = (connectionContext, tmsDB) => {
   const now = new Date();
-  const {exp, sub, tms} = connectionContext.authToken;
+  const {authToken} = connectionContext;
+  const {exp, tms} = authToken;
   const tokenExpiration = fromEpochSeconds(exp);
   const timeLeftOnToken = tokenExpiration - now;
   const tmsIsValid = isTmsValid(tmsDB, tms);
   if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
-    const nextAuthToken = makeAuthTokenObj(sub, tmsDB);
+    const nextAuthToken = makeAuthTokenObj({...authToken, tms: tmsDB});
     connectionContext.authToken = nextAuthToken;
     sendNewAuthToken(connectionContext.socket, nextAuthToken);
   }

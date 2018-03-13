@@ -24,6 +24,9 @@ graphql`
 const mutation = graphql`
   mutation ChangeTaskTeamMutation($taskId: ID!, $teamId: ID!) {
     changeTaskTeam(taskId: $taskId, teamId: $teamId) {
+      error {
+        message
+      }
       ...ChangeTaskTeamMutation_task @relay(mask: false)
     }
   }
@@ -46,6 +49,7 @@ const ChangeTaskTeamMutation = (environment, variables, onError, onCompleted) =>
     variables,
     updater: (store) => {
       const payload = store.getRootField('changeTaskTeam');
+      if (!payload) return;
       changeTaskTeamTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {

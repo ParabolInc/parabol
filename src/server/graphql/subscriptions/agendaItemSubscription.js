@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import AgendaItemSubscriptionPayload from 'server/graphql/types/AgendaItemSubscriptionPayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import {AGENDA_ITEM} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(AgendaItemSubscriptionPayload),
@@ -13,7 +14,7 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const channelName = `${AGENDA_ITEM}.${teamId}`;

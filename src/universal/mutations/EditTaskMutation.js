@@ -19,6 +19,9 @@ graphql`
 const mutation = graphql`
   mutation EditTaskMutation($taskId: ID!, $isEditing: Boolean!) {
     editTask(taskId: $taskId, isEditing: $isEditing) {
+      error {
+        message
+      }
       ...EditTaskMutation_task @relay(mask: false)      
     }
   }
@@ -36,6 +39,7 @@ const EditTaskMutation = (environment, taskId, isEditing, onCompleted, onError) 
     variables: {taskId, isEditing},
     updater: (store) => {
       const payload = store.getRootField('editTask');
+      if (!payload) return;
       editTaskTaskUpdater(payload, store);
     },
     optimisticUpdater: (store) => {

@@ -34,6 +34,9 @@ graphql`
 const mutation = graphql`
   mutation UpdateTaskMutation($updatedTask: UpdateTaskInput!) {
     updateTask(updatedTask: $updatedTask) {
+      error {
+        message
+      }
       ...UpdateTaskMutation_task @relay (mask: false)
     }
   }
@@ -70,6 +73,7 @@ const UpdateTaskMutation = (environment, updatedTask, area, onCompleted, onError
     },
     updater: (store) => {
       const payload = store.getRootField('updateTask');
+      if (!payload) return;
       updateTaskTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {

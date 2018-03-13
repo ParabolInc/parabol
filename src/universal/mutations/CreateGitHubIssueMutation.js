@@ -18,6 +18,9 @@ graphql`
 const mutation = graphql`
   mutation CreateGitHubIssueMutation($nameWithOwner: String!, $taskId: ID!) {
     createGitHubIssue(nameWithOwner: $nameWithOwner, taskId: $taskId) {
+      error {
+        message
+      }
       ...CreateGitHubIssueMutation_task @relay(mask: false)
     }
   }

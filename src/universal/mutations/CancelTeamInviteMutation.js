@@ -45,6 +45,9 @@ graphql`
 const mutation = graphql`
   mutation CancelTeamInviteMutation($invitationId: ID!) {
     cancelTeamInvite(invitationId: $invitationId) {
+      error {
+        message
+      }
       ...CancelTeamInviteMutation_invitation @relay(mask: false)
       ...CancelTeamInviteMutation_notification @relay(mask: false)
       ...CancelTeamInviteMutation_teamMember @relay(mask: false)
@@ -80,6 +83,7 @@ const CancelTeamInviteMutation = (environment, invitationId, teamId, onError, on
     variables: {invitationId},
     updater: (store) => {
       const payload = store.getRootField('cancelTeamInvite');
+      if (!payload) return;
       cancelTeamInviteInvitationUpdater(payload, store);
       cancelTeamInviteNotificationUpdater(payload, store, viewerId);
       cancelTeamInviteTeamMemberUpdater(payload, store);

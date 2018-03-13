@@ -48,6 +48,9 @@ graphql`
 const mutation = graphql`
   mutation CreateTaskMutation($newTask: CreateTaskInput!, $area: AreaEnum) {
     createTask(newTask: $newTask, area: $area) {
+      error {
+        message
+      }
       ...CreateTaskMutation_task @relay(mask: false)
     }
   }
@@ -85,6 +88,7 @@ const CreateTaskMutation = (environment, newTask, area, onError, onCompleted) =>
     },
     updater: (store) => {
       const payload = store.getRootField('createTask');
+      if (!payload) return;
       createTaskTaskUpdater(payload, store, viewerId, isEditing);
     },
     optimisticUpdater: (store) => {

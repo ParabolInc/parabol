@@ -1,11 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ChangeTaskTeamPayload from 'server/graphql/types/ChangeTaskTeamPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import shortid from 'shortid';
 import removeEntityKeepText from 'universal/utils/draftjs/removeEntityKeepText';
 import {TASK, TASK_INVOLVES} from 'universal/utils/constants';
 import publish from 'server/utils/publish';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
+import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: ChangeTaskTeamPayload,
@@ -28,15 +31,19 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     const task = await r.table('Task').get(taskId);
     if (!task) {
-      throw new Error('Task not found');
+      return sendTaskNotFoundError(authToken, taskId);
     }
     const {content, tags, teamId: oldTeamId} = task;
-    requireTeamMember(authToken, oldTeamId);
+    if (!isTeamMember(authToken, oldTeamId)) return sendTeamAccessError(authToken, oldTeamId);
     if (task.userId !== viewerId) {
-      throw new Error('Cannot change team for a task assigned to someone else');
+      const breadcrumb = {
+        message: 'Cannot change team for a task assigned to someone else',
+        category: 'Unauthorized access'
+      };
+      return sendAuthRaven(authToken, 'Oops', breadcrumb);
     }
 
     // RESOLUTION

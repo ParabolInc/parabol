@@ -2,10 +2,14 @@ import {GraphQLID, GraphQLObjectType} from 'graphql';
 import {resolveUser} from 'server/graphql/resolvers';
 import User from 'server/graphql/types/User';
 import tmsSignToken from 'server/utils/tmsSignToken';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const CreateImposterTokenPayload = new GraphQLObjectType({
   name: 'CreateImposterTokenPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     authToken: {
       type: GraphQLID,
       description: 'The new JWT',

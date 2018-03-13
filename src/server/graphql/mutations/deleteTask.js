@@ -1,10 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: DeleteTaskPayload,
@@ -23,10 +25,10 @@ export default {
     // AUTH
     const task = await r.table('Task').get(taskId);
     if (!task) {
-      throw new Error('Task does not exist');
+      return sendTaskNotFoundError(authToken, taskId);
     }
     const {teamId} = task;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const {subscribedUserIds} = await r({

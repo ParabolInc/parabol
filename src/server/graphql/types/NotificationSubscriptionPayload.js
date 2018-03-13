@@ -27,6 +27,7 @@ const types = [
   RejectOrgApprovalPayload,
   RemoveOrgUserPayload,
   StripeFailPaymentPayload,
+  // User doesn't have an error field, either make an exception & add it (because it's the Viewer) or use a payload here
   User,
   UpdateUserProfilePayload
 ];

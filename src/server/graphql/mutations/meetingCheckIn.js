@@ -1,9 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import MeetingCheckInPayload from 'server/graphql/types/MeetingCheckInPayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {TEAM_MEMBER} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: MeetingCheckInPayload,
@@ -25,7 +26,7 @@ export default {
 
     // teamMemberId is of format 'userId::teamId'
     const [, teamId] = teamMemberId.split('::');
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     await r.table('TeamMember')

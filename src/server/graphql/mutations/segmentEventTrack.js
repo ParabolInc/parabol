@@ -1,7 +1,8 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql';
 import SegmentEventTrackOptions from 'server/graphql/types/SegmentEventTrackOptions';
-import {getUserId, getUserOrgDoc, requireOrgLeader, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader, isTeamMember} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import {sendOrgLeadAccessError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 
 export default {
@@ -21,14 +22,16 @@ export default {
     const userId = getUserId(authToken);
     const {teamId, orgId} = options;
     if (teamId) {
-      requireTeamMember(authToken, teamId);
+      // fail silently. they're being sneaky
+      if (!isTeamMember(authToken, teamId)) sendTeamAccessError(authToken, teamId, true);
     }
     if (orgId) {
       const userOrgDoc = await getUserOrgDoc(userId, orgId);
-      requireOrgLeader(userOrgDoc);
+      if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc, true);
     }
 
     // RESOLUTION
     sendSegmentEvent(event, userId, options);
+    return true;
   }
 };

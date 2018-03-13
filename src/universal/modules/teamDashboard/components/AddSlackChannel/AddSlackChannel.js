@@ -8,6 +8,7 @@ import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation
 import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const defaultSelectedChannel = () => ({
   channelId: undefined,
@@ -19,7 +20,13 @@ class AddSlackChannel extends Component {
     accessToken: PropTypes.string,
     environment: PropTypes.object,
     styles: PropTypes.object,
-    teamMemberId: PropTypes.string
+    teamMemberId: PropTypes.string,
+    setDirty: PropTypes.func.isRequired,
+    error: PropTypes.any,
+    submitting: PropTypes.bool,
+    submitMutation: PropTypes.func.isRequired,
+    onCompleted: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -50,21 +57,9 @@ class AddSlackChannel extends Component {
   };
 
   handleAddChannel = () => {
-    const {environment, teamMemberId} = this.props;
+    const {environment, teamMemberId, onError, onCompleted} = this.props;
     const {selectedChannel} = this.state;
     if (!selectedChannel.channelId) return;
-    const onError = (error) => {
-      this.setState({
-        error
-      });
-    };
-    const onCompleted = () => {
-      if (this.state.error) {
-        this.setState({
-          error: null
-        });
-      }
-    };
     AddSlackChannelMutation(environment, selectedChannel, teamMemberId, onError, onCompleted);
     this.setState({
       selectedChannel: defaultSelectedChannel()
@@ -96,7 +91,7 @@ class AddSlackChannel extends Component {
 
   render() {
     const {isLoaded, options, selectedChannel: {channelName}} = this.state;
-    const {accessToken, styles} = this.props;
+    const {accessToken, error, styles} = this.props;
     return (
       <div className={css(styles.addChannel)}>
         <div className={css(styles.dropdownAndError)}>
@@ -108,7 +103,7 @@ class AddSlackChannel extends Component {
             isLoaded={isLoaded}
           />
           <div className={css(styles.error)}>
-            {this.state.error}
+            {error && error.message}
           </div>
         </div>
         <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
@@ -143,4 +138,4 @@ const styleThunk = () => ({
 });
 
 
-export default withStyles(styleThunk)(AddSlackChannel);
+export default withStyles(styleThunk)(withMutationProps(AddSlackChannel));

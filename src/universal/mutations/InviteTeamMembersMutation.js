@@ -86,6 +86,9 @@ graphql`
 const mutation = graphql`
   mutation InviteTeamMembersMutation($teamId: ID!, $invitees: [Invitee!]!) {
     inviteTeamMembers(invitees: $invitees, teamId: $teamId) {
+      error {
+        message
+      }
       ...InviteTeamMembersMutation_invitation @relay(mask: false)
       ...InviteTeamMembersMutation_notification @relay(mask:false)
       ...InviteTeamMembersMutation_orgApproval @relay(mask: false)
@@ -245,6 +248,7 @@ const InviteTeamMembersMutation = (environment, variables, dispatch, onError, on
     variables,
     updater: (store) => {
       const payload = store.getRootField('inviteTeamMembers');
+      if (!payload) return;
       inviteTeamMembersInvitationUpdater(payload, store);
       popInvitationToast(payload, dispatch);
       inviteTeamMembersOrgApprovalUpdater(payload, store);

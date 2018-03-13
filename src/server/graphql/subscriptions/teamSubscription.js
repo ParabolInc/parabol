@@ -1,14 +1,15 @@
 import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import TeamSubscriptionPayload from 'server/graphql/types/TeamSubscriptionPayload';
-import {getUserId, requireAuth} from 'server/utils/authorization';
+import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import {TEAM} from 'universal/utils/constants';
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLNonNull(TeamSubscriptionPayload),
   subscribe: (source, args, {authToken, dataLoader, socketId}) => {
     // AUTH
-    requireAuth(authToken);
+    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError(authToken);
 
     // RESOLUTION
     const userId = getUserId(authToken);

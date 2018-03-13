@@ -23,6 +23,9 @@ graphql`
 const mutation = graphql`
   mutation ArchiveTeamMutation($teamId: ID!) {
     archiveTeam(teamId: $teamId) {
+      error {
+        message
+      }
       ...ArchiveTeamMutation_team @relay(mask: false)
     }
   }
@@ -74,6 +77,7 @@ const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted)
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('archiveTeam');
+      if (!payload) return;
       archiveTeamTeamUpdater(payload, store, viewerId, {...options, store, environment});
     },
     onCompleted,

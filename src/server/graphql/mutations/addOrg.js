@@ -10,10 +10,10 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, UPDATED} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: AddOrgPayload,
@@ -40,7 +40,7 @@ export default {
 
     // VALIDATION
     const {data: {invitees, newTeam, orgName}, errors} = addOrgValidation()(args);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const orgId = shortid.generate();

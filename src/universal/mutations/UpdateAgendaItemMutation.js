@@ -15,6 +15,9 @@ graphql`
 const mutation = graphql`
   mutation UpdateAgendaItemMutation($updatedAgendaItem: UpdateAgendaItemInput!) {
     updateAgendaItem(updatedAgendaItem: $updatedAgendaItem) {
+      error {
+        message
+      }
       ...UpdateAgendaItemMutation_agendaItem @relay(mask: false)
     }
   }

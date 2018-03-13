@@ -23,6 +23,9 @@ graphql`
 const mutation = graphql`
   mutation AddAgendaItemMutation($newAgendaItem: CreateAgendaItemInput!) {
     addAgendaItem(newAgendaItem: $newAgendaItem) {
+      error {
+        message
+      }
       ...AddAgendaItemMutation_agendaItem @relay(mask: false)
     }
   }
@@ -40,6 +43,7 @@ const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted)
     variables: {newAgendaItem},
     updater: (store) => {
       const payload = store.getRootField('addAgendaItem');
+      if (!payload) return;
       addAgendaItemUpdater(payload, store);
     },
     optimisticUpdater: (store) => {

@@ -1,13 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, TASK, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   name: 'CancelTeamInvite',
@@ -28,9 +30,9 @@ export default {
     // AUTH
     const {email, teamId} = await r.table('Invitation').get(invitationId).default({});
     if (!teamId) {
-      throw new Error('Invitation not found!');
+      return sendInvitationNotFoundError(authToken, invitationId);
     }
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const {removedTeamInviteNotification} = await r({

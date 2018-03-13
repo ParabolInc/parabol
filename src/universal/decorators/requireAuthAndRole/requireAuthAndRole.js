@@ -67,12 +67,11 @@ export default (role, {
     }
 
     render() {
-      const {location: {pathname}} = this.props;
+      const {location: {pathname}, userId} = this.props;
       const {legit} = this.state;
       if (!legit) {
-        return (
-          <Redirect to={{pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`}} />
-        );
+        const to = userId ? '/' : {pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`};
+        return <Redirect to={to} />;
       }
       return <ComposedComponent {...this.props} />;
     }

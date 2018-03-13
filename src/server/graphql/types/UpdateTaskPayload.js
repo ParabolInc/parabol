@@ -2,10 +2,14 @@ import {GraphQLID, GraphQLObjectType} from 'graphql';
 import {makeResolveNotificationForViewer, resolveTask} from 'server/graphql/resolvers';
 import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves';
 import Task from 'server/graphql/types/Task';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const UpdateTaskPayload = new GraphQLObjectType({
   name: 'UpdateTaskPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     task: {
       type: Task,
       resolve: resolveTask

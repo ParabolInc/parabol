@@ -15,7 +15,9 @@ const ToggleAgendaListMutation = (environment, teamId, onError, onCompleted) => 
     mutation,
     variables: {teamId},
     updater: (store) => {
-      const nextValue = store.getRootField('toggleAgendaList').getValue('hideAgenda');
+      const payload = store.getRootField('toggleAgendaList');
+      if (!payload) return;
+      const nextValue = payload.getValue('hideAgenda');
       const teamMemberId = toTeamMemberId(teamId, viewerId);
       store.get(teamMemberId).setValue(nextValue, 'hideAgenda');
     },
