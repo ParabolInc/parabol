@@ -51,6 +51,10 @@ export const newMeetingFields = () => ({
     type: Team,
     description: 'The team that ran the meeting',
     resolve: resolveTeam
+  },
+  updatedAt: {
+    type: GraphQLISO8601Type,
+    description: 'The last time a meeting was updated (stage completed, finished, etc)'
   }
 });
 

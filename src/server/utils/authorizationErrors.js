@@ -108,3 +108,12 @@ export const sendTeamMemberNotOnTeamError = (authToken, {teamId, userId}) => {
   };
   return sendAuthRaven(authToken, 'Well that is weird', breadcrumb);
 };
+
+export const sendNotMeetingFacilitatorError = (authToken, userId) => {
+  const breadcrumb = {
+    message: 'You are not the meeting facilitator',
+    category: 'Meeting facilitator',
+    data: {userId}
+  };
+  return sendAuthRaven(authToken, 'Not meeting facilitator', breadcrumb);
+};
