@@ -166,6 +166,7 @@ export default class ReflectionCard extends Component<Props, State> {
     };
     if (isCollapsed) {
       styles.height = '3rem';
+      styles.overflow = 'hidden';
     }
     return (
       <div className={css(styles)}>
