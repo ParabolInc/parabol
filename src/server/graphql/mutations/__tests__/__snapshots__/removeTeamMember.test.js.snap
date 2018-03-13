@@ -329,5 +329,3 @@ Object {
   ],
 }
 `;
-
-exports[`removeTeamMember throw if the caller is not self or team lead 1`] = `"Unauthorized. Only the team leader promote someone to lead"`;

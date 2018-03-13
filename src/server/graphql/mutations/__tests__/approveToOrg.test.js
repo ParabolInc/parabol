@@ -6,7 +6,6 @@ import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {__now} from 'server/__tests__/setup/mockTimes';
-import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
 import * as sendEmailPromise from 'server/email/sendEmail';
@@ -131,7 +130,7 @@ describe('approveToOrg', () => {
     // expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 
-  test('throws if the caller does not own the notification', async () => {
+  test('returns error if the caller does not own the notification', async () => {
     // SETUP
     const mockDB = new MockDB();
     await mockDB.init()
@@ -143,9 +142,7 @@ describe('approveToOrg', () => {
 
     // TEST
     const {id: dbNotificationId} = notification;
-    await expectAsyncToThrow(
-      approveToOrg.resolve(undefined, {dbNotificationId}, {authToken, dataLoader, socket}),
-      [dbNotificationId, wrongUser.id]
-    );
+    const res = await approveToOrg.resolve(undefined, {dbNotificationId}, {authToken, dataLoader, socket});
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
   });
 });
