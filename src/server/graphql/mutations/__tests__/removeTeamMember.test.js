@@ -77,7 +77,7 @@ describe('removeTeamMember', () => {
       undefined,
       {teamMemberId},
       {authToken, dataLoader}
-    )
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    );
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });

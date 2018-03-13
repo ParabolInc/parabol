@@ -20,7 +20,9 @@ const SlackChannelAddedSubscription = (environment, queryVariables) => {
     subscription,
     variables: {teamId},
     updater: (store) => {
-      const newNode = store.getRootField('slackChannelAdded').getLinkedRecord('channel');
+      const payload = store.getRootField('slackChannelAdded');
+      if (!payload) return;
+      const newNode = payload.getLinkedRecord('channel');
       addSlackChannelUpdater(store, viewerId, teamId, newNode);
     }
   };

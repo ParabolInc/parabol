@@ -82,7 +82,7 @@ describe('endMeeting', () => {
 
     // TEST
     const res = await endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader, socket});
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 
   test('return error if no meeting has ever been created', async () => {
@@ -95,7 +95,7 @@ describe('endMeeting', () => {
 
     // TEST
     const res = await endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader, socket});
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 
   test('return error when the caller is not a team member', async () => {
@@ -107,6 +107,6 @@ describe('endMeeting', () => {
 
     // TEST
     const res = await endMeeting.resolve(undefined, {teamId: 'foo'}, {authToken, dataLoader, socket});
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });

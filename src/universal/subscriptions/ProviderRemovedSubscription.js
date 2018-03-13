@@ -28,6 +28,7 @@ const ProviderRemovedSubscription = (environment, queryVariables) => {
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('providerRemoved');
+      if (!payload) return;
       const service = payload.getLinkedRecord('providerRow').getValue('service');
 
       // remove the accessToken from the provider

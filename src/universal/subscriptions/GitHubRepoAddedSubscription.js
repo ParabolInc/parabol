@@ -25,7 +25,9 @@ const GitHubRepoAddedSubscription = (environment, queryVariables) => {
     subscription,
     variables: {teamId},
     updater: (store) => {
-      const newNode = store.getRootField('githubRepoAdded').getLinkedRecord('repo');
+      const payload = store.getRootField('githubRepoAdded');
+      if (!payload) return;
+      const newNode = payload.getLinkedRecord('repo');
       addGitHubRepoUpdater(store, viewerId, teamId, newNode);
     }
   };

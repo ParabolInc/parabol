@@ -92,6 +92,7 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
     updater: (store) => {
       const options = {dispatch, environment, history, location, store};
       const payload = store.getRootField('notificationSubscription');
+      if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
         case 'AddOrgPayload':
