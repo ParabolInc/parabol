@@ -30,6 +30,7 @@ const OrganizationSubscription = (environment, queryVariables, subParams) => {
     variables: {},
     updater: (store) => {
       const payload = store.getRootField('organizationSubscription');
+      if (!payload) return;
       const type = payload.getValue('__typename');
       const options = {dispatch, history};
       switch (type) {

@@ -1,11 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDate from 'mockdate';
-import {__now, __aMinuteAgo, __anHourAgo} from 'server/__tests__/setup/mockTimes';
+import {__aMinuteAgo, __anHourAgo, __now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
-import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
 import {DONE} from 'universal/utils/constants';
 import convertToRichText from 'server/__tests__/setup/convertToRichText';
@@ -162,7 +161,7 @@ describe('updateTask', () => {
     expect(dataLoader.isShared()).toEqual(true);
   });
 
-  test('throw when the caller is not a team member', async () => {
+  test('return error when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {task, user} = await mockDB.init()
@@ -175,7 +174,7 @@ describe('updateTask', () => {
       id: taskId,
       status: DONE
     };
-    await expectAsyncToThrow(updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket}),
-      [mockDB.context.team.id]);
+    const res = await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket});
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });

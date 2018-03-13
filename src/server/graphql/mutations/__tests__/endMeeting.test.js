@@ -5,7 +5,6 @@ import {__anHourAgo, __now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
-import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
 import * as sendEmailPromise from 'server/email/sendEmail';
 import endMeeting from 'server/graphql/mutations/endMeeting';
@@ -72,7 +71,7 @@ describe('endMeeting', () => {
     expect(dataLoader.isShared()).toEqual(true);
   });
 
-  test('throw if called after meeting ended or no active meeting', async () => {
+  test('return error if called after meeting ended or no active meeting', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user} = await mockDB.init()
@@ -82,10 +81,11 @@ describe('endMeeting', () => {
     const dataLoader = makeDataLoader(authToken);
 
     // TEST
-    await expectAsyncToThrow(endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader, socket}));
+    const res = await endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader, socket});
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 
-  test('throw if no meeting has ever been created', async () => {
+  test('return error if no meeting has ever been created', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user} = await mockDB.init();
@@ -94,10 +94,11 @@ describe('endMeeting', () => {
     const dataLoader = makeDataLoader(authToken);
 
     // TEST
-    await expectAsyncToThrow(endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader, socket}));
+    const res = await endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader, socket});
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 
-  test('throw when the caller is not a team member', async () => {
+  test('return error when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user} = await mockDB.init();
@@ -105,6 +106,7 @@ describe('endMeeting', () => {
     const dataLoader = makeDataLoader(authToken);
 
     // TEST
-    await expectAsyncToThrow(endMeeting.resolve(undefined, {teamId: 'foo'}, {authToken, dataLoader, socket}));
+    const res = await endMeeting.resolve(undefined, {teamId: 'foo'}, {authToken, dataLoader, socket});
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });
