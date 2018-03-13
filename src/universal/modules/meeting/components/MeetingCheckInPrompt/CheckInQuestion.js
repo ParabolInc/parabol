@@ -114,6 +114,7 @@ class CheckInQuestion extends Component {
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
+        maxHeight={40}
         isOpen={(isFacilitating && !isEditing) ? undefined : false}
       >
         <div className={css(styles.root)}>
