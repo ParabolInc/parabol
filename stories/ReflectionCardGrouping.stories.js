@@ -41,13 +41,7 @@ type ReflectionCatcherProps = {
   handleUngroup: (reflectionId: ReflectionID) => any
 };
 
-let ReflectionCatcher = (props: ReflectionCatcherProps) => (
-  props.connectDropTarget(
-    <div className={css({position: 'fixed', top: 0, left: 0, width: '100%', height: '100%'})} />
-  )
-);
-
-const spec = {
+const reflectionCatcherSpec = {
   canDrop(props: ReflectionCatcherProps, monitor) {
     const {ungroupedReflections} = props;
     const {id: draggedReflectionId} = monitor.getItem();
@@ -62,11 +56,17 @@ const spec = {
   }
 };
 
-const collect = (connect) => ({
+const reflectionCatcherCollect = (connect) => ({
   connectDropTarget: connect.dropTarget()
 });
 
-ReflectionCatcher = DropTarget(REFLECTION_CARD, spec, collect)(ReflectionCatcher);
+const ReflectionCatcher = DropTarget(REFLECTION_CARD, reflectionCatcherSpec, reflectionCatcherCollect)(
+  (props: ReflectionCatcherProps) => (
+    props.connectDropTarget(
+      <div className={css({position: 'fixed', top: 0, left: 0, width: '100%', height: '100%'})} />
+    )
+  )
+);
 
 class DragAndDropStory extends Component<*, DragAndDropStoryState> {
   state = {
