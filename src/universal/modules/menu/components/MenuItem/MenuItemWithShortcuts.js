@@ -44,7 +44,7 @@ class MenuItemWithShortcuts extends Component {
     avatar: PropTypes.string,
     children: PropTypes.any,
     closePortal: PropTypes.func,
-    dot: PropTypes.bool,
+    hasDotIcon: PropTypes.bool,
     icon: PropTypes.string,
     iconColor: PropTypes.string,
     isActive: PropTypes.bool,
@@ -84,7 +84,7 @@ class MenuItemWithShortcuts extends Component {
     const {
       avatar,
       children,
-      dot,
+      hasDotIcon,
       icon,
       iconColor,
       isActive,
@@ -142,8 +142,8 @@ class MenuItemWithShortcuts extends Component {
         onClick={this.handleClick}
       >
         {avatar && makeAvatar()}
-        {!avatar && icon && !dot && makeIcon()}
-        {!avatar && dot && makeDot()}
+        {!avatar && icon && !hasDotIcon && makeIcon()}
+        {!avatar && hasDotIcon && makeDot()}
         {children ? React.cloneElement(children, {isActive, menuRef}) : labelEl}
       </div>
     );
