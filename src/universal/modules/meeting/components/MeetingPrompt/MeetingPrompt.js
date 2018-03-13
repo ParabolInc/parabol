@@ -74,7 +74,7 @@ const styleThunk = (theme, {avatarLarge}) => ({
 
   heading: {
     color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s5,
+    fontSize: appTheme.typography.s6,
     fontWeight: 600,
     lineHeight: '1.5',
     margin: 0,
@@ -82,34 +82,42 @@ const styleThunk = (theme, {avatarLarge}) => ({
     width: '100%',
 
     [promptBreakpoint]: {
-      fontSize: appTheme.typography.s6
+      fontSize: appTheme.typography.s7
     }
   },
 
   subHeading: {
-    color: appTheme.palette.dark90l,
-    fontSize: appTheme.typography.s4,
-    fontWeight: 600,
+    color: ui.hintFontColor,
+    fontSize: ui.hintFontSize,
+    // color: appTheme.palette.dark90l,
+    // fontSize: appTheme.typography.s4,
+    // fontWeight: 600,
     lineHeight: '1.5',
     margin: 0,
     padding: 0,
     width: '100%',
 
     [promptBreakpoint]: {
-      fontSize: appTheme.typography.s5
+      // fontSize: appTheme.typography.s5
+      fontSize: ui.hintFontSizeLarger
     }
   },
 
   helpText: {
-    color: appTheme.palette.dark90l,
-    fontSize: appTheme.typography.s2,
+    color: ui.hintFontColor,
+    fontSize: ui.hintFontSize,
+    // color: appTheme.palette.dark90l,
+    // fontSize: appTheme.typography.s2,
+    // fontWeight: 400,
     lineHeight: '1.5',
     margin: 0,
     padding: 0,
+    userSelect: 'none',
     width: '100%',
 
     [promptBreakpoint]: {
-      fontSize: appTheme.typography.s3
+      // fontSize: appTheme.typography.s3
+      fontSize: ui.hintFontSizeLarger
     }
   },
 

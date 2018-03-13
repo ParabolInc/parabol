@@ -70,7 +70,7 @@ class CopyShortLink extends Component {
   render() {
     const {icon, label, url} = this.props;
     const {confirmingCopied} = this.state;
-    const theIcon = icon || 'copy';
+    const theIcon = icon || 'link';
     const theLabel = label || url;
     return (
       <Tooltip
@@ -81,7 +81,7 @@ class CopyShortLink extends Component {
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         tip={<div>Copied the meeting link!</div>}
       >
-        <CopyToClipboard text={url} onCopy={this.confirmCopied}>
+        <CopyToClipboard text={url} onCopy={this.confirmCopied} title="Copy Meeting Link">
           <CopyBlock>
             <CopyIcon name={theIcon} />
             <CopyLabel>{theLabel}</CopyLabel>

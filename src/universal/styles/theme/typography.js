@@ -4,6 +4,10 @@ const typography = {
   serif: ['IBM Plex Serif', 'Georgia', 'Times New Roman', 'Times', 'serif'],
   monospace: ['IBM Plex Mono', 'Menlo', 'Monaco', 'Consolas', 'Courier New', 'monospace'],
 
+  sansSerifString: '"IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif',
+  serifString: '"IBM Plex Serif", Georgia, "Times New Roman", Times, serif',
+  monospaceString: '"IBM Plex Mono", Menlo, Monaco, Consolas, "Courier New", monospace',
+
   // Typography scale (matches a subset of Sketch defaults)
   sBase: '1rem', // 16px
   s1: '.75rem', // 12px

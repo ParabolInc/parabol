@@ -41,13 +41,14 @@ const MeetingAgendaFirstCall = (props) => {
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls ?
                 <Button
+                  buttonSize="large"
                   buttonStyle="primary"
                   colorPalette="warm"
                   icon="arrow-circle-right"
+                  iconLarge
                   iconPlacement="right"
                   label={`Let’s begin: ${phaseName}`}
                   onClick={gotoNext}
-                  buttonSize="large"
                 /> :
                 <MeetingFacilitationHint>
                   {'Waiting for'} <b>{facilitatorName}</b> {`to start the ${phaseName}`}

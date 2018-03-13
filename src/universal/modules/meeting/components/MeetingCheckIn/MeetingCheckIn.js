@@ -74,6 +74,7 @@ const MeetingCheckin = (props) => {
           <CheckInControls
             checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
             currentMemberName={currentMember.preferredName}
+            localPhaseItem={localPhaseItem}
             nextMemberName={nextMember && nextMember.preferredName}
           />
         </MeetingControlBar>
