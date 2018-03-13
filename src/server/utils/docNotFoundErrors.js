@@ -80,3 +80,12 @@ export const sendMeetingNotFoundError = (authToken, meetingId, returnValue) => {
   };
   return sendAuthRaven(authToken, 'Meeting Not Found', breadcrumb, returnValue);
 };
+
+export const sendStageNotFoundError = (authToken, stageId, returnValue) => {
+  const breadcrumb = {
+    message: 'Stage ID not found',
+    category: 'Not found',
+    data: {stageId}
+  };
+  return sendAuthRaven(authToken, 'Meeting Stage Not Found', breadcrumb, returnValue);
+};
