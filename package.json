@@ -219,7 +219,6 @@
     "redux-thunk": "2.2.0",
     "relay-runtime": "^1.5.0",
     "rethinkdbdash": "^2.3.31",
-    "roman-numeral": "^0.2.6",
     "secure-compare": "^3.0.1",
     "serve-favicon": "^2.4.3",
     "shared-dataloader": "^0.1.0",

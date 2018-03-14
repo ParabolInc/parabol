@@ -31,6 +31,10 @@ export const meetingTypeToSlug = {
   [RETROSPECTIVE]: 'retro'
 };
 
+export const meetingTypeToLabel = {
+  [RETROSPECTIVE]: 'Retrospective'
+};
+
 export const phaseTypeToSlug = {
   [CHECKIN]: 'checkin'
 };

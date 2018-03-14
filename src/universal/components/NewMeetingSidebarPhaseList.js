@@ -2,7 +2,6 @@
 import React from 'react';
 import {LOBBY} from 'universal/utils/constants';
 import styled from 'react-emotion';
-import romanNumeral from 'roman-numeral';
 import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSidebarPhaseListItem';
 import {createFragmentContainer, graphql} from 'react-relay';
 import {withRouter} from 'react-router-dom';
@@ -50,7 +49,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
           return (<NewMeetingSidebarPhaseListItem
             key={name}
             name={phaseLabelLookup[name]}
-            listPrefix={`${romanNumeral.convert(idx + 1)}.`}
+            listPrefix={String(idx + 1)}
             isActive={localGroup === name}
             isFacilitatorPhaseGroup={facilitatorPhaseGroup === name}
             isNavigable={isNavigable(name, stages, isFacilitator)}

@@ -15,10 +15,11 @@ import NewMeetingLobby from 'universal/components/NewMeetingLobby';
 
 import type {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
+import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
+import ui from 'universal/styles/ui';
 
 const MeetingContainer = styled('div')({
-  backgroundColor: '#fff',
+  backgroundColor: ui.backgroundColor,
   display: 'flex',
   height: '100vh'
 });
@@ -53,9 +54,10 @@ const NewMeeting = (props: Props) => {
   const {localPhase, meetingType, viewer} = props;
   const {team} = viewer;
   const {teamName} = team;
+  const meetingLabel = meetingTypeToLabel[meetingType];
   return (
     <MeetingContainer>
-      <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
+      <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
       <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
       <MeetingArea>
         <MeetingAreaHeader>
