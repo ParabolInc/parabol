@@ -4,8 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.31.0 2018-Mar-07
-## Added
+## v1.0.0 2018-Mar-07
+### Added
 - Client-side filtering behind the localFilter release flag
 - A complete style makeover!
 - React storybook!
@@ -13,7 +13,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Hubspot tiering traits
 - Retro meeting lobby (front-end without UI)
 
-## Fixed
+### Fixed
 - Intranet GraphQL Ping query
 - Auto-endMeeting now has dataloader and does not throw
 - Notification bell highlighting goes away correctly #1806
@@ -24,24 +24,24 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Agenda doesn't jitter on the bottom #1734
 - Agenda scrolls correctly #1802
 
-## Removed
+### Removed
 - Lengthy tests before deploying to development server
 
 
 ## v0.30.2 2018-Mar-05
-## Fixed
+### Fixed
 - Don't log out when a bad invite token is attempted
 - Keep dispatch after logout
 - Show welcome toast to new team members (missing dispatch)
 
 
 ## v0.30.1 2018-Mar-01
-## Fixed
+### Fixed
 - Hotfix for #1817, no longer require active subscription to update credit card
 
 
 ## v0.30.0 2018-Feb-28
-## Added
+### Added
 - activeProOrgCount and activeProUserCount queries
 - Change the team a card belogs to from _My Dashboard_ (#1474)
 - Password recovery page (behind `newSignIn` release flag)
@@ -49,47 +49,47 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 
 ## v0.29.0 2018-Feb-21
-## Fixed
+### Fixed
 - fixed withCoords
 - added new sign-in page (controlled by `newSignIn` release flag)
 
 ## v0.28.1 2018-Feb-19
-## Fixed
+### Fixed
 - unsentMessageQueue never released queries and mutations (#1775)
 
 ## v0.28.0 2018-Feb-14
-## Added
+### Added
 - Done items in the meeting summary
 
-## Fixed
+### Fixed
 - Connectivity messages for socket disconnects/reconnects/firewalls
 
-## Removed
+### Removed
 - SocketCluster in favor of vanilla uws
 
 ## v0.27.2 2018-Feb-11
-## Fixed
+### Fixed
 - Regression caused by incomplete project -> task refactor (#1728)
 
 ## v0.27.0 2018-Feb-07
-## Added
+### Added
 - Scroll to active agenda item during meeting
 - Renamed Project to Task
 
-## Fixed
+### Fixed
 - Minor style updates
 
 
 ## v0.26.1 2018-Jan-31
-## Fixed
+### Fixed
 - E2E Timeouts
 
 
 ## v0.26.0 2018-Jan-31
-## Added
+### Added
 - Soft team members
 
-## Fixed
+### Fixed
 - Errors on removed team members (#1664)
 - Regression in agenda list flow (#1668)
 - Private cards showing up during updates phase (#1604)
@@ -97,11 +97,11 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Integration regression (#1667)
 
 ## v0.25.0 2018-Jan-24
-## Added
+### Added
 - Feature flags
 - Message on websocket disconnects
 
-## Removed
+### Removed
 - Cashay. We're 100% Relay!
 
 ## v0.24.1 2018-Jan-10
@@ -119,7 +119,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Scrolling card drag-n-drop
 - Various notification bugs and inivtation logic
 
-# Removed
+### Removed
 - Dependencies on Cashay for all but user/org
 
 ## v0.23.0 2017-Nov-17
