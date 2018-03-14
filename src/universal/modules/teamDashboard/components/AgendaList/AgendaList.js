@@ -32,6 +32,7 @@ class AgendaList extends Component {
     facilitatorPhase: PropTypes.oneOf(phaseArray),
     facilitatorPhaseItem: PropTypes.number,
     gotoAgendaItem: PropTypes.func,
+    inSync: PropTypes.bool,
     localPhase: PropTypes.oneOf(phaseArray),
     localPhaseItem: PropTypes.number,
     styles: PropTypes.object,
@@ -105,7 +106,7 @@ class AgendaList extends Component {
     const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting';
     return (<div className={css(styles.emptyBlock)}>
       <div className={css(styles.emptyEmoji)}>
-          🤓
+        🤓
       </div>
       <div className={css(styles.emptyMessage)}>
         {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}<b><i>{'upcoming vacation'}</i></b>{'.”'}
@@ -169,6 +170,7 @@ class AgendaList extends Component {
       facilitatorPhase,
       facilitatorPhaseItem,
       gotoAgendaItem,
+      inSync,
       localPhase,
       localPhaseItem,
       visibleAgendaItemId,
@@ -199,6 +201,7 @@ class AgendaList extends Component {
                 gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
                 handleRemove={this.removeItemFactory(item.id)}
                 idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                inSync={inSync}
                 isCurrent={idx + 1 === agendaPhaseItem}
                 isFacilitator={idx + 1 === facilitatorPhaseItem}
                 localPhase={localPhase}
@@ -244,7 +247,7 @@ const styleThunk = () => ({
   emptyEmoji: {
     fontSize: appTheme.typography.s4,
     minWidth: '2rem',
-    paddingLeft: '.75rem'
+    paddingLeft: '1.375rem'
   },
 
   emptyMessage: {

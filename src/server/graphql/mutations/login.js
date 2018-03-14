@@ -10,6 +10,9 @@ import {
 } from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
+import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
+import {sendBadAuthTokenError} from 'server/utils/authorizationErrors';
+import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj';
 
 const login = {
   type: LoginPayload,
@@ -27,7 +30,12 @@ const login = {
     const now = new Date();
 
     // VALIDATION
-    const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0ClientId});
+    let authToken;
+    try {
+      authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0ClientId});
+    } catch (e) {
+      return sendBadAuthTokenError();
+    }
     const viewerId = getUserId(authToken);
 
     // RESOLUTION
@@ -35,7 +43,11 @@ const login = {
       const user = await dataLoader.get('users').load(viewerId);
       // LOGIN
       if (user) {
-        return {userId: viewerId};
+        return {
+          userId: viewerId,
+          // create a brand new auth token using the tms in our DB, not auth0s
+          authToken: encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms: user.tms}))
+        };
       }
       // should never reach this line in production. that means our DB !== auth0 DB
     }
@@ -71,7 +83,10 @@ const login = {
 
     // don't await
     setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
-    return {userId: viewerId};
+    return {
+      authToken: auth0Token,
+      userId: viewerId
+    };
   }
 };
 

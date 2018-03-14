@@ -1,106 +1,85 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import FontAwesome from 'react-fontawesome';
+import styled from 'react-emotion';
 import withHotkey from 'react-hotkey-hoc';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import Button from 'universal/components/Button/Button';
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
+
+const ButtonBlock = styled('div')({
+  display: 'flex'
+});
 
 const CheckInControls = (props) => {
   const {
     bindHotkey,
     checkInPressFactory,
-    nextMemberName,
-    styles
+    currentMemberName,
+    localPhaseItem,
+    nextMemberName
   } = props;
 
   const handleOnClickPresent = checkInPressFactory(true);
   const handleOnClickAbsent = checkInPressFactory(false);
-
-  const icon = {
-    display: 'inline-block',
-    lineHeight: 'inherit',
-    textAlign: 'right',
-    verticalAlign: 'middle',
-    width: '2rem'
-  };
-  const nextIcon = {
-    ...icon,
-    fontSize: ui.iconSize2x
-  };
-  const skipIcon = {
-    ...icon,
-    fontSize: ui.iconSize2x
-  };
-
   const nextPhaseName = actionMeeting.updates.name;
 
   bindHotkey('h', handleOnClickPresent);
   bindHotkey('n', handleOnClickAbsent);
 
+  const nextLabel = (
+    <span>
+      {`${currentMemberName} is `}<u>{'h'}</u>{'ere – '}{nextMemberName ? `Move to ${nextMemberName}` : `move to ${nextPhaseName}`}
+    </span>
+  );
+
+  const skipLabel = (
+    <span>
+      {`${currentMemberName} is `}<u>{'n'}</u>{'ot here – '}{nextMemberName ? `Skip to ${nextMemberName}` : `skip to ${nextPhaseName}`}
+    </span>
+  );
+
+  // TODO: theme-able? (button colors)
+
   return (
-    <div className={css(styles.controlBlock)}>
-      <div className={css(styles.control, styles.nextControl)} onClick={handleOnClickPresent}>
-        <FontAwesome name="check-circle" style={nextIcon} />
-        <span className={css(styles.label)}>
-          <u>{'H'}</u>{'ere – '}{nextMemberName ? `move to ${nextMemberName}` : `move to ${nextPhaseName}`}
-        </span>
-      </div>
-      <div className={css(styles.control, styles.skipControl)} onClick={handleOnClickAbsent}>
-        <FontAwesome name="minus-circle" style={skipIcon} />
-        <span className={css(styles.label)}>
-          <u>{'N'}</u>{'ot here – '}{nextMemberName ? `skip to ${nextMemberName}` : `skip to ${nextPhaseName}`}
-        </span>
-      </div>
-    </div>
+    <ButtonBlock>
+      <BounceBlock animationDelay="30s" key={`checkIn${localPhaseItem}buttonAnimation`}>
+        <Button
+          aria-label={`Mark ${currentMemberName} as “here” and move on`}
+          buttonStyle="flat"
+          colorPalette="dark"
+          icon="check-circle"
+          iconLarge
+          iconPalette="green"
+          iconPlacement="left"
+          key={`checkIn${localPhaseItem}nextButton`}
+          label={nextLabel}
+          onClick={handleOnClickPresent}
+          buttonSize="medium"
+        />
+      </BounceBlock>
+      <Button
+        aria-label={`Mark ${currentMemberName} as “not here” and move on`}
+        buttonStyle="flat"
+        colorPalette="dark"
+        icon="minus-circle"
+        iconLarge
+        iconPalette="red"
+        iconPlacement="left"
+        key={`checkIn${localPhaseItem}skipButton`}
+        label={skipLabel}
+        onClick={handleOnClickPresent}
+        buttonSize="medium"
+      />
+    </ButtonBlock>
   );
 };
 
 CheckInControls.propTypes = {
   bindHotkey: PropTypes.func.isRequired,
   checkInPressFactory: PropTypes.func.isRequired,
-  nextMemberName: PropTypes.string,
-  styles: PropTypes.object
+  currentMemberName: PropTypes.string,
+  localPhaseItem: PropTypes.number,
+  nextMemberName: PropTypes.string
 };
 
-const styleThunk = () => ({
-  control: {
-    cursor: 'pointer',
-    display: 'block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.5'
-  },
-
-  nextControl: {
-    color: appTheme.brand.secondary.green, // TODO: theme-able?
-    marginBottom: '.5rem'
-  },
-
-  skipControl: {
-    color: appTheme.brand.secondary.red // TODO: theme-able?
-  },
-
-  controlBlock: {
-    display: 'inline-block',
-    paddingTop: '1rem',
-    textAlign: 'left'
-  },
-
-  label: {
-    color: ui.colorText,
-    display: 'inline-block',
-    paddingLeft: '.5rem',
-    verticalAlign: 'middle',
-
-    ':hover': {
-      textDecoration: 'underline'
-    },
-    ':focus': {
-      textDecoration: 'underline'
-    }
-  }
-});
-
-export default withStyles(styleThunk)(withHotkey(CheckInControls));
+export default withHotkey(CheckInControls);

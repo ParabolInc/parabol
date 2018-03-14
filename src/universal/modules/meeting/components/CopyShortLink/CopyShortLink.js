@@ -1,12 +1,42 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import Button from 'universal/components/Button/Button';
+import styled from 'react-emotion';
+import FontAwesome from 'react-fontawesome';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
-import voidClick from 'universal/utils/voidClick';
+import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
+
+const CopyIcon = styled(FontAwesome)({
+  color: 'inherit',
+  display: 'block',
+  fontSize: ui.iconSize,
+  height: ui.iconSize,
+  marginTop: '-.4375rem',
+  marginRight: '.5rem',
+  position: 'absolute',
+  top: '50%',
+  right: '100%'
+});
+
+const CopyLabel = styled('div')({
+  color: 'inherit',
+  fontSize: appTheme.typography.s2
+});
+
+const CopyBlock = styled('div')({
+  color: ui.hintFontColor,
+  position: 'relative',
+  '&:hover': {
+    color: ui.colorText,
+    cursor: 'pointer'
+  }
+});
 
 class CopyShortLink extends Component {
   static propTypes = {
+    icon: PropTypes.string,
+    label: PropTypes.string,
     url: PropTypes.string
   };
 
@@ -38,30 +68,24 @@ class CopyShortLink extends Component {
   };
 
   render() {
-    const {url} = this.props;
+    const {icon, label, url} = this.props;
     const {confirmingCopied} = this.state;
-    const callToAction = 'Copy the meeting link';
+    const theIcon = icon || 'link';
+    const theLabel = label || url;
     return (
       <Tooltip
         isOpen={confirmingCopied}
-        tip={<div>Copied the meeting link!</div>}
         maxHeight={40}
         maxWidth={500}
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
+        tip={<div>Copied the meeting link!</div>}
       >
-        <CopyToClipboard text={url} onCopy={this.confirmCopied}>
-          <Button
-            aria-label={callToAction}
-            buttonSize="small"
-            buttonStyle="inverted"
-            colorPalette="warm"
-            title={callToAction}
-            icon="copy"
-            iconPlacement="left"
-            label={url}
-            onClick={voidClick}
-          />
+        <CopyToClipboard text={url} onCopy={this.confirmCopied} title="Copy Meeting Link">
+          <CopyBlock>
+            <CopyIcon name={theIcon} />
+            <CopyLabel>{theLabel}</CopyLabel>
+          </CopyBlock>
         </CopyToClipboard>
       </Tooltip>
     );

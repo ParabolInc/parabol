@@ -75,7 +75,7 @@ class OutcomeCardAssignMenu extends Component {
         ariaLabel={'Assign this task to a teammate'}
         closePortal={closePortal}
       >
-        <div className={css(styles.label)}>Assign to:</div>
+        <div className={css(styles.label)}>{'Assign to:'}</div>
         {assignees.map((teamMember) => {
           return (
             <MenuItemWithShortcuts

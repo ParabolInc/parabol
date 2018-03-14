@@ -9,7 +9,7 @@ import updateTeamCheckInQuestion from '../updateTeamCheckInQuestion';
 console.error = jest.fn();
 
 describe('updateTeamCheckInQuestion mutation resolver', () => {
-  it('throws an `unauthorized` error when a non-team member tries to update the question', async () => {
+  it('returns an `unauthorized` error when a non-team member tries to update the question', async () => {
     expect.assertions(1);
 
     // SETUP
@@ -21,18 +21,15 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
     const dataLoader = makeDataLoader(authToken);
 
     // TEST
-    try {
-      await updateTeamCheckInQuestion.resolve(
-        undefined,
-        {teamId: team.id, checkInQuestion: 'New check-in question'},
-        {authToken, dataLoader}
-      );
-    } catch (error) {
-      expect(error.message).toMatch('You do not have access to team');
-    }
+    const res = await updateTeamCheckInQuestion.resolve(
+      undefined,
+      {teamId: team.id, checkInQuestion: 'New check-in question'},
+      {authToken, dataLoader}
+    );
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 
-  it('throws an `unauthorized` error when a member of a non-paid team tries to update the question', async () => {
+  it('returns an `unauthorized` error when a member of a non-paid team tries to update the question', async () => {
     expect.assertions(1);
 
     // SETUP
@@ -44,15 +41,12 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
     const authToken = mockAuthToken(user);
     const dataLoader = makeDataLoader(authToken);
     // TEST
-    try {
-      await updateTeamCheckInQuestion.resolve(
-        undefined,
-        {teamId: team.id, checkInQuestion: 'New check-in question'},
-        {authToken, dataLoader}
-      );
-    } catch (error) {
-      expect(error.message).toMatch('Unauthorized');
-    }
+    const res = await updateTeamCheckInQuestion.resolve(
+      undefined,
+      {teamId: team.id, checkInQuestion: 'New check-in question'},
+      {authToken, dataLoader}
+    );
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 
   it('allows team members of paid teams to edit the check-in question', async () => {

@@ -457,5 +457,3 @@ Object {
   ],
 }
 `;
-
-exports[`approveToOrg throws if the caller does not own the notification 1`] = `"Unauthorized. User is not a Billing Leader for that organization"`;

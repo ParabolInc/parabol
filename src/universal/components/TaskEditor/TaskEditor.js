@@ -174,6 +174,8 @@ class TaskEditor extends Component {
       styles.root,
       noText && styles.rootNoText
     );
+    const placeholder = 'Describe what “Done” looks like';
+    // const placeholder = 'What does “Done” look like?';
     return (
       <div className={rootStyles}>
         <Editor
@@ -189,7 +191,7 @@ class TaskEditor extends Component {
           onEscape={this.handleEscape}
           onTab={this.handleTab}
           onUpArrow={this.handleUpArrow}
-          placeholder={'Describe what “Done” looks like'}
+          placeholder={placeholder}
           readOnly={readOnly}
           ref={setEditorRef}
         />
@@ -207,18 +209,20 @@ const styleThunk = () => ({
   },
 
   rootNoText: {
-    height: '2.5rem'
+    height: '2.75rem' // Use this if the placeholder wraps
   },
 
   editorBlockquote: {
     fontStyle: 'italic',
-    borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
-    margin: '1rem 0',
+    borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
+    margin: '.5rem 0',
     padding: '0 .5rem'
   },
 
   codeBlock: {
     backgroundColor: appTheme.palette.mid10a,
+    borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
+    borderRadius: '.0625rem',
     color: appTheme.palette.warm,
     fontFamily: appTheme.typography.monospace,
     fontSize: appTheme.typography.s2,

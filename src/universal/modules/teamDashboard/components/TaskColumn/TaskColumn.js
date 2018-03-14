@@ -177,6 +177,7 @@ class TaskColumn extends Component {
       atmosphere,
       firstColumn,
       getTaskById,
+      isMyMeetingSection,
       lastColumn,
       status,
       tasks,
@@ -188,12 +189,17 @@ class TaskColumn extends Component {
       firstColumn && styles.columnFirst,
       lastColumn && styles.columnLast
     );
+    const userCanAdd = area === 'TEAM_DASH' || area === 'USER_DASH' || isMyMeetingSection;
+    const statusLabelBlockStyles = css(
+      styles.statusLabelBlock,
+      userCanAdd && styles.statusLabelBlockUserCanAdd
+    );
 
     return (
       <div className={columnStyles}>
         <div className={css(styles.columnHeader)}>
           {this.makeAddTask()}
-          <div className={css(styles.statusLabelBlock)}>
+          <div className={statusLabelBlockStyles}>
             <span className={css(styles.statusLabel)}>
               {label}
             </span>
@@ -252,7 +258,7 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
-    padding: '.625rem 1rem .5rem',
+    padding: '.625rem .625rem .5rem',
     position: 'relative'
   },
 
@@ -275,7 +281,12 @@ const styleThunk = () => ({
     alignItems: 'center',
     display: 'flex',
     flex: 1,
-    fontSize: appTheme.typography.sBase
+    fontSize: '1.0625rem',
+    marginLeft: '.9375rem'
+  },
+
+  statusLabelBlockUserCanAdd: {
+    marginLeft: '.5625rem'
   },
 
   statusLabel: {

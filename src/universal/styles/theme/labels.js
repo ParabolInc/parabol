@@ -13,7 +13,6 @@ const stateColor = {
 
 const ARCHIVED = {
   color: stateColor.archive,
-  icon: 'archive',
   label: 'Archived',
   slug: 'archived'
 };
@@ -28,25 +27,21 @@ const labels = {
     ],
     [ACTIVE]: {
       color: stateColor.active,
-      icon: 'arrow-right',
       label: 'Active',
       slug: ACTIVE
     },
     [STUCK]: {
       color: stateColor.stuck,
-      icon: 'exclamation-triangle',
       label: 'Stuck',
       slug: STUCK
     },
     [DONE]: {
       color: stateColor.done,
-      icon: 'check',
       label: 'Done',
       slug: DONE
     },
     [FUTURE]: {
       color: stateColor.future,
-      icon: 'clock-o',
       label: 'Future',
       slug: FUTURE
     },
@@ -55,14 +50,12 @@ const labels = {
     },
     private: {
       color: stateColor.private,
-      icon: 'clock-o',
       label: 'Future',
       slug: FUTURE
     }
   },
   archive: {
     color: stateColor.archive,
-    icon: 'archive',
     label: 'Archive',
     slug: 'archive'
   },
@@ -71,7 +64,6 @@ const labels = {
   },
   task: {
     color: appTheme.palette.dark,
-    icon: 'calendar',
     label: 'Task',
     slug: 'task'
   }

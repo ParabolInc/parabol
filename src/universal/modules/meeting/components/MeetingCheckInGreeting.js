@@ -1,40 +1,35 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
+import styled from 'react-emotion';
 
-import appTheme from 'universal/styles/theme/appTheme';
-import withStyles from 'universal/styles/withStyles';
+const GreetingBlock = styled('div')({
+  fontSize: '1.5rem'
+});
 
+const GreetingSpan = styled('span')({
+  borderBottom: '.0625rem dashed currentColor',
+  color: 'inherit',
+  cursor: 'help',
+  fontStyle: 'italic'
+});
 
-const MeetingCheckInGreeting = ({currentName, team: {greeting}, styles}) => (
-  <div style={{color: appTheme.palette.warm}}>
-    <span
-      className={css(styles.greeting)}
-      title={`${greeting.content} means “hello” in ${greeting.language}`}
-    >
+const MeetingCheckInGreeting = ({currentName, team: {greeting}}) => (
+  <GreetingBlock>
+    <GreetingSpan title={`${greeting.content} means “hello” in ${greeting.language}`}>
       {greeting.content}
-    </span>
+    </GreetingSpan>
     {`, ${currentName}:`}
-  </div>
+  </GreetingBlock>
 );
 
 MeetingCheckInGreeting.propTypes = {
   currentName: PropTypes.string.isRequired,
-  styles: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired
 };
 
-const greetingStyleThunk = () => ({
-  greeting: {
-    borderBottom: '1px dashed currentColor',
-    color: 'inherit',
-    cursor: 'help'
-  }
-});
-
 export default createFragmentContainer(
-  withStyles(greetingStyleThunk)(MeetingCheckInGreeting),
+  MeetingCheckInGreeting,
   graphql`
     fragment MeetingCheckInGreeting_team on Team {
       greeting: checkInGreeting {

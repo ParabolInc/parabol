@@ -29,15 +29,14 @@ export default {
     const r = getRethink();
 
     // AUTH
+    const viewerId = getUserId(authToken);
     if (!isTeamMember(authToken, teamId)) {
-      const orgId = await r.table('Team').get(teamId)('orgId');
-      const userOrgDoc = await getUserOrgDoc(authToken, orgId);
+      const orgId = await r.table('Team').get(teamId)('orgId').default('');
+      const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
       if (!isOrgBillingLeader(userOrgDoc)) {
         return sendTeamAccessError(authToken, teamId);
       }
     }
-
-    const viewerId = getUserId(authToken);
 
     // RESOLUTION
     const subOptions = {mutatorId, operationId};

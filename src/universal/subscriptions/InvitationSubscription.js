@@ -24,6 +24,7 @@ const InvitationSubscription = (environment, queryVariables) => {
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('invitationSubscription');
+      if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
         case 'AcceptTeamInviteNotificationPayload':

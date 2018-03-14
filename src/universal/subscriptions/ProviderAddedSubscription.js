@@ -66,6 +66,7 @@ const ProviderAddedSubscription = (environment, queryVariables) => {
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('providerAdded');
+      if (!payload) return;
       const viewer = store.get(viewerId);
       addProviderUpdater(store, viewer, teamId, payload);
     }

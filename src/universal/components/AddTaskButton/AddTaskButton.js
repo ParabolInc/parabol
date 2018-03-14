@@ -40,7 +40,6 @@ const styleThunk = () => ({
     borderRadius: '100%',
     height: '1.5rem',
     lineHeight: '1.5rem',
-    marginRight: '.625rem',
     width: '1.5rem'
   },
 

@@ -18,6 +18,7 @@ const IntegrationLeftSubscription = (service) => (environment, queryVariables) =
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('integrationLeft');
+      if (!payload) return;
       leaveIntegrationUpdater(store, viewer, teamId, payload);
     }
   };
