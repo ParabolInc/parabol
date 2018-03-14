@@ -1,34 +1,70 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import CreateCardRootStyles from './CreateCardRootStyles';
+import styled, {css, cx} from 'react-emotion';
+
+const CardBlock = css({
+  ...CreateCardRootStyles,
+  backgroundColor: 'transparent',
+  border: `.0625rem dashed ${appTheme.palette.mid30l}`,
+  boxShadow: 0,
+  paddingLeft: 0,
+  paddingRight: 0
+});
+
+const CardWithControls = css({
+  ...CreateCardRootStyles,
+  backgroundColor: appTheme.palette.mid10a,
+  boxShadow: 'none',
+  borderTop: 0,
+  paddingLeft: 0,
+  paddingRight: 0,
+  transition: 'background-color 100ms ease-in, box-shadow 100ms ease-in',
+  '&:hover': {
+    backgroundColor: ui.palette.white,
+    boxShadow: ui.shadow[2],
+    cursor: 'pointer'
+  }
+});
+
+const ControlBlock = styled('div')({
+  alignContent: 'center',
+  alignSelf: 'stretch',
+  color: appTheme.palette.mid,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  lineHeight: '1.5',
+  textAlign: 'center',
+  width: '100%'
+});
+
+const ControlLabel = styled('div')({
+  fontSize: ui.cardContentFontSize,
+  fontWeight: 600
+});
+
+const ControlHint = styled('div')({
+  fontSize: ui.hintFontSize,
+  opacity: '.7'
+});
 
 const CreateCard = (props) => {
-  const {
-    handleAddTask,
-    hasControls,
-    styles
-  } = props;
-
-  const cardStyles = css(
-    styles.root,
-    (hasControls) && styles.hasControls
-  );
-
+  const {handleAddTask, hasControls} = props;
+  const cardStyles = cx(CardBlock, hasControls && CardWithControls);
   return (
     <div className={cardStyles}>
       {hasControls &&
-        <div className={css(styles.controlsBlock)} onClick={handleAddTask} title="Add a Task (just press “t”)">
-          <div className={css(styles.label)}>
+        <ControlBlock onClick={handleAddTask} title="Add a Task (just press “t”)">
+          <ControlLabel>
             {'Add a '}<u>{'T'}</u>{'ask'}
-          </div>
-          <div className={css(styles.hint)}>
+          </ControlLabel>
+          <ControlHint>
             {'(tag '}<b>{'#private'}</b>{' for personal Tasks)'}
-          </div>
-        </div>
+          </ControlHint>
+        </ControlBlock>
       }
     </div>
   );
@@ -36,62 +72,7 @@ const CreateCard = (props) => {
 
 CreateCard.propTypes = {
   handleAddTask: PropTypes.func,
-  hasControls: PropTypes.bool,
-  styles: PropTypes.object
+  hasControls: PropTypes.bool
 };
 
-const styleThunk = () => ({
-  root: {
-    ...CreateCardRootStyles,
-    backgroundColor: 'transparent',
-    border: `1px dashed ${appTheme.palette.mid30l}`,
-    boxShadow: 'none',
-    paddingLeft: 0,
-    paddingRight: 0
-  },
-
-  hasControls: {
-    ...CreateCardRootStyles,
-    borderTop: 0,
-    paddingLeft: 0,
-    paddingRight: 0,
-    ':hover': {
-      boxShadow: ui.shadow[1]
-    },
-    ':focus': {
-      boxShadow: ui.shadow[2]
-    }
-  },
-
-  controlsBlock: {
-    alignContent: 'center',
-    alignSelf: 'stretch',
-    color: appTheme.palette.mid,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    lineHeight: '1.5',
-    textAlign: 'center',
-    width: '100%',
-
-    ':hover': {
-      color: appTheme.palette.mid80d,
-      cursor: 'pointer'
-    },
-    ':focus': {
-      color: appTheme.palette.mid80d,
-      cursor: 'pointer'
-    }
-  },
-
-  label: {
-    fontSize: appTheme.typography.s4,
-    fontWeight: 600
-  },
-
-  hint: {
-    fontSize: appTheme.typography.s2
-  }
-});
-
-export default withStyles(styleThunk)(CreateCard);
+export default CreateCard;

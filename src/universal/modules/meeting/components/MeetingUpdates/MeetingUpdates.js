@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import withStyles from 'universal/styles/withStyles';
 import {MEETING} from 'universal/utils/constants';
@@ -48,6 +50,7 @@ class MeetingUpdates extends Component {
     const {tasks} = this.state;
     const self = teamMembers.find((m) => m.isSelf);
     const currentTeamMember = teamMembers[localPhaseItem - 1];
+    const nextTeamMember = teamMembers[localPhaseItem];
     const isLastMember = localPhaseItem === teamMembers.length;
     const nextPhaseName = actionMeeting.agendaitems.name;
     const myTeamMemberId = self && self.id;
@@ -55,20 +58,6 @@ class MeetingUpdates extends Component {
     return (
       <MeetingMain>
         <MeetingSection flexToFill>
-          <div className={css(styles.layout)}>
-            {showMoveMeetingControls &&
-              <Button
-                buttonStyle="flat"
-                colorPalette="warm"
-                icon="arrow-circle-right"
-                iconPlacement="right"
-                key={`update${localPhaseItem}`}
-                label={isLastMember ? `Advance to the ${nextPhaseName}` : 'Next teammate '}
-                onClick={gotoNext}
-                buttonSize="medium"
-              />
-            }
-          </div>
           <div className={css(styles.body)}>
             <TaskColumns
               alignColumns="center"
@@ -80,6 +69,24 @@ class MeetingUpdates extends Component {
             />
           </div>
         </MeetingSection>
+        {showMoveMeetingControls &&
+          <MeetingControlBar>
+            <BounceBlock animationDelay="120s" key={`update${localPhaseItem}buttonAnimation`}>
+              <Button
+                buttonStyle="flat"
+                colorPalette="dark"
+                icon="arrow-circle-right"
+                iconLarge
+                iconPalette="warm"
+                iconPlacement="right"
+                key={`update${localPhaseItem}`}
+                label={isLastMember ? `Advance to the ${nextPhaseName}` : `Move to ${nextTeamMember.preferredName}`}
+                onClick={gotoNext}
+                buttonSize="medium"
+              />
+            </BounceBlock>
+          </MeetingControlBar>
+        }
       </MeetingMain>
     );
   }

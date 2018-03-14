@@ -28,7 +28,7 @@ export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 /* Meeting Misc. */
 export const MEETING_NAME = 'Action Meeting';
 export const MEETING_SUMMARY_LABEL = 'Summary';
-export const AGENDA_ITEM_LABEL = 'Agenda Item';
+export const AGENDA_ITEM_LABEL = 'Agenda Topic';
 
 /* Phases */
 export const LOBBY = 'lobby';

@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -12,13 +11,12 @@ import Tooltip from 'universal/components/Tooltip/Tooltip';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
-import withStyles from 'universal/styles/withStyles';
+import styled from 'react-emotion';
 
 
 const iconStyle = {
-  color: ui.palette.dark,
+  color: ui.colorText,
   display: 'block',
   height: '1.5rem',
   fontSize: '1rem',
@@ -30,15 +28,28 @@ const iconStyle = {
 };
 
 const buttonStyle = {
-  color: ui.palette.dark,
+  color: ui.colorText,
   display: 'block'
 };
+
+
+const QuestionBlock = styled('div')({
+  alignContent: 'center',
+  display: 'flex',
+  fontSize: '1.5rem',
+  lineHeight: '1.25rem',
+  padding: `${ui.cardPaddingBase} 0 ${ui.cardPaddingBase} 0`,
+  fontWeight: 300
+});
+
+const EditorBlock = styled('div')({
+  minWidth: '20rem'
+});
 
 class CheckInQuestion extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     isFacilitating: PropTypes.bool.isRequired,
-    styles: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired
   };
 
@@ -93,7 +104,7 @@ class CheckInQuestion extends Component {
   };
 
   render() {
-    const {isFacilitating, styles, team: {tier}} = this.props;
+    const {isFacilitating, team: {tier}} = this.props;
     const {editorState} = this.state;
     const canEdit = tierSupportsUpdateCheckInQuestion(tier);
     const isEditing = editorState.getSelection().getHasFocus();
@@ -117,8 +128,8 @@ class CheckInQuestion extends Component {
         maxHeight={40}
         isOpen={(isFacilitating && !isEditing) ? undefined : false}
       >
-        <div className={css(styles.root)}>
-          <div className={css(styles.editor)}>
+        <QuestionBlock>
+          <EditorBlock>
             <EditorInputWrapper
               editorState={editorState}
               setEditorState={this.setEditorState}
@@ -128,7 +139,7 @@ class CheckInQuestion extends Component {
                 this.editorRef = c;
               }}
             />
-          </div>
+          </EditorBlock>
           {isFacilitating &&
             <div>
               {canEdit ?
@@ -139,46 +150,14 @@ class CheckInQuestion extends Component {
               }
             </div>
           }
-        </div>
+        </QuestionBlock>
       </Tooltip>
     );
   }
 }
 
-const styleThunk = () => ({
-  root: {
-    alignContent: 'center',
-    display: 'flex',
-    fontSize: '1.5rem',
-    lineHeight: '1.25rem',
-    padding: `${ui.cardPaddingBase} 0 ${ui.cardPaddingBase} 0`,
-    fontWeight: 300
-  },
-
-  editor: {
-    minWidth: '20rem'
-  },
-
-  editorBlockquote: {
-    fontStyle: 'italic',
-    borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
-    margin: '1rem 0',
-    padding: '0 .5rem'
-  },
-
-  codeBlock: {
-    backgroundColor: appTheme.palette.mid10a,
-    color: appTheme.palette.warm,
-    fontFamily: appTheme.typography.monospace,
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s6,
-    margin: '0',
-    padding: '0 .5rem'
-  }
-});
-
 export default createFragmentContainer(
-  withAtmosphere(withStyles(styleThunk)(CheckInQuestion)),
+  withAtmosphere(CheckInQuestion),
   graphql`
     fragment CheckInQuestion_team on Team {
       id

@@ -134,6 +134,7 @@ const SummaryEmail = (props) => {
   const teamDashLinkStyle = {
     ...textStyle,
     backgroundColor: appTheme.palette.warm,
+    backgroundImage: ui.gradientWarm,
     borderRadius: '4em',
     color: '#ffffff',
     cursor: 'pointer',

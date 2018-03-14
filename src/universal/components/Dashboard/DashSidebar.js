@@ -4,12 +4,12 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {NavLink} from 'react-router-dom';
+import {LogoBlock} from 'universal/components';
 import tinycolor from 'tinycolor2';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
 import StandardHub from 'universal/components/StandardHub/StandardHub';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import appTheme from 'universal/styles/theme/appTheme';
-import logoMark from 'universal/styles/theme/images/brand/mark-white.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import DashNavItem from './DashNavItem';
@@ -54,11 +54,7 @@ const DashSidebar = (props) => {
           </div>
         </nav>
       </div>
-      <div className={css(styles.brand)}>
-        <a href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
-          <img alt="Parabol" className={css(styles.logo)} src={logoMark} />
-        </a>
-      </div>
+      <LogoBlock variant="white" />
     </div>
   );
 };
@@ -93,14 +89,12 @@ const styleThunk = () => ({
 
   nav: {
     display: 'flex',
-    // flex: 1,
     flexDirection: 'column',
     left: 0,
     maxHeight: '100%',
     paddingBottom: '1.25rem',
     position: 'absolute',
     top: 0,
-    // paddingLeft: '3.75rem',
     width: '100%'
   },
 
@@ -174,17 +168,6 @@ const styleThunk = () => ({
   addTeamLabel: {
     fontSize: ui.navMenuFontSize,
     lineHeight: ui.navMenuLineHeight
-  },
-
-  brand: {
-    fontSize: 0,
-    padding: '.75rem',
-    textAlign: 'center'
-  },
-
-  logo: {
-    display: 'inline-block',
-    verticalAlign: 'top'
   }
 });
 

@@ -30,6 +30,7 @@ class AgendaListAndInput extends Component {
     facilitatorPhase: PropTypes.oneOf(phaseArray),
     facilitatorPhaseItem: PropTypes.number,
     gotoAgendaItem: PropTypes.func,
+    inSync: PropTypes.bool,
     localPhase: PropTypes.oneOf(phaseArray),
     localPhaseItem: PropTypes.number,
     setAgendaInputRef: PropTypes.func,
@@ -84,6 +85,7 @@ class AgendaListAndInput extends Component {
       facilitatorPhase,
       facilitatorPhaseItem,
       gotoAgendaItem,
+      inSync,
       localPhase,
       localPhaseItem,
       setAgendaInputRef,
@@ -106,6 +108,7 @@ class AgendaListAndInput extends Component {
             facilitatorPhase={facilitatorPhase}
             facilitatorPhaseItem={facilitatorPhaseItem}
             gotoAgendaItem={gotoAgendaItem}
+            inSync={inSync}
             localPhase={localPhase}
             localPhaseItem={localPhaseItem}
             visibleAgendaItemId={visibleAgendaItemId}

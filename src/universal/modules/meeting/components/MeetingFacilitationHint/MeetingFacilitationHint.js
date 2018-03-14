@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 
@@ -37,9 +38,7 @@ MeetingFacilitationHint.defaultProps = {
 
 const styleThunk = () => ({
   facilitationHint: {
-    // backgroundColor: appTheme.palette.mid10l,
-    // borderRadius: '.25rem',
-    color: appTheme.palette.dark60a,
+    color: ui.hintFontColor,
     display: 'inline-block',
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s5,

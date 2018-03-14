@@ -43,13 +43,13 @@ class OutcomeCardStatusMenu extends Component {
     const listItems = statusItems
       .filter((status) => status !== taskStatus)
       .map((status) => {
-        const {color, icon, label} = labels.taskStatus[status];
+        const {color, label} = labels.taskStatus[status];
         return (
           <MenuItemWithShortcuts
-            icon={icon}
+            hasDotIcon
             iconColor={color}
             key={status}
-            label={<div className={css(styles.label)}>{'Move to '}<b style={{color}}>{label}</b></div>}
+            label={<div className={css(styles.label)}>{`Move to ${label}`}</div>}
             onClick={this.handleTaskUpdateFactory(status)}
             closePortal={closePortal}
           />
@@ -58,14 +58,16 @@ class OutcomeCardStatusMenu extends Component {
     listItems.push(<MenuItemHR key="HR1" />);
     listItems.push(isPrivate ?
       (<MenuItemWithShortcuts
-        icon="lock"
+        hasDotIcon
+        iconColor={labels.taskStatus.private.color}
         key="private"
         label={<div className={css(styles.label)}>{'Remove '}<b>{'#private'}</b></div>}
         onClick={removeContentTag('private')}
         closePortal={closePortal}
       />) :
       (<MenuItemWithShortcuts
-        icon="lock"
+        hasDotIcon
+        iconColor={labels.taskStatus.private.color}
         key="private"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>}
         onClick={this.makeAddTagToTask('#private')}
@@ -74,14 +76,16 @@ class OutcomeCardStatusMenu extends Component {
     );
     listItems.push(isAgenda ?
       (<MenuItemWithShortcuts
-        icon="times"
+        hasDotIcon
+        iconColor={ui.colorError}
         key="delete"
         label={<div className={css(styles.label)}>{'Delete this Task'}</div>}
         onClick={this.deleteOutcome}
         closePortal={closePortal}
       />) :
       (<MenuItemWithShortcuts
-        icon="archive"
+        hasDotIcon
+        iconColor={labels.taskStatus.archived.color}
         key="archive"
         label={<div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>}
         onClick={this.makeAddTagToTask('#archived')}

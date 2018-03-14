@@ -137,12 +137,10 @@ MeetingAvatarGroup.propTypes = {
   team: PropTypes.object.isRequired
 };
 
-const borderDefault = appTheme.palette.mid20a;
-const borderWarm = appTheme.palette.warm80a;
-const borderLocal = appTheme.palette.dark;
-const boxShadowBase = '0 0 0 3px #fff, 0 0 0 7px';
-const boxShadowBorder = `${boxShadowBase} ${borderDefault}`;
-const boxShadowWarm = `${boxShadowBase} ${borderWarm}`;
+const borderActive = appTheme.brand.secondary.yellow;
+const borderLocal = appTheme.palette.mid30l;
+const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
+const boxShadowWarm = `${boxShadowBase} ${borderActive}`;
 const boxShadowLocal = `${boxShadowBase} ${borderLocal}`;
 
 const styleThunk = () => ({
@@ -161,14 +159,17 @@ const styleThunk = () => ({
   },
 
   item: {
-    marginLeft: '1.25rem',
-    marginRight: '.4375rem',
+    marginLeft: '1rem',
+    marginRight: '.25rem',
     position: 'relative'
+  },
+
+  itemReadOnly: {
+    // Define
   },
 
   avatarBlock: {
     borderRadius: '100%',
-    boxShadow: boxShadowBorder,
     width: '2.25rem',
 
     [ui.breakpoint.wide]: {
@@ -194,11 +195,9 @@ const styleThunk = () => ({
     boxShadow: boxShadowWarm
   },
 
-  itemReadOnly: {
-    // Define
-  },
-
   avatarBlockReadOnly: {
+    boxShadow: 'none',
+
     ':hover': {
       opacity: '1'
     }

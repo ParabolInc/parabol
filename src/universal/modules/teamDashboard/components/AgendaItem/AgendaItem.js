@@ -32,6 +32,7 @@ class AgendaItem extends Component {
     ensureVisible: PropTypes.bool,
     handleRemove: PropTypes.func,
     idx: PropTypes.number,
+    inSync: PropTypes.bool,
     isCurrent: PropTypes.bool,
     isComplete: PropTypes.bool,
     isFacilitator: PropTypes.bool,
@@ -71,6 +72,7 @@ class AgendaItem extends Component {
       connectDragSource,
       disabled,
       idx,
+      inSync,
       isCurrent,
       isFacilitator,
       handleRemove,
@@ -85,27 +87,31 @@ class AgendaItem extends Component {
     const canDelete = !isComplete && !isCurrent && !disabled;
     const inAgendaGroupLocal = inAgendaGroup(localPhase);
     const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
+
     const rootStyles = css(
       styles.root,
       inAgendaGroupLocal && isLocal && styles.itemLocal,
-      inAgendaGroupFacilitator && isFacilitator && styles.itemFacilitator,
+      inAgendaGroupFacilitator && isFacilitator && !inSync && styles.itemNotInSync,
       isComplete && styles.processed,
       disabled && styles.rootDisabled,
       isComplete && disabled && styles.processedDisabled
     );
+
     const contentStyles = css(
       styles.link,
       isComplete && styles.strikethrough,
       canNavigate && styles.canNavigate,
       inAgendaGroupLocal && isLocal && styles.descLocal,
-      inAgendaGroupFacilitator && isFacilitator && styles.descFacilitator
+      inAgendaGroupFacilitator && isFacilitator && !inSync && styles.descNotInSync
     );
+
     const delStyles = css(
       styles.del,
       disabled && styles.delDisabled,
       // we can make the position of the del (x) more centered when there’s a low number of agenda items
       agendaLength < 10 ? styles.delBumpRight : styles.delBumpLeft
     );
+
     return connectDragSource(
       <div className={rootStyles} title={content} ref={(el) => { this.el = el; }}>
         {canDelete &&
@@ -145,6 +151,20 @@ const styleThunk = () => ({
     },
     ':hover > div': {
       opacity: 1
+    },
+
+    '::after': {
+      backgroundColor: 'transparent',
+      borderRadius: '100%',
+      content: '""',
+      display: 'block',
+      left: '.875rem',
+      marginTop: '-.1875rem',
+      position: 'absolute',
+      height: '.375rem',
+      top: '50%',
+      transition: 'opacity .1s ease-in',
+      width: '.375rem'
     }
   },
 
@@ -211,6 +231,8 @@ const styleThunk = () => ({
   },
 
   itemLocal: {
+    backgroundColor: ui.navMenuLightBackgroundColorActive,
+    boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
     color: ui.colorText
   },
 
@@ -225,9 +247,17 @@ const styleThunk = () => ({
   },
 
   itemFacilitator: {
-    backgroundColor: ui.navMenuLightBackgroundColorActive,
-    boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
-    color: ui.colorText
+    // Define
+  },
+
+  itemNotInSync: {
+    color: ui.palette.warm,
+    '::after': {
+      backgroundColor: ui.palette.warm
+    },
+    ':hover::after': {
+      opacity: 0
+    }
   },
 
   descFacilitator: {
@@ -237,6 +267,16 @@ const styleThunk = () => ({
     },
     ':focus': {
       color: ui.linkColorHover
+    }
+  },
+
+  descNotInSync: {
+    color: ui.palette.warm,
+    ':hover': {
+      color: ui.palette.warm
+    },
+    ':focus': {
+      color: ui.palette.warm
     }
   },
 

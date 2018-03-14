@@ -15,7 +15,8 @@ const brand = {
     orange: '#FD6157',
     teal: '#55C0CF',
     silver: '#F1F0FA',
-    darkGray: '#444258'
+    darkGray: '#444258',
+    midGray: '#82809A'
   },
 
   secondary: {

@@ -9,6 +9,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import StartMeetingMutation from 'universal/mutations/StartMeetingMutation';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -33,19 +34,19 @@ const MeetingLobby = (props) => {
         <MeetingPhaseHeading>
           {`Hi, ${teamName} Team!`}
         </MeetingPhaseHeading>
-        <div className={css(styles.helpText)}>
+        <MeetingCopy>
           {'Is the whole team here?'}
-        </div>
-        <div className={css(styles.helpText)}>
+        </MeetingCopy>
+        <MeetingCopy>
           {'The person who presses “Start Meeting” will facilitate the meeting.'}<br />
           {'Everyone’s display automatically follows the Facilitator.'}
-        </div>
-        <div className={css(styles.helpText)}>
+        </MeetingCopy>
+        <MeetingCopy>
           <b>{'Today’s Facilitator'}</b>{`: begin the ${actionMeeting.checkin.name}!`}
-        </div>
+        </MeetingCopy>
         <div className={css(styles.buttonBlock)}>
           <Button
-            buttonStyle="solid"
+            buttonStyle="primary"
             colorPalette="warm"
             label="Start Action Meeting"
             onClick={onStartMeetingClick}
@@ -53,7 +54,6 @@ const MeetingLobby = (props) => {
             waiting={submitting}
           />
         </div>
-        <p className={css(styles.label)}>{'Meeting Link:'}</p>
         <div className={css(styles.urlBlock)}>
           <CopyShortLink url={meetingUrl} />
         </div>
@@ -108,17 +108,9 @@ const styleThunk = () => ({
     width: '13rem'
   },
 
-  label: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s3,
-    fontWeight: 600,
-    margin: '4rem 0 0',
-    textTransform: 'uppercase'
-  },
-
   urlBlock: {
+    margin: '3rem 0 0',
     display: 'inline-block',
-    margin: '.5rem 0 0',
     verticalAlign: 'middle'
   }
 });

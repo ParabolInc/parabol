@@ -23,7 +23,7 @@ export default function NotificationSummaryEmail() {
           <p>{'Hi there, '}%recipient.name%{'!'}</p>
           <p>
             {'You have received '}
-            <span style={{fontWeight: 'bold'}}>%recipient.numNotifications%{' new notification(s)'}</span>
+            <span style={{fontWeight: 600}}>%recipient.numNotifications%{' new notification(s)'}</span>
             {' in the last day.'}
           </p>
           <br />

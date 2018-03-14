@@ -30,13 +30,19 @@ const makeFlatTheme = (buttonStyle, color) => ({
   fontWeight: 400,
 
   ':hover': {
-    backgroundColor: appTheme.palette.mid10a,
+    backgroundColor: appTheme.palette.light,
+    boxShadow: 'none',
     color
   },
   ':focus': {
-    backgroundColor: appTheme.palette.mid10a,
+    backgroundColor: appTheme.palette.light,
+    boxShadow: 'none',
     color
   }
+});
+
+const makePrimaryTheme = () => ({
+  ...ui.buttonStylesPrimary
 });
 
 const makePropColors = (buttonStyle, colorPalette) => {
@@ -46,6 +52,9 @@ const makePropColors = (buttonStyle, colorPalette) => {
     ui.palette.dark : baseTextColor;
   if (buttonStyle === 'flat' || buttonStyle === 'outlined') {
     return makeFlatTheme(buttonStyle, color);
+  }
+  if (buttonStyle === 'primary') {
+    return makePrimaryTheme();
   }
   return makeSolidTheme(color, textColor, buttonStyle);
 };
@@ -58,21 +67,24 @@ class Button extends Component {
     depth: PropTypes.oneOf([0, 1, 2, 3]),
     disabled: PropTypes.bool,
     icon: PropTypes.string,
+    iconLarge: PropTypes.bool,
+    iconPalette: PropTypes.oneOf(ui.paletteOptions),
     iconPlacement: PropTypes.oneOf([
       'left',
       'right'
     ]),
     isBlock: PropTypes.bool,
-    label: PropTypes.string,
+    label: PropTypes.any,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
     buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
     buttonStyle: PropTypes.oneOf([
-      'solid',
-      'outlined',
+      'flat',
       'inverted',
-      'flat'
+      'outlined',
+      'primary',
+      'solid'
     ]),
     styles: PropTypes.object,
     textTransform: PropTypes.oneOf([
@@ -131,6 +143,8 @@ class Button extends Component {
       depth,
       disabled,
       icon,
+      iconLarge,
+      iconPalette,
       iconPlacement,
       isBlock,
       label,
@@ -161,7 +175,8 @@ class Button extends Component {
       const defaultIconPlacement = icon && label ? 'left' : '';
       const thisIconPlacement = iconPlacement || defaultIconPlacement;
       const iconStyle = {
-        fontSize: ui.iconSize,
+        color: iconPalette ? ui.palette[iconPalette] : 'inherit',
+        fontSize: iconLarge ? ui.iconSize2x : ui.iconSize,
         lineHeight: 'inherit',
         verticalAlign: 'middle'
       };
@@ -195,7 +210,7 @@ class Button extends Component {
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseLeave={this.onMouseLeave}
-        title={title || label || ariaLabel}
+        title={title || ariaLabel}
         type={type || 'button'}
         aria-label={ariaLabel}
       >
@@ -218,7 +233,6 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
     base: {
       ...ui.buttonBaseStyles,
       ...buttonSizeStyles,
-      borderRadius: '4em',
       textTransform: textTransform || 'none',
       transition: `box-shadow ${ui.transition[0]}, transform ${ui.transition[0]}`
     },
@@ -247,11 +261,11 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
     },
 
     iconLeft: {
-      marginRight: '.375em'
+      marginRight: '.5rem'
     },
 
     iconRight: {
-      marginLeft: '.375em'
+      marginLeft: '.5rem'
     },
 
     buttonInner: {
@@ -271,6 +285,7 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
     },
 
     pressedDown: {
+      boxShadow: ui.shadow[depth - 1],
       transform: 'translate(0, .125rem)'
     },
 

@@ -2,13 +2,16 @@
 // ui.js
 // -----------------------------------------------------------------------------
 
-// import tinycolor from 'tinycolor2';
+import tinycolor from 'tinycolor2';
 import appTheme from 'universal/styles/theme/appTheme';
+import makeGradient from 'universal/styles/helpers/makeGradient';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import zIndexScale from 'universal/styles/helpers/zIndexScale';
 
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------
+
+const makeShadowColor = (opacity) => `rgba(68, 66, 88, ${opacity})`;
 
 // Control sizes (used by buttons and fields)
 const CONTROL_SIZE_SMALL = 'small';
@@ -22,14 +25,14 @@ const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem';
 const CONTROL_SMALL_PADDING_VERTICAL = '.3125rem';
 const CONTROL_SMALL_BLOCK_PADDING_VERTICAL = '.375rem';
 
-const CONTROL_MEDIUM_FONT_SIZE = '1rem';
+const CONTROL_MEDIUM_FONT_SIZE = '.9375rem';
 const CONTROL_MEDIUM_LINE_HEIGHT = '1.5rem';
 const CONTROL_MEDIUM_PADDING_HORIZONTAL = '.6875rem';
 const CONTROL_MEDIUM_BLOCK_PADDING_HORIZONTAL = '.75rem';
 const CONTROL_MEDIUM_PADDING_VERTICAL = '.4375rem';
 const CONTROL_MEDIUM_BLOCK_PADDING_VERTICAL = '.5rem';
 
-const CONTROL_LARGE_FONT_SIZE = '1.125rem';
+const CONTROL_LARGE_FONT_SIZE = '1rem';
 const CONTROL_LARGE_LINE_HEIGHT = '1.75rem';
 const CONTROL_LARGE_PADDING_HORIZONTAL = '.9375rem';
 const CONTROL_LARGE_BLOCK_PADDING_HORIZONTAL = '1rem';
@@ -38,7 +41,7 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
-// const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
+const {red, rose, green} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
 // Small border radius for controls (inputs, buttons, etcs.)
@@ -55,11 +58,12 @@ const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE;
 
 // Color (default for text)
 const COLOR_TEXT = appTheme.brand.primary.darkGray;
-const COLOR_ERROR = appTheme.brand.secondary.red;
+const COLOR_TEXT_LIGHT = appTheme.brand.primary.midGray;
+const COLOR_ERROR = red;
 
 // Color palette
 const white = '#fff';
-const gray = appTheme.palette.mid20l;
+const gray = appTheme.palette.light;
 const PALETTE_OPTIONS = [
   'cool',
   'warm',
@@ -67,7 +71,9 @@ const PALETTE_OPTIONS = [
   'mid',
   'light',
   'white',
-  'gray'
+  'gray',
+  'green',
+  'red'
 ];
 const PALETTE_VALUES = {
   cool,
@@ -76,7 +82,9 @@ const PALETTE_VALUES = {
   mid,
   light,
   white,
-  gray
+  gray,
+  green,
+  red
 };
 
 // Fields
@@ -99,6 +107,17 @@ export const MAX_WAIT_TIME = 5000;
 // Filter
 const filterBlur = 'blur(1.5px)';
 
+// Theme Gradients TODO: theme-able?
+const gradientWarm = makeGradient(red, rose);
+const gradientWarmDarkened = makeGradient(
+  tinycolor(red).darken(3),
+  tinycolor(rose).darken(3)
+);
+const gradientWarmLightened = makeGradient(
+  tinycolor(red).desaturate().lighten(),
+  tinycolor(rose).desaturate().lighten()
+);
+
 // Icons
 const iconSize = '14px'; // FontAwesome base
 const iconSizeAvatar = '21px'; // FontAwesome 1.5x
@@ -112,7 +131,6 @@ const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
 // Panels
-// const panelInnerBorderColor = appTheme.palette.mid30l;
 const panelInnerBorderColor = appTheme.palette.mid10l;
 
 // Placeholders
@@ -136,12 +154,15 @@ const TYPE_SEMIBOLD = 600;
 
 // Shadows
 // NOTE: levels increase on a scale of 2x
+
+const baseShadow = makeShadowColor('.15');
+
 const shadow = [
-  '0 .0625rem .125rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
-  '0 .125rem .25rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
-  '0 .25rem .5rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
-  '0 .5rem 1rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
-  '0 1rem 2rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)'
+  `0 .0625rem .25rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
+  `0 .125rem .5rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
+  `0 .25rem 1rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
+  `0 .5rem 2rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
+  `0 1rem 4rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`
 ];
 
 // -----------------------------------------------------------------------------
@@ -177,12 +198,13 @@ const ui = {
   buttonBaseStyles: {
     appearance: 'none',
     border: '.0625rem solid transparent',
+    borderRadius: '5em',
     boxShadow: 'none',
     cursor: 'pointer',
     display: 'inline-block',
     fontFamily: appTheme.typography.sansSerif,
     fontWeight: 600,
-    outline: 'none',
+    outline: 0,
     textAlign: 'center',
     textDecoration: 'none',
     transition: `transform ${transition[0]}`,
@@ -195,6 +217,22 @@ const ui = {
     ':focus': {
       boxShadow: shadow[0],
       textDecoration: 'none'
+    }
+  },
+  buttonStylesPrimary: {
+    backgroundImage: gradientWarm,
+    color: white,
+    ':hover': {
+      backgroundImage: gradientWarmDarkened
+    },
+    ':focus': {
+      backgroundImage: gradientWarmDarkened
+    },
+    ':active': {
+      backgroundImage: gradientWarmDarkened
+    },
+    ':disabled': {
+      backgroundImage: gradientWarmLightened
     }
   },
   buttonBlockStyles: {
@@ -226,17 +264,17 @@ const ui = {
     [BUTTON_SIZE_SMALL]: {
       fontSize: CONTROL_SMALL_FONT_SIZE,
       lineHeight: CONTROL_SMALL_LINE_HEIGHT,
-      padding: `${CONTROL_SMALL_PADDING_VERTICAL} 1em`
+      padding: `${CONTROL_SMALL_PADDING_VERTICAL} 1.5em`
     },
     [BUTTON_SIZE_MEDIUM]: {
       fontSize: CONTROL_MEDIUM_FONT_SIZE,
       lineHeight: CONTROL_MEDIUM_LINE_HEIGHT,
-      padding: `${CONTROL_MEDIUM_PADDING_VERTICAL} 1em`
+      padding: `${CONTROL_MEDIUM_PADDING_VERTICAL} 1.5em`
     },
     [BUTTON_SIZE_LARGE]: {
       fontSize: CONTROL_LARGE_FONT_SIZE,
       lineHeight: CONTROL_LARGE_LINE_HEIGHT,
-      padding: `${CONTROL_LARGE_PADDING_VERTICAL} 1em`
+      padding: `${CONTROL_LARGE_PADDING_VERTICAL} 1.5em`
     }
   },
 
@@ -244,15 +282,15 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
+  cardBoxShadow: shadow[0],
   cardButtonHeight: '1.5rem',
-  cardContentFontSize: appTheme.typography.s3,
-  cardContentLineHeight: appTheme.typography.s5,
+  cardContentFontSize: '.9375rem',
+  cardContentLineHeight: '1.375rem',
   cardEditingStatusFontSize: '.6875rem',
   cardEditingStatusLineHeight: appTheme.typography.sBase,
   cardMaxWidth: '17.5rem',
-  // cardMinHeight: '6.875rem',
-  cardMinHeight: '7.3125rem',
-  cardPaddingBase: '.9375rem', // was .5rem
+  cardMinHeight: '7.9375rem',
+  cardPaddingBase: '.9375rem',
   cardDragStyle: {
     boxShadow: shadow[3]
   },
@@ -284,7 +322,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   dashAgendaWidth: '15rem',
   dashBackgroundColor: backgroundColor,
-  // dashBorderColor: 'rgba(0, 0, 0, .1)',
   dashBorderColor: appTheme.palette.light90d,
   dashGutter: '1.25rem',
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
@@ -292,12 +329,10 @@ const ui = {
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
     fontFamily: appTheme.typography.serif,
-    // fontSize: '1.75rem',
     fontSize: '1.5rem',
     fontWeight: 600,
     lineHeight: '1.5'
   },
-  // dashMenuBorder: '1px solid rgba(255, 255, 255, .5)',
   dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
   dashMenuHeight: '13.5625rem',
   dashMenuWidth: '10rem',
@@ -313,7 +348,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
-  emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, “Helvetica Neue”, Arial, sans-serif',
+  emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
   emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
     borderCollapse: 'collapse',
@@ -424,6 +459,18 @@ const ui = {
   fieldErrorBorderColor: appTheme.palette.warm90a,
   fieldErrorPlaceholderColor: appTheme.palette.warm90a,
 
+  // Gradients
+  // ---------------------------------------------------------------------------
+  gradientWarm,
+  gradientWarmDarkened,
+  gradientWarmLightened,
+
+  // Hints
+  // ---------------------------------------------------------------------------
+  hintFontColor: COLOR_TEXT_LIGHT,
+  hintFontSize: appTheme.typography.s2,
+  hintFontSizeLarger: appTheme.typography.s3,
+
   // Icons
   // ---------------------------------------------------------------------------
   iconSize,
@@ -457,16 +504,18 @@ const ui = {
 
   // Link
   // ---------------------------------------------------------------------------
-  // linkColor: appTheme.palette.cool,
   linkColor: COLOR_TEXT,
-  // linkColorHover: tinycolor(appTheme.palette.cool).darken(15).toHexString(),
   linkColorHover: appTheme.palette.mid,
 
   // Meeting
   // ---------------------------------------------------------------------------
+  meetingChromeBoxShadow: `inset .0625rem 0 .0625rem ${makeShadowColor('.1')}`,
+  meetingBorderColor: appTheme.palette.mid10a,
+  meetingCopyFontSize: '.9375rem',
   meetingSidebarGutter: '.5rem',
   meetingSidebarWidth: '15rem',
   meetingSplashGutter: '4.5rem',
+  meetingControlBarHeight: '4rem',
 
   // Menus
   // ---------------------------------------------------------------------------
@@ -486,7 +535,7 @@ const ui = {
 
   // Modals
   // ---------------------------------------------------------------------------
-  modalBackdropBackgroundColor: 'rgba(78, 73, 95, .25)',
+  modalBackdropBackgroundColor: makeShadowColor('.3'),
   modalBorderRadius: borderRadiusLarge,
   modalBoxShadow: `${shadow[4]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
   modalButtonSize: BUTTON_SIZE_MEDIUM,
@@ -507,6 +556,7 @@ const ui = {
   navMenuDarkBackgroundColorActive: appTheme.palette.mid80d,
   navMenuDarkBackgroundColorHover: appTheme.palette.mid90d,
   navMenuLightBackgroundColorActive: appTheme.palette.light90l,
+  navMenuLightBackgroundColorHover: appTheme.palette.light50l,
   navMenuFontSize: '.9375rem',
   navMenuLineHeight: '1.25rem',
   navMenuLeftBorderWidth: '.1875rem',

@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
 
 const style = {
-  backgroundColor: appTheme.palette.cool20l,
-  color: appTheme.palette.cool,
+  backgroundColor: 'rgba(248, 221, 180, .6)', // TODO: theme-able?
+  borderRadius: '.0625rem',
   fontWeight: 600
 };
 

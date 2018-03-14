@@ -279,7 +279,7 @@ class MeetingContainer extends Component {
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
     const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, teamMembers, agendaItems);
     const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
-    const showMoveMeetingControls = isFacilitating || isBehindMeeting;
+    const showMoveMeetingControls = isFacilitating;
     const facilitatorName = getFacilitatorName(activeFacilitator, teamMembers);
 
     return (
@@ -289,6 +289,7 @@ class MeetingContainer extends Component {
           gotoAgendaItem={this.gotoAgendaItem}
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
+          inSync={inSync}
           isFacilitating={isFacilitating}
           setAgendaInputRef={this.setAgendaInputRef}
           team={team}
@@ -347,6 +348,7 @@ class MeetingContainer extends Component {
             gotoNext={this.gotoNext}
             hideMoveMeetingControls={hideMoveMeetingControls}
             localPhaseItem={localPhaseItem}
+            showMoveMeetingControls={showMoveMeetingControls}
             viewer={viewer}
           />
           }

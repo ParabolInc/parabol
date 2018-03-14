@@ -5,7 +5,7 @@ import path from 'path';
 import {promisify} from 'util';
 
 import {DRIVERS_DIR} from './constants';
-import {DRIVERS, Driver, getOsName, getOsArch} from './drivers';
+import {DRIVERS} from './drivers';
 
 const execP = promisify(child_process.exec);
 
