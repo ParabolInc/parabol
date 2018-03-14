@@ -64,6 +64,7 @@ export default {
     const newMeetingBase = {
       id: meetingId,
       createdAt: now,
+      updatedAt: now,
       facilitatorUserId: viewerId,
       facilitatorStageId,
       meetingNumber: meetingCount + 1,

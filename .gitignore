@@ -13,6 +13,7 @@ rethinkdb_data/
 rethinkdb_dump_*
 schema.flow.js
 stats.json
+storybook-static/
 test-report.xml
 webdrivers/
 webpack-assets.json
