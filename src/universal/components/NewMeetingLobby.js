@@ -75,9 +75,10 @@ const NewMeetingLobby = (props: Props) => {
   };
   const isPro = tier === PRO;
   const canStartMeeting = isPro || meetingsRemaining > 0;
+  const meetingLabel = meetingTypeToLabel[meetingType];
   return (
     <Lobby>
-      <LabelHeading>{'Retro Meeting Lobby'}</LabelHeading>
+      <LabelHeading>{`${meetingLabel} Meeting Lobby`}</LabelHeading>
       <MeetingPhaseHeading>{`${teamName} Retro`}</MeetingPhaseHeading>
       {!isPro &&
       <RetroExpository>
@@ -113,7 +114,7 @@ const NewMeetingLobby = (props: Props) => {
           buttonStyle="primary"
           colorPalette="warm"
           disabled={!canStartMeeting}
-          label={`Start ${meetingTypeToLabel[meetingType]} Meeting`}
+          label={`Start ${meetingLabel} Meeting`}
           onClick={onStartMeetingClick}
           buttonSize="large"
           waiting={submitting}

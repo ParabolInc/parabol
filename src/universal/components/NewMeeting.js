@@ -15,8 +15,10 @@ import NewMeetingLobby from 'universal/components/NewMeetingLobby';
 
 import type {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
+import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
+import {CHECKIN} from 'universal/utils/constants';
+import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -54,6 +56,8 @@ const NewMeeting = (props: Props) => {
   const {localPhase, meetingType, viewer} = props;
   const {team} = viewer;
   const {teamName} = team;
+  const meetingSlug = meetingTypeToSlug[meetingType];
+
   return (
     <MeetingContainer>
       <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
@@ -70,8 +74,12 @@ const NewMeeting = (props: Props) => {
         </MeetingAreaHeader>
         <Switch>
           <Route
-            path={`/${meetingTypeToSlug[meetingType]}/:teamId`}
+            path={`/${meetingSlug}/:teamId`}
             render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
+          />
+          <Route
+            path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}`}
+            render={() => <NewMeetingCheckIn meetingType={meetingType} team={team} />}
           />
         </Switch>
       </MeetingArea>
