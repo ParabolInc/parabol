@@ -4,6 +4,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.1.0 2018-Mar-14
+### Added
+- Meeting views were updated to be closer to latest visual concepts
+- Meeting views now have a designated control bar for grouping facilitation affordances
+- Now using raven to handle server errors
+- Added the new lobby UI for retro meetings
+
+### Fixed
+- Fixed #1866 infinite loop if you attempt to access admin without admin rights
+- Fixed client-side error handling for graphql errors in http and ws
+- Fixed #1740 phase navigation mutation on backend
+- Fixed invoice history to show when truly paid instead of pending
+- Fixed dataloader exceptions
+- Fixed the ability for admins to impersonate
+
 ## v1.0.0 2018-Mar-07
 ### Added
 - Client-side filtering behind the localFilter release flag
