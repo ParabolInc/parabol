@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay';
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
 import signout from 'universal/containers/Signout/signout';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import getGraphQLError from 'universal/utils/relay/getGraphQLError';
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
@@ -26,10 +27,19 @@ const mutation = graphql`
 `;
 
 const CreateImposterTokenMutation = (environment, userId, {dispatch, history}) => {
+  const onError = (err) => {
+    dispatch(showError({title: 'Whoa there!', message: err.message}));
+  };
+
   return commitMutation(environment, {
     mutation,
     variables: {userId},
-    onCompleted: async (res) => {
+    onCompleted: async (res, errors) => {
+      const serverError = getGraphQLError(res, errors);
+      if (serverError) {
+        onError(serverError);
+        return;
+      }
       const {createImposterToken} = res;
       const {authToken, user: {id, preferredName: name, picture: avatar, email}} = createImposterToken;
       const profile = {id, avatar, email, name};
@@ -43,9 +53,7 @@ const CreateImposterTokenMutation = (environment, userId, {dispatch, history}) =
       // Navigate to a default location, the application root:
       history.replace('/');
     },
-    onError: (err) => {
-      dispatch(showError({title: 'Whoa there!', message: err}));
-    }
+    onError
   });
 };
 
