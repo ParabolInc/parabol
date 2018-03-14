@@ -18,13 +18,12 @@ commander
   .version('1.0.0')
   .description('Runs end-to-end tests against the Parabol app')
   .option(
-    '-u',
-    '--url <url>',
+    '-u, --url <url>',
     'URL of the application under test.  If not provided, runs a prod-like server locally.'
   )
-  .option('-i', '--inspect', 'Run the test process under the node inspector')
-  .option('-m', '--mocha-timeout', `Timeout (in milliseconds) for individual tests.  (Default ${MOCHA_TIMEOUT})`)
-  .option('-s', '--server-timeout', `Only applies Time (in milliseconds) for individual tests.  (Default ${SERVER_TIMEOUT})`)
+  .option('-i, --inspect', 'Run the test process under the node inspector')
+  .option('-m, --mocha-timeout', `Timeout (in milliseconds) for individual tests.  (Default ${MOCHA_TIMEOUT})`)
+  .option('-s, --server-timeout', `Only applies Time (in milliseconds) for individual tests.  (Default ${SERVER_TIMEOUT})`)
   .parse(process.argv);
 
 function startAppServer(serverTimeout) {

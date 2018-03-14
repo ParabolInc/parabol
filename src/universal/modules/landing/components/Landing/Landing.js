@@ -53,6 +53,7 @@ const Landing = (props) => {
               label="Log In"
               onClick={handleLoginClick}
               textTransform="uppercase"
+              title="Log In"
             />
           </div>
         </div>
