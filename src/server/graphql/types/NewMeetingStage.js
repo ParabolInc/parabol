@@ -1,10 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
 import {CHECKIN, DISCUSS, GROUP, THINK, VOTE} from 'universal/utils/constants';
 import TeamMemberStage from 'server/graphql/types/TeamMemberStage';
 import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
 import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 
 /*
  * Each meeting has many phases.
@@ -23,6 +24,10 @@ export const newMeetingStageFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
+  endAt: {
+    description: 'The datetime the stage was completed',
+    type: GraphQLISO8601Type
+  },
   meetingId: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'foreign key. try using meeting'
@@ -40,11 +45,19 @@ export const newMeetingStageFields = () => ({
   // },
   isComplete: {
     type: GraphQLBoolean,
-    description: 'true if the facilitator has completed this stage, else false'
+    description: 'true if the facilitator has completed this stage, else false. Should be boolean(endAt)'
   },
   phaseType: {
     description: 'The type of the phase',
     type: NewMeetingPhaseTypeEnum
+  },
+  startAt: {
+    description: 'The datetime the stage was started',
+    type: GraphQLISO8601Type
+  },
+  viewCount: {
+    description: 'Number of times the facilitator has visited this stage',
+    type: GraphQLInt
   }
   // isViewOnce: {
   //   description: 'true if the meeting phase can only be viewed once (eg first call)',
