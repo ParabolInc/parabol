@@ -6,6 +6,7 @@ const mutation = graphql`
       error {
         message
       }
+      authToken
       user {
         ...UserAnalyticsFrag @relay(mask: false)
       }
