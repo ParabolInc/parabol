@@ -3,11 +3,14 @@ import {fromGlobalId, toGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload';
 import getProviderRowData from 'server/safeQueries/getProviderRowData';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
 import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendIntegrationNotFoundError} from 'server/utils/docNotFoundErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 
 const getPayload = async (service, integrationChanges, teamId, userId) => {
@@ -46,7 +49,7 @@ export default {
     const r = getRethink();
 
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const {id: dbProviderId} = fromGlobalId(providerId);
@@ -57,14 +60,17 @@ export default {
         isActive: false
       }, {returnChanges: true});
 
-    if (res.skipped === 1) {
-      throw new Error(`Provider ${providerId} does not exist`);
-    }
+    if (res.skipped === 1) return sendIntegrationNotFoundError(authToken, providerId);
 
     // remove the user from every integration under the service
     const updatedProvider = res.changes[0];
     if (!updatedProvider) {
-      throw new Error(`Provider ${providerId} did not contain ${teamId}`);
+      const breadcrumb = {
+        message: `Provider ${providerId} did not contain ${teamId}`,
+        category: 'Not found',
+        data: {providerId, teamId}
+      };
+      return sendAuthRaven(authToken, 'Oh no', breadcrumb);
     }
     const {service} = updatedProvider.new_val;
     const userId = getUserId(authToken);

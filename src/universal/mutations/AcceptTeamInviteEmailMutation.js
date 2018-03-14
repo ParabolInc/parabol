@@ -78,6 +78,7 @@ const AcceptTeamInviteEmailMutation = (environment, inviteToken, dispatch, histo
     variables: {inviteToken},
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInviteEmail');
+      if (!payload) return;
       acceptTeamInviteEmailTeamUpdater(payload, store, viewerId, {dispatch});
     },
     onError,

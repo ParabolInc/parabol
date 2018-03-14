@@ -5,10 +5,14 @@ import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import {getUserId} from 'server/utils/authorization';
 import Task from 'server/graphql/types/Task';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const CancelTeamInvitePayload = new GraphQLObjectType({
   name: 'CancelTeamInvitePayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     invitation: {
       type: Invitation,
       description: 'The cancelled invitation',

@@ -1,8 +1,9 @@
-import {GraphQLID, GraphQLNonNull, GraphQLList} from 'graphql';
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import GitHubIntegration from 'server/graphql/types/GitHubIntegration';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import {GITHUB} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: new GraphQLList(GitHubIntegration),
@@ -17,7 +18,7 @@ export default {
     const r = getRethink();
 
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, []);
 
     // RESOLUTION
     return r.table(GITHUB)

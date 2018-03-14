@@ -3,9 +3,11 @@ import getRethink from 'server/database/rethinkDriver';
 import getInviterInfoAndTeamName from 'server/graphql/mutations/helpers/inviteTeamMembers/getInviterInfoAndTeamName';
 import ResendTeamInvitePayload from 'server/graphql/types/ResendTeamInvitePayload';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   name: 'ResendTeamInvite',
@@ -24,10 +26,10 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const invitation = await r.table('Invitation').get(inviteId);
-    if (!invitation) throw new Error('Invitation not found!');
+    if (!invitation) return sendInvitationNotFoundError(authToken, inviteId);
 
     const {email, fullName, orgId, teamId} = invitation;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);

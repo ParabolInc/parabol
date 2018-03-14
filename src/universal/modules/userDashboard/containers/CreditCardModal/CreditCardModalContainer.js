@@ -9,6 +9,7 @@ import CreditCardModal from 'universal/modules/userDashboard/components/CreditCa
 import UpdateCreditCardMutation from 'universal/mutations/UpdateCreditCardMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UpgradeToProMutation from 'universal/mutations/UpgradeToProMutation';
+import getGraphQLError from 'universal/utils/relay/getGraphQLError';
 
 const stripeFieldLookup = {
   exp_year: {
@@ -90,8 +91,13 @@ class CreditCardModalContainer extends Component {
       const onError = (err) => {
         throw new SubmissionError(err);
       };
-      const onCompleted = () => {
-        closePortal();
+      const onCompleted = (res, errors) => {
+        const serverError = getGraphQLError(res, errors);
+        if (serverError) {
+          onError(serverError.message);
+        } else {
+          closePortal();
+        }
       };
       if (isUpdate) {
         UpdateCreditCardMutation(atmosphere, orgId, stripeToken, onError, onCompleted);

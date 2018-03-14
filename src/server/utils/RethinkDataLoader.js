@@ -14,7 +14,6 @@ const indexResults = (results, indexField, cacheKeyFn = defaultCacheKeyFn) => {
 };
 
 const sendErrorToSentry = (authToken, key, keys, indexedResults) => {
-  const error = new Error('Dataloader key not found');
   const breadcrumb = {
     message: 'Dataloader key not found',
     category: 'dataloader',
@@ -24,7 +23,7 @@ const sendErrorToSentry = (authToken, key, keys, indexedResults) => {
       indexedResults
     }
   };
-  sendSentryEvent(error, authToken, breadcrumb);
+  sendSentryEvent(authToken, breadcrumb);
 };
 
 const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (results, authToken) => {

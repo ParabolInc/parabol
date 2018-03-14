@@ -13,6 +13,7 @@ import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import rejectOrgApprovalValidation from './rejectOrgApprovalValidation';
+import getGraphQLError from 'universal/utils/relay/getGraphQLError';
 
 const validate = (values) => {
   const schema = rejectOrgApprovalValidation();
@@ -33,15 +34,25 @@ const RejectOrgApprovalModal = (props) => {
     submitting,
     styles
   } = props;
-  const onSubmit = async (submissionData) => {
-    const schema = rejectOrgApprovalValidation();
-    const {data: {reason}} = schema(submissionData);
-    const variables = {reason, notificationId};
-    const onError = (err) => {
-      throw new SubmissionError(err);
-    };
-    RejectOrgApprovalMutation(atmosphere, variables, onError);
-    closePortal();
+  const onSubmit = (submissionData) => {
+    return new Promise((resolve, reject) => {
+      const schema = rejectOrgApprovalValidation();
+      const {data: {reason}} = schema(submissionData);
+      const variables = {reason, notificationId};
+      const onError = (err) => {
+        reject(new SubmissionError({_error: err}));
+      };
+      const onCompleted = (res, errors) => {
+        const graphQLError = getGraphQLError(res, errors);
+        if (graphQLError) {
+          onError(graphQLError);
+        } else {
+          resolve();
+          closePortal();
+        }
+      };
+      RejectOrgApprovalMutation(atmosphere, variables, onError, onCompleted);
+    });
   };
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
@@ -52,7 +63,7 @@ const RejectOrgApprovalModal = (props) => {
         Type a response below and <br />we’ll pass it along to {inviterName}.
       </Type>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {error && <div className={css(styles.error)}>{error}</div>}
+        {error && <div className={css(styles.error)}>{error.message}</div>}
         <Field
           component={TextAreaField}
           name="reason"
@@ -79,7 +90,7 @@ RejectOrgApprovalModal.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   closeAfter: PropTypes.number.isRequired,
   closePortal: PropTypes.func.isRequired,
-  error: PropTypes.string,
+  error: PropTypes.any,
   handleSubmit: PropTypes.func.isRequired,
   isClosing: PropTypes.bool,
   inviteeEmail: PropTypes.string,

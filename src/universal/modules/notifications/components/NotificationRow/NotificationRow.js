@@ -27,7 +27,7 @@ const NotificationRow = (props) => {
         onCompleted={onCompleted}
         onError={onError}
       />
-      {error && <div className={css(styles.error)}>{error}</div>}
+      {error && <div className={css(styles.error)}>{error.message}</div>}
     </div>
   );
 };

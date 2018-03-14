@@ -5,11 +5,13 @@ import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEm
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: EndMeetingPayload,
@@ -26,7 +28,7 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     const meeting = await r.table('Meeting')
     // get the most recent meeting
       .getAll(teamId, {index: 'teamId'})
@@ -34,7 +36,12 @@ export default {
       .nth(0)
       .default({endedAt: r.now()});
     if (meeting.endedAt) {
-      throw new Error('Meeting already ended!');
+      const breadcrumb = {
+        message: 'Meeting already ended!',
+        category: 'Meeting ended',
+        data: {teamId}
+      };
+      return sendAuthRaven(authToken, 'Meeting already ended', breadcrumb);
     }
 
     // RESOLUTION

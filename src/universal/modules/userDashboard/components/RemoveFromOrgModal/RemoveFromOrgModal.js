@@ -59,7 +59,6 @@ RemoveFromOrgModal.propTypes = {
   orgId: PropTypes.string.isRequired,
   preferredName: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
-  error: PropTypes.any,
   submitting: PropTypes.bool,
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,

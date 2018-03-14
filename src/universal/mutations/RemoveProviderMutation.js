@@ -6,6 +6,9 @@ import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {
     removeProvider(providerId: $providerId teamId: $teamId) {
+      error {
+        message
+      }
       providerRow {
         service
         accessToken
@@ -97,6 +100,7 @@ const RemoveProviderMutation = (environment, providerId, service, teamId) => {
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('removeProvider');
+      if (!payload) return;
 
       // remove the accessToken from the provider
       const userId = payload.getValue('userId');

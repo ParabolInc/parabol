@@ -4,15 +4,16 @@ import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore'
 import AreaEnum from 'server/graphql/types/AreaEnum';
 import CreateTaskInput from 'server/graphql/types/CreateTaskInput';
 import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {ASSIGNEE, MENTIONEE, NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import makeTaskSchema from 'universal/validation/makeTaskSchema';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: CreateTaskPayload,
@@ -37,9 +38,9 @@ export default {
     const viewerId = getUserId(authToken);
     const schema = makeTaskSchema();
     const {errors, data: validNewTask} = schema({content: 1, ...newTask});
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
     const {teamId, userId, content} = validNewTask;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, userId);

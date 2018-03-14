@@ -55,6 +55,9 @@ graphql`
 const mutation = graphql`
   mutation ApproveToOrgMutation($email: String!, $orgId: ID!) {
     approveToOrg(email: $email, orgId: $orgId) {
+      error {
+        message
+      }
       ...ApproveToOrgMutation_organization @relay(mask: false)    
       ...ApproveToOrgMutation_orgApproval @relay(mask: false)
       ...ApproveToOrgMutation_invitation @relay(mask: false)
@@ -121,6 +124,7 @@ const ApproveToOrgMutation = (environment, email, orgId, onError, onCompleted) =
     variables: {email, orgId},
     updater: (store) => {
       const payload = store.getRootField('approveToOrg');
+      if (!payload) return;
       approveToOrgOrganizationUpdater(payload, store, viewerId);
       approveToOrgOrgApprovalUpdater(payload, store);
       approveToOrgInvitationUpdater(payload, store);

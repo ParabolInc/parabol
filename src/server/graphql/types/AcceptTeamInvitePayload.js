@@ -17,8 +17,12 @@ import TeamMember from 'server/graphql/types/TeamMember';
 import User from 'server/graphql/types/User';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 import Task from 'server/graphql/types/Task';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 export const acceptTeamInviteFields = {
+  error: {
+    type: StandardMutationError
+  },
   team: {
     type: Team,
     description: 'The team that the invitee will be joining',

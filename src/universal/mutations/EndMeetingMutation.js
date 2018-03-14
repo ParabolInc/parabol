@@ -34,6 +34,9 @@ graphql`
 const mutation = graphql`
   mutation EndMeetingMutation($teamId: ID!) {
     endMeeting(teamId: $teamId) {
+      error {
+        message
+      }
       ...EndMeetingMutation_team @relay(mask: false)
       ...EndMeetingMutation_task @relay(mask: false)
     }
@@ -60,6 +63,7 @@ const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) 
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('endMeeting');
+      if (!payload) return;
       endMeetingTeamUpdater(payload, {history});
       endMeetingTaskUpdater(payload, store, viewerId);
     },

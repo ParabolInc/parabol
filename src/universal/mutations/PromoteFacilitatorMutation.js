@@ -20,6 +20,9 @@ graphql`
 const mutation = graphql`
   mutation PromoteFacilitatorMutation($facilitatorId: ID!, $disconnectedFacilitatorId: ID) {
     promoteFacilitator(facilitatorId: $facilitatorId, disconnectedFacilitatorId: $disconnectedFacilitatorId) {
+      error {
+        message
+      }
       ...PromoteFacilitatorMutation_team @relay(mask: false)
     }
   }
@@ -51,6 +54,7 @@ const PromoteFacilitatorMutation = (environment, variables, dispatch, onError, o
     variables,
     updater: (store) => {
       const payload = store.getRootField('promoteFacilitator');
+      if (!payload) return;
       promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
     },
     optimisticUpdater: (store) => {

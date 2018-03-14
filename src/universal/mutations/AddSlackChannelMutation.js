@@ -7,6 +7,9 @@ import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 const mutation = graphql`
   mutation AddSlackChannelMutation($input: AddSlackChannelInput!) {
     addSlackChannel(input: $input) {
+      error {
+        message
+      }
       channel {
         channelId
         channelName
@@ -28,9 +31,9 @@ export const addSlackChannelUpdater = (store, viewerId, teamId, newSlackIntegrat
   incrementIntegrationCount(viewer, teamId, SLACK, 1);
 };
 
-const AddSlackChannelMutation = (environment, payload, teamMemberId, onError, onCompleted) => {
+const AddSlackChannelMutation = (environment, channelPayload, teamMemberId, onError, onCompleted) => {
   const {viewerId} = environment;
-  const {channelId, channelName} = payload;
+  const {channelId, channelName} = channelPayload;
   return commitMutation(environment, {
     mutation,
     variables: {
@@ -40,7 +43,9 @@ const AddSlackChannelMutation = (environment, payload, teamMemberId, onError, on
       }
     },
     updater: (store) => {
-      const slackIntegration = store.getRootField('addSlackChannel').getLinkedRecord('channel');
+      const payload = store.getRoot('addSlackChannel');
+      if (!payload) return;
+      const slackIntegration = payload.getLinkedRecord('channel');
       const {teamId} = fromTeamMemberId(teamMemberId);
       addSlackChannelUpdater(store, viewerId, teamId, slackIntegration);
     },

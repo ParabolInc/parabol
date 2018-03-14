@@ -3,9 +3,13 @@ import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
 import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendIntegrationNotFoundError} from 'server/utils/docNotFoundErrors';
+import {sendAlreadyUpdatedIntegrationError} from 'server/utils/alreadyMutatedErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: new GraphQLNonNull(LeaveIntegrationPayload),
@@ -24,22 +28,30 @@ export default {
     const userId = getUserId(authToken);
     const integration = await r.table(service).get(localId);
     if (!integration) {
-      throw new Error('That integration does not exist');
+      return sendIntegrationNotFoundError(globalId);
     }
     const {adminUserId, teamId, userIds} = integration;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
-    if (!authToken.tms.includes(teamId)) {
-      throw new Error('You must be a part of the team to leave the team');
-    }
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     if (!userIds.includes(userId)) {
-      throw new Error('You are not a part of this integration');
+      const breadcrumb = {
+        message: 'You are not a part of this integration',
+        category: 'Already mutated',
+        data: {globalId}
+      };
+      return sendAuthRaven(authToken, 'Easy there', breadcrumb);
     }
 
     if (userId === adminUserId) {
-      throw new Error('The repo admin cannot leave the repo');
+      const breadcrumb = {
+        message: 'The repo admin cannot leave the repo',
+        category: 'Leave integration',
+        data: {globalId}
+      };
+      return sendAuthRaven(authToken, 'Hold up', breadcrumb);
     }
 
     // RESOLUTION
@@ -50,7 +62,7 @@ export default {
       }), {returnChanges: true})('changes')(0)('new_val').default(null);
 
     if (!updatedIntegration) {
-      throw new Error('Integration was already updated');
+      return sendAlreadyUpdatedIntegrationError(authToken, globalId);
     }
 
     const {isActive, nameWithOwner} = updatedIntegration;

@@ -11,6 +11,9 @@ graphql`
 const mutation = graphql`
   mutation MeetingCheckInMutation($teamMemberId: ID!, $isCheckedIn: Boolean) {
     meetingCheckIn(teamMemberId: $teamMemberId, isCheckedIn: $isCheckedIn) {
+      error {
+        message
+      }
       ...MeetingCheckInMutation_teamMember @relay(mask: false)
     }
   }

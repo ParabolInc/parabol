@@ -2,11 +2,12 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput';
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload';
-import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {handleSchemaErrors} from 'server/utils/utils';
 import {ORGANIZATION} from 'universal/utils/constants';
 import updateOrgValidation from './helpers/updateOrgValidation';
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),
@@ -26,12 +27,12 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, updatedOrg.id);
-    requireOrgLeader(userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const schema = updateOrgValidation();
     const {errors, data: {id: orgId, ...org}} = schema(updatedOrg);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const dbUpdate = {

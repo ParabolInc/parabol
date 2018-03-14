@@ -5,7 +5,7 @@ import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reac
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
 import getPendingInvitations from 'server/safeQueries/getPendingInvitations';
-import {isBillingLeader} from 'server/utils/authorization';
+import {isOrgBillingLeader} from 'server/utils/authorization';
 import {ASK_APPROVAL, DENIED, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import unarchiveTasksForReactivatedSoftTeamMembers from 'server/safeMutations/unarchiveTasksForReactivatedSoftTeamMembers';
@@ -48,7 +48,7 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
     teamId,
     teamName,
     userId,
-    isBillingLeader: isBillingLeader(userOrgDoc)
+    isBillingLeader: isOrgBillingLeader(userOrgDoc)
   };
   const detailedInvitations = makeDetailedInvitations(teamMembers, emailArr, users, orgApprovals, pendingInvitations, inviter);
   const inviteesToReactivate = detailedInvitations.filter(({action}) => action === REACTIVATE);

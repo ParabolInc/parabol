@@ -60,15 +60,17 @@ if (!PROD) {
   }));
   app.use(require('webpack-hot-middleware')(compiler)); // eslint-disable-line import/no-extraneous-dependencies
   /* eslint-enable global-require */
+} else {
+  Raven.config(process.env.SENTRY_DSN, {
+    release: version,
+    environment: process.env.NODE_ENV,
+    parseUser: jwtFields
+  }).install();
+  // sentry.io request handler capture middleware, must be first:
+  app.use(Raven.requestHandler());
 }
-Raven.config(process.env.SENTRY_DSN, {
-  release: version,
-  environment: process.env.NODE_ENV,
-  parseUser: jwtFields
-}).install();
+
 // setup middleware
-// sentry.io request handler capture middleware, must be first:
-app.use(Raven.requestHandler());
 app.use(bodyParser.json({
   verify: (req, res, buf) => {
     if (req.originalUrl.startsWith('/stripe')) {

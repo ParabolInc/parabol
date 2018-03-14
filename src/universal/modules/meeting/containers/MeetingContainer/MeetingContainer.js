@@ -64,7 +64,6 @@ class MeetingContainer extends Component {
     }).isRequired,
     teamId: PropTypes.string.isRequired,
     userId: PropTypes.string.isRequired,
-    error: PropTypes.any,
     submitting: PropTypes.bool,
     submitMutation: PropTypes.func.isRequired,
     onCompleted: PropTypes.func.isRequired,

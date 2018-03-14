@@ -1,8 +1,12 @@
 import {GraphQLList, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const LeaveIntegrationPayload = new GraphQLObjectType({
   name: 'LeaveIntegrationPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     globalId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The globalId of the integration with a removed member'

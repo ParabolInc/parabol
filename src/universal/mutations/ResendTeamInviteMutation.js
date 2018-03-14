@@ -10,6 +10,9 @@ graphql`
 const mutation = graphql`
   mutation ResendTeamInviteMutation($inviteId: ID!) {
     resendTeamInvite(inviteId: $inviteId) {
+      error {
+        message
+      }
      ...ResendTeamInviteMutation_invitation @relay(mask: false) 
     }
   }

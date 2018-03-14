@@ -47,6 +47,9 @@ graphql`
 const mutation = graphql`
   mutation RejectOrgApprovalMutation($notificationId: ID!, $reason: String!) {
     rejectOrgApproval(notificationId: $notificationId, reason: $reason) {
+      error {
+        message
+      }
       ...RejectOrgApprovalMutation_orgApproval @relay(mask: false)
       ...RejectOrgApprovalMutation_notification @relay(mask: false)
     }
@@ -105,14 +108,14 @@ const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted)
     variables,
     updater: (store) => {
       const payload = store.getRootField('rejectOrgApproval');
+      if (!payload) return;
       rejectOrgApprovalOrgApprovalUpdater(payload, store);
       rejectOrgApprovalNotificationUpdater(payload, store, viewerId);
       rejectOrgApprovalTeamMemberUpdater(payload, store);
       rejectOrgApprovalTaskUpdater(payload, store, viewerId);
     },
-    optimisticUpdater: (store) => {
-      const {notificationId} = variables;
-      handleRemoveNotifications(notificationId, store, viewerId);
+    optimisticUpdater: () => {
+      // Do not be optimistic because that'll close the modal
     },
     onCompleted,
     onError

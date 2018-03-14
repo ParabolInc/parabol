@@ -3,6 +3,9 @@ import {commitMutation} from 'react-relay';
 const mutation = graphql`
   mutation CreateFirstTeamMutation($newTeam: NewTeamInput!) {
     createFirstTeam(newTeam: $newTeam) {
+      error {
+        message
+      }
       team {
         id
         name

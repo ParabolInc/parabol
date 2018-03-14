@@ -13,6 +13,9 @@ graphql`
 const mutation = graphql`
   mutation ClearNotificationMutation($notificationId: ID!) {
     clearNotification(notificationId: $notificationId) {
+      error {
+        message
+      }
       ...ClearNotificationMutation_notification @relay(mask: false)
     }
   }
@@ -30,6 +33,7 @@ const ClearNotificationMutation = (environment, notificationId, onError, onCompl
     variables: {notificationId},
     updater: (store) => {
       const payload = store.getRootField('clearNotification');
+      if (!payload) return;
       clearNotificationNotificationUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {

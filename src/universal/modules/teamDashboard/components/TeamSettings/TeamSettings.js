@@ -48,7 +48,6 @@ class TeamSettings extends Component {
     dispatch: PropTypes.func.isRequired,
     styles: PropTypes.object,
     viewer: PropTypes.object.isRequired,
-    error: PropTypes.any,
     submitting: PropTypes.bool,
     submitMutation: PropTypes.func.isRequired,
     onCompleted: PropTypes.func.isRequired,

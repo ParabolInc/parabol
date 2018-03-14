@@ -2,10 +2,12 @@ import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
 import MoveMeetingPayload from 'server/graphql/types/MoveMeetingPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {AGENDA_ITEM, AGENDA_ITEMS, CHECKIN, TEAM} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: MoveMeetingPayload,
@@ -34,7 +36,7 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // BAILOUT
     if (force) {
@@ -56,7 +58,12 @@ export default {
     const meetingPhaseInfo = actionMeeting[meetingPhase];
     if (nextPhase) {
       if (!nextPhaseInfo) {
-        throw new Error(`${nextPhase} is not a valid phase`);
+        const breadcrumb = {
+          message: `${nextPhase} is not a valid phase`,
+          category: 'Move meeting',
+          data: {teamId}
+        };
+        return sendAuthRaven(authToken, 'Oh dear', breadcrumb);
       }
       if (nextPhaseInfo.items) {
         const {arrayName} = nextPhaseInfo.items;
@@ -66,7 +73,12 @@ export default {
             .filter({isNotRemoved: true})
             .count();
           if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
-            throw new Error('We don’t have that many team members!');
+            const breadcrumb = {
+              message: 'We don’t have that many team members!',
+              category: 'Move meeting',
+              data: {teamId}
+            };
+            return sendAuthRaven(authToken, 'Oh dear', breadcrumb);
           }
         } else if (arrayName === 'agendaItems') {
           const agendaItemCount = await r.table('AgendaItem')
@@ -74,25 +86,50 @@ export default {
             .filter({isActive: true})
             .count();
           if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
-            throw new Error('We don’t have that many agenda items!');
+            const breadcrumb = {
+              message: 'We don’t have that many agenda items!',
+              category: 'Move meeting',
+              data: {teamId}
+            };
+            return sendAuthRaven(authToken, 'Oh dear', breadcrumb);
           }
         }
         if (nextPhaseInfo.visitOnce && meetingPhaseInfo.index > nextPhaseInfo.index) {
-          throw new Error('You can’t visit first call twice!');
+          const breadcrumb = {
+            message: 'You can’t visit first call twice!',
+            category: 'Move meeting',
+            data: {teamId}
+          };
+          return sendAuthRaven(authToken, 'Oh dear', breadcrumb);
         }
       } else if (nextPhaseItem) {
-        throw new Error(`${nextPhase} does not have phase items, but you said ${nextPhaseItem}`);
+        const breadcrumb = {
+          message: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`,
+          category: 'Move meeting',
+          data: {teamId}
+        };
+        return sendAuthRaven(authToken, 'Oh dear', breadcrumb);
       }
     }
 
     if (!nextPhaseItem && (!nextPhase || nextPhaseInfo.items)) {
-      throw new Error('Did not receive a nextPhaseItem');
+      const breadcrumb = {
+        message: 'Did not receive a nextPhaseItem',
+        category: 'Move meeting',
+        data: {teamId}
+      };
+      return sendAuthRaven(authToken, 'Oh dear', breadcrumb);
     }
 
     const userId = getUserId(authToken);
     const teamMemberId = `${userId}::${teamId}`;
     if (activeFacilitator !== teamMemberId) {
-      throw new Error('Only the facilitator can advance the meeting');
+      const breadcrumb = {
+        message: 'Only the facilitator can advance the meeting',
+        category: 'Move meeting',
+        data: {teamId}
+      };
+      return sendAuthRaven(authToken, 'Oh dear', breadcrumb);
     }
 
     // RESOLUTION

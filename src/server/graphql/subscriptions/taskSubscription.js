@@ -1,15 +1,15 @@
 import {GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import TaskSubscriptionPayload from 'server/graphql/types/TaskSubscriptionPayload';
-import {getUserId} from 'server/utils/authorization';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import {TASK} from 'universal/utils/constants';
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
 
 const taskSubscription = {
   type: new GraphQLNonNull(TaskSubscriptionPayload),
   subscribe: async (source, args, {authToken, socketId, dataLoader}) => {
     // AUTH
-    requireAuth(authToken);
+    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError(authToken);
 
     // RESOLUTION
     const viewerId = getUserId(authToken);

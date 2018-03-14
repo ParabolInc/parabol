@@ -1,9 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload';
-import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
+import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {NOTIFICATION} from 'universal/utils/constants';
+import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: ClearNotificationPayload,
@@ -20,9 +21,9 @@ export default {
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const userId = getUserId(authToken);
+    const viewerId = getUserId(authToken);
     const notification = await r.table('Notification').get(notificationId);
-    requireNotificationOwner(userId, notification);
+    if (!notification || !notification.userIds.includes(viewerId)) return sendNotificationAccessError(authToken, notificationId);
 
     // RESOLUTION
     await r.table('Notification')
@@ -30,7 +31,7 @@ export default {
       .delete();
 
     const data = {notification};
-    publish(NOTIFICATION, userId, ClearNotificationPayload, data, subOptions);
+    publish(NOTIFICATION, viewerId, ClearNotificationPayload, data, subOptions);
     return data;
   }
 };

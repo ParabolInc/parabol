@@ -2,11 +2,12 @@ import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import UpdateAgendaItemInput from 'server/graphql/types/UpdateAgendaItemInput';
 import UpdateAgendaItemPayload from 'server/graphql/types/UpdateAgendaItemPayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {handleSchemaErrors} from 'server/utils/utils';
 import {AGENDA_ITEM} from 'universal/utils/constants';
 import makeUpdateAgendaItemSchema from 'universal/validation/makeUpdateAgendaItemSchema';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: UpdateAgendaItemPayload,
@@ -26,12 +27,12 @@ export default {
     // AUTH
     const {id: agendaItemId} = updatedAgendaItem;
     const [teamId] = agendaItemId.split('::');
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
     const schema = makeUpdateAgendaItemSchema();
     const {errors, data: {id, ...doc}} = schema(updatedAgendaItem);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     await r.table('AgendaItem').get(id)

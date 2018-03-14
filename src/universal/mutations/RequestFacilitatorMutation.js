@@ -15,6 +15,9 @@ graphql`
 const mutation = graphql`
   mutation RequestFacilitatorMutation($teamId: ID!) {
     requestFacilitator(teamId: $teamId) {
+      error {
+        message
+      }
       ...RequestFacilitatorMutation_team @relay(mask: false)
     }
   }

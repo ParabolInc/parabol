@@ -16,8 +16,9 @@ const SlackChannelRemovedSubscription = (environment, queryVariables) => {
     variables: {teamId},
     updater: (store) => {
       const viewer = store.get(viewerId);
-      const removedChannel = store.getRootField('slackChannelRemoved');
-      const deletedId = removedChannel.getValue('deletedId');
+      const payload = store.getRootField('slackChannelRemoved');
+      if (!payload) return;
+      const deletedId = payload.getValue('deletedId');
       removeSlackChannelUpdater(viewer, teamId, deletedId);
     }
   };

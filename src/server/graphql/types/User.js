@@ -24,11 +24,13 @@ import Meeting from 'server/graphql/types/Meeting';
 import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import UserOrg from 'server/graphql/types/UserOrg';
-import {getUserId, requireAuth, requireTeamMember} from 'server/utils/authorization';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import organization from 'server/graphql/queries/organization';
 import tasks from 'server/graphql/queries/tasks';
 import archivedTasks from 'server/graphql/queries/archivedTasks';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -145,12 +147,11 @@ const User = new GraphQLObjectType({
         }
       },
       async resolve(source, {meetingId}, {authToken, dataLoader}) {
-        requireAuth(authToken);
         const meeting = await dataLoader.get('meetings').load(meetingId);
         if (!meeting) {
-          throw new Error('Meeting ID not found');
+          return sendMeetingNotFoundError(authToken, meetingId);
         }
-        requireTeamMember(authToken, meeting.teamId);
+        if (!isTeamMember(authToken, meeting.teamId)) return sendTeamAccessError(authToken, meeting.teamId, null);
         return meeting;
       }
     },
@@ -189,7 +190,7 @@ const User = new GraphQLObjectType({
       },
       resolve: (source, {teamId}, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken);
-        requireTeamMember(authToken, teamId);
+        if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
         const teamMemberId = toTeamMemberId(teamId, viewerId);
         return dataLoader.get('teamMembers').load(teamMemberId);
       }

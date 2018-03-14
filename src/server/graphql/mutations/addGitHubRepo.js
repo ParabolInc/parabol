@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddGitHubRepoPayload from 'server/graphql/types/AddGitHubRepoPayload';
 import tokenCanAccessRepo from 'server/integrations/tokenCanAccessRepo';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams';
 import shortid from 'shortid';
@@ -10,6 +10,10 @@ import {GITHUB, GITHUB_ENDPOINT} from 'universal/utils/constants';
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 import fetch from 'node-fetch';
+import {
+  sendGitHubAdministratorError, sendGitHubPassedThoughError, sendTeamAccessError
+} from 'server/utils/authorizationErrors';
+import {sendGitHubProviderNotFoundError} from 'server/utils/docNotFoundErrors';
 
 const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) => {
   const endpoint = `https://api.github.com/repos/${nameWithOwner}/hooks`;
@@ -75,7 +79,7 @@ export default {
     const r = getRethink();
     const now = new Date();
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     const userId = getUserId(authToken);
 
     // VALIDATION
@@ -84,22 +88,15 @@ export default {
       .filter({service: GITHUB, isActive: true});
 
     const viewerProviderIdx = allTeamProviders.findIndex((provider) => provider.userId === userId);
-    if (viewerProviderIdx === -1) {
-      throw new Error('No GitHub Provider found! Try refreshing your token');
-    }
+    if (viewerProviderIdx === -1) return sendGitHubProviderNotFoundError(authToken, {teamId, nameWithOwner});
     // first check if the viewer has permission. then, check the rest
     const {accessToken} = allTeamProviders[viewerProviderIdx];
     const viewerPermissions = await tokenCanAccessRepo(accessToken, nameWithOwner);
     const {data, errors} = viewerPermissions;
-    if (errors) {
-      console.error('GitHub error: ', errors);
-      throw errors;
-    }
+    if (errors) return sendGitHubPassedThoughError(authToken, errors);
 
     const {repository: {viewerCanAdminister, databaseId: ghRepoId}} = data;
-    if (!viewerCanAdminister) {
-      throw new Error(`You must be an administer of ${nameWithOwner} to integrate`);
-    }
+    if (!viewerCanAdminister) return sendGitHubAdministratorError(authToken, nameWithOwner);
 
     // RESOLUTION
 

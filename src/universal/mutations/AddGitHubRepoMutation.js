@@ -8,6 +8,9 @@ import incrementIntegrationCount from 'universal/utils/relay/incrementIntegratio
 const mutation = graphql`
   mutation AddGitHubRepoMutation($nameWithOwner: String!, $teamId: ID!) {
     addGitHubRepo(nameWithOwner: $nameWithOwner, teamId: $teamId) {
+      error {
+        message
+      }
       repo {
         id
         adminUserId
@@ -42,7 +45,9 @@ const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, onError, onCo
     mutation,
     variables: {nameWithOwner, teamId},
     updater: (store) => {
-      const node = store.getRootField('addGitHubRepo').getLinkedRecord('repo');
+      const payload = store.getRoot('addGitHubRepo');
+      if (!payload) return;
+      const node = payload.getLinkedRecord('repo');
       addGitHubRepoUpdater(store, viewerId, teamId, node);
     },
     optimisticUpdater: (store) => {

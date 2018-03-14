@@ -3,13 +3,14 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
-import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 import publish from 'server/utils/publish';
-import sendSegmentEvent from 'server/utils/sendSegmentEvent';
+import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants';
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import {sendAlreadyProTierError} from 'server/utils/alreadyMutatedErrors';
 
 export default {
   type: UpgradeToProPayload,
@@ -33,16 +34,14 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    requireOrgLeader(userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r.table('Organization')
       .get(orgId)
       .pluck('orgUsers', 'stripeId', 'stripeSubscriptionId');
 
-    if (startingSubId) {
-      throw new Error('You are already pro!');
-    }
+    if (startingSubId) return sendAlreadyProTierError(authToken, orgId);
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId

@@ -5,10 +5,14 @@ import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import OrgApproval from 'server/graphql/types/OrgApproval';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const ApproveToOrgPayload = new GraphQLObjectType({
   name: 'ApproveToOrgPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     removedRequestNotifications: {
       type: new GraphQLList(NotifyRequestNewUser),
       description: 'If the viewer is an org leader, the notifications removed after approving to the organization',

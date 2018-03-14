@@ -8,6 +8,7 @@ import {GQL_COMPLETE, GQL_DATA, GQL_ERROR} from 'universal/utils/constants';
 import relayUnsubscribe from 'server/utils/relayUnsubscribe';
 import sendMessage from 'server/socketHelpers/sendMessage';
 import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult';
+import firstErrorMessage from 'universal/utils/relay/firstErrorMessage';
 
 const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}));
@@ -16,14 +17,16 @@ const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader
   const document = parse(query);
   try {
     const result = await subscribe(Schema, document, {}, context, variables);
-    if (!result.errors || !isResub) return {asyncIterator: result};
+    // failing here means the subscription failed our custom business logic in the subscribe method, eg bad auth
+    if (!result.errors) {
+      return {asyncIterator: result};
+    }
     // squelch errors for resub, we expect a few errors & the client doesn't need to know about them
-    // failing here means the subscription failed our custom business logic in the subscribe method
+    return isResub ? {} : {errors: result.errors};
   } catch (e) {
     // the subscription couldn't be found or there was an internal graphql error
-    return {error: e.message};
+    return {errors: [{message: e.message}]};
   }
-  return {};
 };
 
 const handleSubscribe = async (connectionContext, parsedMessage, options = {}) => {
@@ -36,12 +39,12 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
   }
 
   connectionContext.subs[opId] = {status: 'pending'};
-  const {asyncIterator, error} = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
+  const {asyncIterator, errors} = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
   if (!asyncIterator) {
-    if (error) {
+    if (errors) {
       const {query, variables} = parsedMessage;
-      sendGraphQLErrorResult('WebSocket-Subscription', error, query, variables, authToken);
-      sendMessage(socket, GQL_ERROR, {errors: [{message: error}]}, opId);
+      sendGraphQLErrorResult('WebSocket-Subscription', firstErrorMessage(errors), query, variables, authToken);
+      sendMessage(socket, GQL_ERROR, {errors}, opId);
     }
     return;
   }
@@ -56,8 +59,6 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
       setTimeout(() => relayUnsubscribeAll(connectionContext, {isResub: true}), 1000);
       return;
     }
-    // TODO Until we rewrite the client (because Apollo is wrong) don't send errors see handleMessage.js
-    // const resultType = payload.errors ? GQL_ERROR : GQL_DATA;
     sendMessage(socket, GQL_DATA, payload, opId);
   };
 

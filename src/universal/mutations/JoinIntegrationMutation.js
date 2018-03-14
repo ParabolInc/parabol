@@ -4,6 +4,9 @@ import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMemb
 const mutation = graphql`
   mutation JoinIntegrationMutation($globalId: ID!) {
     joinIntegration(globalId: $globalId) {
+      error {
+        message
+      }
       globalId
       teamMember {
         id
@@ -32,6 +35,7 @@ const JoinIntegrationMutation = (environment, globalId, teamId, onError, onCompl
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('joinIntegration');
+      if (!payload) return;
       joinIntegrationUpdater(store, viewer, teamId, payload);
     },
     optimisticUpdater: (store) => {

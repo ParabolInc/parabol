@@ -13,6 +13,7 @@ import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {withRouter} from 'react-router-dom';
+import getGraphQLError from 'universal/utils/relay/getGraphQLError';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -56,7 +57,12 @@ class UserSettingsContainer extends Component {
         raven.captureException(err);
         reject(err);
       };
-      const onCompleted = () => {
+      const onCompleted = (res, errors) => {
+        const serverError = getGraphQLError(res, errors);
+        if (serverError) {
+          onError(serverError.message);
+          return;
+        }
         const {activity, dispatch, nextPage, untouch, history} = this.props;
         dispatch(showSuccess(updateSuccess));
         if (activity === ACTIVITY_WELCOME) {

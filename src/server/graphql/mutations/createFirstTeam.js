@@ -4,14 +4,16 @@ import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg';
 import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader';
 import CreateFirstTeamPayload from 'server/graphql/types/CreateFirstTeamPayload';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
-import {getUserId, requireAuth} from 'server/utils/authorization';
+import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
 import addSeedTasks from './helpers/addSeedTasks';
 import createFirstTeamValidation from './helpers/createFirstTeamValidation';
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: CreateFirstTeamPayload,
@@ -26,7 +28,7 @@ export default {
     const r = getRethink();
 
     // AUTH
-    requireAuth(authToken);
+    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError();
     const viewerId = getUserId(authToken);
 
     // VALIDATION
@@ -35,12 +37,16 @@ export default {
       .pluck('id', 'preferredName', 'userOrgs');
 
     if (user.userOrgs && user.userOrgs.length > 0) {
-      throw new Error('cannot use createFirstTeam when already part of an org');
+      const breadcrumb = {
+        message: 'Cannot use createFirstTeam when already part of an org',
+        category: 'Unauthorized access'
+      };
+      return sendAuthRaven(authToken, 'Oops', breadcrumb);
     }
 
     const schema = createFirstTeamValidation();
     const {data: {name}, errors} = schema(newTeam);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const orgId = shortid.generate();

@@ -54,6 +54,9 @@ graphql`
 const mutation = graphql`
   mutation AcceptTeamInviteMutation($notificationId: ID!) {
     acceptTeamInviteNotification(notificationId: $notificationId) {
+      error {
+        message
+      }
       ...AcceptTeamInviteMutation_team @relay(mask: false)
     }
   }
@@ -118,6 +121,7 @@ const AcceptTeamInviteMutation = (environment, notificationId, dispatch, onError
     variables: {notificationId},
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInviteNotification');
+      if (!payload) return;
       acceptTeamInviteTeamUpdater(payload, store, viewerId, {dispatch});
     },
     onCompleted,

@@ -4,10 +4,14 @@ import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import OrgApproval from 'server/graphql/types/OrgApproval';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 import Task from 'server/graphql/types/Task';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 const CancelApprovalPayload = new GraphQLObjectType({
   name: 'CancelApprovalPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     orgApproval: {
       type: OrgApproval,
       description: 'The inactivated org approval',

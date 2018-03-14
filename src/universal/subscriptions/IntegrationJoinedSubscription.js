@@ -22,6 +22,7 @@ const IntegrationJoinedSubscription = (service) => (environment, queryVariables)
     updater: (store) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('integrationJoined');
+      if (!payload) return;
       joinIntegrationUpdater(store, viewer, teamId, payload);
     }
   };

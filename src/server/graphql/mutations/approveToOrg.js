@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload';
 import approveToOrg from 'server/safeMutations/approveToOrg';
-import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, ORGANIZATION} from 'universal/utils/constants';
-
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: ApproveToOrgPayload,
@@ -23,17 +23,19 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
-    requireOrgLeader(userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // RESOLUTION
     const subOptions = {mutatorId, operationId};
     const {
+      error,
       removedRequestNotifications,
       removedOrgApprovals,
       newInvitations,
       inviteeApprovedNotifications,
       teamInviteNotifications
     } = await approveToOrg(email, orgId, viewerId, dataLoader);
+    if (error) return {error};
 
     const invitationIds = newInvitations.map(({id}) => id);
 

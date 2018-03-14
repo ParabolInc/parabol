@@ -3,9 +3,13 @@ import {fromGlobalId} from 'graphql-relay';
 import getRethink from 'server/database/rethinkDriver';
 import JoinIntegrationPayload from 'server/graphql/types/JoinIntegrationPayload';
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendIntegrationNotFoundError, sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors';
+import {sendAlreadyJoinedIntegrationError} from 'server/utils/alreadyMutatedErrors';
+import sendAuthRaven from 'server/utils/sendAuthRaven';
 
 export default {
   type: new GraphQLNonNull(JoinIntegrationPayload),
@@ -24,18 +28,16 @@ export default {
     const {id: localId, type: service} = fromGlobalId(globalId);
     const integration = await r.table(service).get(localId);
     if (!integration) {
-      throw new Error('That integration does not exist');
+      return sendIntegrationNotFoundError(authToken, localId);
     }
     const {teamId, userIds} = integration;
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
-    if (!authToken.tms.includes(teamId)) {
-      throw new Error('You must be a part of the team to join the team');
-    }
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     if (userIds.includes(userId)) {
-      throw new Error('You are already a part of this integration');
+      return sendAlreadyJoinedIntegrationError(authToken, globalId);
     }
 
     const provider = await r.table('Provider')
@@ -44,7 +46,12 @@ export default {
       .nth(0)
       .default(null);
     if (!provider) {
-      throw new Error('You must first connect your account to the integration');
+      const breadcrumb = {
+        message: 'You must first connect your account to the integration',
+        category: 'Join Integration',
+        data: {service, teamId}
+      };
+      return sendAuthRaven(authToken, 'Oh no', breadcrumb);
     }
 
     // RESOLUTION
@@ -53,14 +60,19 @@ export default {
       const usersAndIntegrations = await maybeJoinRepos([integration], [provider]);
       const integrationIds = usersAndIntegrations[userId];
       if (integrationIds.length === 0) {
-        throw new Error('You must be an org member or collaborator to join');
+        const breadcrumb = {
+          message: 'You must be an org member or collaborator to join',
+          category: 'Join Integration',
+          data: {service, teamId}
+        };
+        return sendAuthRaven(authToken, 'Oh no', breadcrumb);
       }
     }
 
     const teamMemberId = `${userId}::${teamId}`;
     const teamMember = await r.table('TeamMember').get(teamMemberId);
     if (!teamMember) {
-      throw new Error('Team member not found!');
+      return sendTeamMemberNotFoundError(authToken, teamId, userId);
     }
 
     const integrationJoined = {

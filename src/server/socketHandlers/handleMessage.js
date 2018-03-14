@@ -39,17 +39,15 @@ const handleMessage = (connectionContext) => async (message) => {
     // this GQL_START logic will be simplified when we move to persisted queries
   } else if (type === GQL_START) {
     if (!isQueryProvided(payload)) {
-      sendMessage(socket, GQL_ERROR, {errors: [new Error('No payload provided')]}, opId);
+      sendMessage(socket, GQL_ERROR, {errors: [{message: 'No payload provided'}]}, opId);
       return;
     }
     if (isSubscriptionPayload(payload)) {
       wsRelaySubscribeHandler(connectionContext, parsedMessage);
     } else {
       const result = await wsGraphQLHandler(connectionContext, parsedMessage);
-      // TODO Until we rewrite the client (because Apollo is wrong) don't send errors
-      // Even if the data is 99% good, the Apollo client nulls out the data, which brings blank screens and sads.
-      // const resultType = result.errors ? GQL_ERROR : GQL_DATA;
-      sendMessage(socket, GQL_DATA, result, opId);
+      const messageType = result.data ? GQL_DATA : GQL_ERROR;
+      sendMessage(socket, messageType, result, opId);
     }
   } else if (type === GQL_STOP) {
     relayUnsubscribe(subs, opId);

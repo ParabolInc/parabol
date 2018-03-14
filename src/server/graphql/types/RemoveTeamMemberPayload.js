@@ -13,11 +13,15 @@ import Team from 'server/graphql/types/Team';
 import TeamMember from 'server/graphql/types/TeamMember';
 import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 
 const RemoveTeamMemberPayload = new GraphQLObjectType({
   name: 'RemoveTeamMemberPayload',
   fields: () => ({
+    error: {
+      type: StandardMutationError
+    },
     teamMember: {
       type: TeamMember,
       description: 'The team member removed',

@@ -4,8 +4,12 @@ import Organization from 'server/graphql/types/Organization';
 import OrganizationMember from 'server/graphql/types/OrganizationMember';
 import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAddedPayload';
 import SetOrgUserRoleRemovedPayload from 'server/graphql/types/SetOrgUserRoleRemovedPayload';
+import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
 export const setOrgUserRoleFields = {
+  error: {
+    type: StandardMutationError
+  },
   organization: {
     type: Organization,
     resolve: resolveOrganization

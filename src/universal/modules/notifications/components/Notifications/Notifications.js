@@ -27,7 +27,7 @@ const Notifications = (props) => {
     styles
   } = props;
 
-  const clearableNotifs = notifications.edges.filter(({node}) => !requiresAction(node));
+  const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node));
   const clearAllNotifications = () => {
     submitMutation();
     clearableNotifs.forEach(({node}) => {
@@ -59,7 +59,7 @@ const Notifications = (props) => {
         <Panel compact label="Notifications" controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}>
           {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
-              {notifications.edges.map(({node}) =>
+              {notifications.edges.filter(({node}) => Boolean(node)).map(({node}) =>
                 (<NotificationRow
                   dispatch={dispatch}
                   key={`notification${node.id}`}

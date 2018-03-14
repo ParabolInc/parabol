@@ -23,6 +23,9 @@ graphql`
 const mutation = graphql`
   mutation MoveMeetingMutation($teamId: ID!, $nextPhase: ActionMeetingPhaseEnum, $nextPhaseItem: Int, $force: Boolean) {
     moveMeeting(teamId: $teamId, nextPhase: $nextPhase, nextPhaseItem: $nextPhaseItem, force: $force) {
+      error {
+        message
+      }
       ...MoveMeetingMutation_agendaItem @relay(mask: false)
       ...MoveMeetingMutation_team @relay(mask: false)
     }

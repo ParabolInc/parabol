@@ -1,9 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import KillMeetingPayload from 'server/graphql/types/KillMeetingPayload';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {LOBBY, TEAM} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 export default {
   type: KillMeetingPayload,
@@ -19,7 +20,7 @@ export default {
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // RESOLUTION
     // reset the meeting

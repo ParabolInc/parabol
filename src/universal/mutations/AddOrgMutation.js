@@ -36,6 +36,9 @@ graphql`
 const mutation = graphql`
   mutation AddOrgMutation($newTeam: NewTeamInput!, $invitees: [Invitee!], $orgName: String!) {
     addOrg(newTeam: $newTeam, invitees: $invitees, orgName: $orgName) {
+      error {
+        message
+      }
       ...AddOrgMutation_organization @relay(mask: false)
     }
   }
@@ -74,6 +77,7 @@ const AddOrgMutation = (environment, variables, options, onError, onCompleted) =
     variables,
     updater: (store) => {
       const payload = store.getRootField('addOrg');
+      if (!payload) return;
       addOrgMutationOrganizationUpdater(payload, store, viewerId, {...options, store, environment});
     },
     onCompleted,

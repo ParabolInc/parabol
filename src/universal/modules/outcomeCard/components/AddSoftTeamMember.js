@@ -101,8 +101,8 @@ class AddSoftTeamMember extends Component {
     closePortal();
     const invitees = [{email: inviteeEmail}];
     submitMutation();
-    const handleCompleted = (res) => {
-      onCompleted();
+    const handleCompleted = (res, errors) => {
+      onCompleted(res, errors);
       const {inviteTeamMembers: {newSoftTeamMembers, reactivatedTeamMembers}} = res;
       const newSoftTeamMemberId = newSoftTeamMembers && newSoftTeamMembers[0].id;
       const reactivatedTeamMemberId = reactivatedTeamMembers && reactivatedTeamMembers[0].id;

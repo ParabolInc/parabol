@@ -3,6 +3,7 @@ import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 import IntranetSchema from 'server/graphql/intranetSchema/intranetSchema';
 import Schema from './rootSchema';
 import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult';
+import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors';
 
 export default (sharedDataLoader) => async (req, res) => {
   const {query, variables} = req.body;
@@ -14,7 +15,8 @@ export default (sharedDataLoader) => async (req, res) => {
   if (result.errors) {
     sendGraphQLErrorResult('HTTP', result.errors[0], query, variables, authToken);
   }
-  res.send(result);
+  const sanitizedResult = sanitizeGraphQLErrors(result);
+  res.send(sanitizedResult);
 };
 
 export const intranetHttpGraphQLHandler = (sharedDataLoader) => async (req, res) => {
@@ -27,5 +29,6 @@ export const intranetHttpGraphQLHandler = (sharedDataLoader) => async (req, res)
   if (result.errors) {
     sendGraphQLErrorResult('HTTP-Intranet', result.errors[0], query, variables, authToken);
   }
-  res.send(result);
+  const sanitizedResult = sanitizeGraphQLErrors(result);
+  res.send(sanitizedResult);
 };

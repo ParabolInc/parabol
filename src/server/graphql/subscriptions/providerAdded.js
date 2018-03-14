@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
 import AddProviderPayload from 'server/graphql/types/AddProviderPayload';
-import {getUserId, requireTeamMember} from 'server/utils/authorization';
+import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
 
 export default {
@@ -14,7 +15,7 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader}) => {
     // AUTH
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     const subscriberUserId = getUserId(authToken);
 
     // RESOLUTION

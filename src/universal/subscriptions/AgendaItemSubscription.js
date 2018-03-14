@@ -21,6 +21,7 @@ const AgendaItemSubscription = (environment, queryVariables) => {
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('agendaItemSubscription');
+      if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
         case 'AddAgendaItemPayload':

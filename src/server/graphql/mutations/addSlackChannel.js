@@ -2,11 +2,15 @@ import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload';
 import insertSlackChannel from 'server/safeMutations/insertSlackChannel';
-import {requireTeamMember} from 'server/utils/authorization';
+import {isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {SLACK} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import fetch from 'node-fetch';
+import {
+  sendSlackChannelArchivedError, sendSlackPassedThoughError, sendTeamAccessError
+} from 'server/utils/authorizationErrors';
+import {sendSlackProviderNotFoundError} from 'server/utils/docNotFoundErrors';
 
 // TODO get rid of input and only request teamId not teamMemberId
 const AddSlackChannelInput = new GraphQLInputObjectType({
@@ -37,7 +41,7 @@ export default {
     // AUTH
     // TODO replace teamMemberId with teamId, no need for the userId here?
     const {teamId} = fromTeamMemberId(teamMemberId);
-    requireTeamMember(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
     // VALIDATION
 
@@ -48,9 +52,7 @@ export default {
       .nth(0)
       .default(null);
 
-    if (!provider || !provider.accessToken) {
-      throw new Error('No Slack Provider found! Try refreshing your token');
-    }
+    if (!provider || !provider.accessToken) return sendSlackProviderNotFoundError(authToken, {teamMemberId, slackChannelId});
 
     // see if the slackChannelId is legit
     const {accessToken} = provider;
@@ -58,14 +60,10 @@ export default {
     const channelInfo = await fetch(channelInfoUrl);
     const channelInfoJson = await channelInfo.json();
     const {ok, channel} = channelInfoJson;
-    if (!ok) {
-      throw new Error(channelInfoJson.error);
-    }
+    if (!ok) return sendSlackPassedThoughError(authToken, channelInfoJson.error);
 
     const {is_archived: isArchived, name} = channel;
-    if (isArchived) {
-      throw new Error(`Slack channel ${name} is archived!`);
-    }
+    if (isArchived) return sendSlackChannelArchivedError(authToken, name);
 
     // RESOLUTION
     const newChannel = await insertSlackChannel(slackChannelId, name, teamId);

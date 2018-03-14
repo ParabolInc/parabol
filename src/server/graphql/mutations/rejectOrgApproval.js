@@ -3,9 +3,8 @@ import getRethink from 'server/database/rethinkDriver';
 import rejectOrgApprovalValidation from 'server/graphql/mutations/helpers/rejectOrgApprovalValidation';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification';
-import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {handleSchemaErrors} from 'server/utils/utils';
 import shortid from 'shortid';
 import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
@@ -15,6 +14,9 @@ import promiseAllObj from 'universal/utils/promiseAllObj';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors';
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -38,16 +40,14 @@ export default {
     const {notificationId} = args;
     const viewerId = getUserId(authToken);
     const rejectionNotification = await r.table('Notification').get(notificationId);
-    if (!rejectionNotification) {
-      throw new Error(`Notification ${notificationId} no longer exists!`);
-    }
+    if (!rejectionNotification) return sendNotificationAccessError(authToken, notificationId);
     const {orgId, inviteeEmail} = rejectionNotification;
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
-    requireOrgLeader(userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
 
     // VALIDATION
     const {data: {reason}, errors} = rejectOrgApprovalValidation()(args);
-    handleSchemaErrors(errors);
+    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
 
     // RESOLUTION
     const deniedByName = await r.table('User').get(viewerId)('preferredName').default('A Billing Leader');

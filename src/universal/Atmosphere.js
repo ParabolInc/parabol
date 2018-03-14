@@ -116,6 +116,7 @@ export default class Atmosphere extends Environment {
       this.subscriptionClient.operations[opId] = {
         options: payload,
         handler: (errors, result) => {
+          // errors only exist if GQL_ERROR is sent
           delete this.subscriptionClient.operations[opId];
           if (result) {
             resolve(result);

@@ -1,8 +1,13 @@
 import {commitMutation} from 'react-relay';
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
+import handleMutationError from 'universal/mutations/handlers/handleMutationError';
 
 graphql`
   fragment StartNewMeetingMutation_team on StartNewMeetingPayload {
+    error {
+      title
+      message
+    }
     team {
       id
       meetingId
@@ -60,13 +65,15 @@ const mutation = graphql`
   }
 `;
 
-export const startNewMeetingTeamOnNext = (payload, {history}) => {
-  const {team: {id: teamId, newMeeting: {meetingType, phases: [firstPhase]}}} = payload;
+export const startNewMeetingTeamOnNext = (payload, context) => {
+  const {history} = context;
+  const {error, team: {id: teamId, newMeeting: {meetingType, phases: [firstPhase]}}} = payload;
   const {phaseType} = firstPhase;
   const phaseSlug = phaseTypeToSlug[phaseType];
   const meetingTypeSlug = meetingTypeToSlug[meetingType];
   const phaseItemSlug = firstPhase.stages.length === 1 ? '' : 1;
   history.push(`/${meetingTypeSlug}/${teamId}/${phaseSlug}/${phaseItemSlug}`);
+  handleMutationError(error, context);
 };
 
 const StartNewMeetingMutation = (environment, variables, {history}, onError, onCompleted) => {
@@ -74,10 +81,10 @@ const StartNewMeetingMutation = (environment, variables, {history}, onError, onC
     mutation,
     variables,
     onError,
-    onCompleted: (res) => {
-      startNewMeetingTeamOnNext(res.startNewMeeting, {history});
+    onCompleted: (res, errors) => {
+      startNewMeetingTeamOnNext(res.startNewMeeting, {environment, history});
       if (onCompleted) {
-        onCompleted(res);
+        onCompleted(res, errors);
       }
     }
   });
