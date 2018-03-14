@@ -7,6 +7,7 @@ import publish from 'server/utils/publish';
 import {NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors';
+import removeTeamMemberFromNewMeeting from 'server/graphql/mutations/helpers/removeTeamMemberFromNewMeeting';
 
 export default {
   type: RemoveTeamMemberPayload,
@@ -33,6 +34,9 @@ export default {
     const isKickout = !isSelf;
     const res = await removeTeamMember(teamMemberId, {isKickout}, subOptions);
     const {user, removedNotifications, notificationId, archivedTaskIds, reassignedTaskIds} = res;
+
+    // if a new meeting was currently running, remove them from it
+    await removeTeamMemberFromNewMeeting(teamMemberId, teamId, dataLoader);
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const {tms} = user;
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});

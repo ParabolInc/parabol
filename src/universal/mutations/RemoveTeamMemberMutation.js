@@ -51,6 +51,13 @@ graphql`
     }
     team {
       id
+      newMeeting {
+        phases {
+          stages {
+            id
+          }
+        }
+      }
     }
     teamMember {
       userId
