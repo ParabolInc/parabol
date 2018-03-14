@@ -15,6 +15,7 @@ import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
 import ReflectionCardDropPreview from 'universal/components/ReflectionCardDropPreview/ReflectionCardDropPreview';
+import ui from 'universal/styles/ui';
 
 import ReflectionGroupTitleEditor from './ReflectionGroupTitleEditor';
 
@@ -58,8 +59,8 @@ class ReflectionGroup extends Component<Props, State> {
     const {hovered} = this.props;
     const {isExpanded} = this.state;
     const reflections = isExpanded ? this.props.reflections : this.getVisibleReflections();
-    const cardElements = reflections.map((reflection) => ({
-      element: this.renderReflection(reflection),
+    const cardElements = reflections.map((reflection, index) => ({
+      element: this.renderReflection(reflection, index === reflections.length - 1),
       key: reflection.id
     }));
     return hovered ? (
@@ -76,12 +77,15 @@ class ReflectionGroup extends Component<Props, State> {
     this.getVisibleReflections().length + (this.props.hovered ? 1 : 0)
   );
 
-  getVisibleReflections = () => (
-    this.props.reflections.slice(
-      0,
-      this.props.hovered ? this.maxCollapsedItems - 1 : this.maxCollapsedItems
-    )
-  );
+  getVisibleReflections = () => {
+    const {hovered, reflections} = this.props;
+    if (hovered && reflections.length <= this.maxCollapsedItems - 1 || !hovered && reflections.length <= this.maxCollapsedItems) {
+      return reflections;
+    }
+    return this.props.reflections.slice(
+      this.props.reflections.length - (this.props.hovered ? this.maxCollapsedItems - 1 : this.maxCollapsedItems)
+    );
+  };
 
   maxCollapsedItems = 4;
 
@@ -114,7 +118,7 @@ class ReflectionGroup extends Component<Props, State> {
     );
   };
 
-  renderReflection = (reflection: Reflection) => {
+  renderReflection = (reflection: Reflection, isTopCard: boolean) => {
     const {isExpanded} = this.state;
     return isExpanded ? (
       <DraggableReflectionCard
@@ -124,7 +128,7 @@ class ReflectionGroup extends Component<Props, State> {
         handleDrop={console.log}
         hovered={this.props.hovered}
         id={reflection.id}
-        isCollapsed={!this.state.isExpanded}
+        isCollapsed={!this.state.isExpanded && !isTopCard}
         stage={reflection.stage}
       />
     ) : (
@@ -132,7 +136,7 @@ class ReflectionGroup extends Component<Props, State> {
         contentState={reflection.content}
         hovered={this.props.hovered}
         id={reflection.id}
-        isCollapsed={!this.state.isExpanded}
+        isCollapsed={!this.state.isExpanded && !isTopCard}
         stage={reflection.stage}
       />
     );
@@ -151,7 +155,7 @@ class ReflectionGroup extends Component<Props, State> {
   renderCollapsedElement = (element: Element<*>, key: string, index: number) => {
     const styles = this.getAnimatedCardsStyles({
       transform:
-        `translateY(${index * -80}%) ` +
+        `translateY(${-(index * (ui.retroCardCollapsedHeightRem - 0.5))}rem) ` +
         `scale(${1 - (0.05 * (this.getCollapsedItemCount() - index - 1))})`
     });
     return (

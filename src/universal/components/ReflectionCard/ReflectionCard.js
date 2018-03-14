@@ -14,6 +14,7 @@ import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton';
 
@@ -165,7 +166,7 @@ export default class ReflectionCard extends Component<Props, State> {
       padding: '0.8rem'
     };
     if (isCollapsed) {
-      styles.height = '3rem';
+      styles.height = `${ui.retroCardCollapsedHeightRem}rem`;
       styles.overflow = 'hidden';
     }
     return (
