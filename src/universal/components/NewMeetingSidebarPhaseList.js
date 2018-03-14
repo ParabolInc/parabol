@@ -49,7 +49,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
           return (<NewMeetingSidebarPhaseListItem
             key={name}
             name={phaseLabelLookup[name]}
-            listPrefix={idx + 1}
+            listPrefix={String(idx + 1)}
             isActive={localGroup === name}
             isFacilitatorPhaseGroup={facilitatorPhaseGroup === name}
             isNavigable={isNavigable(name, stages, isFacilitator)}
