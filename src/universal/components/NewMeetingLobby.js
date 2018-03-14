@@ -14,13 +14,32 @@ import GetRetroAccessLoadable from 'universal/components/GetRetroAccessLoadable'
 import type {NewMeetingLobby_team as Team} from './__generated__/NewMeetingLobby_team.graphql';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation';
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import ui from 'universal/styles/ui';
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
+import makeHref from 'universal/utils/makeHref';
 
-const TitleHeader = styled('h2')({
-  textTransform: 'uppercase'
+const ButtonBlock = styled('div')({
+  margin: '0',
+  paddingTop: '2.25rem',
+  width: '13rem'
 });
 
-const TeamNameHeader = styled('h1')({
-  fontWeight: 800
+const Lobby = styled('div')({
+  paddingLeft: ui.meetingSplashGutter,
+  paddingTop: '2rem',
+  textAlign: 'left',
+
+  [ui.breakpoint.wide]: {
+    paddingTop: '3rem'
+  },
+  [ui.breakpoint.wider]: {
+    paddingTop: '4rem'
+  },
+  [ui.breakpoint.widest]: {
+    paddingTop: '6rem'
+  }
 });
 
 const RetroExpository = styled('div')({
@@ -29,6 +48,12 @@ const RetroExpository = styled('div')({
 
 const GetAccessCopy = styled('div')({
   fontWeight: 300
+});
+
+const UrlBlock = styled('div')({
+  margin: '3rem 0 0',
+  display: 'inline-block',
+  verticalAlign: 'middle'
 });
 
 type Props = {
@@ -49,9 +74,9 @@ const NewMeetingLobby = (props: Props) => {
   const isPro = tier === PRO;
   const canStartMeeting = isPro || meetingsRemaining > 0;
   return (
-    <React.Fragment>
-      <TitleHeader>{'Retro Meeting Lobby'}</TitleHeader>
-      <TeamNameHeader>{`${teamName} Retro`}</TeamNameHeader>
+    <Lobby>
+      <LabelHeading>{'Retro Meeting Lobby'}</LabelHeading>
+      <MeetingPhaseHeading>{`${teamName} Retro`}</MeetingPhaseHeading>
       {!isPro &&
       <RetroExpository>
         {'A retrospective lets your team reflect on past work and discover opportunities for how to work better in the future'}
@@ -77,20 +102,21 @@ const NewMeetingLobby = (props: Props) => {
         />
       </GetAccessCopy>
       }
-
-      <Button
-        buttonStyle="solid"
-        colorPalette="cool"
-        depth={1}
-        disabled={canStartMeeting}
-        isBlock
-        label="Start Retro Meeting"
-        onClick={onStartMeetingClick}
-        buttonSize="large"
-        textTransform="uppercase"
-        waiting={submitting}
-      />
-    </React.Fragment>
+      <ButtonBlock>
+        <Button
+          buttonStyle="primary"
+          colorPalette="warm"
+          disabled={canStartMeeting}
+          label="Start Action Meeting"
+          onClick={onStartMeetingClick}
+          buttonSize="large"
+          waiting={submitting}
+        />
+      </ButtonBlock>
+      <UrlBlock>
+        <CopyShortLink url={makeHref(`/retro/${teamId}`)} />
+      </UrlBlock>
+    </Lobby>
   );
 };
 
