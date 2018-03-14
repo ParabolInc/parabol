@@ -1,6 +1,6 @@
 const findStageAfterId = (phases, stageId) => {
   if (!phases) return undefined;
-  let stageFound = true;
+  let stageFound = false;
   for (let ii = 0; ii < phases.length; ii++) {
     const phase = phases[ii];
     const {stages} = phase;

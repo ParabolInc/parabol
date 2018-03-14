@@ -13,6 +13,7 @@ import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
 import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
 import NewMeetingLobby from 'universal/components/NewMeetingLobby';
 
+import type {RouterHistory} from 'react-router-dom';
 import type {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
@@ -22,6 +23,8 @@ import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
+import ErrorBoundary from 'universal/components/ErrorBoundary';
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -52,27 +55,48 @@ const MeetingAreaHeader = styled('div')({
 type Props = {
   atmosphere: Object,
   localPhase: NewMeetingPhaseTypeEnum,
+  history: RouterHistory,
   meetingType: MeetingTypeEnum,
   viewer: Viewer
 }
 
+type Variables = {
+  meetingId: string,
+  facilitatorStageId: ?string,
+  completedStageId?: string
+};
+
 class NewMeeting extends Component<Props> {
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
-    const {atmosphere, meetingType, viewer: {team: {teamId, newMeeting: {facilitatorStageId, facilitatorUserId, meetingId, phases}}}} = this.props;
+    const {atmosphere, history, meetingType, viewer: {team: {teamId, newMeeting}}} = this.props;
+    if (!newMeeting) return;
+    const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
     const nextUrl = fromStageIdToUrl(stageId, phases, teamId, meetingType);
     if (!nextUrl) return;
     const {viewerId} = atmosphere;
     const isFacilitating = viewerId === facilitatorUserId;
     if (isFacilitating) {
       const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
-      const variables = {meetingId, facilitatorStageId: stageId};
+      const variables: Variables = {meetingId, facilitatorStageId: stageId};
       if (!isComplete) {
         variables.completedStageId = facilitatorStageId;
       }
-      submitMutation();
+      // submitMutation();
       NavigateMeetingMutation(atmosphere, variables, onError, onCompleted);
     }
     history.push(nextUrl);
+  };
+
+  gotoNext = (stageId) => {
+    const {viewer: {team: {newMeeting}}} = this.props;
+    if (!newMeeting) return;
+    const {phases} = newMeeting;
+    const nextStageRes = findStageAfterId(phases, stageId);
+    if (!nextStageRes) {
+      // TODO end meeting!
+    }
+    const {stage: {id: nextStageId}} = nextStageRes;
+    this.gotoStageId(nextStageId);
   }
 
   render() {
@@ -97,16 +121,18 @@ class NewMeeting extends Component<Props> {
               team={team}
             />
           </MeetingAreaHeader>
-          <Switch>
-            <Route
-              path={`/${meetingSlug}/:teamId`}
-              render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
-            />
-            <Route
-              path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
-              render={() => <NewMeetingCheckIn meetingType={meetingType} team={team} />}
-            />
-          </Switch>
+          <ErrorBoundary>
+            <Switch>
+              <Route
+                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
+                render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
+              />
+              <Route
+                path={`/${meetingSlug}/:teamId`}
+                render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
+              />
+            </Switch>
+          </ErrorBoundary>
         </MeetingArea>
       </MeetingContainer>
     );
@@ -131,6 +157,7 @@ export default createFragmentContainer(
       team(teamId: $teamId) {
         ...MeetingAvatarGroup_team
         ...NewMeetingLobby_team
+        ...NewMeetingCheckIn_team
         checkInGreeting {
           content
           language
@@ -154,10 +181,12 @@ export default createFragmentContainer(
         }
         newMeeting {
           meetingId: id
+          facilitatorStageId
           facilitatorUserId
           phases {
             phaseType
             stages {
+              id
               isComplete
             }
           }

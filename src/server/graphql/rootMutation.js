@@ -55,6 +55,7 @@ import updateCreditCard from 'server/graphql/mutations/updateCreditCard';
 import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateTask from 'server/graphql/mutations/updateTask';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
+import updateNewCheckInQuestion from 'server/graphql/mutations/updateNewCheckInQuestion';
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg';
 import addTeam from 'server/graphql/mutations/addTeam';
@@ -134,6 +135,7 @@ export default new GraphQLObjectType({
     updateCreditCard,
     updateOrg,
     updateCheckInQuestion,
+    updateNewCheckInQuestion,
     updateTask,
     updateTeamName,
     updateUserProfile,

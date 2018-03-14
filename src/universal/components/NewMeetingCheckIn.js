@@ -6,20 +6,19 @@ import {Redirect, withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import type {NewMeetingCheckIn_team as Team} from './__generated__/NewMeetingCheckIn.graphql';
+import type {NewMeetingCheckIn_team as Team} from './__generated__/NewMeetingCheckIn_team.graphql';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/MeetingCheckInPrompt';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
 import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
-import findStageById from 'universal/utils/meetings/findStageById';
-import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
+import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt';
+import fromUrlToStageId from 'universal/utils/meetings/fromUrlToStageId';
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -54,14 +53,15 @@ type Props = {
 };
 
 const NewMeetingCheckIn = (props: Props) => {
-  const {atmosphere, onError, onCompleted, match: {params: {localPhaseItem}}, meetingType, submitMutation, submitting, team} = props;
-  const {newMeeting, teamId} = team;
+  const {atmosphere, gotoNext, onError, onCompleted, match: {params: {localPhaseItem}}, meetingType, submitMutation, submitting, team} = props;
+  const {newMeeting} = team;
   const {facilitatorStageId, facilitatorUserId, phases} = newMeeting;
   const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
     if (submitting) return;
     submitMutation();
     MeetingCheckInMutation(atmosphere, teamMemberId, isCheckedIn, onError, onCompleted);
-    gotoNext();
+    const stageId = fromUrlToStageId(phases);
+    gotoNext(stageId);
   };
 
   const {teamMembers} = team;
@@ -80,10 +80,9 @@ const NewMeetingCheckIn = (props: Props) => {
   return (
     <React.Fragment>
       <MeetingSection flexToFill paddingBottom="1rem">
-        <MeetingCheckInPrompt
-          isFacilitating={isFacilitating}
-          localPhaseItem={localPhaseItem}
+        <NewMeetingCheckInPrompt
           team={team}
+          teamMember={currentMember}
         />
         <CheckIn>
           {!isFacilitating &&
@@ -120,12 +119,24 @@ export default createFragmentContainer(
   withRouter(withAtmosphere(withMutationProps(NewMeetingCheckIn))),
   graphql`
     fragment NewMeetingCheckIn_team on Team {
+      ...NewMeetingCheckInPrompt_team
+      newMeeting {
+        facilitatorStageId
+        facilitatorUserId
+        phases {
+          phaseType
+          stages {
+            id
+          }
+        }
+      }
       teamId: id
       teamMembers(sortBy: "checkInOrder") {
         id
         isSelf
         preferredName
         userId
+        ...NewMeetingCheckInPrompt_teamMember
       }
     }
   `

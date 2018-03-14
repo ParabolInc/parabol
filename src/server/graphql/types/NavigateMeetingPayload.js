@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql';
-import {resolveMeeting} from 'server/graphql/resolvers';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {resolveNewMeeting} from 'server/graphql/resolvers';
 
 const NavigateMeetingPayload = new GraphQLObjectType({
   name: 'NavigateMeetingPayload',
@@ -11,7 +11,7 @@ const NavigateMeetingPayload = new GraphQLObjectType({
     },
     meeting: {
       type: NewMeeting,
-      resolve: resolveMeeting
+      resolve: resolveNewMeeting
     }
   })
 });

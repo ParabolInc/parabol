@@ -14,8 +14,8 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation NavigateMeetingMutation($meetingId: ID!, completedStageId: ID, facilitatorStageId: ID) {
-    moveMeeting(meetingId: $meetingId, completedStageId: $completedStageId, facilitatorStageId: $facilitatorStageId) {
+  mutation NavigateMeetingMutation($meetingId: ID!, $completedStageId: ID, $facilitatorStageId: ID) {
+    navigateMeeting(meetingId: $meetingId, completedStageId: $completedStageId, facilitatorStageId: $facilitatorStageId) {
       error {
         message
       }

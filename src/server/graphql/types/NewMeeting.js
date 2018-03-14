@@ -22,11 +22,11 @@ export const newMeetingFields = () => ({
     description: 'The timestamp the meeting officially ended'
   },
   facilitatorStageId: {
-    type: GraphQLID,
+    type: new GraphQLNonNull(GraphQLID),
     description: 'The location of the facilitator in the meeting'
   },
   facilitatorUserId: {
-    type: GraphQLID,
+    type: new GraphQLNonNull(GraphQLID),
     description: 'The userId (or anonymousId) of the most recent facilitator'
   },
   invitees: {
