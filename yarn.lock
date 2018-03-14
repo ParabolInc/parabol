@@ -9396,10 +9396,6 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-roman-numeral@^0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/roman-numeral/-/roman-numeral-0.2.6.tgz#03fecb55ac57150015cf1e200db31d83b8c33513"
-
 rst-selector-parser@^2.2.2:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/rst-selector-parser/-/rst-selector-parser-2.2.3.tgz#81b230ea2fcc6066c89e3472de794285d9b03d91"
