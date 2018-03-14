@@ -7,6 +7,7 @@ import relayUnsubscribeAll from 'server/utils/relayUnsubscribeAll';
 import {GQL_COMPLETE, GQL_DATA, GQL_ERROR} from 'universal/utils/constants';
 import relayUnsubscribe from 'server/utils/relayUnsubscribe';
 import sendMessage from 'server/socketHelpers/sendMessage';
+import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult';
 
 const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}));
@@ -38,6 +39,8 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
   const {asyncIterator, error} = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
   if (!asyncIterator) {
     if (error) {
+      const {query, variables} = parsedMessage;
+      sendGraphQLErrorResult('WebSocket-Subscription', error, query, variables, authToken);
       sendMessage(socket, GQL_ERROR, {errors: [{message: error}]}, opId);
     }
     return;
@@ -53,8 +56,9 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
       setTimeout(() => relayUnsubscribeAll(connectionContext, {isResub: true}), 1000);
       return;
     }
-    const resultType = payload.errors ? GQL_ERROR : GQL_DATA;
-    sendMessage(socket, resultType, payload, opId);
+    // TODO Until we rewrite the client (because Apollo is wrong) don't send errors see handleMessage.js
+    // const resultType = payload.errors ? GQL_ERROR : GQL_DATA;
+    sendMessage(socket, GQL_DATA, payload, opId);
   };
 
   // Use this to kick clients out of the sub

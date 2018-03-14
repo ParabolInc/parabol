@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader';
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId} from 'server/utils/authorization';
+import sendSentryEvent from 'server/utils/sendSentryEvent';
 
 const defaultCacheKeyFn = (key) => key;
 
@@ -12,20 +13,30 @@ const indexResults = (results, indexField, cacheKeyFn = defaultCacheKeyFn) => {
   return indexedResults;
 };
 
-const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (results) => {
-  const indexedResults = indexResults(results, indexField, cacheKeyFn);
-  // return keys.map((val) => indexedResults.get(cacheKeyFn(val)));
-  return keys.map((val) => indexedResults.get(cacheKeyFn(val)) || new Error(`Key not found : ${val}`));
+const sendErrorToSentry = (authToken, key, keys, indexedResults) => {
+  const error = new Error('Dataloader key not found');
+  const breadcrumb = {
+    message: 'Dataloader key not found',
+    category: 'dataloader',
+    data: {
+      key,
+      keys,
+      indexedResults
+    }
+  };
+  sendSentryEvent(error, authToken, breadcrumb);
 };
 
-const makeStandardLoader = (table) => {
-  const batchFn = async (keys) => {
-    const r = getRethink();
-    const docs = await r.table(table)
-      .getAll(r.args(keys), {index: 'id'});
-    return normalizeRethinkDbResults(keys, 'id')(docs);
-  };
-  return new DataLoader(batchFn);
+const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (results, authToken) => {
+  const indexedResults = indexResults(results, indexField, cacheKeyFn);
+  // return keys.map((val) => indexedResults.get(cacheKeyFn(val)) || new Error(`Key not found : ${val}`));
+  return keys.map((val) => {
+    const res = indexedResults.get(cacheKeyFn(val));
+    if (!res) {
+      sendErrorToSentry(authToken, cacheKeyFn(val), keys, indexedResults);
+    }
+    return res;
+  });
 };
 
 const makeCustomLoader = (batchFn, options) => {
@@ -158,21 +169,30 @@ export default class RethinkDataLoader {
   _share() {
     this.authToken = null;
   }
+  makeStandardLoader(table) {
+    const batchFn = async (keys) => {
+      const r = getRethink();
+      const docs = await r.table(table)
+        .getAll(r.args(keys), {index: 'id'});
+      return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken);
+    };
+    return new DataLoader(batchFn);
+  }
 
-  agendaItems = makeStandardLoader('AgendaItem');
-  customPhaseItems = makeStandardLoader('CustomPhaseItem');
-  invitations = makeStandardLoader('Invitation');
-  meetings = makeStandardLoader('Meeting');
-  meetingSettings = makeStandardLoader('MeetingSettings');
-  newMeetings = makeStandardLoader('NewMeeting');
-  notifications = makeStandardLoader('Notification');
-  orgApprovals = makeStandardLoader('OrgApproval');
-  organizations = makeStandardLoader('Organization');
-  retroThoughtGroups = makeStandardLoader('RetroThoughtGroup');
-  retroThoughts = makeStandardLoader('RetroThought');
-  softTeamMembers = makeStandardLoader('SoftTeamMember');
-  tasks = makeStandardLoader('Task');
-  teamMembers = makeStandardLoader('TeamMember');
-  teams = makeStandardLoader('Team');
-  users = makeStandardLoader('User');
+  agendaItems = this.makeStandardLoader('AgendaItem');
+  customPhaseItems = this.makeStandardLoader('CustomPhaseItem');
+  invitations = this.makeStandardLoader('Invitation');
+  meetings = this.makeStandardLoader('Meeting');
+  meetingSettings = this.makeStandardLoader('MeetingSettings');
+  newMeetings = this.makeStandardLoader('NewMeeting');
+  notifications = this.makeStandardLoader('Notification');
+  orgApprovals = this.makeStandardLoader('OrgApproval');
+  organizations = this.makeStandardLoader('Organization');
+  retroThoughtGroups = this.makeStandardLoader('RetroThoughtGroup');
+  retroThoughts = this.makeStandardLoader('RetroThought');
+  softTeamMembers = this.makeStandardLoader('SoftTeamMember');
+  tasks = this.makeStandardLoader('Task');
+  teamMembers = this.makeStandardLoader('TeamMember');
+  teams = this.makeStandardLoader('Team');
+  users = this.makeStandardLoader('User');
 }

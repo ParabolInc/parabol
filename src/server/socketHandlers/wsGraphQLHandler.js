@@ -1,6 +1,7 @@
 import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 import RethinkDataLoader from 'server/utils/RethinkDataLoader';
+import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult';
 
 export default async function wsGraphQLHandler(connectionContext, parsedMessage) {
   const {payload} = parsedMessage;
@@ -16,7 +17,7 @@ export default async function wsGraphQLHandler(connectionContext, parsedMessage)
   dataLoader.dispose();
 
   if (result.errors) {
-    console.log('DEBUG GraphQL Error:', result.errors);
+    sendGraphQLErrorResult('WebSocket', result.errors[0], query, variables, authToken);
   }
   return result;
 }
