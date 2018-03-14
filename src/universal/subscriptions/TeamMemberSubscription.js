@@ -33,6 +33,7 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
     variables: {},
     updater: (store) => {
       const payload = store.getRootField('teamMemberSubscription');
+      if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
         case 'AcceptTeamInviteNotificationPayload':

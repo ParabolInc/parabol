@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -55,19 +56,19 @@ const MeetingAgendaLastCall = (props) => {
                 {' so far—need anything else?'}
               </MeetingCopy>
             }
-
             <AgendaShortcutHint />
-
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls &&
-                <Button
-                  aria-label="End Meeting"
-                  buttonSize="large"
-                  buttonStyle="primary"
-                  colorPalette="warm"
-                  label="End Action Meeting"
-                  onClick={gotoNext}
-                />
+                <BounceBlock animationDelay="30s">
+                  <Button
+                    aria-label="End Meeting"
+                    buttonSize="large"
+                    buttonStyle="primary"
+                    colorPalette="warm"
+                    label="End Action Meeting"
+                    onClick={gotoNext}
+                  />
+                </BounceBlock>
               }
             </div>
             <div className={css(styles.hintBlock)}>

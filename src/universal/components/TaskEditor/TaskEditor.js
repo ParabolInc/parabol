@@ -175,7 +175,6 @@ class TaskEditor extends Component {
       noText && styles.rootNoText
     );
     const placeholder = 'Describe what “Done” looks like';
-    // const placeholder = 'What does “Done” look like?';
     return (
       <div className={rootStyles}>
         <Editor

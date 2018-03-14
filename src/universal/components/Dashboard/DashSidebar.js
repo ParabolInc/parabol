@@ -89,14 +89,12 @@ const styleThunk = () => ({
 
   nav: {
     display: 'flex',
-    // flex: 1,
     flexDirection: 'column',
     left: 0,
     maxHeight: '100%',
     paddingBottom: '1.25rem',
     position: 'absolute',
     top: 0,
-    // paddingLeft: '3.75rem',
     width: '100%'
   },
 

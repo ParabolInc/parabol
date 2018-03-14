@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
@@ -58,9 +59,7 @@ class MeetingAgendaItems extends Component {
     const agendaItem = agendaItems[localPhaseItem - 1];
     const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id);
     const isLast = agendaItems.length === localPhaseItem;
-    const heading = (<span>{currentTeamMember.preferredName}: <span
-      style={{color: ui.palette.warm}}
-    >“{agendaItem.content}”</span></span>);
+    const subHeading = (<span><b>{currentTeamMember.preferredName}</b>{', what do you need?'}</span>);
     return (
       <MeetingMain>
         <MeetingSection flexToFill paddingBottom="2rem">
@@ -69,8 +68,8 @@ class MeetingAgendaItems extends Component {
               <div className={css(styles.prompt)}>
                 <MeetingPrompt
                   avatar={currentTeamMember.picture}
-                  heading={heading}
-                  subHeading={'What do you need?'}
+                  heading={`“${agendaItem.content}”`}
+                  subHeading={subHeading}
                 />
               </div>
               <div className={css(styles.nav)}>
@@ -91,16 +90,22 @@ class MeetingAgendaItems extends Component {
         </MeetingSection>
         {showMoveMeetingControls &&
           <MeetingControlBar>
-            <Button
-              buttonStyle="flat"
-              colorPalette="warm"
-              icon="arrow-circle-right"
-              iconPlacement="right"
-              key={`agendaItem${localPhaseItem}`}
-              label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
-              onClick={gotoNext}
-              buttonSize="medium"
-            />
+            <BounceBlock animationDelay="120s" key={`agendaItem${localPhaseItem}buttonAnimation`}>
+              <Button
+                buttonSize="medium"
+                buttonStyle="flat"
+                colorPalette="dark"
+                hasBounce
+                bounceDelay="10s"
+                icon="arrow-circle-right"
+                iconLarge
+                iconPalette="warm"
+                iconPlacement="right"
+                key={`agendaItem${localPhaseItem}`}
+                label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
+                onClick={gotoNext}
+              />
+            </BounceBlock>
           </MeetingControlBar>
         }
       </MeetingMain>

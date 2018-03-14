@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -70,16 +71,20 @@ class MeetingUpdates extends Component {
         </MeetingSection>
         {showMoveMeetingControls &&
           <MeetingControlBar>
-            <Button
-              buttonStyle="flat"
-              colorPalette="warm"
-              icon="arrow-circle-right"
-              iconPlacement="right"
-              key={`update${localPhaseItem}`}
-              label={isLastMember ? `Advance to the ${nextPhaseName}` : `Move to ${nextTeamMember.preferredName}`}
-              onClick={gotoNext}
-              buttonSize="medium"
-            />
+            <BounceBlock animationDelay="120s" key={`update${localPhaseItem}buttonAnimation`}>
+              <Button
+                buttonStyle="flat"
+                colorPalette="dark"
+                icon="arrow-circle-right"
+                iconLarge
+                iconPalette="warm"
+                iconPlacement="right"
+                key={`update${localPhaseItem}`}
+                label={isLastMember ? `Advance to the ${nextPhaseName}` : `Move to ${nextTeamMember.preferredName}`}
+                onClick={gotoNext}
+                buttonSize="medium"
+              />
+            </BounceBlock>
           </MeetingControlBar>
         }
       </MeetingMain>

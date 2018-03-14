@@ -1,5 +1,13 @@
 import sendAuthRaven from 'server/utils/sendAuthRaven';
 
+export const sendBadAuthTokenError = (authToken, returnValue) => {
+  const breadcrumb = {
+    message: 'The supplied auth token is invalid',
+    category: 'Unauthenticated Access'
+  };
+  return sendAuthRaven(authToken, 'Bad authentication', breadcrumb, returnValue);
+};
+
 export const sendNotAuthenticatedAccessError = (authToken, returnValue) => {
   const breadcrumb = {
     message: 'You must be logged in for this action.',

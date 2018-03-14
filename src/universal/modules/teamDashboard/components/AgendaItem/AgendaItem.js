@@ -91,7 +91,6 @@ class AgendaItem extends Component {
     const rootStyles = css(
       styles.root,
       inAgendaGroupLocal && isLocal && styles.itemLocal,
-      // inAgendaGroupFacilitator && isFacilitator && !inSync && styles.itemFacilitator,
       inAgendaGroupFacilitator && isFacilitator && !inSync && styles.itemNotInSync,
       isComplete && styles.processed,
       disabled && styles.rootDisabled,
@@ -103,7 +102,6 @@ class AgendaItem extends Component {
       isComplete && styles.strikethrough,
       canNavigate && styles.canNavigate,
       inAgendaGroupLocal && isLocal && styles.descLocal,
-      // inAgendaGroupFacilitator && isFacilitator && !inSync && styles.descFacilitator,
       inAgendaGroupFacilitator && isFacilitator && !inSync && styles.descNotInSync
     );
 
@@ -233,7 +231,6 @@ const styleThunk = () => ({
   },
 
   itemLocal: {
-    // color: ui.colorText
     backgroundColor: ui.navMenuLightBackgroundColorActive,
     boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
     color: ui.colorText
@@ -250,8 +247,7 @@ const styleThunk = () => ({
   },
 
   itemFacilitator: {
-    // backgroundColor: ui.navMenuLightBackgroundColorActive,
-    // boxShadow: `inset 3px 0 0 ${ui.palette.mid}`,
+    // Define
   },
 
   itemNotInSync: {

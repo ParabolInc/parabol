@@ -19,7 +19,7 @@ import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPha
 import ui from 'universal/styles/ui';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import makeHref from 'universal/utils/makeHref';
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
+import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
 
 const ButtonBlock = styled('div')({
@@ -76,10 +76,11 @@ const NewMeetingLobby = (props: Props) => {
   const isPro = tier === PRO;
   const canStartMeeting = isPro || meetingsRemaining > 0;
   const meetingLabel = meetingTypeToLabel[meetingType];
+  const meetingSlug = meetingTypeToSlug[meetingType];
   return (
     <Lobby>
       <LabelHeading>{`${meetingLabel} Meeting Lobby`}</LabelHeading>
-      <MeetingPhaseHeading>{`${teamName} Retro`}</MeetingPhaseHeading>
+      <MeetingPhaseHeading>{`${teamName} ${meetingLabel}`}</MeetingPhaseHeading>
       {!isPro &&
       <RetroExpository>
         {'A retrospective lets your team reflect on past work and discover opportunities for how to work better in the future'}
@@ -121,7 +122,7 @@ const NewMeetingLobby = (props: Props) => {
         />
       </ButtonBlock>
       <UrlBlock>
-        <CopyShortLink url={makeHref(`/retro/${teamId}`)} />
+        <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
       </UrlBlock>
     </Lobby>
   );

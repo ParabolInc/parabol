@@ -16,7 +16,7 @@ import NewMeetingLobby from 'universal/components/NewMeetingLobby';
 import type {RouterHistory} from 'react-router-dom';
 import type {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
-import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
+import {meetingTypeToLabel, meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
 import {CHECKIN} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
@@ -59,7 +59,6 @@ type Props = {
   meetingType: MeetingTypeEnum,
   viewer: Viewer
 }
-
 type Variables = {
   meetingId: string,
   facilitatorStageId: ?string,
@@ -67,8 +66,7 @@ type Variables = {
 };
 
 class NewMeeting extends Component<Props> {
-  gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
-    const {atmosphere, history, meetingType, viewer: {team: {teamId, newMeeting}}} = this.props;
+  gotoStageId = (stageId, submitMutation, onError, onCompleted) => {const {atmosphere, history, meetingType, viewer: {team: {teamId, newMeeting}}} = this.props;
     if (!newMeeting) return;
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
     const nextUrl = fromStageIdToUrl(stageId, phases, teamId, meetingType);
@@ -99,44 +97,41 @@ class NewMeeting extends Component<Props> {
     this.gotoStageId(nextStageId);
   }
 
-  render() {
-    const {atmosphere, localPhase, meetingType, viewer} = this.props;
-    const {team} = viewer;
-    const {newMeeting, teamName} = team;
-    const {facilitatorUserId} = newMeeting || {};
+  render()  {
+  const {atmosphere,localPhase, meetingType, viewer} = this.props;
+  const {team} = viewer;
+  const {newMeeting,teamName} = team;const {facilitatorUserId} = newMeeting || {};
     const meetingSlug = meetingTypeToSlug[meetingType];
     const {viewerId} = atmosphere;
     const isFacilitating = facilitatorUserId === viewerId;
-    return (
-      <MeetingContainer>
-        <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
-        <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
-        <MeetingArea>
-          <MeetingAreaHeader>
-            <MeetingAvatarGroup
-              gotoItem={() => {}}
-              isFacilitating={isFacilitating}
-              localPhase={localPhase}
-              localPhaseItem={null}
-              team={team}
-            />
-          </MeetingAreaHeader>
-          <ErrorBoundary>
-            <Switch>
-              <Route
-                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
+  const meetingLabel = meetingTypeToLabel[meetingType];return (
+    <MeetingContainer>
+      <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
+      <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
+      <MeetingArea>
+        <MeetingAreaHeader>
+          <MeetingAvatarGroup
+            gotoItem={() => {}}
+            isFacilitating={isFacilitating}
+            localPhase={localPhase}
+            localPhaseItem={null}
+            team={team}
+          />
+        </MeetingAreaHeader><ErrorBoundary>
+        <Switch>
+          <Route
+            path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
                 render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
               />
               <Route
                 path={`/${meetingSlug}/:teamId`}
-                render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
-              />
-            </Switch>
-          </ErrorBoundary>
+            render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
+          />
+        </Switch>
+      </ErrorBoundary>
         </MeetingArea>
-      </MeetingContainer>
-    );
-  }
+    </MeetingContainer>
+  );}
 };
 
 export default createFragmentContainer(

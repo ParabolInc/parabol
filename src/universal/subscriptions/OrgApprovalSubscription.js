@@ -22,6 +22,7 @@ const OrgApprovalSubscription = (environment, queryVariables) => {
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('orgApprovalSubscription');
+      if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
         case 'ApproveToOrgPayload':

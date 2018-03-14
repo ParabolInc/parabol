@@ -50,6 +50,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
     variables: {},
     updater: (store) => {
       const payload = store.getRootField('teamSubscription');
+      if (!payload) return;
       const type = payload.getValue('__typename');
       const options = {store, environment, dispatch, history, location};
       switch (type) {
