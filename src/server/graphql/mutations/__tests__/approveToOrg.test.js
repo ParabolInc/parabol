@@ -143,6 +143,6 @@ describe('approveToOrg', () => {
     // TEST
     const {id: dbNotificationId} = notification;
     const res = await approveToOrg.resolve(undefined, {dbNotificationId}, {authToken, dataLoader, socket});
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });

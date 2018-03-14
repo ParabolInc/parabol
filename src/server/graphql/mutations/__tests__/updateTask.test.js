@@ -175,6 +175,6 @@ describe('updateTask', () => {
       status: DONE
     };
     const res = await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket});
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });

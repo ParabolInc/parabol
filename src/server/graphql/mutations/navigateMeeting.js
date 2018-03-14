@@ -26,8 +26,8 @@ export default {
     }
   },
   async resolve(source,
-                {completedStageId, facilitatorStageId, meetingId},
-                {authToken, socketId: mutatorId, dataLoader}) {
+    {completedStageId, facilitatorStageId, meetingId},
+    {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();

@@ -16,6 +16,6 @@ describe('inviteTeamMembers', () => {
     const dataLoader = makeDataLoader(authToken);
     // VERIFY
     const res = await inviteTeamMembers.resolve(undefined, {invitees, teamId}, {authToken, dataLoader});
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });

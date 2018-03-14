@@ -19,6 +19,8 @@ import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPha
 import ui from 'universal/styles/ui';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import makeHref from 'universal/utils/makeHref';
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
 
 const ButtonBlock = styled('div')({
   margin: '0',
@@ -102,12 +104,16 @@ const NewMeetingLobby = (props: Props) => {
         />
       </GetAccessCopy>
       }
+      <MeetingCopy>
+        {'The person who presses “Start Meeting” will facilitate the meeting.'}<br />
+        {'Everyone’s display automatically follows the Facilitator.'}
+      </MeetingCopy>
       <ButtonBlock>
         <Button
           buttonStyle="primary"
           colorPalette="warm"
-          disabled={canStartMeeting}
-          label="Start Action Meeting"
+          disabled={!canStartMeeting}
+          label={`Start ${meetingTypeToLabel[meetingType]} Meeting`}
           onClick={onStartMeetingClick}
           buttonSize="large"
           waiting={submitting}

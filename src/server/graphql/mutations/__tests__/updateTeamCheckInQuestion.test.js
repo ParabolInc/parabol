@@ -26,7 +26,7 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
       {teamId: team.id, checkInQuestion: 'New check-in question'},
       {authToken, dataLoader}
     );
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 
   it('returns an `unauthorized` error when a member of a non-paid team tries to update the question', async () => {
@@ -46,7 +46,7 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
       {teamId: team.id, checkInQuestion: 'New check-in question'},
       {authToken, dataLoader}
     );
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 
   it('allows team members of paid teams to edit the check-in question', async () => {
