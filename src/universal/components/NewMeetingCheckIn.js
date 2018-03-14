@@ -1,16 +1,13 @@
 // @flow
 import * as React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import type {RouterHistory} from 'react-router-dom';
-import {withRouter} from 'react-router-dom';
+import type {Match} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import {PRO} from 'universal/utils/constants';
 import type {NewMeetingCheckIn_team as Team} from './__generated__/NewMeetingCheckIn.graphql';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
-import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation';
-import {css} from 'aphrodite-local-styles/no-important';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/MeetingCheckInPrompt';
@@ -18,25 +15,48 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
 import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
+import findStageById from 'universal/utils/meetings/findStageById';
+import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
+import ui from 'universal/styles/ui';
+import styled from 'react-emotion';
+import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
+
+const CheckIn = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  padding: '1rem 0',
+  width: '100%',
+
+  [ui.breakpoint.wide]: {
+    padding: '2rem 0'
+  },
+
+  [ui.breakpoint.wider]: {
+    padding: '3rem 0'
+  },
+
+  [ui.breakpoint.widest]: {
+    padding: '4rem 0'
+  }
+});
+
+const Hint = styled('div')({
+  marginTop: '2.5rem'
+});
+
 
 type Props = {
   atmosphere: Object,
-  history: RouterHistory,
+  match: Match,
   meetingType: MeetingTypeEnum,
   team: Team,
   ...MutationProps
 };
 
 const NewMeetingCheckIn = (props: Props) => {
-  const {atmosphere, history, onError, onCompleted, meetingType, submitMutation, submitting, team} = props;
-  const {meetingSettings: {meetingsOffered, meetingsRemaining}, newMeeting, teamId, teamName, tier} = team;
-  const {facilitatorUserId} = newMeeting;
-  const onStartMeetingClick = () => {
-    submitMutation();
-    StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted);
-  };
-  const isPro = tier === PRO;
-  const canStartMeeting = isPro || meetingsRemaining > 0;
+  const {atmosphere, onError, onCompleted, match: {params: {localPhaseItem}}, meetingType, submitMutation, submitting, team} = props;
+  const {newMeeting, teamId} = team;
+  const {facilitatorStageId, facilitatorUserId, phases} = newMeeting;
   const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
     if (submitting) return;
     submitMutation();
@@ -47,7 +67,12 @@ const NewMeetingCheckIn = (props: Props) => {
   const {teamMembers} = team;
   const memberIdx = localPhaseItem - 1;
   const currentMember = teamMembers[memberIdx];
-  const facilitator = teamM
+  if (!currentMember) {
+    const to = fromStageIdToUrl(phases, facilitatorStageId);
+    return <Redirect to={to} />;
+  }
+  const facilitator = teamMembers.find((teamMember) => teamMember.userId === facilitatorUserId);
+  const {preferredName: facilitatorName} = facilitator;
   const {isSelf: isMyMeetingSection} = currentMember;
   const nextMember = teamMembers[memberIdx + 1];
   const {viewerId} = atmosphere;
@@ -60,9 +85,9 @@ const NewMeetingCheckIn = (props: Props) => {
           localPhaseItem={localPhaseItem}
           team={team}
         />
-        <div className={css(styles.base)}>
-          {!showMoveMeetingControls &&
-          <div className={css(styles.hint)}>
+        <CheckIn>
+          {!isFacilitating &&
+          <Hint>
             <MeetingFacilitationHint showEllipsis={!nextMember || !isMyMeetingSection}>
               {nextMember ?
                 <span>
@@ -74,9 +99,9 @@ const NewMeetingCheckIn = (props: Props) => {
                 <span>{'Waiting for'} <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
               }
             </MeetingFacilitationHint>
-          </div>
+          </Hint>
           }
-        </div>
+        </CheckIn>
       </MeetingSection>
       {isFacilitating &&
       <MeetingControlBar>
@@ -95,10 +120,12 @@ export default createFragmentContainer(
   withRouter(withAtmosphere(withMutationProps(NewMeetingCheckIn))),
   graphql`
     fragment NewMeetingCheckIn_team on Team {
+      teamId: id
       teamMembers(sortBy: "checkInOrder") {
         id
         isSelf
         preferredName
+        userId
       }
     }
   `

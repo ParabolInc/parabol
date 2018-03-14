@@ -38,3 +38,11 @@ export const meetingTypeToLabel = {
 export const phaseTypeToSlug = {
   [CHECKIN]: 'checkin'
 };
+
+export const phaseIsMultiStage = {
+  [CHECKIN]: true,
+  [THINK]: false,
+  [GROUP]: false,
+  [VOTE]: false,
+  [DISCUSS]: true
+};

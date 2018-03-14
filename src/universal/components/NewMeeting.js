@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, {Component} from 'react';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
@@ -19,6 +19,9 @@ import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/looku
 import ui from 'universal/styles/ui';
 import {CHECKIN} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
+import findStageById from 'universal/utils/meetings/findStageById';
+import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
+import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -52,39 +55,62 @@ type Props = {
   meetingType: MeetingTypeEnum,
   viewer: Viewer
 }
-const NewMeeting = (props: Props) => {
-  const {localPhase, meetingType, viewer} = props;
-  const {team} = viewer;
-  const {teamName} = team;
-  const meetingSlug = meetingTypeToSlug[meetingType];
 
-  return (
-    <MeetingContainer>
-      <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
-      <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
-      <MeetingArea>
-        <MeetingAreaHeader>
-          <MeetingAvatarGroup
-            gotoItem={() => {}}
-            isFacilitating={false}
-            localPhase={localPhase}
-            localPhaseItem={null}
-            team={team}
-          />
-        </MeetingAreaHeader>
-        <Switch>
-          <Route
-            path={`/${meetingSlug}/:teamId`}
-            render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
-          />
-          <Route
-            path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}`}
-            render={() => <NewMeetingCheckIn meetingType={meetingType} team={team} />}
-          />
-        </Switch>
-      </MeetingArea>
-    </MeetingContainer>
-  );
+class NewMeeting extends Component<Props> {
+  gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
+    const {atmosphere, meetingType, viewer: {team: {teamId, newMeeting: {facilitatorStageId, facilitatorUserId, meetingId, phases}}}} = this.props;
+    const nextUrl = fromStageIdToUrl(stageId, phases, teamId, meetingType);
+    if (!nextUrl) return;
+    const {viewerId} = atmosphere;
+    const isFacilitating = viewerId === facilitatorUserId;
+    if (isFacilitating) {
+      const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
+      const variables = {meetingId, facilitatorStageId: stageId};
+      if (!isComplete) {
+        variables.completedStageId = facilitatorStageId;
+      }
+      submitMutation();
+      NavigateMeetingMutation(atmosphere, variables, onError, onCompleted);
+    }
+    history.push(nextUrl);
+  }
+
+  render() {
+    const {atmosphere, localPhase, meetingType, viewer} = this.props;
+    const {team} = viewer;
+    const {newMeeting, teamName} = team;
+    const {facilitatorUserId} = newMeeting || {};
+    const meetingSlug = meetingTypeToSlug[meetingType];
+    const {viewerId} = atmosphere;
+    const isFacilitating = facilitatorUserId === viewerId;
+    return (
+      <MeetingContainer>
+        <Helmet title={`Retrospective Meeting for ${teamName} | Parabol`} />
+        <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
+        <MeetingArea>
+          <MeetingAreaHeader>
+            <MeetingAvatarGroup
+              gotoItem={() => {}}
+              isFacilitating={isFacilitating}
+              localPhase={localPhase}
+              localPhaseItem={null}
+              team={team}
+            />
+          </MeetingAreaHeader>
+          <Switch>
+            <Route
+              path={`/${meetingSlug}/:teamId`}
+              render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
+            />
+            <Route
+              path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
+              render={() => <NewMeetingCheckIn meetingType={meetingType} team={team} />}
+            />
+          </Switch>
+        </MeetingArea>
+      </MeetingContainer>
+    );
+  }
 };
 
 export default createFragmentContainer(
@@ -127,7 +153,7 @@ export default createFragmentContainer(
           userId
         }
         newMeeting {
-          id
+          meetingId: id
           facilitatorUserId
           phases {
             phaseType
