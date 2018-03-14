@@ -1,4 +1,5 @@
 import {
+  ACTION,
   AGENDA_ITEMS, CHECKIN, DISCUSS, FIRST_CALL, GROUP, LAST_CALL, LOBBY, RETROSPECTIVE, SUMMARY, THINK, UPDATES,
   VOTE
 } from 'universal/utils/constants';
@@ -28,7 +29,8 @@ export const phaseLabelLookup = {
 };
 
 export const meetingTypeToSlug = {
-  [RETROSPECTIVE]: 'retro'
+  [RETROSPECTIVE]: 'retro',
+  [ACTION]: 'meeting'
 };
 
 export const meetingTypeToLabel = {

@@ -4,15 +4,20 @@ import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 import {setMeetingAlertState} from 'universal/modules/dashboard/ducks/dashDuck';
+import {ACTION} from 'universal/utils/constants';
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
 const getActiveMeetings = (viewer) => {
   const activeMeetings = [];
   if (viewer) {
     const {teams} = viewer;
     teams.forEach((team) => {
-      if (team.meetingId) {
+      const {meetingId, newMeeting} = team;
+      if (meetingId) {
+        const meetingType = newMeeting ? newMeeting.meetingType : ACTION;
+        const meetingSlug = meetingTypeToSlug[meetingType];
         activeMeetings.push({
-          link: `/meeting/${team.id}`,
+          link: `/${meetingSlug}/${team.id}`,
           name: team.name
         });
       }
@@ -79,6 +84,10 @@ export default createFragmentContainer(
       teams {
         id
         meetingId
+        newMeeting {
+          id
+          meetingType
+        }
         name
       }
     }
