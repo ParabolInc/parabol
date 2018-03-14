@@ -44,12 +44,6 @@ class ReflectionGroup extends Component<Props, State> {
     isExpanded: false
   };
 
-  componentWillReceiveProps(nextProps: Props) {
-    if (this.state.isExpanded && nextProps.hovered) {
-      this.setState({isExpanded: false});
-    }
-  }
-
   getAnimatedCardsStyles = (extraStyles: ?Object) => ({
     transition: `transform ${animationTimeout.enter / 1000}s ease`,
     ...extraStyles
@@ -183,10 +177,13 @@ class ReflectionGroup extends Component<Props, State> {
         <PlainButton
           aria-label={isExpanded ? 'Collapse this reflection group' : 'Expand this reflection group'}
           onClick={isExpanded ? this.collapse : this.expand}
+          type="button"
         >
-          <CSSTransition name="reflection-group-accordion" timeout={animationTimeout}>
-            {isExpanded ? this.renderExpandedCards() : this.renderCollapsedCards()}
-          </CSSTransition>
+          <div>
+            <CSSTransition name="reflection-group-accordion" timeout={animationTimeout}>
+              {isExpanded ? this.renderExpandedCards() : this.renderCollapsedCards()}
+            </CSSTransition>
+          </div>
         </PlainButton>
       </div>
     );

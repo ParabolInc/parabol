@@ -36,6 +36,7 @@ type DragAndDropStoryState = {
 };
 
 type ReflectionCatcherProps = {
+  children: Node,
   connectDropTarget: (Node) => Node,
   ungroupedReflections: Array<Reflection>,
   handleUngroup: (reflectionId: ReflectionID) => any
@@ -63,7 +64,9 @@ const reflectionCatcherCollect = (connect) => ({
 const ReflectionCatcher = DropTarget(REFLECTION_CARD, reflectionCatcherSpec, reflectionCatcherCollect)(
   (props: ReflectionCatcherProps) => (
     props.connectDropTarget(
-      <div className={css({position: 'fixed', top: 0, left: 0, width: '100%', height: '100%'})} />
+      <div className={css({width: '100%', height: '100%'})}>
+        {props.children}
+      </div>
     )
   )
 );
@@ -175,34 +178,35 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
           description="Group reflection cards. Note: order of cards vs. groups on the canvas is not preserved in this demo."
           render={() => (
             <div>
-              <Grid>
-                <ReflectionCatcher
-                  ungroupedReflections={this.getUngroupedReflections()}
-                  handleUngroup={this.handleUngroup}
-                />
-                {this.getUngroupedReflections().map((reflection) => (
-                  <DraggableReflectionCard
-                    contentState={reflection.content}
-                    handleCancelDrag={this.handleCancelDrag}
-                    handleBeginDrag={this.handleBeginDrag}
-                    handleDrop={this.handleCardOnCardDrop}
-                    id={reflection.id}
-                    iAmDragging={this.state.dragging[reflection.id]}
-                    key={reflection.id}
-                    receiveDrops
-                    userDragging={this.state.dragging[reflection.id] && 'Dan'}
-                  />
-                ))}
-                {this.state.groups.map((group) => (
-                  <DroppableReflectionGroup
-                    id={group.id}
-                    handleDrop={this.handleCardOnGroupDrop}
-                    handleSaveTitle={action('save-title')}
-                    reflections={group.reflections}
-                    key={group.id}
-                  />
-                ))}
-              </Grid>
+              <ReflectionCatcher
+                ungroupedReflections={this.getUngroupedReflections()}
+                handleUngroup={this.handleUngroup}
+              >
+                <Grid>
+                  {this.getUngroupedReflections().map((reflection) => (
+                    <DraggableReflectionCard
+                      contentState={reflection.content}
+                      handleCancelDrag={this.handleCancelDrag}
+                      handleBeginDrag={this.handleBeginDrag}
+                      handleDrop={this.handleCardOnCardDrop}
+                      id={reflection.id}
+                      iAmDragging={this.state.dragging[reflection.id]}
+                      key={reflection.id}
+                      receiveDrops
+                      userDragging={this.state.dragging[reflection.id] && 'Dan'}
+                    />
+                  ))}
+                  {this.state.groups.map((group) => (
+                    <DroppableReflectionGroup
+                      id={group.id}
+                      handleDrop={this.handleCardOnGroupDrop}
+                      handleSaveTitle={action('save-title')}
+                      reflections={group.reflections}
+                      key={group.id}
+                    />
+                  ))}
+                </Grid>
+              </ReflectionCatcher>
               <ReflectionGroupingDragLayer getReflectionById={this.getReflectionById} />
             </div>
           )}
