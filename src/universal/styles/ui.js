@@ -2,10 +2,8 @@
 // ui.js
 // -----------------------------------------------------------------------------
 
-// import tinycolor from 'tinycolor2';
 import tinycolor from 'tinycolor2';
 import appTheme from 'universal/styles/theme/appTheme';
-// import {makeGradient, makePlaceholderStyles} from 'universal/styles/helpers';
 import makeGradient from 'universal/styles/helpers/makeGradient';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import zIndexScale from 'universal/styles/helpers/zIndexScale';
@@ -43,8 +41,7 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
-const {red, rose} = appTheme.brand.secondary;
-// const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
+const {red, rose, green} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
 // Small border radius for controls (inputs, buttons, etcs.)
@@ -66,7 +63,7 @@ const COLOR_ERROR = red;
 
 // Color palette
 const white = '#fff';
-const gray = appTheme.palette.mid20l;
+const gray = appTheme.palette.light;
 const PALETTE_OPTIONS = [
   'cool',
   'warm',
@@ -74,7 +71,9 @@ const PALETTE_OPTIONS = [
   'mid',
   'light',
   'white',
-  'gray'
+  'gray',
+  'green',
+  'red'
 ];
 const PALETTE_VALUES = {
   cool,
@@ -83,7 +82,9 @@ const PALETTE_VALUES = {
   mid,
   light,
   white,
-  gray
+  gray,
+  green,
+  red
 };
 
 // Fields
@@ -130,7 +131,6 @@ const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts';
 const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
 // Panels
-// const panelInnerBorderColor = appTheme.palette.mid30l;
 const panelInnerBorderColor = appTheme.palette.mid10l;
 
 // Placeholders
@@ -154,13 +154,6 @@ const TYPE_SEMIBOLD = 600;
 
 // Shadows
 // NOTE: levels increase on a scale of 2x
-// const shadow = [
-//   '0 .0625rem .125rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
-//   '0 .125rem .25rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
-//   '0 .25rem .5rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
-//   '0 .5rem 1rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)',
-//   '0 1rem 2rem rgba(0, 0, 0, .25), 0 0 .0625rem rgba(0, 0, 0, .15)'
-// ];
 
 const baseShadow = makeShadowColor('.15');
 
@@ -296,9 +289,8 @@ const ui = {
   cardEditingStatusFontSize: '.6875rem',
   cardEditingStatusLineHeight: appTheme.typography.sBase,
   cardMaxWidth: '17.5rem',
-  // cardMinHeight: '6.875rem',
   cardMinHeight: '7.9375rem',
-  cardPaddingBase: '.9375rem', // was .5rem
+  cardPaddingBase: '.9375rem',
   cardDragStyle: {
     boxShadow: shadow[3]
   },
@@ -330,7 +322,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   dashAgendaWidth: '15rem',
   dashBackgroundColor: backgroundColor,
-  // dashBorderColor: 'rgba(0, 0, 0, .1)',
   dashBorderColor: appTheme.palette.light90d,
   dashGutter: '1.25rem',
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
@@ -338,12 +329,10 @@ const ui = {
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
     fontFamily: appTheme.typography.serif,
-    // fontSize: '1.75rem',
     fontSize: '1.5rem',
     fontWeight: 600,
     lineHeight: '1.5'
   },
-  // dashMenuBorder: '1px solid rgba(255, 255, 255, .5)',
   dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
   dashMenuHeight: '13.5625rem',
   dashMenuWidth: '10rem',
@@ -359,7 +348,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
-  emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, “Helvetica Neue”, Arial, sans-serif',
+  emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
   emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
     borderCollapse: 'collapse',
@@ -480,6 +469,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   hintFontColor: COLOR_TEXT_LIGHT,
   hintFontSize: appTheme.typography.s2,
+  hintFontSizeLarger: appTheme.typography.s3,
 
   // Icons
   // ---------------------------------------------------------------------------
@@ -514,9 +504,7 @@ const ui = {
 
   // Link
   // ---------------------------------------------------------------------------
-  // linkColor: appTheme.palette.cool,
   linkColor: COLOR_TEXT,
-  // linkColorHover: tinycolor(appTheme.palette.cool).darken(15).toHexString(),
   linkColorHover: appTheme.palette.mid,
 
   // Meeting

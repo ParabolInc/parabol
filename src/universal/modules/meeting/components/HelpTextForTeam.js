@@ -1,20 +1,27 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {createFragmentContainer} from 'react-relay';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
+import styled from 'react-emotion';
+
+const AgendaControl = styled('span')({
+  color: ui.palette.warm,
+  cursor: 'pointer',
+  '&:hover': {
+    textDecoration: 'underline'
+  }
+});
 
 const HelpTextForTeam = (props) => {
-  const {agendaInputRef, styles, currentTeamMember} = props;
+  const {agendaInputRef, currentTeamMember} = props;
   const handleAgendaControl = () => {
     agendaInputRef.focus();
   };
   const isCheckedInFalse = currentTeamMember.isCheckedIn === false;
   return (
-    <span className={css(styles.helpText)}>
+    <span>
       <span>{isCheckedInFalse ? '(' : `(${currentTeamMember.preferredName} is sharing. `}</span>
-      <span onClick={handleAgendaControl} className={css(styles.agendaControl)}>{'Add agenda items'}</span>
+      <AgendaControl onClick={handleAgendaControl}>{'Add agenda items'}</AgendaControl>
       {' for discussion.)'}
     </span>
   );
@@ -22,27 +29,11 @@ const HelpTextForTeam = (props) => {
 
 HelpTextForTeam.propTypes = {
   agendaInputRef: PropTypes.instanceOf(Element),
-  styles: PropTypes.object,
   currentTeamMember: PropTypes.object.isRequired
 };
 
-const styleThunk = () => ({
-  agendaControl: {
-    color: ui.palette.warm,
-    cursor: 'pointer',
-    ':hover': {
-      opacity: 0.5
-    }
-  },
-
-  helpText: {
-    fontWeight: 600,
-    userSelect: 'none'
-  }
-});
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(HelpTextForTeam),
+  HelpTextForTeam,
   graphql`
     fragment HelpTextForTeam_currentTeamMember on TeamMember {
       preferredName

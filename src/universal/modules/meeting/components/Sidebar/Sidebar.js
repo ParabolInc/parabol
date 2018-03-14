@@ -65,13 +65,8 @@ const Sidebar = (props) => {
     styles.navListItemLink,
     localPhase === FIRST_CALL && styles.navListItemLinkActive,
     localPhase === LAST_CALL && styles.navListItemLinkActive,
-    // inAgendaGroup(localPhase) && styles.navListItemLinkActive,
     !canNavigateTo(FIRST_CALL) && styles.navListItemLinkDisabled
   );
-
-  // const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
-  // const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
-  // const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
 
   const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS);
   const agendaListDisabled = meetingPhase === CHECKIN;
@@ -90,7 +85,7 @@ const Sidebar = (props) => {
         >
           {teamName}
         </Link>
-        <CopyShortLink icon="link" label="Meeting Link" url={relativeLink} />
+        <CopyShortLink label="Copy Meeting Link" url={relativeLink} />
       </div>
       <div className={css(styles.agendaLabelBlock)}>
         <LabelHeading>{'Action Meeting'}</LabelHeading>
@@ -271,7 +266,6 @@ const styleThunk = () => ({
   },
 
   sidebar: {
-    // backgroundColor: appTheme.palette.mid10l,
     backgroundColor: ui.palette.white,
     display: 'flex',
     flexDirection: 'column',

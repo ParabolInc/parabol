@@ -30,11 +30,13 @@ const makeFlatTheme = (buttonStyle, color) => ({
   fontWeight: 400,
 
   ':hover': {
-    backgroundColor: appTheme.palette.mid10a,
+    backgroundColor: appTheme.palette.light,
+    boxShadow: 'none',
     color
   },
   ':focus': {
-    backgroundColor: appTheme.palette.mid10a,
+    backgroundColor: appTheme.palette.light,
+    boxShadow: 'none',
     color
   }
 });
@@ -65,12 +67,14 @@ class Button extends Component {
     depth: PropTypes.oneOf([0, 1, 2, 3]),
     disabled: PropTypes.bool,
     icon: PropTypes.string,
+    iconLarge: PropTypes.bool,
+    iconPalette: PropTypes.oneOf(ui.paletteOptions),
     iconPlacement: PropTypes.oneOf([
       'left',
       'right'
     ]),
     isBlock: PropTypes.bool,
-    label: PropTypes.string,
+    label: PropTypes.any,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
@@ -139,6 +143,8 @@ class Button extends Component {
       depth,
       disabled,
       icon,
+      iconLarge,
+      iconPalette,
       iconPlacement,
       isBlock,
       label,
@@ -169,7 +175,8 @@ class Button extends Component {
       const defaultIconPlacement = icon && label ? 'left' : '';
       const thisIconPlacement = iconPlacement || defaultIconPlacement;
       const iconStyle = {
-        fontSize: ui.iconSize,
+        color: iconPalette ? ui.palette[iconPalette] : 'inherit',
+        fontSize: iconLarge ? ui.iconSize2x : ui.iconSize,
         lineHeight: 'inherit',
         verticalAlign: 'middle'
       };
@@ -203,7 +210,7 @@ class Button extends Component {
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseLeave={this.onMouseLeave}
-        title={title || label || ariaLabel}
+        title={title || ariaLabel}
         type={type || 'button'}
         aria-label={ariaLabel}
       >
@@ -254,11 +261,11 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
     },
 
     iconLeft: {
-      marginRight: '.375em'
+      marginRight: '.5rem'
     },
 
     iconRight: {
-      marginLeft: '.375em'
+      marginLeft: '.5rem'
     },
 
     buttonInner: {

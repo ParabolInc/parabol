@@ -42,6 +42,7 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
     variables: {},
     updater: (store) => {
       const payload = store.getRootField('taskSubscription');
+      if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
         case 'AcceptTeamInviteNotificationPayload':

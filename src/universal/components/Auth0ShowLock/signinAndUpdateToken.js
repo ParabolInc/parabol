@@ -14,8 +14,8 @@ export default async function signinAndUpdateToken(atmosphere, dispatch, profile
       onError(serverError.message);
       return;
     }
-    const {login: {user}} = res;
-    dispatch(setAuthToken(auth0Token, user));
+    const {login: {authToken, user}} = res;
+    dispatch(setAuthToken(authToken, user));
     SendClientSegmentEventMutation(atmosphere, 'User Login');
   };
 

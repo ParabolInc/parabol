@@ -16,8 +16,9 @@ const GitHubRepoRemovedSubscription = (environment, queryVariables) => {
     variables: {teamId},
     updater: (store) => {
       const viewer = store.get(viewerId);
-      const removedRepo = store.getRootField('githubRepoRemoved');
-      const deletedId = removedRepo.getValue('deletedId');
+      const payload = store.getRootField('githubRepoRemoved');
+      if (!payload) return;
+      const deletedId = payload.getValue('deletedId');
       removeGitHubRepoUpdater(viewer, teamId, deletedId);
     }
   };
