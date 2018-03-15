@@ -45,7 +45,8 @@ const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb) =
     const userId = getUserId(authToken);
     user = await r.table('User')
       .get(userId)
-      .pluck('id', 'email', 'preferredName', 'picture');
+      .pluck('id', 'email', 'preferredName', 'picture')
+      .default(null);
   }
   Raven.context(() => {
     if (user) {

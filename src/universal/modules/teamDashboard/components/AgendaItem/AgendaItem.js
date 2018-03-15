@@ -112,6 +112,11 @@ class AgendaItem extends Component {
       agendaLength < 10 ? styles.delBumpRight : styles.delBumpLeft
     );
 
+    const indexStyles = css(
+      styles.index,
+      disabled && styles.indexDisabled
+    );
+
     return connectDragSource(
       <div className={rootStyles} title={content} ref={(el) => { this.el = el; }}>
         {canDelete &&
@@ -119,7 +124,7 @@ class AgendaItem extends Component {
           <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}} />
         </div>
         }
-        <div className={css(styles.index)}>{idx + 1}.</div>
+        <div className={indexStyles}>{idx + 1}.</div>
         <div className={css(styles.content)} onClick={gotoAgendaItem}>
           <a className={contentStyles}>{content}</a>”
         </div>
@@ -136,7 +141,7 @@ const lineHeight = '1.5rem';
 const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
-    color: ui.palette.mid,
+    color: ui.colorText,
     display: 'flex',
     fontSize: appTheme.typography.s3,
     padding: '.5rem .5rem .5rem 0',
@@ -222,10 +227,10 @@ const styleThunk = () => ({
   },
 
   link: {
-    color: ui.palette.mid,
+    color: ui.colorText,
 
     ...makeHoverFocus({
-      color: ui.palette.mid,
+      color: ui.colorText,
       textDecoration: 'none'
     })
   },
@@ -286,9 +291,12 @@ const styleThunk = () => ({
     lineHeight,
     opacity: '.5',
     paddingRight: '.75rem',
-    paddingTop: '.0625rem',
     textAlign: 'right',
     width: '3.75rem'
+  },
+
+  indexDisabled: {
+    opacity: '.5 !important'
   },
 
   author: {
@@ -323,11 +331,11 @@ const styleThunk = () => ({
   },
 
   canNavigate: {
-    color: ui.colorText,
+    color: ui.palette.mid,
 
     ...makeHoverFocus({
+      color: ui.palette.mid,
       cursor: 'pointer',
-      opacity: '.5',
       textDecoration: 'underline'
     })
   }
