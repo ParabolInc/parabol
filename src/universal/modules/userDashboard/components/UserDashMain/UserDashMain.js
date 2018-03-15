@@ -24,7 +24,7 @@ const UserDashMain = (props) => {
     <DashMain>
       <Helmet title="My Dashboard | Parabol" />
       <DashHeader>
-        <DashHeaderInfo title="My Dashboard">
+        <DashHeaderInfo>
           <div className={css(styles.headerCopy)}>
             {makeDateString(new Date(), {showDay: true})}<br />
             <span className={css(styles.rallyLink)}>

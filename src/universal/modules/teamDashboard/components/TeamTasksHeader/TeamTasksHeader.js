@@ -5,9 +5,9 @@ import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
 import {
-  DashSectionControl, DashSectionControls, DashSectionHeader,
-  DashSectionHeading
+  DashSectionControl, DashSectionControls, DashSectionHeader, DashSectionHeading, DashHeading
 } from 'universal/components/Dashboard';
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
@@ -40,7 +40,7 @@ const targetAnchor = {
 
 const TeamTasksHeader = (props) => {
   const {dispatch, styles, teamMemberFilterId, teamMemberFilterName, team} = props;
-  const {teamId, teamMembers} = team;
+  const {teamId, teamMembers, teamName} = team;
   const toggle = <DashFilterToggle label={teamMemberFilterName} />;
 
   const itemFactory = () => {
@@ -61,13 +61,18 @@ const TeamTasksHeader = (props) => {
   };
   return (
     <DashSectionHeader>
-      <DashSectionHeading label="Team Tasks" />
+      <div>
+        <LabelHeading>{'Team Dashboard'}</LabelHeading>
+        <DashHeading>
+          {`${teamName} Tasks`}
+        </DashHeading>
+      </div>
       <DashSectionControls>
         {/* TODO: needs link to archive */}
         <DashSectionControl>
           <FontAwesome name="archive" style={iconStyle} />
           <Link className={css(styles.link)} to={`/team/${teamId}/archive`}>
-            See Archived Tasks
+            {'See Archived Tasks'}
           </Link>
         </DashSectionControl>
         {/* TODO: needs minimal, inline dropdown */}
@@ -135,6 +140,7 @@ export default createFragmentContainer(
   graphql`
     fragment TeamTasksHeader_team on Team {
       teamId: id
+      teamName: name
       teamMembers(sortBy: "preferredName") {
         id
         preferredName

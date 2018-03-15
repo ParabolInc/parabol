@@ -3,12 +3,17 @@ import React from 'react';
 import {matchPath, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav';
+import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
 import ui from 'universal/styles/ui';
 
 const teamSettings = () => System.import('universal/modules/teamDashboard/components/TeamSettingsRoot');
 const providers = () => System.import('universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot');
 const slackIntegrations = () => System.import('universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot');
 const githubIntegrations = () => System.import('universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot');
+
+// use the same object so the EditTeamName doesn't rerender so gosh darn always
+// const initialValues = {teamName: ''};
+// <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} />
 
 const TeamSettingsWrapper = (props) => {
   const {location: {pathname}, match, teamMemberId} = props;

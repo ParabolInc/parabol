@@ -92,7 +92,6 @@ TaskColumns.defaultProps = {
 
 const styleThunk = () => ({
   root: {
-    // borderTop: `1px solid ${ui.dashBorderColor}`,
     display: 'flex',
     flex: '1',
     width: '100%'
@@ -112,10 +111,15 @@ const styleThunk = () => ({
 
   columns: {
     display: 'flex !important',
+    margin: '0 auto',
     maxWidth: ui.taskColumnsMaxWidth,
     minWidth: ui.taskColumnsMinWidth,
-    padding: `0 ${ui.taskColumnPaddingInner}`,
-    width: '100%'
+    padding: `0 ${ui.taskColumnPaddingInnerSmall}`,
+    width: '100%',
+    [ui.dashBreakpoint]: {
+      paddingLeft: ui.taskColumnPaddingInnerLarge,
+      paddingRight: ui.taskColumnPaddingInnerLarge
+    }
   }
 });
 

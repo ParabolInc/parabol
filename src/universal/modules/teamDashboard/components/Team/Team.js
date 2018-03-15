@@ -41,7 +41,8 @@ const Team = (props) => {
   const hasOverlay = hasActiveMeeting || !isPaid;
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ?
-    <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
+    // <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
+    <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : '';
   const modalLayout = hasMeetingAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
   const goToTeamSettings = () =>
     history.push(`/team/${teamId}/settings/`);

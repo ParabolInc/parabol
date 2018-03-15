@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ui from 'universal/styles/ui';
 import {
+  DashHeading,
   DashSectionControl,
   DashSectionControls,
   DashSectionHeader
@@ -37,6 +38,9 @@ const UserTasksHeader = (props) => {
   // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
+      <DashHeading>
+        {'My Dashboard'}
+      </DashHeading>
       <DashSectionControls>
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>

@@ -13,6 +13,11 @@ import zIndexScale from 'universal/styles/helpers/zIndexScale';
 
 const makeShadowColor = (opacity) => `rgba(68, 66, 88, ${opacity})`;
 
+// Breakpoints
+const BREAKPOINT_WIDE = '@media (min-width: 90rem)';
+const BREAKPOINT_WIDER = '@media (min-width: 100rem)';
+const BREAKPOINT_WIDEST = '@media (min-width: 120rem)';
+
 // Control sizes (used by buttons and fields)
 const CONTROL_SIZE_SMALL = 'small';
 const CONTROL_SIZE_MEDIUM = 'medium';
@@ -188,9 +193,9 @@ const ui = {
   // Breakpoints
   // ---------------------------------------------------------------------------
   breakpoint: {
-    wide: '@media (min-width: 90rem)',
-    wider: '@media (min-width: 100rem)',
-    widest: '@media (min-width: 120rem)'
+    wide: BREAKPOINT_WIDE,
+    wider: BREAKPOINT_WIDER,
+    widest: BREAKPOINT_WIDEST
   },
 
   // Buttons
@@ -323,9 +328,9 @@ const ui = {
   dashAgendaWidth: '15rem',
   dashBackgroundColor: backgroundColor,
   dashBorderColor: appTheme.palette.light90d,
-  dashGutter: '1.25rem',
-  // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
-  //       in a better future we may be more adaptive/responsive (TA)
+  dashBreakpoint: BREAKPOINT_WIDE,
+  dashGutterSmall: '1.25rem',
+  dashGutterLarge: '2rem',
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
     fontFamily: appTheme.typography.serif,
@@ -336,6 +341,8 @@ const ui = {
   dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
   dashMenuHeight: '13.5625rem',
   dashMenuWidth: '10rem',
+  // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
+  //       in a better future we may be more adaptive/responsive (TA)
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashAlertsHeight: '5.25rem',
@@ -582,7 +589,8 @@ const ui = {
 
   // Task columns
   // ---------------------------------------------------------------------------
-  taskColumnPaddingInner: '.625rem',
+  taskColumnPaddingInnerSmall: '.625rem',
+  taskColumnPaddingInnerLarge: '.9375rem',
   taskColumnsMaxWidth: '78.25rem',
   taskColumnsMinWidth: '48rem',
 

@@ -18,15 +18,15 @@ const AgendaAndTasks = (props) => {
     <div className={css(styles.root)}>
       <Helmet title={`${teamName} | Parabol`} />
       <div className={css(styles.headers)}>
-        <div className={css(styles.tasksLayout, styles.tasksLayoutHeader)}>
+        <div className={css(styles.tasksLayout, !hideAgenda && styles.tasksLayoutHeader)}>
           <TeamTasksHeaderContainer team={team} />
         </div>
-        <div className={css(styles.agendaLayout, !hideAgenda && styles.agendaLayoutOpen)}>
+        <div className={css(styles.agendaLayout, !hideAgenda && styles.agendaLayoutOpen, hideAgenda && styles.agendaHeaderClosed)}>
           <AgendaHeader hideAgenda={hideAgenda} teamId={teamId} />
         </div>
       </div>
       <div className={css(styles.agendaAndTasks)}>
-        <div className={css(styles.tasksLayout, styles.tasksLayoutContent, !hideAgenda && styles.tasksLayoutShared)}>
+        <div className={css(styles.tasksLayout, !hideAgenda && styles.tasksLayoutShared)}>
           <TeamColumnsContainer teamId={teamId} viewer={viewer} />
         </div>
         {!hideAgenda &&
@@ -56,6 +56,7 @@ const styleThunk = () => ({
 
   headers: {
     display: 'flex',
+    position: 'relative',
     width: '100%'
   },
 
@@ -83,15 +84,19 @@ const styleThunk = () => ({
   },
 
   tasksLayoutShared: {
-    borderRight: `1px solid ${borderColor}`
+    borderRight: `.0625rem solid ${borderColor}`
   },
 
   tasksLayoutHeader: {
-    borderRight: `1px solid ${borderColor}`
+    borderRight: `.0625rem solid ${borderColor}`
   },
 
-  tasksLayoutContent: {
-    borderTop: `1px solid ${borderColor}`
+  agendaHeaderClosed: {
+    '@media (min-width: 109rem)': {
+      position: 'absolute',
+      right: 0,
+      top: 0
+    }
   }
 });
 

@@ -156,10 +156,10 @@ class TeamSettings extends Component {
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.actionLink)} onClick={resend}>
-          Resend Invitation
+          {'Resend Invitation'}
         </div>
         <div className={css(styles.actionLink)} onClick={cancel}>
-          Cancel Invitation
+          {'Cancel Invitation'}
         </div>
       </div>
     );
@@ -242,7 +242,9 @@ const styleThunk = () => ({
   },
 
   panels: {
-    maxWidth: ui.settingsPanelMaxWidth
+    margin: '0 auto',
+    maxWidth: ui.settingsPanelMaxWidth,
+    width: '100%'
   },
 
   actionLinkBlock: {
@@ -268,11 +270,11 @@ const styleThunk = () => ({
   },
 
   panelBorder: {
-    borderTop: `1px solid ${ui.panelInnerBorderColor}`
+    borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`
   },
 
   panelRow: {
-    borderTop: `1px solid ${ui.rowBorderColor}`,
+    borderTop: `.0625rem solid ${ui.rowBorderColor}`,
     padding: `${ui.panelGutter}`
   }
 });
