@@ -48,7 +48,6 @@ const MeetingArea = styled('div')({
 const MeetingAreaHeader = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
-  flexDirection: 'row-reverse',
   flexWrap: 'wrap',
   justifyContent: 'space-between',
   maxWidth: '100%',
