@@ -54,7 +54,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const options = {store, environment, dispatch, history, location};
       switch (type) {
         case 'AcceptTeamInvitePayload':
-          acceptTeamInviteTeamUpdater(payload, store, viewerId, options);
+          acceptTeamInviteTeamUpdater(payload, store, viewerId);
           break;
         case 'AddOrgCreatorPayload':
           addOrgMutationNotificationUpdater(payload, store, viewerId, options);

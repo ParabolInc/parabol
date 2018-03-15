@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`acceptTeamInvite adds an invitee who was not previously in the org 1`] = `
+Object {
+  "invitation": Array [
+    Object {
+      "acceptedAt": 2017-01-01T08:00:00.000Z,
+      "createdAt": 2017-01-01T07:00:00.000Z,
+      "email": "<<constant>>",
+      "hashedToken": "<<constant>>",
+      "id": "<<constant>>",
+      "inviteCount": 1,
+      "invitedBy": "<<constant>>",
+      "teamId": "<<constant>>",
+      "tokenExpiration": 1970-01-01T00:00:00.000Z,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+  "notification": Array [],
+  "teamMember": Object {
+    "checkInOrder": 4,
+    "email": "invitee@mockTeam+acceptTeamInvite1.co",
+    "id": 3,
+    "isCheckedIn": null,
+    "isFacilitator": true,
+    "isLead": false,
+    "isNotRemoved": true,
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "inviteeGuy",
+    "teamId": 1,
+    "userId": 0,
+  },
+  "user": Object {
+    "cachedAt": 2017-01-01T07:00:00.000Z,
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "email": "invitee@mockTeam+acceptTeamInvite1.co",
+    "emailVerified": false,
+    "id": 0,
+    "identities": Array [],
+    "inactive": false,
+    "lastLogin": 2017-01-01T07:00:00.000Z,
+    "lastSeenAt": 2017-01-01T07:00:00.000Z,
+    "name": "inviteeGuy",
+    "picture": "https://placeimg.com/100/100/animals",
+    "preferredName": "inviteeGuy",
+    "tms": Array [
+      1,
+    ],
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userOrgs": Array [
+      Object {
+        "id": 2,
+        "role": null,
+      },
+    ],
+    "welcomeSentAt": 2017-01-01T07:00:00.000Z,
+  },
+}
+`;
