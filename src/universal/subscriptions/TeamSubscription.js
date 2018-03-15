@@ -15,7 +15,6 @@ const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
-      ...AcceptTeamInviteEmailMutation_team
       ...AcceptTeamInviteMutation_team
       ...AddTeamMutation_team
       ...AddTeamMutation_team
@@ -55,7 +54,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const options = {store, environment, dispatch, history, location};
       switch (type) {
         case 'AcceptTeamInvitePayload':
-        case 'AcceptTeamInviteEmailPayload':
           acceptTeamInviteTeamUpdater(payload, store, viewerId, options);
           break;
         case 'AddOrgCreatorPayload':

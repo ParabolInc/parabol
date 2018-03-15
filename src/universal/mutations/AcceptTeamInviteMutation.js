@@ -7,18 +7,23 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
+import getGraphQLError from 'universal/utils/relay/getGraphQLError';
+import handleToastError from 'universal/mutations/handlers/handleToastError';
+import jwtDecode from 'jwt-decode';
+import {setAuthToken} from 'universal/redux/authDuck';
+import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
 
 graphql`
-  fragment AcceptTeamInviteMutation_invitation on AcceptTeamInviteNotificationPayload {
+  fragment AcceptTeamInviteMutation_invitation on AcceptTeamInvitePayload {
     removedInvitation {
       id
       teamId
-    } 
+    }
   }
 `;
 
 graphql`
-  fragment AcceptTeamInviteMutation_teamMember on AcceptTeamInviteNotificationPayload {
+  fragment AcceptTeamInviteMutation_teamMember on AcceptTeamInvitePayload {
     teamMember {
       ...CompleteTeamMemberFrag @relay(mask: false)
     }
@@ -33,7 +38,7 @@ graphql`
 `;
 
 graphql`
-  fragment AcceptTeamInviteMutation_task on AcceptTeamInviteNotificationPayload {
+  fragment AcceptTeamInviteMutation_task on AcceptTeamInvitePayload {
     hardenedTasks {
       ...CompleteTaskFrag @relay(mask: false)
     }
@@ -41,19 +46,23 @@ graphql`
 `;
 
 graphql`
-  fragment AcceptTeamInviteMutation_team on AcceptTeamInviteNotificationPayload {
+  fragment AcceptTeamInviteMutation_team on AcceptTeamInvitePayload {
     team {
       ...CompleteTeamFrag @relay(mask: false)
     }
+    authToken
     removedNotification {
       id
+    }
+    user {
+      ...UserAnalyticsFrag @relay(mask: false)
     }
   }
 `;
 
 const mutation = graphql`
-  mutation AcceptTeamInviteMutation($notificationId: ID!) {
-    acceptTeamInviteNotification(notificationId: $notificationId) {
+  mutation AcceptTeamInviteMutation($notificationId: ID, $inviteToken: ID) {
+    acceptTeamInvite(notificationId: $notificationId, inviteToken: $inviteToken) {
       error {
         message
       }
@@ -114,18 +123,39 @@ export const acceptTeamInviteInvitationUpdater = (payload, store) => {
   handleRemoveInvitations(invitation, store);
 };
 
-const AcceptTeamInviteMutation = (environment, notificationId, dispatch, onError, onCompleted) => {
+const AcceptTeamInviteMutation = (environment, variables, {dispatch, history}, onError, onCompleted) => {
   const {viewerId} = environment;
   return commitMutation(environment, {
     mutation,
-    variables: {notificationId},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInviteNotification');
       if (!payload) return;
       acceptTeamInviteTeamUpdater(payload, store, viewerId, {dispatch});
     },
-    onCompleted,
-    onError
+    onError,
+    onCompleted: (data, errors) => {
+      if (onCompleted) {
+        onCompleted(data, errors);
+      }
+      const serverError = getGraphQLError(data, errors);
+      if (serverError) {
+        handleToastError(serverError, dispatch);
+        // give them the benefit of the doubt & don't sign them out
+        history.push('/');
+        return;
+      }
+      const {acceptTeamInviteEmail: {team, authToken, user}} = data;
+      const {id: teamId} = team;
+      const {tms} = jwtDecode(authToken);
+      dispatch(setAuthToken(authToken, user));
+      if (tms.length <= 1) {
+        dispatch(setWelcomeActivity(`/team/${teamId}`));
+        history.push('/me/settings');
+      } else {
+        history.push(`/team/${teamId}`);
+      }
+    }
   });
 };
 

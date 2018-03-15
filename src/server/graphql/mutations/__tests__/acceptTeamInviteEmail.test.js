@@ -12,7 +12,7 @@ import getRethink from 'server/database/rethinkDriver';
 import hashInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamMembers/hashInviteTokenKey';
 import makeInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/makeInviteToken';
 import parseInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/parseInviteToken';
-import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
+import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {ADD_USER} from 'server/utils/serverConstants';
 import * as tmsSignToken from 'server/utils/tmsSignToken';
@@ -21,7 +21,7 @@ import {TEAM_INVITE} from 'universal/utils/constants';
 MockDate.set(__now);
 console.error = jest.fn();
 
-describe('acceptTeamInviteEmail', () => {
+describe('acceptTeamInvite', () => {
   beforeEach(() => {
     auth0ManagementClient.users.updateAppMetadata.mockReset();
   });
@@ -52,7 +52,7 @@ describe('acceptTeamInviteEmail', () => {
     auth0ManagementClient.__initMock(mockDB.db);
     const tms = [teamId];
     // TEST
-    await acceptTeamInviteEmail.resolve(undefined, {inviteToken}, {authToken, dataLoader});
+    await acceptTeamInvite.resolve(undefined, {inviteToken}, {authToken, dataLoader});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -94,7 +94,7 @@ describe('acceptTeamInviteEmail', () => {
     const tms = [mockDB.db.team[0].id, teamId];
 
     // TEST
-    await acceptTeamInviteEmail.resolve(undefined, {inviteToken}, {authToken, dataLoader});
+    await acceptTeamInvite.resolve(undefined, {inviteToken}, {authToken, dataLoader});
 
     // VERIFY
     const db = await fetchAndSerialize({

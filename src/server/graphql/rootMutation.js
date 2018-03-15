@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
-import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
-import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
+import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite';
 import addAgendaItem from 'server/graphql/mutations/addAgendaItem';
 import addGitHubRepo from 'server/graphql/mutations/addGitHubRepo';
 import addOrg from 'server/graphql/mutations/addOrg';
@@ -72,8 +71,7 @@ import updateUserProfile from 'server/graphql/mutations/updateUserProfile';
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-    acceptTeamInviteEmail,
-    acceptTeamInviteNotification,
+    acceptTeamInvite,
     addAgendaItem,
     addFeatureFlag,
     addGitHubRepo,
