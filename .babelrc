@@ -23,7 +23,8 @@
         ],
         [
           "react-loadable/babel"
-        ]
+        ],
+        ["transform-runtime"]
       ]
     },
     "test": {

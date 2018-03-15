@@ -9,13 +9,15 @@ const PlainButton = styled('button')({
   borderRadius: 0,
   color: 'inherit',
   cursor: 'pointer',
+  fontFamily: 'inherit',
   fontSize: 'inherit',
   margin: 0,
   padding: 0,
   ':focus': {
     outline: 0,
     boxShadow: `0 0 1px 1px ${appTheme.palette.mid}`
-  }
+  },
+  textAlign: 'inherit'
 });
 
 export default PlainButton;
