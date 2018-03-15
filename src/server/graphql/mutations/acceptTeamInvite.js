@@ -105,7 +105,7 @@ export default {
       removedNotification,
       removedInvitationId: invitationId,
       removedSoftTeamMember
-    } = await acceptTeamInvite(teamId, authToken, inviteeEmail);
+    } = await acceptTeamInvite(teamId, authToken, inviteeEmail, dataLoader);
     const oldTMS = authToken.tms || [];
     const tms = oldTMS.concat(teamId);
     const teamMemberId = toTeamMemberId(teamId, viewerId);
