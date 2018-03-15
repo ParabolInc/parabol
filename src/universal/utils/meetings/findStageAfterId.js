@@ -1,4 +1,9 @@
-const findStageAfterId = (phases, stageId) => {
+// @flow
+
+
+// import type {NewMeetingPhase} from 'universal/types/schema.flow';
+
+const findStageAfterId = (phases: $ReadOnlyArray<Object>, stageId: string) => {
   if (!phases) return undefined;
   let stageFound = false;
   for (let ii = 0; ii < phases.length; ii++) {

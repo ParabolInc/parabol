@@ -9,7 +9,7 @@ const getNextFacilitatorStage = (facilitatorStageId, teamMemberStageId, phases) 
   // get the next stage. if this is the last stage, get the previous one
   const {stage: nextStage} = findStageAfterId(phases, teamMemberStageId) || findStageBeforeId(phases, teamMemberStageId);
   return nextStage;
-}
+};
 /*
  * NewMeetings have a predefined set of stages, we need to remove it manually
  */

@@ -30,14 +30,14 @@ export default {
     // AUTH
     const meeting = await r.table('NewMeeting').get(meetingId);
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
-    if (!isTeamMember(authToken, meetingId)) return sendTeamAccessError(authToken, meetingId);
-    if (!await isPaidTier(meetingId)) return sendTeamPaidTierError(authToken, meetingId);
+    const {phases, teamId} = meeting;
+    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!await isPaidTier(teamId)) return sendTeamPaidTierError(authToken, teamId);
 
     // VALIDATION
     const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion);
 
     // RESOLUTION
-    const {phases, teamId} = meeting;
     const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN);
     // mutative
     checkInPhase.checkInQuestion = normalizedCheckInQuestion;

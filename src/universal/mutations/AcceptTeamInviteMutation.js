@@ -49,6 +49,22 @@ graphql`
   fragment AcceptTeamInviteMutation_team on AcceptTeamInvitePayload {
     team {
       ...CompleteTeamFrag @relay(mask: false)
+      newMeeting {
+        phases {
+          ... on CheckInPhase {
+            stages {
+              id
+              teamMember {
+                id
+                isSelf
+                picture
+                preferredName
+                userId
+              }
+            }
+          }
+        }
+      }
     }
     authToken
     removedNotification {

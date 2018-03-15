@@ -73,7 +73,7 @@ const NewMeetingLobby = (props: Props) => {
   if (newMeeting) {
     const {facilitatorStageId, phases} = newMeeting;
     const to = fromStageIdToUrl(facilitatorStageId, phases, teamId, meetingType);
-    return <Redirect to={to} />
+    return <Redirect to={to} />;
   }
   const onStartMeetingClick = () => {
     submitMutation();

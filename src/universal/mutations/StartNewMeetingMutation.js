@@ -16,6 +16,10 @@ graphql`
         createdAt
         facilitatorStageId
         facilitatorUserId
+        facilitator {
+          id
+          preferredName
+        }
         meetingNumber
         meetingType
         phases {

@@ -40,7 +40,7 @@ const Heading = styled('div')({
   [promptBreakpoint]: {
     fontSize: appTheme.typography.s6
   }
-})
+});
 
 const SubHeading = styled('div')({
   color: appTheme.palette.dark90l,
@@ -105,19 +105,19 @@ const NewMeetingPrompt = (props: Props) => {
         <Avatar picture={picture || defaultUserAvatar} size="fill" />
       </AvatarBlock>
       <Body>
-      <Heading>
-        {heading}
-      </Heading>
-      {subHeading &&
-      <SubHeading>
-        {subHeading}
-      </SubHeading>
-      }
-      {helpText &&
-      <HelpText>
-        {helpText}
-      </HelpText>
-      }
+        <Heading>
+          {heading}
+        </Heading>
+        {subHeading &&
+        <SubHeading>
+          {subHeading}
+        </SubHeading>
+        }
+        {helpText &&
+        <HelpText>
+          {helpText}
+        </HelpText>
+        }
       </Body>
     </MeetingPromptRoot>
   );

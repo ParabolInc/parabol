@@ -4,6 +4,7 @@ import {createFragmentContainer} from 'react-relay';
 import styled from 'react-emotion';
 
 import type {NewMeetingCheckInGreeting_teamMember as TeamMember} from './__generated__/NewMeetingCheckInGreeting_teamMember.graphql';
+// eslint-disable-next-line max-len
 import type {NewMeetingCheckInGreeting_checkInGreeting as CheckInGreeting} from './__generated__/NewMeetingCheckInGreeting_checkInGreeting.graphql';
 
 const GreetingBlock = styled('div')({

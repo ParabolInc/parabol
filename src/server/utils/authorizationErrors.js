@@ -152,7 +152,7 @@ export const sendInvitationHashFailError = (authToken, inviteToken, returnValue)
 
 export const sendTeamAlreadyJoinedError = (authToken, inviteToken, returnValue) => {
   const breadcrumb = {
-    message: `Hey, we think you already belong to this team.`,
+    message: 'Hey, we think you already belong to this team.',
     category: 'Team already joined',
     data: {inviteToken}
   };

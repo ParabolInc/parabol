@@ -93,10 +93,10 @@ export const sendInvitationNotFoundError = (authToken, inviteToken, returnValue)
   return sendAuthRaven(authToken, 'Invitation not found, but don’t worry', breadcrumb, returnValue);
 };
 
-export const sendNoInvitationProvidedError= (authToken, returnValue) => {
+export const sendNoInvitationProvidedError = (authToken, returnValue) => {
   const breadcrumb = {
-    message: `You must provide an invitation token or notification`,
-    category: 'Not found',
+    message: 'You must provide an invitation token or notification',
+    category: 'Not found'
   };
   return sendAuthRaven(authToken, 'Invitation not provided', breadcrumb, returnValue);
 };

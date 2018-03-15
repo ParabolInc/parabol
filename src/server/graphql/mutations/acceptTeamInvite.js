@@ -135,7 +135,7 @@ export default {
     publish(INVITATION, teamId, AcceptTeamInvitePayload, data, subOptions);
 
     // Tell the new team member about the team, welcome them, and remove their outstanding invitation notifications
-    publish(TEAM, viewerId, AcceptTeamInvitePayload, data, subOptions);
+    publish(TEAM, teamId, AcceptTeamInvitePayload, data, subOptions);
 
     // Tell the rest of the team about the new team member, toast the event, and remove their old invitations
     publish(TEAM_MEMBER, teamId, AcceptTeamInvitePayload, data, subOptions);

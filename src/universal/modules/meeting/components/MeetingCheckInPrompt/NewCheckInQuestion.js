@@ -64,8 +64,6 @@ type State = {
 }
 
 class NewCheckInQuestion extends Component<Props, State> {
-  editorRef: any;
-
   constructor(props) {
     super(props);
     const checkInQuestion = getCheckInQuestion(props);
@@ -92,14 +90,16 @@ class NewCheckInQuestion extends Component<Props, State> {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused && !isFocused) {
-      const {atmosphere, team: {id: teamId}} = this.props;
+      const {atmosphere, team: {newMeeting: {meetingId}}} = this.props;
       const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
-      UpdateNewCheckInQuestionMutation(atmosphere, teamId, checkInQuestion);
+      UpdateNewCheckInQuestionMutation(atmosphere, {meetingId, checkInQuestion});
     }
     this.setState({
       editorState
     });
   };
+
+  editorRef: any;
 
   selectAllQuestion = () => {
     this.editorRef.focus();
@@ -177,6 +177,7 @@ export default createFragmentContainer(
     fragment NewCheckInQuestion_team on Team {
       id
       newMeeting {
+        meetingId: id
         facilitatorUserId
         phases {
           ... on CheckInPhase {
