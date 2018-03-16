@@ -2,21 +2,21 @@ import {commitMutation} from 'react-relay';
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams';
 import fromUrlToStage from 'universal/utils/meetings/fromUrlToStage';
-import findStageById from 'universal/utils/meetings/findStageById';
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
-    stageCompleted {
-      id
-    }
     meeting {
       facilitatorStageId
       phases {
         phaseType
         stages {
-          isComplete
+          id
         }
       }
+    }
+    oldFacilitatorStage {
+      id
+      isComplete
     }
   }
 `;
@@ -34,13 +34,10 @@ const mutation = graphql`
 
 export const navigateMeetingTeamOnNext = (payload, context) => {
   const {history} = context;
-  const {meeting: {facilitatorStageId, phases}, stageCompleted: {id: stageCompletedId}} = payload;
-  const {meetingType, teamId} = getMeetingPathParams();
-  if (!meetingType || !teamId) return;
-  const oldFacilitatorPhaseStageRes = findStageById(phases, stageCompletedId);
+  const {meeting: {facilitatorStageId, phases}, oldFacilitatorStage: {id: oldFacilitatorStageId}} = payload;
+  const {meetingSlug, teamId} = getMeetingPathParams();
+  if (!meetingSlug || !teamId) return;
   const viewerStage = fromUrlToStage(phases);
-  if (!oldFacilitatorPhaseStageRes || !viewerStage) return;
-  const {stage: {id: oldFacilitatorStageId}} = oldFacilitatorPhaseStageRes;
   const {id: viewerStageId} = viewerStage;
   const inSync = viewerStageId === oldFacilitatorStageId;
   if (inSync) {

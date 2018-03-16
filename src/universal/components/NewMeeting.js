@@ -28,7 +28,8 @@ import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId';
 import handleHotkey from 'universal/utils/meetings/handleHotkey';
 import fromUrlToStage from 'universal/utils/meetings/fromUrlToStage';
-import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
+import {connect} from 'react-redux';
+import KillNewMeetingMutation from 'universal/mutations/KillNewMeetingMutation';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -75,15 +76,14 @@ type Variables = {
 class NewMeeting extends Component<Props> {
   constructor(props) {
     super(props);
-    const {atmosphere, bindHotkey, history, match: {params: {teamId}}, meetingType, submitting} = props;
+    const {atmosphere, bindHotkey, dispatch, history, match: {params: {teamId}}, meetingType, submitting, viewer: {team: {newMeeting}}} = props;
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
     bindHotkey('i c a n t h a c k i t', () => {
-      const onCompleted = () => {
-        const meetingSlug = meetingTypeToSlug[meetingType];
-        history.push(`/${meetingSlug}/${teamId}`);
-      };
-      KillMeetingMutation(atmosphere, teamId, history, undefined, onCompleted);
+      const {viewer: {team: {newMeeting}}} = props;
+      if (!newMeeting) return;
+      const {meetingId} = newMeeting;
+      KillNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
     });
   }
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
@@ -139,7 +139,7 @@ class NewMeeting extends Component<Props> {
   }
 
   render() {
-    const {atmosphere, localPhase, meetingType, viewer} = this.props;
+    const {atmosphere, location, localPhase, meetingType, viewer} = this.props;
     const {team} = viewer;
     const {newMeeting, teamName} = team; const {facilitatorUserId} = newMeeting || {};
     const meetingSlug = meetingTypeToSlug[meetingType];
@@ -162,7 +162,7 @@ class NewMeeting extends Component<Props> {
             <Switch>
               <Route
                 path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
-                render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
+                render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} location={location} meetingType={meetingType} team={team} />}
               />
               <Route
                 path={`/${meetingSlug}/:teamId`}
@@ -182,7 +182,9 @@ export default createFragmentContainer(
       withAtmosphere(
         withMutationProps(
           withRouter(
-            NewMeeting
+            connect()(
+              NewMeeting
+            )
           )
         )
       )

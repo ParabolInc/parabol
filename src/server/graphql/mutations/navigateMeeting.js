@@ -59,14 +59,14 @@ export default {
     }
 
     // RESOLUTION
-    await r.table('NewMeeting').get(meetingId)
+    const oldFacilitatorStageId = await r.table('NewMeeting').get(meetingId)
       .update({
         facilitatorStageId,
         phases,
         updatedAt: now
-      });
+      }, {returnChanges: true})('changes')(0)('old_val')('facilitatorStageId');
 
-    const data = {meetingId, stageIdCompleted: completedStageId};
+    const data = {meetingId, oldFacilitatorStageId, facilitatorStageId};
     publish(TEAM, teamId, NavigateMeetingPayload, data, subOptions);
     return data;
   }

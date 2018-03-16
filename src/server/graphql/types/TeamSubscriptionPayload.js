@@ -17,6 +17,7 @@ import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
+import KillNewMeetingPayload from 'server/graphql/types/KillNewMeetingPayload';
 
 
 const types = [
@@ -25,6 +26,7 @@ const types = [
   ArchiveTeamPayload,
   EndMeetingPayload,
   KillMeetingPayload,
+  KillNewMeetingPayload,
   MoveMeetingPayload,
   NavigateMeetingPayload,
   PromoteFacilitatorPayload,

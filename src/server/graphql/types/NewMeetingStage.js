@@ -69,19 +69,20 @@ export const newMeetingStageFields = () => ({
   // }
 });
 
-const resolveTypeLookup = {
-  [CHECKIN]: CheckInStage,
-  [THINK]: GenericMeetingStage,
-  [GROUP]: GenericMeetingStage,
-  [VOTE]: GenericMeetingStage,
-  [DISCUSS]: RetroDiscussStage
-};
-
 const NewMeetingStage = new GraphQLInterfaceType({
   name: 'NewMeetingStage',
   description: 'An instance of a meeting phase item. On the client, this usually represents a single view',
   fields: newMeetingStageFields,
-  resolveType: ({phaseType}) => resolveTypeLookup[phaseType]
+  resolveType: ({phaseType}) => {
+    const resolveTypeLookup = {
+      [CHECKIN]: CheckInStage,
+      [THINK]: GenericMeetingStage,
+      [GROUP]: GenericMeetingStage,
+      [VOTE]: GenericMeetingStage,
+      [DISCUSS]: RetroDiscussStage
+    };
+    return resolveTypeLookup[phaseType];
+  }
 });
 
 export default NewMeetingStage;

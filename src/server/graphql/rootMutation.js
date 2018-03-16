@@ -67,6 +67,7 @@ import createImposterToken from 'server/graphql/mutations/createImposterToken';
 import createUserPicturePutUrl from 'server/graphql/mutations/createUserPicturePutUrl';
 import login from 'server/graphql/mutations/login';
 import updateUserProfile from 'server/graphql/mutations/updateUserProfile';
+import killNewMeeting from 'server/graphql/mutations/killNewMeeting';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -103,6 +104,7 @@ export default new GraphQLObjectType({
     inviteTeamMembers,
     joinIntegration,
     killMeeting,
+    killNewMeeting,
     leaveIntegration,
     meetingCheckIn,
     moveMeeting,
