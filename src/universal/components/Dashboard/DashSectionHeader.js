@@ -20,10 +20,11 @@ DashSectionHeader.propTypes = {
 
 const styleThunk = () => ({
   root: {
+    alignItems: 'flex-end',
     display: 'flex',
     margin: '0 auto',
     maxWidth: ui.taskColumnsMaxWidth,
-    padding: `1rem ${ui.dashGutterSmall}`,
+    padding: `3rem ${ui.dashGutterSmall} 1.25rem`,
     position: 'relative',
     width: '100%',
     [ui.dashBreakpoint]: {

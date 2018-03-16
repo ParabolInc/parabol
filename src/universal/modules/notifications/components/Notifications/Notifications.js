@@ -4,6 +4,7 @@ import React from 'react';
 import Atmosphere from 'universal/Atmosphere';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
+import {SettingsWrapper} from 'universal/components/Settings';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import {requiresAction} from 'universal/types/notification';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -55,7 +56,7 @@ const Notifications = (props) => {
   return (
     <UserSettingsWrapper>
       <Helmet title="My Notifications | Parabol" />
-      <div className={css(styles.wrapper)}>
+      <SettingsWrapper>
         <Panel compact label="Notifications" controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}>
           {notifications && notifications.edges.length ?
             <div className={css(styles.notificationList)}>
@@ -72,7 +73,7 @@ const Notifications = (props) => {
             </div>
           }
         </Panel>
-      </div>
+      </SettingsWrapper>
     </UserSettingsWrapper>
   );
 };
@@ -111,10 +112,6 @@ const styleThunk = () => ({
     padding: ui.rowGutter,
     textAlign: 'center',
     width: '100%'
-  },
-
-  wrapper: {
-    maxWidth: '48rem'
   }
 });
 

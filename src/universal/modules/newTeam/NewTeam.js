@@ -21,36 +21,38 @@ const NewTeam = (props) => {
   const orgId = organizations.find((org) => org.id === defaultOrgId) ? defaultOrgId : firstOrgId;
   return (
     <div className={css(styles.layout)}>
-      <NewTeamForm
-        defaultOrgId={defaultOrgId}
-        initialValues={{orgId, isNewOrganization: String(!defaultOrgId)}}
-        organizations={organizations}
-      />
-      <div className={css(styles.helpLayout)}>
-        <div className={css(styles.helpBlock)}>
-          <div className={css(styles.helpHeading)}>
-            {'What’s an Organization?'}
+      <div className={css(styles.inner)}>
+        <NewTeamForm
+          defaultOrgId={defaultOrgId}
+          initialValues={{orgId, isNewOrganization: String(!defaultOrgId)}}
+          organizations={organizations}
+        />
+        <div className={css(styles.helpLayout)}>
+          <div className={css(styles.helpBlock)}>
+            <div className={css(styles.helpHeading)}>
+              {'What’s an Organization?'}
+            </div>
+            <div className={css(styles.helpCopy)}>
+              {`It’s the billing entity for a group of teams
+              such as a company, non-profit, or
+              for your personal use. Once created, you can
+              create teams and invite others, even if they
+              don't share your email domain.`}
+            </div>
+            <div className={css(styles.helpCopy)}>
+              {'New Organizations start out on the '}
+              <b>{'Free Personal Plan'}</b>{'.'}
+            </div>
+            <Button
+              buttonSize="small"
+              buttonStyle="flat"
+              colorPalette="warm"
+              icon="external-link-square"
+              iconPlacement="right"
+              label="Learn More"
+              onClick={() => (window.open(PRICING_LINK, '_blank'))}
+            />
           </div>
-          <div className={css(styles.helpCopy)}>
-            {`It’s the billing entity for a group of teams
-            such as a company, non-profit, or
-            for your personal use. Once created, you can
-            create teams and invite others, even if they
-            don't share your email domain.`}
-          </div>
-          <div className={css(styles.helpCopy)}>
-            {'New Organizations start out on the '}
-            <b>{'Free Personal Plan'}</b>{'.'}
-          </div>
-          <Button
-            buttonSize="small"
-            buttonStyle="flat"
-            colorPalette="warm"
-            icon="external-link-square"
-            iconPlacement="right"
-            label="Learn More"
-            onClick={() => (window.open(PRICING_LINK, '_blank'))}
-          />
         </div>
       </div>
     </div>
@@ -65,9 +67,20 @@ NewTeam.propTypes = {
 
 const styleThunk = () => ({
   layout: {
+    alignItems: 'center',
     backgroundColor: ui.backgroundColor,
     display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    width: '100%'
+  },
+
+  inner: {
+    display: 'flex',
+    justifyContent: 'center',
     minWidth: '60rem',
+    paddingBottom: '10vh',
     width: '100%'
   },
 
@@ -76,13 +89,13 @@ const styleThunk = () => ({
   },
 
   helpBlock: {
-    background: appTheme.palette.light50l,
+    background: appTheme.palette.yellow30l,
     boxShadow: ui.shadow[1],
     color: appTheme.palette.dark,
     margin: '1rem 0',
     padding: '.75rem',
     textAlign: 'center',
-    width: '16rem'
+    width: '15rem'
   },
 
   helpHeading: {

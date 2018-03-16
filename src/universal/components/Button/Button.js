@@ -41,6 +41,20 @@ const makeFlatTheme = (buttonStyle, color) => ({
   }
 });
 
+const makeLinkTheme = (color) => ({
+  backgroundColor: 'transparent',
+  boxShadow: 'none !important',
+  color,
+  fontWeight: 400,
+
+  ':hover': {
+    opacity: '.5'
+  },
+  ':focus': {
+    opacity: '.5'
+  }
+});
+
 const makePrimaryTheme = () => ({
   ...ui.buttonStylesPrimary
 });
@@ -55,6 +69,9 @@ const makePropColors = (buttonStyle, colorPalette) => {
   }
   if (buttonStyle === 'primary') {
     return makePrimaryTheme();
+  }
+  if (buttonStyle === 'link') {
+    return makeLinkTheme(color);
   }
   return makeSolidTheme(color, textColor, buttonStyle);
 };
@@ -82,6 +99,7 @@ class Button extends Component {
     buttonStyle: PropTypes.oneOf([
       'flat',
       'inverted',
+      'link',
       'outlined',
       'primary',
       'solid'

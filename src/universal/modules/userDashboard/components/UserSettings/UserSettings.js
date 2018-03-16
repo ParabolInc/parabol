@@ -102,7 +102,7 @@ UserSettings.propTypes = {
 
 const styleThunk = () => ({
   body: {
-    maxWidth: '37.5rem'
+    width: '100%'
   },
 
   form: {

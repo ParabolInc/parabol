@@ -5,7 +5,10 @@ import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
 import {
-  DashSectionControl, DashSectionControls, DashSectionHeader, DashSectionHeading, DashHeading
+  DashSectionControl,
+  DashSectionControls,
+  DashSectionHeader,
+  DashHeading
 } from 'universal/components/Dashboard';
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';

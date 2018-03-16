@@ -1,20 +1,25 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {DashSectionHeading} from 'universal/components/Dashboard';
+import {Button} from 'universal/components';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ToggleAgendaListMutation from 'universal/mutations/ToggleAgendaListMutation';
 import ui from 'universal/styles/ui';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import styled from 'react-emotion';
+import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const RootBlock = styled('div')({
   cursor: 'pointer',
   maxWidth: ui.dashAgendaWidth,
   minWidth: ui.dashAgendaWidth,
-  width: '100%'
+  padding: `1rem ${ui.dashGutterSmall}`,
+  width: '100%',
+  [ui.dashBreakpoint]: {
+    padding: `1rem ${ui.dashGutterLarge}`
+  }
 });
 
-const AgendaHeader = (props) => {
+const AgendaToggle = (props) => {
   const {atmosphere, hideAgenda, submitMutation, submitting, onError, onCompleted, teamId} = props;
   const toggleHide = () => {
     if (!submitting) {
@@ -22,15 +27,24 @@ const AgendaHeader = (props) => {
       ToggleAgendaListMutation(atmosphere, teamId, onError, onCompleted);
     }
   };
-  const label = `Agenda Topics${hideAgenda ? '...' : ''}`;
+  const label = `${hideAgenda ? 'See' : 'Hide'} ${AGENDA_ITEM_LABEL}s`;
   return (
-    <RootBlock onClick={toggleHide}>
-      <DashSectionHeading label={label} />
+    <RootBlock>
+      <Button
+        buttonSize="small"
+        buttonStyle={hideAgenda ? 'outlined' : 'flat'}
+        colorPalette={hideAgenda ? 'warm' : 'mid'}
+        icon="comments"
+        isBlock
+        key={`agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`}
+        label={hideAgenda ? label : label}
+        onClick={toggleHide}
+      />
     </RootBlock>
   );
 };
 
-AgendaHeader.propTypes = {
+AgendaToggle.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   hideAgenda: PropTypes.bool,
   onCompleted: PropTypes.func.isRequired,
@@ -40,4 +54,4 @@ AgendaHeader.propTypes = {
   teamId: PropTypes.string
 };
 
-export default withMutationProps(withAtmosphere(AgendaHeader));
+export default withMutationProps(withAtmosphere(AgendaToggle));

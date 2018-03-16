@@ -63,9 +63,13 @@ const Team = (props) => {
         modalLayout={modalLayout}
         key={`${teamId}UnpaidModal`}
       />
-      <DashHeader hasOverlay={hasOverlay}>
+      <DashHeader
+        area={isSettings ? 'teamSettings' : 'teamDash'}
+        hasOverlay={hasOverlay}
+        key={`team${isSettings ? 'Dash' : 'Settigns'}Header`}
+      >
         <DashHeaderInfo title={DashHeaderInfoTitle}>
-          {!isSettings && <DashSearchControl onChange={updateFilter} placeholder="Search Tasks and Agenda Topics" />}
+          {!isSettings && <DashSearchControl onChange={updateFilter} placeholder="Search Tasks & Agenda" />}
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
           {isSettings ?

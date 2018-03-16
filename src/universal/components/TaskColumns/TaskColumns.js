@@ -1,12 +1,32 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import TaskColumn from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumn';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
 import {columnArray, MEETING, meetingColumnArray} from 'universal/utils/constants';
 import makeTasksByStatus from 'universal/utils/makeTasksByStatus';
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
+import styled from 'react-emotion';
+
+const RootBlock = styled('div')({
+  display: 'flex',
+  flex: '1',
+  width: '100%'
+});
+
+const ColumnsBlock = styled('div')({
+  display: 'flex',
+  flex: '1',
+  margin: '0 auto',
+  maxWidth: ui.taskColumnsMaxWidth,
+  minWidth: ui.taskColumnsMinWidth,
+  padding: `0 ${ui.taskColumnPaddingInnerSmall}`,
+  width: '100%',
+
+  [ui.dashBreakpoint]: {
+    paddingLeft: ui.taskColumnPaddingInnerLarge,
+    paddingRight: ui.taskColumnPaddingInnerLarge
+  }
+});
 
 class TaskColumns extends Component {
   componentWillMount() {
@@ -33,21 +53,18 @@ class TaskColumns extends Component {
   // myTeamMemberId is undefined if this is coming from USER_DASH
   // TODO we only need userId, we can compute myTeamMemberId
     const {
-      alignColumns,
       area,
       getTaskById,
       isMyMeetingSection,
       myTeamMemberId,
-      styles,
       teams,
       teamMemberFilterId
     } = this.props;
     const {tasks} = this.state;
-    const rootStyles = css(styles.root, styles[alignColumns]);
     const lanes = area === MEETING ? meetingColumnArray : columnArray;
     return (
-      <div className={rootStyles}>
-        <div className={css(styles.columns)}>
+      <RootBlock>
+        <ColumnsBlock>
           {lanes.map((status, idx) =>
             (<TaskColumn
               key={`taskCol${status}`}
@@ -63,64 +80,21 @@ class TaskColumns extends Component {
               teams={teams}
             />)
           )}
-        </div>
+        </ColumnsBlock>
         <EditorHelpModalContainer />
-      </div>
+      </RootBlock>
     );
   }
 }
 
 TaskColumns.propTypes = {
-  alignColumns: PropTypes.oneOf([
-    'center',
-    'left',
-    'right'
-  ]),
   area: PropTypes.string,
   getTaskById: PropTypes.func.isRequired,
   isMyMeetingSection: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   tasks: PropTypes.object.isRequired,
-  styles: PropTypes.object,
   teamMemberFilterId: PropTypes.string,
   teams: PropTypes.array
 };
 
-TaskColumns.defaultProps = {
-  alignColumns: 'left'
-};
-
-const styleThunk = () => ({
-  root: {
-    display: 'flex',
-    flex: '1',
-    width: '100%'
-  },
-
-  center: {
-    justifyContent: 'center'
-  },
-
-  left: {
-    justifyContent: 'flex-start'
-  },
-
-  right: {
-    justifyContent: 'flex-end'
-  },
-
-  columns: {
-    display: 'flex !important',
-    margin: '0 auto',
-    maxWidth: ui.taskColumnsMaxWidth,
-    minWidth: ui.taskColumnsMinWidth,
-    padding: `0 ${ui.taskColumnPaddingInnerSmall}`,
-    width: '100%',
-    [ui.dashBreakpoint]: {
-      paddingLeft: ui.taskColumnPaddingInnerLarge,
-      paddingRight: ui.taskColumnPaddingInnerLarge
-    }
-  }
-});
-
-export default withStyles(styleThunk)(TaskColumns);
+export default TaskColumns;

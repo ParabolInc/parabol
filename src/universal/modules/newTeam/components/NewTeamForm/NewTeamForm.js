@@ -4,10 +4,9 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import Button from 'universal/components/Button/Button';
+import {Button, Panel} from 'universal/components';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import InputField from 'universal/components/InputField/InputField';
-import Panel from 'universal/components/Panel/Panel';
 import Radio from 'universal/components/Radio/Radio';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -93,8 +92,9 @@ class NewTeamForm extends Component {
 
     return (
       <form className={css(styles.form)} onSubmit={handleSubmit(this.onSubmit)}>
-        <Panel label="Create a New Team">
+        <Panel hasHeader={false}>
           <div className={css(styles.formInner)}>
+            <div className={css(styles.formHeading)}>{'Create a New Team'}</div>
             <div className={css(styles.formBlock)}>
               <FieldLabel
                 fieldSize={controlSize}
@@ -178,6 +178,7 @@ class NewTeamForm extends Component {
             <div className={css(styles.buttonBlock)}>
               <Button
                 buttonSize="large"
+                buttonStyle="primary"
                 colorPalette="warm"
                 depth={1}
                 isBlock
@@ -205,12 +206,18 @@ const styleThunk = () => ({
   form: {
     margin: 0,
     maxWidth: '40rem',
-    padding: '.5rem 2rem',
+    padding: '0 2rem .5rem',
+    width: '100%'
+  },
+
+  formHeading: {
+    ...ui.dashHeaderTitleStyles,
+    padding: '0 0 2rem',
+    textAlign: 'center',
     width: '100%'
   },
 
   formInner: {
-    borderTop: `.0625rem solid ${ui.panelBorderColor}`,
     padding: '2rem'
   },
 

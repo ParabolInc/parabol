@@ -5,6 +5,7 @@ import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {Link, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
+import {SettingsWrapper} from 'universal/components/Settings';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import TagPro from 'universal/components/Tag/TagPro';
 import {tagBlock} from 'universal/components/Tag/tagBase';
@@ -47,7 +48,7 @@ const Organization = (props) => {
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
-      <div className={css(styles.wrapper)}>
+      <SettingsWrapper>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
           <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
           <div style={inlineBlockStyle}>Back to Organizations</div>
@@ -74,7 +75,7 @@ const Organization = (props) => {
           <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling} extraProps={extraProps} />
           <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={extraProps} />
         </Switch>
-      </div>
+      </SettingsWrapper>
     </UserSettingsWrapper>
   );
 };
@@ -129,10 +130,6 @@ const styleThunk = () => ({
   goBackLabel: {
     ...goBackLabel,
     margin: '1rem 0'
-  },
-
-  wrapper: {
-    maxWidth: '40rem'
   },
 
   toggleBlock: {

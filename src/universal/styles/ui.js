@@ -331,6 +331,7 @@ const ui = {
   dashBreakpoint: BREAKPOINT_WIDE,
   dashGutterSmall: '1.25rem',
   dashGutterLarge: '2rem',
+  dashHeaderMinHeight: '4rem',
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
     fontFamily: appTheme.typography.serif,
@@ -341,8 +342,17 @@ const ui = {
   dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
   dashMenuHeight: '13.5625rem',
   dashMenuWidth: '10rem',
+
+  dashTeamBreakpointDown: '@media (max-width: 123.1875rem)',
+  dashTeamBreakpointUp: '@media (min-width: 123.25rem)',
+
+  dashTeamMaxWidth: '93.25rem',
+  dashTeamMaxWidthDown: '108.1875rem',
+  dashTeamMaxWidthUp: '108.25rem',
+
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
+
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashAlertsHeight: '5.25rem',
@@ -574,7 +584,8 @@ const ui = {
 
   // Panels
   // ---------------------------------------------------------------------------
-  panelBoxShadow: '0 .125rem .25rem rgba(68, 66, 88, 0.05)', // based on dark palette color
+  // panelBoxShadow: '0 .125rem .25rem rgba(68, 66, 88, 0.05)', // based on dark palette color
+  panelBoxShadow: shadow[0], // based on dark palette color
   panelBorderColor: appTheme.palette.mid50l,
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
@@ -634,7 +645,7 @@ const ui = {
   // Settings
   // ---------------------------------------------------------------------------
   settingsGutter: '1rem',
-  settingsPanelMaxWidth: '42rem',
+  settingsPanelMaxWidth: '48rem',
 
   // Shadows
   shadow,
