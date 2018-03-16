@@ -41,7 +41,6 @@ const Team = (props) => {
   const hasOverlay = hasActiveMeeting || !isPaid;
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ?
-    // <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
     <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : '';
   const modalLayout = hasMeetingAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
   const goToTeamSettings = () =>
@@ -69,7 +68,7 @@ const Team = (props) => {
         key={`team${isSettings ? 'Dash' : 'Settigns'}Header`}
       >
         <DashHeaderInfo title={DashHeaderInfoTitle}>
-          {!isSettings && <DashSearchControl onChange={updateFilter} placeholder="Search Tasks & Agenda" />}
+          {!isSettings && <DashSearchControl onChange={updateFilter} placeholder="Search Team Tasks & Agenda" />}
         </DashHeaderInfo>
         <div className={css(styles.teamLinks)}>
           {isSettings ?

@@ -24,7 +24,7 @@ const styleThunk = () => ({
     display: 'flex',
     margin: '0 auto',
     maxWidth: ui.taskColumnsMaxWidth,
-    padding: `3rem ${ui.dashGutterSmall} 1.25rem`,
+    padding: `2rem ${ui.dashGutterSmall}`,
     position: 'relative',
     width: '100%',
     [ui.dashBreakpoint]: {

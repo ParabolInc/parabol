@@ -328,7 +328,7 @@ const ui = {
   dashAgendaWidth: '15rem',
   dashBackgroundColor: backgroundColor,
   dashBorderColor: appTheme.palette.light90d,
-  dashBreakpoint: BREAKPOINT_WIDE,
+  dashBreakpoint: BREAKPOINT_WIDER,
   dashGutterSmall: '1.25rem',
   dashGutterLarge: '2rem',
   dashHeaderMinHeight: '4rem',

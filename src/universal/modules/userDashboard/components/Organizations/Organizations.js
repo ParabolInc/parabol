@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-// import IconControl from 'universal/components/IconControl/IconControl';
 import {SettingsWrapper} from 'universal/components/Settings';
 import {Button, Panel} from 'universal/components';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
@@ -18,16 +17,6 @@ const Organizations = (props) => {
   const gotoNewTeam = () => {
     history.push('/newteam');
   };
-  // const addNewOrg = () =>
-  //   (<IconControl
-  //     icon="plus-square-o"
-  //     iconSize={ui.iconSize2x}
-  //     label="New Organization"
-  //     lineHeight={ui.iconSize2x}
-  //     onClick={gotoNewTeam}
-  //     padding={`0 0 0 ${ui.panelGutter}`}
-  //   />);
-
   const addNewOrg = () =>
     (<Button
       aria-label="Tap to create a new organzation"
