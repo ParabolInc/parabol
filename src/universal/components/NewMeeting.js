@@ -6,14 +6,13 @@ import withHotkey from 'react-hotkey-hoc';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import type {Match, RouterHistory} from 'react-router-dom';
 import {Route, Switch, withRouter} from 'react-router-dom';
 import styled from 'react-emotion';
 import {Helmet} from 'react-helmet';
 import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
 import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
 import NewMeetingLobby from 'universal/components/NewMeetingLobby';
-
-import type {Match, RouterHistory} from 'react-router-dom';
 import type {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel, meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
@@ -30,6 +29,7 @@ import handleHotkey from 'universal/utils/meetings/handleHotkey';
 import fromUrlToStage from 'universal/utils/meetings/fromUrlToStage';
 import {connect} from 'react-redux';
 import KillNewMeetingMutation from 'universal/mutations/KillNewMeetingMutation';
+import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -59,7 +59,7 @@ const MeetingAreaHeader = styled('div')({
 
 type Props = {
   atmosphere: Object,
-  bindHotkey: (mousetrapKey: string|Array<string>, cb: () => void) => void,
+  bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void,
   localPhase: NewMeetingPhaseTypeEnum,
   history: RouterHistory,
   match: Match,
@@ -86,6 +86,7 @@ class NewMeeting extends Component<Props> {
       KillNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
     });
   }
+
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
     const {atmosphere, history, viewer: {team: {newMeeting}}} = this.props;
     if (!newMeeting) return;
@@ -141,11 +142,15 @@ class NewMeeting extends Component<Props> {
   render() {
     const {atmosphere, location, localPhase, meetingType, viewer} = this.props;
     const {team} = viewer;
-    const {newMeeting, teamName} = team; const {facilitatorUserId} = newMeeting || {};
+    const {newMeeting, teamName} = team;
+    const {facilitatorStageId, facilitatorUserId, phases} = newMeeting || {};
     const meetingSlug = meetingTypeToSlug[meetingType];
     const {viewerId} = atmosphere;
     const isFacilitating = facilitatorUserId === viewerId;
-    const meetingLabel = meetingTypeToLabel[meetingType]; return (
+    const meetingLabel = meetingTypeToLabel[meetingType];
+    const stage = fromUrlToStage(phases);
+    const inSync = stage && stage.id === facilitatorStageId;
+    return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
         <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
@@ -158,7 +163,8 @@ class NewMeeting extends Component<Props> {
               localPhaseItem={null}
               team={team}
             />
-          </MeetingAreaHeader><ErrorBoundary>
+          </MeetingAreaHeader>
+          <ErrorBoundary>
             <Switch>
               <Route
                 path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
@@ -171,6 +177,7 @@ class NewMeeting extends Component<Props> {
             </Switch>
           </ErrorBoundary>
         </MeetingArea>
+        {!inSync && <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />}
       </MeetingContainer>
     );
   }
