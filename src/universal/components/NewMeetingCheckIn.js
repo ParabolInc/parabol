@@ -2,7 +2,7 @@
 import * as React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import type {Match} from 'react-router-dom';
-import {matchPath, Redirect, withRouter} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
@@ -16,11 +16,13 @@ import CheckInControls from 'universal/modules/meeting/components/CheckInControl
 import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
-import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt';
 import fromUrlToStage from 'universal/utils/meetings/fromUrlToStage';
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import {CHECKIN} from 'universal/utils/constants';
+import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams';
+import {phaseTypeToSlug} from 'universal/utils/meetings/lookups';
+import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -58,13 +60,8 @@ const NewMeetingCheckIn = (props: Props) => {
   const {atmosphere, gotoNext, onError, onCompleted, submitMutation, submitting, team} = props;
   const {newMeeting} = team;
   if (!newMeeting) {
-    const pathRes = matchPath(location.pathname, {
-      path: '/:meetingSlug/:teamId/:phaseType/:stageIdx'
-    });
-    if (!pathRes) return <Redirect to={'/'} />;
-    const {params: {meetingSlug, teamId}} = pathRes;
-    const to = meetingSlug && teamId ? `/${meetingSlug}/${teamId}` : '/';
-    return <Redirect to={to} />;
+    const {teamId, meetingSlug} = getMeetingPathParams();
+    return <Redirect to={`/${meetingSlug}/${teamId}`} />
   }
   const {facilitatorStageId, facilitator: {facilitatorName, facilitatorUserId}, phases} = newMeeting;
   const stage = fromUrlToStage(phases);

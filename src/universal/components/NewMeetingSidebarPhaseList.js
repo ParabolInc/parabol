@@ -10,6 +10,7 @@ import {phaseLabelLookup, phaseTypeToPhaseGroup} from 'universal/utils/meetings/
 
 import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeetingSidebarPhaseList_viewer as Viewer} from './__generated__/NewMeetingSidebarPhaseList_viewer.graphql';
+import findStageById from 'universal/utils/meetings/findStageById';
 
 const NavList = styled('ul')({
   listStyle: 'none',
@@ -18,6 +19,8 @@ const NavList = styled('ul')({
 });
 
 const isNavigable = (group, stages, isFacilitator) => {
+  // FIXME
+  return false;
   const firstStageIdxInGroup = stages.findIndex((stage) => phaseTypeToPhaseGroup[stage.type] === group);
   const currentStageIdx = stages.findIndex((stage) => stage.isComplete);
   if (!isFacilitator) {
@@ -36,11 +39,10 @@ type Props = {
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
   const {atmosphere: {viewerId}, localPhase, viewer: {team: {meetingSettings: {phaseTypes}, newMeeting}}} = props;
-  const {facilitatorUserId} = newMeeting || {};
-  const stages = newMeeting && newMeeting.stages || [];
+  const {facilitatorUserId, facilitatorStageId, phases = []} = newMeeting || {};
   const localGroup = phaseTypeToPhaseGroup[localPhase];
-  const facilitatorStage = stages.find((stage) => stage.isFacilitatorStage);
-  const facilitatorPhaseGroup = facilitatorStage ? phaseTypeToPhaseGroup[facilitatorStage.type] : LOBBY;
+  const stageRes = findStageById(phases, facilitatorStageId);
+  const facilitatorPhaseGroup = stageRes ? phaseTypeToPhaseGroup[stageRes.phase.phaseType] : LOBBY;
   const isFacilitator = facilitatorUserId === viewerId;
   return (
     <NavList>
@@ -52,7 +54,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
             listPrefix={String(idx + 1)}
             isActive={localGroup === name}
             isFacilitatorPhaseGroup={facilitatorPhaseGroup === name}
-            isNavigable={isNavigable(name, stages, isFacilitator)}
+            isNavigable={isNavigable(name, phases, isFacilitator)}
             handleClick={() => {}}
           />);
         })}

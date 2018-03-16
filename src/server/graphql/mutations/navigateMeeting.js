@@ -66,7 +66,7 @@ export default {
         updatedAt: now
       });
 
-    const data = {meetingId};
+    const data = {meetingId, stageIdCompleted: completedStageId};
     publish(TEAM, teamId, NavigateMeetingPayload, data, subOptions);
     return data;
   }

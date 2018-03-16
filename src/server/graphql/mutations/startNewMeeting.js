@@ -69,7 +69,8 @@ export default {
       facilitatorStageId,
       meetingNumber: meetingCount + 1,
       meetingType,
-      phases
+      phases,
+      teamId
     };
     const newMeeting = extendNewMeetingForType(newMeetingBase);
     await r({

@@ -87,13 +87,18 @@ class NewMeeting extends Component<Props> {
     });
   }
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
-    const {atmosphere, history, meetingType, viewer: {team: {teamId, newMeeting}}} = this.props;
+    const {atmosphere, history, viewer: {team: {newMeeting}}} = this.props;
     if (!newMeeting) return;
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
-    const nextUrl = fromStageIdToUrl(stageId, phases, teamId, meetingType);
+    const nextUrl = fromStageIdToUrl(stageId, phases);
     if (!nextUrl) return;
     const {viewerId} = atmosphere;
     const isFacilitating = viewerId === facilitatorUserId;
+    // calling history.push above the mutation because
+    // if an odd number of values are set inside the optimisticUpdater (not 0 to 2 values),
+    // then the components are rerendered before the url is changed (why?)
+    // this is also mitigated by passing location in from the Root component, but avoiding a rerender is nice
+    history.push(nextUrl);
     if (isFacilitating) {
       const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
       const variables: Variables = {meetingId, facilitatorStageId: stageId};
@@ -103,7 +108,6 @@ class NewMeeting extends Component<Props> {
       // submitMutation();
       NavigateMeetingMutation(atmosphere, variables, onError, onCompleted);
     }
-    history.push(nextUrl);
   };
 
   gotoNext = () => {

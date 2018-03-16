@@ -72,7 +72,7 @@ const NewMeetingLobby = (props: Props) => {
   const {meetingSettings: {meetingsOffered, meetingsRemaining}, newMeeting, teamId, teamName, tier} = team;
   if (newMeeting) {
     const {facilitatorStageId, phases} = newMeeting;
-    const to = fromStageIdToUrl(facilitatorStageId, phases, teamId, meetingType);
+    const to = fromStageIdToUrl(facilitatorStageId, phases);
     return <Redirect to={to} />;
   }
   const onStartMeetingClick = () => {

@@ -1,9 +1,7 @@
-import {matchPath} from 'react-router-dom';
+import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams';
 
 const fromUrlToStage = (phases) => {
-  const {params: {phaseType, stageIdx}} = matchPath(location.pathname, {
-    path: '/:meetingType/:teamId/:phaseType/:stageIdx'
-  });
+  const {phaseType, stageIdx} = getMeetingPathParams();
   const phase = phases.find((curPhase) => curPhase.phaseType === phaseType);
   return phase ? phase.stages[stageIdx - 1] : undefined;
 };

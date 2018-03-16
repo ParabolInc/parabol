@@ -10,6 +10,7 @@ import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberM
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 import {removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
+import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -38,7 +39,8 @@ const subscription = graphql`
 `;
 
 const onNextHandlers = {
-  StartNewMeetingMutation: startNewMeetingTeamOnNext
+  StartNewMeetingMutation: startNewMeetingTeamOnNext,
+  NavigateMeetingMutation: navigateMeetingTeamOnNext
 };
 
 const TeamSubscription = (environment, queryVariables, subParams) => {

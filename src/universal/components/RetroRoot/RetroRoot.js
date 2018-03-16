@@ -59,7 +59,8 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight="50vh" />}
-          ready={<NewMeeting localPhase={localPhase} meetingType={meetingType} />}
+          // pass in location to ensure the route change always triggers a rerender
+          ready={<NewMeeting location={location} localPhase={localPhase} meetingType={meetingType} />}
         />
       )}
     />
