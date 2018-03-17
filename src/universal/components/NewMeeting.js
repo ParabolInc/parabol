@@ -19,7 +19,6 @@ import ui from 'universal/styles/ui';
 import {CHECKIN} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
-import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
 import ErrorBoundary from 'universal/components/ErrorBoundary';
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
@@ -30,6 +29,7 @@ import KillNewMeetingMutation from 'universal/mutations/KillNewMeetingMutation';
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import type {Dispatch} from 'redux';
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup';
+import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -89,18 +89,12 @@ class NewMeeting extends Component<Props> {
   }
 
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
-    const {atmosphere, history, viewer: {team: {newMeeting}}} = this.props;
+    const {atmosphere, viewer: {team: {newMeeting}}} = this.props;
     if (!newMeeting) return;
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
-    const nextUrl = fromStageIdToUrl(stageId, phases);
-    if (!nextUrl) return;
     const {viewerId} = atmosphere;
     const isFacilitating = viewerId === facilitatorUserId;
-    // calling history.push above the mutation because
-    // if an odd number of values are set inside the optimisticUpdater (not 0 to 2 values),
-    // then the components are rerendered before the url is changed (why?)
-    // this is also mitigated by passing location in from the Root component, but avoiding a rerender is nice
-    history.push(nextUrl);
+    updateLocalStage(atmosphere, meetingId, stageId);
     if (isFacilitating) {
       const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
       const variables: Variables = {meetingId, facilitatorStageId: stageId};
@@ -149,7 +143,7 @@ class NewMeeting extends Component<Props> {
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
-        <NewMeetingSidebar meetingType={meetingType} viewer={viewer} />
+        <NewMeetingSidebar gotoStageId={this.gotoStageId} meetingType={meetingType} viewer={viewer} />
         <MeetingArea>
           <MeetingAreaHeader>
             <NewMeetingAvatarGroup
@@ -160,7 +154,7 @@ class NewMeeting extends Component<Props> {
           <ErrorBoundary>
             <Switch>
               <Route
-                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
+                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}`}
                 render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
               />
               <Route
@@ -222,9 +216,6 @@ export default createFragmentContainer(
           meetingId: id
           facilitatorStageId
           facilitatorUserId
-          localPhase {
-            id
-          }
           localStage {
             localStageId: id
           }

@@ -31,7 +31,7 @@ const UpdateNewCheckInQuestionMutation = (environment, variables, onCompleted, o
       const {meetingId, checkInQuestion} = variables;
       const meeting = store.get(meetingId);
       const phases = meeting.getLinkedRecords('phases');
-      const checkInPhase = phases.find((phase) => phase.__typename === 'CheckInPhase');
+      const checkInPhase = phases.find((phase) => phase.getValue('__typename') === 'CheckInPhase');
       checkInPhase.setValue(checkInQuestion, 'checkInQuestion');
     },
     onCompleted,

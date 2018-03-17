@@ -23,7 +23,7 @@ const MeetingAvatarGroupInner = styled('div')({
 });
 
 type Props = {
-  gotoStageId: () => void,
+  gotoStageId: (stageId: string) => void,
   team: Team
 };
 
@@ -35,16 +35,19 @@ const NewMeetingAvatarGroup = (props: Props) => {
   return (
     <MeetingAvatarGroupRoot>
       <MeetingAvatarGroupInner>
-        {teamMembers.map((teamMember) => (
-          <NewMeetingAvatar
+        {teamMembers.map((teamMember) => {
+          return (<NewMeetingAvatar
             key={teamMember.id}
-            gotoStageId={gotoStageId}
+            gotoStage={() => {
+              const teamMemberStage = localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMember.id);
+              const teamMemberStageId = teamMemberStage && teamMemberStage.id || '';
+              gotoStageId(teamMemberStageId);
+            }}
             isFacilitatorStage={facilitatorStageTeamMemberId === teamMember.id}
             newMeeting={newMeeting}
-            stage={localPhase.stages.find((stage) => stage.teamMemberId === teamMember.id)}
             teamMember={teamMember}
-          />)
-        )}
+          />);
+        })}
       </MeetingAvatarGroupInner>
     </MeetingAvatarGroupRoot>
   );
@@ -57,35 +60,21 @@ export default createFragmentContainer(
       teamId: id
       teamMembers(sortBy: "checkInOrder") {
         id
-        isCheckedIn
-        isConnected
-        isSelf
-        picture
-        ...MeetingAvatarMenu_avatar
+        ...NewMeetingAvatar_teamMember
       }
       newMeeting {
         facilitatorStageId
         localPhase {
           id
-          phaseType
           stages {
-            ... on CheckInStage {
+            ... on NewMeetingTeamMemberStage {
               teamMemberId
-              ...NewMeetingAvatar_stage
             }
-          }
-        }
-        localStage {
-          ...on CheckInStage {
-            teamMemberId
           }
         }
         phases {
           phaseType
           stages {
-            ... on CheckInStage {
-              teamMemberId
-            }
             id
           }
         }

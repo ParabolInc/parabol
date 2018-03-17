@@ -2,7 +2,7 @@
 import * as React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import type {RouterHistory} from 'react-router-dom';
-import {Redirect, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
@@ -21,7 +21,7 @@ import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/Co
 import makeHref from 'universal/utils/makeHref';
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
-import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
+import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 
 const ButtonBlock = styled('div')({
   margin: '0',
@@ -71,9 +71,9 @@ const NewMeetingLobby = (props: Props) => {
   const {atmosphere, history, onError, onCompleted, meetingType, submitMutation, submitting, team} = props;
   const {meetingSettings: {meetingsOffered, meetingsRemaining}, newMeeting, teamId, teamName, tier} = team;
   if (newMeeting) {
-    const {facilitatorStageId, phases} = newMeeting;
-    const to = fromStageIdToUrl(facilitatorStageId, phases);
-    return <Redirect to={to} />;
+    const {facilitatorStageId, meetingId} = newMeeting;
+    updateLocalStage(atmosphere, meetingId, facilitatorStageId);
+    return null;
   }
   const onStartMeetingClick = () => {
     submitMutation();
@@ -144,14 +144,9 @@ export default createFragmentContainer(
         meetingsRemaining
       }
       newMeeting {
+        meetingId: id
         facilitatorStageId
         meetingType
-        phases {
-          phaseType
-          stages {
-            id
-          }
-        }
       }
       teamId: id
       teamName: name

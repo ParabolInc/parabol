@@ -13,7 +13,7 @@ import styled from 'react-emotion';
 import LoadableNewMeetingAvatarMenu from 'universal/modules/meeting/components/LoadableNewMeetingAvatarMenu';
 import {CHECKIN, UPDATES} from 'universal/utils/constants';
 
-import type {NewMeetingAvatar_stage as Stage} from './__generated__/NewMeetingAvatar_stage.graphql';
+import type {NewMeetingAvatar_teamMember as TeamMember} from './__generated__/NewMeetingAvatar_teamMember.graphql';
 import type {NewMeetingAvatar_newMeeting as NewMeeting} from './__generated__/NewMeetingAvatar_newMeeting.graphql';
 
 const originAnchor = {
@@ -82,27 +82,24 @@ const TagBlock = styled('div')({
 });
 
 type Props = {
-  gotoStageId: (stageId: string) => void,
+  gotoStage: () => void,
   isFacilitatorStage: boolean,
   newMeeting: NewMeeting,
-  stage: Stage,
+  teamMember: TeamMember,
 }
 const NewMeetingAvatar = (props: Props) => {
-  const {gotoStageId, isFacilitatorStage, newMeeting, stage} = props;
+  const {gotoStage, isFacilitatorStage, newMeeting, teamMember} = props;
   const {facilitatorUserId, localPhase, localStage} = newMeeting || {};
-  const localPhaseType = localPhase.phaseType;
+  const localPhaseType = localPhase && localPhase.phaseType;
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES;
-  const teamMember = stage.teamMember || {};
-  const picture = teamMember.picture || defaultUserAvatar;
-  const avatarIsFacilitating = teamMember.userId === facilitatorUserId;
-  const handleNavigate = canNavigate ? () => {
-    gotoStageId(stage.id);
-  } : undefined;
+  const {teamMemberId, isConnected, isSelf, isCheckedIn, picture = defaultUserAvatar, userId} = teamMember;
+  const avatarIsFacilitating = userId === facilitatorUserId;
+  const handleNavigate = canNavigate ? gotoStage : undefined;
   return (
     <Item>
       <AvatarBlock
         isReadOnly={!canNavigate}
-        isLocalStage={localStage && localStage.teamMemberId === teamMember.id}
+        isLocalStage={localStage && localStage.teamMemberId === teamMemberId}
         isFacilitatorStage={isFacilitatorStage}
       >
         <LoadableMenu
@@ -120,8 +117,8 @@ const NewMeetingAvatar = (props: Props) => {
             hasBadge
             isClickable
             picture={picture}
-            isConnected={teamMember.isConnected || teamMember.isSelf}
-            isCheckedIn={teamMember.isCheckedIn}
+            isConnected={isConnected || isSelf}
+            isCheckedIn={isCheckedIn}
             size="fill"
           />}
         />
@@ -138,35 +135,24 @@ const NewMeetingAvatar = (props: Props) => {
 export default createFragmentContainer(
   connect()(withAtmosphere(NewMeetingAvatar)),
   graphql`
-    fragment NewMeetingAvatar_stage on NewMeetingStage {
-      id
-      ... on CheckInStage {
-        teamMember {
-          id
-          isCheckedIn
-          isConnected
-          isSelf
-          picture
-          userId
-          ...NewMeetingAvatarMenu_teamMember
-        }
-      }
+    fragment NewMeetingAvatar_teamMember on TeamMember {
+      teamMemberId: id
+      isCheckedIn
+      isConnected
+      isSelf
+      picture
+      userId
+      ...NewMeetingAvatarMenu_teamMember
     }
     fragment NewMeetingAvatar_newMeeting on NewMeeting {
       facilitatorUserId
       localStage {
-        ... on CheckInStage {
+        ... on NewMeetingTeamMemberStage {
           teamMemberId
         }
       }
       localPhase {
         phaseType
-      }
-      phases {
-        phaseType
-        stages {
-          id
-        }
       }
       ...NewMeetingAvatarMenu_newMeeting
     }

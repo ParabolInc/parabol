@@ -51,12 +51,14 @@ const SidebarSubHeading = styled('div')({
 });
 
 type Props = {
+  gotoStageId: (stageId: string) => void,
   meetingType: MeetingTypeEnum,
   viewer: Viewer
 }
 
 const NewMeetingSidebar = (props: Props) => {
   const {
+    gotoStageId,
     meetingType,
     viewer
   } = props;
@@ -78,7 +80,7 @@ const NewMeetingSidebar = (props: Props) => {
         <LabelHeading>{'Action Meeting'}</LabelHeading>
       </SidebarSubHeading>
       <Nav>
-        <NewMeetingSidebarPhaseList viewer={viewer} />
+        <NewMeetingSidebarPhaseList gotoStageId={gotoStageId} viewer={viewer} />
       </Nav>
       <LogoBlock variant="primary" />
     </SidebarParent>

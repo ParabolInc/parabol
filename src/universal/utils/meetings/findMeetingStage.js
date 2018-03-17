@@ -3,23 +3,19 @@
 
 // import type {NewMeetingPhase} from 'universal/types/schema.flow';
 
-const findStageAfterId = (phases: $ReadOnlyArray<Object>, stageId: string) => {
+const findMeetingStage = (phases: $ReadOnlyArray<Object>) => {
   if (!phases) return undefined;
-  let stageFound = false;
   for (let ii = 0; ii < phases.length; ii++) {
     const phase = phases[ii];
     const {stages} = phase;
     for (let jj = 0; jj < stages.length; jj++) {
       const stage = stages[jj];
-      if (stageFound === true) {
-        return {phase, stage};
-      }
-      if (stage.id === stageId) {
-        stageFound = true;
+      if (!stage.isComplete) {
+        return {stage, phase};
       }
     }
   }
   return undefined;
 };
 
-export default findStageAfterId;
+export default findMeetingStage;

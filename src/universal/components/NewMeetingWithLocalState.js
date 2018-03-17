@@ -1,83 +1,130 @@
 // @flow
 import React, {Component} from 'react';
 
-import type {Match} from 'react-router-dom';
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
+import type {Match, RouterHistory} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
+import {createFragmentContainer} from 'react-relay';
 import findKeyByValue from 'universal/utils/findKeyByValue';
-import {phaseTypeToSlug} from 'universal/utils/meetings/lookups';
+import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {withLocationMeetingState_viewer as Viewer} from '../decorators/__generated__/withLocalMeetingState_viewer.graphql';
 import NewMeeting from 'universal/components/NewMeeting';
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
+import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
+import updateLocalStage from 'universal/utils/relay/updateLocalStage';
+import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
+
 /*
- * Extracts the local phase and stage from the url and puts it into the relay store
+ * Creates a 2-way sync between the URL and the local state
+ * On initial load, extracts state from the url & puts it in relay's local state
+ * Listens for changes to the local state and updates the URL accordingly.
+ * Updating the URL requires full knowledge of the meeting's phases & stages,
+ * so by extracting it, components and callbacks (like onNext, which can't access the meeting) can
+ * trigger a redirect by only knowing the stageId.
+ * Also, by making the URL a function of the local state, we don't need to worry about
+ * race conditions that exist between updating the URL & deriving state form the URL during rerender.
+ *
+ * tl;dr it gives the client a pretty URL for free and the dev doesn't have to muck around with history.push
  */
 
 type Props = {
   atmosphere: Object,
+  history: RouterHistory,
   match: Match,
+  meetingType: MeetingTypeEnum,
   viewer: Viewer
 }
 
-class NewMeetingWithLocalState extends Component<Props> {
+type State = {
+  // true if the initial URL is legit, else false
+  safeRoute: boolean
+}
+
+class NewMeetingWithLocalState extends Component<Props, State> {
   constructor(props) {
     super(props);
-    this.updateLocalState(props.match.params);
+    const safeRoute = this.updateRelayFromURL(props.match.params);
+    this.state = {
+      safeRoute
+    };
   }
 
   componentWillReceiveProps(nextProps) {
-    const {match: {params}} = nextProps;
-    const {match: {params: oldParams}} = this.props;
-    if (params !== oldParams) {
-      this.updateLocalState(params);
+    const {viewer: {team: {newMeeting}}} = nextProps;
+    const {viewer: {team: {newMeeting: oldMeeting}}} = this.props;
+    const localStageId = newMeeting && newMeeting.localStage && newMeeting.localStage.id;
+    const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id;
+    if (localStageId !== oldLocalStageId) {
+      const {history, match: {params: {teamId}}, meetingType} = nextProps;
+      const meetingSlug = meetingTypeToSlug[meetingType];
+      if (!newMeeting && teamId) {
+        // goto lobby
+        history.push(`/${meetingSlug}/${teamId}`);
+      }
+      const {phases} = newMeeting;
+      const nextUrl = fromStageIdToUrl(localStageId, phases);
+      history.push(nextUrl);
+    }
+    if (!this.state.safeRoute) {
+      this.setState({safeRoute: true})
     }
   }
 
-  updateLocalState(params) {
-    const {localPhaseSlug, stageIdxSlug, teamId} = params;
-    const {atmosphere, viewer: {team: {newMeeting}}} = this.props;
+  updateRelayFromURL(params) {
+    const {localPhaseSlug, stageIdxSlug} = params;
+    const {atmosphere, history, match: {params: {teamId}}, viewer: {team: {newMeeting}}, meetingType} = this.props;
+    const meetingSlug = meetingTypeToSlug[meetingType];
+    const {viewerId} = atmosphere;
+    const lobbyUrl = `/${meetingSlug}/${teamId}`;
     if (!newMeeting) {
       // in lobby
-      return;
+      history.push(lobbyUrl);
+      return false;
     }
 
     const localPhaseType = findKeyByValue(phaseTypeToSlug, localPhaseSlug);
     const stageIdx = stageIdxSlug ? Number(stageIdxSlug) - 1 : 0;
-    const {phases} = newMeeting;
+    const {facilitatorUserId, meetingId, phases} = newMeeting;
     const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType);
-    if (!phase) return;
+    if (!phase) {
+      // typo in url
+      history.push(lobbyUrl);
+      return false;
+    }
     const stage = phase.stages[stageIdx];
-    commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId).getLinkedRecord('newMeeting')
-        .setLinkedRecord(store.get(stage.id), 'localStage')
-        .setLinkedRecord(store.get(phase.id), 'localPhase');
-    });
+    const stageId = stage && stage.id;
+    const isViewerFacilitator = viewerId === facilitatorUserId;
+    const isNavigable = getIsNavigable(isViewerFacilitator, phases, stageId)
+    if (!isNavigable) {
+      // too early to visit meeting or typo
+      history.push(lobbyUrl);
+      return false;
+    }
+    updateLocalStage(atmosphere, meetingId, stage.id);
+    return false;
   }
 
   render() {
-    return <NewMeeting {...this.props} />;
+    return this.state.safeRoute ? <NewMeeting {...this.props} /> : null;
   }
 }
 
 export default createFragmentContainer(
-  withAtmosphere(NewMeetingWithLocalState),
+  withRouter(withAtmosphere(NewMeetingWithLocalState)),
   graphql`
     fragment NewMeetingWithLocalState_viewer on User {
       ...NewMeeting_viewer
       team(teamId: $teamId) {
         newMeeting {
+          meetingId: id
+          localStage {
+            id
+          }
           phases {
             id
             phaseType
             stages {
               id
-              isComplete
-            }
-            ... on CheckInPhase {
-              checkInGreeting {
-                content
-                language
-              }
-              checkInQuestion
             }
           }
         }

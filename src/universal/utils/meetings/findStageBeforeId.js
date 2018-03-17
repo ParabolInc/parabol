@@ -7,7 +7,7 @@ const findStageBeforeId = (phases, stageId) => {
     for (let jj = stages.length - 1; jj >= 0; jj--) {
       const stage = stages[jj];
       if (stageFound === true) {
-        return {phase, stage, stageIdx: jj};
+        return {phase, stage};
       }
       if (stage.id === stageId) {
         stageFound = true;

@@ -1,18 +1,11 @@
-import {commitMutation} from 'react-relay';
-import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
-import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams';
-import findStageByUrl from 'universal/utils/meetings/findStageByUrl';
+import {commitLocalUpdate, commitMutation} from 'react-relay';
+import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage';
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
     meeting {
+      id
       facilitatorStageId
-      phases {
-        phaseType
-        stages {
-          id
-        }
-      }
     }
     oldFacilitatorStage {
       id
@@ -33,17 +26,15 @@ const mutation = graphql`
 `;
 
 export const navigateMeetingTeamOnNext = (payload, context) => {
-  const {history} = context;
-  const {meeting: {facilitatorStageId, phases}, oldFacilitatorStage: {id: oldFacilitatorStageId}} = payload;
-  const {meetingSlug, teamId} = getMeetingPathParams();
-  if (!meetingSlug || !teamId) return;
-  const {stage: viewerStage} = findStageByUrl(phases);
-  const {id: viewerStageId} = viewerStage;
-  const inSync = viewerStageId === oldFacilitatorStageId;
-  if (inSync) {
-    const facilitatorStageUrl = fromStageIdToUrl(facilitatorStageId, phases);
-    history.push(facilitatorStageUrl);
-  }
+  const {environment} = context;
+  const {meeting: {id: meetingId, facilitatorStageId}, oldFacilitatorStage: {id: oldFacilitatorStageId}} = payload;
+  commitLocalUpdate(environment, (store) => {
+    const meetingProxy = store.get(meetingId);
+    const viewerStageId = meetingProxy.getLinkedRecord('localStage').getValue('id');
+    if (viewerStageId === oldFacilitatorStageId) {
+      setLocalStageAndPhase(store, meetingId, facilitatorStageId);
+    }
+  });
 };
 
 const NavigateMeetingMutation = (environment, variables, onError, onCompleted) => {

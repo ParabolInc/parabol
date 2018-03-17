@@ -2,7 +2,7 @@
 import * as React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import type {Match} from 'react-router-dom';
-import {Redirect, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
@@ -19,7 +19,6 @@ import styled from 'react-emotion';
 import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt';
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import {CHECKIN} from 'universal/utils/constants';
-import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams';
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -56,11 +55,6 @@ type Props = {
 const NewMeetingCheckIn = (props: Props) => {
   const {atmosphere, gotoNext, onError, onCompleted, submitMutation, submitting, team} = props;
   const {newMeeting} = team;
-  if (!newMeeting) {
-    const {teamId, meetingSlug} = getMeetingPathParams();
-    if (!teamId || !meetingSlug) return null;
-    return <Redirect to={`/${meetingSlug}/${teamId}`} />;
-  }
   const {facilitator: {facilitatorName, facilitatorUserId}, localStage: {localStageId, teamMember}, phases} = newMeeting;
   const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
     if (submitting) return;
@@ -70,7 +64,7 @@ const NewMeetingCheckIn = (props: Props) => {
   };
   const {isSelf: isMyMeetingSection} = teamMember;
   const nextStageRes = findStageAfterId(phases, localStageId);
-  // in case the checkin in the last phase of the meeting
+  // in case the checkin is the last phase of the meeting
   if (!nextStageRes) return null;
   const {stage: nextStage, phase: nextPhase} = nextStageRes;
   const lastCheckInStage = nextPhase.phaseType !== CHECKIN;

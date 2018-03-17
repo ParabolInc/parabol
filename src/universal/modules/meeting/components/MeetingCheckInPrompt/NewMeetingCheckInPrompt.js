@@ -49,6 +49,14 @@ export default createFragmentContainer(
             }
           }
         }
+        # request question from server to use locally (above)
+        phases {
+          ... on CheckInPhase {
+            checkInGreeting {
+              ...NewMeetingCheckInGreeting_checkInGreeting
+            }
+          }
+        }
       }
     }
     fragment NewMeetingCheckInPrompt_teamMember on TeamMember {

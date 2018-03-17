@@ -49,9 +49,7 @@ const EditorBlock = styled('div')({
 const getCheckInQuestion = (props) => {
   const {team: {newMeeting}} = props;
   if (!newMeeting) return '';
-  const {phases} = newMeeting;
-  const checkInPhase = phases.find((phase) => phase.checkInQuestion) || {};
-  return checkInPhase.checkInQuestion || '';
+  return newMeeting.localPhase.checkInQuestion;
 };
 
 type Props = {
@@ -180,6 +178,12 @@ export default createFragmentContainer(
       newMeeting {
         meetingId: id
         facilitatorUserId
+        localPhase {
+          ... on CheckInPhase {
+            checkInQuestion
+          }
+        }
+        # request question from server to use locally (above)
         phases {
           ... on CheckInPhase {
             checkInQuestion
