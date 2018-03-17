@@ -10,6 +10,9 @@ import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/Co
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 import LogoBlock from 'universal/components/LogoBlock/LogoBlock';
 import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList';
+import makeHref from 'universal/utils/makeHref';
+import type {MeetingTypeEnum} from 'universal/types/schema.flow';
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
 const Nav = styled('nav')({
   display: 'flex',
@@ -48,25 +51,28 @@ const SidebarSubHeading = styled('div')({
 });
 
 type Props = {
+  meetingType: MeetingTypeEnum,
   viewer: Viewer
 }
 
 const NewMeetingSidebar = (props: Props) => {
   const {
+    meetingType,
     viewer
   } = props;
   const {team: {teamId, teamName}} = viewer;
+  const meetingSlug = meetingTypeToSlug[meetingType];
   const relativeLink = `/retro/${teamId}`;
   return (
     <SidebarParent>
       <SidebarHeader>
         <TeamDashboardLink
-          to={`/team/${teamId}`}
+          to={`/${meetingSlug}/${teamId}`}
           title={`Go to the ${teamName} Team Dashboard`}
         >
           {teamName}
         </TeamDashboardLink>
-        <CopyShortLink icon="link" label="Meeting Link" url={relativeLink} />
+        <CopyShortLink icon="link" label="Meeting Link" url={makeHref(relativeLink)} />
       </SidebarHeader>
       <SidebarSubHeading>
         <LabelHeading>{'Action Meeting'}</LabelHeading>

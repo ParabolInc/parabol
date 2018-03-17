@@ -149,7 +149,7 @@ class NewMeeting extends Component<Props> {
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
-        <NewMeetingSidebar viewer={viewer} />
+        <NewMeetingSidebar meetingType={meetingType} viewer={viewer} />
         <MeetingArea>
           <MeetingAreaHeader>
             <NewMeetingAvatarGroup
