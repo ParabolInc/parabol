@@ -12,7 +12,7 @@ const findStageAfterId = (phases: $ReadOnlyArray<Object>, stageId: string) => {
     for (let jj = 0; jj < stages.length; jj++) {
       const stage = stages[jj];
       if (stageFound === true) {
-        return {phase, stage, phaseIdx: ii, stageIdx: jj};
+        return {phase, stage, stageIdx: jj};
       }
       if (stage.id === stageId) {
         stageFound = true;

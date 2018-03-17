@@ -11,9 +11,8 @@ import {Route, Switch, withRouter} from 'react-router-dom';
 import styled from 'react-emotion';
 import {Helmet} from 'react-helmet';
 import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
-import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
 import NewMeetingLobby from 'universal/components/NewMeetingLobby';
-import type {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
+import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel, meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
@@ -26,10 +25,11 @@ import ErrorBoundary from 'universal/components/ErrorBoundary';
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId';
 import handleHotkey from 'universal/utils/meetings/handleHotkey';
-import fromUrlToStage from 'universal/utils/meetings/fromUrlToStage';
 import {connect} from 'react-redux';
 import KillNewMeetingMutation from 'universal/mutations/KillNewMeetingMutation';
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
+import type {Dispatch} from 'redux';
+import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -60,13 +60,14 @@ const MeetingAreaHeader = styled('div')({
 type Props = {
   atmosphere: Object,
   bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void,
-  localPhase: NewMeetingPhaseTypeEnum,
+  dispatch: Dispatch<*>,
   history: RouterHistory,
   match: Match,
   meetingType: MeetingTypeEnum,
   submitting: boolean,
   viewer: Viewer
 }
+
 type Variables = {
   meetingId: string,
   facilitatorStageId: ?string,
@@ -76,7 +77,7 @@ type Variables = {
 class NewMeeting extends Component<Props> {
   constructor(props) {
     super(props);
-    const {atmosphere, bindHotkey, dispatch, history, match: {params: {teamId}}, meetingType, submitting, viewer: {team: {newMeeting}}} = props;
+    const {atmosphere, bindHotkey, dispatch, history, submitting} = props;
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
     bindHotkey('i c a n t h a c k i t', () => {
@@ -114,9 +115,8 @@ class NewMeeting extends Component<Props> {
   gotoNext = () => {
     const {viewer: {team: {newMeeting}}} = this.props;
     if (!newMeeting) return;
-    const {phases} = newMeeting;
-    const stage = fromUrlToStage(phases);
-    const nextStageRes = findStageAfterId(phases, stage.id);
+    const {localStage: {localStageId}, phases} = newMeeting;
+    const nextStageRes = findStageAfterId(phases, localStageId);
     if (!nextStageRes) {
       // TODO end meeting!
       return;
@@ -128,9 +128,8 @@ class NewMeeting extends Component<Props> {
   gotoPrev = () => {
     const {viewer: {team: {newMeeting}}} = this.props;
     if (!newMeeting) return;
-    const {phases} = newMeeting;
-    const stage = fromUrlToStage(phases);
-    const nextStageRes = findStageBeforeId(phases, stage.id);
+    const {localStage: {localStageId}, phases} = newMeeting;
+    const nextStageRes = findStageBeforeId(phases, localStageId);
     if (!nextStageRes) {
       // TODO end meeting!
       return;
@@ -140,27 +139,21 @@ class NewMeeting extends Component<Props> {
   }
 
   render() {
-    const {atmosphere, location, localPhase, meetingType, viewer} = this.props;
+    const {meetingType, viewer} = this.props;
     const {team} = viewer;
     const {newMeeting, teamName} = team;
-    const {facilitatorStageId, facilitatorUserId, phases} = newMeeting || {};
+    const {facilitatorStageId, localStage} = newMeeting || {};
     const meetingSlug = meetingTypeToSlug[meetingType];
-    const {viewerId} = atmosphere;
-    const isFacilitating = facilitatorUserId === viewerId;
     const meetingLabel = meetingTypeToLabel[meetingType];
-    const stage = fromUrlToStage(phases);
-    const inSync = stage && stage.id === facilitatorStageId;
+    const inSync = localStage && localStage.localStageId === facilitatorStageId;
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
-        <NewMeetingSidebar localPhase={localPhase} viewer={viewer} />
+        <NewMeetingSidebar viewer={viewer} />
         <MeetingArea>
           <MeetingAreaHeader>
-            <MeetingAvatarGroup
-              gotoItem={() => {}}
-              isFacilitating={isFacilitating}
-              localPhase={localPhase}
-              localPhaseItem={null}
+            <NewMeetingAvatarGroup
+              gotoStageId={this.gotoStageId}
               team={team}
             />
           </MeetingAreaHeader>
@@ -168,7 +161,7 @@ class NewMeeting extends Component<Props> {
             <Switch>
               <Route
                 path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}/:localPhaseItem`}
-                render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} location={location} meetingType={meetingType} team={team} />}
+                render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
               />
               <Route
                 path={`/${meetingSlug}/:teamId`}
@@ -201,7 +194,7 @@ export default createFragmentContainer(
     fragment NewMeeting_viewer on User {
       ...NewMeetingSidebar_viewer
       team(teamId: $teamId) {
-        ...MeetingAvatarGroup_team
+        ...NewMeetingAvatarGroup_team
         ...NewMeetingLobby_team
         ...NewMeetingCheckIn_team
         checkInGreeting {
@@ -229,7 +222,14 @@ export default createFragmentContainer(
           meetingId: id
           facilitatorStageId
           facilitatorUserId
+          localPhase {
+            id
+          }
+          localStage {
+            localStageId: id
+          }
           phases {
+            id
             phaseType
             stages {
               id

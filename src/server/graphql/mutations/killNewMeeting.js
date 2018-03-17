@@ -38,7 +38,7 @@ export default {
         .update({
           endAt: now
         })
-    })
+    });
 
     const data = {meetingId, teamId};
     publish(TEAM, teamId, KillNewMeetingPayload, data, subOptions);

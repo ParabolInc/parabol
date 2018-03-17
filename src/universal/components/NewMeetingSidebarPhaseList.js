@@ -7,8 +7,6 @@ import {createFragmentContainer, graphql} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {phaseLabelLookup, phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups';
-
-import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeetingSidebarPhaseList_viewer as Viewer} from './__generated__/NewMeetingSidebarPhaseList_viewer.graphql';
 import findStageById from 'universal/utils/meetings/findStageById';
 
@@ -18,32 +16,31 @@ const NavList = styled('ul')({
   padding: 0
 });
 
-const isNavigable = (group, stages, isFacilitator) => {
-  // FIXME
+const isNavigable = (phaseType, phases, isViewerFacilitator) => {
   return false;
-  const firstStageIdxInGroup = stages.findIndex((stage) => phaseTypeToPhaseGroup[stage.type] === group);
-  const currentStageIdx = stages.findIndex((stage) => stage.isComplete);
-  if (!isFacilitator) {
-    return firstStageIdxInGroup <= currentStageIdx;
-  }
-  const nextStageIdxInGroup = stages
-    .findIndex((stage, idx) => idx > firstStageIdxInGroup && phaseTypeToPhaseGroup[stage.type] !== group);
-  return firstStageIdxInGroup <= nextStageIdxInGroup;
+  // const firstStageIdxInGroup = phases.findIndex((stage) => phaseTypeToPhaseGroup[stage.type] === phaseType);
+  // const currentStageIdx = phases.findIndex((stage) => stage.isComplete);
+  // if (!isViewerFacilitator) {
+  //   return firstStageIdxInGroup <= currentStageIdx;
+  // }
+  // const nextStageIdxInGroup = phases
+  //   .findIndex((stage, idx) => idx > firstStageIdxInGroup && phaseTypeToPhaseGroup[stage.type] !== phaseType);
+  // return firstStageIdxInGroup <= nextStageIdxInGroup;
 };
 
 type Props = {
   atmosphere: Object,
-  localPhase: NewMeetingPhaseTypeEnum,
   viewer: Viewer
 }
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
-  const {atmosphere: {viewerId}, localPhase, viewer: {team: {meetingSettings: {phaseTypes}, newMeeting}}} = props;
-  const {facilitatorUserId, facilitatorStageId, phases = []} = newMeeting || {};
-  const localGroup = phaseTypeToPhaseGroup[localPhase];
+  const {atmosphere: {viewerId}, viewer: {team: {meetingSettings: {phaseTypes}, newMeeting}}} = props;
+  const {facilitatorUserId, facilitatorStageId, localPhase = {}, phases = []} = newMeeting || {};
+  const {phaseType} = localPhase;
+  const localGroup = phaseTypeToPhaseGroup[phaseType];
   const stageRes = findStageById(phases, facilitatorStageId);
   const facilitatorPhaseGroup = stageRes ? phaseTypeToPhaseGroup[stageRes.phase.phaseType] : LOBBY;
-  const isFacilitator = facilitatorUserId === viewerId;
+  const isViewerFacilitator = facilitatorUserId === viewerId;
   return (
     <NavList>
       {phaseTypes
@@ -54,7 +51,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
             listPrefix={String(idx + 1)}
             isActive={localGroup === name}
             isFacilitatorPhaseGroup={facilitatorPhaseGroup === name}
-            isNavigable={isNavigable(name, phases, isFacilitator)}
+            isNavigable={isNavigable(name, phases, isViewerFacilitator)}
             handleClick={() => {}}
           />);
         })}
@@ -73,6 +70,9 @@ export default createFragmentContainer(
         newMeeting {
           facilitatorUserId
           facilitatorStageId
+          localPhase {
+            phaseType
+          }
           phases {
             phaseType
             stages {

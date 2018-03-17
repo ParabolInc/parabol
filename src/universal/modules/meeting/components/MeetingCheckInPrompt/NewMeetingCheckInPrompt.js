@@ -15,9 +15,7 @@ type Props = {
 
 const NewMeetingCheckinPrompt = (props: Props) => {
   const {team, teamMember} = props;
-  const {newMeeting: {phases}} = team;
-  const checkInPhase = phases.find((phase) => phase.checkInGreeting);
-  const {checkInGreeting} = checkInPhase;
+  const {newMeeting: {localPhase: {checkInGreeting}}} = team;
   const heading = (
     <React.Fragment>
       <NewMeetingCheckInGreeting
@@ -41,8 +39,10 @@ export default createFragmentContainer(
   graphql`
     fragment NewMeetingCheckInPrompt_team on Team {
       ...NewCheckInQuestion_team
-      newMeeting{
-        phases {
+      newMeeting {
+        localPhase {
+          phaseType
+          id
           ... on CheckInPhase {
             checkInGreeting {
               ...NewMeetingCheckInGreeting_checkInGreeting

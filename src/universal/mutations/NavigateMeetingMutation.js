@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay';
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams';
-import fromUrlToStage from 'universal/utils/meetings/fromUrlToStage';
+import findStageByUrl from 'universal/utils/meetings/findStageByUrl';
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
@@ -37,7 +37,7 @@ export const navigateMeetingTeamOnNext = (payload, context) => {
   const {meeting: {facilitatorStageId, phases}, oldFacilitatorStage: {id: oldFacilitatorStageId}} = payload;
   const {meetingSlug, teamId} = getMeetingPathParams();
   if (!meetingSlug || !teamId) return;
-  const viewerStage = fromUrlToStage(phases);
+  const {stage: viewerStage} = findStageByUrl(phases);
   const {id: viewerStageId} = viewerStage;
   const inSync = viewerStageId === oldFacilitatorStageId;
   if (inSync) {

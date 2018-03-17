@@ -103,7 +103,6 @@ const MeetingAvatarGroup = (props) => {
                     targetAnchor={targetAnchor}
                     toggle={<Avatar
                       hasBadge
-                      isActive={avatarIsFacilitating}
                       isClickable
                       picture={picture}
                       isConnected={avatar.isConnected || avatar.isSelf}

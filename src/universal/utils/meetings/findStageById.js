@@ -6,7 +6,7 @@ const findStageById = (phases, stageId) => {
     for (let jj = 0; jj < stages.length; jj++) {
       const stage = stages[jj];
       if (stage.id === stageId) {
-        return {phase, stage, phaseIdx: ii, stageIdx: jj};
+        return {phase, stage, stageIdx: jj};
       }
     }
   }

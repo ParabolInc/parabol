@@ -17,12 +17,9 @@ import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
 import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt';
-import fromUrlToStage from 'universal/utils/meetings/fromUrlToStage';
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import {CHECKIN} from 'universal/utils/constants';
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams';
-import {phaseTypeToSlug} from 'universal/utils/meetings/lookups';
-import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -61,23 +58,18 @@ const NewMeetingCheckIn = (props: Props) => {
   const {newMeeting} = team;
   if (!newMeeting) {
     const {teamId, meetingSlug} = getMeetingPathParams();
-    return <Redirect to={`/${meetingSlug}/${teamId}`} />
+    if (!teamId || !meetingSlug) return null;
+    return <Redirect to={`/${meetingSlug}/${teamId}`} />;
   }
-  const {facilitatorStageId, facilitator: {facilitatorName, facilitatorUserId}, phases} = newMeeting;
-  const stage = fromUrlToStage(phases);
-  if (!stage) {
-    const to = fromStageIdToUrl(phases, facilitatorStageId);
-    return <Redirect to={to} />;
-  }
+  const {facilitator: {facilitatorName, facilitatorUserId}, localStage: {localStageId, teamMember}, phases} = newMeeting;
   const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
     if (submitting) return;
     submitMutation();
     MeetingCheckInMutation(atmosphere, teamMemberId, isCheckedIn, onError, onCompleted);
-    gotoNext(stage.id);
+    gotoNext(localStageId);
   };
-  const {teamMember} = stage;
   const {isSelf: isMyMeetingSection} = teamMember;
-  const nextStageRes = findStageAfterId(phases, stage.id);
+  const nextStageRes = findStageAfterId(phases, localStageId);
   // in case the checkin in the last phase of the meeting
   if (!nextStageRes) return null;
   const {stage: nextStage, phase: nextPhase} = nextStageRes;
@@ -134,6 +126,18 @@ export default createFragmentContainer(
           facilitatorUserId: id
           facilitatorName: preferredName
         }
+        localStage {
+          localStageId: id
+          ... on CheckInStage {
+            teamMember {
+              id
+              isSelf
+              preferredName
+              userId
+              ...NewMeetingCheckInPrompt_teamMember
+            }
+          }
+        }
         phases {
           phaseType
           stages {
@@ -144,7 +148,6 @@ export default createFragmentContainer(
                 isSelf
                 preferredName
                 userId
-                ...NewMeetingCheckInPrompt_teamMember
               }
             }
           }

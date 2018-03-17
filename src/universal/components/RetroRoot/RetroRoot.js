@@ -12,16 +12,16 @@ import TaskSubscription from 'universal/subscriptions/TaskSubscription';
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription';
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import TeamSubscription from 'universal/subscriptions/TeamSubscription';
-import NewMeeting from 'universal/components/NewMeeting';
 import type {Dispatch} from 'redux';
 import type {Location, Match, RouterHistory} from 'react-router-dom';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
+import NewMeetingWithLocalState from 'universal/components/NewMeetingWithLocalState';
 
 const query = graphql`
   query RetroRootQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
     viewer {
-      ...NewMeeting_viewer
+      ...NewMeetingWithLocalState_viewer
     }
   }
 `;
@@ -60,7 +60,7 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight="50vh" />}
           // pass in location to ensure the route change always triggers a rerender
-          ready={<NewMeeting location={location} localPhase={localPhase} meetingType={meetingType} />}
+          ready={<NewMeetingWithLocalState location={location} localPhase={localPhase} match={match} meetingType={meetingType} />}
         />
       )}
     />

@@ -5,8 +5,6 @@ import {Link} from 'react-router-dom';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
-
-import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeetingSidebar_viewer as Viewer} from './__generated__/NewMeetingSidebar_viewer.graphql';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
@@ -50,13 +48,11 @@ const SidebarSubHeading = styled('div')({
 });
 
 type Props = {
-  localPhase: NewMeetingPhaseTypeEnum,
   viewer: Viewer
 }
 
 const NewMeetingSidebar = (props: Props) => {
   const {
-    localPhase,
     viewer
   } = props;
   const {team: {teamId, teamName}} = viewer;
@@ -76,7 +72,7 @@ const NewMeetingSidebar = (props: Props) => {
         <LabelHeading>{'Action Meeting'}</LabelHeading>
       </SidebarSubHeading>
       <Nav>
-        <NewMeetingSidebarPhaseList localPhase={localPhase} viewer={viewer} />
+        <NewMeetingSidebarPhaseList viewer={viewer} />
       </Nav>
       <LogoBlock variant="primary" />
     </SidebarParent>
