@@ -139,7 +139,7 @@ class NewMeeting extends Component<Props> {
     const {facilitatorStageId, localStage} = newMeeting || {};
     const meetingSlug = meetingTypeToSlug[meetingType];
     const meetingLabel = meetingTypeToLabel[meetingType];
-    const inSync = localStage && localStage.localStageId === facilitatorStageId;
+    const inSync = localStage ? localStage.localStageId === facilitatorStageId : true;
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />

@@ -71,24 +71,48 @@ class NewMeetingWithLocalState extends Component<Props, State> {
   }
 
   updateRelayFromURL(params) {
+    /*
+     * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
+     * the additional logic here has 2 benefits:
+     *  1) no need for validation inside phase components
+     *  2) guaranteed 1 redirect maximum (no URL flickering)
+     */
     const {localPhaseSlug, stageIdxSlug} = params;
     const {atmosphere, history, match: {params: {teamId}}, viewer: {team: {newMeeting}}, meetingType} = this.props;
     const meetingSlug = meetingTypeToSlug[meetingType];
     const {viewerId} = atmosphere;
     const lobbyUrl = `/${meetingSlug}/${teamId}`;
+
+    // i'm trying to go to the lobby and there's no active meeting
+    if (!localPhaseSlug && !newMeeting) {
+      return true;
+    }
+
+    // i'm trying to go to the middle of a meeting that hasn't started
     if (!newMeeting) {
-      // in lobby
       history.push(lobbyUrl);
+      return false;
+    }
+
+    const {facilitatorStageId, facilitatorUserId, localStage, meetingId, phases} = newMeeting;
+
+    // i'm headed to the lobby but the meeting is already going, send me there
+    if (localStage && !localPhaseSlug) {
+      const {id: localStageId} = localStage;
+      const nextUrl = fromStageIdToUrl(localStageId, phases);
+      history.push(nextUrl);
       return false;
     }
 
     const localPhaseType = findKeyByValue(phaseTypeToSlug, localPhaseSlug);
     const stageIdx = stageIdxSlug ? Number(stageIdxSlug) - 1 : 0;
-    const {facilitatorUserId, meetingId, phases} = newMeeting;
+
     const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType);
     if (!phase) {
-      // typo in url
-      history.push(lobbyUrl);
+      // typo in url, send to the facilitator
+      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases);
+      history.push(nextUrl);
+      updateLocalStage(atmosphere, meetingId, facilitatorStageId);
       return false;
     }
     const stage = phase.stages[stageIdx];
@@ -96,12 +120,16 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     const isViewerFacilitator = viewerId === facilitatorUserId;
     const isNavigable = getIsNavigable(isViewerFacilitator, phases, stageId)
     if (!isNavigable) {
-      // too early to visit meeting or typo
-      history.push(lobbyUrl);
+      // too early to visit meeting or typo, go to facilitator
+      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases);
+      history.push(nextUrl);
+      updateLocalStage(atmosphere, meetingId, facilitatorStageId);
       return false;
     }
+
+    // legit URL!
     updateLocalStage(atmosphere, meetingId, stage.id);
-    return false;
+    return true;
   }
 
   render() {
@@ -116,6 +144,8 @@ export default createFragmentContainer(
       ...NewMeeting_viewer
       team(teamId: $teamId) {
         newMeeting {
+          facilitatorStageId
+          facilitatorUserId
           meetingId: id
           localStage {
             id

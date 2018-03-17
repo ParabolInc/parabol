@@ -64,12 +64,12 @@ const NewMeetingSidebar = (props: Props) => {
   } = props;
   const {team: {teamId, teamName}} = viewer;
   const meetingSlug = meetingTypeToSlug[meetingType];
-  const relativeLink = `/retro/${teamId}`;
+  const relativeLink = `/${meetingSlug}/${teamId}`;
   return (
     <SidebarParent>
       <SidebarHeader>
         <TeamDashboardLink
-          to={`/${meetingSlug}/${teamId}`}
+          to={`/team/${teamId}`}
           title={`Go to the ${teamName} Team Dashboard`}
         >
           {teamName}

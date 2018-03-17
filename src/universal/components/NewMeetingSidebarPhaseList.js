@@ -24,12 +24,14 @@ type Props = {
 }
 
 const getItemStage = (name: string, phases: $ReadOnlyArray<Object>, facilitatorStageId: string) => {
-  const {stage, phase} = findStageById(phases, facilitatorStageId);
+  const stageRes = findStageById(phases, facilitatorStageId);
+  if (!stageRes) return undefined;
+  const {stage, phase} = stageRes;
   if (phase.phaseType === name) {
-    return {stage, phase};
+    return stage;
   }
   const itemPhase = phases.find(({phaseType}) => phaseType === name);
-  return {stage: itemPhase && itemPhase.stages[0], phase: itemPhase};
+  return itemPhase && itemPhase.stages[0];
 };
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
@@ -45,7 +47,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
     <NavList>
       {phaseTypes
         .map((name, idx) => {
-          const {stage: itemStage} = getItemStage(name, phases, facilitatorStageId);
+          const itemStage = getItemStage(name, phases, facilitatorStageId);
           const itemStageId = itemStage && itemStage.id || '';
           const isNavigable = getIsNavigable(isViewerFacilitator, phases, itemStageId);
           const handleClick = isNavigable ? () => gotoStageId(itemStageId) : undefined;

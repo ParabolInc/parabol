@@ -23,6 +23,8 @@ const getIsNavigable = (isViewerFacilitator, phases, stageId) => {
   if (isViewerFacilitator) {
     return facilitatorCanNavigateToStage(phases, stageId);
   }
+  // the first is always free
+  if (phases[0].stages[0].id === stageId) return true;
   const {stage} = findStageBeforeId(phases, stageId);
   return stage.isComplete;
 };
