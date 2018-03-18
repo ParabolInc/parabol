@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
@@ -14,8 +13,9 @@ import UpdateNewCheckInQuestionMutation from 'universal/mutations/UpdateNewCheck
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 
 import type {NewCheckInQuestion_team as Team} from './__generated__/NewCheckInQuestion_team.graphql';
+import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 
-const iconStyle = {
+const CogIcon = styled(StyledFontAwesome)(({canEdit, isEditing}) => ({
   color: ui.colorText,
   display: 'block',
   height: '1.5rem',
@@ -24,14 +24,10 @@ const iconStyle = {
   marginLeft: '0.5rem',
   paddingTop: '.1875rem',
   textAlign: 'center',
-  width: '1.25rem'
-};
-
-const buttonStyle = {
-  color: ui.colorText,
-  display: 'block'
-};
-
+  width: '1.25rem',
+  visibility: isEditing ? 'hidden' : 'visible',
+  cursor: canEdit && 'pointer'
+}));
 
 const QuestionBlock = styled('div')({
   alignContent: 'center',
@@ -123,11 +119,6 @@ class NewCheckInQuestion extends Component<Props, State> {
     const isEditing = editorState.getSelection().getHasFocus();
     const {viewerId} = atmosphere;
     const isFacilitating = facilitatorUserId === viewerId;
-    const buttonIconStyle = {
-      ...iconStyle,
-      cursor: 'pointer',
-      visibility: isEditing ? 'hidden' : 'visible'
-    };
 
     const tip = canEdit
       ? 'Tap to customize the Social Check-in question.'
@@ -140,7 +131,6 @@ class NewCheckInQuestion extends Component<Props, State> {
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
         maxHeight={40}
-        isOpen={(isFacilitating && !isEditing) ? undefined : false}
       >
         <QuestionBlock>
           <EditorBlock>
@@ -157,10 +147,10 @@ class NewCheckInQuestion extends Component<Props, State> {
           {isFacilitating &&
           <div>
             {canEdit ?
-              <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
-                <FontAwesome name="cog" style={buttonIconStyle} />
+              <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
+                <CogIcon name="cog" canEdit={canEdit} isEditing={isEditing} />
               </PlainButton> :
-              <FontAwesome name="cog" style={iconStyle} />
+              <CogIcon name="cog" canEdit={canEdit} isEditing={isEditing} />
             }
           </div>
           }

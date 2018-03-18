@@ -18,6 +18,7 @@ import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
 import KillNewMeetingPayload from 'server/graphql/types/KillNewMeetingPayload';
+import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload';
 
 
 const types = [
@@ -30,6 +31,7 @@ const types = [
   MoveMeetingPayload,
   NavigateMeetingPayload,
   PromoteFacilitatorPayload,
+  PromoteNewMeetingFacilitatorPayload,
   RequestFacilitatorPayload,
   StartMeetingPayload,
   StartNewMeetingPayload,

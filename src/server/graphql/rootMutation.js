@@ -30,6 +30,7 @@ import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn';
 import moveMeeting from 'server/graphql/mutations/moveMeeting';
 import navigateMeeting from 'server/graphql/mutations/navigateMeeting';
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
+import promoteNewMeetingFacilitator from 'server/graphql/mutations/promoteNewMeetingFacilitator';
 import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead';
 import rejectOrgApproval from 'server/graphql/mutations/rejectOrgApproval';
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem';
@@ -111,6 +112,7 @@ export default new GraphQLObjectType({
     moveTeamToOrg,
     navigateMeeting,
     promoteFacilitator,
+    promoteNewMeetingFacilitator,
     promoteToTeamLead,
     rejectOrgApproval,
     removeAgendaItem,
