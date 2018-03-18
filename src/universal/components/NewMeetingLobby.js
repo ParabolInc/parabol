@@ -21,7 +21,6 @@ import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/Co
 import makeHref from 'universal/utils/makeHref';
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
-import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 
 const ButtonBlock = styled('div')({
   margin: '0',
@@ -69,12 +68,7 @@ type Props = {
 
 const NewMeetingLobby = (props: Props) => {
   const {atmosphere, history, onError, onCompleted, meetingType, submitMutation, submitting, team} = props;
-  const {meetingSettings: {meetingsOffered, meetingsRemaining}, newMeeting, teamId, teamName, tier} = team;
-  if (newMeeting) {
-    const {facilitatorStageId, meetingId} = newMeeting;
-    updateLocalStage(atmosphere, meetingId, facilitatorStageId);
-    return null;
-  }
+  const {meetingSettings: {meetingsOffered, meetingsRemaining}, teamId, teamName, tier} = team;
   const onStartMeetingClick = () => {
     submitMutation();
     StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted);
@@ -142,11 +136,6 @@ export default createFragmentContainer(
       meetingSettings(meetingType: $meetingType) {
         meetingsOffered
         meetingsRemaining
-      }
-      newMeeting {
-        meetingId: id
-        facilitatorStageId
-        meetingType
       }
       teamId: id
       teamName: name

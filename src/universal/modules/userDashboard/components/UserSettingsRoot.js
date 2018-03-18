@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
+// @flow
 import React from 'react';
+import type {Location, Match, RouterHistory} from 'react-router-dom';
 import {withRouter} from 'react-router-dom';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -9,6 +10,8 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UserSettingsContainer from 'universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer';
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription';
 import {cacheConfig} from 'universal/utils/constants';
+import type {Dispatch} from 'react-redux';
+import {connect} from 'react-redux';
 
 const query = graphql`
   query UserSettingsRootQuery {
@@ -22,7 +25,15 @@ const subscriptions = [
   NotificationSubscription
 ];
 
-const UserSettingsRoot = (props) => {
+type Props = {
+  atmosphere: Object,
+  dispatch: Dispatch<*>,
+  history: RouterHistory,
+  location: Location,
+  match: Match
+}
+
+const UserSettingsRoot = (props: Props) => {
   const {atmosphere, dispatch, history, location, match: {params: {teamId}}} = props;
   return (
     <QueryRenderer
@@ -44,13 +55,4 @@ const UserSettingsRoot = (props) => {
   );
 };
 
-UserSettingsRoot.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  teams: PropTypes.array
-};
-
-export default withRouter(withAtmosphere(UserSettingsRoot));
+export default connect()(withRouter(withAtmosphere(UserSettingsRoot)));

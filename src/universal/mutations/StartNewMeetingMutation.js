@@ -1,6 +1,6 @@
 import {commitMutation} from 'react-relay';
-import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import handleMutationError from 'universal/mutations/handlers/handleMutationError';
+import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 
 graphql`
   fragment StartNewMeetingMutation_team on StartNewMeetingPayload {
@@ -12,50 +12,7 @@ graphql`
       id
       meetingId
       newMeeting {
-        id
-        createdAt
-        facilitatorStageId
-        facilitatorUserId
-        facilitator {
-          id
-          preferredName
-        }
-        meetingNumber
-        meetingType
-        phases {
-          stages {
-            isComplete
-          }
-          phaseType
-          ... on CheckInPhase {
-            checkInGreeting {
-              content
-              language
-            }
-            checkInQuestion
-            stages {
-              teamMember {
-                preferredName
-                picture
-              }
-            }
-          }
-          ... on ThinkPhase {
-            focusedPhaseItemId
-          }
-          ... on DiscussPhase {
-            stages {
-              thoughtGroup {
-                title
-                voteCount
-                retroThoughts {
-                  isViewerCreator
-                  content
-                }
-              }
-            }
-          }
-        }
+        ...CompleteNewMeetingFrag @relay(mask: false)
       }
     }
   }
@@ -70,13 +27,9 @@ const mutation = graphql`
 `;
 
 export const startNewMeetingTeamOnNext = (payload, context) => {
-  const {history} = context;
-  const {error, team: {id: teamId, newMeeting: {meetingType, phases: [firstPhase]}}} = payload;
-  const {phaseType} = firstPhase;
-  const phaseSlug = phaseTypeToSlug[phaseType];
-  const meetingTypeSlug = meetingTypeToSlug[meetingType];
-  const phaseItemSlug = firstPhase.stages.length === 1 ? '' : 1;
-  history.push(`/${meetingTypeSlug}/${teamId}/${phaseSlug}/${phaseItemSlug}`);
+  const {environment} = context;
+  const {error, team: {newMeeting: {id: meetingId, phases: [firstPhase]}}} = payload;
+  updateLocalStage(environment, meetingId, firstPhase.stages[0].id);
   handleMutationError(error, context);
 };
 

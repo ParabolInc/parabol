@@ -60,13 +60,14 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       if (!newMeeting && teamId) {
         // goto lobby
         history.push(`/${meetingSlug}/${teamId}`);
+        return;
       }
       const {phases} = newMeeting;
       const nextUrl = fromStageIdToUrl(localStageId, phases);
       history.push(nextUrl);
     }
     if (!this.state.safeRoute) {
-      this.setState({safeRoute: true})
+      this.setState({safeRoute: true});
     }
   }
 
@@ -78,10 +79,15 @@ class NewMeetingWithLocalState extends Component<Props, State> {
      *  2) guaranteed 1 redirect maximum (no URL flickering)
      */
     const {localPhaseSlug, stageIdxSlug} = params;
-    const {atmosphere, history, match: {params: {teamId}}, viewer: {team: {newMeeting}}, meetingType} = this.props;
+    const {atmosphere, history, match: {params: {teamId}}, viewer, meetingType} = this.props;
+    if (!viewer) {
+      // server error
+      history.push('/');
+      return false;
+    }
+    const {team: {newMeeting}} = viewer;
     const meetingSlug = meetingTypeToSlug[meetingType];
     const {viewerId} = atmosphere;
-    const lobbyUrl = `/${meetingSlug}/${teamId}`;
 
     // i'm trying to go to the lobby and there's no active meeting
     if (!localPhaseSlug && !newMeeting) {
@@ -89,8 +95,8 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
 
     // i'm trying to go to the middle of a meeting that hasn't started
-    if (!newMeeting) {
-      history.push(lobbyUrl);
+    if (!newMeeting && teamId) {
+      history.push(`/${meetingSlug}/${teamId}`);
       return false;
     }
 
@@ -118,7 +124,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     const stage = phase.stages[stageIdx];
     const stageId = stage && stage.id;
     const isViewerFacilitator = viewerId === facilitatorUserId;
-    const isNavigable = getIsNavigable(isViewerFacilitator, phases, stageId)
+    const isNavigable = getIsNavigable(isViewerFacilitator, phases, stageId);
     if (!isNavigable) {
       // too early to visit meeting or typo, go to facilitator
       const nextUrl = fromStageIdToUrl(facilitatorStageId, phases);

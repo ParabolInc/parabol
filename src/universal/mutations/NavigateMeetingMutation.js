@@ -1,5 +1,6 @@
 import {commitLocalUpdate, commitMutation} from 'react-relay';
 import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage';
+import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
@@ -30,7 +31,7 @@ export const navigateMeetingTeamOnNext = (payload, context) => {
   const {meeting: {id: meetingId, facilitatorStageId}, oldFacilitatorStage: {id: oldFacilitatorStageId}} = payload;
   commitLocalUpdate(environment, (store) => {
     const meetingProxy = store.get(meetingId);
-    const viewerStageId = meetingProxy.getLinkedRecord('localStage').getValue('id');
+    const viewerStageId = getInProxy(meetingProxy, 'localStage', 'id');
     if (viewerStageId === oldFacilitatorStageId) {
       setLocalStageAndPhase(store, meetingId, facilitatorStageId);
     }

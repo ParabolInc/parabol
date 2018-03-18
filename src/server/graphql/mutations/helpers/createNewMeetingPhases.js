@@ -18,22 +18,21 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
   }
   const {phaseTypes} = meetingSettings;
 
-  return Promise.all(phaseTypes.map(async (phaseType, idx) => {
-    const isFacilitatorPhase = idx === 0;
+  return Promise.all(phaseTypes.map(async (phaseType) => {
     if (phaseType === CHECKIN) {
       return {
         id: shortid.generate(),
         phaseType,
         checkInGreeting: makeCheckinGreeting(meetingCount, teamId),
         checkInQuestion: convertToTaskContent(makeCheckinQuestion(meetingCount, teamId)),
-        stages: await makeCheckinStages(teamId, meetingId, dataLoader, isFacilitatorPhase)
+        stages: await makeCheckinStages(teamId, meetingId, dataLoader)
       };
     }
     if (phaseType === THINK || phaseType === GROUP || phaseType === VOTE) {
       return {
         id: shortid.generate(),
         phaseType,
-        stages: [makeRetroStage(phaseType, meetingId, isFacilitatorPhase)]
+        stages: [makeRetroStage(phaseType, meetingId)]
       };
     }
     if (phaseType === DISCUSS) {

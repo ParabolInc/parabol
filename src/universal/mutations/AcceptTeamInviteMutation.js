@@ -29,21 +29,9 @@ graphql`
     }
     team {
       name
+      # alternatively, we could just send down the single stage
       newMeeting {
-        phases {
-          ... on CheckInPhase {
-            stages {
-              id
-              teamMember {
-                id
-                isSelf
-                picture
-                preferredName
-                userId
-              }
-            }
-          }
-        }
+        ...CompleteNewMeetingFrag @relay(mask: false)
       }
     }
     removedSoftTeamMember {

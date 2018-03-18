@@ -6,6 +6,7 @@ import CheckInStage from 'server/graphql/types/CheckInStage';
 import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
 import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
 
 /*
  * Each meeting has many phases.
@@ -39,13 +40,18 @@ export const newMeetingStageFields = () => ({
       return dataLoader.get('newMeetings').load(meetingId);
     }
   },
-  // isFacilitatorStage: {
-  //   type: GraphQLBoolean,
-  //   description: 'true if the facilitator is currently looking at the stage, else false'
-  // },
   isComplete: {
     type: GraphQLBoolean,
     description: 'true if the facilitator has completed this stage, else false. Should be boolean(endAt)'
+  },
+  phase: {
+    type: NewMeetingPhase,
+    description: 'The phase this stage belongs to',
+    resolve: async ({meetingId, phaseType}, args, {dataLoader}) => {
+      const meeting = await dataLoader.get('newMeetings').load(meetingId);
+      const {phases} = meeting;
+      return phases.find((phase) => phase.phaseType === phaseType);
+    }
   },
   phaseType: {
     description: 'The type of the phase',

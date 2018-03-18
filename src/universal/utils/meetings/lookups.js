@@ -25,7 +25,11 @@ export const phaseLabelLookup = {
   [THINK]: 'Reflect',
   [GROUP]: 'Theme',
   [VOTE]: 'Vote',
-  [DISCUSS]: 'Discuss'
+  [DISCUSS]: 'Discuss',
+  [UPDATES]: 'Solo Updates',
+  [FIRST_CALL]: 'First Call',
+  [AGENDA_ITEMS]: 'Team Agenda',
+  [LAST_CALL]: 'Last Call'
 };
 
 export const meetingTypeToSlug = {
@@ -34,11 +38,16 @@ export const meetingTypeToSlug = {
 };
 
 export const meetingTypeToLabel = {
-  [RETROSPECTIVE]: 'Retrospective'
+  [RETROSPECTIVE]: 'Retrospective',
+  [ACTION]: 'Action'
 };
 
 export const phaseTypeToSlug = {
-  [CHECKIN]: 'checkin'
+  [CHECKIN]: 'checkin',
+  [THINK]: 'reflect',
+  [GROUP]: 'theme',
+  [VOTE]: 'vote',
+  [DISCUSS]: 'discuss'
 };
 
 export const phaseIsMultiStage = {

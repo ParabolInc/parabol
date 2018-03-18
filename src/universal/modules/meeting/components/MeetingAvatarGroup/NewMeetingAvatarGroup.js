@@ -67,6 +67,7 @@ export default createFragmentContainer(
         localPhase {
           id
           stages {
+            id
             ... on NewMeetingTeamMemberStage {
               teamMemberId
             }
@@ -76,6 +77,10 @@ export default createFragmentContainer(
           phaseType
           stages {
             id
+            # here to ensure it exists on localPhase
+            ... on NewMeetingTeamMemberStage {
+              teamMemberId
+            }
           }
         }
         ...NewMeetingAvatar_newMeeting

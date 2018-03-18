@@ -41,7 +41,7 @@ const removeOrgUser = {
       .filter({userId, isNotRemoved: true})('id');
 
     const perTeamRes = await Promise.all(teamMemberIds.map((teamMemberId) => {
-      return removeTeamMember(teamMemberId, {isKickout: true});
+      return removeTeamMember(teamMemberId, {isKickout: true}, dataLoader);
     }));
 
     const taskIds = perTeamRes.reduce((arr, res) => {
