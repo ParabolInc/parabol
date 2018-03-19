@@ -33,7 +33,7 @@ const RetroReflectPhase = ({team: {meetingSettings}}: Props) => {
   return (
     <ReflectPhaseWrapper>
       {phaseItems && phaseItems.map((phaseItem) =>
-        <ReflectionTypeColumn key={phaseItem.id} {...phaseItem} />
+        <ReflectionTypeColumn key={phaseItem.id} retroPhaseItem={phaseItem} />
       )}
     </ReflectPhaseWrapper>
   );
@@ -48,8 +48,7 @@ export default createFragmentContainer(
           phaseItems {
             ... on RetroPhaseItem {
               id
-              title
-              question
+              ...ReflectionTypeColumn_retroPhaseItem
             }
           }
         }

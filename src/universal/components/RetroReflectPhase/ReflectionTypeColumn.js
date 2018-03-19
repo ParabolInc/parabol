@@ -4,16 +4,18 @@
  *
  * @flow
  */
+import type {RetroPhaseItem} from 'universal/types/schema.flow';
+
 import React from 'react';
 import styled from 'react-emotion';
+import {createFragmentContainer} from 'react-relay';
 
 import AddReflectionButton from 'universal/components/AddReflectionButton/AddReflectionButton';
 
 import ui from 'universal/styles/ui';
 
 type Props = {
-  title: string,
-  question: string
+  retroPhaseItem: RetroPhaseItem
 };
 
 const ColumnWrapper = styled('div')({
@@ -39,7 +41,7 @@ const TypeTitle = styled('div')({
   color: ui.labelHeadingColor
 });
 
-const ReflectionTypeColumn = ({title, question}: Props) => (
+const ReflectionTypeColumn = ({retroPhaseItem: {title, question}}: Props) => (
   <ColumnWrapper>
     <TypeHeader>
       <TypeTitle>{title.toUpperCase()}</TypeTitle>
@@ -51,4 +53,12 @@ const ReflectionTypeColumn = ({title, question}: Props) => (
   </ColumnWrapper>
 );
 
-export default ReflectionTypeColumn;
+export default createFragmentContainer(
+  ReflectionTypeColumn,
+  graphql`
+    fragment ReflectionTypeColumn_retroPhaseItem on RetroPhaseItem {
+      title
+      question
+    }
+  `
+);
