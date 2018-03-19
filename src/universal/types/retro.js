@@ -6,8 +6,6 @@
 // $FlowFixMe
 import {ContentState} from 'draft-js';
 
-export type Stage = 'positive' | 'negative' | 'change';
-
 export type ReflectionGroupID = string;
 
 export type ReflectionID = string;
@@ -15,7 +13,7 @@ export type ReflectionID = string;
 export type Reflection = {
   id: ReflectionID,
   content: ContentState,
-  stage: ?Stage
+  type: ?string
 };
 
 export type ReflectionGroup = {

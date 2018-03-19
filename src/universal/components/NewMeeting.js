@@ -17,7 +17,7 @@ import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroRefle
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel, meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
-import {CHECKIN} from 'universal/utils/constants';
+import {CHECKIN, REFLECT} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
@@ -161,8 +161,8 @@ class NewMeeting extends Component<Props> {
                 render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
               />
               <Route
-                path="/retro/:teamId/reflect"
-                component={RetroReflectPhase}
+                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[REFLECT]}`}
+                render={() => <RetroReflectPhase team={team} />}
               />
               <Route
                 path={`/${meetingSlug}/:teamId`}
@@ -198,6 +198,7 @@ export default createFragmentContainer(
         ...NewMeetingAvatarGroup_team
         ...NewMeetingLobby_team
         ...NewMeetingCheckIn_team
+        ...RetroReflectPhase_team
         checkInGreeting {
           content
           language

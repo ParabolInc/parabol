@@ -3,10 +3,17 @@
  *
  * @flow
  */
+import type {Team} from 'universal/types/schema.flow';
+
 import React from 'react';
 import styled from 'react-emotion';
+import {createFragmentContainer} from 'react-relay';
 
 import ReflectionTypeColumn from './ReflectionTypeColumn';
+
+type Props = {
+  team: Team,
+};
 
 const ReflectPhaseWrapper = styled('div')({
   height: '100%',
@@ -15,11 +22,38 @@ const ReflectPhaseWrapper = styled('div')({
   width: '100%'
 });
 
-const RetroReflectPhase = () => (
-  <ReflectPhaseWrapper>
-    <ReflectionTypeColumn description="What’s working?" title="POSITIVE" />
-    <ReflectionTypeColumn description="Where did you get stuck?" title="NEGATIVE" />
-  </ReflectPhaseWrapper>
-);
+const RetroReflectPhase = ({team: {meetingSettings}}: Props) => {
+  if (!meetingSettings.hasOwnProperty('phaseItems')) {
+    return null;
+  }
+  // The nested union types of meetingSettings/phaseItems are creating a multiplicative
+  // effect on the possible values of meetingSettings, making it really difficult
+  // $FlowFixMe
+  const {phaseItems} = meetingSettings;
+  return (
+    <ReflectPhaseWrapper>
+      {phaseItems && phaseItems.map((phaseItem) =>
+        <ReflectionTypeColumn key={phaseItem.id} {...phaseItem} />
+      )}
+    </ReflectPhaseWrapper>
+  );
+};
 
-export default RetroReflectPhase;
+export default createFragmentContainer(
+  RetroReflectPhase,
+  graphql`
+    fragment RetroReflectPhase_team on Team {
+      meetingSettings(meetingType: $meetingType) {
+        ... on RetrospectiveMeetingSettings {
+          phaseItems {
+            ... on RetroPhaseItem {
+              id
+              title
+              question
+            }
+          }
+        }
+      }
+    }
+  `
+);

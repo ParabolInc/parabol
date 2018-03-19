@@ -12,8 +12,8 @@ import AddReflectionButton from 'universal/components/AddReflectionButton/AddRef
 import ui from 'universal/styles/ui';
 
 type Props = {
-  description: string,
-  title: string
+  title: string,
+  question: string
 };
 
 const ColumnWrapper = styled('div')({
@@ -39,11 +39,11 @@ const TypeTitle = styled('div')({
   color: ui.labelHeadingColor
 });
 
-const ReflectionTypeColumn = ({description, title}: Props) => (
+const ReflectionTypeColumn = ({title, question}: Props) => (
   <ColumnWrapper>
     <TypeHeader>
-      <TypeTitle>{title}</TypeTitle>
-      <TypeDescription>{description}</TypeDescription>
+      <TypeTitle>{title.toUpperCase()}</TypeTitle>
+      <TypeDescription>{question}</TypeDescription>
     </TypeHeader>
     <ReflectionsArea>
       <AddReflectionButton handleClick={() => console.log('clicked!')} />
