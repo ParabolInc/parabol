@@ -7,7 +7,9 @@ const handleDisconnect = (connectionContext, options = {}) => () => {
     query: `
     mutation DisconnectSocket {
       disconnectSocket {
-        id
+        user {
+          id
+        }
       }
     }
   `

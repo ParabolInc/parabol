@@ -9396,10 +9396,6 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-roman-numeral@^0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/roman-numeral/-/roman-numeral-0.2.6.tgz#03fecb55ac57150015cf1e200db31d83b8c33513"
-
 rst-selector-parser@^2.2.2:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/rst-selector-parser/-/rst-selector-parser-2.2.3.tgz#81b230ea2fcc6066c89e3472de794285d9b03d91"
@@ -9639,9 +9635,9 @@ shallowequal@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/shallowequal/-/shallowequal-1.0.2.tgz#1561dbdefb8c01408100319085764da3fcf83f8f"
 
-shared-dataloader@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/shared-dataloader/-/shared-dataloader-0.1.0.tgz#c914d14454e767a93e769c359a79cdca9cfbf013"
+shared-dataloader@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/shared-dataloader/-/shared-dataloader-0.2.0.tgz#c2b53459c8140447fe97ee1d9e54c709dcd4c296"
 
 shebang-command@^1.2.0:
   version "1.2.0"

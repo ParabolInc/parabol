@@ -13,6 +13,7 @@ import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayl
 import User from 'server/graphql/types/User';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
+import DisconnectSocketPayload from 'server/graphql/types/DisconnectSocketPayload';
 
 const types = [
   AddOrgPayload,
@@ -23,6 +24,7 @@ const types = [
   ClearNotificationPayload,
   CreateTaskPayload,
   DeleteTaskPayload,
+  DisconnectSocketPayload,
   InviteTeamMembersPayload,
   RejectOrgApprovalPayload,
   RemoveOrgUserPayload,

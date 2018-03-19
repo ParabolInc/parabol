@@ -6,7 +6,7 @@ export const REFRESH_JWT_AFTER = ms('15d');
 export const AUTO_PAUSE_THRESH = ms('30d');
 export const OLD_MEETING_AGE = ms('1d');
 export const MAX_PERSONAL_TASKS = 500;
-
+export const MEETING_FACILITATOR_ELECTION_TIMEOUT = 5000;
 /* stripe variables */
 // $199,999/mo
 // export const ACTION_MONTHLY = 'dev-monthly';
