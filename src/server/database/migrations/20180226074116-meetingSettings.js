@@ -9,7 +9,6 @@ import {
   LOBBY,
   RETROSPECTIVE,
   SUMMARY,
-  THINK,
   UPDATES,
   VOTE
 } from 'universal/utils/constants';
@@ -39,7 +38,7 @@ exports.up = async (r) => {
           id: shortid.generate(),
           meetingType: RETROSPECTIVE,
           teamId,
-          phases: [LOBBY, CHECKIN, THINK, GROUP, VOTE, DISCUSS, SUMMARY]
+          phases: [LOBBY, CHECKIN, 'think', GROUP, VOTE, DISCUSS, SUMMARY]
         },
         {
           id: shortid.generate(),

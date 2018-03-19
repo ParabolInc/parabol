@@ -6,7 +6,7 @@ import {
   FIRST_CALL,
   GROUP,
   LAST_CALL,
-  THINK,
+  REFLECT,
   UPDATES,
   VOTE
 } from 'universal/utils/constants';
@@ -23,7 +23,7 @@ const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
     [AGENDA_ITEMS]: {},
     [LAST_CALL]: {},
     // Retro
-    [THINK]: {},
+    [REFLECT]: {},
     [GROUP]: {},
     [VOTE]: {},
     [DISCUSS]: {}

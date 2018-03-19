@@ -1,5 +1,5 @@
 import makeCheckinStages from 'server/graphql/mutations/helpers/makeCheckinStages';
-import {CHECKIN, DISCUSS, GROUP, THINK, VOTE} from 'universal/utils/constants';
+import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
 import makeRetroStage from 'server/graphql/mutations/helpers/makeRetroStage';
 import getRethink from 'server/database/rethinkDriver';
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
@@ -28,7 +28,7 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
         stages: await makeCheckinStages(teamId, meetingId, dataLoader)
       };
     }
-    if (phaseType === THINK || phaseType === GROUP || phaseType === VOTE) {
+    if (phaseType === REFLECT || phaseType === GROUP || phaseType === VOTE) {
       return {
         id: shortid.generate(),
         phaseType,

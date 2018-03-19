@@ -36,10 +36,10 @@ graphql`
       }
       ... on DiscussPhase {
         stages {
-          thoughtGroup {
+          reflectionGroup {
             title
             voteCount
-            retroThoughts {
+            retroReflections {
               isViewerCreator
               content
             }

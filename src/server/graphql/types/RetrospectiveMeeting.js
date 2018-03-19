@@ -1,7 +1,7 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
 import NewMeeting, {newMeetingFields} from 'server/graphql/types/NewMeeting';
-import RetroThoughtGroup from 'server/graphql/types/RetroThoughtGroup';
-import RetroThought from 'server/graphql/types/RetroThought';
+import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
+import RetroReflection from 'server/graphql/types/RetroReflection';
 
 const RetrospectiveMeeting = new GraphQLObjectType({
   name: 'RetrospectiveMeeting',
@@ -9,12 +9,12 @@ const RetrospectiveMeeting = new GraphQLObjectType({
   description: 'A retrospective meeting',
   fields: () => ({
     ...newMeetingFields(),
-    thoughtGroups: {
-      type: new GraphQLList(RetroThoughtGroup)
+    reflectionGroups: {
+      type: new GraphQLList(RetroReflectionGroup)
     },
-    thoughts: {
-      type: new GraphQLList(RetroThought),
-      description: 'The thoughts generated during the think phase of the retro'
+    reflections: {
+      type: new GraphQLList(RetroReflection),
+      description: 'The reflections generated during the reflect phase of the retro'
     }
   })
 });
