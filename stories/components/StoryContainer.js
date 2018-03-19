@@ -7,7 +7,13 @@
 import type {Node} from 'react';
 
 import React, {Component} from 'react';
+// $FlowFixMe
+import {DragDropContextProvider} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import styled, {css} from 'react-emotion';
+import {Provider} from 'react-redux';
+import {createStore, combineReducers} from 'redux';
+import {reducer as formReducer} from 'redux-form';
 
 import injectGlobals from 'universal/styles/hepha';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -25,6 +31,12 @@ const FullPageWrapper = styled('div')({
   padding: '1rem',
   width: '100vw'
 });
+
+const rootReducer = combineReducers({
+  form: formReducer
+});
+
+const store = createStore(rootReducer);
 
 export default class StoryContainer extends Component<Props> {
   componentWillMount() {
@@ -49,10 +61,14 @@ export default class StoryContainer extends Component<Props> {
 
   render() {
     return (
-      <FullPageWrapper>
-        {this.maybeRenderDescription()}
-        {this.props.render()}
-      </FullPageWrapper>
+      <Provider store={store}>
+        <DragDropContextProvider backend={HTML5Backend}>
+          <FullPageWrapper>
+            {this.maybeRenderDescription()}
+            {this.props.render()}
+          </FullPageWrapper>
+        </DragDropContextProvider>
+      </Provider>
     );
   }
 }

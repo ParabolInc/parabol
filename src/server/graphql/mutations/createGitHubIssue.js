@@ -198,7 +198,7 @@ export default {
     const endpoint = `https://api.github.com/repos/${repoOwner}/${repoName}/issues`;
     const newIssue = await fetch(endpoint, postOptions);
     const newIssueJson = await newIssue.json();
-    const error = makeAssigneeError(newIssueJson, assigneeId, nameWithOwner, authToken);
+    const error = await makeAssigneeError(newIssueJson, assigneeId, nameWithOwner, authToken);
     if (error) return error;
     const {id: integrationId, assignees, number: issueNumber} = newIssueJson;
     if (assignees.length === 0) {

@@ -9,6 +9,7 @@ import styled from 'react-emotion';
 
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 type Props = {
   handleClick: () => any
@@ -32,5 +33,5 @@ export default styled(AddReflectionButton)({
   color: appTheme.palette.dark,
   padding: '0.8rem',
   textAlign: 'center',
-  width: '20rem'
+  width: ui.retroCardWidth
 });

@@ -27,8 +27,7 @@ const Sidebar = (props) => {
     team
   } = props;
   const {teamId, teamName, agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase} = team;
-
-  const relativeLink = `/meeting/${teamId}`;
+  const meetingUrl = makeHref(`/meeting/${teamId}`);
   const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
     agendaItems.findIndex((a) => a.isComplete === false) + 1 : 0;
   const canNavigateTo = (phase) => {
@@ -86,7 +85,7 @@ const Sidebar = (props) => {
         >
           {teamName}
         </Link>
-        <CopyShortLink label="Copy Meeting Link" url={makeHref(relativeLink)} />
+        <CopyShortLink label="Copy Meeting Link" url={meetingUrl} />
       </div>
       <div className={css(styles.agendaLabelBlock)}>
         <LabelHeading>{'Action Meeting'}</LabelHeading>

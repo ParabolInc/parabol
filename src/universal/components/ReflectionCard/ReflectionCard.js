@@ -1,8 +1,10 @@
 /**
- * Renders a fully visible retrospective reflection card.
+ * The reflection card presentational component.
  *
  * @flow
  */
+import type {Stage} from 'universal/types/retro';
+
 // $FlowFixMe
 import {EditorState, ContentState} from 'draft-js';
 import React, {Component} from 'react';
@@ -12,12 +14,11 @@ import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton';
 
-type Stage = 'positive' | 'negative' | 'change';
-
-type Props = {
+export type Props = {|
   // The draft-js content for this card
   contentState: ContentState,
   // The action to take when this card is deleted
@@ -28,14 +29,20 @@ type Props = {
   hovered?: boolean,
   // True when the current user is the one dragging this card
   iAmDragging?: boolean,
-  // If the `userDragging` prop is provided, this states whether it serves as
-  // the under-the-mouse dragged card, or the sitting-where-it-came-from card.
+  // The unique ID of this reflection card
+  id: string,
+  // Whether we're "collapsed" e.g. in a stack of cards.  This allows us to truncate to a constant height,
+  // Simplifying style computations.
+  isCollapsed?: boolean,
+  // Provided by react-dnd
+  isDragging?: boolean,
+  // States whether it serves as a drag preview.
   pulled?: boolean,
   // The stage of the meeting this was created during
-  stage?: Stage,
+  stage?: ?Stage,
   // The name of the user who is currently dragging this card to a new place, if any
   userDragging?: string,
-};
+|};
 
 type State = {
   editorState: EditorState,
@@ -60,12 +67,6 @@ const BottomBar = styled('div')({
 const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperProps) => ({
   opacity: ((iAmDragging && !pulled)) && 0.6
 }));
-
-const ReflectionCardMain = styled('div')({
-  maxHeight: '10rem',
-  overflow: 'auto',
-  padding: '0.8rem'
-});
 
 const getDisplayName = (stage: ?Stage): string => {
   switch (stage) {
@@ -131,17 +132,17 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   maybeRenderStage = () => {
-    const {stage} = this.props;
-    return stage && <BottomBar>{getDisplayName(this.props.stage)}</BottomBar>;
+    const {isCollapsed, stage} = this.props;
+    return !isCollapsed && stage && <BottomBar>{getDisplayName(this.props.stage)}</BottomBar>;
   };
 
   maybeRenderUserDragging = () => {
-    const {pulled, userDragging} = this.props;
+    const {isDragging, pulled, userDragging} = this.props;
     const styles = {
       color: appTheme.palette.warm,
       textAlign: 'end'
     };
-    return (userDragging && !pulled) && (
+    return (isDragging && !pulled) && (
       <div className={css(styles)}>
         {userDragging}
       </div>
@@ -157,19 +158,32 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   renderCardContent = () => {
-    const {handleSave} = this.props;
+    const {handleSave, isCollapsed} = this.props;
     const {editorState} = this.state;
-    return handleSave ? (
-      <EditorInputWrapper
-        ariaLabel="Edit this reflection"
-        editorState={editorState}
-        handleReturn={() => 'not-handled'}
-        onBlur={handleSave && (() => handleSave(editorState))}
-        placeholder="My reflection thought..."
-        setEditorState={this.setEditorState}
-      />
-    ) : (
-      <div>{editorState.getCurrentContent().getPlainText()}</div>
+    const styles: Object = {
+      maxHeight: '10rem',
+      overflow: 'auto',
+      padding: '0.8rem'
+    };
+    if (isCollapsed) {
+      styles.height = `${ui.retroCardCollapsedHeightRem}rem`;
+      styles.overflow = 'hidden';
+    }
+    return (
+      <div className={css(styles)}>
+        {handleSave ? (
+          <EditorInputWrapper
+            ariaLabel="Edit this reflection"
+            editorState={editorState}
+            handleReturn={() => 'not-handled'}
+            onBlur={handleSave && (() => handleSave(editorState))}
+            placeholder="My reflection thought..."
+            setEditorState={this.setEditorState}
+          />
+        ) : (
+          <div>{editorState.getCurrentContent().getPlainText()}</div>
+        )}
+      </div>
     );
   };
 
@@ -186,9 +200,7 @@ export default class ReflectionCard extends Component<Props, State> {
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
         >
-          <ReflectionCardMain>
-            {this.renderCardContent()}
-          </ReflectionCardMain>
+          {this.renderCardContent()}
           {this.maybeRenderStage()}
           {this.maybeRenderDelete()}
         </ReflectionCardWrapper>

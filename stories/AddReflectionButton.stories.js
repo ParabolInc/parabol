@@ -13,7 +13,7 @@ import AddReflectionButton from 'universal/components/AddReflectionButton/AddRef
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
 
-storiesOf('AddReflectionButton', module)
+storiesOf('Add Reflection Button', module)
   .add('adds a reflection', () => (
     <RetroBackground>
       <StoryContainer
