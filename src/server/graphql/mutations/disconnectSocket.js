@@ -4,7 +4,7 @@ import publish from 'server/utils/publish';
 import {NOTIFICATION} from 'universal/utils/constants';
 import DisconnectSocketPayload from 'server/graphql/types/DisconnectSocketPayload';
 import promoteFirstTeamMember from 'server/graphql/mutations/helpers/promoteFirstTeamMember';
-import {MEETING_FACILITATOR_ELECTION_TIMEOUT} from 'server/utils/serverConstants';
+import {MEETING_FACILITATOR_ELECTION_TIMEOUT, SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants';
 
 export default {
   name: 'DisconnectSocket',
@@ -43,7 +43,7 @@ export default {
           .coerceTo('array')
           .default([])
       });
-      const customTTL = facilitatingTeams.length > 0 ? 10000 : undefined;
+      const customTTL = facilitatingTeams.length > 0 ? MEETING_FACILITATOR_ELECTION_TIMEOUT + SHARED_DATA_LOADER_TTL : undefined;
       const operationId = dataLoader.share(customTTL);
       const subOptions = {mutatorId: socketId, operationId};
       listeningUserIds.forEach((onlineUserId) => {
