@@ -7,7 +7,7 @@ import {createFragmentContainer} from 'react-relay';
 import findKeyByValue from 'universal/utils/findKeyByValue';
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {withLocationMeetingState_viewer as Viewer} from '../decorators/__generated__/withLocalMeetingState_viewer.graphql';
+import {withLocationMeetingState_viewer as Viewer} from './__generated__/NewMeetingWithLocalState_viewer.graphql';
 import NewMeeting from 'universal/components/NewMeeting';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
