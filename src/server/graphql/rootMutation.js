@@ -74,6 +74,7 @@ import updateReflectionContent from 'server/graphql/mutations/updateReflectionCo
 import updateReflectionLocation from 'server/graphql/mutations/updateReflectionLocation';
 import removeReflection from 'server/graphql/mutations/removeReflection';
 import createReflectionGroup from 'server/graphql/mutations/createReflectionGroup';
+import updateReflectionGroupTitle from 'server/graphql/mutations/updateReflectionGroupTitle';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -147,6 +148,7 @@ export default new GraphQLObjectType({
     updateCheckInQuestion,
     updateNewCheckInQuestion,
     updateReflectionContent,
+    updateReflectionGroupTitle,
     updateReflectionLocation,
     updateTask,
     updateTeamName,

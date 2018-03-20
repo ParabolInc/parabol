@@ -24,6 +24,7 @@ import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectio
 import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload';
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload';
+import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload';
 
 
 const types = [
@@ -49,6 +50,7 @@ const types = [
   UpdateCreditCardPayload,
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,
+  UpdateReflectionGroupTitlePayload,
   UpdateReflectionLocationPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload
