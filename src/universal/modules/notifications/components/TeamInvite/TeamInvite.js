@@ -10,11 +10,13 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import {withRouter} from 'react-router-dom';
 
 const TeamInvite = (props) => {
   const {
     atmosphere,
     dispatch,
+    history,
     styles,
     notification,
     submitting,
@@ -26,7 +28,7 @@ const TeamInvite = (props) => {
   const {teamName} = team;
   const accept = () => {
     submitMutation();
-    AcceptTeamInviteMutation(atmosphere, notificationId, dispatch, onError, onCompleted);
+    AcceptTeamInviteMutation(atmosphere, {notificationId}, {dispatch, history}, onError, onCompleted);
   };
 
   return (
@@ -61,6 +63,7 @@ const TeamInvite = (props) => {
 TeamInvite.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
   styles: PropTypes.object,
@@ -74,7 +77,7 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  connect()(withStyles(styleThunk)(TeamInvite)),
+  connect()(withRouter(withStyles(styleThunk)(TeamInvite))),
   graphql`
     fragment TeamInvite_notification on NotifyTeamInvite {
       notificationId: id

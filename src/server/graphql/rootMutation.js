@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
-import acceptTeamInviteEmail from 'server/graphql/mutations/acceptTeamInviteEmail';
-import acceptTeamInviteNotification from 'server/graphql/mutations/acceptTeamInviteNotification';
+import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite';
 import addAgendaItem from 'server/graphql/mutations/addAgendaItem';
 import addGitHubRepo from 'server/graphql/mutations/addGitHubRepo';
 import addOrg from 'server/graphql/mutations/addOrg';
@@ -31,6 +30,7 @@ import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn';
 import moveMeeting from 'server/graphql/mutations/moveMeeting';
 import navigateMeeting from 'server/graphql/mutations/navigateMeeting';
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator';
+import promoteNewMeetingFacilitator from 'server/graphql/mutations/promoteNewMeetingFacilitator';
 import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead';
 import rejectOrgApproval from 'server/graphql/mutations/rejectOrgApproval';
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem';
@@ -55,6 +55,7 @@ import updateCreditCard from 'server/graphql/mutations/updateCreditCard';
 import updateOrg from 'server/graphql/mutations/updateOrg';
 import updateTask from 'server/graphql/mutations/updateTask';
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion';
+import updateNewCheckInQuestion from 'server/graphql/mutations/updateNewCheckInQuestion';
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro';
 import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg';
 import addTeam from 'server/graphql/mutations/addTeam';
@@ -67,12 +68,12 @@ import createImposterToken from 'server/graphql/mutations/createImposterToken';
 import createUserPicturePutUrl from 'server/graphql/mutations/createUserPicturePutUrl';
 import login from 'server/graphql/mutations/login';
 import updateUserProfile from 'server/graphql/mutations/updateUserProfile';
+import killNewMeeting from 'server/graphql/mutations/killNewMeeting';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-    acceptTeamInviteEmail,
-    acceptTeamInviteNotification,
+    acceptTeamInvite,
     addAgendaItem,
     addFeatureFlag,
     addGitHubRepo,
@@ -104,12 +105,14 @@ export default new GraphQLObjectType({
     inviteTeamMembers,
     joinIntegration,
     killMeeting,
+    killNewMeeting,
     leaveIntegration,
     meetingCheckIn,
     moveMeeting,
     moveTeamToOrg,
     navigateMeeting,
     promoteFacilitator,
+    promoteNewMeetingFacilitator,
     promoteToTeamLead,
     rejectOrgApproval,
     removeAgendaItem,
@@ -134,6 +137,7 @@ export default new GraphQLObjectType({
     updateCreditCard,
     updateOrg,
     updateCheckInQuestion,
+    updateNewCheckInQuestion,
     updateTask,
     updateTeamName,
     updateUserProfile,

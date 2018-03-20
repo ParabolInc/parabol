@@ -221,7 +221,7 @@
     "rethinkdbdash": "^2.3.31",
     "secure-compare": "^3.0.1",
     "serve-favicon": "^2.4.3",
-    "shared-dataloader": "^0.1.0",
+    "shared-dataloader": "^0.2.0",
     "shortid": "^2.2.8",
     "string-score": "^1.0.1",
     "stripe": "^4.24.0",

@@ -1,5 +1,4 @@
-import {commitMutation} from 'react-relay';
-import {matchPath} from 'react-router-dom';
+import {commitLocalUpdate, commitMutation} from 'react-relay';
 import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
@@ -9,6 +8,10 @@ import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks';
 import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTeamMembers';
 import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import onExTeamRoute from 'universal/utils/onExTeamRoute';
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
+import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage';
+import findStageById from 'universal/utils/meetings/findStageById';
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -44,6 +47,10 @@ graphql`
   fragment RemoveOrgUserMutation_team on RemoveOrgUserPayload {
     teams {
       id
+      # wildly wasteful in terms of overfetching, but no handler required
+      newMeeting {
+        ...CompleteNewMeetingFrag @relay(mask: false)
+      }
     }
     user {
       id
@@ -103,10 +110,7 @@ const popKickedOutToast = (payload, {dispatch, history, location}) => {
   const {pathname} = location;
   for (let ii = 0; ii < teamIds.length; ii++) {
     const teamId = teamIds[ii];
-    const onExTeamRoute = Boolean(matchPath(pathname, {
-      path: `(/team/${teamId}|/meeting/${teamId})`
-    }));
-    if (onExTeamRoute) {
+    if (onExTeamRoute(pathname, teamId)) {
       history.push('/me');
       return;
     }
@@ -133,7 +137,7 @@ export const removeOrgUserNotificationUpdater = (payload, store, viewerId, optio
   handleRemoveNotifications(orgNotificationIds, store, viewerId);
 
   const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications');
-  handleAddNotifications(kickOutNotifications, payload, viewerId);
+  handleAddNotifications(kickOutNotifications, store, viewerId);
 
   popKickedOutToast(payload, options);
 };
@@ -147,22 +151,41 @@ export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
   }
 };
 
-export const removeOrgUserTeamMemberUpdater = (payload, store, viewerId) => {
-  const removedUserId = getInProxy(payload, 'user', 'id');
-  if (removedUserId === viewerId) {
-    const teamMembers = payload.getLinkedRecords('teamMembers');
-    const teamMemberIds = getInProxy(teamMembers, 'id');
-    handleRemoveTeamMembers(teamMemberIds, store);
-  }
+export const removeOrgUserTeamMemberUpdater = (payload, store) => {
+  const teamMembers = payload.getLinkedRecords('teamMembers');
+  const teamMemberIds = getInProxy(teamMembers, 'id');
+  handleRemoveTeamMembers(teamMemberIds, store);
 };
 
 export const removeOrgUserTaskUpdater = (payload, store, viewerId) => {
   const removedUserId = getInProxy(payload, 'user', 'id');
+  const tasks = payload.getLinkedRecords('updatedTasks');
   if (removedUserId === viewerId) {
-    const tasks = payload.getLinkedRecords('updatedTasks');
     const taskIds = getInProxy(tasks, 'id');
     handleRemoveTasks(taskIds, store, viewerId);
+  } else {
+    handleUpsertTasks(tasks, store, viewerId);
   }
+};
+
+export const removeOrgUserTeamOnNext = (payload, context) => {
+  const {environment} = context;
+  const {teams} = payload;
+  teams.forEach((team) => {
+    const {newMeeting} = team;
+    if (!newMeeting) return;
+    const {id: meetingId, facilitatorStageId, phases} = newMeeting;
+    // a meeting is going on, see if the are on the removed user's phase & if so, redirect them
+    commitLocalUpdate(environment, (store) => {
+      const meetingProxy = store.get(meetingId);
+      if (!meetingProxy) return;
+      const viewerStageId = getInProxy(meetingProxy, 'localStage', 'id');
+      const stageRes = findStageById(phases, viewerStageId);
+      if (!stageRes) {
+        setLocalStageAndPhase(store, meetingId, facilitatorStageId);
+      }
+    });
+  });
 };
 
 const RemoveOrgUserMutation = (environment, orgId, userId, onError, onCompleted) => {

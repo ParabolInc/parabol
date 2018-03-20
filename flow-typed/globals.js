@@ -13,3 +13,7 @@ declare var __RELEASE_FLAGS__: Object;
 
 // eslint-disable-next-line no-unused-vars
 declare var graphql: (strings: Array<string>) => any;
+
+// Remove this when upgrading webpack
+// eslint-disable-next-line no-unused-vars
+declare var System: Object;

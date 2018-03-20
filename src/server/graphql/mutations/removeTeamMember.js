@@ -31,8 +31,9 @@ export default {
 
     // RESOLUTION
     const isKickout = !isSelf;
-    const res = await removeTeamMember(teamMemberId, {isKickout}, subOptions);
+    const res = await removeTeamMember(teamMemberId, {isKickout}, dataLoader);
     const {user, removedNotifications, notificationId, archivedTaskIds, reassignedTaskIds} = res;
+
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const {tms} = user;
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});

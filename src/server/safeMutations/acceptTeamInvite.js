@@ -6,8 +6,9 @@ import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifica
 import {getUserId} from 'server/utils/authorization';
 import {ADD_USER} from 'server/utils/serverConstants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import addTeamMemberToNewMeeting from 'server/graphql/mutations/helpers/addTeamMemberToNewMeeting';
 
-const acceptTeamInvite = async (teamId, authToken, email) => {
+const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
   const r = getRethink();
   const now = new Date();
   const userId = getUserId(authToken);
@@ -17,7 +18,7 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
   });
   const userOrgs = user.userOrgs || [];
   const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
-  const {removedInvitationId, removedNotification, removedSoftTeamMember} = await r({
+  const {removedInvitationId, removedNotification, removedSoftTeamMember, teamMember} = await r({
     // add the team to the user doc
     userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
     teamMember: insertNewTeamMember(userId, teamId),
@@ -52,6 +53,8 @@ const acceptTeamInvite = async (teamId, authToken, email) => {
     await adjustUserCount(userId, orgId, ADD_USER);
   }
 
+  // if a meeting is going on right now, add them
+  await addTeamMemberToNewMeeting(teamMember, teamId, dataLoader);
   return {
     removedNotification,
     removedInvitationId,

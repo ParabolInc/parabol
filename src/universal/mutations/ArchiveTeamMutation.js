@@ -4,7 +4,7 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
-import {matchPath} from 'react-router-dom';
+import onExTeamRoute from 'universal/utils/onExTeamRoute';
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
@@ -50,10 +50,7 @@ const popTeamArchivedToast = (payload, {dispatch, history, location, environment
     }
   }));
   const {pathname} = location;
-  const onExTeamRoute = Boolean(matchPath(pathname, {
-    path: `(/team/${teamId}|/meeting/${teamId})`
-  }));
-  if (onExTeamRoute) {
+  if (onExTeamRoute(pathname, teamId)) {
     history.push('/me');
   }
 };

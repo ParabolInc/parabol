@@ -18,6 +18,10 @@ export const resolveMeeting = ({meeting, meetingId}, args, {dataLoader}) => {
   return meetingId ? dataLoader.get('meetings').load(meetingId) : meeting;
 };
 
+export const resolveNewMeeting = ({meeting, meetingId}, args, {dataLoader}) => {
+  return meetingId ? dataLoader.get('newMeetings').load(meetingId) : meeting;
+};
+
 export const resolveNotification = ({notificationId, notification}, args, {dataLoader}) => {
   return notificationId ? dataLoader.get('notifications').load(notificationId) : notification;
 };

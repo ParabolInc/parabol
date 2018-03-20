@@ -1,14 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
+import styled from 'react-emotion';
+
+const RejoinButton = styled('div')({
+  bottom: '2.75rem',
+  position: 'fixed',
+  right: '2rem',
+  zIndex: ui.ziRejoinFacilitatorButton
+});
 
 const RejoinFacilitatorButton = (props) => {
-  const {styles, onClickHandler} = props;
+  const {onClickHandler} = props;
   return (
-    <div className={css(styles.rejoinButtonBlock)}>
+    <RejoinButton>
       <Button
         colorPalette="warm"
         depth={2}
@@ -17,22 +23,12 @@ const RejoinFacilitatorButton = (props) => {
         onClick={onClickHandler}
         buttonSize="medium"
       />
-    </div>
+    </RejoinButton>
   );
 };
 
 RejoinFacilitatorButton.propTypes = {
-  styles: PropTypes.object,
   onClickHandler: PropTypes.func
 };
 
-const styleThunk = () => ({
-  rejoinButtonBlock: {
-    bottom: '2rem',
-    position: 'fixed',
-    right: '2rem',
-    zIndex: ui.ziRejoinFacilitatorButton
-  }
-});
-
-export default withStyles(styleThunk)(RejoinFacilitatorButton);
+export default RejoinFacilitatorButton;

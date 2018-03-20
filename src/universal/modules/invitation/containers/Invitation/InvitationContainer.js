@@ -6,7 +6,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import withReducer from 'universal/decorators/withReducer/withReducer';
 import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
-import AcceptTeamInviteEmailMutation from 'universal/mutations/AcceptTeamInviteEmailMutation';
+import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 
 const mapStateToProps = (state, props) => {
   const {match: {params: {id}}} = props;
@@ -59,7 +59,7 @@ export default class Invitation extends Component {
 
   processInvitation = () => {
     const {atmosphere, dispatch, inviteToken, history} = this.props;
-    AcceptTeamInviteEmailMutation(atmosphere, inviteToken, dispatch, history);
+    AcceptTeamInviteMutation(atmosphere, {inviteToken}, {dispatch, history});
   };
 
   render() {

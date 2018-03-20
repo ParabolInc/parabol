@@ -14,6 +14,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {ACTION} from 'universal/utils/constants';
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
 const initialValues = {teamName: ''};
@@ -29,7 +30,7 @@ const Team = (props) => {
     team
   } = props;
   if (!team) return <LoadingView />;
-  const {teamId, teamName, isPaid, meetingId} = team;
+  const {teamId, teamName, isPaid, meetingId, newMeeting} = team;
   const updateFilter = (e) => {
     const nextValue = e.target.value;
     commitLocalUpdate(atmosphere, (store) => {
@@ -51,6 +52,7 @@ const Team = (props) => {
     <DashMain>
       <MeetingInProgressModal
         isOpen={hasActiveMeeting}
+        meetingType={newMeeting ? newMeeting.meetingType : ACTION}
         modalLayout={modalLayout}
         teamId={teamId}
         teamName={teamName}
@@ -134,6 +136,10 @@ export default createFragmentContainer(
       teamName: name
       isPaid
       meetingId
+      newMeeting {
+        id
+        meetingType
+      }
       ...DashboardAvatars_team
     }
   `

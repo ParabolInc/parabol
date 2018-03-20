@@ -1,6 +1,4 @@
 import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType';
-import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
-import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload';
 import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
@@ -13,22 +11,27 @@ import RequestFacilitatorPayload from 'server/graphql/types/RequestFacilitatorPa
 import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
 import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload';
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
+import UpdateNewCheckInQuestionPayload from 'server/graphql/types/UpdateNewCheckInQuestionPayload';
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload';
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
+import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
+import KillNewMeetingPayload from 'server/graphql/types/KillNewMeetingPayload';
+import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload';
 
 
 const types = [
-  AcceptTeamInviteEmailPayload,
-  AcceptTeamInviteNotificationPayload,
+  AcceptTeamInvitePayload,
   AddTeamPayload,
   ArchiveTeamPayload,
   EndMeetingPayload,
   KillMeetingPayload,
+  KillNewMeetingPayload,
   MoveMeetingPayload,
   NavigateMeetingPayload,
   PromoteFacilitatorPayload,
+  PromoteNewMeetingFacilitatorPayload,
   RequestFacilitatorPayload,
   StartMeetingPayload,
   StartNewMeetingPayload,
@@ -36,6 +39,7 @@ const types = [
   RemoveTeamMemberPayload,
   UpdateCheckInQuestionPayload,
   UpdateCreditCardPayload,
+  UpdateNewCheckInQuestionPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload
 ];

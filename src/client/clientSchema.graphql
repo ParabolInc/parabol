@@ -1,3 +1,13 @@
+extend interface NewMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
+}
+
+extend type RetrospectiveMeeting {
+localPhase: NewMeetingPhase!
+localStage: NewMeetingStage!
+}
+
 extend type Team {
   contentFilter: String
 }

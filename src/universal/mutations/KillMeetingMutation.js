@@ -10,6 +10,9 @@ graphql`
       meetingId
       meetingPhase
       meetingPhaseItem
+      newMeeting {
+        id
+      }
     }
   }
 `;
@@ -44,7 +47,6 @@ const KillMeetingMutation = (environment, teamId, history, onError, onCompleted)
         .setValue(null, 'facilitatorPhaseItem')
         .setValue(null, 'meetingPhaseItem')
         .setValue(null, 'activeFacilitator');
-      history.push(`/meeting/${teamId}/lobby`);
     },
     onCompleted,
     onError

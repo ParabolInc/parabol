@@ -1,5 +1,4 @@
 import {commitMutation} from 'react-relay';
-import {matchPath} from 'react-router-dom';
 import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
@@ -9,6 +8,7 @@ import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams';
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks';
+import onExTeamRoute from 'universal/utils/onExTeamRoute';
 
 graphql`
   fragment RemoveTeamMemberMutation_task on RemoveTeamMemberPayload {
@@ -51,6 +51,13 @@ graphql`
     }
     team {
       id
+      newMeeting {
+        phases {
+          stages {
+            id
+          }
+        }
+      }
     }
     teamMember {
       userId
@@ -89,10 +96,7 @@ const popKickedOutNotification = (payload, {dispatch, environment, history}) => 
     }
   }));
   const {pathname} = history.location;
-  const onExTeamRoute = Boolean(matchPath(pathname, {
-    path: `(/team/${teamId}|/meeting/${teamId})`
-  }));
-  if (onExTeamRoute) {
+  if (onExTeamRoute(pathname, teamId)) {
     history.push('/me');
   }
 };

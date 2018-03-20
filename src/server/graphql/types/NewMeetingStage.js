@@ -1,10 +1,12 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
 import {CHECKIN, DISCUSS, GROUP, THINK, VOTE} from 'universal/utils/constants';
-import TeamMemberStage from 'server/graphql/types/TeamMemberStage';
+import CheckInStage from 'server/graphql/types/CheckInStage';
 import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
 import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage';
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
 
 /*
  * Each meeting has many phases.
@@ -23,6 +25,10 @@ export const newMeetingStageFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
+  endAt: {
+    description: 'The datetime the stage was completed',
+    type: GraphQLISO8601Type
+  },
   meetingId: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'foreign key. try using meeting'
@@ -34,17 +40,30 @@ export const newMeetingStageFields = () => ({
       return dataLoader.get('newMeetings').load(meetingId);
     }
   },
-  // isFacilitatorStage: {
-  //   type: GraphQLBoolean,
-  //   description: 'true if the facilitator is currently looking at the stage, else false'
-  // },
   isComplete: {
     type: GraphQLBoolean,
-    description: 'true if the facilitator has completed this stage, else false'
+    description: 'true if the facilitator has completed this stage, else false. Should be boolean(endAt)'
+  },
+  phase: {
+    type: NewMeetingPhase,
+    description: 'The phase this stage belongs to',
+    resolve: async ({meetingId, phaseType}, args, {dataLoader}) => {
+      const meeting = await dataLoader.get('newMeetings').load(meetingId);
+      const {phases} = meeting;
+      return phases.find((phase) => phase.phaseType === phaseType);
+    }
   },
   phaseType: {
     description: 'The type of the phase',
     type: NewMeetingPhaseTypeEnum
+  },
+  startAt: {
+    description: 'The datetime the stage was started',
+    type: GraphQLISO8601Type
+  },
+  viewCount: {
+    description: 'Number of times the facilitator has visited this stage',
+    type: GraphQLInt
   }
   // isViewOnce: {
   //   description: 'true if the meeting phase can only be viewed once (eg first call)',
@@ -56,19 +75,20 @@ export const newMeetingStageFields = () => ({
   // }
 });
 
-const resolveTypeLookup = {
-  [CHECKIN]: TeamMemberStage,
-  [THINK]: GenericMeetingStage,
-  [GROUP]: GenericMeetingStage,
-  [VOTE]: GenericMeetingStage,
-  [DISCUSS]: RetroDiscussStage
-};
-
 const NewMeetingStage = new GraphQLInterfaceType({
   name: 'NewMeetingStage',
   description: 'An instance of a meeting phase item. On the client, this usually represents a single view',
   fields: newMeetingStageFields,
-  resolveType: ({phaseType}) => resolveTypeLookup[phaseType]
+  resolveType: ({phaseType}) => {
+    const resolveTypeLookup = {
+      [CHECKIN]: CheckInStage,
+      [THINK]: GenericMeetingStage,
+      [GROUP]: GenericMeetingStage,
+      [VOTE]: GenericMeetingStage,
+      [DISCUSS]: RetroDiscussStage
+    };
+    return resolveTypeLookup[phaseType];
+  }
 });
 
 export default NewMeetingStage;

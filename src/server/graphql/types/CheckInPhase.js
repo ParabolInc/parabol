@@ -1,7 +1,7 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase';
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
-import TeamMemberStage from 'server/graphql/types/TeamMemberStage';
+import CheckInStage from 'server/graphql/types/CheckInStage';
 
 const CheckInPhase = new GraphQLObjectType({
   name: 'CheckInPhase',
@@ -18,7 +18,7 @@ const CheckInPhase = new GraphQLObjectType({
       description: 'The checkIn question of the week (draft-js format)'
     },
     stages: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamMemberStage)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CheckInStage)))
     }
   })
 });

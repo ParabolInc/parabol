@@ -4,8 +4,9 @@ import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposFo
 import shortid from 'shortid';
 import {GITHUB, KICKED_OUT} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import removeTeamMemberFromNewMeeting from 'server/graphql/mutations/helpers/removeTeamMemberFromNewMeeting';
 
-const removeTeamMember = async (teamMemberId, options) => {
+const removeTeamMember = async (teamMemberId, options, dataLoader) => {
   const {isKickout} = options;
   const r = getRethink();
   const now = new Date();
@@ -91,6 +92,9 @@ const removeTeamMember = async (teamMemberId, options) => {
     // TODO send the archived tasks in a mutation payload
     archivedTaskIds = await archiveTasksForManyRepos(repoChanges);
   }
+
+  // if a new meeting was currently running, remove them from it
+  await removeTeamMemberFromNewMeeting(teamMemberId, teamId, dataLoader);
 
   return {
     user,

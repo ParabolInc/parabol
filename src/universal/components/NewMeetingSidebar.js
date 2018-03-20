@@ -5,13 +5,14 @@ import {Link} from 'react-router-dom';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
-
-import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 import type {NewMeetingSidebar_viewer as Viewer} from './__generated__/NewMeetingSidebar_viewer.graphql';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 import LogoBlock from 'universal/components/LogoBlock/LogoBlock';
 import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList';
+import makeHref from 'universal/utils/makeHref';
+import type {MeetingTypeEnum} from 'universal/types/schema.flow';
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
 const Nav = styled('nav')({
   display: 'flex',
@@ -50,17 +51,20 @@ const SidebarSubHeading = styled('div')({
 });
 
 type Props = {
-  localPhase: NewMeetingPhaseTypeEnum,
+  gotoStageId: (stageId: string) => void,
+  meetingType: MeetingTypeEnum,
   viewer: Viewer
 }
 
 const NewMeetingSidebar = (props: Props) => {
   const {
-    localPhase,
+    gotoStageId,
+    meetingType,
     viewer
   } = props;
   const {team: {teamId, teamName}} = viewer;
-  const relativeLink = `/retro/${teamId}`;
+  const meetingSlug = meetingTypeToSlug[meetingType];
+  const relativeLink = `/${meetingSlug}/${teamId}`;
   return (
     <SidebarParent>
       <SidebarHeader>
@@ -70,13 +74,13 @@ const NewMeetingSidebar = (props: Props) => {
         >
           {teamName}
         </TeamDashboardLink>
-        <CopyShortLink icon="link" label="Meeting Link" url={relativeLink} />
+        <CopyShortLink icon="link" label="Meeting Link" url={makeHref(relativeLink)} />
       </SidebarHeader>
       <SidebarSubHeading>
         <LabelHeading>{'Action Meeting'}</LabelHeading>
       </SidebarSubHeading>
       <Nav>
-        <NewMeetingSidebarPhaseList localPhase={localPhase} viewer={viewer} />
+        <NewMeetingSidebarPhaseList gotoStageId={gotoStageId} viewer={viewer} />
       </Nav>
       <LogoBlock variant="primary" />
     </SidebarParent>

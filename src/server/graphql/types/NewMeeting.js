@@ -1,12 +1,13 @@
 import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
-import {resolveTeam} from 'server/graphql/resolvers';
+import {makeResolve, resolveTeam} from 'server/graphql/resolvers';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import Team from 'server/graphql/types/Team';
 import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import {RETROSPECTIVE} from 'universal/utils/constants';
+import User from 'server/graphql/types/User';
 
 export const newMeetingFields = () => ({
   id: {
@@ -22,12 +23,17 @@ export const newMeetingFields = () => ({
     description: 'The timestamp the meeting officially ended'
   },
   facilitatorStageId: {
-    type: GraphQLID,
+    type: new GraphQLNonNull(GraphQLID),
     description: 'The location of the facilitator in the meeting'
   },
   facilitatorUserId: {
-    type: GraphQLID,
+    type: new GraphQLNonNull(GraphQLID),
     description: 'The userId (or anonymousId) of the most recent facilitator'
+  },
+  facilitator: {
+    type: new GraphQLNonNull(User),
+    description: 'The facilitator user',
+    resolve: makeResolve('facilitatorUserId', 'facilitator', 'users')
   },
   invitees: {
     type: new GraphQLList(MeetingInvitee)

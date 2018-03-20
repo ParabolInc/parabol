@@ -83,7 +83,12 @@ class MeetingContainer extends Component {
     this.unsafeRoute = !handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
-    bindHotkey('i c a n t h a c k i t', () => KillMeetingMutation(atmosphere, teamId, history));
+    bindHotkey('i c a n t h a c k i t', () => {
+      const onCompleted = () => {
+        history.push(`/meeting/${teamId}/lobby`);
+      };
+      KillMeetingMutation(atmosphere, teamId, history, undefined, onCompleted);
+    });
     this.electionTimer = setInterval(() => {
       this.electFacilitatorIfNone();
     }, 5000);
