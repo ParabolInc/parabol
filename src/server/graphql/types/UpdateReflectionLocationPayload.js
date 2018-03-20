@@ -3,6 +3,7 @@ import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import RetroReflection from 'server/graphql/types/RetroReflection';
+import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 
 const UpdateReflectionLocationPayload = new GraphQLObjectType({
   name: 'UpdateReflectionLocationPayload',
@@ -17,6 +18,16 @@ const UpdateReflectionLocationPayload = new GraphQLObjectType({
     reflection: {
       type: RetroReflection,
       resolve: makeResolve('reflectionId', 'reflection', 'retroReflections')
+    },
+    orphanedReflection: {
+      type: RetroReflection,
+      description: 'If the reflection was removed from a group & was the penultimate in the group, this orphan was removed, too',
+      resolve: makeResolve('orphanedReflectionId', 'orphanedReflection', 'retroReflections')
+    },
+    removedGroup: {
+      type: RetroReflectionGroup,
+      description: 'If the reflection was removed from a group & was the penultimate in the group, the group was removed, too',
+      resolve: makeResolve('removedGroupId', 'removedGroup', 'retroReflectionGroups')
     }
   })
 });

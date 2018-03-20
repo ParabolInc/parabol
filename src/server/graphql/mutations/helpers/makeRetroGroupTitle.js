@@ -22,7 +22,7 @@ const getSmartEntities = async (reflections) => {
     type: 'PLAIN_TEXT'
   };
   try {
-    return client.analyzeEntities({document})
+    return client.analyzeEntities({document});
   } catch (e) {
     const breadcrumb = {
       message: e.message,
@@ -62,7 +62,15 @@ const makeRetroGroupTitle = async (meetingId, reflections) => {
   const r = getRethink();
   const textSummary = await getSmartEntities(reflections);
   const smartTitle = createSmartTitle(textSummary);
-  if (smartTitle) return {smartTitle, title: smartTitle};
+  if (smartTitle) {
+    const allTitles = await r.table('RetroReflectionGroup')
+      .getAll(meetingId, {index: 'meetingId'})
+      .filter({isActive: true})('title')
+      .default([]);
+    if (!allTitles.includes(smartTitle)) {
+      return {smartTitle, title: smartTitle};
+    }
+  }
   const reflectionCount = await r.table('RetroReflectionGroup')
     .getAll(meetingId, {index: 'meetingId'})
     .count();

@@ -9,7 +9,7 @@ import {GROUP, TEAM} from 'universal/utils/constants';
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 import stringSimilarity from 'string-similarity';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import {sendGroupTitleRequiredError} from 'server/utils/__tests__/validationErrors';
+import {sendGroupTitleDuplicateError, sendGroupTitleRequiredError} from 'server/utils/__tests__/validationErrors';
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload';
 
 export default {
@@ -44,6 +44,11 @@ export default {
     // VALIDATION
     const normalizedTitle = title.trim();
     if (normalizedTitle.length < 1) return sendGroupTitleRequiredError(authToken, reflectionGroupId);
+    const allTitles = await r.table('RetroReflectionGroup')
+      .getAll(meetingId, {index: 'meetingId'})
+      .filter({isActive: true})('title')
+      .default([]);
+    if (allTitles.includes(normalizedTitle)) return sendGroupTitleDuplicateError(authToken, normalizedTitle);
 
     // RESOLUTION
     await r.table('RetroReflectionGroup').get(reflectionGroupId)

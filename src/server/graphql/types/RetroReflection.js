@@ -3,7 +3,7 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
-import {getUserId, isSuperUser} from 'server/utils/authorization';
+import {getUserId} from 'server/utils/authorization';
 import {resolveForSU} from 'server/graphql/resolvers';
 
 const RetroReflection = new GraphQLObjectType({

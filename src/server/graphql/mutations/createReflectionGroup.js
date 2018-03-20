@@ -10,6 +10,7 @@ import {GROUP, TEAM} from 'universal/utils/constants';
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload';
 import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle';
+import {sendTooManyReflectionsError} from 'server/utils/__tests__/validationErrors';
 
 export default {
   type: CreateReflectionGroupPayload,
@@ -20,7 +21,7 @@ export default {
     },
     reflectionIds: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
-      description: 'An array of 1 or more reflections that make up the group. The first card in the array will be used to determine sort order'
+      description: 'An array of 1 or 2 reflections that make up the group. The first card in the array will be used to determine sort order'
     }
   },
   async resolve(source, {meetingId, reflectionIds}, {authToken, dataLoader, socketId: mutatorId}) {
@@ -38,12 +39,14 @@ export default {
     if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
 
     // VALIDATION
+    if (reflectionIds.length > 2) return sendTooManyReflectionsError(authToken, reflectionIds);
     const reflections = await dataLoader.get('retroReflections').loadMany(reflectionIds);
     if (reflections.some((reflection) => !reflection)) return sendReflectionNotFoundError(authToken, reflectionIds);
 
     // RESOLUTION
     const reflectionGroupId = shortid.generate();
-    const {title, smartTitle} = makeRetroGroupTitle(meetingId, reflections);
+    const {title, smartTitle} = await makeRetroGroupTitle(meetingId, reflections);
+
     const reflectionGroup = {
       id: reflectionGroupId,
       createdAt: now,
@@ -56,19 +59,13 @@ export default {
       sortOrder: reflections[0].sortOrder
     };
 
-    const groupSortOrders = reflectionIds.reduce((obj, id, idx) => {
-      obj[id] = idx;
-      return obj;
-    }, {});
-
     await r({
       group: r.table('RetroReflectionGroup').insert(reflectionGroup),
       reflections: r.table('RetroReflection')
         .getAll(r.args(reflectionIds), {index: 'id'})
-        .update((reflection) => ({
-          reflectionGroupId,
-          groupSortOrder: r(groupSortOrders)(reflection('id'))
-        }))
+        .update({
+          reflectionGroupId
+        })
     });
 
     const data = {meetingId, reflectionGroupId};
