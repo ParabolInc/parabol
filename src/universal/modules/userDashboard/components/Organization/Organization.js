@@ -1,12 +1,12 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import {Link, Switch} from 'react-router-dom';
+import {withRouter, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import {SettingsWrapper} from 'universal/components/Settings';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
+import {DashNavControl} from 'universal/components';
 import TagPro from 'universal/components/Tag/TagPro';
 import {tagBlock} from 'universal/components/Tag/tagBase';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
@@ -15,7 +15,6 @@ import BillingMembersToggle from 'universal/modules/userDashboard/components/Bil
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import appTheme from 'universal/styles/theme/appTheme';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import ui from 'universal/styles/ui';
@@ -25,15 +24,10 @@ import makeDateString from 'universal/utils/makeDateString';
 
 const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
 const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot');
-const inlineBlockStyle = {
-  display: 'inline-block',
-  lineHeight: ui.dashSectionHeaderLineHeight,
-  marginRight: '.5rem',
-  verticalAlign: 'middle'
-};
 
 const Organization = (props) => {
   const {
+    history,
     match,
     orgId,
     styles,
@@ -44,15 +38,19 @@ const Organization = (props) => {
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
   const extraProps = {orgId, org};
+  const goToOrgs = () => history.push('/me/organizations');
 
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
       <SettingsWrapper>
-        <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
-          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
-          <div style={inlineBlockStyle}>Back to Organizations</div>
-        </Link>
+        <div className={css(styles.backControl)}>
+          <DashNavControl
+            icon="arrow-circle-left"
+            label="Back to Organizations"
+            onClick={goToOrgs}
+          />
+        </div>
         <div className={css(styles.avatarAndName)}>
           <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
             <OrgAvatarInput orgId={orgId} />
@@ -83,6 +81,7 @@ const Organization = (props) => {
 Organization.propTypes = {
   match: PropTypes.object.isRequired,
   orgId: PropTypes.string.isRequired,
+  history: PropTypes.object,
   styles: PropTypes.object,
   viewer: PropTypes.object
 };
@@ -127,8 +126,7 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  goBackLabel: {
-    ...goBackLabel,
+  backControl: {
     margin: '1rem 0'
   },
 
@@ -146,7 +144,7 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withStyles(styleThunk)(Organization),
+  withRouter(withStyles(styleThunk)(Organization)),
   graphql`
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {

@@ -23,7 +23,7 @@ const CONTROL_SIZE_SMALL = 'small';
 const CONTROL_SIZE_MEDIUM = 'medium';
 const CONTROL_SIZE_LARGE = 'large';
 
-const CONTROL_SMALL_FONT_SIZE = '.875rem';
+const CONTROL_SMALL_FONT_SIZE = '.8125rem';
 const CONTROL_SMALL_LINE_HEIGHT = '1.25rem';
 const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem';
 const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem';
@@ -46,6 +46,7 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
+const {midGray} = appTheme.brand.primary;
 const {red, rose, green} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
@@ -77,6 +78,7 @@ const PALETTE_OPTIONS = [
   'light',
   'white',
   'gray',
+  'midGray',
   'green',
   'red'
 ];
@@ -88,6 +90,7 @@ const PALETTE_VALUES = {
   light,
   white,
   gray,
+  midGray,
   green,
   red
 };
@@ -349,7 +352,11 @@ const ui = {
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashAlertsHeight: '5.25rem',
-  dashSectionHeaderLineHeight: '2rem',
+
+  dashControlFontColor: COLOR_TEXT_LIGHT,
+  dashControlFontSize: appTheme.typography.s2,
+  dashControlHeight: '2rem',
+
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
   dashTeamBreakpointUp: '@media (min-width: 123.25rem)',

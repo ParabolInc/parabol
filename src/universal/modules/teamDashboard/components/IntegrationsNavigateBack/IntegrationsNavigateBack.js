@@ -1,39 +1,29 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import React from 'react';
-import FontAwesome from 'react-fontawesome';
-import {Link} from 'react-router-dom';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import PropTypes from 'prop-types';
+import {withRouter} from 'react-router-dom';
+import styled from 'react-emotion';
+import {DashNavControl} from 'universal/components';
 
-const inlineBlockStyle = {
-  display: 'inline-block',
-  lineHeight: ui.dashSectionHeaderLineHeight,
-  marginRight: '.5rem',
-  verticalAlign: 'middle'
-};
+const RootBlock = styled('div')({
+  margin: '1rem 0'
+});
 
-const IntegrationsNavigateBack = ({styles, teamId}) => {
+const IntegrationsNavigateBack = ({history, teamId}) => {
+  const goToIntegrations = () => history.push(`/team/${teamId}/settings/integrations`);
   return (
-    <Link className={css(styles.link)} to={`/team/${teamId}/settings/integrations`} title="Back to Integrations">
-      <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
-      <div style={inlineBlockStyle}>Back to <b>Integrations</b></div>
-    </Link>
+    <RootBlock>
+      <DashNavControl
+        icon="arrow-circle-left"
+        label="Back to Integrations"
+        onClick={goToIntegrations}
+      />
+    </RootBlock>
   );
 };
 
 IntegrationsNavigateBack.propTypes = {
-  styles: PropTypes.object,
+  history: PropTypes.object,
   teamId: PropTypes.string.isRequired
 };
 
-const styleThunk = () => ({
-  link: {
-    ...goBackLabel,
-    display: 'block',
-    margin: '1rem 0'
-  }
-});
-
-export default withStyles(styleThunk)(IntegrationsNavigateBack);
+export default withRouter(IntegrationsNavigateBack);

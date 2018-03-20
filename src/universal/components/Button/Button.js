@@ -41,19 +41,27 @@ const makeFlatTheme = (buttonStyle, color) => ({
   }
 });
 
-const makeLinkTheme = (color) => ({
-  backgroundColor: 'transparent',
-  boxShadow: 'none !important',
-  color,
-  fontWeight: 400,
+const makeLinkTheme = (color) => {
+  const hoverFocusStyles = {
+    boxShadow: 'none !important',
+    color: tinycolor.mix(color, '#000', 15).toHexString()
+  };
+  return ({
+    backgroundColor: 'transparent',
+    boxShadow: 'none !important',
+    color,
+    fontWeight: 400,
+    paddingLeft: 0,
+    paddingRight: 0,
 
-  ':hover': {
-    opacity: '.5'
-  },
-  ':focus': {
-    opacity: '.5'
-  }
-});
+    ':hover': {
+      ...hoverFocusStyles
+    },
+    ':focus': {
+      ...hoverFocusStyles
+    }
+  });
+};
 
 const makePrimaryTheme = () => ({
   ...ui.buttonStylesPrimary
