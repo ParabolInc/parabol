@@ -1,28 +1,30 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {isTeamMember} from 'server/utils/authorization';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload';
-import {sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
+import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
+import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
+import {sendPhaseItemNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
-import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
 import publish from 'server/utils/publish';
 import {REFLECT, TEAM} from 'universal/utils/constants';
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 
 export default {
-  type: UpdateReflectionContentPayload,
-  description: 'Update the content of a reflection',
+  type: UpdateReflectionLocationPayload,
+  description: 'Update the sortOrder or phaseItemId of a reflection (usually by dragging it)',
   args: {
     reflectionId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    content: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'A stringified draft-js document containing thoughts'
+    retroPhaseItemId: {
+      type: GraphQLID,
+      description: 'The phase item the reflection belongs to'
+    },
+    sortOrder: {
+      type: new GraphQLNonNull(GraphQLFloat)
     }
   },
-  async resolve(source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {reflectionId, retroPhaseItemId, sortOrder}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const now = new Date();
@@ -39,17 +41,20 @@ export default {
     if (isPhaseComplete(REFLECT, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT);
 
     // VALIDATION
-    const normalizedContent = normalizeRawDraftJS(content);
+    const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId);
+    if (!phaseItem || phaseItem.teamId !== teamId) return sendPhaseItemNotFoundError(authToken, retroPhaseItemId);
+    if (!phaseItem.isActive) return sendPhaseItemNotActiveError(authToken, retroPhaseItemId);
 
     // RESOLUTION
     await r.table('RetroReflection').get(reflectionId)
       .update({
-        content: normalizedContent,
+        sortOrder,
+        retroPhaseItemId,
         updatedAt: now
       });
 
     const data = {meetingId, reflectionId};
-    publish(TEAM, teamId, UpdateReflectionContentPayload, data, subOptions);
+    publish(TEAM, teamId, UpdateReflectionLocationPayload, data, subOptions);
     return data;
   }
 };

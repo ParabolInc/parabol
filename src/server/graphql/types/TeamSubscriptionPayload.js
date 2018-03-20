@@ -21,6 +21,7 @@ import KillNewMeetingPayload from 'server/graphql/types/KillNewMeetingPayload';
 import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload';
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload';
 import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload';
+import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
 
 
 const types = [
@@ -44,6 +45,7 @@ const types = [
   UpdateCreditCardPayload,
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,
+  UpdateReflectionLocationPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload
 ];
