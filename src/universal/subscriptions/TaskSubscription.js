@@ -17,7 +17,6 @@ const subscription = graphql`
     taskSubscription {
       __typename
       ...AcceptTeamInviteMutation_task
-      ...AcceptTeamInviteEmailMutation_task
       ...RemoveTeamMemberMutation_task
       ...CancelApprovalMutation_task
       ...CancelTeamInviteMutation_task
@@ -45,8 +44,7 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
       if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
-        case 'AcceptTeamInviteNotificationPayload':
-        case 'AcceptTeamInviteEmailPayload':
+        case 'AcceptTeamInvitePayload':
           acceptTeamInviteTaskUpdater(payload, store, viewerId);
           break;
         case 'RemoveTeamMemberOtherPayload':

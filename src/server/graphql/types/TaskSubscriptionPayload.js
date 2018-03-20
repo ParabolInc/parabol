@@ -12,12 +12,10 @@ import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload';
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
-import AcceptTeamInviteEmailPayload from 'server/graphql/types/AcceptTeamInviteEmailPayload';
-import AcceptTeamInviteNotificationPayload from 'server/graphql/types/AcceptTeamInviteNotificationPayload';
+import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
 
 const types = [
-  AcceptTeamInviteEmailPayload,
-  AcceptTeamInviteNotificationPayload,
+  AcceptTeamInvitePayload,
   CancelApprovalPayload,
   CancelTeamInvitePayload,
   ChangeTaskTeamPayload,

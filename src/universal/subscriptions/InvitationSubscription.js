@@ -8,7 +8,6 @@ const subscription = graphql`
     invitationSubscription(teamId: $teamId) {
       __typename
       ...AcceptTeamInviteMutation_invitation
-      ...AcceptTeamInviteEmailMutation_invitation
       ...ApproveToOrgMutation_invitation
       ...CancelTeamInviteMutation_invitation
       ...InviteTeamMembersMutation_invitation
@@ -27,8 +26,7 @@ const InvitationSubscription = (environment, queryVariables) => {
       if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
-        case 'AcceptTeamInviteNotificationPayload':
-        case 'AcceptTeamInviteEmailPayload':
+        case 'AcceptTeamInvitePayload':
           acceptTeamInviteInvitationUpdater(payload, store);
           break;
         case 'ApproveToOrgPayload':

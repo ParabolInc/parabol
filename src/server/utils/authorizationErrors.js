@@ -125,3 +125,36 @@ export const sendNotMeetingFacilitatorError = (authToken, userId) => {
   };
   return sendAuthRaven(authToken, 'Not meeting facilitator', breadcrumb);
 };
+
+export const sendInvitationExpiredError = (authToken, inviteToken, returnValue) => {
+  const breadcrumb = {
+    message: `
+              Hey, your invitation expired. Maybe someone already used it or
+              it was sitting in your inbox too long.
+              Ask your friend for a new one.
+            `,
+    category: 'Expired',
+    data: {inviteToken}
+  };
+  return sendAuthRaven(authToken, 'Invitation has expired', breadcrumb, returnValue);
+};
+
+export const sendInvitationHashFailError = (authToken, inviteToken, returnValue) => {
+  const breadcrumb = {
+    message: `
+              We had difficulty with that link. Did you paste it correctly?
+            `,
+    category: 'Invalid invitation',
+    data: {inviteToken}
+  };
+  return sendAuthRaven(authToken, 'Invitation invalid', breadcrumb, returnValue);
+};
+
+export const sendTeamAlreadyJoinedError = (authToken, inviteToken, returnValue) => {
+  const breadcrumb = {
+    message: 'Hey, we think you already belong to this team.',
+    category: 'Team already joined',
+    data: {inviteToken}
+  };
+  return sendAuthRaven(authToken, 'Team already joined', breadcrumb, returnValue);
+};

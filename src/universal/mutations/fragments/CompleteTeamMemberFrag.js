@@ -9,5 +9,6 @@ graphql`
     picture
     preferredName
     teamId
+    userId
   }
 `;

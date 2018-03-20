@@ -2,7 +2,8 @@ import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 import getInProxy from 'universal/utils/relay/getInProxy';
 
-const popTeamInviteNotificationToast = (teamInviteNotification, {dispatch, environment}) => {
+const popTeamInviteNotificationToast = (teamInviteNotification, options) => {
+  const {environment, dispatch} = options;
   const inviterName = getInProxy(teamInviteNotification, 'inviter', 'preferredName');
   if (!inviterName) return;
   const teamName = getInProxy(teamInviteNotification, 'team', 'name');
@@ -14,7 +15,7 @@ const popTeamInviteNotificationToast = (teamInviteNotification, {dispatch, envir
     action: {
       label: 'Accept!',
       callback: () => {
-        AcceptTeamInviteMutation(environment, notificationId, dispatch);
+        AcceptTeamInviteMutation(environment, {notificationId}, options);
       }
     }
   }));

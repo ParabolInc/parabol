@@ -1,10 +1,9 @@
 import shortid from 'shortid';
 
-const makeRetroStage = (phaseType, meetingId, isFacilitatorPhase) => {
+const makeRetroStage = (phaseType, meetingId) => {
   return {
     id: shortid.generate(),
     meetingId,
-    isFacilitatorStage: isFacilitatorPhase,
     isComplete: false,
     phaseType
   };

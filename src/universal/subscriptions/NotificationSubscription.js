@@ -31,13 +31,20 @@ const subscription = graphql`
       ...RejectOrgApprovalMutation_notification
       ...UpdateUserProfileMutation_notification
 
-      # ConnectSocket/DisconnectSocket
+      # ConnectSocket
       ... on User {
         id
         isConnected
         tms
       }
 
+      # DisconnectSocket 
+      ... on DisconnectSocketPayload {
+        user {
+          id
+          tms
+        }
+      }
       # Stripe webhooks
       ... on StripeFailPaymentPayload {
         notification {
@@ -59,6 +66,19 @@ const connectSocketUserUpdater = (payload, store) => {
     const teamMember = store.get(teamMemberId);
     if (!teamMember) return;
     teamMember.setValue(isConnected, 'isConnected');
+  });
+};
+
+const disconnectSocketNotificationUpdater = (payload, store) => {
+  const user = payload.getLinkedRecord('user');
+  const userId = user.getValue('id');
+  const teamIds = user.getValue('tms');
+  if (!teamIds) return;
+  const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId));
+  teamMemberIds.forEach((teamMemberId) => {
+    const teamMember = store.get(teamMemberId);
+    if (!teamMember) return;
+    teamMember.setValue(false, 'isConnected');
   });
 };
 
@@ -85,7 +105,10 @@ const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options)
   popPaymentFailedToast(payload, options);
 };
 
-const NotificationSubscription = (environment, queryVariables, {dispatch, history, location}) => {
+const onNextHandlers = {};
+
+const NotificationSubscription = (environment, queryVariables, subParams) => {
+  const {dispatch, history, location} = subParams;
   const {viewerId} = environment;
   return {
     subscription,
@@ -119,6 +142,9 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
         case 'DeleteTaskPayload':
           deleteTaskNotificationUpdater(payload, store, viewerId);
           break;
+        case 'DisconnectSocketPayload':
+          disconnectSocketNotificationUpdater(payload, store);
+          break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersNotificationUpdater(payload, store, viewerId, options);
           break;
@@ -138,6 +164,13 @@ const NotificationSubscription = (environment, queryVariables, {dispatch, histor
           break;
         default:
           console.error('NotificationSubscription case fail', type);
+      }
+    },
+    onNext: ({notificationSubscription}) => {
+      const {__typename: type} = notificationSubscription;
+      const handler = onNextHandlers[type];
+      if (handler) {
+        handler(notificationSubscription, {...subParams, environment});
       }
     }
   };

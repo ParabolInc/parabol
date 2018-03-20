@@ -24,6 +24,7 @@ import http from 'http';
 import startMemwatch from 'server/utils/startMemwatch';
 import packageJSON from '../../package.json';
 import jwtFields from 'universal/utils/jwtFields';
+import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants';
 
 const {version} = packageJSON;
 // Import .env and expand variables:
@@ -39,7 +40,7 @@ const server = http.createServer(app);
 const wss = new Server({server});
 server.listen(PORT);
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
-const sharedDataLoader = new SharedDataLoader({PROD, onShare: '_share', ttl: 5000});
+const sharedDataLoader = new SharedDataLoader({PROD, onShare: '_share', ttl: SHARED_DATA_LOADER_TTL});
 
 // HMR
 if (!PROD) {

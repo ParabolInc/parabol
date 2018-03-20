@@ -17,22 +17,20 @@ const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader
   const document = parse(query);
   try {
     const result = await subscribe(Schema, document, {}, context, variables);
-    // failing here means the subscription failed our custom business logic in the subscribe method, eg bad auth
     if (!result.errors) {
       return {asyncIterator: result};
     }
     // squelch errors for resub, we expect a few errors & the client doesn't need to know about them
     return isResub ? {} : {errors: result.errors};
   } catch (e) {
-    // the subscription couldn't be found or there was an internal graphql error
-    return {errors: [{message: e.message}]};
+    return isResub ? {} : {errors: [{message: e.message}]};
   }
 };
 
 const handleSubscribe = async (connectionContext, parsedMessage, options = {}) => {
   const {id: socketId, authToken, socket, sharedDataLoader} = connectionContext;
   const {id: opId} = parsedMessage;
-  const isResub = options;
+  const {isResub} = options;
   if (connectionContext.subs[opId]) {
     // subscription already exists, restart it
     relayUnsubscribe(connectionContext.subs, opId);

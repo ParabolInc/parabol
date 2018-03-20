@@ -47,21 +47,26 @@ export default {
       const {stage} = completedStageRes;
       // MUTATIVE
       stage.isComplete = true;
+      stage.endAt = now;
     }
     if (facilitatorStageId) {
       const facilitatorStageRes = findStageById(phases, facilitatorStageId);
       if (!facilitatorStageRes) return sendStageNotFoundError(authToken, facilitatorStageId);
+      const {stage: facilitatorStage} = facilitatorStageRes;
+      // mutative
+      facilitatorStage.startAt = facilitatorStage.startAt || now;
+      facilitatorStage.viewCount = facilitatorStage.viewCount ? facilitatorStage.viewCount + 1 : 1;
     }
 
     // RESOLUTION
-    await r.table('NewMeeting').get(meetingId)
+    const oldFacilitatorStageId = await r.table('NewMeeting').get(meetingId)
       .update({
         facilitatorStageId,
         phases,
         updatedAt: now
-      });
+      }, {returnChanges: true})('changes')(0)('old_val')('facilitatorStageId');
 
-    const data = {meetingId};
+    const data = {meetingId, oldFacilitatorStageId, facilitatorStageId};
     publish(TEAM, teamId, NavigateMeetingPayload, data, subOptions);
     return data;
   }

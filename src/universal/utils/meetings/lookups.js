@@ -1,4 +1,5 @@
 import {
+  ACTION,
   AGENDA_ITEMS, CHECKIN, DISCUSS, FIRST_CALL, GROUP, LAST_CALL, LOBBY, RETROSPECTIVE, SUMMARY, THINK, UPDATES,
   VOTE
 } from 'universal/utils/constants';
@@ -24,17 +25,35 @@ export const phaseLabelLookup = {
   [THINK]: 'Reflect',
   [GROUP]: 'Theme',
   [VOTE]: 'Vote',
-  [DISCUSS]: 'Discuss'
+  [DISCUSS]: 'Discuss',
+  [UPDATES]: 'Solo Updates',
+  [FIRST_CALL]: 'First Call',
+  [AGENDA_ITEMS]: 'Team Agenda',
+  [LAST_CALL]: 'Last Call'
 };
 
 export const meetingTypeToSlug = {
-  [RETROSPECTIVE]: 'retro'
+  [RETROSPECTIVE]: 'retro',
+  [ACTION]: 'meeting'
 };
 
 export const meetingTypeToLabel = {
-  [RETROSPECTIVE]: 'Retrospective'
+  [RETROSPECTIVE]: 'Retrospective',
+  [ACTION]: 'Action'
 };
 
 export const phaseTypeToSlug = {
-  [CHECKIN]: 'checkin'
+  [CHECKIN]: 'checkin',
+  [THINK]: 'reflect',
+  [GROUP]: 'theme',
+  [VOTE]: 'vote',
+  [DISCUSS]: 'discuss'
+};
+
+export const phaseIsMultiStage = {
+  [CHECKIN]: true,
+  [THINK]: false,
+  [GROUP]: false,
+  [VOTE]: false,
+  [DISCUSS]: true
 };

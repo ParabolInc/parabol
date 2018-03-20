@@ -8,37 +8,44 @@ import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation';
 import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation';
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
-import {removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
+import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
+import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMutation';
+import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
-      ...AcceptTeamInviteEmailMutation_team
-      ...AcceptTeamInviteMutation_team
-      ...AddTeamMutation_team
-      ...AddTeamMutation_team
-      ...ArchiveTeamMutation_team,
-      ...EndMeetingMutation_team
-      ...KillMeetingMutation_team
-      ...MoveMeetingMutation_team
-      ...PromoteFacilitatorMutation_team
-      ...RemoveTeamMemberMutation_team
-      ...RemoveOrgUserMutation_team
-      ...RequestFacilitatorMutation_team
-      ...StartMeetingMutation_team
-      ...StartNewMeetingMutation_team
-      ...UpdateCheckInQuestionMutation_team
-      ...UpdateCreditCardMutation_team
-      ...UpdateTeamNameMutation_team
-      ...UpgradeToProMutation_organization
+      ...AcceptTeamInviteMutation_team @relay(mask: false)
+      ...AddTeamMutation_team @relay(mask: false)
+      ...AddTeamMutation_team @relay(mask: false)
+      ...ArchiveTeamMutation_team @relay(mask: false)
+      ...EndMeetingMutation_team @relay(mask: false)
+      ...KillMeetingMutation_team @relay(mask: false)
+      ...KillNewMeetingMutation_team @relay(mask: false)
+      ...MoveMeetingMutation_team @relay(mask: false)
+      ...NavigateMeetingMutation_team @relay(mask: false)
+      ...PromoteFacilitatorMutation_team @relay(mask: false)
+      ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
+      ...RemoveTeamMemberMutation_team @relay(mask: false)
+      ...RemoveOrgUserMutation_team @relay(mask: false)
+      ...RequestFacilitatorMutation_team @relay(mask: false)
+      ...StartMeetingMutation_team @relay(mask: false)
+      ...StartNewMeetingMutation_team @relay(mask: false)
+      ...UpdateCheckInQuestionMutation_team @relay(mask: false)
+      ...UpdateCreditCardMutation_team @relay(mask: false)
+      ...UpdateTeamNameMutation_team @relay(mask: false)
+      ...UpgradeToProMutation_organization @relay(mask: false)
     }
   }
 `;
 
 const onNextHandlers = {
-  StartNewMeetingMutation: startNewMeetingTeamOnNext
+  StartNewMeetingPayload: startNewMeetingTeamOnNext,
+  NavigateMeetingPayload: navigateMeetingTeamOnNext,
+  PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
+  RemoveOrgUserPayload: removeOrgUserTeamOnNext
 };
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
@@ -54,8 +61,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const options = {store, environment, dispatch, history, location};
       switch (type) {
         case 'AcceptTeamInvitePayload':
-        case 'AcceptTeamInviteEmailPayload':
-          acceptTeamInviteTeamUpdater(payload, store, viewerId, options);
+          acceptTeamInviteTeamUpdater(payload, store, viewerId);
           break;
         case 'AddOrgCreatorPayload':
           addOrgMutationNotificationUpdater(payload, store, viewerId, options);
@@ -86,12 +92,18 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'KillMeetingPayload':
           killMeetingTeamUpdater();
           break;
+        case 'KillNewMeetingPayload':
+          break;
         case 'MeetingCheckInPayload':
           break;
         case 'MoveMeetingPayload':
           break;
+        case 'NavigateMeetingPayload':
+          break;
         case 'PromoteFacilitatorPayload':
           promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
+          break;
+        case 'PromoteNewMeetingFacilitatorPayload':
           break;
         case 'RemoveOrgUserPayload':
           removeOrgUserTeamUpdater(payload, store, viewerId);
@@ -104,7 +116,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'StartMeetingPayload':
           break;
-        case 'StartNewMeetingMutation':
+        case 'StartNewMeetingPayload':
           break;
         case 'UpdateCreditCardPayload':
           break;

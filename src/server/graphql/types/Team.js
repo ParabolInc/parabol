@@ -198,7 +198,7 @@ const Team = new GraphQLObjectType({
       }
     },
     teamMembers: {
-      type: new GraphQLList(TeamMember),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamMember))),
       args: {
         sortBy: {
           type: GraphQLString,

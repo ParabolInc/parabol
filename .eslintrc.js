@@ -106,6 +106,8 @@ module.exports = {
     "__RELEASE_FLAGS__": true,
     "socket": true,
     "graphql": true,
-    "System": true
+    "System": true,
+    // not sure how to handle these undocumented flow types
+    "$ReadOnlyArray": true
   }
 };
