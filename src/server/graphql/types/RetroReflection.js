@@ -38,7 +38,7 @@ const RetroReflection = new GraphQLObjectType({
     },
     content: {
       description: 'The stringified draft-js content',
-      type: GraphQLString
+      type: new GraphQLNonNull(GraphQLString)
     },
     meetingId: {
       type: GraphQLID,

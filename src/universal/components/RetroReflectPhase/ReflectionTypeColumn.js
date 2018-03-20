@@ -66,7 +66,7 @@ const ReflectionTypeColumn = ({team: {newMeeting}, retroPhaseItem}: Props) => (
       <TypeDescription>{retroPhaseItem.question}</TypeDescription>
     </TypeHeader>
     <ReflectionsArea>
-      {newMeeting && newMeeting.thoughts && newMeeting.thoughts.map((reflection) => (
+      {newMeeting && newMeeting.reflections && newMeeting.reflections.map((reflection) => (
         reflection.isViewerCreator ? (
           <ReflectionCard
             handleDelete={() => handleDelete(reflection.id)}
@@ -98,7 +98,7 @@ export default createFragmentContainer(
       newMeeting {
         id
         ...on RetrospectiveMeeting {
-          thoughts {
+          reflections {
             id
             isViewerCreator
             content
