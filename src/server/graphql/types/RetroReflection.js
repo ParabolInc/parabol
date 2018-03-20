@@ -79,7 +79,11 @@ const RetroReflection = new GraphQLObjectType({
         const meeting = dataLoader.get('newMeetings').load(meetingId);
         return dataLoader.get('teams').load(meeting.teamId);
       }
-    }
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the meeting was updated. Used to determine how long it took to write a reflection'
+    },
   })
 });
 

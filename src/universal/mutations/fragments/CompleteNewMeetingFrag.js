@@ -31,7 +31,7 @@ graphql`
         }
         checkInQuestion
       }
-      ... on ThinkPhase {
+      ... on ReflectPhase {
         focusedPhaseItemId
       }
       ... on DiscussPhase {

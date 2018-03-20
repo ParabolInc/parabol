@@ -1,4 +1,5 @@
 import sendAuthRaven from 'server/utils/sendAuthRaven';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 
 export const sendAlreadyJoinedIntegrationError = (authToken, integrationId) => {
   const breadcrumb = {
@@ -70,6 +71,15 @@ export const sendAlreadyEndedMeetingError = (authToken, meetingId) => {
     data: {meetingId}
   };
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
+};
+
+export const sendAlreadyCompletedMeetingPhaseError = (authToken, phaseType, meetingId) => {
+  const breadcrumb = {
+    message: `The ${phaseLabelLookup[phaseType]} phase is already complete!`,
+    category: 'Already completed phase',
+    data: {meetingId}
+  };
+  return sendAuthRaven(authToken, 'Hey now', breadcrumb);
 };
 
 export const sendAlreadyUpdatedTaskError = (authToken, taskId) => {

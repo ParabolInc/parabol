@@ -5,10 +5,11 @@ import shortid from 'shortid';
 import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload';
 import {sendMeetingNotFoundError, sendPhaseItemNotFoundError} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
 import publish from 'server/utils/publish';
-import {TEAM} from 'universal/utils/constants';
+import {REFLECT, TEAM} from 'universal/utils/constants';
+import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 
 export default {
   type: CreateReflectionPayload,
@@ -39,9 +40,10 @@ export default {
     const viewerId = getUserId(authToken);
     const meeting = await r.table('NewMeeting').get(meetingId).default(null);
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
-    const {endedAt, teamId} = meeting;
+    const {endedAt, phases, teamId} = meeting;
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (isPhaseComplete(REFLECT, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT);
 
     // VALIDATION
     const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId);
@@ -57,7 +59,8 @@ export default {
       content: normalizedContent,
       meetingId,
       retroPhaseItemId,
-      sortOrder
+      sortOrder,
+      updatedAt: now,
     };
     await r.table('RetroReflection').insert(reflection);
     const data = {meetingId, reflectionId: reflection.id};
