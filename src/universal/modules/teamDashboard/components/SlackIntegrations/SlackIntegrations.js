@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import Button from 'universal/components/Button/Button';
-import Panel from 'universal/components/Panel/Panel';
+import {SettingsWrapper} from 'universal/components/Settings';
+import {Button, Panel} from 'universal/components';
 import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
@@ -30,7 +30,7 @@ const SlackIntegrations = (props) => {
     window.open(uri);
   };
   return (
-    <div className={css(styles.slackIntegrations)}>
+    <SettingsWrapper>
       <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <div className={css(styles.providerDetails)}>
@@ -108,7 +108,7 @@ const SlackIntegrations = (props) => {
           }
         </div>
       </Panel>
-    </div>
+    </SettingsWrapper>
   );
 };
 
@@ -122,11 +122,6 @@ SlackIntegrations.propTypes = {
 };
 
 const styleThunk = () => ({
-  slackIntegrations: {
-    maxWidth: ui.settingsPanelMaxWidth,
-    width: '100%'
-  },
-
   providerDetails: {
     alignItems: 'center',
     display: 'flex'

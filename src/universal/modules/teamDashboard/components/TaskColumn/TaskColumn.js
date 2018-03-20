@@ -246,7 +246,7 @@ const styleThunk = () => ({
   },
 
   columnFirst: {
-    borderLeft: 0
+    // keeping this around, we may need it (TA)
   },
 
   columnLast: {

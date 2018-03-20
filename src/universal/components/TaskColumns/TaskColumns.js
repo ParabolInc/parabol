@@ -62,8 +62,6 @@ class TaskColumns extends Component {
     } = this.props;
     const {tasks} = this.state;
     const lanes = area === MEETING ? meetingColumnArray : columnArray;
-    console.log(area);
-    console.log('area');
     return (
       <RootBlock>
         <ColumnsBlock>

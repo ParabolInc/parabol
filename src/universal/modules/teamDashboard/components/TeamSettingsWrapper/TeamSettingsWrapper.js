@@ -10,12 +10,6 @@ const providers = () => System.import('universal/modules/teamDashboard/container
 const slackIntegrations = () => System.import('universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot');
 const githubIntegrations = () => System.import('universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot');
 
-// TODO: moving EditTeamName here? (TA)
-// import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
-// use the same object so the EditTeamName doesn't rerender so gosh darn always
-// const initialValues = {teamName: ''};
-// <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} />
-
 const TeamSettingsWrapper = (props) => {
   const {location: {pathname}, match, teamMemberId} = props;
   const {params: {teamId}} = match;

@@ -230,11 +230,15 @@ const styleThunk = () => ({
   },
 
   header: {
-    padding: '0 0 0 1rem'
+    padding: `0 0 0 ${ui.dashGutterSmall}`,
+
+    [ui.dashBreakpoint]: {
+      paddingLeft: ui.dashGutterLarge
+    }
   },
 
   border: {
-    borderTop: `1px solid ${ui.dashBorderColor}`,
+    borderTop: `.0625rem solid ${ui.dashBorderColor}`,
     height: '.0625rem',
     width: '100%'
   },
@@ -248,19 +252,26 @@ const styleThunk = () => ({
   },
 
   cardGrid: {
-    padding: '.5rem',
-    width: '100%'
+    padding: '.75rem',
+    width: '100%',
+
+    [ui.dashBreakpoint]: {
+      padding: '1.5rem'
+    }
   },
 
   emptyMsg: {
     backgroundColor: '#fff',
-    border: `1px solid ${appTheme.palette.mid30l}`,
+    border: `.0625rem solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
-    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s2,
-    fontStyle: 'italic',
     display: 'inline-block',
-    padding: '1rem'
+    margin: ui.dashGutterSmall,
+    padding: '1rem',
+
+    [ui.dashBreakpoint]: {
+      margin: ui.dashGutterLarge
+    }
   },
 
   link: {

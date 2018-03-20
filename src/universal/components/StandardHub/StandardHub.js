@@ -81,8 +81,6 @@ const StandardHub = (props) => {
 
   const userAvatar = picture || defaultUserAvatar;
 
-  // <div className={css(styles.email)}>{email}</div>
-
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.user)}>
@@ -163,14 +161,6 @@ const styleThunk = () => ({
     lineHeight: '1.375rem',
     maxWidth,
     paddingTop: '.125rem'
-  },
-
-  email: {
-    ...textOverflow,
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.sBase,
-    marginTop: '.125rem',
-    maxWidth
   },
 
   notifications: {
