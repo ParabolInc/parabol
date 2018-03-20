@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
@@ -40,6 +40,19 @@ const RetroReflection = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The foreign key to link a reflection to its meeting'
     },
+    meeting: {
+      type: RetrospectiveMeeting,
+      description: 'The retrospective meeting this reflection was created in',
+      resolve: ({meetingId}, args, {dataLoader}) => {
+        return dataLoader.get('newMeetings').load(meetingId);
+      }
+    },
+    phaseItem: {
+      type: RetroPhaseItem,
+      resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
+        return dataLoader.get('customPhaseItems').load(retroPhaseItemId);
+      }
+    },
     retroPhaseItemId: {
       type: GraphQLID,
       description: 'The foreign key to link a reflection to its phaseItem'
@@ -55,18 +68,9 @@ const RetroReflection = new GraphQLObjectType({
         return dataLoader.get('retroThoughGroups').load(reflectionGroupId);
       }
     },
-    phase: {
-      type: RetroPhaseItem,
-      resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
-        return dataLoader.get('customPhaseItems').load(retroPhaseItemId);
-      }
-    },
-    meeting: {
-      type: RetrospectiveMeeting,
-      description: 'The retrospective meeting this reflection was cretaed in',
-      resolve: ({meetingId}, args, {dataLoader}) => {
-        return dataLoader.get('newMeetings').load(meetingId);
-      }
+    sortOrder: {
+      type: GraphQLFloat,
+      description: 'The sort order of the reflection in the phase item list'
     },
     team: {
       type: RetrospectiveMeeting,

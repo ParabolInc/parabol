@@ -158,3 +158,12 @@ export const sendTeamAlreadyJoinedError = (authToken, inviteToken, returnValue) 
   };
   return sendAuthRaven(authToken, 'Team already joined', breadcrumb, returnValue);
 };
+
+export const sendPhaseItemNotActiveError = (authToken, retroPhaseItemId, returnValue) => {
+  const breadcrumb = {
+    message: 'That category is no longer active',
+    category: 'Inactive',
+    data: {retroPhaseItemId}
+  };
+  return sendAuthRaven(authToken, 'How did you find an old category?', breadcrumb, returnValue);
+};

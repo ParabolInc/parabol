@@ -63,6 +63,15 @@ export const sendAlreadyStartedMeetingError = (authToken, teamId) => {
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
 };
 
+export const sendAlreadyEndedMeetingError = (authToken, meetingId) => {
+  const breadcrumb = {
+    message: 'The meeting has ended!',
+    category: 'Already ended meeting',
+    data: {meetingId}
+  };
+  return sendAuthRaven(authToken, 'Easy there', breadcrumb);
+};
+
 export const sendAlreadyUpdatedTaskError = (authToken, taskId) => {
   const breadcrumb = {
     message: 'The task has already been updated',

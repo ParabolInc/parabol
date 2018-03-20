@@ -1,82 +1,67 @@
-import {GraphQLNonNull} from 'graphql';
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import AreaEnum from 'server/graphql/types/AreaEnum';
-import CreateTaskInput from 'server/graphql/types/CreateTaskInput';
-import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import shortid from 'shortid';
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-import makeTaskSchema from 'universal/validation/makeTaskSchema';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
+import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
+import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload';
+import {sendMeetingNotFoundError, sendPhaseItemNotFoundError} from 'server/utils/docNotFoundErrors';
+import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
+import publish from 'server/utils/publish';
+import {TEAM} from 'universal/utils/constants';
 
 export default {
-  type: CreateTaskPayload,
-  description: 'Create a new task, triggering a CreateCard for other viewers',
+  type: CreateReflectionPayload,
+  description: 'Create a new reflection',
   args: {
-    newTask: {
-      type: new GraphQLNonNull(CreateTaskInput),
-      description: 'The new task including an id, status, and type, and teamMemberId'
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID)
     },
-    area: {
-      type: AreaEnum,
-      description: 'The part of the site where the creation occurred'
+    content: {
+      type: GraphQLString,
+      description: 'A stringified draft-js document containing thoughts'
+    },
+    retroPhaseItemId: {
+      type: GraphQLID,
+      description: 'The phase item the reflection belongs to'
+    },
+    sortOrder: {
+      type: new GraphQLNonNull(GraphQLFloat)
     }
   },
-  async resolve(source, {newTask, area}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {meetingId, content, retroPhaseItemId, sortOrder}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const now = new Date();
     const subOptions = {operationId, mutatorId};
+
     // AUTH
-    // VALIDATION
     const viewerId = getUserId(authToken);
-    const schema = makeTaskSchema();
-    const {errors, data: validNewTask} = schema({content: 1, ...newTask});
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
-    const {teamId, userId, content} = validNewTask;
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null);
+    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
+    const {endedAt, teamId} = meeting;
+    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
 
-    // RESOLUTION
-    const teamMemberId = toTeamMemberId(teamId, userId);
-    const taskId = shortid.generate();
-    const {entityMap} = JSON.parse(content);
-    const tags = getTagsFromEntityMap(entityMap);
-    const task = {
-      id: taskId,
-      agendaId: validNewTask.agendaId,
-      content: validNewTask.content,
-      createdAt: now,
-      createdBy: viewerId,
-      isSoftTask: false,
-      sortOrder: validNewTask.sortOrder,
-      status: validNewTask.status,
-      tags,
-      teamId,
-      assigneeId: teamMemberId,
-      updatedAt: now,
-      userId
-    };
-    const history = {
-      id: shortid.generate(),
-      content: task.content,
-      taskId: task.id,
-      status: task.status,
-      assigneeId: task.assigneeId,
-      updatedAt: task.updatedAt
-    };
-    const {teamMembers} = await r({
-      task: r.table('Task').insert(task),
-      history: r.table('TaskHistory').insert(history),
-      teamMembers: r.table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({
-          isNotRemoved: true
-        })
-        .coerceTo('array')
-    });
+    // VALIDATION
+    const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId);
+    if (!phaseItem || phaseItem.teamId !== teamId) return sendPhaseItemNotFoundError(authToken, retroPhaseItemId);
+    if (!phaseItem.isActive) return sendPhaseItemNotActiveError(authToken, retroPhaseItemId);
+    const normalizedContent = normalizeRawDraftJS(content);
 
+    // RESOLUTION
+    const reflection = {
+      id: shortid.generate(),
+      createdAt: now,
+      creatorId: viewerId,
+      content: normalizedContent,
+      meetingId,
+      retroPhaseItemId,
+      sortOrder
+    };
+    await r.table('RetroReflection').insert(reflection);
+    const data = {meetingId, reflectionId: reflection.id};
+    publish(TEAM, teamId, CreateReflectionPayload, data, subOptions);
     return data;
   }
 };

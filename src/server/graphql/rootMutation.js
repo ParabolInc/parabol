@@ -69,6 +69,7 @@ import createUserPicturePutUrl from 'server/graphql/mutations/createUserPictureP
 import login from 'server/graphql/mutations/login';
 import updateUserProfile from 'server/graphql/mutations/updateUserProfile';
 import killNewMeeting from 'server/graphql/mutations/killNewMeeting';
+import createReflection from 'server/graphql/mutations/createReflection';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -92,6 +93,7 @@ export default new GraphQLObjectType({
     createFirstTeam,
     createGitHubIssue,
     createOrgPicturePutUrl,
+    createReflection,
     createTask,
     createUserPicturePutUrl,
     deleteTask,
