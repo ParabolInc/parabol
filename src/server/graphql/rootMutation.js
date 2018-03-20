@@ -73,6 +73,7 @@ import createReflection from 'server/graphql/mutations/createReflection';
 import updateReflectionContent from 'server/graphql/mutations/updateReflectionContent';
 import updateReflectionLocation from 'server/graphql/mutations/updateReflectionLocation';
 import removeReflection from 'server/graphql/mutations/removeReflection';
+import createReflectionGroup from 'server/graphql/mutations/createReflectionGroup';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -97,6 +98,7 @@ export default new GraphQLObjectType({
     createGitHubIssue,
     createOrgPicturePutUrl,
     createReflection,
+    createReflectionGroup,
     createTask,
     createUserPicturePutUrl,
     deleteTask,

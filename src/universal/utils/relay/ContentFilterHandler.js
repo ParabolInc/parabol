@@ -1,14 +1,14 @@
 /*
  * Cache the content's text for faster searches
  */
+import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString';
+
 const ContentTextHandler = {
   update(store, payload) {
     const record = store.get(payload.dataID);
     if (!record) return;
     const content = record.getValue(payload.fieldKey);
-    const parsedContent = JSON.parse(content);
-    const textBlocks = parsedContent.blocks.map(({text}) => text);
-    const fullText = textBlocks.join('\n');
+    const fullText = extractTextFromDraftString(content);
     record.setValue(fullText, 'contentText');
   }
 };

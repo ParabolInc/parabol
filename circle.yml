@@ -134,6 +134,7 @@ stages:
             export DEPLOY_ENV="local"
           fi
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+          cp $DEVOPS_WORKDIR/environments/.googlecloudkey.json ./.googlecloudkey.json
 
       - type: shell
         name: Build test

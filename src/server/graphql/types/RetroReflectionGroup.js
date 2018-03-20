@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLInt, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLBoolean} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroReflection from 'server/graphql/types/RetroReflection';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
@@ -16,6 +16,10 @@ const RetroReflectionGroup = new GraphQLObjectType({
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the meeting was created'
+    },
+    isActive: {
+      type: GraphQLBoolean,
+      description: 'True if the reflection was not removed, else false'
     },
     title: {
       type: GraphQLString,
@@ -43,7 +47,11 @@ const RetroReflectionGroup = new GraphQLObjectType({
         return dataLoader.get('teams').load(meeting.teamId);
       }
     },
-    votes: {
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the meeting was updated at'
+    },
+    voterIds: {
       type: new GraphQLList(GraphQLID),
       description: 'A list of voterIds (teamMemberId or anonymousTeamMemberId). Not available to team to preserve anonymity',
       resolve: ({votes}, args, {authToken}) => {
@@ -53,8 +61,8 @@ const RetroReflectionGroup = new GraphQLObjectType({
     voteCount: {
       type: GraphQLInt,
       description: 'The number of votes this group has received',
-      resolve: ({votes}) => {
-        return votes.length;
+      resolve: ({voterIds}) => {
+        return voterIds ? voterIds.length : 0;
       }
     }
   })

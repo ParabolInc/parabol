@@ -23,6 +23,7 @@ import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayloa
 import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload';
 import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload';
+import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload';
 
 
 const types = [
@@ -30,6 +31,7 @@ const types = [
   AddTeamPayload,
   ArchiveTeamPayload,
   CreateReflectionPayload,
+  CreateReflectionGroupPayload,
   EndMeetingPayload,
   KillMeetingPayload,
   KillNewMeetingPayload,
