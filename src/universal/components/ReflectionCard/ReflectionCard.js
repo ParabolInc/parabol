@@ -3,8 +3,6 @@
  *
  * @flow
  */
-import type {Stage} from 'universal/types/retro';
-
 // $FlowFixMe
 import {EditorState, ContentState} from 'draft-js';
 import React, {Component} from 'react';
@@ -38,8 +36,8 @@ export type Props = {|
   isDragging?: boolean,
   // States whether it serves as a drag preview.
   pulled?: boolean,
-  // The stage of the meeting this was created during
-  stage?: ?Stage,
+  // The reflection type, e.g. "negative" or "positive"
+  reflectionType?: ?string,
   // The name of the user who is currently dragging this card to a new place, if any
   userDragging?: string,
 |};
@@ -68,14 +66,12 @@ const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperP
   opacity: ((iAmDragging && !pulled)) && 0.6
 }));
 
-const getDisplayName = (stage: ?Stage): string => {
-  switch (stage) {
+const getDisplayName = (reflectionType: ?string): string => {
+  switch (reflectionType) {
     case 'positive':
       return "What's working?";
     case 'negative':
       return 'Where did you get stuck?';
-    case 'change':
-      return 'What might we do differently next time?';
     default:
       return '';
   }
@@ -131,9 +127,9 @@ export default class ReflectionCard extends Component<Props, State> {
     );
   };
 
-  maybeRenderStage = () => {
-    const {isCollapsed, stage} = this.props;
-    return !isCollapsed && stage && <BottomBar>{getDisplayName(this.props.stage)}</BottomBar>;
+  maybeRenderReflectionType = () => {
+    const {isCollapsed, reflectionType} = this.props;
+    return !isCollapsed && reflectionType && <BottomBar>{getDisplayName(this.props.reflectionType)}</BottomBar>;
   };
 
   maybeRenderUserDragging = () => {
@@ -201,7 +197,7 @@ export default class ReflectionCard extends Component<Props, State> {
           onMouseLeave={this.handleMouseLeave}
         >
           {this.renderCardContent()}
-          {this.maybeRenderStage()}
+          {this.maybeRenderReflectionType()}
           {this.maybeRenderDelete()}
         </ReflectionCardWrapper>
       </DnDStylesWrapper>

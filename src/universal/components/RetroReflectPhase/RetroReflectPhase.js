@@ -22,7 +22,8 @@ const ReflectPhaseWrapper = styled('div')({
   width: '100%'
 });
 
-const RetroReflectPhase = ({team: {meetingSettings}}: Props) => {
+const RetroReflectPhase = ({team}: Props) => {
+  const {newMeeting, meetingSettings} = team;
   if (!meetingSettings.hasOwnProperty('phaseItems')) {
     return null;
   }
@@ -33,7 +34,7 @@ const RetroReflectPhase = ({team: {meetingSettings}}: Props) => {
   return (
     <ReflectPhaseWrapper>
       {phaseItems && phaseItems.map((phaseItem) =>
-        <ReflectionTypeColumn key={phaseItem.id} retroPhaseItem={phaseItem} />
+        <ReflectionTypeColumn newMeeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} team={team} />
       )}
     </ReflectPhaseWrapper>
   );
@@ -43,6 +44,7 @@ export default createFragmentContainer(
   RetroReflectPhase,
   graphql`
     fragment RetroReflectPhase_team on Team {
+      ...ReflectionTypeColumn_team
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
           phaseItems {

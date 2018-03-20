@@ -29,8 +29,8 @@ storiesOf('Reflection Group', module)
               handleSaveTitle={action('save-title')}
               id={newId()}
               reflections={[
-                {id: newId(), content: ContentState.createFromText('This is the bottom card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('This is the top card'), stage: null}
+                {id: newId(), content: ContentState.createFromText('This is the bottom card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('This is the top card'), reflectionType: null}
               ]}
               title={''}
             />
@@ -38,17 +38,17 @@ storiesOf('Reflection Group', module)
               handleSaveTitle={action('save-title')}
               id={newId()}
               reflections={[
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
                 {
                   id: newId(),
                   content: ContentState.createFromText(`
                     This one has a lot to say!
                     Fortunately it does not screw up the translation computation.
                   `),
-                  stage: null
+                  reflectionType: null
                 },
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null}
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null}
               ]}
               title={''}
             />
@@ -56,15 +56,15 @@ storiesOf('Reflection Group', module)
               handleSaveTitle={action('save-title')}
               id={newId()}
               reflections={[
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null}
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null}
               ]}
               title={''}
             />
@@ -84,8 +84,8 @@ storiesOf('Reflection Group', module)
               id={newId()}
               hovered
               reflections={[
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null},
-                {id: newId(), content: ContentState.createFromText('Card'), stage: null}
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null},
+                {id: newId(), content: ContentState.createFromText('Card'), reflectionType: null}
               ]}
               title={''}
             />

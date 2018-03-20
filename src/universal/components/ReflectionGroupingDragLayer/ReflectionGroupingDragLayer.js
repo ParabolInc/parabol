@@ -74,7 +74,7 @@ class ReflectionGroupingDragLayer extends Component<Props> {
           contentState={reflection.content}
           id={id}
           pulled
-          stage={reflection.stage}
+          reflectionType={reflection.reflectionType}
         />
       );
     }
