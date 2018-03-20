@@ -72,6 +72,24 @@ export const sendMeetingNotFoundError = (authToken, meetingId, returnValue) => {
   return sendAuthRaven(authToken, 'Meeting Not Found', breadcrumb, returnValue);
 };
 
+export const sendReflectionNotFoundError = (authToken, reflectionId, returnValue) => {
+  const breadcrumb = {
+    message: 'Reflection ID not found',
+    category: 'Not found',
+    data: {reflectionId}
+  };
+  return sendAuthRaven(authToken, 'Reflection Not Found', breadcrumb, returnValue);
+};
+
+export const sendPhaseItemNotFoundError = (authToken, retroPhaseItemId, returnValue) => {
+  const breadcrumb = {
+    message: 'That category is not found',
+    category: 'Not found',
+    data: {retroPhaseItemId}
+  };
+  return sendAuthRaven(authToken, 'Category Not Found', breadcrumb, returnValue);
+};
+
 export const sendStageNotFoundError = (authToken, stageId, returnValue) => {
   const breadcrumb = {
     message: 'Stage ID not found',

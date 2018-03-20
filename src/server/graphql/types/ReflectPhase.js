@@ -3,8 +3,8 @@ import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMe
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
 
-const ThinkPhase = new GraphQLObjectType({
-  name: 'ThinkPhase',
+const ReflectPhase = new GraphQLObjectType({
+  name: 'ReflectPhase',
   description: 'The meeting phase where all team members check in one-by-one',
   interfaces: () => [NewMeetingPhase],
   fields: () => ({
@@ -26,4 +26,4 @@ const ThinkPhase = new GraphQLObjectType({
   })
 });
 
-export default ThinkPhase;
+export default ReflectPhase;

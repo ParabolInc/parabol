@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql';
 import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage';
-import RetroThoughtGroup from 'server/graphql/types/RetroThoughtGroup';
+import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 
 const RetroDiscussStage = new GraphQLObjectType({
   name: 'RetroDiscussStage',
@@ -8,15 +8,15 @@ const RetroDiscussStage = new GraphQLObjectType({
   interfaces: () => [NewMeetingStage],
   fields: () => ({
     ...newMeetingStageFields(),
-    thoughtGroupId: {
+    reflectionGroupId: {
       type: GraphQLID,
-      description: 'foreign key. use thoughtGroup'
+      description: 'foreign key. use reflectionGroup'
     },
-    thoughtGroup: {
-      type: RetroThoughtGroup,
+    reflectionGroup: {
+      type: RetroReflectionGroup,
       description: 'the group that is the focal point of the discussion',
-      resolve: ({thoughtGroupId}, args, {dataLoader}) => {
-        return dataLoader.get('retroThoughtGroups').load(thoughtGroupId);
+      resolve: ({reflectionGroupId}, args, {dataLoader}) => {
+        return dataLoader.get('retroReflectionGroups').load(reflectionGroupId);
       }
     }
   })

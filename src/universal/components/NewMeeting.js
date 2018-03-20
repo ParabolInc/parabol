@@ -228,10 +228,10 @@ export default createFragmentContainer(
             }
           }
           ... on RetrospectiveMeeting {
-            thoughts {
+            reflections {
               id
             }
-            thoughtGroups {
+            reflectionGroups {
               id
             }
           }

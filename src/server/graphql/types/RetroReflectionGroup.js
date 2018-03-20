@@ -1,13 +1,13 @@
 import {GraphQLInt, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import RetroThought from 'server/graphql/types/RetroThought';
+import RetroReflection from 'server/graphql/types/RetroReflection';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import {isSuperUser} from 'server/utils/authorization';
 import Team from 'server/graphql/types/Team';
 
-const RetroThoughtGroup = new GraphQLObjectType({
-  name: 'RetroThoughtGroup',
-  description: 'A thought created during the think phase of a retrospective',
+const RetroReflectionGroup = new GraphQLObjectType({
+  name: 'RetroReflectionGroup',
+  description: 'A reflection created during the reflect phase of a retrospective',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -19,18 +19,18 @@ const RetroThoughtGroup = new GraphQLObjectType({
     },
     title: {
       type: GraphQLString,
-      description: 'The title of the grouping of the retrospective thoughts'
+      description: 'The title of the grouping of the retrospective reflections'
     },
-    retroThoughts: {
-      type: new GraphQLList(new GraphQLNonNull(RetroThought)),
-      description: 'The thoughts that belong in the group',
+    retroReflections: {
+      type: new GraphQLList(new GraphQLNonNull(RetroReflection)),
+      description: 'The reflections that belong in the group',
       resolve: ({id: retroGroupId}, args, {dataLoader}) => {
-        return dataLoader.get('retroThoughtsByGroupId').load(retroGroupId);
+        return dataLoader.get('retroReflectionsByGroupId').load(retroGroupId);
       }
     },
     meeting: {
       type: RetrospectiveMeeting,
-      description: 'The retrospective meeting this thought was created in',
+      description: 'The retrospective meeting this reflection was created in',
       resolve: ({meetingId}, args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId);
       }
@@ -60,4 +60,4 @@ const RetroThoughtGroup = new GraphQLObjectType({
   })
 });
 
-export default RetroThoughtGroup;
+export default RetroReflectionGroup;

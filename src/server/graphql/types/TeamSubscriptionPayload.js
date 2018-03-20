@@ -19,12 +19,17 @@ import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayloa
 import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
 import KillNewMeetingPayload from 'server/graphql/types/KillNewMeetingPayload';
 import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload';
+import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload';
+import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload';
+import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
+import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload';
 
 
 const types = [
   AcceptTeamInvitePayload,
   AddTeamPayload,
   ArchiveTeamPayload,
+  CreateReflectionPayload,
   EndMeetingPayload,
   KillMeetingPayload,
   KillNewMeetingPayload,
@@ -36,10 +41,13 @@ const types = [
   StartMeetingPayload,
   StartNewMeetingPayload,
   RemoveOrgUserPayload,
+  RemoveReflectionPayload,
   RemoveTeamMemberPayload,
   UpdateCheckInQuestionPayload,
   UpdateCreditCardPayload,
   UpdateNewCheckInQuestionPayload,
+  UpdateReflectionContentPayload,
+  UpdateReflectionLocationPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload
 ];

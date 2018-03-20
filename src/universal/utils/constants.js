@@ -42,7 +42,7 @@ export const SUMMARY = 'summary';
 export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
 
 /* Retrospective Phases */
-export const THINK = 'think';
+export const REFLECT = 'reflect';
 export const GROUP = 'group';
 export const VOTE = 'vote';
 export const DISCUSS = 'discuss';

@@ -1,6 +1,6 @@
 import {
   ACTION,
-  AGENDA_ITEMS, CHECKIN, DISCUSS, FIRST_CALL, GROUP, LAST_CALL, LOBBY, RETROSPECTIVE, SUMMARY, THINK, UPDATES,
+  AGENDA_ITEMS, CHECKIN, DISCUSS, FIRST_CALL, GROUP, LAST_CALL, LOBBY, RETROSPECTIVE, SUMMARY, REFLECT, UPDATES,
   VOTE
 } from 'universal/utils/constants';
 
@@ -13,7 +13,7 @@ export const phaseTypeToPhaseGroup = {
   [AGENDA_ITEMS]: AGENDA_ITEMS,
   [LAST_CALL]: AGENDA_ITEMS,
   [SUMMARY]: SUMMARY,
-  [THINK]: THINK,
+  [REFLECT]: REFLECT,
   [GROUP]: GROUP,
   [VOTE]: VOTE,
   [DISCUSS]: DISCUSS
@@ -22,7 +22,7 @@ export const phaseTypeToPhaseGroup = {
 /* These are the labels show to the viewer */
 export const phaseLabelLookup = {
   [CHECKIN]: 'Social Check-In',
-  [THINK]: 'Reflect',
+  [REFLECT]: 'Reflect',
   [GROUP]: 'Theme',
   [VOTE]: 'Vote',
   [DISCUSS]: 'Discuss',
@@ -44,7 +44,7 @@ export const meetingTypeToLabel = {
 
 export const phaseTypeToSlug = {
   [CHECKIN]: 'checkin',
-  [THINK]: 'reflect',
+  [REFLECT]: 'reflect',
   [GROUP]: 'theme',
   [VOTE]: 'vote',
   [DISCUSS]: 'discuss'
@@ -52,7 +52,7 @@ export const phaseTypeToSlug = {
 
 export const phaseIsMultiStage = {
   [CHECKIN]: true,
-  [THINK]: false,
+  [REFLECT]: false,
   [GROUP]: false,
   [VOTE]: false,
   [DISCUSS]: true

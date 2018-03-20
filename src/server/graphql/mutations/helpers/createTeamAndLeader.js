@@ -12,7 +12,7 @@ import {
   LOBBY,
   RETRO_PHASE_ITEM,
   RETROSPECTIVE,
-  THINK,
+  REFLECT,
   UPDATES,
   VOTE
 } from 'universal/utils/constants';
@@ -48,7 +48,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
       id: shortid.generate(),
       meetingType: RETROSPECTIVE,
       teamId,
-      phaseTypes: [CHECKIN, THINK, GROUP, VOTE, DISCUSS]
+      phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS]
     },
     {
       id: shortid.generate(),

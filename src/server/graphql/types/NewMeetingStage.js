@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
-import {CHECKIN, DISCUSS, GROUP, THINK, VOTE} from 'universal/utils/constants';
+import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
 import CheckInStage from 'server/graphql/types/CheckInStage';
 import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
 import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage';
@@ -82,7 +82,7 @@ const NewMeetingStage = new GraphQLInterfaceType({
   resolveType: ({phaseType}) => {
     const resolveTypeLookup = {
       [CHECKIN]: CheckInStage,
-      [THINK]: GenericMeetingStage,
+      [REFLECT]: GenericMeetingStage,
       [GROUP]: GenericMeetingStage,
       [VOTE]: GenericMeetingStage,
       [DISCUSS]: RetroDiscussStage

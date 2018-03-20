@@ -69,6 +69,10 @@ import createUserPicturePutUrl from 'server/graphql/mutations/createUserPictureP
 import login from 'server/graphql/mutations/login';
 import updateUserProfile from 'server/graphql/mutations/updateUserProfile';
 import killNewMeeting from 'server/graphql/mutations/killNewMeeting';
+import createReflection from 'server/graphql/mutations/createReflection';
+import updateReflectionContent from 'server/graphql/mutations/updateReflectionContent';
+import updateReflectionLocation from 'server/graphql/mutations/updateReflectionLocation';
+import removeReflection from 'server/graphql/mutations/removeReflection';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -92,6 +96,7 @@ export default new GraphQLObjectType({
     createFirstTeam,
     createGitHubIssue,
     createOrgPicturePutUrl,
+    createReflection,
     createTask,
     createUserPicturePutUrl,
     deleteTask,
@@ -120,6 +125,7 @@ export default new GraphQLObjectType({
     removeSlackChannel,
     removeGitHubRepo,
     removeOrgUser,
+    removeReflection,
     removeTeamMember,
     requestFacilitator,
     resendTeamInvite,
@@ -138,6 +144,8 @@ export default new GraphQLObjectType({
     updateOrg,
     updateCheckInQuestion,
     updateNewCheckInQuestion,
+    updateReflectionContent,
+    updateReflectionLocation,
     updateTask,
     updateTeamName,
     updateUserProfile,

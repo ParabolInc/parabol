@@ -96,13 +96,14 @@ export default class RethinkDataLoader {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
       });
     }, this.dataloaderOptions);
-    this.retroThoughtsByGroupId = makeCustomLoader(async (thoughtGroupIds) => {
+    this.retroReflectionsByGroupId = makeCustomLoader(async (reflectionGroupIds) => {
       const r = getRethink();
-      const retroThoughts = await r.table('RetroThought')
-        .getAll(r.args(thoughtGroupIds), {index: 'thoughtGroupId'});
-      primeStandardLoader(this.retroThoughts, retroThoughts);
-      return thoughtGroupIds.map((thoughtGroupId) => {
-        return retroThoughts.filter((retroThought) => retroThought.thoughtGroupId === thoughtGroupId);
+      const retroReflections = await r.table('RetroReflection')
+        .getAll(r.args(reflectionGroupIds), {index: 'reflectionGroupId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.retroReflections, retroReflections);
+      return reflectionGroupIds.map((reflectionGroupId) => {
+        return retroReflections.filter((retroReflection) => retroReflection.reflectionGroupId === reflectionGroupId);
       });
     }, this.dataloaderOptions);
     this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
@@ -168,11 +169,12 @@ export default class RethinkDataLoader {
   _share() {
     this.authToken = null;
   }
-  makeStandardLoader(table) {
+  makeStandardLoader(table, filter = {}) {
     const batchFn = async (keys) => {
       const r = getRethink();
       const docs = await r.table(table)
-        .getAll(r.args(keys), {index: 'id'});
+        .getAll(r.args(keys), {index: 'id'})
+        .filter(filter);
       return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken);
     };
     return new DataLoader(batchFn);
@@ -187,8 +189,8 @@ export default class RethinkDataLoader {
   notifications = this.makeStandardLoader('Notification');
   orgApprovals = this.makeStandardLoader('OrgApproval');
   organizations = this.makeStandardLoader('Organization');
-  retroThoughtGroups = this.makeStandardLoader('RetroThoughtGroup');
-  retroThoughts = this.makeStandardLoader('RetroThought');
+  retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup');
+  retroReflections = this.makeStandardLoader('RetroReflection', {isActive: true});
   softTeamMembers = this.makeStandardLoader('SoftTeamMember');
   tasks = this.makeStandardLoader('Task');
   teamMembers = this.makeStandardLoader('TeamMember');
