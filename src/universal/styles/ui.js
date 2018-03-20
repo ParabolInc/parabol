@@ -585,7 +585,6 @@ const ui = {
 
   // Panels
   // ---------------------------------------------------------------------------
-  // panelBoxShadow: '0 .125rem .25rem rgba(68, 66, 88, 0.05)', // based on dark palette color
   panelBoxShadow: shadow[0], // based on dark palette color
   panelBorderColor: appTheme.palette.mid50l,
   panelInnerBorderColor,
