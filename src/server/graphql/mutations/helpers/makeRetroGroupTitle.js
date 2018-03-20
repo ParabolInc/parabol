@@ -28,7 +28,7 @@ const getSmartEntities = async (reflections) => {
       message: e.message,
       category: 'Google cloud language API fail'
     };
-    sendSentryEvent(undefined, breadcrumb)
+    sendSentryEvent(undefined, breadcrumb);
     return null;
   }
 };
@@ -62,12 +62,12 @@ const makeRetroGroupTitle = async (meetingId, reflections) => {
   const r = getRethink();
   const textSummary = await getSmartEntities(reflections);
   const smartTitle = createSmartTitle(textSummary);
-  if (smartTitle) return smartTitle;
+  if (smartTitle) return {smartTitle, title: smartTitle};
   const reflectionCount = await r.table('RetroReflectionGroup')
     .getAll(meetingId, {index: 'meetingId'})
     .count();
   const nextCount = reflectionCount + 1;
-  return `Group #${nextCount}`;
+  return {title: `Group #${nextCount}`};
 };
 
 export default makeRetroGroupTitle;

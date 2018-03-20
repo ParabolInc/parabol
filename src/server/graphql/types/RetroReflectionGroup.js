@@ -1,9 +1,9 @@
-import {GraphQLInt, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLBoolean} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroReflection from 'server/graphql/types/RetroReflection';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
-import {isSuperUser} from 'server/utils/authorization';
 import Team from 'server/graphql/types/Team';
+import {resolveForSU} from 'server/graphql/resolvers';
 
 const RetroReflectionGroup = new GraphQLObjectType({
   name: 'RetroReflectionGroup',
@@ -20,6 +20,11 @@ const RetroReflectionGroup = new GraphQLObjectType({
     isActive: {
       type: GraphQLBoolean,
       description: 'True if the reflection was not removed, else false'
+    },
+    smartTitle: {
+      type: GraphQLString,
+      description: 'Our auto-suggested title, to be compared to the actual title for analytics',
+      resolve: resolveForSU('smartTitle')
     },
     title: {
       type: GraphQLString,
@@ -54,9 +59,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
     voterIds: {
       type: new GraphQLList(GraphQLID),
       description: 'A list of voterIds (teamMemberId or anonymousTeamMemberId). Not available to team to preserve anonymity',
-      resolve: ({votes}, args, {authToken}) => {
-        return isSuperUser(authToken) ? votes : undefined;
-      }
+      resolve: resolveForSU('voterIds')
     },
     voteCount: {
       type: GraphQLInt,

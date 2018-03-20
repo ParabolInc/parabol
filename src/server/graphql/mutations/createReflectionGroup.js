@@ -43,12 +43,14 @@ export default {
 
     // RESOLUTION
     const reflectionGroupId = shortid.generate();
+    const {title, smartTitle} = makeRetroGroupTitle(meetingId, reflections);
     const reflectionGroup = {
       id: reflectionGroupId,
       createdAt: now,
       isActive: true,
       meetingId,
-      title: makeRetroGroupTitle(meetingId, reflections),
+      smartTitle,
+      title,
       updatedAt: now,
       voterIds: [],
       sortOrder: reflections[0].sortOrder
