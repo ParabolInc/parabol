@@ -9,11 +9,11 @@ import styled from 'react-emotion';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
 
 const RootBlock = styled('div')({
-  cursor: 'pointer',
-  maxWidth: ui.dashAgendaWidth,
-  minWidth: ui.dashAgendaWidth,
+  alignItems: 'flex-end',
+  display: 'flex',
   padding: `1rem ${ui.dashGutterSmall}`,
   width: '100%',
+
   [ui.dashBreakpoint]: {
     padding: `1rem ${ui.dashGutterLarge}`
   }
@@ -37,7 +37,7 @@ const AgendaToggle = (props) => {
         icon="comments"
         isBlock
         key={`agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`}
-        label={hideAgenda ? label : label}
+        label={label}
         onClick={toggleHide}
       />
     </RootBlock>

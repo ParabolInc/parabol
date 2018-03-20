@@ -343,13 +343,6 @@ const ui = {
   dashMenuHeight: '13.5625rem',
   dashMenuWidth: '10rem',
 
-  dashTeamBreakpointDown: '@media (max-width: 123.1875rem)',
-  dashTeamBreakpointUp: '@media (min-width: 123.25rem)',
-
-  dashTeamMaxWidth: '93.25rem',
-  dashTeamMaxWidthDown: '108.1875rem',
-  dashTeamMaxWidthUp: '108.25rem',
-
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
 
@@ -359,6 +352,7 @@ const ui = {
   dashSectionHeaderLineHeight: '2rem',
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
+  dashTeamBreakpointUp: '@media (min-width: 123.25rem)',
   draftModalMargin: 32,
 
   // Email

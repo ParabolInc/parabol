@@ -26,10 +26,12 @@ const UserDashMain = (props) => {
       <Helmet title="My Dashboard | Parabol" />
       <DashHeader area="userDash">
         <DashHeaderInfo>
-          <DashSearchControl
-            onChange={() => (console.log('DashSearchControl'))}
-            placeholder="Search My Tasks"
-          />
+          {__RELEASE_FLAGS__.userDashFilter &&
+            <DashSearchControl
+              onChange={() => (console.log('DashSearchControl'))}
+              placeholder="Search My Tasks"
+            />
+          }
           <div className={css(styles.headerCopy)}>
             {makeDateString(new Date(), {showDay: true})}<br />
             <span className={css(styles.rallyLink)}>
