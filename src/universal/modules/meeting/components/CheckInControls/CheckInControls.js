@@ -67,7 +67,7 @@ const CheckInControls = (props) => {
         iconPlacement="left"
         key={`checkIn${localPhaseItem}skipButton`}
         label={skipLabel}
-        onClick={handleOnClickPresent}
+        onClick={handleOnClickAbsent}
         buttonSize="medium"
       />
     </ButtonBlock>
