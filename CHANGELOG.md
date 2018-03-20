@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.1.1 2018-Mar-19
+### Fixed
+- Regression that would mark team members present when absent was selected
+
 ## v1.1.0 2018-Mar-14
 ### Added
 - Meeting views were updated to be closer to latest visual concepts
