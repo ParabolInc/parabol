@@ -24,6 +24,10 @@ const RetroReflection = new GraphQLObjectType({
         return isSuperUser(authToken) ? creatorId : undefined;
       }
     },
+    isActive: {
+      type: GraphQLBoolean,
+      description: 'True if the reflection was not removed, else false'
+    },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
       type: GraphQLBoolean,
@@ -83,7 +87,7 @@ const RetroReflection = new GraphQLObjectType({
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the meeting was updated. Used to determine how long it took to write a reflection'
-    },
+    }
   })
 });
 

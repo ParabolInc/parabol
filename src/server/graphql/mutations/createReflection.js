@@ -57,10 +57,11 @@ export default {
       createdAt: now,
       creatorId: viewerId,
       content: normalizedContent,
+      isActive: true,
       meetingId,
       retroPhaseItemId,
       sortOrder,
-      updatedAt: now,
+      updatedAt: now
     };
     await r.table('RetroReflection').insert(reflection);
     const data = {meetingId, reflectionId: reflection.id};

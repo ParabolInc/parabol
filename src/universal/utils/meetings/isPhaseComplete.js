@@ -1,5 +1,5 @@
 const isPhaseComplete = (phaseType, phases) => {
-  const phase = phases.find((phase) => phase.phaseType === phaseType);
+  const phase = phases.find((p) => p.phaseType === phaseType);
   return phase.stages.every((stage) => stage && stage.isComplete === true);
 };
 

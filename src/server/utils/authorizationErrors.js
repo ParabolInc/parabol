@@ -167,3 +167,12 @@ export const sendPhaseItemNotActiveError = (authToken, retroPhaseItemId, returnV
   };
   return sendAuthRaven(authToken, 'How did you find an old category?', breadcrumb, returnValue);
 };
+
+export const sendReflectionAccessError = (authToken, retroPhaseItemId, returnValue) => {
+  const breadcrumb = {
+    message: 'That is not your reflection',
+    category: 'Reflection access error',
+    data: {retroPhaseItemId}
+  };
+  return sendAuthRaven(authToken, 'Nacho Reflection', breadcrumb, returnValue);
+};

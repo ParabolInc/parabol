@@ -99,7 +99,8 @@ export default class RethinkDataLoader {
     this.retroReflectionsByGroupId = makeCustomLoader(async (reflectionGroupIds) => {
       const r = getRethink();
       const retroReflections = await r.table('RetroReflection')
-        .getAll(r.args(reflectionGroupIds), {index: 'reflectionGroupId'});
+        .getAll(r.args(reflectionGroupIds), {index: 'reflectionGroupId'})
+        .filter({isActive: true});
       primeStandardLoader(this.retroReflections, retroReflections);
       return reflectionGroupIds.map((reflectionGroupId) => {
         return retroReflections.filter((retroReflection) => retroReflection.reflectionGroupId === reflectionGroupId);
@@ -168,11 +169,12 @@ export default class RethinkDataLoader {
   _share() {
     this.authToken = null;
   }
-  makeStandardLoader(table) {
+  makeStandardLoader(table, filter = {}) {
     const batchFn = async (keys) => {
       const r = getRethink();
       const docs = await r.table(table)
-        .getAll(r.args(keys), {index: 'id'});
+        .getAll(r.args(keys), {index: 'id'})
+        .filter(filter);
       return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken);
     };
     return new DataLoader(batchFn);
@@ -188,7 +190,7 @@ export default class RethinkDataLoader {
   orgApprovals = this.makeStandardLoader('OrgApproval');
   organizations = this.makeStandardLoader('Organization');
   retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup');
-  retroReflections = this.makeStandardLoader('RetroReflection');
+  retroReflections = this.makeStandardLoader('RetroReflection', {isActive: true});
   softTeamMembers = this.makeStandardLoader('SoftTeamMember');
   tasks = this.makeStandardLoader('Task');
   teamMembers = this.makeStandardLoader('TeamMember');

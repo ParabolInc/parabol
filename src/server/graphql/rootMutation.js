@@ -72,6 +72,7 @@ import killNewMeeting from 'server/graphql/mutations/killNewMeeting';
 import createReflection from 'server/graphql/mutations/createReflection';
 import updateReflectionContent from 'server/graphql/mutations/updateReflectionContent';
 import updateReflectionLocation from 'server/graphql/mutations/updateReflectionLocation';
+import removeReflection from 'server/graphql/mutations/removeReflection';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -124,6 +125,7 @@ export default new GraphQLObjectType({
     removeSlackChannel,
     removeGitHubRepo,
     removeOrgUser,
+    removeReflection,
     removeTeamMember,
     requestFacilitator,
     resendTeamInvite,
