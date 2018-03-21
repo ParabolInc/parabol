@@ -34,7 +34,7 @@ class OrgPlanSqueeze extends Component {
     />);
     const openUrl = (url) => () => window.open(url, '_blank');
     return (
-      <Panel hasHeader={false}>
+      <Panel>
         <div className={css(styles.panelInner)}>
           <div className={css(styles.panelCell, styles.panelPersonal)}>
             <OrgPlanBadge planType={PERSONAL} />

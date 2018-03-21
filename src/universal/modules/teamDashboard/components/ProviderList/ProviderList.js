@@ -12,7 +12,7 @@ const ProviderList = (props) => {
   const {providerMap} = viewer;
   return (
     <SettingsWrapper>
-      <Panel hasHeader={false} hideFirstRowBorder>
+      <Panel hideFirstRowBorder>
         <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} jwt={jwt} teamId={teamId} />
         <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} jwt={jwt} teamId={teamId} />
       </Panel>

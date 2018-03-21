@@ -92,7 +92,7 @@ class NewTeamForm extends Component {
 
     return (
       <form className={css(styles.form)} onSubmit={handleSubmit(this.onSubmit)}>
-        <Panel hasHeader={false}>
+        <Panel>
           <div className={css(styles.formInner)}>
             <div className={css(styles.formHeading)}>{'Create a New Team'}</div>
             <div className={css(styles.formBlock)}>

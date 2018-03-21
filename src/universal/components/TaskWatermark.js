@@ -13,6 +13,7 @@ const WatermarkBlock = styled('div')({
   bottom: 0,
   left: 0,
   overflow: 'hidden',
+  pointerEvents: 'none',
   position: 'absolute',
   right: 0,
   textAlign: 'center',

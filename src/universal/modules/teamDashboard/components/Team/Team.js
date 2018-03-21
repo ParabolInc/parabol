@@ -67,7 +67,7 @@ const Team = (props) => {
       <DashHeader
         area={isSettings ? 'teamSettings' : 'teamDash'}
         hasOverlay={hasOverlay}
-        key={`team${isSettings ? 'Dash' : 'Settigns'}Header`}
+        key={`team${isSettings ? 'Dash' : 'Settings'}Header`}
       >
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {!isSettings && <DashSearchControl onChange={updateFilter} placeholder="Search Team Tasks & Agenda" />}

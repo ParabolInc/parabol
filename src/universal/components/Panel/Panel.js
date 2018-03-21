@@ -9,7 +9,6 @@ const Panel = (props) => {
   const {
     children,
     controls,
-    hasHeader,
     hideFirstRowBorder,
     label,
     styles
@@ -17,7 +16,7 @@ const Panel = (props) => {
 
   return (
     <div className={css(styles.panel, styles.depth)}>
-      {hasHeader &&
+      {label &&
         <div className={css(styles.header)}>
           <div className={css(styles.label)}>
             {label}
@@ -49,15 +48,9 @@ Panel.propTypes = {
   children: PropTypes.any,
   compact: PropTypes.bool,
   controls: PropTypes.any,
-  hasHeader: PropTypes.bool,
   hideFirstRowBorder: PropTypes.bool,
   label: PropTypes.any,
   styles: PropTypes.object
-};
-
-Panel.defaultProps = {
-  hasHeader: true,
-  label: 'Panel'
 };
 
 const bgThemeValues = {
