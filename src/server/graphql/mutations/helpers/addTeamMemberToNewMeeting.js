@@ -25,13 +25,13 @@ const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
   const meetingMember = createMeetingMember(meetingId, meetingType)(teamMember);
   await r({
     meeting: r.table('NewMeeting')
-    .get(meetingId)
-    .update({
-      phases,
-      updatedAt: now
-    }),
+      .get(meetingId)
+      .update({
+        phases,
+        updatedAt: now
+      }),
     member: r.table('MeetingMember').insert(meetingMember)
-});
+  });
   return true;
 };
 

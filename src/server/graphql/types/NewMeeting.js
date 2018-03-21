@@ -64,15 +64,16 @@ export const newMeetingFields = () => ({
   }
 });
 
-const resolveTypeLookup = {
-  [RETROSPECTIVE]: RetrospectiveMeeting
-};
-
 const NewMeeting = new GraphQLInterfaceType({
   name: 'NewMeeting',
   description: 'A team meeting history for all previous meetings',
   fields: newMeetingFields,
-  resolveType: ({meetingType}) => resolveTypeLookup[meetingType]
+  resolveType: ({meetingType}) => {
+    const resolveTypeLookup = {
+      [RETROSPECTIVE]: RetrospectiveMeeting
+    };
+    return resolveTypeLookup[meetingType];
+  }
 });
 
 export default NewMeeting;

@@ -5,7 +5,7 @@ import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendMeetingMemberNotFoundError, sendReflectionGroupNotFoundError} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
-import {TEAM, VOTE} from 'universal/utils/constants';
+import {RETROSPECTIVE, TEAM, VOTE} from 'universal/utils/constants';
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload';
 import safelyCastVote from 'server/graphql/mutations/helpers/safelyCastVote';
@@ -53,8 +53,9 @@ export default {
       const votingError = await safelyWithdrawVote(authToken, meetingId, viewerId, reflectionGroupId);
       if (votingError) return votingError;
     } else {
-      const meetingSettings = dataLoader.get('meetingSettingsByTeamId').load(teamId);
-      const {maxVotesPerGroup} = meetingSettings;
+      const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId);
+      const retroSettings = allSettings.find((settings) => settings.meetingType === RETROSPECTIVE);
+      const {maxVotesPerGroup} = retroSettings;
       const votingError = await safelyCastVote(authToken, meetingId, viewerId, reflectionGroupId, maxVotesPerGroup);
       if (votingError) return votingError;
     }

@@ -6,7 +6,7 @@ import {TEAM} from 'universal/utils/constants';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import NewMeetingCheckInPayload from 'server/graphql/types/NewMeetingCheckInPayload';
 import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
-import {sendMeetingMemberNotFoundError, sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
+import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export default {
@@ -40,13 +40,9 @@ export default {
 
     // RESOLUTION
     const meetingMemberId = toTeamMemberId(meetingId, userId);
-    const success = await r.table('MeetingMember')
+    await r.table('MeetingMember')
       .get(meetingMemberId)
-      .update({isCheckedIn})
-      .default(null)('replaced')
-      .eq(1);
-
-    if (!success) return sendMeetingMemberNotFoundError(authToken, meetingId);
+      .update({isCheckedIn});
 
     const data = {meetingId, userId};
     publish(TEAM, teamId, NewMeetingCheckInPayload, data, subOptions);

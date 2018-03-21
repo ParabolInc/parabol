@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import {RETROSPECTIVE} from 'universal/utils/constants';
+import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember';
 
 export const meetingMemberFields = () => ({
   id: {
@@ -31,15 +31,16 @@ export const meetingMemberFields = () => ({
   }
 });
 
-const resolveTypeLookup = {
-  [RETROSPECTIVE]: RetrospectiveMeeting
-};
-
 const MeetingMember = new GraphQLInterfaceType({
   name: 'MeetingMember',
   description: 'All the user details for a specific meeting',
   fields: meetingMemberFields,
-  resolveType: ({meetingType}) => resolveTypeLookup[meetingType]
+  resolveType: ({meetingType}) => {
+    const resolveTypeLookup = {
+      [RETROSPECTIVE]: RetrospectiveMeetingMember
+    };
+    return resolveTypeLookup[meetingType];
+  }
 });
 
 export default MeetingMember;

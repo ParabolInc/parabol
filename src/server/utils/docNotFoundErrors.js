@@ -72,15 +72,6 @@ export const sendMeetingNotFoundError = (authToken, meetingId, returnValue) => {
   return sendAuthRaven(authToken, 'Meeting Not Found', breadcrumb, returnValue);
 };
 
-export const sendMeetingMemberNotFoundError = (authToken, meetingId, returnValue) => {
-  const breadcrumb = {
-    message: 'Meeting member not found',
-    category: 'Not found',
-    data: {meetingId}
-  };
-  return sendAuthRaven(authToken, 'Meeting details for user not found', breadcrumb, returnValue);
-};
-
 export const sendReflectionNotFoundError = (authToken, reflectionId, returnValue) => {
   const breadcrumb = {
     message: 'Reflection ID not found',

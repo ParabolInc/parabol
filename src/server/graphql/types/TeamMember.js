@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks';
 import {resolveTeam} from 'server/graphql/resolvers';
@@ -80,12 +80,17 @@ const TeamMember = new GraphQLObjectType({
       description: 'The meeting specifics for the meeting the team member is currently in',
       args: {
         meetingId: {
-          type: new GraphQLNonNull(GraphQLID)
+          type: GraphQLID
         }
       },
-      resolve: ({userId}, {meetingId}, {dataLoader}) => {
+      resolve: async ({teamId, userId}, args, {dataLoader}) => {
+        let meetingId = args.meetingId;
+        if (!meetingId) {
+          const team = await dataLoader.get('teams').load(teamId);
+          meetingId = team.meetingId;
+        }
         const meetingMemberId = toTeamMemberId(meetingId, userId);
-        return dataLoader.get('meetingMembers').load(meetingMemberId);
+        return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined;
       }
     },
     /* Foreign keys */

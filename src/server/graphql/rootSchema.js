@@ -11,6 +11,7 @@ import ReflectPhase from 'server/graphql/types/ReflectPhase';
 import CheckInPhase from 'server/graphql/types/CheckInPhase';
 import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings';
 import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings';
+import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember';
 
 export default new GraphQLSchema({
   query,
@@ -24,6 +25,7 @@ export default new GraphQLSchema({
     NotifyPromoteToOrgLeader,
     RetroPhaseItem,
     RetrospectiveMeeting,
+    RetrospectiveMeetingMember,
     RetrospectiveMeetingSettings,
     ActionMeetingSettings
   ]

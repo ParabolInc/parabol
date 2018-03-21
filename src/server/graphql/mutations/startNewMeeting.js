@@ -78,7 +78,7 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const createMemberForMeeting = createMeetingMember(meetingId, meetingType);
     const meetingMembersBase = teamMembers.map(createMemberForMeeting);
-    const meetingMembers = await extendMeetingMembersForType(meetingMembersBase);
+    const meetingMembers = await extendMeetingMembersForType(meetingMembersBase, dataLoader);
     await r({
       team: r.table('Team').get(teamId)
         .update({meetingId}),
