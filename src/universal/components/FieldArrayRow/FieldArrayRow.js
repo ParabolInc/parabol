@@ -57,8 +57,6 @@ FieldArrayRow.propTypes = {
   labelHeader: PropTypes.string.isRequired,
   fields: PropTypes.object.isRequired,
   hoverRow: PropTypes.number,
-  nestedFieldHeader: PropTypes.string.isRequired,
-  nestedFieldName: PropTypes.string.isRequired,
   onHoverRow: PropTypes.func.isRequired,
   onLeaveRow: PropTypes.func.isRequired,
   styles: PropTypes.object
