@@ -19,10 +19,6 @@ type Props = {
   }
 };
 
-const purple = {
-  color: appTheme.brand.primary.purple
-};
-
 const H1 = styled('h1')({
   color: appTheme.palette.dark,
   fontFamily: appTheme.typography.serif,
@@ -30,14 +26,14 @@ const H1 = styled('h1')({
 });
 
 const H2 = styled('h2')({
-  ...purple,
+  color: appTheme.palette.mid,
   fontSize: '1rem',
   fontWeight: 400,
   margin: '.5rem 0 2rem'
 });
 
 const linkStyles = {
-  ...purple,
+  color: appTheme.palette.mid,
   textDecoration: 'underline'
 };
 
