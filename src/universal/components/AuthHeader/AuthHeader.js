@@ -23,11 +23,17 @@ const purple = {
   color: appTheme.brand.primary.purple
 };
 
-const H1 = styled('h1')(purple);
+const H1 = styled('h1')({
+  color: appTheme.palette.dark,
+  fontFamily: appTheme.typography.serif,
+  margin: '3rem 0 .5rem'
+});
 
 const H2 = styled('h2')({
   ...purple,
-  fontSize: '1.2rem'
+  fontSize: '1rem',
+  fontWeight: 400,
+  margin: '.5rem 0 2rem'
 });
 
 const linkStyles = {
@@ -49,7 +55,7 @@ const AuthHeader = (props: Props) => (
   <Fragment>
     <H1>{props.heading}</H1>
     <H2>
-      or{' '}
+      {'or '}
       <BrandedLink to={props.secondaryAction.relativeUrl}>
         {props.secondaryAction.displayName}
       </BrandedLink>

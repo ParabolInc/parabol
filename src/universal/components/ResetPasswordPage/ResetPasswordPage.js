@@ -55,7 +55,7 @@ export default class PasswordResetPage extends Component<Props, State> {
       <AuthPage title="Reset Password | Parabol">
         <AuthHeader
           heading="Forgot your password?"
-          secondaryAction={{relativeUrl: '/signin', displayName: 'Sign in'}}
+          secondaryAction={{relativeUrl: '/signin', displayName: 'Sign In'}}
         />
         <HorizontalSeparator />
         <PasswordReset

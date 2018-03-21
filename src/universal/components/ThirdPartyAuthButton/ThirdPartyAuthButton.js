@@ -18,23 +18,21 @@ type Props = {
   provider: ThirdPartyAuthProvider
 };
 
-const ButtonContainer = styled('div')({
-  paddingTop: '.5rem'
-});
+const ButtonContainer = styled('div')({width: '16rem'});
 
 export default ({action, waiting, provider, handleClick}: Props) => {
   const label = `${action} with ${provider.displayName}`;
   return (
     <ButtonContainer>
       <Button
-        borderRadius="100px"
-        type="button"
-        title={label}
-        label={label}
+        buttonSize="medium"
+        colorPalette="white"
         icon={provider.iconName}
-        iconPlacement="left"
-        colorPalette="gray"
+        isBlock
+        label={label}
         onClick={handleClick}
+        title={label}
+        type="button"
         waiting={waiting}
       />
     </ButtonContainer>

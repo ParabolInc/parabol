@@ -36,7 +36,7 @@ export default (props: Props) => (
         handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
       />
     ))}
-    <HorizontalSeparator text="or" />
+    <HorizontalSeparator margin="1rem 0 0" text="or" />
     {props.error &&
       <ErrorAlert message={props.error} />
     }

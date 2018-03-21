@@ -10,6 +10,7 @@ import React from 'react';
 import styled from 'react-emotion';
 
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Header from './Header';
 
@@ -19,10 +20,12 @@ type Props = {
 };
 
 const PageContainer = styled('div')({
+  alignItems: 'center',
+  backgroundColor: ui.backgroundColor,
   color: appTheme.palette.dark,
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center'
+  minHeight: '100vh'
 });
 
 const CenteredBlock = styled('div')({

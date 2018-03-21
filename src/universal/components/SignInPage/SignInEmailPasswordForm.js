@@ -28,9 +28,7 @@ const Form = styled('form')({
   flexDirection: 'column'
 });
 
-const FieldsContainer = styled('div')({
-  marginBottom: '2rem'
-});
+const Block = styled('div')(({margin, width}) => ({margin, width}));
 
 const linkStyles = {
   color: appTheme.brand.primary.purple,
@@ -46,31 +44,35 @@ const ForgotPasswordLink = styled(Link)({
 
 const SignInEmailPasswordForm = (props: Props) => (
   <Form onSubmit={props.handleSubmit}>
-    <FieldsContainer>
-      <Field
-        type="email"
-        autoFocus
-        component={InputField}
-        placeholder="you@company.co"
-        label="Email:"
-        name="email"
-        underline
-        disabled={props.submitting}
-      />
+    <Block margin="1rem 0 2rem" width="16rem">
+      <Block margin="0 0 1.5rem">
+        <Field
+          type="email"
+          autoFocus
+          component={InputField}
+          fieldSize="large"
+          placeholder="you@company.co"
+          label="Email:"
+          name="email"
+          underline
+          disabled={props.submitting}
+        />
+      </Block>
       <Field
         type="password"
         component={InputField}
+        fieldSize="large"
         placeholder="********"
         label="Password:"
         name="password"
         underline
         disabled={props.submitting}
       />
-    </FieldsContainer>
+    </Block>
     <PrimaryButton type="submit" disabled={!props.valid} waiting={props.submitting}>
-      Sign In
+      {'Sign In'}
     </PrimaryButton>
-    <ForgotPasswordLink to="/reset-password">Forgot your password?</ForgotPasswordLink>
+    <ForgotPasswordLink to="/reset-password">{'Forgot your password?'}</ForgotPasswordLink>
   </Form>
 );
 

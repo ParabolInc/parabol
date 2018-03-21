@@ -25,25 +25,27 @@ const Form = styled('form')({
   flexDirection: 'column'
 });
 
-const FieldsContainer = styled('div')({
-  marginBottom: '2rem'
+const Block = styled('div')({
+  margin: '2rem 0 3rem',
+  width: '16rem'
 });
 
 const PasswordResetForm = (props: Props) => {
   return (
     <Form onSubmit={props.handleSubmit}>
-      <FieldsContainer>
+      <Block>
         <Field
           type="email"
           autoFocus
           component={InputField}
+          fieldSize="large"
           placeholder="you@company.co"
           label="Email:"
           name="email"
           underline
           disabled={props.submitting}
         />
-      </FieldsContainer>
+      </Block>
       <PrimaryButton disabled={!props.valid} waiting={props.submitting} type="submit">
         {'Submit'}
       </PrimaryButton>

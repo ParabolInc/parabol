@@ -514,7 +514,7 @@ const ui = {
 
   // Label Headings
   // ---------------------------------------------------------------------------
-  labelHeadingColor: appTheme.palette.dark50a,
+  labelHeadingColor: midGray,
   labelHeadingFontSize: '.75rem',
   labelHeadingFontWeight: TYPE_SEMIBOLD,
   labelHeadingLineHeight: '1rem',

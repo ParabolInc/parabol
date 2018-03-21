@@ -26,25 +26,27 @@ const Form = styled('form')({
   flexDirection: 'column'
 });
 
-const FieldsContainer = styled('div')({
-  marginBottom: '2rem'
-});
+const Block = styled('div')(({margin, width}) => ({margin, width}));
 
 const SignInEmailPasswordForm = (props: Props) => (
   <Form onSubmit={props.handleSubmit}>
-    <FieldsContainer>
+    <Block margin="1rem 0 2rem" width="16rem">
+      <Block margin="0 0 1.5rem">
+        <Field
+          autoFocus
+          component={InputField}
+          fieldSize="large"
+          type="email"
+          placeholder="you@company.co"
+          label="Email:"
+          name="email"
+          underline
+          disabled={props.submitting}
+        />
+      </Block>
       <Field
-        autoFocus
         component={InputField}
-        type="email"
-        placeholder="you@company.co"
-        label="Email:"
-        name="email"
-        underline
-        disabled={props.submitting}
-      />
-      <Field
-        component={InputField}
+        fieldSize="large"
         type="password"
         placeholder="********"
         label="Password:"
@@ -52,9 +54,9 @@ const SignInEmailPasswordForm = (props: Props) => (
         underline
         disabled={props.submitting}
       />
-    </FieldsContainer>
+    </Block>
     <PrimaryButton disabled={!props.valid} waiting={props.submitting} type="submit">
-      Sign Up
+      {'Sign Up'}
     </PrimaryButton>
   </Form>
 );
