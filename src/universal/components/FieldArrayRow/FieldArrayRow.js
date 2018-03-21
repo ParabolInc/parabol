@@ -88,10 +88,8 @@ const styleThunk = () => ({
   fieldGroupRow: {
     display: 'flex',
     maxWidth: '100%',
-    paddingLeft: '22rem',
-    paddingRight: '3.5rem',
-    width: '47.5rem',
-    margin: '0 0 1rem',
+    padding: '0 3.5rem',
+    margin: '0 0 .5rem',
     position: 'relative'
   },
 
