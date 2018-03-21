@@ -26,6 +26,7 @@ import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayloa
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload';
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload';
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload';
+import NewMeetingCheckInPayload from 'server/graphql/types/NewMeetingCheckInPayload';
 
 
 const types = [
@@ -39,6 +40,7 @@ const types = [
   KillNewMeetingPayload,
   MoveMeetingPayload,
   NavigateMeetingPayload,
+  NewMeetingCheckInPayload,
   PromoteFacilitatorPayload,
   PromoteNewMeetingFacilitatorPayload,
   RequestFacilitatorPayload,

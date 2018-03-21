@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLNonNull, GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks';
 import {resolveTeam} from 'server/graphql/resolvers';
@@ -11,6 +11,8 @@ import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import Assignee from 'server/graphql/types/Assignee';
+import MeetingMember from 'server/graphql/types/MeetingMember';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -71,6 +73,19 @@ const TeamMember = new GraphQLObjectType({
       resolve: (source, args, {authToken}) => {
         const userId = getUserId(authToken);
         return source.userId === userId;
+      }
+    },
+    meetingMember: {
+      type: MeetingMember,
+      description: 'The meeting specifics for the meeting the team member is currently in',
+      args: {
+        meetingId: {
+          type: new GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve: ({userId}, {meetingId}, {dataLoader}) => {
+        const meetingMemberId = toTeamMemberId(meetingId, userId);
+        return dataLoader.get('meetingMembers').load(meetingMemberId);
       }
     },
     /* Foreign keys */

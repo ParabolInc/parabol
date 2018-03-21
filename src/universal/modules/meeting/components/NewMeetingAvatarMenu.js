@@ -38,7 +38,7 @@ type Props = {
 const NewMeetingAvatarMenu = (props: Props) => {
   const {atmosphere, dispatch, newMeeting, teamMember, closePortal, handleNavigate} = props;
   const {localPhase, facilitatorUserId, meetingId} = newMeeting || {};
-  const {isCheckedIn, isConnected, isSelf, preferredName, userId} = teamMember;
+  const {meetingMember: {isCheckedIn}, isConnected, isSelf, preferredName, userId} = teamMember;
   const connected = isConnected ? 'connected' : 'disconnected';
   const checkedIn = isCheckedIn ? ' and checked in' : '';
   const headerLabel = `${isSelf ? 'You are' : `${preferredName} is`} ${connected} ${checkedIn}`;
@@ -84,7 +84,9 @@ export default createFragmentContainer(
       }
     }
     fragment NewMeetingAvatarMenu_teamMember on TeamMember {
-      isCheckedIn
+      meetingMember(meetingId: $meetingId) {
+        isCheckedIn
+      }
       isConnected
       isSelf
       preferredName

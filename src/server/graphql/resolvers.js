@@ -1,5 +1,6 @@
 import {getUserId, isSuperUser} from 'server/utils/authorization';
 import nullIfEmpty from 'universal/utils/nullIfEmpty';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem;
@@ -51,6 +52,11 @@ export const makeResolveNotificationsForViewer = (idArray, docArray) => async (s
   if (!notificationDocs) return null;
   const viewerNotifications = notificationDocs.filter((n) => n.userIds.includes(viewerId));
   return nullIfEmpty(viewerNotifications);
+};
+
+export const resolveMeetingMember = ({meetingId, userId}, args, {dataLoader}) => {
+  const meetingMemberId = toTeamMemberId(meetingId, userId);
+  return dataLoader.get('meetingMembers').load(meetingMemberId);
 };
 
 export const resolveNotifications = ({notificationIds, notifications}, args, {dataLoader}) => {
