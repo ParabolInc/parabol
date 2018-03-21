@@ -25,6 +25,7 @@ import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflecti
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload';
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload';
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload';
+import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload';
 
 
 const types = [
@@ -53,7 +54,8 @@ const types = [
   UpdateReflectionGroupTitlePayload,
   UpdateReflectionLocationPayload,
   UpdateTeamNamePayload,
-  UpgradeToProPayload
+  UpgradeToProPayload,
+  VoteForReflectionGroupPayload
 ];
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types);
