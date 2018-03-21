@@ -1,102 +1,127 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
+import AgendaToggle from 'universal/modules/teamDashboard/components/AgendaToggle/AgendaToggle';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
 import TeamTasksHeaderContainer from 'universal/modules/teamDashboard/containers/TeamTasksHeader/TeamTasksHeaderContainer';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
+import styled from 'react-emotion';
+
+const RootBlock = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  position: 'relative',
+  width: '100%'
+});
+
+const TasksMain = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column'
+});
+
+const TasksHeader = styled('div')(({hideAgenda}) => ({
+  display: 'flex',
+  paddingRight: !hideAgenda && ui.dashAgendaWidth,
+  paddingTop: '.75rem',
+  justifyContent: 'flex-start',
+  width: '100%',
+
+  [ui.dashTeamBreakpointUp]: {
+    justifyContent: 'center',
+    paddingTop: 0
+  }
+}));
+
+const TasksContent = styled('div')(({hideAgenda}) => ({
+  display: 'flex',
+  flex: 1,
+  margin: 0,
+  paddingRight: !hideAgenda && ui.dashAgendaWidth,
+  width: '100%',
+
+  [ui.dashTeamBreakpointUp]: {
+    margin: '0 auto'
+  }
+}));
+
+const Inner = styled('div')({
+  display: 'flex',
+  flex: 1,
+  margin: 0,
+  maxWidth: ui.taskColumnsMaxWidth,
+  width: '100%',
+
+  [ui.dashTeamBreakpointUp]: {
+    margin: '0 auto'
+  }
+});
+
+const AgendaMain = styled('div')(({hideAgenda}) => ({
+  backgroundColor: !hideAgenda && ui.palette.white,
+  bottom: hideAgenda ? 'auto' : '0',
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  width: ui.dashAgendaWidth
+}));
+
+const AgendaContent = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  width: '100%'
+});
 
 const AgendaAndTasks = (props) => {
-  const {viewer, styles} = props;
+  const {viewer} = props;
   const {teamMember: {hideAgenda}, team} = viewer;
   const {teamId, teamName} = team;
   return (
-    <div className={css(styles.root)}>
+    <RootBlock>
       <Helmet title={`${teamName} | Parabol`} />
-      <div className={css(styles.headers)}>
-        <div className={css(styles.tasksLayout, styles.tasksLayoutHeader)}>
-          <TeamTasksHeaderContainer team={team} />
-        </div>
-        <div className={css(styles.agendaLayout, !hideAgenda && styles.agendaLayoutOpen)}>
-          <AgendaHeader hideAgenda={hideAgenda} teamId={teamId} />
-        </div>
-      </div>
-      <div className={css(styles.agendaAndTasks)}>
-        <div className={css(styles.tasksLayout, styles.tasksLayoutContent, !hideAgenda && styles.tasksLayoutShared)}>
-          <TeamColumnsContainer teamId={teamId} viewer={viewer} />
-        </div>
+
+      {/* Tasks */}
+      <TasksMain>
+        <TasksHeader hideAgenda={hideAgenda}>
+          <Inner>
+            <TeamTasksHeaderContainer team={team} />
+          </Inner>
+
+        </TasksHeader>
+        <TasksContent hideAgenda={hideAgenda}>
+          <Inner>
+            <TeamColumnsContainer teamId={teamId} viewer={viewer} />
+          </Inner>
+        </TasksContent>
+      </TasksMain>
+
+      {/* Agenda */}
+      <AgendaMain hideAgenda={hideAgenda}>
+        <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         {!hideAgenda &&
-        <div className={css(styles.agendaLayout, !hideAgenda && styles.agendaLayoutOpen)}>
-          <AgendaListAndInput canNavigate={false} context="dashboard" disabled={false} team={team} />
-        </div>
+          <AgendaContent>
+            <AgendaListAndInput canNavigate={false} context="dashboard" disabled={false} team={team} />
+          </AgendaContent>
         }
-      </div>
-    </div>
+      </AgendaMain>
+    </RootBlock>
   );
 };
 
 AgendaAndTasks.propTypes = {
-  styles: PropTypes.object,
   teamId: PropTypes.string,
   viewer: PropTypes.object
 };
 
-const borderColor = ui.dashBorderColor;
-const styleThunk = () => ({
-  root: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    width: '100%'
-  },
-
-  headers: {
-    display: 'flex',
-    width: '100%'
-  },
-
-  agendaAndTasks: {
-    display: 'flex',
-    flex: 1,
-    width: '100%'
-  },
-
-  agendaLayout: {
-    display: 'flex',
-    flexDirection: 'column',
-    maxWidth: ui.dashAgendaWidth,
-    minWidth: ui.dashAgendaWidth
-  },
-
-  agendaLayoutOpen: {
-    backgroundColor: ui.palette.white
-  },
-
-  tasksLayout: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column'
-  },
-
-  tasksLayoutShared: {
-    borderRight: `1px solid ${borderColor}`
-  },
-
-  tasksLayoutHeader: {
-    borderRight: `1px solid ${borderColor}`
-  },
-
-  tasksLayoutContent: {
-    borderTop: `1px solid ${borderColor}`
-  }
-});
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(AgendaAndTasks),
+  AgendaAndTasks,
   graphql`
     fragment AgendaAndTasks_viewer on User {
       team(teamId: $teamId) {

@@ -39,7 +39,9 @@ SettingsHeader.propTypes = {
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
-    display: 'flex'
+    display: 'flex',
+    justifyContent: 'center',
+    width: '100%'
   },
 
   heading: {

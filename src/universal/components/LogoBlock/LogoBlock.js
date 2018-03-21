@@ -28,7 +28,7 @@ const LogoBlock = (props) => {
   const {variant} = props;
   const logoSrc = variant === 'primary' ? logoMarkPrimary : logoMarkWhite;
   return (
-    <Block>
+    <Block variant={variant}>
       <Anchor href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
         <Image alt="Parabol" src={logoSrc} />
       </Anchor>

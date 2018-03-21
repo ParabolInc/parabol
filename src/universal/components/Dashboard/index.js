@@ -1,6 +1,7 @@
 export DashAlert from './DashAlert.js';
 export DashContent from './DashContent.js';
 export DashHeader from './DashHeader.js';
+export DashHeading from './DashHeading.js';
 export DashHeaderInfo from './DashHeaderInfo.js';
 export DashLayout from './DashLayout.js';
 export DashMain from './DashMain.js';

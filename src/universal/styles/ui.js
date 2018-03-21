@@ -13,12 +13,17 @@ import zIndexScale from 'universal/styles/helpers/zIndexScale';
 
 const makeShadowColor = (opacity) => `rgba(68, 66, 88, ${opacity})`;
 
+// Breakpoints
+const BREAKPOINT_WIDE = '@media (min-width: 90rem)';
+const BREAKPOINT_WIDER = '@media (min-width: 100rem)';
+const BREAKPOINT_WIDEST = '@media (min-width: 120rem)';
+
 // Control sizes (used by buttons and fields)
 const CONTROL_SIZE_SMALL = 'small';
 const CONTROL_SIZE_MEDIUM = 'medium';
 const CONTROL_SIZE_LARGE = 'large';
 
-const CONTROL_SMALL_FONT_SIZE = '.875rem';
+const CONTROL_SMALL_FONT_SIZE = '.8125rem';
 const CONTROL_SMALL_LINE_HEIGHT = '1.25rem';
 const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem';
 const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem';
@@ -41,6 +46,7 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
+const {midGray} = appTheme.brand.primary;
 const {red, rose, green} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
@@ -72,6 +78,7 @@ const PALETTE_OPTIONS = [
   'light',
   'white',
   'gray',
+  'midGray',
   'green',
   'red'
 ];
@@ -83,6 +90,7 @@ const PALETTE_VALUES = {
   light,
   white,
   gray,
+  midGray,
   green,
   red
 };
@@ -188,9 +196,9 @@ const ui = {
   // Breakpoints
   // ---------------------------------------------------------------------------
   breakpoint: {
-    wide: '@media (min-width: 90rem)',
-    wider: '@media (min-width: 100rem)',
-    widest: '@media (min-width: 120rem)'
+    wide: BREAKPOINT_WIDE,
+    wider: BREAKPOINT_WIDER,
+    widest: BREAKPOINT_WIDEST
   },
 
   // Buttons
@@ -323,9 +331,10 @@ const ui = {
   dashAgendaWidth: '15rem',
   dashBackgroundColor: backgroundColor,
   dashBorderColor: appTheme.palette.light90d,
-  dashGutter: '1.25rem',
-  // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
-  //       in a better future we may be more adaptive/responsive (TA)
+  dashBreakpoint: BREAKPOINT_WIDER,
+  dashGutterSmall: '1.25rem',
+  dashGutterLarge: '2rem',
+  dashHeaderMinHeight: '4rem',
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
     fontFamily: appTheme.typography.serif,
@@ -336,12 +345,21 @@ const ui = {
   dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
   dashMenuHeight: '13.5625rem',
   dashMenuWidth: '10rem',
+
+  // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
+  //       in a better future we may be more adaptive/responsive (TA)
+
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashAlertsHeight: '5.25rem',
-  dashSectionHeaderLineHeight: '2rem',
+
+  dashControlFontColor: COLOR_TEXT_LIGHT,
+  dashControlFontSize: appTheme.typography.s2,
+  dashControlHeight: '2rem',
+
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
+  dashTeamBreakpointUp: '@media (min-width: 123.25rem)',
   draftModalMargin: 32,
 
   // Email
@@ -567,7 +585,7 @@ const ui = {
 
   // Panels
   // ---------------------------------------------------------------------------
-  panelBoxShadow: '0 .125rem .25rem rgba(68, 66, 88, 0.05)', // based on dark palette color
+  panelBoxShadow: shadow[0], // based on dark palette color
   panelBorderColor: appTheme.palette.mid50l,
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
@@ -582,7 +600,8 @@ const ui = {
 
   // Task columns
   // ---------------------------------------------------------------------------
-  taskColumnPaddingInner: '.625rem',
+  taskColumnPaddingInnerSmall: '.625rem',
+  taskColumnPaddingInnerLarge: '.9375rem',
   taskColumnsMaxWidth: '78.25rem',
   taskColumnsMinWidth: '48rem',
 
@@ -626,7 +645,7 @@ const ui = {
   // Settings
   // ---------------------------------------------------------------------------
   settingsGutter: '1rem',
-  settingsPanelMaxWidth: '42rem',
+  settingsPanelMaxWidth: '48rem',
 
   // Shadows
   shadow,

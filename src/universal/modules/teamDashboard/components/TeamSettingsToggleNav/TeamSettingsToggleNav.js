@@ -28,8 +28,9 @@ const TeamSettingsToggleNav = (props) => {
   ];
 
   const wrapperStyle = {
-    margin: `${ui.panelMarginVertical} 0 0`,
-    maxWidth: ui.settingsPanelMaxWidth
+    margin: `${ui.panelMarginVertical} auto 0`,
+    maxWidth: ui.settingsPanelMaxWidth,
+    width: '100%'
   };
 
   return (

@@ -12,7 +12,7 @@ const typography = {
   s4: '1.125rem', // 18px
   s5: '1.25rem', // 20px
   s6: '1.5rem', // 24px
-  s7: '2.25rem', // 36px
+  s7: '2.125rem', // 34px
   s8: '3rem' // 48px
 };
 

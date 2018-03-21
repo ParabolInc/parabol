@@ -41,6 +41,28 @@ const makeFlatTheme = (buttonStyle, color) => ({
   }
 });
 
+const makeLinkTheme = (color) => {
+  const hoverFocusStyles = {
+    boxShadow: 'none !important',
+    color: tinycolor.mix(color, '#000', 15).toHexString()
+  };
+  return ({
+    backgroundColor: 'transparent',
+    boxShadow: 'none !important',
+    color,
+    fontWeight: 400,
+    paddingLeft: 0,
+    paddingRight: 0,
+
+    ':hover': {
+      ...hoverFocusStyles
+    },
+    ':focus': {
+      ...hoverFocusStyles
+    }
+  });
+};
+
 const makePrimaryTheme = () => ({
   ...ui.buttonStylesPrimary
 });
@@ -55,6 +77,9 @@ const makePropColors = (buttonStyle, colorPalette) => {
   }
   if (buttonStyle === 'primary') {
     return makePrimaryTheme();
+  }
+  if (buttonStyle === 'link') {
+    return makeLinkTheme(color);
   }
   return makeSolidTheme(color, textColor, buttonStyle);
 };
@@ -82,6 +107,7 @@ class Button extends Component {
     buttonStyle: PropTypes.oneOf([
       'flat',
       'inverted',
+      'link',
       'outlined',
       'primary',
       'solid'

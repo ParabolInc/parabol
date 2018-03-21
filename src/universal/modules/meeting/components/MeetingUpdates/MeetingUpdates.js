@@ -60,7 +60,6 @@ class MeetingUpdates extends Component {
         <MeetingSection flexToFill>
           <div className={css(styles.body)}>
             <TaskColumns
-              alignColumns="center"
               getTaskById={getTaskById(allTasks)}
               isMyMeetingSection={isMyMeetingSection}
               myTeamMemberId={myTeamMemberId}

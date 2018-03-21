@@ -1,32 +1,19 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import {Link} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {
-  DashSectionControl, DashSectionControls, DashSectionHeader,
-  DashSectionHeading
+  DashSectionControl,
+  DashSectionControls,
+  DashSectionHeader,
+  DashHeading
 } from 'universal/components/Dashboard';
+import {DashNavControl, LabelHeading} from 'universal/components';
+import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
-import ib from 'universal/styles/helpers/ib';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-
-const iconStyle = {
-  ...ib,
-  margin: '0 .5rem 0 0'
-};
-
-const inlineBlock = {
-  display: 'inline-block',
-  height: ui.dashSectionHeaderLineHeight,
-  lineHeight: ui.dashSectionHeaderLineHeight,
-  verticalAlign: 'middle'
-};
 
 const originAnchor = {
   vertical: 'bottom',
@@ -39,8 +26,8 @@ const targetAnchor = {
 };
 
 const TeamTasksHeader = (props) => {
-  const {dispatch, styles, teamMemberFilterId, teamMemberFilterName, team} = props;
-  const {teamId, teamMembers} = team;
+  const {dispatch, history, teamMemberFilterId, teamMemberFilterName, team} = props;
+  const {teamId, teamMembers, teamName} = team;
   const toggle = <DashFilterToggle label={teamMemberFilterName} />;
 
   const itemFactory = () => {
@@ -59,31 +46,37 @@ const TeamTasksHeader = (props) => {
         />)
       ));
   };
+
+  const goToArchive = () => history.push(`/team/${teamId}/archive`);
+
   return (
     <DashSectionHeader>
-      <DashSectionHeading label="Team Tasks" />
+      <div>
+        <LabelHeading>{'Team Dashboard'}</LabelHeading>
+        <DashHeading>
+          {`${teamName} Tasks`}
+        </DashHeading>
+      </div>
       <DashSectionControls>
-        {/* TODO: needs link to archive */}
+
+        {/* Archive Link */}
+        <DashNavControl
+          icon="archive"
+          label="See Archived Tasks"
+          onClick={goToArchive}
+        />
+
+        {/* Filter by Owner */}
         <DashSectionControl>
-          <FontAwesome name="archive" style={iconStyle} />
-          <Link className={css(styles.link)} to={`/team/${teamId}/archive`}>
-            See Archived Tasks
-          </Link>
-        </DashSectionControl>
-        {/* TODO: needs minimal, inline dropdown */}
-        <DashSectionControl>
-          <div className={css(styles.filterRow)}>
-            <b style={inlineBlock}>{'Show Tasks for'}</b><span style={inlineBlock}>:</span>
-            {' '}
-            <Menu
-              itemFactory={itemFactory}
-              label="Filter by:"
-              maxHeight={ui.dashMenuHeight}
-              toggle={toggle}
-              originAnchor={originAnchor}
-              targetAnchor={targetAnchor}
-            />
-          </div>
+          <DashFilterLabel><b>{'Show Tasks for'}</b>{': '}</DashFilterLabel>
+          <Menu
+            itemFactory={itemFactory}
+            label="Filter by:"
+            maxHeight={ui.dashMenuHeight}
+            toggle={toggle}
+            originAnchor={originAnchor}
+            targetAnchor={targetAnchor}
+          />
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
@@ -93,48 +86,18 @@ const TeamTasksHeader = (props) => {
 TeamTasksHeader.propTypes = {
   children: PropTypes.any,
   dispatch: PropTypes.func.isRequired,
-  styles: PropTypes.object,
+  history: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMemberFilterId: PropTypes.string,
   teamMemberFilterName: PropTypes.string
 };
 
-const styleThunk = () => ({
-  button: {
-    ...inlineBlock,
-    color: appTheme.palette.mid,
-
-    ':hover': {
-      color: appTheme.palette.dark
-    },
-    ':focus': {
-      color: appTheme.palette.dark
-    }
-  },
-
-  filterRow: {
-    display: 'flex',
-    justifyContent: 'flex-end'
-  },
-
-  link: {
-    ...ib,
-    color: appTheme.palette.mid,
-
-    ':hover': {
-      color: appTheme.palette.dark
-    },
-    ':focus': {
-      color: appTheme.palette.dark
-    }
-  }
-});
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(TeamTasksHeader),
+  withRouter(TeamTasksHeader),
   graphql`
     fragment TeamTasksHeader_team on Team {
       teamId: id
+      teamName: name
       teamMembers(sortBy: "preferredName") {
         id
         preferredName
