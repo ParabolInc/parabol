@@ -1,8 +1,8 @@
 
-// Exporting the basics, basically
+// Export universal/components
 
-export AuthPage from './AuthPage/AuthPage';
 export AuthHeader from './AuthHeader/AuthHeader';
+export AuthPage from './AuthPage/AuthPage';
 export Avatar from './Avatar/Avatar';
 export Button from './Button/Button';
 export DashNavControl from './DashNavControl/DashNavControl';
