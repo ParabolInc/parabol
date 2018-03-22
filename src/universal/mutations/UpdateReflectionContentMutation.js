@@ -4,7 +4,7 @@
  * @flow
  */
 import {commitMutation} from 'react-relay';
-import {Environment, RecordSourceSelectorProxy} from 'relay-runtime';
+import {Environment, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime';
 
 type Variables = {
   content: string,
@@ -15,22 +15,27 @@ type CompletedHandler = (response: ?Object, errors: ?Array<Error>) => void;
 
 type ErrorHandler = (error: Error) => void;
 
-const mutation = graphql`
-  mutation UpdateReflectionContentMutation($content: String!, $reflectionId: ID!) {
-    updateReflectionContent(content: $content, reflectionId: $reflectionId) {
-      meeting {
-        id
-      }
-      reflection {
-        id
-        content
-      }
+graphql`
+  fragment UpdateReflectionContentMutation_team on UpdateReflectionContentPayload {
+    meeting {
+      id
+    }
+    reflection {
+      id
+      content
     }
   }
 `;
 
-const updateReflectionContentUpdater = (store: RecordSourceSelectorProxy) => {
-  const payload = store.getRootField('updateReflectionContent');
+const mutation = graphql`
+  mutation UpdateReflectionContentMutation($content: String!, $reflectionId: ID!) {
+    updateReflectionContent(content: $content, reflectionId: $reflectionId) {
+      ...UpdateReflectionContentMutation_team @relay(mask: false)
+    }
+  }
+`;
+
+export const updateReflectionContentUpdater = (payload: RecordSourceProxy, store: RecordSourceSelectorProxy) => {
   if (!payload) {
     return;
   }
@@ -83,7 +88,10 @@ const CreateReflectionMutation = (
     onCompleted,
     onError,
     optimisticResponse: getOptimisticResponse(variables, meetingId),
-    updater: updateReflectionContentUpdater
+    updater: (store: RecordSourceSelectorProxy) => {
+      const payload = store.getRootField('updateReflectionContent');
+      updateReflectionContentUpdater(payload, store);
+    }
   });
 };
 
