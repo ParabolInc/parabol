@@ -4,7 +4,7 @@
  * @flow
  */
 import {commitMutation} from 'react-relay';
-import {Environment, RecordSourceSelectorProxy} from 'relay-runtime';
+import {Environment, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime';
 
 type Variables = {
   reflectionId: string,
@@ -14,21 +14,26 @@ type CompletedHandler = (response: ?Object, errors: ?Array<Error>) => void;
 
 type ErrorHandler = (error: Error) => void;
 
-const mutation = graphql`
-  mutation RemoveReflectionMutation($reflectionId: ID!) {
-    removeReflection(reflectionId: $reflectionId) {
-      meeting {
-        id
-      }
-      reflection {
-        id
-      }
+graphql`
+  fragment RemoveReflectionMutation_team on RemoveReflectionPayload {
+    meeting {
+      id
+    }
+    reflection {
+      id
     }
   }
 `;
 
-const removeReflectionUpdater = (store: RecordSourceSelectorProxy) => {
-  const payload = store.getRootField('removeReflection');
+const mutation = graphql`
+  mutation RemoveReflectionMutation($reflectionId: ID!) {
+    removeReflection(reflectionId: $reflectionId) {
+      ...RemoveReflectionMutation_team @relay(mask: false)
+    }
+  }
+`;
+
+export const removeReflectionUpdater = (payload: RecordProxy, store: RecordSourceSelectorProxy) => {
   // TODO - maeby https://github.com/dan-f/maeby
   if (!payload) {
     return;
@@ -79,7 +84,10 @@ const CreateReflectionMutation = (
     onCompleted,
     onError,
     optimisticResponse: getOptimisticResponse(variables, meetingId),
-    updater: removeReflectionUpdater
+    updater: (store: RecordSourceSelectorProxy) => {
+      const payload = store.getRootField('removeReflection');
+      removeReflectionUpdater(payload, store);
+    }
   });
 };
 

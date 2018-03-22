@@ -7,6 +7,7 @@ import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation';
 import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation';
 import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation';
+import {removeReflectionUpdater} from 'universal/mutations/RemoveReflectionMutation';
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
@@ -30,6 +31,7 @@ const subscription = graphql`
       ...NavigateMeetingMutation_team @relay(mask: false)
       ...PromoteFacilitatorMutation_team @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
+      ...RemoveReflectionMutation_team @relay(mask: false)
       ...RemoveTeamMemberMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RequestFacilitatorMutation_team @relay(mask: false)
@@ -112,6 +114,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'RemoveOrgUserPayload':
           removeOrgUserTeamUpdater(payload, store, viewerId);
+          break;
+        case 'RemoveReflectionPayload':
+          removeReflectionUpdater(payload, store);
           break;
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);
