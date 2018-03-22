@@ -225,6 +225,10 @@ const ui = {
     ':focus': {
       boxShadow: shadow[0],
       textDecoration: 'none'
+    },
+    ':active': {
+      boxShadow: shadow[0],
+      textDecoration: 'none'
     }
   },
   buttonStylesPrimary: {
@@ -240,7 +244,8 @@ const ui = {
       backgroundImage: gradientWarmDarkened
     },
     ':disabled': {
-      backgroundImage: gradientWarmLightened
+      backgroundImage: gradientWarmLightened,
+      opacity: 1
     }
   },
   buttonBlockStyles: {
@@ -254,13 +259,19 @@ const ui = {
     cursor: 'not-allowed',
     opacity: '.5',
     ':hover': {
+      boxShadow: 'none',
       opacity: '.5'
     },
     ':focus': {
+      boxShadow: 'none',
       opacity: '.5'
     },
     ':active': {
+      boxShadow: 'none',
       animation: 'none'
+    },
+    ':disabled': {
+      boxShadow: 'none'
     }
   },
   buttonSizeOptions: [
