@@ -99,7 +99,7 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
       </TypeHeader>
       <ReflectionsArea>
         {newMeeting.reflections && forPhaseItem(retroPhaseItem.id, newMeeting.reflections).map((reflection) => (
-          <div style={{margin: '0.5rem'}} key={reflection.id}>
+          <div style={{margin: '0.7rem 0.7rem 0 0'}} key={reflection.id}>
             {reflection.isViewerCreator ? (
               <ReflectionCard
                 handleDelete={() => handleDelete(atmosphere, reflection.id, newMeeting.id)}
@@ -113,7 +113,7 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
             )}
           </div>
         ))}
-        <div style={{margin: '0.5rem'}}>
+        <div style={{margin: '0.7rem 0.7rem 0 0'}}>
           <AddReflectionButton handleClick={() => handleClickAddReflection(atmosphere, newMeeting.id, retroPhaseItem.id)} />
         </div>
       </ReflectionsArea>
