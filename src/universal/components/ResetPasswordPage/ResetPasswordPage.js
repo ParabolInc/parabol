@@ -5,10 +5,11 @@
  */
 import promisify from 'es6-promisify';
 import React, {Component} from 'react';
-
-import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
-import AuthPage from 'universal/components/AuthPage/AuthPage';
-import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
+import {
+  AuthHeader,
+  AuthPage,
+  HorizontalSeparator
+} from 'universal/components';
 import {AUTH0_DB_CONNECTION} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
 import PasswordReset from './ResetPassword';

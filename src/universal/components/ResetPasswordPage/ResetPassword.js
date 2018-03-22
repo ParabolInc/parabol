@@ -6,9 +6,7 @@
 
 import React, {Fragment} from 'react';
 import styled from 'react-emotion';
-
-import PlainButton from 'universal/components/PlainButton/PlainButton';
-import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
+import {ErrorAlert, PlainButton} from 'universal/components';
 import PasswordResetForm from './ResetPasswordForm';
 
 type Props = {
@@ -19,9 +17,9 @@ type Props = {
 };
 
 const P = styled('p')({
-  textAlign: 'center',
+  lineHeight: 1.5,
   margin: '1rem 0',
-  lineHeight: 1.5
+  textAlign: 'center'
 });
 
 const LinkButton = styled(PlainButton)({

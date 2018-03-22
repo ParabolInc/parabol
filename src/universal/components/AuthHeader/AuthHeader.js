@@ -4,11 +4,9 @@
  * @flow
  */
 import type {StyledComponent, Tag} from 'react-emotion';
-
 import React, {Fragment} from 'react';
 import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
-
 import appTheme from 'universal/styles/theme/appTheme';
 
 type Props = {
@@ -22,14 +20,16 @@ type Props = {
 const H1 = styled('h1')({
   color: appTheme.palette.dark,
   fontFamily: appTheme.typography.serif,
-  margin: '3rem 0 .5rem'
+  margin: '3rem 0 .5rem',
+  textAlign: 'center'
 });
 
 const H2 = styled('h2')({
   color: appTheme.palette.mid,
   fontSize: '1rem',
   fontWeight: 400,
-  margin: '.5rem 0 2rem'
+  margin: '.5rem 0 2rem',
+  textAlign: 'center'
 });
 
 const linkStyles = {

@@ -3,12 +3,9 @@
  *
  * @flow
  */
-
 import type {Node} from 'react';
-
 import React from 'react';
 import styled from 'react-emotion';
-
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -25,6 +22,7 @@ const PageContainer = styled('div')({
   color: appTheme.palette.dark,
   display: 'flex',
   flexDirection: 'column',
+  maxWidth: '100%',
   minHeight: '100vh'
 });
 
@@ -33,6 +31,8 @@ const CenteredBlock = styled('div')({
   flexDirection: 'column',
   alignItems: 'center',
   height: '100%',
+  maxWidth: '100%',
+  padding: '0 1rem 2rem',
   width: '30rem'
 });
 

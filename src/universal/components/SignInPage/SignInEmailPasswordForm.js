@@ -4,14 +4,11 @@
  * @flow
  */
 import type {Credentials} from 'universal/types/auth';
-
 import React from 'react';
 import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
 import {Field, reduxForm} from 'redux-form';
-
-import InputField from 'universal/components/InputField/InputField';
-import PrimaryButton from 'universal/components/PrimaryButton/PrimaryButton';
+import {InputField, PrimaryButton} from 'universal/components';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 import appTheme from 'universal/styles/theme/appTheme';

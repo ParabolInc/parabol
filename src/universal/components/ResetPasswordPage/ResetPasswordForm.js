@@ -7,9 +7,7 @@
 import React from 'react';
 import styled from 'react-emotion';
 import {Field, reduxForm} from 'redux-form';
-
-import PrimaryButton from 'universal/components/PrimaryButton/PrimaryButton';
-import InputField from 'universal/components/InputField/InputField';
+import {InputField, PrimaryButton} from 'universal/components';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 

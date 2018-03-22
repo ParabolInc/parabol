@@ -4,14 +4,14 @@
  * @flow
  */
 import type {Credentials, ThirdPartyAuthProvider} from 'universal/types/auth';
-
 import React, {Fragment} from 'react';
 import styled from 'react-emotion';
-
-import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
-import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
-import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
-import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
+import {
+  AuthHeader,
+  ErrorAlert,
+  HorizontalSeparator,
+  ThirdPartyAuthButton
+} from 'universal/components';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import SignUpEmailPasswordForm from './SignUpEmailPasswordForm';
@@ -43,7 +43,8 @@ const A = styled('a')({
 const PrivacyFooter = styled('div')({
   color: ui.hintFontColor,
   fontSize: ui.hintFontSize,
-  marginTop: '1rem'
+  marginTop: '1rem',
+  textAlign: 'center'
 });
 
 const SignUp = (props: Props) => (
