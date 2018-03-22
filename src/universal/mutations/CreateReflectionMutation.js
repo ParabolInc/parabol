@@ -4,7 +4,7 @@
  * @flow
  */
 import {commitMutation} from 'react-relay';
-import {Environment, RecordSourceSelectorProxy} from 'relay-runtime';
+import {Environment, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime';
 
 import clientTempId from 'universal/utils/relay/clientTempId';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
@@ -20,25 +20,30 @@ type CompletedHandler = (response: ?Object, errors: ?Array<Error>) => void;
 
 type ErrorHandler = (error: Error) => void;
 
+graphql`
+  fragment CreateReflectionMutation_team on CreateReflectionPayload {
+    meeting {
+      id
+    }
+    reflection {
+      content
+      id
+      isViewerCreator
+      retroPhaseItemId
+      sortOrder
+    }
+}
+`;
+
 const mutation = graphql`
   mutation CreateReflectionMutation($content: String, $meetingId: ID!, $retroPhaseItemId: ID!, $sortOrder: Float!) {
     createReflection(content: $content, meetingId: $meetingId, retroPhaseItemId: $retroPhaseItemId, sortOrder: $sortOrder) {
-      meeting {
-        id
-      }
-      reflection {
-        content
-        id
-        isViewerCreator
-        retroPhaseItemId
-        sortOrder
-      }
+      ...CreateReflectionMutation_team @relay(mask: false)
     }
   }
 `;
 
-const createReflectionUpdater = (store: RecordSourceSelectorProxy) => {
-  const payload = store.getRootField('createReflection');
+export const createReflectionUpdater = (payload: RecordProxy, store: RecordSourceSelectorProxy) => {
   // TODO - https://github.com/dan-f/maeby
   if (!payload) {
     return;
@@ -95,7 +100,10 @@ const CreateReflectionMutation = (
     onCompleted,
     onError,
     optimisticResponse: getOptimisticResponse(variables),
-    updater: createReflectionUpdater
+    updater: (store: RecordSourceSelectorProxy) => {
+      const payload = store.getRootField('createReflection');
+      createReflectionUpdater(payload, store);
+    }
   });
 };
 

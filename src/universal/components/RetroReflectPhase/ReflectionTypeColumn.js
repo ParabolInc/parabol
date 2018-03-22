@@ -109,7 +109,7 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
               />
             ) : (
               // TODO - needs isEditing, which is unavailable on RetroThought type
-              <AnonymousReflectionCard content={reflection.content} />
+              <AnonymousReflectionCard content={deserialize(reflection.content).getPlainText()} />
             )}
           </div>
         ))}

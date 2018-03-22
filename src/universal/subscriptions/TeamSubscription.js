@@ -2,6 +2,7 @@ import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteM
 import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation';
 import {addTeamMutationNotificationUpdater, addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation';
 import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation';
+import {createReflectionUpdater} from 'universal/mutations/CreateReflectionMutation';
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation';
 import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation';
@@ -21,6 +22,7 @@ const subscription = graphql`
       ...AddTeamMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
+      ...CreateReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
       ...KillNewMeetingMutation_team @relay(mask: false)
@@ -70,6 +72,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           addTeamMutationNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'CreateGitHubIssuePayload':
+          break;
+        case 'CreateReflectionPayload':
+          createReflectionUpdater(payload, store);
           break;
         case 'RemoveTeamMemberSelfPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);
