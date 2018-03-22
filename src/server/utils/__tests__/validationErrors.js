@@ -26,3 +26,12 @@ export const sendGroupTitleDuplicateError = (authToken, title) => {
   };
   return sendAuthRaven(authToken, 'That might be confusing', breadcrumb);
 };
+
+export const sendGroupingThresholdValidationError = (authToken, meetingId, threshold) => {
+  const breadcrumb = {
+    message: 'The grouping threshold must be between 0 and 1',
+    category: 'Validation error',
+    data: {meetingId, threshold}
+  };
+  return sendAuthRaven(authToken, 'Bad grouping threshold', breadcrumb);
+};

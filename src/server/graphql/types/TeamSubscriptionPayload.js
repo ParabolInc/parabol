@@ -27,12 +27,14 @@ import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionG
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload';
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload';
 import NewMeetingCheckInPayload from 'server/graphql/types/NewMeetingCheckInPayload';
+import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload';
 
 
 const types = [
   AcceptTeamInvitePayload,
   AddTeamPayload,
   ArchiveTeamPayload,
+  AutoGroupReflectionsPayload,
   CreateReflectionPayload,
   CreateReflectionGroupPayload,
   EndMeetingPayload,

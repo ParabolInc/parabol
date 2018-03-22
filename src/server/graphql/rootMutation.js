@@ -77,6 +77,7 @@ import createReflectionGroup from 'server/graphql/mutations/createReflectionGrou
 import updateReflectionGroupTitle from 'server/graphql/mutations/updateReflectionGroupTitle';
 import voteForReflectionGroup from 'server/graphql/mutations/voteForReflectionGroup';
 import newMeetingCheckIn from 'server/graphql/mutations/newMeetingCheckIn';
+import autoGroupReflections from 'server/graphql/mutations/autoGroupReflections';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -91,6 +92,7 @@ export default new GraphQLObjectType({
     addTeam,
     approveToOrg,
     archiveTeam,
+    autoGroupReflections,
     cancelApproval,
     cancelTeamInvite,
     changeTaskTeam,
