@@ -200,7 +200,8 @@ export default class RethinkDataLoader {
   orgApprovals = this.makeStandardLoader('OrgApproval');
   organizations = this.makeStandardLoader('Organization');
   retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup');
-  retroReflections = this.makeStandardLoader('RetroReflection', {isActive: true});
+  activeRetroReflections = this.makeStandardLoader('RetroReflection', {isActive: true});
+  inactiveRetroReflections = this.makeStandardLoader('RetroReflection', {isActive: false});
   softTeamMembers = this.makeStandardLoader('SoftTeamMember');
   tasks = this.makeStandardLoader('Task');
   teamMembers = this.makeStandardLoader('TeamMember');

@@ -19,6 +19,7 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation';
+import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation';
 import deserialize from 'universal/utils/draftjs/deserialize';
 import ui from 'universal/styles/ui';
 
@@ -39,8 +40,12 @@ const handleClickAddReflection = (environment: Environment, meetingId: string, r
   });
 };
 
-const handleDelete = (id: string) => {
-  console.log(`Action: delete reflection "${id}". Mutation not yet implemented`);
+const handleDelete = (environment: Environment, reflectionId: string, meetingId: string) => {
+  RemoveReflectionMutation(
+    environment,
+    {reflectionId},
+    meetingId
+  );
 };
 
 const handleSave = (id: string, editorState: EditorState) => {
@@ -90,7 +95,7 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
           <div style={{margin: '0.5rem'}} key={reflection.id}>
             {reflection.isViewerCreator ? (
               <ReflectionCard
-                handleDelete={() => handleDelete(reflection.id)}
+                handleDelete={() => handleDelete(atmosphere, reflection.id, newMeeting.id)}
                 handleSave={(editorState: EditorState) => handleSave(reflection.id, editorState)}
                 id={reflection.id}
                 contentState={deserialize(reflection.content)}
