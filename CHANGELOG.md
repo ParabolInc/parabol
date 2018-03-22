@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.2.0 2018-Mar-21
+### Added
+- Retro card groups #1729
+- Retro social check-in #1741
+- Retro Backend: Creating & Editing Reflections #1742
+
 ## v1.1.1 2018-Mar-19
 ### Fixed
 - Regression that would mark team members present when absent was selected
