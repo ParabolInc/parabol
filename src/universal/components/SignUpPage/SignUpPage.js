@@ -3,14 +3,12 @@
  *
  * @flow
  */
-
 import type {Credentials} from 'universal/types/auth';
 import type {Dispatch} from 'redux';
 import promisify from 'es6-promisify';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-
-import AuthPage from 'universal/components/AuthPage/AuthPage';
+import {AuthPage} from 'universal/components';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';
