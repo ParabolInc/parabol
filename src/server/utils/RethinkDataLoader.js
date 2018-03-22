@@ -106,6 +106,16 @@ export default class RethinkDataLoader {
         return retroReflections.filter((retroReflection) => retroReflection.reflectionGroupId === reflectionGroupId);
       });
     }, this.dataloaderOptions);
+    this.retroReflectionsByMeetingId = makeCustomLoader(async (meetingIds) => {
+      const r = getRethink();
+      const retroReflections = await r.table('RetroReflection')
+        .getAll(r.args(meetingIds), {index: 'meetingId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.retroReflections, retroReflections);
+      return meetingIds.map((meetingId) => {
+        return retroReflections.filter((retroReflection) => retroReflection.meetingId === meetingId);
+      });
+    }, this.dataloaderOptions);
     this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
       const softTeamMembers = await r.table('SoftTeamMember')

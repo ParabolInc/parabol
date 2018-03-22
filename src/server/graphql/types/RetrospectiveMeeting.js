@@ -14,7 +14,10 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     },
     reflections: {
       type: new GraphQLList(RetroReflection),
-      description: 'The reflections generated during the reflect phase of the retro'
+      description: 'The reflections generated during the reflect phase of the retro',
+      resolve: ({id}, args, {dataLoader}) => (
+        dataLoader.get('retroReflectionsByMeetingId').load(id)
+      )
     }
   })
 });
