@@ -7,7 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Row from 'universal/components/Row/Row';
 import Tag from 'universal/components/Tag/Tag';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 
 const OrgUserRow = (props) => {
   const {
@@ -28,7 +28,7 @@ const OrgUserRow = (props) => {
       <div className={css(styles.userAvatar)}>
         {picture ?
           <Avatar hasBadge={false} picture={picture} size="small" /> :
-          <AvatarPlaceholder />
+          <img alt="" src={defaultUserAvatar} />
         }
       </div>
       <div className={css(styles.userInfo)}>

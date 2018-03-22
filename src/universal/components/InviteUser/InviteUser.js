@@ -4,7 +4,7 @@ import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {Field, reduxForm} from 'redux-form';
 import SubmissionError from 'redux-form/es/SubmissionError';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import Button from 'universal/components/Button/Button';
 import Editable from 'universal/components/Editable/Editable';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -60,7 +60,7 @@ const InviteUser = (props) => {
   };
   return (
     <div className={css(styles.inviteUser)}>
-      <AvatarPlaceholder />
+      <img alt="" src={defaultUserAvatar} />
       <div className={css(styles.fieldBlock)}>
         <Field
           component={Editable}
