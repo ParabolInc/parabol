@@ -324,7 +324,7 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
       ':active': {
         boxShadow: ui.shadow[depth] || 'none'
       },
-      ':disable': {
+      ':disabled': {
         boxShadow: 'none'
       }
     },

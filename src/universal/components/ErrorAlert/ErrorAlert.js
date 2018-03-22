@@ -16,7 +16,7 @@ type Props = {
   message: string
 };
 
-const backgroundColor = tinycolor(ui.colorError).setAlpha(.2).toRgbString();
+const backgroundColor = tinycolor(ui.colorError).setAlpha(0.2).toRgbString();
 
 const ErrorAlertWrapper = styled('div')({
   // backgroundColor: appTheme.palette.warm20a,
