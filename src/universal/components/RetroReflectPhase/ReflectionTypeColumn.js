@@ -20,7 +20,9 @@ import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCar
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation';
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation';
+import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation';
 import deserialize from 'universal/utils/draftjs/deserialize';
+import serialize from 'universal/utils/draftjs/serialize';
 import ui from 'universal/styles/ui';
 
 // Helpers
@@ -48,8 +50,13 @@ const handleDelete = (environment: Environment, reflectionId: string, meetingId:
   );
 };
 
-const handleSave = (id: string, editorState: EditorState) => {
-  console.log(`Action: save reflection "${id}". Mutation not yet implemented. Editor state:`, editorState);
+const handleSave = (environment: Environment, reflectionId: string, meetingId: string, editorState: EditorState) => {
+  const content = serialize(editorState.getCurrentContent());
+  UpdateReflectionContentMutation(
+    environment,
+    {reflectionId, content},
+    meetingId
+  );
 };
 
 // Components
@@ -96,7 +103,7 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
             {reflection.isViewerCreator ? (
               <ReflectionCard
                 handleDelete={() => handleDelete(atmosphere, reflection.id, newMeeting.id)}
-                handleSave={(editorState: EditorState) => handleSave(reflection.id, editorState)}
+                handleSave={(editorState: EditorState) => handleSave(atmosphere, reflection.id, newMeeting.id, editorState)}
                 id={reflection.id}
                 contentState={deserialize(reflection.content)}
               />

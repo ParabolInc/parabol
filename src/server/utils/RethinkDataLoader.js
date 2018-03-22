@@ -101,7 +101,7 @@ export default class RethinkDataLoader {
       const retroReflections = await r.table('RetroReflection')
         .getAll(r.args(reflectionGroupIds), {index: 'reflectionGroupId'})
         .filter({isActive: true});
-      primeStandardLoader(this.retroReflections, retroReflections);
+      primeStandardLoader(this.activeRetroReflections, retroReflections);
       return reflectionGroupIds.map((reflectionGroupId) => {
         return retroReflections.filter((retroReflection) => retroReflection.reflectionGroupId === reflectionGroupId);
       });
@@ -111,7 +111,7 @@ export default class RethinkDataLoader {
       const retroReflections = await r.table('RetroReflection')
         .getAll(r.args(meetingIds), {index: 'meetingId'})
         .filter({isActive: true});
-      primeStandardLoader(this.retroReflections, retroReflections);
+      primeStandardLoader(this.activeRetroReflections, retroReflections);
       return meetingIds.map((meetingId) => {
         return retroReflections.filter((retroReflection) => retroReflection.meetingId === meetingId);
       });
