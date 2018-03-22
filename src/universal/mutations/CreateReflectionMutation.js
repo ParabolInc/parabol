@@ -3,11 +3,11 @@
  *
  * @flow
  */
-import {ContentState} from 'draft-js';
 import {commitMutation} from 'react-relay';
 import {Environment, RecordSourceSelectorProxy} from 'relay-runtime';
 
 import clientTempId from 'universal/utils/relay/clientTempId';
+import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 
 type Variables = {
   content?: string,
@@ -39,6 +39,7 @@ const mutation = graphql`
 
 const createReflectionUpdater = (store: RecordSourceSelectorProxy) => {
   const payload = store.getRootField('createReflection');
+  // TODO - https://github.com/dan-f/maeby
   if (!payload) {
     return;
   }
@@ -88,7 +89,7 @@ const CreateReflectionMutation = (
   return commitMutation(environment, {
     mutation,
     variables: {
-      content: JSON.stringify(ContentState.createFromText('')),
+      content: makeEmptyStr(),
       ...variables
     },
     onCompleted,

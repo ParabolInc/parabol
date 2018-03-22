@@ -5,6 +5,7 @@
  * @flow
  */
 import type {RetroPhaseItem, Team} from 'universal/types/schema.flow';
+import type TeamFragment from './__generated__/ReflectionTypeColumn_team.graphql';
 
 // $FlowFixMe
 import {EditorState} from 'draft-js';
@@ -18,12 +19,19 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation';
+import deserialize from 'universal/utils/draftjs/deserialize';
 import ui from 'universal/styles/ui';
+
+// Helpers
+
+const forPhaseItem = (retroPhaseItemId: string, reflections: Array<TeamFragment>) => (
+  reflections
+    .filter((reflection) => reflection.retroPhaseItemId === retroPhaseItemId)
+);
 
 // Actions
 
 const handleClickAddReflection = (environment: Environment, meetingId: string, retroPhaseItemId: string) => {
-  console.log(`Action: adding reflection to retroPhaseItem "${retroPhaseItemId}".`);
   CreateReflectionMutation(environment, {
     meetingId,
     retroPhaseItemId,
@@ -71,29 +79,34 @@ type Props = {
 };
 
 const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: Props) => (
-  <ColumnWrapper>
-    <TypeHeader>
-      <TypeTitle>{retroPhaseItem.title.toUpperCase()}</TypeTitle>
-      <TypeDescription>{retroPhaseItem.question}</TypeDescription>
-    </TypeHeader>
-    <ReflectionsArea>
-      {newMeeting && newMeeting.reflections && newMeeting.reflections.map((reflection) => (
-        reflection.isViewerCreator ? (
-          <ReflectionCard
-            handleDelete={() => handleDelete(reflection.id)}
-            handleSave={(editorState: EditorState) => handleSave(reflection.id, editorState)}
-            id={reflection.id}
-            contentState={reflection.content}
-            key={reflection.id}
-          />
-        ) : (
-          // TODO - needs isEditing, which is unavailable on RetroThought type
-          <AnonymousReflectionCard content={reflection.content} key={reflection.id} />
-        )
-      ))}
-      <AddReflectionButton handleClick={() => handleClickAddReflection(atmosphere, newMeeting.id, retroPhaseItem.id)} />
-    </ReflectionsArea>
-  </ColumnWrapper>
+  newMeeting && (
+    <ColumnWrapper>
+      <TypeHeader>
+        <TypeTitle>{retroPhaseItem.title.toUpperCase()}</TypeTitle>
+        <TypeDescription>{retroPhaseItem.question}</TypeDescription>
+      </TypeHeader>
+      <ReflectionsArea>
+        {newMeeting.reflections && forPhaseItem(retroPhaseItem.id, newMeeting.reflections).map((reflection) => (
+          <div style={{margin: '0.5rem'}} key={reflection.id}>
+            {reflection.isViewerCreator ? (
+              <ReflectionCard
+                handleDelete={() => handleDelete(reflection.id)}
+                handleSave={(editorState: EditorState) => handleSave(reflection.id, editorState)}
+                id={reflection.id}
+                contentState={deserialize(reflection.content)}
+              />
+            ) : (
+              // TODO - needs isEditing, which is unavailable on RetroThought type
+              <AnonymousReflectionCard content={reflection.content} />
+            )}
+          </div>
+        ))}
+        <div style={{margin: '0.5rem'}}>
+          <AddReflectionButton handleClick={() => handleClickAddReflection(atmosphere, newMeeting.id, retroPhaseItem.id)} />
+        </div>
+      </ReflectionsArea>
+    </ColumnWrapper>
+  )
 );
 
 export default createFragmentContainer(
@@ -113,6 +126,7 @@ export default createFragmentContainer(
             id
             isViewerCreator
             content
+            retroPhaseItemId
           }
         }
       }
