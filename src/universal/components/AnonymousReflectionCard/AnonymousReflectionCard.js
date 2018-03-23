@@ -76,6 +76,7 @@ class AnonymousReflectionCard extends Component<Props, State> {
             <BlurredDiv>
               <EditorInputWrapper
                 editorState={EditorState.createWithContent(obfuscatedContentState)}
+                setEditorState={() => {}}
                 readOnly
               />
             </BlurredDiv>

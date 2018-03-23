@@ -65,6 +65,9 @@ export const createReflectionUpdater = (payload: RecordProxy, store: RecordSourc
   if (!reflections) {
     return;
   }
+  if (reflections.find((r) => r.getValue('id') === reflection.getValue('id'))) {
+    return;
+  }
   const newReflections = [...reflections, reflection].sort((a, b) => {
     const sortOrderA = a.getValue('sortOrder');
     const sortOrderB = b.getValue('sortOrder');
