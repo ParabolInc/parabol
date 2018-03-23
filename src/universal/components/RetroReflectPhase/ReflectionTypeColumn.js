@@ -127,7 +127,7 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
                 contentState={deserialize(reflection.content)}
               />
             ) : (
-              <AnonymousReflectionCard content={deserialize(reflection.content).getPlainText()} isEditing={reflection.isEditing} />
+              <AnonymousReflectionCard contentState={deserialize(reflection.content)} isEditing={reflection.isEditing} />
             )}
           </div>
         ))}

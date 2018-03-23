@@ -199,7 +199,10 @@ export default class ReflectionCard extends Component<Props, State> {
             setEditorState={this.setEditorState}
           />
         ) : (
-          <div>{editorState.getCurrentContent().getPlainText()}</div>
+          <EditorInputWrapper
+            editorState={editorState}
+            readOnly
+          />
         )}
       </div>
     );
