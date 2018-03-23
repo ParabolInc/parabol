@@ -1,14 +1,36 @@
-<svg width="14" height="14" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="44" height="44" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <title>avatar-user</title>
 <desc>Created using Figma</desc>
-<g id="Canvas" transform="translate(-4547 290)">
+<g id="Canvas" transform="translate(-317 -301)">
 <g id="avatar-user">
-<g id="&#239;&#138;&#190;">
-<use xlink:href="#path0_fill" transform="translate(4547 -290)" fill="#B3B5C4"/>
+<g id="Symbols">
+<g id="New user icon avatar">
+<g id="avatar user">
+<mask id="mask0_alpha" mask-type="alpha">
+<g id="mask 2">
+<g id="Vector">
+<use xlink:href="#path0_fill" transform="translate(317 301)" fill="#FFFFFF"/>
+</g>
+</g>
+</mask>
+<g id="Oval" mask="url(#mask0_alpha)">
+<use xlink:href="#path1_fill" transform="translate(318 302)" fill="#FFFFFF"/>
+</g>
+<g id="Oval" mask="url(#mask0_alpha)">
+<use xlink:href="#path2_fill" transform="translate(317 301)" fill="#B6ADC7"/>
+</g>
+<g id="&#239;&#128;&#135;" mask="url(#mask0_alpha)">
+<use xlink:href="#path3_fill" transform="translate(324 309)" fill="#B6ADC7"/>
+</g>
+</g>
+</g>
 </g>
 </g>
 </g>
 <defs>
-<path id="path0_fill" d="M 7 0C 3.13281 0 0 3.13281 0 7C 0 10.8516 3.125 14 7 14C 10.8828 14 14 10.8438 14 7C 14 3.13281 10.8672 0 7 0ZM 11.8359 10.5547C 11.5547 9.15625 10.875 8 9.44531 8C 8.8125 8.61719 7.95313 9 7 9C 6.04687 9 5.1875 8.61719 4.55469 8C 3.125 8 2.44531 9.15625 2.16406 10.5547C 1.4375 9.55469 1 8.32812 1 7C 1 3.69531 3.69531 1 7 1C 10.3047 1 13 3.69531 13 7C 13 8.32812 12.5625 9.55469 11.8359 10.5547ZM 10 5.5C 10 7.15625 8.65625 8.5 7 8.5C 5.34375 8.5 4 7.15625 4 5.5C 4 3.84375 5.34375 2.5 7 2.5C 8.65625 2.5 10 3.84375 10 5.5Z"/>
+<path id="path0_fill" d="M 22 44C 34.1503 44 44 34.1503 44 22C 44 9.84974 34.1503 0 22 0C 9.84974 0 0 9.84974 0 22C 0 34.1503 9.84974 44 22 44Z"/>
+<path id="path1_fill" d="M 21 42C 32.598 42 42 32.598 42 21C 42 9.40202 32.598 0 21 0C 9.40202 0 0 9.40202 0 21C 0 32.598 9.40202 42 21 42Z"/>
+<path id="path2_fill" d="M 22 42C 33.0457 42 42 33.0457 42 22C 42 10.9543 33.0457 2 22 2C 10.9543 2 2 10.9543 2 22C 2 33.0457 10.9543 42 22 42ZM 22 44C 9.84974 44 0 34.1503 0 22C 0 9.84974 9.84974 0 22 0C 34.1503 0 44 9.84974 44 22C 44 34.1503 34.1503 44 22 44Z"/>
+<path id="path3_fill" fill-rule="evenodd" d="M 30 29.7891C 30 23.625 28.4766 16.5 22.336 16.5C 20.4375 18.3516 17.8594 19.5 15 19.5C 12.1406 19.5 9.56251 18.3516 7.66407 16.5C 1.52344 16.5 0 23.625 0 29.7891C 0 33.211 2.25 36 4.99219 36L 25.0078 36C 27.75 36 30 33.211 30 29.7891ZM 24 9.00001C 24 4.03125 19.9688 -2.37484e-07 15 -2.37484e-07C 10.0313 -2.37484e-07 6.00001 4.03125 6.00001 9.00001C 6.00001 13.9688 10.0313 18 15 18C 19.9688 18 24 13.9688 24 9.00001Z"/>
 </defs>
 </svg>
