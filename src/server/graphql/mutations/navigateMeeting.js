@@ -7,6 +7,7 @@ import {sendNotMeetingFacilitatorError} from 'server/utils/authorizationErrors';
 import NavigateMeetingPayload from 'server/graphql/types/NavigateMeetingPayload';
 import {sendMeetingNotFoundError, sendStageNotFoundError} from 'server/utils/docNotFoundErrors';
 import findStageById from 'universal/utils/meetings/findStageById';
+import handleCompletedStage from 'server/graphql/mutations/helpers/handleCompletedStage';
 
 export default {
   type: NavigateMeetingPayload,
@@ -45,9 +46,13 @@ export default {
       const completedStageRes = findStageById(phases, completedStageId);
       if (!completedStageRes) return sendStageNotFoundError(authToken, completedStageId);
       const {stage} = completedStageRes;
-      // MUTATIVE
-      stage.isComplete = true;
-      stage.endAt = now;
+      if (!stage.isComplete) {
+        // MUTATIVE
+        stage.isComplete = true;
+        stage.endAt = now;
+        // handle any side effects
+        handleCompletedStage(stage, meeting);
+      }
     }
     if (facilitatorStageId) {
       const facilitatorStageRes = findStageById(phases, facilitatorStageId);

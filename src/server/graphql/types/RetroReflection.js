@@ -1,10 +1,11 @@
-import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import {getUserId} from 'server/utils/authorization';
 import {resolveForSU} from 'server/graphql/resolvers';
+import GoogleAnalyzedEntity from 'server/graphql/types/GoogleAnalyzedEntity';
 
 const RetroReflection = new GraphQLObjectType({
   name: 'RetroReflection',
@@ -13,6 +14,11 @@ const RetroReflection = new GraphQLObjectType({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
+    },
+    autoReflectionGroupId: {
+      type: GraphQLID,
+      description: 'The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()',
+      resolve: resolveForSU('autoGroupThreshold')
     },
     createdAt: {
       type: GraphQLISO8601Type,
@@ -38,6 +44,11 @@ const RetroReflection = new GraphQLObjectType({
     content: {
       description: 'The stringified draft-js content',
       type: GraphQLString
+    },
+    entities: {
+      description: 'The entities (i.e. nouns) parsed from the content and their respective salience',
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GoogleAnalyzedEntity))),
+      resolve: resolveForSU('entities')
     },
     meetingId: {
       type: GraphQLID,

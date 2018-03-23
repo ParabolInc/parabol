@@ -11,7 +11,6 @@ import Team from 'server/graphql/types/Team';
 import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import Assignee from 'server/graphql/types/Assignee';
-import MeetingMember from 'server/graphql/types/MeetingMember';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 const TeamMember = new GraphQLObjectType({
@@ -76,7 +75,7 @@ const TeamMember = new GraphQLObjectType({
       }
     },
     meetingMember: {
-      type: MeetingMember,
+      type: require('./MeetingMember').default,
       description: 'The meeting specifics for the meeting the team member is currently in',
       args: {
         meetingId: {

@@ -55,8 +55,7 @@ export default {
       smartTitle,
       title,
       updatedAt: now,
-      voterIds: [],
-      sortOrder: reflections[0].sortOrder
+      voterIds: []
     };
 
     await r({
