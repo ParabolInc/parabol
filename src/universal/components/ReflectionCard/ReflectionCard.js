@@ -23,6 +23,10 @@ export type Props = {|
   handleDelete?: () => any,
   // The action to take when this card is saved
   handleSave?: (editorState: EditorState) => any,
+  // A hook for any effects to perform when the user "starts editing" this card e.g. it gains focus
+  handleStartEditing?: () => any,
+  // A hook for any effects to perform when the user "stops editing" this card e.g. it loses focus
+  handleStopEditing?: () => any,
   // True when this card is being hovered over by a valid drag source
   hovered?: boolean,
   // True when the current user is the one dragging this card
@@ -108,6 +112,23 @@ export default class ReflectionCard extends Component<Props, State> {
     }
   };
 
+  handleEditorBlur = () => {
+    const {handleSave, handleStopEditing} = this.props;
+    if (handleSave) {
+      handleSave(this.getEditorState());
+    }
+    if (handleStopEditing) {
+      handleStopEditing();
+    }
+  };
+
+  handleEditorFocus = () => {
+    const {handleStartEditing} = this.props;
+    if (handleStartEditing) {
+      handleStartEditing();
+    }
+  };
+
   saveDeleteButton = (deleteButton: ?HTMLButtonElement) => {
     this.deleteButton = deleteButton;
   };
@@ -172,7 +193,8 @@ export default class ReflectionCard extends Component<Props, State> {
             ariaLabel="Edit this reflection"
             editorState={editorState}
             handleReturn={() => 'not-handled'}
-            onBlur={handleSave && (() => handleSave(editorState))}
+            onBlur={this.handleEditorBlur}
+            onFocus={this.handleEditorFocus}
             placeholder="My reflection thought..."
             setEditorState={this.setEditorState}
           />

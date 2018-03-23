@@ -15,6 +15,7 @@ import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMuta
 import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMutation';
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
 import {updateReflectionContentUpdater} from 'universal/mutations/UpdateReflectionContentMutation';
+import {updateReflectionIsEditingUpdater} from 'universal/mutations/UpdateReflectionIsEditingMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -41,6 +42,7 @@ const subscription = graphql`
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
+      ...UpdateReflectionIsEditingMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
     }
@@ -134,8 +136,11 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'UpdateCheckInQuestionPayload':
           break;
-        case 'UpdateReflectionContentMutation':
+        case 'UpdateReflectionContentPayload':
           updateReflectionContentUpdater(payload, store);
+          break;
+        case 'UpdateReflectionIsEditingPayload':
+          updateReflectionIsEditingUpdater(payload, store);
           break;
         case 'UpgradeToProPayload':
           break;

@@ -28,6 +28,10 @@ const RetroReflection = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'True if the reflection was not removed, else false'
     },
+    isEditing: {
+      description: 'Whether or not this reflection is currently being edited by a teammate',
+      type: new GraphQLNonNull(GraphQLBoolean)
+    },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
       type: GraphQLBoolean,

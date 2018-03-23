@@ -28,7 +28,7 @@ const AnonymousReflectionCard = ({content, isEditing}: Props) => {
   return (
     <ReflectionCardWrapper>
       <ReflectionContents>
-        {isEditing
+        {isEditing || !content || !content.length
           ? 'Somebody is typing...'
           : content && <BlurredDiv>{content}</BlurredDiv>
         }

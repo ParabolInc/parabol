@@ -35,7 +35,7 @@ const mutation = graphql`
   }
 `;
 
-export const updateReflectionContentUpdater = (payload: RecordSourceProxy, store: RecordSourceSelectorProxy) => {
+export const updateReflectionContentUpdater = (payload: ?RecordSourceProxy, store: RecordSourceSelectorProxy) => {
   if (!payload) {
     return;
   }

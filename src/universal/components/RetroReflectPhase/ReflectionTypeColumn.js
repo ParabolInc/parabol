@@ -20,6 +20,7 @@ import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCar
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation';
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation';
+import UpdateReflectionIsEditingMutation from 'universal/mutations/UpdateReflectionIsEditingMutation';
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation';
 import deserialize from 'universal/utils/draftjs/deserialize';
 import serialize from 'universal/utils/draftjs/serialize';
@@ -55,6 +56,22 @@ const handleSave = (environment: Environment, reflectionId: string, meetingId: s
   UpdateReflectionContentMutation(
     environment,
     {reflectionId, content},
+    meetingId
+  );
+};
+
+const handleStartEditing = (environment: Environment, reflectionId: string, meetingId: string) => {
+  UpdateReflectionIsEditingMutation(
+    environment,
+    {reflectionId, isEditing: true},
+    meetingId
+  );
+};
+
+const handleStopEditing = (environment: Environment, reflectionId: string, meetingId: string) => {
+  UpdateReflectionIsEditingMutation(
+    environment,
+    {reflectionId, isEditing: false},
     meetingId
   );
 };
@@ -104,12 +121,13 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
               <ReflectionCard
                 handleDelete={() => handleDelete(atmosphere, reflection.id, newMeeting.id)}
                 handleSave={(editorState: EditorState) => handleSave(atmosphere, reflection.id, newMeeting.id, editorState)}
+                handleStartEditing={() => handleStartEditing(atmosphere, reflection.id, newMeeting.id)}
+                handleStopEditing={() => handleStopEditing(atmosphere, reflection.id, newMeeting.id)}
                 id={reflection.id}
                 contentState={deserialize(reflection.content)}
               />
             ) : (
-              // TODO - needs isEditing, which is unavailable on RetroThought type
-              <AnonymousReflectionCard content={deserialize(reflection.content).getPlainText()} />
+              <AnonymousReflectionCard content={deserialize(reflection.content).getPlainText()} isEditing={reflection.isEditing} />
             )}
           </div>
         ))}
@@ -136,6 +154,7 @@ export default createFragmentContainer(
         ...on RetrospectiveMeeting {
           reflections {
             id
+            isEditing
             isViewerCreator
             content
             retroPhaseItemId
