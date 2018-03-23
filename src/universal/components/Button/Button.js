@@ -194,7 +194,7 @@ class Button extends Component {
       styles.propColors,
       hasDisabledStyles && styles.disabled,
       !hasDisabledStyles && pressedDown && styles.pressedDown,
-      waiting && styles.wait
+      waiting && styles.waiting
     );
 
     const makeIconLabel = () => {
@@ -270,6 +270,9 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
       },
       ':focus': {
         boxShadow: !disabled && ui.shadow[depth + 1]
+      },
+      ':active': {
+        boxShadow: !disabled && ui.shadow[depth + 1]
       }
     },
 
@@ -311,11 +314,22 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
     },
 
     pressedDown: {
-      boxShadow: ui.shadow[depth - 1],
-      transform: 'translate(0, .125rem)'
+      transform: 'translate(0, .125rem)',
+      ':hover': {
+        boxShadow: ui.shadow[depth] || 'none'
+      },
+      ':focus': {
+        boxShadow: ui.shadow[depth] || 'none'
+      },
+      ':active': {
+        boxShadow: ui.shadow[depth] || 'none'
+      },
+      ':disabled': {
+        boxShadow: 'none'
+      }
     },
 
-    wait: {
+    waiting: {
       ...ui.buttonDisabledStyles,
       cursor: 'wait'
     }
