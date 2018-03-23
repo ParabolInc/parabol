@@ -66,6 +66,7 @@ const TeamCallToAction = ({history, teamId}: Props) => {
           maxWidth={208}
           maxHeight={225}
           originAnchor={originAnchor}
+          queryVars={{teamId}}
           targetAnchor={targetAnchor}
           toggle={buttonToggle}
         /> :
