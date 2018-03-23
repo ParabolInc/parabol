@@ -71,7 +71,7 @@ export const createReflectionUpdater = (payload: RecordProxy, store: RecordSourc
   const newReflections = [...reflections, reflection].sort((a, b) => {
     const sortOrderA = a.getValue('sortOrder');
     const sortOrderB = b.getValue('sortOrder');
-    return sortOrderB - sortOrderA;
+    return sortOrderA - sortOrderB;
   });
   meeting.setLinkedRecords(newReflections, 'reflections');
 };

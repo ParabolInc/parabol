@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import type {RetroPhaseItem, Team} from 'universal/types/schema.flow';
+import type {RetroPhaseItem, RetroReflection, Team} from 'universal/types/schema.flow';
 import type TeamFragment from './__generated__/ReflectionTypeColumn_team.graphql';
 
 // $FlowFixMe
@@ -24,6 +24,7 @@ import UpdateReflectionIsEditingMutation from 'universal/mutations/UpdateReflect
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation';
 import deserialize from 'universal/utils/draftjs/deserialize';
 import serialize from 'universal/utils/draftjs/serialize';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import ui from 'universal/styles/ui';
 
 // Helpers
@@ -35,11 +36,16 @@ const forPhaseItem = (retroPhaseItemId: string, reflections: Array<TeamFragment>
 
 // Actions
 
-const handleClickAddReflection = (environment: Environment, meetingId: string, retroPhaseItemId: string) => {
+const handleClickAddReflection = (
+  environment: Environment,
+  meetingId: string,
+  retroPhaseItemId: string,
+  reflections: Array<RetroReflection>
+) => {
   CreateReflectionMutation(environment, {
     meetingId,
     retroPhaseItemId,
-    sortOrder: 0
+    sortOrder: getNextSortOrder(reflections)
   });
 };
 
@@ -132,7 +138,11 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
           </div>
         ))}
         <div style={{margin: '0.7rem 0.7rem 0 0'}}>
-          <AddReflectionButton handleClick={() => handleClickAddReflection(atmosphere, newMeeting.id, retroPhaseItem.id)} />
+          <AddReflectionButton
+            handleClick={() => handleClickAddReflection(
+              atmosphere, newMeeting.id, retroPhaseItem.id, newMeeting.reflections || []
+            )}
+          />
         </div>
       </ReflectionsArea>
     </ColumnWrapper>
@@ -153,11 +163,12 @@ export default createFragmentContainer(
         id
         ...on RetrospectiveMeeting {
           reflections {
+            content
             id
             isEditing
             isViewerCreator
-            content
             retroPhaseItemId
+            sortOrder
           }
         }
       }
