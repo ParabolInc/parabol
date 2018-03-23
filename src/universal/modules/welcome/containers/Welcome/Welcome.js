@@ -6,6 +6,7 @@ import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
 import welcomeReducer, {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import withReducer from '../../../../decorators/withReducer/withReducer';
 import {createFragmentContainer} from 'react-relay';
+import {withRouter} from 'react-router-dom';
 
 const selector = formValueSelector('welcomeWizard');
 const rawSelector = formValueSelector('welcomeWizardRawInvitees');
@@ -67,7 +68,7 @@ WelcomeContainer.propTypes = {
 export default createFragmentContainer(
   withReducer({welcome: welcomeReducer})(
     connect(mapStateToProps)(
-      WelcomeContainer
+      withRouter(WelcomeContainer)
     )
   ),
   graphql`

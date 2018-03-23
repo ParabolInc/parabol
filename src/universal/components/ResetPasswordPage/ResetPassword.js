@@ -6,9 +6,7 @@
 
 import React, {Fragment} from 'react';
 import styled from 'react-emotion';
-
-import PlainButton from 'universal/components/PlainButton/PlainButton';
-import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
+import {ErrorAlert, PlainButton} from 'universal/components';
 import PasswordResetForm from './ResetPasswordForm';
 
 type Props = {
@@ -19,8 +17,9 @@ type Props = {
 };
 
 const P = styled('p')({
-  textAlign: 'center',
-  margin: '1rem 0'
+  lineHeight: 1.5,
+  margin: '1rem 0',
+  textAlign: 'center'
 });
 
 const LinkButton = styled(PlainButton)({
@@ -32,15 +31,19 @@ const PasswordReset = (props: Props) => (
     {props.error && <ErrorAlert message={props.error} />}
     {props.emailSent ? (
       <Fragment>
-        <P>You’re all set!</P>
-        <P>We’ve sent you an email with password recovery instructions.</P>
+        <P>{'You’re all set!'}</P>
+        <P>{'We’ve sent you an email with password recovery instructions.'}</P>
         <P>
-          Didn’t get it? Check your spam folder, or <LinkButton onClick={props.tryAgain}>click here</LinkButton> to try again.
+          {'Didn’t get it? Check your spam folder, or '}<LinkButton onClick={props.tryAgain}>click here</LinkButton>{' to try again.'}
         </P>
       </Fragment>
     ) : (
       <Fragment>
-        <P>Confirm your email address, and we’ll send you an email with password recovery instructions.</P>
+        <P>
+          {'Confirm your email address, and we’ll send you '}
+          <br />
+          {'an email with password recovery instructions.'}
+        </P>
         <PasswordResetForm onSubmit={props.handleSubmitResetPassword} />
       </Fragment>
     )}

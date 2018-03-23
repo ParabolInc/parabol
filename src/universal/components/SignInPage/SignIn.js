@@ -4,13 +4,13 @@
  * @flow
  */
 import type {ThirdPartyAuthProvider, Credentials} from 'universal/types/auth';
-
 import React, {Fragment} from 'react';
-
-import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
-import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
-import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
-import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton';
+import {
+  AuthHeader,
+  ErrorAlert,
+  HorizontalSeparator,
+  ThirdPartyAuthButton
+} from 'universal/components';
 import SignInEmailPasswordForm from './SignInEmailPasswordForm';
 
 type Props = {
@@ -36,7 +36,7 @@ export default (props: Props) => (
         handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
       />
     ))}
-    <HorizontalSeparator text="or" />
+    <HorizontalSeparator margin="1rem 0 0" text="or" />
     {props.error &&
       <ErrorAlert message={props.error} />
     }

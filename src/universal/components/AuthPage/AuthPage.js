@@ -3,13 +3,11 @@
  *
  * @flow
  */
-
 import type {Node} from 'react';
-
 import React from 'react';
 import styled from 'react-emotion';
-
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Header from './Header';
 
@@ -19,10 +17,13 @@ type Props = {
 };
 
 const PageContainer = styled('div')({
+  alignItems: 'center',
+  backgroundColor: ui.backgroundColor,
   color: appTheme.palette.dark,
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center'
+  maxWidth: '100%',
+  minHeight: '100vh'
 });
 
 const CenteredBlock = styled('div')({
@@ -30,6 +31,8 @@ const CenteredBlock = styled('div')({
   flexDirection: 'column',
   alignItems: 'center',
   height: '100%',
+  maxWidth: '100%',
+  padding: '0 1rem 2rem',
   width: '30rem'
 });
 

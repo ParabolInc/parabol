@@ -15,14 +15,13 @@ const CallOutPanel = (props) => {
     styles
   } = props;
 
-  const hasHeader = Boolean(panelLabel);
   const panelBodyStyles = css(
     styles.panelBody,
-    hasHeader && styles.panelBodyWithHeader
+    panelLabel && styles.panelBodyWithHeader
   );
 
   return (
-    <Panel hasHeader={hasHeader} label={panelLabel}>
+    <Panel label={panelLabel}>
       <div className={panelBodyStyles}>
         <Type align="center" bold marginBottom=".5rem" scale="s6">
           {heading}

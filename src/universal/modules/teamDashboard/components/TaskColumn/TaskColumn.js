@@ -237,7 +237,6 @@ class TaskColumn extends Component {
 
 const styleThunk = () => ({
   column: {
-    // borderLeft: `2px dashed ${ui.dashBorderColor}`,
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
@@ -247,7 +246,7 @@ const styleThunk = () => ({
   },
 
   columnFirst: {
-    borderLeft: 0
+    // keeping this around, we may need it (TA)
   },
 
   columnLast: {
@@ -258,8 +257,12 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
-    padding: '.625rem .625rem .5rem',
-    position: 'relative'
+    padding: `.625rem ${ui.taskColumnPaddingInnerSmall} .5rem`,
+    position: 'relative',
+    [ui.dashBreakpoint]: {
+      paddingLeft: ui.taskColumnPaddingInnerLarge,
+      paddingRight: ui.taskColumnPaddingInnerLarge
+    }
   },
 
   columnBody: {
@@ -272,9 +275,13 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    padding: `.125rem ${ui.taskColumnPaddingInner} 0`,
+    padding: `.125rem ${ui.taskColumnPaddingInnerSmall} 0`,
     position: 'absolute',
-    width: '100%'
+    width: '100%',
+    [ui.dashBreakpoint]: {
+      paddingLeft: ui.taskColumnPaddingInnerLarge,
+      paddingRight: ui.taskColumnPaddingInnerLarge
+    }
   },
 
   statusLabelBlock: {

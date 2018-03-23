@@ -10,6 +10,7 @@ import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import FieldShortcutHint from 'universal/components/FieldShortcutHint/FieldShortcutHint';
 
 const underlineStyles = {
+  backgroundColor: 'transparent',
   borderLeftColor: 'transparent !important',
   borderRightColor: 'transparent !important',
   borderTopColor: 'transparent !important',

@@ -6,7 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import logoMarkPrimary from 'universal/styles/theme/images/brand/mark-primary.svg';
 import logoMarkWhite from 'universal/styles/theme/images/brand/mark-white.svg';
 
-const Block = styled('div')(({variant}) => ({
+const RootBlock = styled('div')(({variant}) => ({
   alignItems: 'center',
   borderTop: variant === 'primary' && `.0625rem solid ${appTheme.palette.mid10a}`,
   boxSizing: 'content-box',
@@ -28,11 +28,11 @@ const LogoBlock = (props) => {
   const {variant} = props;
   const logoSrc = variant === 'primary' ? logoMarkPrimary : logoMarkWhite;
   return (
-    <Block>
+    <RootBlock variant={variant}>
       <Anchor href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
         <Image alt="Parabol" src={logoSrc} />
       </Anchor>
-    </Block>
+    </RootBlock>
   );
 };
 

@@ -26,14 +26,14 @@ const LoadingView = (props) => {
   const duckStyles = [pato0, pato1, pato2];
   return (
     <div className={css(styles.root)}>
-      <h1 className={css(styles.heading)}>Welcome to Parabol!</h1>
+      <h1 className={css(styles.heading)}>{'Welcome to Parabol!'}</h1>
       {duckStyles.map((delayClass, idx) =>
         (<LoadingDuck
           className={css(delayClass, styles.patoStyles)}
           key={idx} // eslint-disable-line react/no-array-index-key
         />)
       )}
-      <h2 className={css(styles.message)}>Just putting our ducks in a row…</h2>
+      <h2 className={css(styles.message)}>{'Just putting our ducks in a row…'}</h2>
       {children}
     </div>
   );

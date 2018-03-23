@@ -4,14 +4,16 @@
  * @flow
  */
 import type {RouterHistory} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import type {TeamID} from 'universal/types/team';
-
 import React from 'react';
 import styled from 'react-emotion';
-import {withRouter} from 'react-router-dom';
-
-import Button from 'universal/components/Button/Button';
+import {Button} from 'universal/components';
 import ui from 'universal/styles/ui';
+import LoadableTeamCallsToActionMenu from 'universal/modules/teamDashboard/components/TeamCallsToAction/LoadableTeamCallsToActionMenu';
+import LoadableMenu from 'universal/components/LoadableMenu';
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
+import {ACTION} from 'universal/utils/constants';
 
 type Props = {
   teamId: TeamID,
@@ -21,25 +23,54 @@ type Props = {
 const ButtonGroup = styled('div')({
   display: 'flex',
   minWidth: '14rem',
-  paddingLeft: ui.dashGutter
+  paddingLeft: ui.dashGutterSmall,
+
+  [ui.dashBreakpoint]: {
+    minWidth: '13rem',
+    paddingLeft: ui.dashGutterLarge
+  }
 });
 
-const ButtonBlock = styled('div')({
-  margin: '0 .5em',
-  width: '100%'
-});
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
 
 const TeamCallToAction = ({history, teamId}: Props) => {
-  const goToMeetingLobby = () =>
-    history.push(`/meeting/${teamId}/`);
-
-  const goToRetroLobby = () =>
-    history.push(`/retro/${teamId}/`);
+  const goToMeetingLobby = () => {
+    const slug = meetingTypeToSlug[ACTION];
+    history.push(`/${slug}/${teamId}/`);
+  };
+  const buttonToggle = (
+    <Button
+      buttonSize="small"
+      buttonStyle="primary"
+      colorPalette="warm"
+      icon="chevron-down"
+      iconPlacement="right"
+      isBlock
+      label="Start Meeting"
+    />
+  );
 
   return (
     <ButtonGroup>
-      <ButtonBlock>
+      {__RELEASE_FLAGS__.retro ?
+        <LoadableMenu
+          LoadableComponent={LoadableTeamCallsToActionMenu}
+          maxWidth={208}
+          maxHeight={225}
+          originAnchor={originAnchor}
+          targetAnchor={targetAnchor}
+          toggle={buttonToggle}
+        /> :
         <Button
+          buttonSize="small"
           buttonStyle="primary"
           colorPalette="warm"
           icon="users"
@@ -47,21 +78,7 @@ const TeamCallToAction = ({history, teamId}: Props) => {
           isBlock
           label="Start Action Meeting"
           onClick={goToMeetingLobby}
-          buttonSize="small"
         />
-      </ButtonBlock>
-      {__RELEASE_FLAGS__.retro &&
-        <ButtonBlock>
-          <Button
-            buttonStyle="primary"
-            colorPalette="warm"
-            icon="users"
-            iconPlacement="left"
-            label="Start Retrospective"
-            onClick={goToRetroLobby}
-            buttonSize="small"
-          />
-        </ButtonBlock>
       }
     </ButtonGroup>
   );

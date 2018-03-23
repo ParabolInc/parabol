@@ -2,6 +2,7 @@
 import React, {Component} from 'react';
 
 import type {Match, RouterHistory} from 'react-router-dom';
+import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import {withRouter} from 'react-router-dom';
 import {createFragmentContainer} from 'react-relay';
 import findKeyByValue from 'universal/utils/findKeyByValue';
@@ -9,7 +10,6 @@ import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/looku
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {withLocationMeetingState_viewer as Viewer} from './__generated__/NewMeetingWithLocalState_viewer.graphql';
 import NewMeeting from 'universal/components/NewMeeting';
-import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 import getIsNavigable from 'universal/utils/meetings/getIsNavigable';

@@ -42,8 +42,8 @@ class EditorLinkViewer extends Component {
         <span className={css(styles.url)}>
           <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
         </span>
-        <Button buttonStyle="flat" buttonSize="small" colorPalette="warm" label="Change" onClick={changeLink} />
-        <Button buttonStyle="flat" buttonSize="small" colorPalette="warm" label="Remove" onClick={handleRemove} />
+        <Button buttonStyle="flat" buttonSize="small" colorPalette="mid" label="Change" onClick={changeLink} />
+        <Button buttonStyle="flat" buttonSize="small" colorPalette="mid" label="Remove" onClick={handleRemove} />
       </div>
     );
   }

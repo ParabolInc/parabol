@@ -9,14 +9,11 @@ import type {Node} from 'react';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
 import type {AuthResponse, Credentials} from 'universal/types/auth';
-
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
-
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
-import AuthPage from 'universal/components/AuthPage/AuthPage';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {AuthPage, LoadingView} from 'universal/components';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';

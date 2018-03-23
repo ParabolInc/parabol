@@ -40,7 +40,7 @@ class TeamArchiveSqueeze extends Component {
     };
     return (
       <div className={css(styles.archiveSqueezeOuter)}>
-        <Panel bgTheme="light" depth={0} hasHeader={false}>
+        <Panel bgTheme="light" depth={0}>
           <div className={css(styles.archiveSqueezeInner)}>
             <div className={css(styles.archiveSqueezeContent)}>
               <h2 className={css(styles.archiveSqueezeHeading)}>

@@ -10,7 +10,8 @@ import {
   DashContent,
   DashHeader,
   DashHeaderInfo,
-  DashMain
+  DashMain,
+  DashSearchControl
 } from 'universal/components/Dashboard';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
@@ -23,8 +24,14 @@ const UserDashMain = (props) => {
   return (
     <DashMain>
       <Helmet title="My Dashboard | Parabol" />
-      <DashHeader>
-        <DashHeaderInfo title="My Dashboard">
+      <DashHeader area="userDash">
+        <DashHeaderInfo>
+          {__RELEASE_FLAGS__.userDashFilter &&
+            <DashSearchControl
+              onChange={() => (console.log('DashSearchControl'))}
+              placeholder="Search My Tasks"
+            />
+          }
           <div className={css(styles.headerCopy)}>
             {makeDateString(new Date(), {showDay: true})}<br />
             <span className={css(styles.rallyLink)}>

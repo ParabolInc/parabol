@@ -9,6 +9,9 @@ import portal from 'react-portal-hoc';
 import Spinner from '../../../spinner/components/Spinner/Spinner';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
+/*
+ * DEPRECATED! Use MenuWithShortcuts instead. It has shortcut keys & accessibility & a delightful transition animation.
+ */
 const Menu = (props) => {
   const {
     children,

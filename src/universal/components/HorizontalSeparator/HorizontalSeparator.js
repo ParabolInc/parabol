@@ -8,17 +8,25 @@
 import React, {Fragment} from 'react';
 import styled from 'react-emotion';
 
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const SeparatorContainer = styled('div')({
+const SeparatorContainer = styled('div')(({margin}) => ({
+  color: ui.labelHeadingColor,
+  display: 'flex',
+  fontSize: ui.labelHeadingFontSize,
+  fontWeight: ui.labelHeadingFontWeight,
+  lineHeight: ui.labelHeadingLineHeight,
+  letterSpacing: ui.labelHeadingLetterSpacing,
+  margin,
   padding: '1rem 0',
-  display: 'flex'
-});
+  textTransform: 'uppercase'
+}));
 
 const separatorLineStyles = {
+  borderBottom: `0.0625rem solid ${appTheme.palette.mid20a}`,
   margin: 'auto',
-  width: '10rem',
-  borderBottom: `1px solid ${appTheme.palette.mid}`
+  width: '10rem'
 };
 
 const LeftSeparator = styled('div')({
@@ -37,11 +45,12 @@ const FullSeparator = styled('div')({
 });
 
 type Props = {
+  margin?: string,
   text?: string
 };
 
-export default ({text}: Props) => (
-  <SeparatorContainer>
+export default ({margin, text}: Props) => (
+  <SeparatorContainer margin={margin}>
     {text ? (
       <Fragment>
         <LeftSeparator />

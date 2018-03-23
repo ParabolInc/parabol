@@ -31,10 +31,6 @@ const Invitation = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'How many invites have been sent to this email address?'
     },
-    task: {
-      type: GraphQLString,
-      description: 'The task that the invitee is currently working on'
-    },
     teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team invited to'},
     tokenExpiration: {
       type: GraphQLISO8601Type,

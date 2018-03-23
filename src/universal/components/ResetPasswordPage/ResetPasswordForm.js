@@ -7,9 +7,7 @@
 import React from 'react';
 import styled from 'react-emotion';
 import {Field, reduxForm} from 'redux-form';
-
-import PrimaryButton from 'universal/components/PrimaryButton/PrimaryButton';
-import InputField from 'universal/components/InputField/InputField';
+import {InputField, Button} from 'universal/components';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 
@@ -25,28 +23,35 @@ const Form = styled('form')({
   flexDirection: 'column'
 });
 
-const FieldsContainer = styled('div')({
-  marginBottom: '2rem'
+const Block = styled('div')({
+  margin: '2rem 0 3rem',
+  width: '16rem'
 });
 
 const PasswordResetForm = (props: Props) => {
   return (
     <Form onSubmit={props.handleSubmit}>
-      <FieldsContainer>
+      <Block>
         <Field
           type="email"
           autoFocus
           component={InputField}
+          fieldSize="large"
           placeholder="you@company.co"
           label="Email:"
           name="email"
           underline
           disabled={props.submitting}
         />
-      </FieldsContainer>
-      <PrimaryButton disabled={!props.valid} waiting={props.submitting} type="submit">
-        {'Submit'}
-      </PrimaryButton>
+      </Block>
+      <Button
+        buttonSize="large"
+        buttonStyle="primary"
+        disabled={!props.valid}
+        label="Submit"
+        type="submit"
+        waiting={props.submitting}
+      />
     </Form>
   );
 };

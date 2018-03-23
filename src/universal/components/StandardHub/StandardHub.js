@@ -84,10 +84,9 @@ const StandardHub = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.user)}>
-        <Avatar hasBadge={false} picture={userAvatar} size="small" />
+        <Avatar hasBadge={false} picture={userAvatar} size="smaller" />
         <div className={css(styles.info)}>
           <div className={css(styles.name)}>{preferredName}</div>
-          <div className={css(styles.email)}>{email}</div>
         </div>
         {makeUserMenu()}
       </div>
@@ -120,8 +119,8 @@ const styleThunk = () => ({
     alignItems: 'center',
     borderBottom: ui.dashMenuBorder,
     display: 'flex',
-    minHeight: '4.875rem',
-    padding: '1rem',
+    minHeight: ui.dashHeaderMinHeight,
+    padding: '.5625rem 1rem',
     width: '100%'
   },
 
@@ -162,14 +161,6 @@ const styleThunk = () => ({
     lineHeight: '1.375rem',
     maxWidth,
     paddingTop: '.125rem'
-  },
-
-  email: {
-    ...textOverflow,
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.sBase,
-    marginTop: '.125rem',
-    maxWidth
   },
 
   notifications: {

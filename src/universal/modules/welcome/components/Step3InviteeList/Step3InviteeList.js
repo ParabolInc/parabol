@@ -26,11 +26,10 @@ const Step3InviteeList = (props) => {
 
     if (inviteeCount > 0) {
       const serverInvitees = invitees.map((invitee) => {
-        const {email, fullName, task} = invitee;
+        const {email, fullName} = invitee;
         return {
           email,
-          fullName,
-          task
+          fullName
         };
       });
       // We shouldn't need to wait until this mutation completes, but relay flags softTeamMembers for GC & then reruns
@@ -55,10 +54,8 @@ const Step3InviteeList = (props) => {
           <LabeledFieldArray
             existingInvites={existingInvites}
             invitees={invitees}
-            labelHeader="Invitee"
+            labelHeader="Invitees"
             labelSource="invitees"
-            nestedFieldHeader="This Week’s Priority (optional)"
-            nestedFieldName="task"
           />
         </div>
         <div style={{margin: '2rem 0 0', textAlign: 'center'}}>

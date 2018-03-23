@@ -42,7 +42,10 @@ storiesOf('Reflection Group', module)
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null},
                 {
                   id: newId(),
-                  content: ContentState.createFromText('This one has a lot to say! Fortunately it does not screw up the translation computation.'),
+                  content: ContentState.createFromText(`
+                    This one has a lot to say!
+                    Fortunately it does not screw up the translation computation.
+                  `),
                   stage: null
                 },
                 {id: newId(), content: ContentState.createFromText('Card'), stage: null}

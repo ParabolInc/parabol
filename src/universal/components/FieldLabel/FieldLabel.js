@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const FieldLabel = (props) => {
@@ -40,12 +39,14 @@ const styleThunk = (theme, {customStyles, fieldSize, indent, inline}) => {
   const useInlineStyles = (fieldSize && inline) && inlineStyles;
   return ({
     fieldLabel: {
-      color: appTheme.palette.dark,
+      color: ui.labelHeadingColor,
       display: 'block',
-      fontSize: appTheme.typography.sBase,
-      fontWeight: 600,
-      lineHeight: appTheme.typography.s5,
+      fontSize: ui.labelHeadingFontSize,
+      fontWeight: ui.labelHeadingFontWeight,
+      lineHeight: ui.labelHeadingLineHeight,
+      letterSpacing: ui.labelHeadingLetterSpacing,
       padding: 0,
+      textTransform: 'uppercase',
       // 1. Line up controls when inline
       ...useInlineStyles,
       // 2. Optionally line up left edge of text using indent bool

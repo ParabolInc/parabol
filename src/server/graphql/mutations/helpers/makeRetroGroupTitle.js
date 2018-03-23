@@ -16,7 +16,7 @@ const getSmartEntities = async (reflections) => {
   const content = reflections
     .map((reflection) => extractTextFromDraftString(reflection.content))
     .join('\n');
-  const client = new language.LanguageServiceClient({keyFilename: '../../../../../.googlecloudkey.json'});
+  const client = new language.LanguageServiceClient();
   const document = {
     content,
     type: 'PLAIN_TEXT'
