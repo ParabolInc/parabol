@@ -58,7 +58,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
     },
     voterIds: {
       type: new GraphQLList(GraphQLID),
-      description: 'A list of voterIds (teamMemberId or anonymousTeamMemberId). Not available to team to preserve anonymity',
+      description: 'A list of voterIds (userIds). Not available to team to preserve anonymity',
       resolve: resolveForSU('voterIds')
     },
     voteCount: {

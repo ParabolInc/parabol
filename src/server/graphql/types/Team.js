@@ -21,7 +21,7 @@ import {TaskConnection} from 'server/graphql/types/Task';
 import TeamMember from 'server/graphql/types/TeamMember';
 import TierEnum from 'server/graphql/types/TierEnum';
 import {PENDING} from 'server/utils/serverConstants';
-import {resolveOrganization} from 'server/graphql/resolvers';
+import {resolveNewMeeting, resolveOrganization} from 'server/graphql/resolvers';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
 import NewMeeting from 'server/graphql/types/NewMeeting';
@@ -139,9 +139,7 @@ const Team = new GraphQLObjectType({
     newMeeting: {
       type: NewMeeting,
       description: 'The new meeting in progress, if any',
-      resolve: ({meetingId}, args, {dataLoader}) => {
-        return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null;
-      }
+      resolve: resolveNewMeeting
     },
     tier: {
       type: TierEnum,

@@ -75,6 +75,8 @@ import updateReflectionLocation from 'server/graphql/mutations/updateReflectionL
 import removeReflection from 'server/graphql/mutations/removeReflection';
 import createReflectionGroup from 'server/graphql/mutations/createReflectionGroup';
 import updateReflectionGroupTitle from 'server/graphql/mutations/updateReflectionGroupTitle';
+import voteForReflectionGroup from 'server/graphql/mutations/voteForReflectionGroup';
+import newMeetingCheckIn from 'server/graphql/mutations/newMeetingCheckIn';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -119,6 +121,7 @@ export default new GraphQLObjectType({
     moveMeeting,
     moveTeamToOrg,
     navigateMeeting,
+    newMeetingCheckIn,
     promoteFacilitator,
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
@@ -153,6 +156,7 @@ export default new GraphQLObjectType({
     updateTask,
     updateTeamName,
     updateUserProfile,
+    voteForReflectionGroup,
     login,
     upgradeToPro
   })
