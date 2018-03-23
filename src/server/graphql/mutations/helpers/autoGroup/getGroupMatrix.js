@@ -61,7 +61,6 @@ const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
     }
   }
   return {thresh, group};
-  // TOOD build in fuzzy logic to rerun if we
 };
 
 export default getGroupMatrix;
