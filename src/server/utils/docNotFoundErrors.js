@@ -81,6 +81,15 @@ export const sendReflectionNotFoundError = (authToken, reflectionId, returnValue
   return sendAuthRaven(authToken, 'Reflection Not Found', breadcrumb, returnValue);
 };
 
+export const sendReflectionGroupNotFoundError = (authToken, reflectionGroupId, returnValue) => {
+  const breadcrumb = {
+    message: 'Reflection Group not found',
+    category: 'Not found',
+    data: {reflectionGroupId}
+  };
+  return sendAuthRaven(authToken, 'Reflection group Not Found', breadcrumb, returnValue);
+};
+
 export const sendPhaseItemNotFoundError = (authToken, retroPhaseItemId, returnValue) => {
   const breadcrumb = {
     message: 'That category is not found',

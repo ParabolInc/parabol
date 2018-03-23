@@ -128,6 +128,7 @@
   },
   "dependencies": {
     "@babel/plugin-syntax-export-default-from": "^7.0.0-beta.40",
+    "@google-cloud/language": "^1.2.0",
     "@segment/snippet": "^4.0.1",
     "analytics-node": "^3.0.0",
     "aphrodite-local-styles": "0.6.2",
@@ -224,6 +225,7 @@
     "shared-dataloader": "^0.2.0",
     "shortid": "^2.2.8",
     "string-score": "^1.0.1",
+    "string-similarity": "^1.2.0",
     "stripe": "^4.24.0",
     "subscriptions-transport-ws": "https://github.com/mattkrick/subscriptions-transport-ws/tarball/39100e7e6458a0831cd7c0f8cf0f12ea0482b399",
     "tinycolor2": "^1.4.1",

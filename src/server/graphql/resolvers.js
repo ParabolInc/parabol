@@ -1,4 +1,4 @@
-import {getUserId} from 'server/utils/authorization';
+import {getUserId, isSuperUser} from 'server/utils/authorization';
 import nullIfEmpty from 'universal/utils/nullIfEmpty';
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
@@ -126,6 +126,10 @@ export const resolveUser = ({userId, user}, args, {dataLoader}) => {
 
 
 /* Special resolvers */
+
+export const resolveForSU = (fieldName) => (source, args, {authToken}) => {
+  return isSuperUser(authToken) ? source[fieldName] : undefined;
+};
 
 export const makeResolve = (idName, docName, dataLoaderName) => (source, args, {dataLoader}) => {
   const idValue = source[idName];

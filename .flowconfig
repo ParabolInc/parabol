@@ -1,6 +1,7 @@
 [ignore]
 .*node_modules/.*reqwest/.*
 .*node_modules/.*draft-js/.*
+.*node_modules/grpc/*
 
 [include]
 

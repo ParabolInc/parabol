@@ -3,7 +3,8 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
-import {getUserId, isSuperUser} from 'server/utils/authorization';
+import {getUserId} from 'server/utils/authorization';
+import {resolveForSU} from 'server/graphql/resolvers';
 
 const RetroReflection = new GraphQLObjectType({
   name: 'RetroReflection',
@@ -20,9 +21,7 @@ const RetroReflection = new GraphQLObjectType({
     creatorId: {
       description: 'The userId that created the reflection (or unique Id if not a team member)',
       type: GraphQLID,
-      resolve: ({creatorId}, args, {authToken}) => {
-        return isSuperUser(authToken) ? creatorId : undefined;
-      }
+      resolve: resolveForSU('creatorId')
     },
     isActive: {
       type: GraphQLBoolean,
