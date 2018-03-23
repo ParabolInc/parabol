@@ -9,7 +9,7 @@ import {GROUP, TEAM} from 'universal/utils/constants';
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload';
 import {sendGroupingThresholdValidationError} from 'server/utils/__tests__/validationErrors';
-import groupReflections from 'server/graphql/mutations/helpers/groupReflections';
+import groupReflections from 'server/graphql/mutations/helpers/autoGroup/groupReflections';
 
 export default {
   type: AutoGroupReflectionsPayload,
@@ -37,38 +37,31 @@ export default {
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
 
-
     // VALIDATION
     if (groupingThreshold < 0.01 || groupingThreshold > 0.99) {
       return sendGroupingThresholdValidationError(authToken, meetingId, groupingThreshold);
     }
 
     // RESOLUTION
-    const {groupedReflections, groups} = await groupReflections(meetingId, groupingThreshold);
-    // const reflectionGroup = {
-    //   id: reflectionGroupId,
-    //   createdAt: now,
-    //   isActive: true,
-    //   meetingId,
-    //   smartTitle,
-    //   title,
-    //   updatedAt: now,
-    //   voterIds: [],
-    //   sortOrder: reflections[0].sortOrder
-    // };
-
-
+    const {autoGroupThreshold, groupedReflections, groups} = await groupReflections(meetingId, groupingThreshold);
     await r({
       groups: r.table('RetroReflectionGroup').insert(groups),
       reflections: r(groupedReflections).forEach((reflection) => {
         return r.table('RetroReflection')
           .get(reflection('id'))
           .update({
+            entities: reflection('entities'),
+            autoReflectionGroupId: reflection('reflectionGroupId'),
             reflectionGroupId: reflection('reflectionGroupId'),
+            retroPhaseItemId: reflection('retroPhaseItemId'),
             sortOrder: reflection('sortOrder'),
             updatedAt: now
           });
-      })
+      }),
+      meeting: r.table('NewMeeting').get(meetingId)
+        .update({
+          autoGroupThreshold
+        })
     });
 
     const reflectionGroupIds = groups.map(({id}) => id);
