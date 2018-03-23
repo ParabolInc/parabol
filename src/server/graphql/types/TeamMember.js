@@ -76,7 +76,7 @@ const TeamMember = new GraphQLObjectType({
       }
     },
     meetingMember: {
-      type: MeetingMember,
+      type: require('./MeetingMember').default,
       description: 'The meeting specifics for the meeting the team member is currently in',
       args: {
         meetingId: {
