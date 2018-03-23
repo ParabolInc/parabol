@@ -131,7 +131,7 @@ export default {
     const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(newTask, task, viewerId, usersToIgnore);
     const data = {isPrivatized, taskId, notificationsToAdd, notificationsToRemove};
     teamMembers.forEach(({userId}) => {
-      if (isPublic || userId === newTask.userId) {
+      if (isPublic || userId === newTask.userId || userId === viewerId) {
         publish(TASK, userId, UpdateTaskPayload, data, subOptions);
       }
     });
