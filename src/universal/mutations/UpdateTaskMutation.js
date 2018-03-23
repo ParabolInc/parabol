@@ -48,7 +48,10 @@ export const updateTaskTaskUpdater = (payload, store, viewerId, options) => {
 
   const addedNotification = payload.getLinkedRecord('addedNotification');
   handleAddNotifications(addedNotification, store, viewerId);
-  ContentFilterHandler.update(store, {dataID: task.getDataID(), fieldKey: 'content'});
+  if (task) {
+    ContentFilterHandler.update(store, {dataID: task.getDataID(), fieldKey: 'content'});
+  }
+
   if (options) {
     popInvolvementToast(addedNotification, options);
   }
