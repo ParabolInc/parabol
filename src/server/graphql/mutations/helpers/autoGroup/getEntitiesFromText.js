@@ -2,7 +2,7 @@ import sendSentryEvent from 'server/utils/sendSentryEvent';
 import language from '@google-cloud/language/src/index';
 
 const getEntitiesFromText = async (contextText) => {
-  const client = new language.LanguageServiceClient({keyFilename: '../../../../../.googlecloudkey.json'});
+  const client = new language.LanguageServiceClient();
   const document = {
     contextText,
     type: 'PLAIN_TEXT'

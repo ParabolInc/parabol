@@ -1,10 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString';
-import promiseAllPartial from 'universal/utils/promiseAllPartial';
 import * as shortid from 'shortid';
 import mode from 'universal/utils/mode';
-import getEntitiesFromText from 'server/graphql/mutations/helpers/autoGroup/getEntitiesFromText';
-import sanitizeAnalyzedEntitiesResponse from 'server/graphql/mutations/helpers/autoGroup/sanitizeAnalyzedEntititesResponse';
 import getEntityNameArrFromResponses from 'server/graphql/mutations/helpers/autoGroup/getEntityNameArrFromResponses';
 import computeDistanceMatrix from 'server/graphql/mutations/helpers/autoGroup/computeDistanceMatrix';
 import getGroupMatrix from 'server/graphql/mutations/helpers/autoGroup/getGroupMatrix';
@@ -22,22 +18,7 @@ const groupReflections = async (meetingId, groupingThreshold) => {
     .getAll(meetingId, {index: meetingId})
     .filter({isActive: true});
 
-  // fetching entities from google is expensive. only do it if we haven't done it before
-  const reflectionsWithoutEntities = reflections.filter((reflection) => !reflection.entities);
-  // get text for each reflection
-  const contentTexts = reflectionsWithoutEntities.map((reflection) => extractTextFromDraftString(reflection.content));
-
-  // intelligently extract the entities from the body of the text
-  const reflectionResponses = await promiseAllPartial(contentTexts.map(getEntitiesFromText));
-
-  // sanitize reflection responses, nulling out anything without a full response tree
-  const sanitizedReflectionResponses = reflectionResponses.map(sanitizeAnalyzedEntitiesResponse);
-  const reflectionsWithEntities = reflections.map((reflection) => ({
-    ...reflection,
-    entities: reflection.entities || sanitizedReflectionResponses[reflectionsWithoutEntities.indexOf(reflection)]
-  }));
-
-  const allReflectionEntities = reflectionsWithEntities.map(({entities}) => entities);
+  const allReflectionEntities = reflections.map(({entities}) => entities);
 
   // create a unique array of all entity names mentioned in the meeting's reflect phase
   const entityNameArr = getEntityNameArrFromResponses(allReflectionEntities);
@@ -53,7 +34,7 @@ const groupReflections = async (meetingId, groupingThreshold) => {
     // look up the reflection by its vector
     const groupedReflections = group.map((reflectionDistanceArr) => {
       const idx = distanceMatrix.indexOf(reflectionDistanceArr);
-      return reflectionsWithEntities[idx];
+      return reflections[idx];
     });
     const smartTitle = getTitleFromComputedGroup(entityNameArr, group);
 
