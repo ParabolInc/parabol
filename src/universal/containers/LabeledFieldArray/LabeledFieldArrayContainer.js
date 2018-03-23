@@ -7,9 +7,7 @@ export default class LabeledFieldArray extends Component {
   static propTypes = {
     existingInvites: PropTypes.array.isRequired,
     labelHeader: PropTypes.string.isRequired,
-    labelSource: PropTypes.string.isRequired,
-    nestedFieldHeader: PropTypes.string.isRequired,
-    nestedFieldName: PropTypes.string.isRequired
+    labelSource: PropTypes.string.isRequired
   };
 
   constructor(props) {
