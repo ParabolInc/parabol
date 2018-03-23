@@ -4,13 +4,16 @@
  * @flow
  */
 import type {RouterHistory} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import type {TeamID} from 'universal/types/team';
 import React from 'react';
 import styled from 'react-emotion';
-import {withRouter} from 'react-router-dom';
-import {Menu, MenuItem} from 'universal/modules/menu';
 import {Button} from 'universal/components';
 import ui from 'universal/styles/ui';
+import LoadableTeamCallsToActionMenu from 'universal/modules/teamDashboard/components/TeamCallsToAction/LoadableTeamCallsToActionMenu';
+import LoadableMenu from 'universal/components/LoadableMenu';
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
+import {ACTION} from 'universal/utils/constants';
 
 type Props = {
   teamId: TeamID,
@@ -39,21 +42,10 @@ const targetAnchor = {
 };
 
 const TeamCallToAction = ({history, teamId}: Props) => {
-  const goToMeetingLobby = () =>
-    history.push(`/meeting/${teamId}/`);
-
-  const goToRetroLobby = () =>
-    history.push(`/retro/${teamId}/`);
-
-  const itemFactory = () => {
-    const listItems = [];
-    listItems.push(
-      <MenuItem icon="arrow-circle-o-right" label="Start Action Meeting" onClick={goToMeetingLobby} />,
-      <MenuItem icon="clock-o" label="Start Retro Meeting" onClick={goToRetroLobby} />
-    );
-    return listItems;
+  const goToMeetingLobby = () => {
+    const slug = meetingTypeToSlug[ACTION];
+    history.push(`/${slug}/${teamId}/`);
   };
-
   const buttonToggle = (
     <Button
       buttonSize="small"
@@ -69,11 +61,11 @@ const TeamCallToAction = ({history, teamId}: Props) => {
   return (
     <ButtonGroup>
       {__RELEASE_FLAGS__.retro ?
-        <Menu
-          itemFactory={itemFactory}
+        <LoadableMenu
+          LoadableComponent={LoadableTeamCallsToActionMenu}
+          maxWidth={208}
+          maxHeight={225}
           originAnchor={originAnchor}
-          maxHeight="none"
-          menuWidth="13rem"
           targetAnchor={targetAnchor}
           toggle={buttonToggle}
         /> :
