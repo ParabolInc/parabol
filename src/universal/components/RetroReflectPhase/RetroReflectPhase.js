@@ -44,13 +44,13 @@ export default createFragmentContainer(
   RetroReflectPhase,
   graphql`
     fragment RetroReflectPhase_team on Team {
-      ...ReflectionTypeColumn_team
+      ...ReflectionPhaseColumn_team
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
           phaseItems {
             ... on RetroPhaseItem {
               id
-              ...ReflectionTypeColumn_retroPhaseItem
+              ...ReflectionPhaseColumn_retroPhaseItem
             }
           }
         }

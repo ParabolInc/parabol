@@ -5,7 +5,7 @@
  * @flow
  */
 import type {RetroPhaseItem, RetroReflection, Team} from 'universal/types/schema.flow';
-import type TeamFragment from './__generated__/ReflectionTypeColumn_team.graphql';
+import type TeamFragment from './__generated__/ReflectionPhaseColumn_team.graphql';
 
 // $FlowFixMe
 import {EditorState} from 'draft-js';
@@ -152,13 +152,13 @@ const ReflectionPhaseColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}:
 export default createFragmentContainer(
   withAtmosphere(ReflectionPhaseColumn),
   graphql`
-    fragment ReflectionTypeColumn_retroPhaseItem on RetroPhaseItem {
+    fragment ReflectionPhaseColumn_retroPhaseItem on RetroPhaseItem {
       id
       title
       question
     }
 
-    fragment ReflectionTypeColumn_team on Team {
+    fragment ReflectionPhaseColumn_team on Team {
       newMeeting {
         id
         ...on RetrospectiveMeeting {
