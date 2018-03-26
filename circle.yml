@@ -157,8 +157,8 @@ stages:
                 echo ${BASH_REMATCH[1]})"
             git config --global user.name "Parabol CircleCI"
             git config --global user.email "admin+circleci@parabol.co"
-            git add build -f
-            git commit -m "build $ACTION_VERSION" build
+            git add .googlecloudkey.json build -f
+            git commit -m "build $ACTION_VERSION"
           fi
 
       - type: deploy
