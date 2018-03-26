@@ -11,7 +11,8 @@ class MenuWithShortcuts extends Component {
   static propTypes = {
     ariaLabel: PropTypes.string,
     children: PropTypes.any.isRequired,
-    closePortal: PropTypes.func.isRequired
+    closePortal: PropTypes.func.isRequired,
+    defaultActiveIdx: PropTypes.number
   };
 
   state = {
@@ -19,10 +20,9 @@ class MenuWithShortcuts extends Component {
   }
 
   componentWillMount() {
-    const {children} = this.props;
+    const {children, defaultActiveIdx} = this.props;
     const childArr = Children.toArray(children);
-    const startIdx = childArr.findIndex((child) => isValidMenuItem(child));
-    this.state.active = startIdx;
+    this.state.active = defaultActiveIdx || childArr.findIndex((child) => isValidMenuItem(child));
   }
 
   componentDidMount() {
@@ -47,6 +47,9 @@ class MenuWithShortcuts extends Component {
         if (isValidMenuItem(nextChild)) {
           nextIdx = ii;
           break;
+        } else {
+          // if we're at the top & there's a header, put the header into view
+          this.menuRef.scrollIntoView();
         }
       }
     }
