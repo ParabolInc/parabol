@@ -17,7 +17,7 @@ import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroRefle
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel, meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
-import {CHECKIN, REFLECT} from 'universal/utils/constants';
+import {CHECKIN, GROUP, REFLECT} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
@@ -32,6 +32,7 @@ import type {Dispatch} from 'redux';
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup';
 import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading';
+import RetroGroupPhase from 'universal/components/RetroGroupPhase';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -163,6 +164,10 @@ class NewMeeting extends Component<Props> {
               <Route
                 path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[REFLECT]}`}
                 render={() => <RetroReflectPhase team={team} />}
+              />
+              <Route
+                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[GROUP]}`}
+                render={() => <RetroGroupPhase team={team} />}
               />
               <Route
                 path={`/${meetingSlug}/:teamId`}

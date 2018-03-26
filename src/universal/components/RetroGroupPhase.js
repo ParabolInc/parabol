@@ -1,15 +1,9 @@
-/**
- * Renders the UI for the reflection phase of the retrospective meeting
- *
- * @flow
- */
-import type {Team} from 'universal/types/schema.flow';
-
 import React from 'react';
 import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
+import ReflectionPhaseColumn from 'universal/components/RetroReflectPhase/ReflectionPhaseColumn';
 
-import ReflectionPhaseColumn from './ReflectionPhaseColumn';
+import type {RetroGroupPhase_team as Team} from './__generated__/RetroGroupPhase_team.graphql';
 
 type Props = {
   team: Team,
@@ -22,14 +16,11 @@ const ReflectPhaseWrapper = styled('div')({
   width: '100%'
 });
 
-const RetroReflectPhase = ({team}: Props) => {
+const RetroGroupPhase = ({team}: Props) => {
   const {newMeeting, meetingSettings} = team;
   if (!meetingSettings.hasOwnProperty('phaseItems')) {
     return null;
   }
-  // The nested union types of meetingSettings/phaseItems are creating a multiplicative
-  // effect on the possible values of meetingSettings, making it really difficult
-  // $FlowFixMe
   const {phaseItems} = meetingSettings;
   return (
     <ReflectPhaseWrapper>
@@ -41,9 +32,9 @@ const RetroReflectPhase = ({team}: Props) => {
 };
 
 export default createFragmentContainer(
-  RetroReflectPhase,
+  RetroGroupPhase,
   graphql`
-    fragment RetroReflectPhase_team on Team {
+    fragment RetroGroupPhase_team on Team {
       ...ReflectionPhaseColumn_team
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
