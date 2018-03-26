@@ -12,6 +12,8 @@ import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendAlreadyStartedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import sendAuthRaven from 'server/utils/sendAuthRaven';
+import extendMeetingMembersForType from 'server/graphql/mutations/helpers/extendMeetingMembersForType';
+import createMeetingMember from 'server/graphql/mutations/helpers/createMeetingMember';
 
 export default {
   type: StartNewMeetingPayload,
@@ -73,10 +75,15 @@ export default {
       teamId
     };
     const newMeeting = extendNewMeetingForType(newMeetingBase);
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
+    const createMemberForMeeting = createMeetingMember(meetingId, meetingType);
+    const meetingMembersBase = teamMembers.map(createMemberForMeeting);
+    const meetingMembers = await extendMeetingMembersForType(meetingMembersBase, dataLoader);
     await r({
       team: r.table('Team').get(teamId)
         .update({meetingId}),
-      meeting: r.table('NewMeeting').insert(newMeeting)
+      meeting: r.table('NewMeeting').insert(newMeeting),
+      members: r.table('MeetingMember').insert(meetingMembers)
     });
 
     startSlackMeeting(teamId);

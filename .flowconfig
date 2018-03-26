@@ -1,6 +1,8 @@
 [ignore]
 .*node_modules/.*reqwest/.*
 .*node_modules/.*draft-js/.*
+.*node_modules/grpc/*
+.*node_modules/tayden-clusterfck
 
 [include]
 

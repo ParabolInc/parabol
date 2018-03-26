@@ -195,6 +195,7 @@ export default class RethinkDataLoader {
   invitations = this.makeStandardLoader('Invitation');
   meetings = this.makeStandardLoader('Meeting');
   meetingSettings = this.makeStandardLoader('MeetingSettings');
+  meetingMembers = this.makeStandardLoader('MeetingMember');
   newMeetings = this.makeStandardLoader('NewMeeting');
   notifications = this.makeStandardLoader('Notification');
   orgApprovals = this.makeStandardLoader('OrgApproval');
