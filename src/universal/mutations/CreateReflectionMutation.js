@@ -3,6 +3,8 @@
  *
  * @flow
  */
+import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
+
 import {commitMutation} from 'react-relay';
 import {Environment, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime';
 
@@ -15,10 +17,6 @@ type Variables = {
   retroPhaseItemId: string,
   sortOrder: number
 };
-
-type CompletedHandler = (response: ?Object, errors: ?Array<Error>) => void;
-
-type ErrorHandler = (error: Error) => void;
 
 graphql`
   fragment CreateReflectionMutation_team on CreateReflectionPayload {

@@ -3,6 +3,8 @@
  *
  * @flow
  */
+import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
+
 import {commitMutation} from 'react-relay';
 import {Environment, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime';
 
@@ -10,10 +12,6 @@ type Variables = {
   isEditing: boolean,
   reflectionId: string
 };
-
-type CompletedHandler = (response: ?Object, errors: ?Array<Error>) => void;
-
-type ErrorHandler = (error: Error) => void;
 
 graphql`
   fragment UpdateReflectionIsEditingMutation_team on UpdateReflectionIsEditingPayload {
