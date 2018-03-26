@@ -13,7 +13,7 @@ export type ReflectionID = string;
 export type Reflection = {
   id: ReflectionID,
   content: ContentState,
-  reflectionType: ?string
+  reflectionPhaseQuestion: ?string
 };
 
 export type ReflectionGroup = {

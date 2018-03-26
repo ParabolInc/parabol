@@ -91,14 +91,14 @@ storiesOf('Reflection Card', module)
       <StoryContainer
         render={() => (
           <Grid>
-            {[undefined, 'positive', 'negative', 'change'].map((reflectionType) => (
+            {[undefined, "What's working?", 'Where did you get stuck?'].map((reflectionPhaseQuestion) => (
               <ReflectionCard
                 id={newReflectionId()}
                 contentState={ContentState.createFromText('Edit me!')}
                 handleDelete={action('handle-delete')}
                 handleSave={action('handle-save')}
-                key={reflectionType || 'undefined'}
-                reflectionType={reflectionType}
+                key={reflectionPhaseQuestion || 'undefined'}
+                reflectionPhaseQuestion={reflectionPhaseQuestion}
               />
             ))}
           </Grid>

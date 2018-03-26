@@ -40,8 +40,8 @@ export type Props = {|
   isDragging?: boolean,
   // States whether it serves as a drag preview.
   pulled?: boolean,
-  // The reflection type, e.g. "negative" or "positive"
-  reflectionType?: ?string,
+  // The display name of the phase in which this reflection was created, e.g. "What's working?"
+  reflectionPhaseQuestion?: ?string,
   // The name of the user who is currently dragging this card to a new place, if any
   userDragging?: string,
 |};
@@ -69,17 +69,6 @@ const BottomBar = styled('div')({
 const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperProps) => ({
   opacity: ((iAmDragging && !pulled)) && 0.6
 }));
-
-const getDisplayName = (reflectionType: ?string): string => {
-  switch (reflectionType) {
-    case 'positive':
-      return "What's working?";
-    case 'negative':
-      return 'Where did you get stuck?';
-    default:
-      return '';
-  }
-};
 
 export default class ReflectionCard extends Component<Props, State> {
   constructor(props: Props) {
@@ -148,9 +137,9 @@ export default class ReflectionCard extends Component<Props, State> {
     );
   };
 
-  maybeRenderReflectionType = () => {
-    const {isCollapsed, reflectionType} = this.props;
-    return !isCollapsed && reflectionType && <BottomBar>{getDisplayName(this.props.reflectionType)}</BottomBar>;
+  maybeRenderReflectionPhaseQuestion = () => {
+    const {isCollapsed, reflectionPhaseQuestion} = this.props;
+    return !isCollapsed && reflectionPhaseQuestion && <BottomBar>{reflectionPhaseQuestion}</BottomBar>;
   };
 
   maybeRenderUserDragging = () => {
@@ -222,7 +211,7 @@ export default class ReflectionCard extends Component<Props, State> {
           onMouseLeave={this.handleMouseLeave}
         >
           {this.renderCardContent()}
-          {this.maybeRenderReflectionType()}
+          {this.maybeRenderReflectionPhaseQuestion()}
           {this.maybeRenderDelete()}
         </ReflectionCardWrapper>
       </DnDStylesWrapper>

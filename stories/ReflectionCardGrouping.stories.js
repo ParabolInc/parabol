@@ -83,17 +83,17 @@ class DragAndDropStory extends Component<*, DragAndDropStoryState> {
       {
         id: 'card1',
         content: ContentState.createFromText('My pithy reflection is to be heard'),
-        reflectionType: null
+        reflectionPhaseQuestion: null
       },
       {
         id: 'card2',
         content: ContentState.createFromText('No, MY reflection shall be heard loudest!!!'),
-        reflectionType: null
+        reflectionPhaseQuestion: null
       },
       {
         id: 'card3',
         content: ContentState.createFromText('Wait, what about me?'),
-        reflectionType: null
+        reflectionPhaseQuestion: null
       }
     ]
   };

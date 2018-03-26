@@ -113,7 +113,7 @@ type Props = {
   team: Team
 };
 
-const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: Props) => (
+const ReflectionPhaseColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: Props) => (
   newMeeting && (
     <ColumnWrapper>
       <TypeHeader>
@@ -150,7 +150,7 @@ const ReflectionTypeColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: 
 );
 
 export default createFragmentContainer(
-  withAtmosphere(ReflectionTypeColumn),
+  withAtmosphere(ReflectionPhaseColumn),
   graphql`
     fragment ReflectionTypeColumn_retroPhaseItem on RetroPhaseItem {
       id

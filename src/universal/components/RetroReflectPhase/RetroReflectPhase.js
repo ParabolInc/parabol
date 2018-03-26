@@ -9,7 +9,7 @@ import React from 'react';
 import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
 
-import ReflectionTypeColumn from './ReflectionTypeColumn';
+import ReflectionPhaseColumn from './ReflectionPhaseColumn';
 
 type Props = {
   team: Team,
@@ -34,7 +34,7 @@ const RetroReflectPhase = ({team}: Props) => {
   return (
     <ReflectPhaseWrapper>
       {phaseItems && phaseItems.map((phaseItem) =>
-        <ReflectionTypeColumn newMeeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} team={team} />
+        <ReflectionPhaseColumn newMeeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} team={team} />
       )}
     </ReflectPhaseWrapper>
   );

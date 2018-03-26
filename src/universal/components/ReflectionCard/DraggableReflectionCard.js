@@ -50,7 +50,7 @@ class DraggableReflectionCard extends Component<Props> {
       contentState,
       id,
       isOver,
-      reflectionType
+      reflectionPhaseQuestion
     } = this.props;
     const reflectionCardProps = {
       ...without(this.props, 'connectDragSource'),
@@ -65,7 +65,7 @@ class DraggableReflectionCard extends Component<Props> {
           <ReflectionGroup
             id={newId()}
             reflections={[
-              {id, content: contentState, reflectionType}
+              {id, content: contentState, reflectionPhaseQuestion}
             ]}
             hovered
           />
