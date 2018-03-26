@@ -4,11 +4,22 @@
  *
  * @flow
  */
-import {GraphQLObjectType} from 'graphql';
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {resolveNewMeeting} from 'server/graphql/resolvers';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 import NewMeeting from 'server/graphql/types/NewMeeting';
-import RetroReflection from 'server/graphql/types/RetroReflection';
+
+const RetroReflectionEditingState = new GraphQLObjectType({
+  name: 'RetroReflectionEditingState',
+  fields: () => ({
+    id: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
+    isEditing: {
+      type: new GraphQLNonNull(GraphQLBoolean)
+    }
+  })
+});
 
 export default new GraphQLObjectType({
   name: 'UpdateReflectionIsEditingPayload',
@@ -21,8 +32,7 @@ export default new GraphQLObjectType({
       resolve: resolveNewMeeting
     },
     reflection: {
-      type: RetroReflection,
-      resolve: makeResolve('reflectionId', 'reflection', 'activeRetroReflections')
+      type: RetroReflectionEditingState
     }
   })
 });

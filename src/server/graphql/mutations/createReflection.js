@@ -58,7 +58,6 @@ export default {
       creatorId: viewerId,
       content: normalizedContent,
       isActive: true,
-      isEditing: false,
       meetingId,
       retroPhaseItemId,
       sortOrder,

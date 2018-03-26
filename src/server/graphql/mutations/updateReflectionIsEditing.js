@@ -43,7 +43,6 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: Context
   ) {
     const r = getRethink();
-    const now = new Date();
     const operationId = dataLoader.share();
     const subOptions = {operationId, mutatorId};
 
@@ -63,15 +62,7 @@ export default {
     }
 
     // RESOLUTION
-    await r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .update({
-        isEditing,
-        updatedAt: now
-      });
-
-    const data = {meetingId, reflectionId};
+    const data = {meetingId, reflection: {id: reflectionId, isEditing}};
     publish(TEAM, teamId, UpdateRetroReflectionIsEditingPayload, data, subOptions);
     return data;
   }
