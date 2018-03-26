@@ -5,8 +5,11 @@
  */
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
 
+import {maybe} from 'maeby';
 import {commitMutation} from 'react-relay';
 import {Environment, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime';
+
+import fmap3 from 'universal/utils/fmap3';
 
 type Variables = {
   reflectionId: string,
@@ -31,32 +34,22 @@ const mutation = graphql`
   }
 `;
 
-export const removeReflectionUpdater = (payload: RecordProxy, store: RecordSourceSelectorProxy) => {
-  // TODO - maeby https://github.com/dan-f/maeby
-  if (!payload) {
-    return;
-  }
-  const payloadMeeting = payload.getLinkedRecord('meeting');
-  if (!payloadMeeting) {
-    return;
-  }
-  const meetingId = payloadMeeting.getValue('id');
-  const reflection = payload.getLinkedRecord('reflection');
-  if (!reflection) {
-    return;
-  }
-  const meeting = store.get(meetingId);
-  if (!meeting) {
-    return;
-  }
-  const reflections = meeting.getLinkedRecords('reflections');
-  if (!reflections) {
-    return;
-  }
-  const newReflections = reflections.filter((r) => (
-    r.getValue('id') !== reflection.getValue('id')
-  ));
-  meeting.setLinkedRecords(newReflections, 'reflections');
+export const removeReflectionUpdater = (payload: ?RecordProxy, store: RecordSourceSelectorProxy) => {
+  const maybeMeeting = maybe(payload)
+    .bind((pl) => pl.getLinkedRecord('meeting'))
+    .bind((payloadMeeting) => payloadMeeting.getValue('id'))
+    .bind((meetingId) => store.get(meetingId));
+  const maybeReflections = maybeMeeting
+    .bind((meeting) => meeting.getLinkedRecords('reflections'));
+  const maybeReflection = maybe(payload)
+    .bind((pl) => pl.getLinkedRecord('reflection'));
+
+  fmap3((meeting, reflections, reflection) => {
+    const newReflections = reflections.filter((r) => (
+      r.getValue('id') !== reflection.getValue('id')
+    ));
+    meeting.setLinkedRecords(newReflections, 'reflections');
+  }, maybeMeeting, maybeReflections, maybeReflection);
 };
 
 const getOptimisticResponse = (variables: Variables, meetingId: string) => ({

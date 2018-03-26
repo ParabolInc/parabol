@@ -5,8 +5,11 @@
  */
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
 
+import {maybe} from 'maeby';
 import {commitMutation} from 'react-relay';
 import {Environment, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime';
+
+import fmap2 from 'universal/utils/fmap2';
 
 type Variables = {
   isEditing: boolean,
@@ -44,33 +47,24 @@ const getOptimisticResponse = (variables: Variables, meetingId: string) => ({
 });
 
 export const updateReflectionIsEditingUpdater = (payload: ?RecordSourceProxy, store: RecordSourceSelectorProxy) => {
-  if (!payload) {
-    return;
-  }
-  const reflection = payload.getLinkedRecord('reflection');
-  if (!reflection) {
-    return;
-  }
-  const reflectionId = reflection.getValue('id');
-  const reflectionIsEditing = reflection.getValue('isEditing');
-  const payloadMeeting = payload.getLinkedRecord('meeting');
-  if (!payloadMeeting) {
-    return;
-  }
-  const meetingId = payloadMeeting.getValue('id');
-  const meeting = store.get(meetingId);
-  if (!meeting) {
-    return;
-  }
-  const reflections = meeting.getLinkedRecords('reflections');
-  if (!reflections) {
-    return;
-  }
-  const reflectionToUpdate = reflections.find((r) => r.getValue('id') === reflectionId);
-  if (!reflectionToUpdate) {
-    return;
-  }
-  reflectionToUpdate.setValue(reflectionIsEditing, 'isEditing');
+  const maybeReflections = maybe(payload)
+    .bind((pl) => pl.getLinkedRecord('meeting'))
+    .bind((payloadMeeting) => payloadMeeting.getValue('id'))
+    .bind((meetingId) => store.get(meetingId))
+    .bind((meeting) => meeting.getLinkedRecords('reflections'));
+  const maybeReflection = maybe(payload)
+    .bind((pl) => pl.getLinkedRecord('reflection'));
+  const maybeReflectionId = maybeReflection
+    .bind((reflection) => reflection.getValue('id'));
+  const maybeReflectionIsEditing = maybeReflection
+    .bind((reflection) => reflection.getValue('isEditing'));
+  const maybeReflectionToUpdate = fmap2((reflections, reflectionId) => (
+    reflections.find((r) => r.getValue('id') === reflectionId)
+  ), maybeReflections, maybeReflectionId);
+
+  fmap2((reflectionToUpdate, reflectionContent) => {
+    reflectionToUpdate.setValue('isEditing', reflectionContent);
+  }, maybeReflectionToUpdate, maybeReflectionIsEditing);
 };
 
 const UpdateReflectionIsEditingMutation = (

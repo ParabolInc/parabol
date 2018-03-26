@@ -5,11 +5,13 @@
  */
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
 
+import {maybe} from 'maeby';
 import {commitMutation} from 'react-relay';
 import {Environment, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime';
 
-import clientTempId from 'universal/utils/relay/clientTempId';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
+import fmap3 from 'universal/utils/fmap3';
+import clientTempId from 'universal/utils/relay/clientTempId';
 
 type Variables = {
   content?: string,
@@ -41,37 +43,27 @@ const mutation = graphql`
   }
 `;
 
-export const createReflectionUpdater = (payload: RecordProxy, store: RecordSourceSelectorProxy) => {
-  // TODO - https://github.com/dan-f/maeby
-  if (!payload) {
-    return;
-  }
-  const payloadMeeting = payload.getLinkedRecord('meeting');
-  if (!payloadMeeting) {
-    return;
-  }
-  const meetingId = payloadMeeting.getValue('id');
-  const reflection = payload.getLinkedRecord('reflection');
-  if (!reflection) {
-    return;
-  }
-  const meeting = store.get(meetingId);
-  if (!meeting) {
-    return;
-  }
-  const reflections = meeting.getLinkedRecords('reflections');
-  if (!reflections) {
-    return;
-  }
-  if (reflections.find((r) => r.getValue('id') === reflection.getValue('id'))) {
-    return;
-  }
-  const newReflections = [...reflections, reflection].sort((a, b) => {
-    const sortOrderA = a.getValue('sortOrder');
-    const sortOrderB = b.getValue('sortOrder');
-    return sortOrderA - sortOrderB;
-  });
-  meeting.setLinkedRecords(newReflections, 'reflections');
+export const createReflectionUpdater = (payload: ?RecordProxy, store: RecordSourceSelectorProxy) => {
+  const maybeNewReflection = maybe(payload)
+    .bind((pl) => pl.getLinkedRecord('reflection'));
+  const maybeMeeting = maybe(payload)
+    .bind((pl) => pl.getLinkedRecord('meeting'))
+    .bind((payloadMeeting) => payloadMeeting.getValue('id'))
+    .bind((meetingId) => store.get(meetingId));
+  const maybeCurrentReflections = maybeMeeting
+    .bind((meeting) => meeting.getLinkedRecords('reflections'));
+
+  fmap3((currentReflections, newReflection, meeting) => {
+    if (currentReflections.find((r) => r.getValue('id') === newReflection.getValue('id'))) {
+      return;
+    }
+    const newReflections = [...currentReflections, newReflection].sort((a, b) => {
+      const sortOrderA = a.getValue('sortOrder');
+      const sortOrderB = b.getValue('sortOrder');
+      return sortOrderA - sortOrderB;
+    });
+    meeting.setLinkedRecords(newReflections, 'reflections');
+  }, maybeCurrentReflections, maybeNewReflection, maybeMeeting);
 };
 
 const getOptimisticResponse = (variables: Variables) => ({
