@@ -10,10 +10,7 @@
 // $FlowFixMe
 import {convertFromRaw, ContentState} from 'draft-js';
 
-export default (serialized: string): ContentState => {
-  try {
-    return convertFromRaw(JSON.parse(serialized));
-  } catch (error) {
-    return ContentState.createFromText('');
-  }
-};
+// Note: throws an error if the serialized string cannot be parsed into JSON
+export default (serialized: string): ContentState => (
+  convertFromRaw(JSON.parse(serialized))
+);
