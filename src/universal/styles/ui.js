@@ -99,7 +99,8 @@ const PALETTE_VALUES = {
 const FIELD_BOX_SHADOW = 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
 const FIELD_BOX_SHADOW_FOCUS = '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
 const FIELD_PADDING_HORIZONTAL = '.75rem';
-const FIELD_PLACEHOLDER_COLOR = appTheme.palette.mid80l;
+const FIELD_PLACEHOLDER_COLOR = appTheme.palette.dark60l;
+const FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE = appTheme.palette.dark30l;
 const FIELD_SIZE_SMALL = CONTROL_SIZE_SMALL;
 const FIELD_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
 const FIELD_SIZE_LARGE = CONTROL_SIZE_LARGE;
@@ -140,10 +141,6 @@ const MODAL_LAYOUT_VIEWPORT = 'viewport';
 
 // Panels
 const panelInnerBorderColor = appTheme.palette.mid10l;
-
-// Placeholders
-const placeholderColor = appTheme.palette.dark70l;
-const placeholderColorFocusActive = appTheme.palette.dark30l;
 
 // Transitions
 // NOTE: increases on a scale of 2x
@@ -407,52 +404,34 @@ const ui = {
   fieldBoxShadow: FIELD_BOX_SHADOW,
   fieldFocusBoxShadow: FIELD_BOX_SHADOW_FOCUS,
   fieldColorPalettes: {
-    cool: {
-      backgroundColor: appTheme.palette.cool10l,
-      borderColor: appTheme.palette.cool40l,
-      color: appTheme.palette.cool,
-      focusBorderColor: appTheme.palette.cool80l,
-      placeholder: makePlaceholderStyles(appTheme.palette.cool70l),
-      selection: appTheme.palette.cool20l
-    },
+    // gray: input and textarea default style
     gray: {
-      backgroundColor: appTheme.palette.mid10l,
+      backgroundColor: appTheme.palette.light,
       borderColor: appTheme.palette.mid40l,
-      color: appTheme.palette.dark,
+      color: appTheme.palette.dark80d,
       focusBorderColor: appTheme.palette.mid80l,
       placeholder: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR),
+      placeholderColorFocusActive: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE),
       selection: appTheme.palette.mid20l
     },
-    link: {
-      backgroundColor: appTheme.palette.mid10l,
-      borderColor: appTheme.palette.mid40l,
-      color: appTheme.palette.cool,
-      focusBorderColor: appTheme.palette.mid80l,
-      placeholder: makePlaceholderStyles(appTheme.palette.cool70l),
-      selection: appTheme.palette.cool20l
-    },
-    warm: {
-      backgroundColor: appTheme.palette.warm10l,
-      borderColor: appTheme.palette.warm40l,
-      color: appTheme.palette.warm,
-      focusBorderColor: appTheme.palette.warm80l,
-      placeholder: makePlaceholderStyles(appTheme.palette.warm70l),
-      selection: appTheme.palette.warm20l
-    },
+    // primary: used by agenda topic input
     primary: {
       backgroundColor: '#fff',
       borderColor: 'transparent',
       color: COLOR_TEXT,
       focusBorderColor: appTheme.palette.warm70l,
       placeholder: makePlaceholderStyles(appTheme.palette.warm),
+      placeholderColorFocusActive: makePlaceholderStyles(appTheme.palette.warm50l),
       selection: appTheme.palette.warm20l
     },
+    // white: used for dropdowns
     white: {
       backgroundColor: '#fff',
       borderColor: appTheme.palette.mid40l,
       color: appTheme.palette.dark,
       focusBorderColor: appTheme.palette.mid80l,
       placeholder: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR),
+      placeholderColorFocusActive: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE),
       selection: appTheme.palette.mid20l
     }
   },
@@ -609,8 +588,8 @@ const ui = {
 
   // Placeholders
   // ---------------------------------------------------------------------------
-  placeholderColor,
-  placeholderColorFocusActive,
+  placeholderColor: FIELD_PLACEHOLDER_COLOR,
+  placeholderColorFocusActive: FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE,
 
   // Task columns
   // ---------------------------------------------------------------------------

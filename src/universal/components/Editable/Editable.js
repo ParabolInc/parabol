@@ -151,10 +151,10 @@ Editable.propTypes = {
 
 };
 
-const styleThunk = (customTheme, props) => ({
+const styleThunk = (custom, {typeStyles}) => ({
   editableRoot: {
     display: 'block',
-    lineHeight: props.typeStyles.lineHeight,
+    lineHeight: typeStyles.lineHeight,
     width: '100%'
   },
 
@@ -166,7 +166,7 @@ const styleThunk = (customTheme, props) => ({
   staticBlock: {
     display: 'inline-block',
     fontSize: 0,
-    lineHeight: props.typeStyles.lineHeight,
+    lineHeight: typeStyles.lineHeight,
     verticalAlign: 'top',
 
     ':hover': {
@@ -176,15 +176,15 @@ const styleThunk = (customTheme, props) => ({
   },
 
   static: {
-    color: props.typeStyles.color,
+    color: typeStyles.color,
     display: 'inline-block',
-    fontSize: props.typeStyles.fontSize,
-    lineHeight: props.typeStyles.lineHeight,
+    fontSize: typeStyles.fontSize,
+    lineHeight: typeStyles.lineHeight,
     verticalAlign: 'middle'
   },
 
   placeholder: {
-    color: props.typeStyles.placeholderColor
+    color: typeStyles.placeholderColor
   },
 
   icon: {
@@ -206,7 +206,7 @@ const styleThunk = (customTheme, props) => ({
     verticalAlign: 'top',
     width: '100%',
 
-    ...makePlaceholderStyles(props.typeStyles.placeholderColor)
+    ...makePlaceholderStyles(typeStyles.placeholderColor)
   }
 });
 

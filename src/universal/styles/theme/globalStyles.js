@@ -3,7 +3,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import fontLoader from 'universal/styles/theme/fontLoader';
 import ui from 'universal/styles/ui';
 
-const basePlaceholderStyles = makePlaceholderStyles(ui.placeholderColor);
+const placeholder = makePlaceholderStyles(ui.placeholderColor);
 
 export default {
   '*': {
@@ -47,6 +47,8 @@ export default {
     '-webkit-font-smoothing': 'antialiased'
   },
 
+  ...placeholder,
+
   img: {
     maxWidth: '100%'
   },
@@ -66,7 +68,5 @@ export default {
 
   strong: {
     fontWeight: 600
-  },
-
-  ...basePlaceholderStyles
+  }
 };

@@ -25,7 +25,6 @@ class ArchiveTeamForm extends Component<Props> {
           autoFocus
           onBlur={handleFormBlur}
           label="Enter your team name to delete it."
-          colorPalette="gray"
           component={InputField}
           name="archivedTeamName"
           placeholder='E.g. "My Team"'
