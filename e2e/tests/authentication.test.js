@@ -27,46 +27,26 @@ function generateCredentials() {
 }
 
 const actions = {
-  goToHomepage: (driver) => () => driver.get(BASE_URL),
-
-  openLoginModal: (driver) => async () => {
-    const loginButtonSeletor = 'button[title="Log In"]';
+  goToSignInPage: (driver) => async () => {
+    await driver.get(`${BASE_URL}/signin`);
+    const signInFormSelector = '.signin-form';
     await driver
-      .wait(until.elementLocated(By.css(loginButtonSeletor)));
-    await driver
-      .findElement(By.css(loginButtonSeletor))
-      .click();
-    const modalContainerSelector = '#a0-onestep';
-    const loginSignupToggleSelector = '.a0-sign-up';
-    await all(
-      driver
-        .wait(until.elementLocated(By.css(modalContainerSelector))),
-      driver
-        .wait(until.elementLocated(By.css(loginSignupToggleSelector)))
-    );
+      .wait(until.elementLocated(By.css(signInFormSelector)));
   },
 
-  login: (driver) => async ({email, password}) => {
+  goToSignUpPage: (driver) => async () => {
+    await driver.get(`${BASE_URL}/signup`);
+    const signUpFormSelector = '.signup-form';
     await driver
-      .findElement(By.id('a0-signin_easy_email'))
-      .sendKeys(email);
-    await driver
-      .findElement(By.id('a0-signin_easy_password'))
-      .sendKeys(password);
-    await driver
-      .findElement(By.css('button[type="submit"]'))
-      .click();
+      .wait(until.elementLocated(By.css(signUpFormSelector)));
   },
 
-  signUp: (driver) => async ({email, password}) => {
+  authenticate: (driver) => async ({email, password}) => {
     await driver
-      .findElement(By.css('.a0-sign-up'))
-      .click();
-    await driver
-      .findElement(By.id('a0-signup_easy_email'))
+      .findElement(By.css('input[type="email"]'))
       .sendKeys(email);
     await driver
-      .findElement(By.id('a0-signup_easy_password'))
+      .findElement(By.css('input[type="password"]'))
       .sendKeys(password);
     await driver
       .findElement(By.css('button[type="submit"]'))
@@ -74,21 +54,19 @@ const actions = {
   },
 
   logout: (driver) => async () => {
+    const signOutButtonSelector = 'a[title="Sign Out"]';
+    await driver.wait(until.elementLocated(By.css(signOutButtonSelector)));
     await driver
-      .findElement(By.css('a[title="Sign Out"]'))
+      .findElement(By.css(signOutButtonSelector))
       .click();
-    await all(
-      driver
-        .wait(until.urlMatches(BASE_URL_REGEX), waitTimes.short, 'Logging out did not redirect to the base URL'),
-      driver
-        .wait(until.titleMatches(/Parabol/), waitTimes.short, 'Logging out did not redirect to the Parabol Homepage')
-    );
   }
 };
 
 const expectations = {
   shouldSeeLoginWarning: (driver) => async (warningRegex) => {
-    const warningElement = await driver.findElement(By.css('h2.a0-error'));
+    const warningElementSelector = '[role="alert"]';
+    await driver.wait(until.elementLocated(By.css(warningElementSelector)));
+    const warningElement = await driver.findElement(By.css(warningElementSelector));
     await driver.wait(
       () => warningElement.getText().then((txt) => !!(txt.trim().length)),
       waitTimes.short,
@@ -108,15 +86,14 @@ const expectations = {
     return expect(url).toMatch(/welcome/);
   },
 
-  shouldSeeHomepage: (driver) => async () => {
-    const title = await driver.getTitle();
-    expect(title).toMatch(/Parabol/);
-    const url = await driver.getCurrentUrl();
-    expect(url).toMatch(BASE_URL_REGEX);
-    const headingEl = await driver.findElement(By.css('h1'));
-    const headingText = await headingEl.getText();
-    expect(headingText.trim()).toEqual('The Unified Dashboard for All Disciplines');
-  }
+  shouldSeeHomepage: (driver) => async () => (
+    all(
+      driver
+        .wait(until.urlMatches(/signin$/), waitTimes.short, 'Logging out did not redirect to signin page'),
+      driver
+        .wait(until.titleMatches(/Sign In | Parabol/), waitTimes.short, 'Logging out did not redirect to the Parabol Homepage')
+    )
+  )
 };
 
 const behaviors = {
@@ -147,17 +124,15 @@ describe('Authentication', () => {
   });
 
   it('shows an error when the incorrect credentials are provided', async () => {
-    await user.goToHomepage();
-    await user.openLoginModal();
-    await user.login(generateCredentials());
+    await user.goToSignInPage();
+    await user.authenticate(generateCredentials());
     await user.shouldSeeLoginWarning(/Wrong email or password/);
   });
 
   it('can sign up', async () => {
-    await user.goToHomepage();
-    await user.openLoginModal();
+    await user.goToSignUpPage();
     const credentials = generateCredentials();
-    await user.signUp(credentials);
+    await user.authenticate(credentials);
     await user.shouldSeeWelcomeWizard();
     cache.credentials = credentials;
   });
@@ -165,9 +140,8 @@ describe('Authentication', () => {
   it('can log in (and out) with valid credentials', async () => {
     const {credentials} = cache;
     expect(credentials).toBeTruthy();
-    await user.goToHomepage();
-    await user.openLoginModal();
-    await user.login(credentials);
+    await user.goToSignInPage();
+    await user.authenticate(credentials);
     await user.shouldSeeWelcomeWizard();
     await user.logout();
     await user.shouldSeeHomepage();

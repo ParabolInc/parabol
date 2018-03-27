@@ -40,7 +40,7 @@ const ForgotPasswordLink = styled(Link)({
 });
 
 const SignInEmailPasswordForm = (props: Props) => (
-  <Form onSubmit={props.handleSubmit}>
+  <Form className="signin-form" onSubmit={props.handleSubmit}>
     <Block margin="1rem 0 2rem" width="16rem">
       <Block margin="0 0 1.5rem">
         <Field

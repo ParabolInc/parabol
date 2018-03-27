@@ -26,7 +26,7 @@ const Form = styled('form')({
 const Block = styled('div')(({margin, width}) => ({margin, width}));
 
 const SignInEmailPasswordForm = (props: Props) => (
-  <Form onSubmit={props.handleSubmit}>
+  <Form className="signup-form" onSubmit={props.handleSubmit}>
     <Block margin="1rem 0 2rem" width="16rem">
       <Block margin="0 0 1.5rem">
         <Field
