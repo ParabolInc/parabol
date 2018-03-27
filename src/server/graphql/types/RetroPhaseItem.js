@@ -1,4 +1,4 @@
-import {GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import CustomPhaseItem, {customPhaseItemFields} from 'server/graphql/types/CustomPhaseItem';
 
 const RetroPhaseItem = new GraphQLObjectType({
@@ -8,12 +8,12 @@ const RetroPhaseItem = new GraphQLObjectType({
   fields: () => ({
     ...customPhaseItemFields(),
     title: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The title of the phase of the retrospective. Often a short version of the question'
     },
     question: {
       description: 'The question to answer during the phase of the retrospective (eg What went well?)',
-      type: GraphQLString
+      type: new GraphQLNonNull(GraphQLString)
     }
   })
 });

@@ -130,7 +130,7 @@ MeetingAvatarGroup.propTypes = {
   dispatch: PropTypes.func.isRequired,
   gotoItem: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
-  localPhase: PropTypes.oneOf(phaseArray),
+  localPhase: PropTypes.oneOf(phaseArray), // TODO: needs to include phases for new meetings
   localPhaseItem: PropTypes.number,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired

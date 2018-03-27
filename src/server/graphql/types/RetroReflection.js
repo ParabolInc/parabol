@@ -33,6 +33,13 @@ const RetroReflection = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'True if the reflection was not removed, else false'
     },
+    isEditing: {
+      description: 'Whether or not this reflection is currently being edited by a teammate',
+      type: new GraphQLNonNull(GraphQLBoolean),
+      // NOTE: we statically resolve to false here, as the editing state is not persisted,
+      // but rather declared through the `UpdateReflectionIsEditingPayload` on the `TeamSubscription`.
+      resolve: () => false
+    },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
       type: GraphQLBoolean,
@@ -43,7 +50,7 @@ const RetroReflection = new GraphQLObjectType({
     },
     content: {
       description: 'The stringified draft-js content',
-      type: GraphQLString
+      type: new GraphQLNonNull(GraphQLString)
     },
     entities: {
       description: 'The entities (i.e. nouns) parsed from the content and their respective salience',

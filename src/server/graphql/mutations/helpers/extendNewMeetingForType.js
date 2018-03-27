@@ -1,14 +1,15 @@
 import {RETROSPECTIVE} from 'universal/utils/constants';
 
 const extendNewMeetingForType = (newMeetingBase) => {
-  if (newMeetingBase.meetingType === RETROSPECTIVE) {
-    return {
-      ...newMeetingBase,
-      reflectionGroups: [],
-      reflections: []
-    };
+  switch (newMeetingBase.meetingType) {
+    case RETROSPECTIVE:
+    default:
+      return {
+        reflections: [],
+        reflectionGroups: [],
+        ...newMeetingBase
+      };
   }
-  return newMeetingBase;
 };
 
 export default extendNewMeetingForType;

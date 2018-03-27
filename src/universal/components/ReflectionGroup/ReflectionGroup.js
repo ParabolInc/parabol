@@ -123,7 +123,7 @@ class ReflectionGroup extends Component<Props, State> {
         hovered={this.props.hovered}
         id={reflection.id}
         isCollapsed={!this.state.isExpanded && !isTopCard}
-        stage={reflection.stage}
+        reflectionPhaseQuestion={reflection.reflectionPhaseQuestion}
       />
     ) : (
       <ReflectionCard
@@ -131,7 +131,7 @@ class ReflectionGroup extends Component<Props, State> {
         hovered={this.props.hovered}
         id={reflection.id}
         isCollapsed={!this.state.isExpanded && !isTopCard}
-        stage={reflection.stage}
+        reflectionPhaseQuestion={reflection.reflectionPhaseQuestion}
       />
     );
   };

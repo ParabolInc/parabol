@@ -101,9 +101,19 @@ export default class RethinkDataLoader {
       const retroReflections = await r.table('RetroReflection')
         .getAll(r.args(reflectionGroupIds), {index: 'reflectionGroupId'})
         .filter({isActive: true});
-      primeStandardLoader(this.retroReflections, retroReflections);
+      primeStandardLoader(this.activeRetroReflections, retroReflections);
       return reflectionGroupIds.map((reflectionGroupId) => {
         return retroReflections.filter((retroReflection) => retroReflection.reflectionGroupId === reflectionGroupId);
+      });
+    }, this.dataloaderOptions);
+    this.retroReflectionsByMeetingId = makeCustomLoader(async (meetingIds) => {
+      const r = getRethink();
+      const retroReflections = await r.table('RetroReflection')
+        .getAll(r.args(meetingIds), {index: 'meetingId'})
+        .filter({isActive: true});
+      primeStandardLoader(this.activeRetroReflections, retroReflections);
+      return meetingIds.map((meetingId) => {
+        return retroReflections.filter((retroReflection) => retroReflection.meetingId === meetingId);
       });
     }, this.dataloaderOptions);
     this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
@@ -190,8 +200,9 @@ export default class RethinkDataLoader {
   notifications = this.makeStandardLoader('Notification');
   orgApprovals = this.makeStandardLoader('OrgApproval');
   organizations = this.makeStandardLoader('Organization');
-  retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup', {isActive: true});
-  retroReflections = this.makeStandardLoader('RetroReflection', {isActive: true});
+  retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup');
+  activeRetroReflections = this.makeStandardLoader('RetroReflection', {isActive: true});
+  inactiveRetroReflections = this.makeStandardLoader('RetroReflection', {isActive: false});
   softTeamMembers = this.makeStandardLoader('SoftTeamMember');
   tasks = this.makeStandardLoader('Task');
   teamMembers = this.makeStandardLoader('TeamMember');

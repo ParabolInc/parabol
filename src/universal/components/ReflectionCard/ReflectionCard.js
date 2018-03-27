@@ -3,8 +3,6 @@
  *
  * @flow
  */
-import type {Stage} from 'universal/types/retro';
-
 // $FlowFixMe
 import {EditorState, ContentState} from 'draft-js';
 import React, {Component} from 'react';
@@ -25,6 +23,10 @@ export type Props = {|
   handleDelete?: () => any,
   // The action to take when this card is saved
   handleSave?: (editorState: EditorState) => any,
+  // A hook for any effects to perform when the user "starts editing" this card e.g. it gains focus
+  handleStartEditing?: () => any,
+  // A hook for any effects to perform when the user "stops editing" this card e.g. it loses focus
+  handleStopEditing?: () => any,
   // True when this card is being hovered over by a valid drag source
   hovered?: boolean,
   // True when the current user is the one dragging this card
@@ -38,8 +40,8 @@ export type Props = {|
   isDragging?: boolean,
   // States whether it serves as a drag preview.
   pulled?: boolean,
-  // The stage of the meeting this was created during
-  stage?: ?Stage,
+  // The display name of the phase in which this reflection was created, e.g. "What's working?"
+  reflectionPhaseQuestion?: ?string,
   // The name of the user who is currently dragging this card to a new place, if any
   userDragging?: string,
 |};
@@ -67,19 +69,6 @@ const BottomBar = styled('div')({
 const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperProps) => ({
   opacity: ((iAmDragging && !pulled)) && 0.6
 }));
-
-const getDisplayName = (stage: ?Stage): string => {
-  switch (stage) {
-    case 'positive':
-      return "What's working?";
-    case 'negative':
-      return 'Where did you get stuck?';
-    case 'change':
-      return 'What might we do differently next time?';
-    default:
-      return '';
-  }
-};
 
 export default class ReflectionCard extends Component<Props, State> {
   constructor(props: Props) {
@@ -112,6 +101,23 @@ export default class ReflectionCard extends Component<Props, State> {
     }
   };
 
+  handleEditorBlur = () => {
+    const {handleSave, handleStopEditing} = this.props;
+    if (handleSave) {
+      handleSave(this.getEditorState());
+    }
+    if (handleStopEditing) {
+      handleStopEditing();
+    }
+  };
+
+  handleEditorFocus = () => {
+    const {handleStartEditing} = this.props;
+    if (handleStartEditing) {
+      handleStartEditing();
+    }
+  };
+
   saveDeleteButton = (deleteButton: ?HTMLButtonElement) => {
     this.deleteButton = deleteButton;
   };
@@ -131,9 +137,9 @@ export default class ReflectionCard extends Component<Props, State> {
     );
   };
 
-  maybeRenderStage = () => {
-    const {isCollapsed, stage} = this.props;
-    return !isCollapsed && stage && <BottomBar>{getDisplayName(this.props.stage)}</BottomBar>;
+  maybeRenderReflectionPhaseQuestion = () => {
+    const {isCollapsed, reflectionPhaseQuestion} = this.props;
+    return !isCollapsed && reflectionPhaseQuestion && <BottomBar>{reflectionPhaseQuestion}</BottomBar>;
   };
 
   maybeRenderUserDragging = () => {
@@ -176,12 +182,16 @@ export default class ReflectionCard extends Component<Props, State> {
             ariaLabel="Edit this reflection"
             editorState={editorState}
             handleReturn={() => 'not-handled'}
-            onBlur={handleSave && (() => handleSave(editorState))}
+            onBlur={this.handleEditorBlur}
+            onFocus={this.handleEditorFocus}
             placeholder="My reflection thought..."
             setEditorState={this.setEditorState}
           />
         ) : (
-          <div>{editorState.getCurrentContent().getPlainText()}</div>
+          <EditorInputWrapper
+            editorState={editorState}
+            readOnly
+          />
         )}
       </div>
     );
@@ -201,7 +211,7 @@ export default class ReflectionCard extends Component<Props, State> {
           onMouseLeave={this.handleMouseLeave}
         >
           {this.renderCardContent()}
-          {this.maybeRenderStage()}
+          {this.maybeRenderReflectionPhaseQuestion()}
           {this.maybeRenderDelete()}
         </ReflectionCardWrapper>
       </DnDStylesWrapper>

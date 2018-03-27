@@ -86,19 +86,19 @@ storiesOf('Reflection Card', module)
     </RetroBackground>
   ))
 
-  .add('with stage', () => (
+  .add('with reflectionType', () => (
     <RetroBackground>
       <StoryContainer
         render={() => (
           <Grid>
-            {[undefined, 'positive', 'negative', 'change'].map((stage) => (
+            {[undefined, "What's working?", 'Where did you get stuck?'].map((reflectionPhaseQuestion) => (
               <ReflectionCard
                 id={newReflectionId()}
                 contentState={ContentState.createFromText('Edit me!')}
                 handleDelete={action('handle-delete')}
                 handleSave={action('handle-save')}
-                key={stage || 'undefined'}
-                stage={stage}
+                key={reflectionPhaseQuestion || 'undefined'}
+                reflectionPhaseQuestion={reflectionPhaseQuestion}
               />
             ))}
           </Grid>

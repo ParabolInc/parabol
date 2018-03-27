@@ -2,16 +2,20 @@ import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteM
 import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation';
 import {addTeamMutationNotificationUpdater, addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation';
 import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation';
+import {createReflectionUpdater} from 'universal/mutations/CreateReflectionMutation';
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation';
 import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation';
 import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation';
+import {removeReflectionUpdater} from 'universal/mutations/RemoveReflectionMutation';
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
 import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMutation';
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
+import {updateReflectionContentUpdater} from 'universal/mutations/UpdateReflectionContentMutation';
+import {updateReflectionIsEditingUpdater} from 'universal/mutations/UpdateReflectionIsEditingMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -21,6 +25,7 @@ const subscription = graphql`
       ...AddTeamMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
+      ...CreateReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
       ...KillNewMeetingMutation_team @relay(mask: false)
@@ -29,6 +34,7 @@ const subscription = graphql`
       ...NewMeetingCheckInMutation_team @relay(mask: false)
       ...PromoteFacilitatorMutation_team @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
+      ...RemoveReflectionMutation_team @relay(mask: false)
       ...RemoveTeamMemberMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RequestFacilitatorMutation_team @relay(mask: false)
@@ -36,6 +42,8 @@ const subscription = graphql`
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
+      ...UpdateReflectionContentMutation_team @relay(mask: false)
+      ...UpdateReflectionIsEditingMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
     }
@@ -71,6 +79,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           addTeamMutationNotificationUpdater(payload, store, viewerId, options);
           break;
         case 'CreateGitHubIssuePayload':
+          break;
+        case 'CreateReflectionPayload':
+          createReflectionUpdater(payload, store);
           break;
         case 'RemoveTeamMemberSelfPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);
@@ -111,6 +122,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'RemoveOrgUserPayload':
           removeOrgUserTeamUpdater(payload, store, viewerId);
           break;
+        case 'RemoveReflectionPayload':
+          removeReflectionUpdater(payload, store);
+          break;
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);
           break;
@@ -124,6 +138,12 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'UpdateCreditCardPayload':
           break;
         case 'UpdateCheckInQuestionPayload':
+          break;
+        case 'UpdateReflectionContentPayload':
+          updateReflectionContentUpdater(payload, store);
+          break;
+        case 'UpdateReflectionIsEditingPayload':
+          updateReflectionIsEditingUpdater(payload, store);
           break;
         case 'UpgradeToProPayload':
           break;
