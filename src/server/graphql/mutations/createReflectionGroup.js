@@ -40,8 +40,8 @@ export default {
 
     // VALIDATION
     if (reflectionIds.length > 2) return sendTooManyReflectionsError(authToken, reflectionIds);
-    const reflections = await dataLoader.get('activeRetroReflections').loadMany(reflectionIds);
-    if (reflections.some((reflection) => !reflection)) return sendReflectionNotFoundError(authToken, reflectionIds);
+    const reflections = await dataLoader.get('retroReflections').loadMany(reflectionIds);
+    if (reflections.some((reflection) => !reflection || !reflection.isActive)) return sendReflectionNotFoundError(authToken, reflectionIds);
 
     // RESOLUTION
     const reflectionGroupId = shortid.generate();
