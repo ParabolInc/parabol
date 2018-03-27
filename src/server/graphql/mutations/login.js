@@ -81,6 +81,7 @@ const login = {
       welcomeSentAt: now
     };
     await r.table('User').insert(newUser);
+    await sendSegmentIdentify(user.id);
 
     // don't await
     setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
