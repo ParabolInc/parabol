@@ -4,7 +4,11 @@ const extendNewMeetingForType = (newMeetingBase) => {
   switch (newMeetingBase.meetingType) {
     case RETROSPECTIVE:
     default:
-      return newMeetingBase;
+      return {
+        reflections: [],
+        reflectionGroups: [],
+        ...newMeetingBase
+      };
   }
 };
 
