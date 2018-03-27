@@ -74,9 +74,9 @@ const actions = {
   },
 
   logout: (driver) => async () => {
-    await driver
+    const el = await driver
       .findElement(By.css('a[title="Sign Out"]'))
-      .click();
+    await el.click();
     await all(
       driver
         .wait(until.urlMatches(BASE_URL_REGEX), waitTimes.short, 'Logging out did not redirect to the base URL'),
