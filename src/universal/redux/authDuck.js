@@ -1,6 +1,6 @@
 import jwtDecode from 'jwt-decode';
 import raven from 'raven-js';
-import {segmentEventIdentify, segmentEventReset} from 'universal/redux/segmentActions';
+import {selectSegmentTraits, segmentEventReset} from 'universal/redux/segmentActions';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -93,7 +93,11 @@ export function setAuthToken(authToken, user) {
       }
     });
     if (user) {
-      dispatch(segmentEventIdentify(user));
+      /*
+       * Update our segment store with the user's traits so they may be
+       * included on future calls to segment:
+       */
+      selectSegmentTraits(user);
     }
   };
 }
