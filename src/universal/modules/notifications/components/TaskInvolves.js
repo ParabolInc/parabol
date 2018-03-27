@@ -4,17 +4,15 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import withRouter from 'react-router-dom/es/withRouter';
-import Button from 'universal/components/Button/Button';
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
+import {Button, IconAvatar, Row} from 'universal/components';
+import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
-import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import appTheme from 'universal/styles/theme/appTheme';
-import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {ACTIVE, ASSIGNEE, DONE, FUTURE, MENTIONEE, STUCK} from 'universal/utils/constants';
+import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
 import {clearNotificationLabel} from '../helpers/constants';
 
 const involvementWord = {
@@ -86,11 +84,6 @@ class TaskInvolves extends Component {
     const {teamName} = team;
     const {status, tags, assignee} = task;
     const action = involvementWord[involvement];
-    const taskStyles = css(
-      styles.taskListView,
-      styles[status],
-      tags.includes('private') && styles.private
-    );
     return (
       <Row compact>
         <div className={css(styles.icon)}>
@@ -112,7 +105,11 @@ class TaskInvolves extends Component {
             </span>
             <span>{':'}</span>
           </div>
-          <div className={taskStyles}>
+          <div className={css(styles.taskListView)}>
+            <div className={css(styles.indicatorsBlock)}>
+              <OutcomeCardStatusIndicator status={status} />
+              {tags.includes('private') && <OutcomeCardStatusIndicator status="private" />}
+            </div>
             <Editor
               readOnly
               editorState={editorState}
@@ -172,31 +169,15 @@ const styleThunk = () => ({
   ...defaultStyles,
 
   taskListView: {
-    backgroundColor: appTheme.palette.mid10l,
-    borderRadius: ui.borderRadiusMedium,
-    borderLeft: '.25rem solid',
+    backgroundColor: appTheme.palette.light,
+    borderRadius: ui.cardBorderRadius,
     margin: '.25rem 0 0',
     padding: '.5rem'
   },
 
-  [ACTIVE]: {
-    borderColor: labels.taskStatus[ACTIVE].color
-  },
-
-  [STUCK]: {
-    borderColor: labels.taskStatus[STUCK].color
-  },
-
-  [DONE]: {
-    borderColor: labels.taskStatus[DONE].color
-  },
-
-  [FUTURE]: {
-    borderColor: labels.taskStatus[FUTURE].color
-  },
-
-  private: {
-    backgroundColor: ui.privateCardBgColor
+  indicatorsBlock: {
+    display: 'flex',
+    margin: '0 0 .5rem'
   }
 });
 

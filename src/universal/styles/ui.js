@@ -314,6 +314,8 @@ const ui = {
   cardDragStyle: {
     boxShadow: shadow[3]
   },
+  cardStatusIndicatorHeight: '.25rem',
+  cardStatusIndicatorWidth: '1.875rem',
 
   // CTA Panels
   // ---------------------------------------------------------------------------
