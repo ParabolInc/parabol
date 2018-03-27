@@ -5,6 +5,9 @@
  */
 import {commitMutation} from 'react-relay';
 import {Environment, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime';
+import {maybe} from 'maeby';
+
+import fmap2 from 'universal/utils/fmap2';
 
 type Variables = {
   content: string,
@@ -36,33 +39,24 @@ const mutation = graphql`
 `;
 
 export const updateReflectionContentUpdater = (payload: ?RecordSourceProxy, store: RecordSourceSelectorProxy) => {
-  if (!payload) {
-    return;
-  }
-  const payloadMeeting = payload.getLinkedRecord('meeting');
-  if (!payloadMeeting) {
-    return;
-  }
-  const meetingId = payloadMeeting.getValue('id');
-  const reflection = payload.getLinkedRecord('reflection');
-  if (!reflection) {
-    return;
-  }
-  const meeting = store.get(meetingId);
-  if (!meeting) {
-    return;
-  }
-  const reflections = meeting.getLinkedRecords('reflections');
-  if (!reflections) {
-    return;
-  }
-  const reflectionToUpdate = reflections.find((r) => (
-    r.getValue('id') === reflection.getValue('id')
-  ));
-  if (!reflectionToUpdate) {
-    return;
-  }
-  reflectionToUpdate.setValue('content', reflection.getValue('content'));
+  const maybeReflections = maybe(payload)
+    .bind((pl) => pl.getLinkedRecord('meeting'))
+    .bind((payloadMeeting) => payloadMeeting.getValue('id'))
+    .bind((meetingId) => store.get(meetingId))
+    .bind((meeting) => meeting.getLinkedRecords('reflections'));
+  const maybeReflection = maybe(payload)
+    .bind((pl) => pl.getLinkedRecord('reflection'));
+  const maybeReflectionId = maybeReflection
+    .bind((reflection) => reflection.getValue('id'));
+  const maybeReflectionContent = maybeReflection
+    .bind((reflection) => reflection.getValue('content'));
+  const maybeReflectionToUpdate = fmap2((reflections, reflectionId) => (
+    reflections.find((r) => r.getValue('id') === reflectionId)
+  ), maybeReflections, maybeReflectionId);
+
+  fmap2((reflectionToUpdate, reflectionContent) => {
+    reflectionToUpdate.setValue('content', reflectionContent);
+  }, maybeReflectionToUpdate, maybeReflectionContent);
 };
 
 const getOptimisticResponse = (variables: Variables, meetingId: string) => ({

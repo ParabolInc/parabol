@@ -100,3 +100,29 @@ export const sendAlreadyProTierError = (authToken, orgId) => {
   return sendAuthRaven(authToken, 'Easy there', breadcrumb);
 };
 
+export const sendAlreadyRemovedVoteError = (authToken, reflectionGroupId) => {
+  const breadcrumb = {
+    message: 'You’ve already removed that vote',
+    category: 'Already removed vote',
+    data: {reflectionGroupId}
+  };
+  return sendAuthRaven(authToken, 'Easy there', breadcrumb);
+};
+
+export const sendNoVotesLeftError = (authToken, reflectionGroupId) => {
+  const breadcrumb = {
+    message: 'You’re all out of votes!',
+    category: 'Out of votes',
+    data: {reflectionGroupId}
+  };
+  return sendAuthRaven(authToken, 'Easy there', breadcrumb);
+};
+
+export const sendMaxVotesPerGroupError = (authToken, reflectionGroupId, maxVotesPerGroup) => {
+  const breadcrumb = {
+    message: `Unfortunately, you can only vote ${maxVotesPerGroup} times per theme`,
+    category: 'Max votes per theme',
+    data: {reflectionGroupId}
+  };
+  return sendAuthRaven(authToken, 'Feeling passionate? We like that', breadcrumb);
+};

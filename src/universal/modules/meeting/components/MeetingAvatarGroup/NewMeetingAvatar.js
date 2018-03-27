@@ -92,7 +92,8 @@ const NewMeetingAvatar = (props: Props) => {
   const {facilitatorUserId, localPhase, localStage} = newMeeting || {};
   const localPhaseType = localPhase && localPhase.phaseType;
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES;
-  const {teamMemberId, isConnected, isSelf, isCheckedIn, picture = defaultUserAvatar, userId} = teamMember;
+  const {teamMemberId, isConnected, isSelf, meetingMember, picture = defaultUserAvatar, userId} = teamMember;
+  const isCheckedIn = meetingMember ? meetingMember.isCheckedIn : null;
   const avatarIsFacilitating = userId === facilitatorUserId;
   const handleNavigate = canNavigate ? gotoStage : undefined;
   return (
@@ -137,7 +138,9 @@ export default createFragmentContainer(
   graphql`
     fragment NewMeetingAvatar_teamMember on TeamMember {
       teamMemberId: id
-      isCheckedIn
+      meetingMember {
+        isCheckedIn 
+      }
       isConnected
       isSelf
       picture

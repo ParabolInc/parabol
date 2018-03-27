@@ -13,12 +13,12 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
-import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
 import ui from 'universal/styles/ui';
 import styled from 'react-emotion';
 import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt';
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import {CHECKIN} from 'universal/utils/constants';
+import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation';
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -55,11 +55,11 @@ type Props = {
 const NewMeetingCheckIn = (props: Props) => {
   const {atmosphere, gotoNext, onError, onCompleted, submitMutation, submitting, team} = props;
   const {newMeeting} = team;
-  const {facilitator: {facilitatorName, facilitatorUserId}, localStage: {localStageId, teamMember}, phases} = newMeeting;
-  const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
+  const {meetingId, facilitator: {facilitatorName, facilitatorUserId}, localStage: {localStageId, teamMember}, phases} = newMeeting;
+  const makeCheckinPressFactory = (userId) => (isCheckedIn) => () => {
     if (submitting) return;
     submitMutation();
-    MeetingCheckInMutation(atmosphere, teamMemberId, isCheckedIn, onError, onCompleted);
+    NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn}, onError, onCompleted);
     gotoNext(localStageId);
   };
   const {isSelf: isMyMeetingSection} = teamMember;
@@ -99,7 +99,7 @@ const NewMeetingCheckIn = (props: Props) => {
       {isFacilitating &&
       <MeetingControlBar>
         <CheckInControls
-          checkInPressFactory={makeCheckinPressFactory(teamMember.id)}
+          checkInPressFactory={makeCheckinPressFactory(teamMember.userId)}
           currentMemberName={teamMember.preferredName}
           nextMemberName={nextMemberName}
         />
@@ -115,6 +115,7 @@ export default createFragmentContainer(
     fragment NewMeetingCheckIn_team on Team {
       ...NewMeetingCheckInPrompt_team
       newMeeting {
+        meetingId: id
         facilitatorStageId
         facilitator {
           facilitatorUserId: id

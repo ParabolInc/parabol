@@ -3,26 +3,21 @@
  *
  * @flow
  */
-import type {AuthToken} from 'universal/types/auth';
+import type {Context} from 'universal/types/graphql';
 
 import {GraphQLID, GraphQLNonNull, GraphQLBoolean} from 'graphql';
 
 import getRethink from 'server/database/rethinkDriver';
 import UpdateRetroReflectionIsEditingPayload from 'server/graphql/types/UpdateReflectionIsEditingPayload';
 import {isTeamMember} from 'server/utils/authorization';
-import RethinkDataLoader from 'server/utils/RethinkDataLoader';
+import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {sendMeetingNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
 import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 
 type Args = {
   isEditing: boolean,
   reflectionId: string,
-};
-
-type Context = {
-  authToken: AuthToken,
-  dataLoader: RethinkDataLoader,
-  socketId: string
 };
 
 export default {
@@ -49,16 +44,16 @@ export default {
     // AUTH  / VALIDATION
     const reflection = await r.table('RetroReflection').get(reflectionId);
     if (!reflection) {
-      throw new Error(`Reflection with id "${reflectionId}" does not exist.`);
+      return sendReflectionNotFoundError(authToken, reflectionId);
     }
     const {meetingId} = reflection;
     const meeting = await dataLoader.get('newMeetings').load(meetingId);
     if (!meeting) {
-      throw new Error(`Reflection "${reflectionId}" points to meeting "${meetingId}", which does not exist.`);
+      return sendMeetingNotFoundError(authToken, meetingId);
     }
     const {teamId} = meeting;
     if (!isTeamMember(authToken, teamId)) {
-      throw new Error(`Unauthorized.  You do not have access to team "${teamId}".`);
+      return sendTeamAccessError(authToken, teamId);
     }
 
     // RESOLUTION
