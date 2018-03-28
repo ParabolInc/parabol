@@ -2,13 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import portal from 'react-portal-hoc';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import Button from 'universal/components/Button/Button';
+import {Button, FormError} from 'universal/components';
 import {DashModal} from 'universal/components/Dashboard';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import Type from 'universal/components/Type/Type';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RejectOrgApprovalMutation from 'universal/mutations/RejectOrgApprovalMutation';
-import formError from 'universal/styles/helpers/formError';
 import ui from 'universal/styles/ui';
 import rejectOrgApprovalValidation from './rejectOrgApprovalValidation';
 import getGraphQLError from 'universal/utils/relay/getGraphQLError';
@@ -61,7 +60,7 @@ const RejectOrgApprovalModal = (props) => {
         {'Type a response below and '}<br />{`we’ll pass it along to ${inviterName}.`}
       </Type>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {error && <div className={css(formError)}>{error.message}</div>}
+        {error && <FormError>{error.message}</FormError>}
         <Field
           component={TextAreaField}
           name="reason"
@@ -73,9 +72,9 @@ const RejectOrgApprovalModal = (props) => {
             colorPalette="warm"
             isBlock
             label={`Reject ${inviteeEmail}`}
+            onClick={handleSubmit(onSubmit)}
             size={ui.modalButtonSize}
             type="submit"
-            onClick={handleSubmit(onSubmit)}
             waiting={submitting}
           />
         </div>
