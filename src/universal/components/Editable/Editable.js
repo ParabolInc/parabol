@@ -201,6 +201,7 @@ const styleThunk = (custom, {typeStyles}) => ({
     border: 0,
     borderRadius: 0,
     display: 'inline-block',
+    fontFamily: 'inherit',
     outline: 'none',
     padding: 0,
     verticalAlign: 'top',
