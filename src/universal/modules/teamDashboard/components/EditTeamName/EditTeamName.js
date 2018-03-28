@@ -4,13 +4,12 @@ import {Field, reduxForm} from 'redux-form';
 import Editable from 'universal/components/Editable/Editable';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UpdateTeamNameMutation from 'universal/mutations/UpdateTeamNameMutation';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import editTeamNameValidation from './editTeamNameValidation';
 
 const fieldStyles = {
   ...ui.dashHeaderTitleStyles,
-  placeholderColor: appTheme.palette.mid70l
+  placeholderColor: ui.placeholderColor
 };
 
 const validate = (values) => {

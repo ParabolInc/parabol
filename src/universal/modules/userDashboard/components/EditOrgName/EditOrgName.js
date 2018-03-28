@@ -4,14 +4,15 @@ import {Field, reduxForm} from 'redux-form';
 import Editable from 'universal/components/Editable/Editable';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UpdateOrgMutation from 'universal/mutations/UpdateOrgMutation';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import editOrgNameValidation from './editOrgNameValidation';
 
 const fieldStyles = {
-  color: appTheme.palette.mid,
+  color: ui.colorText,
   fontSize: appTheme.typography.s7,
   lineHeight: appTheme.typography.s8,
-  placeholderColor: appTheme.palette.mid70l
+  placeholderColor: ui.placeholderColor
 };
 
 const validate = (values) => {

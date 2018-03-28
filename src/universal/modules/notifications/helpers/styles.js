@@ -3,25 +3,24 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 export default {
   message: {
-    color: appTheme.palette.dark,
+    color: ui.colorText,
     flex: 1,
     fontSize: appTheme.typography.s3,
     lineHeight: '1.375rem',
     marginLeft: ui.rowCompactGutter
   },
   messageVar: {
-    color: appTheme.palette.cool,
-    fontWeight: 600
+    textDecoration: 'underline'
   },
   messageSub: {
-    color: appTheme.palette.dark10d,
+    color: ui.colorText,
     fontSize: appTheme.typography.s2,
     marginTop: '.25rem'
   },
   notifLink: {
     cursor: 'pointer',
     ':hover': {
-      color: appTheme.palette.cool50d
+      color: appTheme.palette.warm
     }
   },
   button: {

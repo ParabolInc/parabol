@@ -90,6 +90,7 @@ const styleThunk = () => ({
   avatarAndName: {
     alignItems: 'flex-start',
     display: 'flex',
+    flexShrink: 0,
     margin: '0 0 1rem',
     maxWidth: '40rem',
     width: '100%'
