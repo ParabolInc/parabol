@@ -3,22 +3,11 @@
  *
  * @flow
  */
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
-
-import {maybe} from 'maeby';
 import {commitMutation} from 'react-relay';
-import {Environment, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime';
-
-import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
-import fmap3 from 'universal/utils/fmap3';
+import handleCreateReflections from 'universal/mutations/handlers/handleCreateReflections';
 import clientTempId from 'universal/utils/relay/clientTempId';
-
-type Variables = {
-  content?: string,
-  meetingId: string,
-  retroPhaseItemId: string,
-  sortOrder: number
-};
+import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 
 graphql`
   fragment CreateReflectionMutation_team on CreateReflectionPayload {
@@ -32,70 +21,54 @@ graphql`
       retroPhaseItemId
       sortOrder
     }
-}
+  }
 `;
 
 const mutation = graphql`
-  mutation CreateReflectionMutation($content: String, $meetingId: ID!, $retroPhaseItemId: ID!, $sortOrder: Float!) {
-    createReflection(content: $content, meetingId: $meetingId, retroPhaseItemId: $retroPhaseItemId, sortOrder: $sortOrder) {
+  mutation CreateReflectionMutation($input: CreateReflectionInput!) {
+    createReflection(input: $input) {
       ...CreateReflectionMutation_team @relay(mask: false)
     }
   }
 `;
 
-export const createReflectionUpdater = (payload: ?RecordProxy, store: RecordSourceSelectorProxy) => {
-  const maybeNewReflection = maybe(payload)
-    .bind((pl) => pl.getLinkedRecord('reflection'));
-  const maybeMeeting = maybe(payload)
-    .bind((pl) => pl.getLinkedRecord('meeting'))
-    .bind((payloadMeeting) => payloadMeeting.getValue('id'))
-    .bind((meetingId) => store.get(meetingId));
-  const maybeCurrentReflections = maybeMeeting
-    .bind((meeting) => meeting.getLinkedRecords('reflections'));
-
-  fmap3((currentReflections, newReflection, meeting) => {
-    if (currentReflections.find((r) => r.getValue('id') === newReflection.getValue('id'))) {
-      return;
-    }
-    const newReflections = [...currentReflections, newReflection].sort((a, b) => {
-      const sortOrderA = a.getValue('sortOrder');
-      const sortOrderB = b.getValue('sortOrder');
-      return sortOrderA - sortOrderB;
-    });
-    meeting.setLinkedRecords(newReflections, 'reflections');
-  }, maybeCurrentReflections, maybeNewReflection, maybeMeeting);
+export const createReflectionTeamUpdater = (payload, store) => {
+  const reflection = payload.getLinkedRecord('reflection');
+  handleCreateReflections(reflection, store);
 };
 
-const getOptimisticResponse = (variables: Variables) => ({
-  createReflection: {
-    error: null,
-    meeting: null,
-    reflection: {
-      ...variables,
-      id: clientTempId(),
-      isViewerCreator: true
-    }
-  }
-});
-
-const CreateReflectionMutation = (
-  environment: Environment,
-  variables: Variables,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
-) => {
-  return commitMutation(environment, {
+const CreateReflectionMutation = (atmosphere, variables, context, onError, onCompleted) => {
+  return commitMutation(atmosphere, {
     mutation,
-    variables: {
-      content: makeEmptyStr(),
-      ...variables
-    },
+    variables,
     onCompleted,
     onError,
-    optimisticResponse: getOptimisticResponse(variables),
-    updater: (store: RecordSourceSelectorProxy) => {
+    updater: (store) => {
       const payload = store.getRootField('createReflection');
-      createReflectionUpdater(payload, store);
+      if (!payload) return;
+      createReflectionTeamUpdater(payload, store);
+    },
+    optimisticUpdater: (store) => {
+      const {input} = variables;
+      const {viewerId} = atmosphere;
+      const {meetingId} = context;
+      const nowISO = new Date().toJSON();
+      const optimisticReflection = {
+        id: clientTempId(),
+        content: input.content || makeEmptyStr(),
+        createdAt: nowISO,
+        creatorId: viewerId,
+        isActive: true,
+        isEditing: true,
+        isViewerCreator: true,
+        meetingId,
+        retroPhaseItemId: input.retroPhaseItemId,
+        sortOrder: input.sortOrder,
+        updatedAt: nowISO
+      };
+      const reflectionNode = createProxyRecord(store, 'RetroReflection', optimisticReflection);
+      reflectionNode.setLinkedRecord(store.get(meetingId), 'meeting');
+      handleCreateReflections(reflectionNode, store);
     }
   });
 };

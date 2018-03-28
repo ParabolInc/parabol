@@ -4,30 +4,58 @@
  *
  * @flow
  */
-import React from 'react';
+import React, {Component} from 'react';
 import styled from 'react-emotion';
-
-import PlainButton from 'universal/components/PlainButton/PlainButton';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
+import {createFragmentContainer} from 'react-relay';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
+import StyledError from 'universal/components/StyledError';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import PlainButton from 'universal/components/PlainButton/PlainButton';
+import type {RetroReflection} from 'universal/types/schema.flow';
 
 type Props = {
-  handleClick: () => any
+  atmosphere: Object,
+  columnReflections: Array<RetroReflection>,
+  // retroPhaseItem,
+  // meeting
+  ...MutationProps
 };
 
-const Plus = styled(
-  (props) => <span aria-hidden="true" {...props}>+</span>
-)({
+const Plus = styled('span')({
   paddingRight: '0.5rem'
 });
 
-const AddReflectionButton = (props: Props) => (
-  <PlainButton {...props} onClick={props.handleClick}>
-    <Plus /><span>Add a reflection</span>
-  </PlainButton>
-);
+class AddReflectionButton extends Component<Props> {
+  handleClick = () => {
+    const {atmosphere, columnReflections, meeting: {meetingId}, retroPhaseItem: {retroPhaseItemId}, submitMutation, onCompleted, onError} = this.props;
+    const input = {
+      retroPhaseItemId,
+      sortOrder: getNextSortOrder(columnReflections)
+    };
+    submitMutation();
+    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted);
+  };
 
-export default styled(AddReflectionButton)({
+  render() {
+    const {className, error, submitting} = this.props;
+    return (
+      <React.Fragment>
+        <PlainButton className={className} onClick={this.handleClick} waiting={submitting}>
+          <Plus>{'+'}</Plus>
+          <span>Add a reflection</span>
+        </PlainButton>
+        {error && <StyledError>{error.message}</StyledError>}
+      </React.Fragment>
+    );
+  }
+}
+
+const styledReflectionButton = styled(AddReflectionButton)({
   border: `2px dashed ${appTheme.palette.mid30a}`,
   borderRadius: 3,
   color: appTheme.palette.dark,
@@ -35,3 +63,15 @@ export default styled(AddReflectionButton)({
   textAlign: 'center',
   width: ui.retroCardWidth
 });
+
+export default createFragmentContainer(
+  withAtmosphere(withMutationProps(styledReflectionButton)),
+  graphql`
+    fragment AddReflectionButton_retroPhaseItem on RetroPhaseItem {
+      retroPhaseItemId: id
+    }
+    fragment AddReflectionButton_meeting on RetrospectiveMeeting {
+      meetingId: id
+    }
+  `
+)

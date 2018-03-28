@@ -4,60 +4,33 @@
  *
  * @flow
  */
-import type {RetroPhaseItem, RetroReflection, Team} from 'universal/types/schema.flow';
-import type TeamFragment from './__generated__/ReflectionPhaseColumn_team.graphql';
-
+import type {RetroReflection} from 'universal/types/schema.flow';
+import type {ReflectionPhaseColumn_meeting as Meeting} from './__generated__/ReflectionPhaseColumn_meeting.graphql';
+import type {ReflectionPhaseColumn_retroPhaseItem as RetroPhaseItem} from './__generated__/ReflectionPhaseColumn_retroPhaseItem.graphql';
 // $FlowFixMe
 import {EditorState} from 'draft-js';
-import React from 'react';
+import React, {Component} from 'react';
 import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
-import {Environment} from 'relay-runtime';
 
 import AddReflectionButton from 'universal/components/AddReflectionButton/AddReflectionButton';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation';
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation';
-import UpdateReflectionIsEditingMutation from 'universal/mutations/UpdateReflectionIsEditingMutation';
+import EditReflectionMutation from 'universal/mutations/EditReflectionMutation';
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation';
 import deserialize from 'universal/utils/draftjs/deserialize';
 import serialize from 'universal/utils/draftjs/serialize';
-import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import ui from 'universal/styles/ui';
-
-// Helpers
-
-const forPhaseItem = (retroPhaseItemId: string, reflections: Array<TeamFragment>) => (
-  reflections
-    .filter((reflection) => reflection.retroPhaseItemId === retroPhaseItemId)
-);
 
 // Actions
 
-const handleClickAddReflection = (
-  environment: Environment,
-  meetingId: string,
-  retroPhaseItemId: string,
-  reflections: Array<RetroReflection>
-) => {
-  CreateReflectionMutation(environment, {
-    meetingId,
-    retroPhaseItemId,
-    sortOrder: getNextSortOrder(reflections)
-  });
+const handleDelete = (environment: Object, reflectionId: string, meetingId: string) => {
+
 };
 
-const handleDelete = (environment: Environment, reflectionId: string, meetingId: string) => {
-  RemoveReflectionMutation(
-    environment,
-    {reflectionId},
-    meetingId
-  );
-};
-
-const handleSave = (environment: Environment, reflectionId: string, meetingId: string, editorState: EditorState) => {
+const handleSave = (environment: Object, reflectionId: string, meetingId: string, editorState: EditorState) => {
   const content = serialize(editorState.getCurrentContent());
   UpdateReflectionContentMutation(
     environment,
@@ -66,16 +39,16 @@ const handleSave = (environment: Environment, reflectionId: string, meetingId: s
   );
 };
 
-const handleStartEditing = (environment: Environment, reflectionId: string, meetingId: string) => {
-  UpdateReflectionIsEditingMutation(
+const handleStartEditing = (environment: Object, reflectionId: string, meetingId: string) => {
+  EditReflectionMutation(
     environment,
     {reflectionId, isEditing: true},
     meetingId
   );
 };
 
-const handleStopEditing = (environment: Environment, reflectionId: string, meetingId: string) => {
-  UpdateReflectionIsEditingMutation(
+const handleStopEditing = (environment: Object, reflectionId: string, meetingId: string) => {
+  EditReflectionMutation(
     environment,
     {reflectionId, isEditing: false},
     meetingId
@@ -107,70 +80,92 @@ const TypeTitle = styled('div')({
   color: ui.labelHeadingColor
 });
 
+const AddReflectionButtonGroup = styled('div')({
+  margin: '0.7rem 0.7rem 0 0'
+});
+
 type Props = {
-  atmosphere: Environment,
-  retroPhaseItem: RetroPhaseItem,
-  team: Team
+  atmosphere: Object,
+  meeting: Meeting,
+  retroPhaseItem: RetroPhaseItem
 };
 
-const ReflectionPhaseColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}: Props) => (
-  newMeeting && (
-    <ColumnWrapper>
-      <TypeHeader>
-        <TypeTitle>{retroPhaseItem.title.toUpperCase()}</TypeTitle>
-        <TypeDescription>{retroPhaseItem.question}</TypeDescription>
-      </TypeHeader>
-      <ReflectionsArea>
-        {newMeeting.reflections && forPhaseItem(retroPhaseItem.id, newMeeting.reflections).map((reflection) => (
-          <div style={{margin: '0.7rem 0.7rem 0 0'}} key={reflection.id}>
-            {reflection.isViewerCreator ? (
-              <ReflectionCard
-                handleDelete={() => handleDelete(atmosphere, reflection.id, newMeeting.id)}
-                handleSave={(editorState: EditorState) => handleSave(atmosphere, reflection.id, newMeeting.id, editorState)}
-                handleStartEditing={() => handleStartEditing(atmosphere, reflection.id, newMeeting.id)}
-                handleStopEditing={() => handleStopEditing(atmosphere, reflection.id, newMeeting.id)}
-                id={reflection.id}
-                contentState={deserialize(reflection.content)}
-              />
-            ) : (
-              <AnonymousReflectionCard contentState={deserialize(reflection.content)} isEditing={reflection.isEditing} />
-            )}
-          </div>
-        ))}
-        <div style={{margin: '0.7rem 0.7rem 0 0'}}>
-          <AddReflectionButton
-            handleClick={() => handleClickAddReflection(
-              atmosphere, newMeeting.id, retroPhaseItem.id, newMeeting.reflections || []
-            )}
-          />
-        </div>
-      </ReflectionsArea>
-    </ColumnWrapper>
-  )
-);
+type State = {
+  columnReflections: Array<RetroReflection>
+};
+
+class ReflectionPhaseColumn extends Component<Props, State> {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+    const {meeting: {reflections: nextReflections}, retroPhaseItem: {retroPhaseItemId}} = nextProps;
+    if (nextReflections === prevState.reflections) return null;
+    return {
+      reflections: nextReflections,
+      columnReflections: nextReflections.filter((reflection) => reflection.retroPhaseItemId === retroPhaseItemId)
+    }
+  }
+
+  constructor(props) {
+    super(props);
+    const {meeting: {reflections}, retroPhaseItem: {retroPhaseItemId}} = props;
+    this.state = {
+      reflections,
+      columnReflections: reflections.filter((reflection) => reflection.retroPhaseItemId === retroPhaseItemId)
+    };
+  }
+
+  render() {
+    const {atmosphere, meeting: {meetingId}, retroPhaseItem} = this.props;
+    const {columnReflections} = this.state;
+    return (
+      <ColumnWrapper>
+        <TypeHeader>
+          <TypeTitle>{retroPhaseItem.title.toUpperCase()}</TypeTitle>
+          <TypeDescription>{retroPhaseItem.question}</TypeDescription>
+        </TypeHeader>
+        <ReflectionsArea>
+          {columnReflections.map((reflection) => (
+            <div style={{margin: '0.7rem 0.7rem 0 0'}} key={reflection.id}>
+              {reflection.isViewerCreator ? (
+                <ReflectionCard
+                  handleDelete={() => handleDelete(atmosphere, reflection.id, newMeeting.id)}
+                  handleSave={(editorState: EditorState) => handleSave(atmosphere, reflection.id, newMeeting.id, editorState)}
+                  handleStartEditing={() => handleStartEditing(atmosphere, reflection.id, newMeeting.id)}
+                  handleStopEditing={() => handleStopEditing(atmosphere, reflection.id, newMeeting.id)}
+                  id={reflection.id}
+                  contentState={deserialize(reflection.content)}
+                />
+              ) : (
+                <AnonymousReflectionCard reflection={reflection} />
+              )}
+            </div>
+          ))}
+          <AddReflectionButtonGroup>
+            <AddReflectionButton columnReflections={columnReflections} />
+          </AddReflectionButtonGroup>
+        </ReflectionsArea>
+      </ColumnWrapper>
+    )
+  }
+};
 
 export default createFragmentContainer(
   withAtmosphere(ReflectionPhaseColumn),
   graphql`
     fragment ReflectionPhaseColumn_retroPhaseItem on RetroPhaseItem {
-      id
+      retroPhaseItemId: id
       title
       question
     }
 
-    fragment ReflectionPhaseColumn_team on Team {
-      newMeeting {
+    fragment ReflectionPhaseColumn_meeting on RetrospectiveMeeting {
+      meetingId: id
+      reflections {
+        content
         id
-        ...on RetrospectiveMeeting {
-          reflections {
-            content
-            id
-            isEditing
-            isViewerCreator
-            retroPhaseItemId
-            sortOrder
-          }
-        }
+        isEditing
+        isViewerCreator
+        retroPhaseItemId
+        sortOrder
       }
     }
   `

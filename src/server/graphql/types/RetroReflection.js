@@ -35,10 +35,7 @@ const RetroReflection = new GraphQLObjectType({
     },
     isEditing: {
       description: 'Whether or not this reflection is currently being edited by a teammate',
-      type: new GraphQLNonNull(GraphQLBoolean),
-      // NOTE: we statically resolve to false here, as the editing state is not persisted,
-      // but rather declared through the `UpdateReflectionIsEditingPayload` on the `TeamSubscription`.
-      resolve: () => false
+      type: new GraphQLNonNull(GraphQLBoolean)
     },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',

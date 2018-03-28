@@ -1,13 +1,11 @@
 /**
  * Removes a reflection for the retrospective meeting.
  *
- * @flow
  */
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
 
 import {maybe} from 'maeby';
 import {commitMutation} from 'react-relay';
-import {Environment, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime';
 
 import fmap3 from 'universal/utils/fmap3';
 
@@ -34,7 +32,7 @@ const mutation = graphql`
   }
 `;
 
-export const removeReflectionUpdater = (payload: ?RecordProxy, store: RecordSourceSelectorProxy) => {
+export const removeReflectionTeamUpdater = (payload, store) => {
   const maybeMeeting = maybe(payload)
     .bind((pl) => pl.getLinkedRecord('meeting'))
     .bind((payloadMeeting) => payloadMeeting.getValue('id'))
@@ -52,18 +50,8 @@ export const removeReflectionUpdater = (payload: ?RecordProxy, store: RecordSour
   }, maybeMeeting, maybeReflections, maybeReflection);
 };
 
-const getOptimisticResponse = (variables: Variables, meetingId: string) => ({
-  removeReflection: {
-    meeting: {
-      __typename: 'RetrospectiveMeeting',
-      id: meetingId
-    },
-    reflection: variables
-  }
-});
-
 const CreateReflectionMutation = (
-  environment: Environment,
+  environment: Object,
   variables: Variables,
   meetingId: string,
   onError?: ErrorHandler,
@@ -72,13 +60,13 @@ const CreateReflectionMutation = (
   return commitMutation(environment, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('removeReflection');
+      if (!payload) return;
+      removeReflectionTeamUpdater(payload, store);
+    },
     onCompleted,
     onError,
-    optimisticResponse: getOptimisticResponse(variables, meetingId),
-    updater: (store: RecordSourceSelectorProxy) => {
-      const payload = store.getRootField('removeReflection');
-      removeReflectionUpdater(payload, store);
-    }
   });
 };
 

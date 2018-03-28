@@ -17,7 +17,7 @@ type Variables = {
 };
 
 graphql`
-  fragment UpdateReflectionIsEditingMutation_team on UpdateReflectionIsEditingPayload {
+  fragment EditReflectionMutation_team on EditReflectionPayload {
     meeting {
       id
     }
@@ -29,15 +29,15 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation UpdateReflectionIsEditingMutation($reflectionId: ID!, $isEditing: Boolean!) {
-    updateReflectionIsEditing(reflectionId: $reflectionId, isEditing: $isEditing) {
-      ...UpdateReflectionIsEditingMutation_team @relay(mask: false)
+  mutation EditReflectionMutation($reflectionId: ID!, $isEditing: Boolean!) {
+    editReflection(reflectionId: $reflectionId, isEditing: $isEditing) {
+      ...EditReflectionMutation_team @relay(mask: false)
     }
   }
 `;
 
 const getOptimisticResponse = (variables: Variables, meetingId: string) => ({
-  updateReflectionIsEditing: {
+  editReflection: {
     meeting: {
       __typename: 'RetrospectiveMeeting',
       id: meetingId
@@ -46,7 +46,7 @@ const getOptimisticResponse = (variables: Variables, meetingId: string) => ({
   }
 });
 
-export const updateReflectionIsEditingUpdater = (payload: ?RecordSourceProxy, store: RecordSourceSelectorProxy) => {
+export const editReflectionTeamUpdater = (payload: ?RecordSourceProxy, store: RecordSourceSelectorProxy) => {
   const maybeReflections = maybe(payload)
     .bind((pl) => pl.getLinkedRecord('meeting'))
     .bind((payloadMeeting) => payloadMeeting.getValue('id'))
@@ -67,7 +67,7 @@ export const updateReflectionIsEditingUpdater = (payload: ?RecordSourceProxy, st
   }, maybeReflectionToUpdate, maybeReflectionIsEditing);
 };
 
-const UpdateReflectionIsEditingMutation = (
+const EditReflectionMutation = (
   environment: Environment,
   variables: Variables,
   meetingId: string,
@@ -81,10 +81,10 @@ const UpdateReflectionIsEditingMutation = (
     onError,
     optimisticResponse: getOptimisticResponse(variables, meetingId),
     updater: (store: RecordSourceSelectorProxy) => {
-      const payload = store.getRootField('updateReflectionIsEditing');
-      updateReflectionIsEditingUpdater(payload, store);
+      const payload = store.getRootField('editReflection');
+      editReflectionTeamUpdater(payload, store);
     }
   })
 );
 
-export default UpdateReflectionIsEditingMutation;
+export default EditReflectionMutation;
