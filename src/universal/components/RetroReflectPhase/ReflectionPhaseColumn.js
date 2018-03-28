@@ -16,6 +16,7 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ui from 'universal/styles/ui';
+import reactLifecyclesCompat from 'react-lifecycles-compat';
 
 const ColumnWrapper = styled('div')({
   display: 'flex',
@@ -62,7 +63,7 @@ class ReflectionPhaseColumn extends Component<Props, State> {
     return {
       reflections: nextReflections,
       columnReflections: nextReflections.filter((reflection) => reflection.retroPhaseItemId === retroPhaseItemId)
-    }
+    };
   }
 
   constructor(props) {
@@ -97,9 +98,11 @@ class ReflectionPhaseColumn extends Component<Props, State> {
           </ColumnChild>
         </ReflectionsArea>
       </ColumnWrapper>
-    )
+    );
   }
-};
+}
+
+reactLifecyclesCompat(ReflectionPhaseColumn);
 
 export default createFragmentContainer(
   withAtmosphere(ReflectionPhaseColumn),

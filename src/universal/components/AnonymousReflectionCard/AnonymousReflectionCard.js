@@ -14,6 +14,7 @@ import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/Re
 import {createFragmentContainer} from 'react-relay';
 
 import type {AnonymousReflectionCard_reflection as Reflection} from './__generated__/AnonymousReflectionCard_reflection.graphql';
+import reactLifecyclesCompat from 'react-lifecycles-compat';
 
 type Props = {
   reflection: Reflection
@@ -21,6 +22,7 @@ type Props = {
 
 type State = {
   editorState: EditorState,
+  content: string,
   isBlurred: boolean
 };
 
@@ -48,19 +50,7 @@ const ReflectionContents = styled('div')({
 });
 
 class AnonymousReflectionCard extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = this.getNextState(props.reflection);
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    const {reflection: {content: nextContent}} = nextProps;
-    if (nextContent !== this.props.reflection.content) {
-      this.setState(this.getNextState(nextProps.reflection));
-    }
-  }
-
-  getContent = (reflection: Reflection) => {
+  static getContent(reflection: Reflection) {
     const {content, isEditing} = reflection;
     if (isEditing) return defaultText;
     const parsedContent = JSON.parse(content);
@@ -70,14 +60,34 @@ class AnonymousReflectionCard extends Component<Props, State> {
     return obfuscate(fullText);
   };
 
-  getNextState = (reflection) => {
+  static getNextState = (reflection) => {
     const contentStr = this.getContent(reflection);
     const editorState = EditorState.createWithContent(contentStr);
     return {
+      content: reflection.content,
       editorState,
       isBlurred: contentStr === defaultText
     };
   };
+
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+    const {reflection} = nextProps;
+    const {content: nextContent} = reflection;
+    if (nextContent === prevState.content) return null;
+    return AnonymousReflectionCard.getNextState(reflection);
+  }
+
+  constructor(props: Props) {
+    super(props);
+    this.state = this.getNextState(props.reflection);
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    const {reflection: {content: nextContent}} = nextProps;
+    if (nextContent !== this.props.reflection.content) {
+      this.setState(AnonymousReflectionCard.getNextState(nextProps.reflection));
+    }
+  }
 
   render() {
     const {editorState, isBlurred} = this.state;
@@ -92,6 +102,8 @@ class AnonymousReflectionCard extends Component<Props, State> {
     );
   }
 }
+
+reactLifecyclesCompat(AnonymousReflectionCard);
 
 export default createFragmentContainer(
   AnonymousReflectionCard,

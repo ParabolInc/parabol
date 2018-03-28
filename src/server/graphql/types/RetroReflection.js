@@ -39,7 +39,7 @@ const RetroReflection = new GraphQLObjectType({
     },
     isEditing: {
       description: 'true if the reflection is being edited, else false',
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLBoolean)))
+      type: GraphQLBoolean
     },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',

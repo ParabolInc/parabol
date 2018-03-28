@@ -34,6 +34,18 @@ const Plus = styled('span')({
   paddingRight: '0.5rem'
 });
 
+const AddButton = styled(PlainButton)({
+  border: `2px dashed ${appTheme.palette.mid30a}`,
+  borderRadius: 3,
+  color: appTheme.palette.dark,
+  padding: '0.8rem',
+  textAlign: 'center',
+  width: ui.retroCardWidth,
+  ':focus': {
+    boxShadow: 'none',
+  }
+});
+
 class AddReflectionButton extends Component<Props> {
   handleClick = () => {
     const {atmosphere, columnReflections, meeting: {meetingId}, retroPhaseItem: {retroPhaseItemId}, submitting, submitMutation, onCompleted, onError} = this.props;
@@ -47,30 +59,21 @@ class AddReflectionButton extends Component<Props> {
   };
 
   render() {
-    const {className, error, submitting} = this.props;
+    const {error, submitting} = this.props;
     return (
       <React.Fragment>
-        <PlainButton className={className} onClick={this.handleClick} waiting={submitting}>
+        <AddButton onClick={this.handleClick} waiting={submitting}>
           <Plus>{'+'}</Plus>
           <span>Add a reflection</span>
-        </PlainButton>
+        </AddButton>
         {error && <StyledError>{error.message}</StyledError>}
       </React.Fragment>
     );
   }
 }
 
-const styledReflectionButton = styled(AddReflectionButton)({
-  border: `2px dashed ${appTheme.palette.mid30a}`,
-  borderRadius: 3,
-  color: appTheme.palette.dark,
-  padding: '0.8rem',
-  textAlign: 'center',
-  width: ui.retroCardWidth
-});
-
 export default createFragmentContainer(
-  withAtmosphere(withMutationProps(styledReflectionButton)),
+  withAtmosphere(withMutationProps(AddReflectionButton)),
   graphql`
     fragment AddReflectionButton_retroPhaseItem on RetroPhaseItem {
       retroPhaseItemId: id
@@ -79,4 +82,4 @@ export default createFragmentContainer(
       meetingId: id
     }
   `
-)
+);

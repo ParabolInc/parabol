@@ -3,7 +3,7 @@
  *
  * @flow
  */
-import type {Context} from 'universal/types/graphql';
+import type {Context} from 'server/flowtypes/graphql';
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import EditReflectionPayload from 'server/graphql/types/EditReflectionPayload';

@@ -10,13 +10,11 @@ import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 
 graphql`
   fragment CreateReflectionMutation_team on CreateReflectionPayload {
-    meeting {
-      id
-    }
     reflection {
       content
       id
       isViewerCreator
+      meetingId
       retroPhaseItemId
       sortOrder
     }

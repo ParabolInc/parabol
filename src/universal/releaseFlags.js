@@ -22,6 +22,6 @@ export default {
   // The single-page embedded signin
   newSignIn: false,
   // The retrospective meeting
-  retro: false,
+  retro: true,
   userDashFilter: false
 };

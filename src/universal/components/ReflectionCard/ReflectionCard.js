@@ -4,7 +4,7 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState, convertToRaw, EditorState} from 'draft-js';
+import {ContentState, convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled, {css} from 'react-emotion';
 
@@ -18,10 +18,13 @@ import ReflectionCardDeleteButton from './ReflectionCardDeleteButton';
 import {createFragmentContainer} from 'react-relay';
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation';
 import EditReflectionMutation from 'universal/mutations/EditReflectionMutation';
 import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql';
 import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import reactLifecyclesCompat from 'react-lifecycles-compat';
 
 export type Props = {|
   canDelete: boolean,
@@ -48,6 +51,7 @@ export type Props = {|
 |};
 
 type State = {
+  content: string,
   editorState: EditorState,
 };
 
@@ -71,14 +75,25 @@ const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperP
 }));
 
 class ReflectionCard extends Component<Props, State> {
+  static getNextState = (content, getEditorState) => {
+    const contentState = convertFromRaw(JSON.parse(content));
+    return {
+      content,
+      editorState: EditorState.createWithContent(contentState, editorDecorators(getEditorState))
+    };
+  };
+
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+    const {reflection} = nextProps;
+    const {content: nextContent} = reflection;
+    if (nextContent === prevState.content) return null;
+    return ReflectionCard.getNextState(nextContent, this.getEditorState);
+  }
+
   constructor(props: Props) {
     super(props);
-    this.state = {
-      editorState: EditorState.createWithContent(
-        props.contentState,
-        editorDecorators(this.getEditorState)
-      )
-    };
+    const {reflection: {content}} = props;
+    this.state = ReflectionCard.getNextState(content, this.getEditorState);
   }
 
   getEditorState = () => (
@@ -133,12 +148,11 @@ class ReflectionCard extends Component<Props, State> {
   };
 
   renderCardContent = () => {
-    const {handleSave, isCollapsed} = this.props;
+    const {isCollapsed} = this.props;
     const {editorState} = this.state;
     const styles: Object = {
       maxHeight: '10rem',
       overflow: 'auto',
-      padding: '0.8rem'
     };
     if (isCollapsed) {
       styles.height = `${ui.retroCardCollapsedHeightRem}rem`;
@@ -146,22 +160,15 @@ class ReflectionCard extends Component<Props, State> {
     }
     return (
       <div className={css(styles)}>
-        {handleSave ? (
-          <EditorInputWrapper
-            ariaLabel="Edit this reflection"
-            editorState={editorState}
-            handleReturn={() => 'not-handled'}
-            onBlur={this.handleEditorBlur}
-            onFocus={this.handleEditorFocus}
-            placeholder="My reflection thought..."
-            setEditorState={this.setEditorState}
-          />
-        ) : (
-          <EditorInputWrapper
-            editorState={editorState}
-            readOnly
-          />
-        )}
+        <EditorInputWrapper
+          ariaLabel="Edit this reflection"
+          editorState={editorState}
+          handleReturn={() => 'not-handled'}
+          onBlur={this.handleEditorBlur}
+          onFocus={this.handleEditorFocus}
+          placeholder="My reflection thought..."
+          setEditorState={this.setEditorState}
+        />
       </div>
     );
   };
@@ -186,8 +193,10 @@ class ReflectionCard extends Component<Props, State> {
   }
 }
 
+reactLifecyclesCompat(ReflectionCard);
+
 export default createFragmentContainer(
-  ReflectionCard,
+  withAtmosphere(withMutationProps(ReflectionCard)),
   graphql`
     fragment ReflectionCard_meeting on RetrospectiveMeeting {
       meetingId: id
@@ -199,4 +208,4 @@ export default createFragmentContainer(
       ...ReflectionCardDeleteButton_reflection
     }
   `
-)
+);
