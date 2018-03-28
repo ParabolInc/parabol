@@ -47,8 +47,6 @@ export default {
     '-webkit-font-smoothing': 'antialiased'
   },
 
-  ...placeholder,
-
   img: {
     maxWidth: '100%'
   },
@@ -68,5 +66,7 @@ export default {
 
   strong: {
     fontWeight: 600
-  }
+  },
+
+  ...placeholder
 };

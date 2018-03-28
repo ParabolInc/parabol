@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import {convertFromRaw, Editor, EditorState} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -7,17 +6,31 @@ import withRouter from 'react-router-dom/es/withRouter';
 import {Button, IconAvatar, Row} from 'universal/components';
 import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
 import {clearNotificationLabel} from '../helpers/constants';
+import {css} from 'react-emotion';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
   [MENTIONEE]: 'mentioned'
+};
+
+const localStyles = {
+  taskListView: {
+    backgroundColor: appTheme.palette.light,
+    borderRadius: ui.cardBorderRadius,
+    margin: '.25rem 0 0',
+    padding: '.5rem'
+  },
+
+  indicatorsBlock: {
+    display: 'flex',
+    margin: '0 0 .5rem'
+  }
 };
 
 class TaskInvolves extends Component {
@@ -75,29 +88,25 @@ class TaskInvolves extends Component {
 
   render() {
     const {editorState} = this.state;
-    const {
-      styles,
-      notification,
-      submitting
-    } = this.props;
+    const {notification, submitting} = this.props;
     const {team, task, involvement, changeAuthor: {changeAuthorName}} = notification;
     const {teamName} = team;
     const {status, tags, assignee} = task;
     const action = involvementWord[involvement];
     return (
       <Row compact>
-        <div className={css(styles.icon)}>
+        <div className={css(defaultStyles.icon)}>
           <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size="small" />
         </div>
-        <div className={css(styles.message)}>
-          <div className={css(styles.messageText)}>
+        <div className={css(defaultStyles.message)}>
+          <div className={css(defaultStyles.messageText)}>
             <b>{changeAuthorName}</b>
             <span>{' has '}</span>
             <b><i>{`${action} you`}</i></b>
             {involvement === MENTIONEE ? ' in' : ''}
             <span>{' a task for '}</span>
             <span
-              className={css(styles.messageVar, styles.notifLink)}
+              className={css(defaultStyles.messageVar, defaultStyles.notifLink)}
               onClick={this.gotoBoard}
               title={`Go to ${teamName}’s Board`}
             >
@@ -105,8 +114,8 @@ class TaskInvolves extends Component {
             </span>
             <span>{':'}</span>
           </div>
-          <div className={css(styles.taskListView)}>
-            <div className={css(styles.indicatorsBlock)}>
+          <div className={css(localStyles.taskListView)}>
+            <div className={css(localStyles.indicatorsBlock)}>
               <OutcomeCardStatusIndicator status={status} />
               {tags.includes('private') && <OutcomeCardStatusIndicator status="private" />}
               {tags.includes('archived') && <OutcomeCardStatusIndicator status="archived" />}
@@ -116,17 +125,17 @@ class TaskInvolves extends Component {
               editorState={editorState}
             />
             {assignee &&
-            <div className={css(styles.owner)}>
-              <img alt="Avatar" className={css(styles.ownerAvatar)} src={assignee.picture} />
-              <div className={css(styles.ownerName)}>
+            <div className={css(defaultStyles.owner)}>
+              <img alt="Avatar" className={css(defaultStyles.ownerAvatar)} src={assignee.picture} />
+              <div className={css(defaultStyles.ownerName)}>
                 {assignee.preferredName}
               </div>
             </div>
             }
           </div>
         </div>
-        <div className={css(styles.buttonGroup)}>
-          <div className={css(styles.widerButton)}>
+        <div className={css(defaultStyles.buttonGroup)}>
+          <div className={css(defaultStyles.widerButton)}>
             <Button
               aria-label="Go to this board"
               colorPalette="warm"
@@ -138,7 +147,7 @@ class TaskInvolves extends Component {
               waiting={submitting}
             />
           </div>
-          <div className={css(styles.iconButton)}>
+          <div className={css(defaultStyles.iconButton)}>
             <Button
               aria-label={clearNotificationLabel}
               buttonSize="small"
@@ -160,30 +169,13 @@ TaskInvolves.propTypes = {
   history: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
-  styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
   notification: PropTypes.object.isRequired
 };
 
-const styleThunk = () => ({
-  ...defaultStyles,
-
-  taskListView: {
-    backgroundColor: appTheme.palette.light,
-    borderRadius: ui.cardBorderRadius,
-    margin: '.25rem 0 0',
-    padding: '.5rem'
-  },
-
-  indicatorsBlock: {
-    display: 'flex',
-    margin: '0 0 .5rem'
-  }
-});
-
 export default createFragmentContainer(
-  withRouter(withStyles(styleThunk)(TaskInvolves)),
+  withRouter(TaskInvolves),
   graphql`
     fragment TaskInvolves_notification on NotifyTaskInvolves {
       notificationId: id

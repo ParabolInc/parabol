@@ -8,6 +8,7 @@ export Button from './Button/Button';
 export DashNavControl from './DashNavControl/DashNavControl';
 export Ellipsis from './Ellipsis/Ellipsis';
 export ErrorAlert from './ErrorAlert/ErrorAlert';
+export FormError from './FormError/FormError';
 export HorizontalSeparator from './HorizontalSeparator/HorizontalSeparator';
 export IconAvatar from './IconAvatar/IconAvatar';
 export InputField from './InputField/InputField';

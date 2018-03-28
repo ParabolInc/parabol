@@ -1,16 +1,14 @@
-import {css} from 'aphrodite-local-styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import AsyncComponent from 'universal/components/AsyncComponent';
 import typePicker from 'universal/modules/notifications/helpers/typePicker';
-import formError from 'universal/styles/helpers/formError';
-import withStyles from 'universal/styles/withStyles';
+import {FormError} from 'universal/components';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const NotificationRow = (props) => {
-  const {atmosphere, dispatch, error, submitting, submitMutation, onCompleted, onError, notification, styles} = props;
+  const {atmosphere, dispatch, error, submitting, submitMutation, onCompleted, onError, notification} = props;
   const {type} = notification;
   const fetchMod = typePicker[type];
   return (
@@ -27,7 +25,7 @@ const NotificationRow = (props) => {
         onCompleted={onCompleted}
         onError={onError}
       />
-      {error && <div className={css(styles.error)}>{error.message}</div>}
+      {error && <FormError>{error.message}</FormError>}
     </div>
   );
 };
@@ -41,23 +39,12 @@ NotificationRow.propTypes = {
   submitting: PropTypes.bool,
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired,
-  styles: PropTypes.object
+  onError: PropTypes.func.isRequired
 };
-
-const styleThunk = () => ({
-  error: {
-    ...formError
-  }
-});
 
 export default createFragmentContainer(
   withAtmosphere(
-    withMutationProps(
-      withStyles(styleThunk)(
-        NotificationRow
-      )
-    )
+    withMutationProps(NotificationRow)
   ),
   graphql`
     fragment NotificationRow_notification on Notification {
