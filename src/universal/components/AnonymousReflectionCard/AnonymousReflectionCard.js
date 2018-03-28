@@ -84,10 +84,7 @@ class AnonymousReflectionCard extends Component<Props, State> {
       <ReflectionCardWrapper>
         <ReflectionContents>
           <MaybeBlurredDiv blur={isBlurred}>
-            <EditorInputWrapper
-              editorState={editorState}
-              readOnly
-            />
+            <EditorInputWrapper editorState={editorState} readOnly />
           </MaybeBlurredDiv>
         </ReflectionContents>
       </ReflectionCardWrapper>

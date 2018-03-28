@@ -29,13 +29,17 @@ const RetroReflection = new GraphQLObjectType({
       type: GraphQLID,
       resolve: resolveForSU('creatorId')
     },
+    editorIds: {
+      description: 'an array of all the socketIds that are currently editing the reflection',
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
+    },
     isActive: {
       type: GraphQLBoolean,
       description: 'True if the reflection was not removed, else false'
     },
     isEditing: {
-      description: 'Whether or not this reflection is currently being edited by a teammate',
-      type: new GraphQLNonNull(GraphQLBoolean)
+      description: 'true if the reflection is being edited, else false',
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLBoolean)))
     },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',

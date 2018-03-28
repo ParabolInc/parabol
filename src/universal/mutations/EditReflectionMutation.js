@@ -4,12 +4,8 @@
  * @flow
  */
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
-
-import {maybe} from 'maeby';
 import {commitMutation} from 'react-relay';
-import {Environment, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime';
-
-import fmap2 from 'universal/utils/fmap2';
+import handleEditReflection from 'universal/mutations/handlers/handleEditReflection';
 
 type Variables = {
   isEditing: boolean,
@@ -23,8 +19,11 @@ graphql`
     }
     reflection {
       id
+      editorIds
       isEditing
     }
+    editorId
+    isEditing
   }
 `;
 
@@ -36,55 +35,31 @@ const mutation = graphql`
   }
 `;
 
-const getOptimisticResponse = (variables: Variables, meetingId: string) => ({
-  editReflection: {
-    meeting: {
-      __typename: 'RetrospectiveMeeting',
-      id: meetingId
-    },
-    reflection: variables
-  }
-});
-
-export const editReflectionTeamUpdater = (payload: ?RecordSourceProxy, store: RecordSourceSelectorProxy) => {
-  const maybeReflections = maybe(payload)
-    .bind((pl) => pl.getLinkedRecord('meeting'))
-    .bind((payloadMeeting) => payloadMeeting.getValue('id'))
-    .bind((meetingId) => store.get(meetingId))
-    .bind((meeting) => meeting.getLinkedRecords('reflections'));
-  const maybeReflection = maybe(payload)
-    .bind((pl) => pl.getLinkedRecord('reflection'));
-  const maybeReflectionId = maybeReflection
-    .bind((reflection) => reflection.getValue('id'));
-  const maybeReflectionIsEditing = maybeReflection
-    .bind((reflection) => reflection.getValue('isEditing'));
-  const maybeReflectionToUpdate = fmap2((reflections, reflectionId) => (
-    reflections.find((r) => r.getValue('id') === reflectionId)
-  ), maybeReflections, maybeReflectionId);
-
-  fmap2((reflectionToUpdate, reflectionContent) => {
-    reflectionToUpdate.setValue('isEditing', reflectionContent);
-  }, maybeReflectionToUpdate, maybeReflectionIsEditing);
+export const editReflectionTeamUpdater = (payload, store) => {
+  handleEditReflection(payload, store);
 };
 
-const EditReflectionMutation = (
-  environment: Environment,
-  variables: Variables,
-  meetingId: string,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
-) => (
-  commitMutation(environment, {
+const EditReflectionMutation = (atmosphere: Object, variables: Variables, onError?: ErrorHandler, onCompleted?: CompletedHandler) => {
+  commitMutation(atmosphere, {
     mutation,
     variables,
     onCompleted,
     onError,
-    optimisticResponse: getOptimisticResponse(variables, meetingId),
-    updater: (store: RecordSourceSelectorProxy) => {
+    updater: (store) => {
       const payload = store.getRootField('editReflection');
+      if (!payload) return;
       editReflectionTeamUpdater(payload, store);
+    },
+    optimisticUpdater: (store) => {
+      const {reflectionId, isEditing} = variables;
+      const reflection = store.get(reflectionId);
+      const reflectionEditorIds = reflection.getValue('editorIds') || [];
+      const nextEditorIds = isEditing ? reflectionEditorIds.concat('tmpUser') : reflectionEditorIds.slice(1);
+      reflection.setValue(nextEditorIds, 'editorIds');
+      reflection.setValue(nextEditorIds.length > 0, 'isEditing');
     }
-  })
-);
+  });
+};
+
 
 export default EditReflectionMutation;

@@ -8,7 +8,6 @@ import type {RetroReflection} from 'universal/types/schema.flow';
 import type {ReflectionPhaseColumn_meeting as Meeting} from './__generated__/ReflectionPhaseColumn_meeting.graphql';
 import type {ReflectionPhaseColumn_retroPhaseItem as RetroPhaseItem} from './__generated__/ReflectionPhaseColumn_retroPhaseItem.graphql';
 // $FlowFixMe
-import {EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
@@ -17,45 +16,7 @@ import AddReflectionButton from 'universal/components/AddReflectionButton/AddRef
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation';
-import EditReflectionMutation from 'universal/mutations/EditReflectionMutation';
-import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation';
-import deserialize from 'universal/utils/draftjs/deserialize';
-import serialize from 'universal/utils/draftjs/serialize';
 import ui from 'universal/styles/ui';
-
-// Actions
-
-const handleDelete = (environment: Object, reflectionId: string, meetingId: string) => {
-
-};
-
-const handleSave = (environment: Object, reflectionId: string, meetingId: string, editorState: EditorState) => {
-  const content = serialize(editorState.getCurrentContent());
-  UpdateReflectionContentMutation(
-    environment,
-    {reflectionId, content},
-    meetingId
-  );
-};
-
-const handleStartEditing = (environment: Object, reflectionId: string, meetingId: string) => {
-  EditReflectionMutation(
-    environment,
-    {reflectionId, isEditing: true},
-    meetingId
-  );
-};
-
-const handleStopEditing = (environment: Object, reflectionId: string, meetingId: string) => {
-  EditReflectionMutation(
-    environment,
-    {reflectionId, isEditing: false},
-    meetingId
-  );
-};
-
-// Components
 
 const ColumnWrapper = styled('div')({
   display: 'flex',
@@ -80,7 +41,7 @@ const TypeTitle = styled('div')({
   color: ui.labelHeadingColor
 });
 
-const AddReflectionButtonGroup = styled('div')({
+const ColumnChild = styled('div')({
   margin: '0.7rem 0.7rem 0 0'
 });
 
@@ -114,7 +75,7 @@ class ReflectionPhaseColumn extends Component<Props, State> {
   }
 
   render() {
-    const {atmosphere, meeting: {meetingId}, retroPhaseItem} = this.props;
+    const {meeting, retroPhaseItem} = this.props;
     const {columnReflections} = this.state;
     return (
       <ColumnWrapper>
@@ -124,24 +85,16 @@ class ReflectionPhaseColumn extends Component<Props, State> {
         </TypeHeader>
         <ReflectionsArea>
           {columnReflections.map((reflection) => (
-            <div style={{margin: '0.7rem 0.7rem 0 0'}} key={reflection.id}>
-              {reflection.isViewerCreator ? (
-                <ReflectionCard
-                  handleDelete={() => handleDelete(atmosphere, reflection.id, newMeeting.id)}
-                  handleSave={(editorState: EditorState) => handleSave(atmosphere, reflection.id, newMeeting.id, editorState)}
-                  handleStartEditing={() => handleStartEditing(atmosphere, reflection.id, newMeeting.id)}
-                  handleStopEditing={() => handleStopEditing(atmosphere, reflection.id, newMeeting.id)}
-                  id={reflection.id}
-                  contentState={deserialize(reflection.content)}
-                />
-              ) : (
+            <ColumnChild key={reflection.id}>
+              {reflection.isViewerCreator ?
+                <ReflectionCard meeting={meeting} reflection={reflection} /> :
                 <AnonymousReflectionCard reflection={reflection} />
-              )}
-            </div>
+              }
+            </ColumnChild>
           ))}
-          <AddReflectionButtonGroup>
-            <AddReflectionButton columnReflections={columnReflections} />
-          </AddReflectionButtonGroup>
+          <ColumnChild>
+            <AddReflectionButton columnReflections={columnReflections} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+          </ColumnChild>
         </ReflectionsArea>
       </ColumnWrapper>
     )
@@ -152,14 +105,17 @@ export default createFragmentContainer(
   withAtmosphere(ReflectionPhaseColumn),
   graphql`
     fragment ReflectionPhaseColumn_retroPhaseItem on RetroPhaseItem {
+      ...AddReflectionButton_retroPhaseItem
       retroPhaseItemId: id
       title
       question
     }
 
     fragment ReflectionPhaseColumn_meeting on RetrospectiveMeeting {
+      ...AddReflectionButton_meeting
       meetingId: id
       reflections {
+        ...AnonymousReflectionCard_reflection
         content
         id
         isEditing

@@ -17,12 +17,14 @@ import StyledError from 'universal/components/StyledError';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import type {RetroReflection} from 'universal/types/schema.flow';
+import type {AddReflectionButton_retroPhaseItem as RetroPhaseItem} from './__generated__/AddReflectionButton_retroPhaseItem.graphql';
+import type {AddReflectionButton_meeting as Meeting} from './__generated__/AddReflectionButton_meeting.graphql';
 
 type Props = {
   atmosphere: Object,
   columnReflections: Array<RetroReflection>,
-  // retroPhaseItem,
-  // meeting
+  retroPhaseItem: RetroPhaseItem,
+  meeting: Meeting,
   ...MutationProps
 };
 
@@ -32,7 +34,8 @@ const Plus = styled('span')({
 
 class AddReflectionButton extends Component<Props> {
   handleClick = () => {
-    const {atmosphere, columnReflections, meeting: {meetingId}, retroPhaseItem: {retroPhaseItemId}, submitMutation, onCompleted, onError} = this.props;
+    const {atmosphere, columnReflections, meeting: {meetingId}, retroPhaseItem: {retroPhaseItemId}, submitting, submitMutation, onCompleted, onError} = this.props;
+    if (submitting) return;
     const input = {
       retroPhaseItemId,
       sortOrder: getNextSortOrder(columnReflections)

@@ -3,11 +3,13 @@
  *
  */
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
-
-import {maybe} from 'maeby';
 import {commitMutation} from 'react-relay';
+import getInProxy from 'universal/utils/relay/getInProxy';
+import handleRemoveReflections from 'universal/mutations/handlers/handleRemoveReflections';
 
-import fmap3 from 'universal/utils/fmap3';
+type Context = {
+  meetingId: string
+};
 
 type Variables = {
   reflectionId: string,
@@ -33,30 +35,16 @@ const mutation = graphql`
 `;
 
 export const removeReflectionTeamUpdater = (payload, store) => {
-  const maybeMeeting = maybe(payload)
-    .bind((pl) => pl.getLinkedRecord('meeting'))
-    .bind((payloadMeeting) => payloadMeeting.getValue('id'))
-    .bind((meetingId) => store.get(meetingId));
-  const maybeReflections = maybeMeeting
-    .bind((meeting) => meeting.getLinkedRecords('reflections'));
-  const maybeReflection = maybe(payload)
-    .bind((pl) => pl.getLinkedRecord('reflection'));
-
-  fmap3((meeting, reflections, reflection) => {
-    const newReflections = reflections.filter((r) => (
-      r.getValue('id') !== reflection.getValue('id')
-    ));
-    meeting.setLinkedRecords(newReflections, 'reflections');
-  }, maybeMeeting, maybeReflections, maybeReflection);
+  const reflectionId = getInProxy(payload, 'reflection', 'id');
+  const meetingId = getInProxy(payload, 'meeting', 'id');
+  handleRemoveReflections(reflectionId, meetingId, store);
 };
 
-const CreateReflectionMutation = (
-  environment: Object,
+const RemoveReflectionMutation = (environment: Object,
   variables: Variables,
-  meetingId: string,
+  context: Context,
   onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
-) => {
+  onCompleted?: CompletedHandler) => {
   return commitMutation(environment, {
     mutation,
     variables,
@@ -65,9 +53,14 @@ const CreateReflectionMutation = (
       if (!payload) return;
       removeReflectionTeamUpdater(payload, store);
     },
+    optimisticUpdater: (store) => {
+      const {reflectionId} = variables;
+      const {meetingId} = context;
+      handleRemoveReflections(reflectionId, meetingId, store);
+    },
     onCompleted,
-    onError,
+    onError
   });
 };
 
-export default CreateReflectionMutation;
+export default RemoveReflectionMutation;

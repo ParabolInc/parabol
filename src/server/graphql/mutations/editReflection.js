@@ -6,7 +6,7 @@
 import type {Context} from 'universal/types/graphql';
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import UpdateRetroReflectionIsEditingPayload from 'server/graphql/types/EditReflectionPayload';
+import EditReflectionPayload from 'server/graphql/types/EditReflectionPayload';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendReflectionAccessError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendMeetingNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
@@ -22,7 +22,7 @@ type Args = {
 
 export default {
   description: 'Changes the editing state of a retrospective reflection',
-  type: UpdateRetroReflectionIsEditingPayload,
+  type: EditReflectionPayload,
   args: {
     reflectionId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -51,8 +51,8 @@ export default {
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
 
     // RESOLUTION
-    const data = {meetingId, reflection: {id: reflectionId, isEditing}};
-    publish(TEAM, teamId, UpdateRetroReflectionIsEditingPayload, data, subOptions);
+    const data = {meetingId, reflectionId, editorId: mutatorId, isEditing};
+    publish(TEAM, teamId, EditReflectionPayload, data, subOptions);
     return data;
   }
 };

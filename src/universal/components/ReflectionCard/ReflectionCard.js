@@ -4,7 +4,7 @@
  * @flow
  */
 // $FlowFixMe
-import {EditorState, ContentState} from 'draft-js';
+import {ContentState, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled, {css} from 'react-emotion';
 
@@ -15,24 +15,22 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton';
+import {createFragmentContainer} from 'react-relay';
+import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
+import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation';
+import EditReflectionMutation from 'universal/mutations/EditReflectionMutation';
+import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql';
+import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql';
 
 export type Props = {|
+  canDelete: boolean,
   // The draft-js content for this card
   contentState: ContentState,
-  // The action to take when this card is deleted
-  handleDelete?: () => any,
-  // The action to take when this card is saved
-  handleSave?: (editorState: EditorState) => any,
-  // A hook for any effects to perform when the user "starts editing" this card e.g. it gains focus
-  handleStartEditing?: () => any,
-  // A hook for any effects to perform when the user "stops editing" this card e.g. it loses focus
-  handleStopEditing?: () => any,
   // True when this card is being hovered over by a valid drag source
   hovered?: boolean,
   // True when the current user is the one dragging this card
   iAmDragging?: boolean,
-  // The unique ID of this reflection card
-  id: string,
   // Whether we're "collapsed" e.g. in a stack of cards.  This allows us to truncate to a constant height,
   // Simplifying style computations.
   isCollapsed?: boolean,
@@ -44,11 +42,13 @@ export type Props = {|
   reflectionPhaseQuestion?: ?string,
   // The name of the user who is currently dragging this card to a new place, if any
   userDragging?: string,
+  meeting: Meeting,
+  reflection: Reflection,
+  ...MutationProps
 |};
 
 type State = {
   editorState: EditorState,
-  mouseOver: boolean
 };
 
 type DnDStylesWrapperProps = {
@@ -70,16 +70,14 @@ const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperP
   opacity: ((iAmDragging && !pulled)) && 0.6
 }));
 
-export default class ReflectionCard extends Component<Props, State> {
+class ReflectionCard extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      confirmingDelete: false,
       editorState: EditorState.createWithContent(
         props.contentState,
         editorDecorators(this.getEditorState)
-      ),
-      mouseOver: false
+      )
     };
   }
 
@@ -91,50 +89,29 @@ export default class ReflectionCard extends Component<Props, State> {
     this.setState({editorState});
   };
 
-  canDelete = () => (
-    Boolean(this.props.handleDelete)
-  );
-
-  delete = () => {
-    if (this.props.handleDelete) {
-      this.props.handleDelete();
-    }
-  };
-
   handleEditorBlur = () => {
-    const {handleSave, handleStopEditing} = this.props;
-    if (handleSave) {
-      handleSave(this.getEditorState());
-    }
-    if (handleStopEditing) {
-      handleStopEditing();
-    }
+    const {atmosphere, reflection: {reflectionId}} = this.props;
+    this.handleContentUpdate();
+    EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
   };
 
   handleEditorFocus = () => {
-    const {handleStartEditing} = this.props;
-    if (handleStartEditing) {
-      handleStartEditing();
+    const {atmosphere, reflection: {reflectionId}} = this.props;
+    EditReflectionMutation(atmosphere, {isEditing: true, reflectionId});
+  };
+
+  handleContentUpdate = () => {
+    const {atmosphere, meeting: {meetingId}, reflection: {content, reflectionId}, submitMutation, onError, onCompleted} = this.props;
+    const {editorState} = this.state;
+    const contentState = editorState.getCurrentContent();
+    if (contentState.hasText()) {
+      const nextContent = JSON.stringify(convertToRaw(contentState));
+      if (content === nextContent) return;
+      submitMutation();
+      UpdateReflectionContentMutation(atmosphere, {reflectionId}, onError, onCompleted);
+    } else {
+      RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
     }
-  };
-
-  saveDeleteButton = (deleteButton: ?HTMLButtonElement) => {
-    this.deleteButton = deleteButton;
-  };
-
-  deleteButton: ?HTMLButtonElement;
-
-  maybeRenderDelete = () => {
-    const {mouseOver} = this.state;
-    return this.canDelete() && (
-      <ReflectionCardDeleteButton
-        innerRef={this.saveDeleteButton}
-        isVisible={mouseOver}
-        onBlur={() => this.setState({mouseOver: false})}
-        onClick={this.delete}
-        onFocus={() => this.setState({mouseOver: true})}
-      />
-    );
   };
 
   maybeRenderReflectionPhaseQuestion = () => {
@@ -153,14 +130,6 @@ export default class ReflectionCard extends Component<Props, State> {
         {userDragging}
       </div>
     );
-  };
-
-  handleMouseEnter = () => {
-    this.setState({mouseOver: true});
-  };
-
-  handleMouseLeave = () => {
-    this.setState({mouseOver: false});
   };
 
   renderCardContent = () => {
@@ -198,7 +167,7 @@ export default class ReflectionCard extends Component<Props, State> {
   };
 
   render() {
-    const {hovered, iAmDragging, pulled, userDragging} = this.props;
+    const {canDelete, hovered, iAmDragging, pulled, userDragging, meeting, reflection} = this.props;
     const holdingPlace = Boolean(userDragging && !pulled);
     return (
       <DnDStylesWrapper pulled={pulled} iAmDragging={iAmDragging} hovered={hovered}>
@@ -207,14 +176,27 @@ export default class ReflectionCard extends Component<Props, State> {
           holdingPlace={holdingPlace}
           hoveringOver={hovered}
           pulled={pulled}
-          onMouseEnter={this.handleMouseEnter}
-          onMouseLeave={this.handleMouseLeave}
         >
           {this.renderCardContent()}
           {this.maybeRenderReflectionPhaseQuestion()}
-          {this.maybeRenderDelete()}
+          {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
         </ReflectionCardWrapper>
       </DnDStylesWrapper>
     );
   }
 }
+
+export default createFragmentContainer(
+  ReflectionCard,
+  graphql`
+    fragment ReflectionCard_meeting on RetrospectiveMeeting {
+      meetingId: id
+      ...ReflectionCardDeleteButton_meeting
+    }
+    fragment ReflectionCard_reflection on RetroReflection {
+      reflectionId: id
+      content
+      ...ReflectionCardDeleteButton_reflection
+    }
+  `
+)

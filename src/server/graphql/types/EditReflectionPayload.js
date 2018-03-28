@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import {GraphQLBoolean, GraphQLObjectType} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql';
 import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 import NewMeeting from 'server/graphql/types/NewMeeting';
@@ -23,6 +23,10 @@ const EditReflectionPayload = new GraphQLObjectType({
     reflection: {
       type: RetroReflection,
       resolve: makeResolve('reflectionId', 'reflection', 'retroReflections')
+    },
+    editorId: {
+      type: GraphQLID,
+      description: 'The socketId of the client editing the card (uses socketId to maintain anonymity)'
     },
     isEditing: {
       type: GraphQLBoolean,
