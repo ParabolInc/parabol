@@ -82,13 +82,6 @@ class AnonymousReflectionCard extends Component<Props, State> {
     this.state = this.getNextState(props.reflection);
   }
 
-  componentWillReceiveProps(nextProps: Props) {
-    const {reflection: {content: nextContent}} = nextProps;
-    if (nextContent !== this.props.reflection.content) {
-      this.setState(AnonymousReflectionCard.getNextState(nextProps.reflection));
-    }
-  }
-
   render() {
     const {editorState, isBlurred} = this.state;
     return (

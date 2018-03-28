@@ -6,7 +6,8 @@ import withMarkdown from 'universal/components/TaskEditor/withMarkdown';
 import appTheme from 'universal/styles/theme/appTheme';
 import {textTags} from 'universal/utils/constants';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
-import {css} from 'react-emotion';
+import styled, {css} from 'react-emotion';
+import ui from 'universal/styles/ui';
 
 type Props = {
   ariaLabel: string,
@@ -19,6 +20,7 @@ type Props = {
   handleKeyCommand: () => void,
   handleTab: () => void,
   handleReturn: () => void,
+  isCollapsed: boolean,
   keyBindingFn: () => void,
   placeholder: string,
   onBlur: () => void,
@@ -45,6 +47,20 @@ const codeBlock = css({
   padding: '0 .5rem'
 });
 
+const EditorStyles = styled('div')(
+  {
+    fontSize: ui.cardContentFontSize,
+    lineHeight: ui.cardContentLineHeight,
+    padding: `0.8rem`,
+    maxHeight: '10rem',
+    overflow: 'auto'
+  },
+  ({isCollapsed}) => isCollapsed && ({
+    height: `${ui.retroCardCollapsedHeightRem}rem`,
+    overflow: 'hidden'
+  })
+)
+
 class ReflectionEditorWrapper extends Component<Props> {
   componentDidMount() {
     const {editorState} = this.props;
@@ -58,6 +74,14 @@ class ReflectionEditorWrapper extends Component<Props> {
       });
     }
   }
+
+  setEditorRef = (c) => {
+    const {innerRef} = this.props;
+    if (innerRef) {
+      innerRef(c);
+    }
+    this.editorRef = c;
+  };
 
   blockStyleFn = (contentBlock) => {
     const type = contentBlock.getType();
@@ -143,6 +167,10 @@ class ReflectionEditorWrapper extends Component<Props> {
     return undefined;
   }
 
+  handleClick = () => {
+    this.editorRef.focus();
+  };
+
   handlePastedText = (text) => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
@@ -159,36 +187,30 @@ class ReflectionEditorWrapper extends Component<Props> {
     return 'not-handled';
   };
 
-  setEditorRef = (c) => {
-    const {innerRef} = this.props;
-    if (innerRef) {
-      innerRef(c);
-    }
-    this.editorRef = c;
-  };
-
   render() {
-    const {ariaLabel, editorState, onBlur, placeholder, readOnly} = this.props;
+    const {ariaLabel, editorState, isCollapsed, onBlur, placeholder, readOnly} = this.props;
     return (
-      <Editor
-        ariaLabel={ariaLabel}
-        blockStyleFn={this.blockStyleFn}
-        editorState={editorState}
-        handleBeforeInput={this.handleBeforeInput}
-        handleKeyCommand={this.handleKeyCommand}
-        handlePastedText={this.handlePastedText}
-        handleReturn={this.handleReturn}
-        keyBindingFn={this.keyBindingFn}
-        onBlur={onBlur}
-        onChange={this.handleChange}
-        onDownArrow={this.handleDownArrow}
-        onEscape={this.handleEscape}
-        onTab={this.handleTab}
-        onUpArrow={this.handleUpArrow}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        ref={this.setEditorRef}
-      />
+      <EditorStyles isCollapsed={isCollapsed} onClick={this.handleClick}>
+        <Editor
+          ariaLabel={ariaLabel}
+          blockStyleFn={this.blockStyleFn}
+          editorState={editorState}
+          handleBeforeInput={this.handleBeforeInput}
+          handleKeyCommand={this.handleKeyCommand}
+          handlePastedText={this.handlePastedText}
+          handleReturn={this.handleReturn}
+          keyBindingFn={this.keyBindingFn}
+          onBlur={onBlur}
+          onChange={this.handleChange}
+          onDownArrow={this.handleDownArrow}
+          onEscape={this.handleEscape}
+          onTab={this.handleTab}
+          onUpArrow={this.handleUpArrow}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          ref={this.setEditorRef}
+        />
+      </EditorStyles>
     );
   }
 }

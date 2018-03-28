@@ -7,12 +7,9 @@
 import {ContentState, convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled, {css} from 'react-emotion';
-
-import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton';
 import {createFragmentContainer} from 'react-relay';
@@ -25,6 +22,7 @@ import type {ReflectionCard_meeting as Meeting} from './__generated__/Reflection
 import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
+import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper';
 
 export type Props = {|
   canDelete: boolean,
@@ -147,34 +145,9 @@ class ReflectionCard extends Component<Props, State> {
     );
   };
 
-  renderCardContent = () => {
-    const {isCollapsed} = this.props;
-    const {editorState} = this.state;
-    const styles: Object = {
-      maxHeight: '10rem',
-      overflow: 'auto',
-    };
-    if (isCollapsed) {
-      styles.height = `${ui.retroCardCollapsedHeightRem}rem`;
-      styles.overflow = 'hidden';
-    }
-    return (
-      <div className={css(styles)}>
-        <EditorInputWrapper
-          ariaLabel="Edit this reflection"
-          editorState={editorState}
-          handleReturn={() => 'not-handled'}
-          onBlur={this.handleEditorBlur}
-          onFocus={this.handleEditorFocus}
-          placeholder="My reflection thought..."
-          setEditorState={this.setEditorState}
-        />
-      </div>
-    );
-  };
-
   render() {
-    const {canDelete, hovered, iAmDragging, pulled, userDragging, meeting, reflection} = this.props;
+    const {canDelete, hovered, iAmDragging, isCollapsed, pulled, userDragging, meeting, reflection} = this.props;
+    const {editorState} = this.state;
     const holdingPlace = Boolean(userDragging && !pulled);
     return (
       <DnDStylesWrapper pulled={pulled} iAmDragging={iAmDragging} hovered={hovered}>
@@ -184,7 +157,15 @@ class ReflectionCard extends Component<Props, State> {
           hoveringOver={hovered}
           pulled={pulled}
         >
-          {this.renderCardContent()}
+          <ReflectionEditorWrapper
+            ariaLabel="Edit this reflection"
+            editorState={editorState}
+            isCollapsed={isCollapsed}
+            onBlur={this.handleEditorBlur}
+            onFocus={this.handleEditorFocus}
+            placeholder="My reflection thought..."
+            setEditorState={this.setEditorState}
+          />
           {this.maybeRenderReflectionPhaseQuestion()}
           {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
         </ReflectionCardWrapper>
