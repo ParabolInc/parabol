@@ -4,7 +4,7 @@
  *
  * @flow
  */
-import React, {Component} from 'react';
+import * as React from 'react';
 import styled from 'react-emotion';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -19,6 +19,8 @@ import PlainButton from 'universal/components/PlainButton/PlainButton';
 import type {RetroReflection} from 'universal/types/schema.flow';
 import type {AddReflectionButton_retroPhaseItem as RetroPhaseItem} from './__generated__/AddReflectionButton_retroPhaseItem.graphql';
 import type {AddReflectionButton_meeting as Meeting} from './__generated__/AddReflectionButton_meeting.graphql';
+
+const {Component} = React;
 
 type Props = {
   atmosphere: Object,

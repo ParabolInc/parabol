@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLList, GraphQLObjectType} from 'graphql';
+import {GraphQLNonNull, GraphQLFloat, GraphQLList, GraphQLObjectType} from 'graphql';
 import NewMeeting, {newMeetingFields} from 'server/graphql/types/NewMeeting';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import RetroReflection from 'server/graphql/types/RetroReflection';
@@ -19,7 +19,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
       type: new GraphQLList(RetroReflectionGroup)
     },
     reflections: {
-      type: new GraphQLList(RetroReflection),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
       description: 'The reflections generated during the reflect phase of the retro',
       resolve: ({id}, args, {dataLoader}) => {
         return dataLoader.get('retroReflectionsByMeetingId').load(id);

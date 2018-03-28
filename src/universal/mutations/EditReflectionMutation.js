@@ -1,7 +1,6 @@
 /**
  * Updates the editing state of a retrospective reflection.
  *
- * @flow
  */
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
 import {commitMutation} from 'react-relay';

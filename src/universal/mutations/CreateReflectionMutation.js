@@ -1,7 +1,6 @@
 /**
  * Creates a reflection for the retrospective meeting.
  *
- * @flow
  */
 import {commitMutation} from 'react-relay';
 import handleCreateReflections from 'universal/mutations/handlers/handleCreateReflections';

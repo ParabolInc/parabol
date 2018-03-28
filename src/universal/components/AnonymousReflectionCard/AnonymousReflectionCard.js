@@ -13,17 +13,18 @@ import EditorInputWrapper from 'universal/components/EditorInputWrapper';
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 import {createFragmentContainer} from 'react-relay';
 
-import type {AnonymouseReflectionCard_reflection as Reflection} from './__generated/AnonymouseReflectionCard_reflection.graphql';
+import type {AnonymousReflectionCard_reflection as Reflection} from './__generated__/AnonymousReflectionCard_reflection.graphql';
 
 type Props = {
   reflection: Reflection
 };
 
 type State = {
-  editorState: EditorState
+  editorState: EditorState,
+  isBlurred: boolean
 };
 
-const defaultText = 'Somebody is typing...'
+const defaultText = 'Somebody is typing...';
 const randomChar = () => String.fromCharCode(97 + Math.floor(Math.random() * 26));
 
 // Given a string, returns another string which has the same "shape", e.g.

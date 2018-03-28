@@ -4,7 +4,6 @@
  *
  * @flow
  */
-import type {RetroReflection} from 'universal/types/schema.flow';
 import type {ReflectionPhaseColumn_meeting as Meeting} from './__generated__/ReflectionPhaseColumn_meeting.graphql';
 import type {ReflectionPhaseColumn_retroPhaseItem as RetroPhaseItem} from './__generated__/ReflectionPhaseColumn_retroPhaseItem.graphql';
 // $FlowFixMe
@@ -52,7 +51,8 @@ type Props = {
 };
 
 type State = {
-  columnReflections: Array<RetroReflection>
+  columnReflections: $ReadOnlyArray<Object>,
+  reflections: $ReadOnlyArray<Object>
 };
 
 class ReflectionPhaseColumn extends Component<Props, State> {
@@ -113,9 +113,11 @@ export default createFragmentContainer(
 
     fragment ReflectionPhaseColumn_meeting on RetrospectiveMeeting {
       ...AddReflectionButton_meeting
+      ...ReflectionCard_meeting
       meetingId: id
       reflections {
         ...AnonymousReflectionCard_reflection
+        ...ReflectionCard_reflection
         content
         id
         isEditing

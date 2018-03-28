@@ -76,7 +76,7 @@ const RetroReflection = new GraphQLObjectType({
       }
     },
     retroPhaseItemId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The foreign key to link a reflection to its phaseItem'
     },
     reflectionGroupId: {

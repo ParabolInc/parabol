@@ -108,7 +108,7 @@ class ReflectionCard extends Component<Props, State> {
       const nextContent = JSON.stringify(convertToRaw(contentState));
       if (content === nextContent) return;
       submitMutation();
-      UpdateReflectionContentMutation(atmosphere, {reflectionId}, onError, onCompleted);
+      UpdateReflectionContentMutation(atmosphere, {content: nextContent, reflectionId}, onError, onCompleted);
     } else {
       RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
     }

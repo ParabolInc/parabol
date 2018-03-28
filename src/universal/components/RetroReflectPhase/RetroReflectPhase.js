@@ -3,13 +3,12 @@
  *
  * @flow
  */
-import type {Team} from 'universal/types/schema.flow';
-
 import React from 'react';
 import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
 
 import ReflectionPhaseColumn from './ReflectionPhaseColumn';
+import type {RetroReflectionPhase_team as Team} from './__generated__/RetroReflectPhase_team.graphql';
 
 type Props = {
   team: Team,
@@ -24,16 +23,10 @@ const ReflectPhaseWrapper = styled('div')({
 
 const RetroReflectPhase = ({team}: Props) => {
   const {newMeeting, meetingSettings} = team;
-  if (!meetingSettings.hasOwnProperty('phaseItems')) {
-    return null;
-  }
-  // The nested union types of meetingSettings/phaseItems are creating a multiplicative
-  // effect on the possible values of meetingSettings, making it really difficult
-  // $FlowFixMe
   const {phaseItems} = meetingSettings;
   return (
     <ReflectPhaseWrapper>
-      {phaseItems && phaseItems.map((phaseItem) =>
+      {phaseItems.map((phaseItem) =>
         <ReflectionPhaseColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
       )}
     </ReflectPhaseWrapper>
