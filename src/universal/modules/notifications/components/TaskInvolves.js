@@ -109,6 +109,7 @@ class TaskInvolves extends Component {
             <div className={css(styles.indicatorsBlock)}>
               <OutcomeCardStatusIndicator status={status} />
               {tags.includes('private') && <OutcomeCardStatusIndicator status="private" />}
+              {tags.includes('archived') && <OutcomeCardStatusIndicator status="archived" />}
             </div>
             <Editor
               readOnly
