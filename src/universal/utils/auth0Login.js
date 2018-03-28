@@ -6,7 +6,7 @@
  *
  * @flow
  */
-import WebAuth from 'auth0-js';
+import {WebAuth} from 'auth0-js/build/auth0';
 import promisify from 'es6-promisify';
 
 import type {Credentials} from 'universal/types/auth';
