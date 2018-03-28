@@ -11,9 +11,6 @@ import shortid from 'shortid';
 import {all, newUserSession, waitTimes} from '../lib';
 
 const BASE_URL = global.E2E_APP_SERVER_URL;
-const BASE_URL_REGEX = BASE_URL.endsWith('/')
-  ? new RegExp(`^${BASE_URL}?$`)
-  : new RegExp(`^${BASE_URL}(/)?$`);
 
 function generateCredentials() {
   // Note that we want to generate unique credentials, since we're testing
