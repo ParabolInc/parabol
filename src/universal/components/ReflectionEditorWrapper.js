@@ -8,6 +8,8 @@ import {textTags} from 'universal/utils/constants';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
 import styled, {css} from 'react-emotion';
 import ui from 'universal/styles/ui';
+import withLinks from 'universal/components/TaskEditor/withLinks';
+import withSuggestions from 'universal/components/TaskEditor/withSuggestions';
 
 type Props = {
   ariaLabel: string,
@@ -20,6 +22,7 @@ type Props = {
   handleKeyCommand: () => void,
   handleTab: () => void,
   handleReturn: () => void,
+  isBlurred: boolean,
   isCollapsed: boolean,
   keyBindingFn: () => void,
   placeholder: string,
@@ -58,6 +61,10 @@ const EditorStyles = styled('div')(
   ({isCollapsed}) => isCollapsed && ({
     height: `${ui.retroCardCollapsedHeightRem}rem`,
     overflow: 'hidden'
+  }),
+  ({isBlurred}) => isBlurred && ({
+    filter: 'blur(4px)',
+    userSelect: 'none'
   })
 )
 
@@ -188,9 +195,9 @@ class ReflectionEditorWrapper extends Component<Props> {
   };
 
   render() {
-    const {ariaLabel, editorState, isCollapsed, onBlur, placeholder, readOnly} = this.props;
+    const {ariaLabel, editorState, isBlurred, isCollapsed, onBlur, placeholder, readOnly} = this.props;
     return (
-      <EditorStyles isCollapsed={isCollapsed} onClick={this.handleClick}>
+      <EditorStyles isBlurred={isBlurred} isCollapsed={isCollapsed} onClick={this.handleClick}>
         <Editor
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}
@@ -215,9 +222,12 @@ class ReflectionEditorWrapper extends Component<Props> {
   }
 }
 
-export default withMarkdown(
-  withKeyboardShortcuts(
-    ReflectionEditorWrapper
+export default withSuggestions(
+  withLinks(
+    withMarkdown(
+      withKeyboardShortcuts((ReflectionEditorWrapper)
+      )
+    )
   )
 );
 

@@ -9,6 +9,7 @@ graphql`
     }
     meetingNumber
     meetingType
+    teamId
     phases {
       id
       phaseType

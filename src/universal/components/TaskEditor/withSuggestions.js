@@ -50,7 +50,8 @@ const withSuggestions = (ComposedComponent) => {
       handleTab: PropTypes.func,
       handleReturn: PropTypes.func,
       handleChange: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired,
+      // could be readOnly, so not strictly required
+      setEditorState: PropTypes.func,
       teamId: PropTypes.string.isRequired
     };
 

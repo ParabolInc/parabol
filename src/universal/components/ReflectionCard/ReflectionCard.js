@@ -148,6 +148,7 @@ class ReflectionCard extends Component<Props, State> {
   render() {
     const {canDelete, hovered, iAmDragging, isCollapsed, pulled, userDragging, meeting, reflection} = this.props;
     const {editorState} = this.state;
+    const {teamId} = meeting;
     const holdingPlace = Boolean(userDragging && !pulled);
     return (
       <DnDStylesWrapper pulled={pulled} iAmDragging={iAmDragging} hovered={hovered}>
@@ -165,6 +166,7 @@ class ReflectionCard extends Component<Props, State> {
             onFocus={this.handleEditorFocus}
             placeholder="My reflection thought..."
             setEditorState={this.setEditorState}
+            teamId={teamId}
           />
           {this.maybeRenderReflectionPhaseQuestion()}
           {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
@@ -181,6 +183,7 @@ export default createFragmentContainer(
   graphql`
     fragment ReflectionCard_meeting on RetrospectiveMeeting {
       meetingId: id
+      teamId
       ...ReflectionCardDeleteButton_meeting
     }
     fragment ReflectionCard_reflection on RetroReflection {

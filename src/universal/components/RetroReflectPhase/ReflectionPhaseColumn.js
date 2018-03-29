@@ -89,7 +89,7 @@ class ReflectionPhaseColumn extends Component<Props, State> {
             <ColumnChild key={reflection.id}>
               {reflection.isViewerCreator ?
                 <ReflectionCard meeting={meeting} reflection={reflection} /> :
-                <AnonymousReflectionCard reflection={reflection} />
+                <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
               }
             </ColumnChild>
           ))}
@@ -116,6 +116,7 @@ export default createFragmentContainer(
 
     fragment ReflectionPhaseColumn_meeting on RetrospectiveMeeting {
       ...AddReflectionButton_meeting
+      ...AnonymousReflectionCard_meeting
       ...ReflectionCard_meeting
       meetingId: id
       reflections {

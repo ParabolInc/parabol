@@ -53,6 +53,10 @@ export const newMeetingFields = () => ({
     type: GraphQLISO8601Type,
     description: 'The time the meeting summary was emailed to the team'
   },
+  teamId: {
+    type: new GraphQLNonNull(GraphQLID),
+    description: 'foreign key for team'
+  },
   team: {
     type: Team,
     description: 'The team that ran the meeting',

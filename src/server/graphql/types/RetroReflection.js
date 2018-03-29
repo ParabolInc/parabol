@@ -31,7 +31,8 @@ const RetroReflection = new GraphQLObjectType({
     },
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
+      resolve: () => []
     },
     isActive: {
       type: GraphQLBoolean,
