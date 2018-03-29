@@ -28,7 +28,12 @@ const targetAnchor = {
 const TeamTasksHeader = (props) => {
   const {dispatch, history, teamMemberFilterId, teamMemberFilterName, team} = props;
   const {teamId, teamMembers, teamName} = team;
-  const toggle = <DashFilterToggle label={teamMemberFilterName} />;
+  // portal HOC warns about refs on the stateless component, wrapping in div (TA)
+  const toggle = (
+    <div>
+      <DashFilterToggle label={teamMemberFilterName} />
+    </div>
+  );
 
   const itemFactory = () => {
     return [<MenuItem

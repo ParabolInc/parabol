@@ -24,7 +24,12 @@ const targetAnchor = {
 
 const UserTasksHeader = (props) => {
   const {dispatch, teams, teamFilterId, teamFilterName} = props;
-  const toggle = <DashFilterToggle label={teamFilterName} />;
+  // portal HOC warns about refs on the stateless component, wrapping in div (TA)
+  const toggle = (
+    <div>
+      <DashFilterToggle label={teamFilterName} />
+    </div>
+  );
   // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
