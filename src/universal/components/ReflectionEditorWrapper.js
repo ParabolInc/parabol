@@ -171,7 +171,7 @@ class ReflectionEditorWrapper extends Component<Props> {
   };
 
   render() {
-    const {ariaLabel, editorState, isBlurred, isCollapsed, onBlur, placeholder, readOnly} = this.props;
+    const {ariaLabel, editorState, isBlurred, isCollapsed, onBlur, onFocus, placeholder, readOnly} = this.props;
     const userSelect = readOnly ? 'none' : 'text';
     return (
       <EditorStyles isBlurred={isBlurred} isCollapsed={isCollapsed}>
@@ -185,6 +185,7 @@ class ReflectionEditorWrapper extends Component<Props> {
           handleReturn={this.handleReturn}
           keyBindingFn={this.keyBindingFn}
           onBlur={onBlur}
+          onFocus={onFocus}
           onChange={this.handleChange}
           placeholder={placeholder}
           readOnly={readOnly}

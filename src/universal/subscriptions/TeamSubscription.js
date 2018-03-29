@@ -25,6 +25,7 @@ const subscription = graphql`
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
+      ...EditReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
       ...KillNewMeetingMutation_team @relay(mask: false)
@@ -42,7 +43,6 @@ const subscription = graphql`
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
-      ...EditReflectionMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
     }

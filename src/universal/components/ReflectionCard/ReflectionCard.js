@@ -115,7 +115,7 @@ class ReflectionCard extends Component<Props, State> {
       submitMutation();
       UpdateReflectionContentMutation(atmosphere, {content: nextContent, reflectionId}, onError, onCompleted);
     } else {
-      // RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
+      RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
     }
   };
 

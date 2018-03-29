@@ -5,7 +5,7 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState, EditorState} from 'draft-js';
+import {ContentState, EditorState, SelectionState} from 'draft-js';
 import React, {Component} from 'react';
 
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
@@ -15,6 +15,8 @@ import type {AnonymousReflectionCard_reflection as Reflection} from './__generat
 import type {AnonymousReflectionCard_meeting as Meeting} from './__generated__/AnonymousReflectionCard_meeting.graphql';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper';
+import {makeContentWithEntity} from 'universal/utils/draftjs/completeEnitity';
+import anonymousReflectionDecorators from 'universal/components/TaskEditor/anonymousReflectionDecorators';
 
 type Props = {
   meeting: Meeting,
@@ -36,6 +38,22 @@ const obfuscate = (content: string): string => {
   });
 };
 
+const getContentState = (contentText) => {
+  const contentState = ContentState.createFromText(contentText);
+  if (contentText !== DEFAULT_TEXT) return contentState;
+  const contentStateWithEntity = contentState
+    .createEntity('ELLIPSIS', 'IMMUTABLE', {});
+  const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+  const anchorKey = contentState.getFirstBlock().getKey();
+  const selectionState = new SelectionState({
+    anchorOffset: DEFAULT_TEXT.length - 3,
+    focusOffset: DEFAULT_TEXT.length,
+    anchorKey,
+    focusKey: anchorKey
+  });
+  return makeContentWithEntity(contentState, selectionState, undefined, entityKey);
+}
+
 class AnonymousReflectionCard extends Component<Props, State> {
   static getContent(reflection: Reflection) {
     const {content, isEditing} = reflection;
@@ -49,21 +67,24 @@ class AnonymousReflectionCard extends Component<Props, State> {
 
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflection} = nextProps;
-    const {content: nextContent} = reflection;
-    if (nextContent === prevState.content) return null;
+    const {content, isEditing} = reflection;
+    if (content === prevState.content && isEditing === prevState.isEditing) return null;
     const contentText = AnonymousReflectionCard.getContent(reflection);
-    const editorState = EditorState.createWithContent(ContentState.createFromText(contentText));
+    const contentState = getContentState(contentText);
+    const editorState = EditorState.createWithContent(contentState, anonymousReflectionDecorators);
     return {
       content: reflection.content,
       editorState,
-      isBlurred: contentText !== DEFAULT_TEXT
+      isBlurred: contentText !== DEFAULT_TEXT,
+      isEditing
     };
   }
 
   state = {
     content: '',
     editorState: null,
-    isBlurred: false
+    isBlurred: false,
+    isEditing: false
   };
 
   render() {

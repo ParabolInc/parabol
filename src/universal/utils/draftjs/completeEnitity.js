@@ -34,7 +34,7 @@ const getExpandedSelectionState = (editorState) => {
   return selectionState;
 };
 
-const makeContentWithEntity = (contentState, selectionState, mention, entityKey) => {
+export const makeContentWithEntity = (contentState, selectionState, mention, entityKey) => {
   if (!mention) {
     // anchorKey && focusKey should be different here (used for EditorLinkChanger)
     return Modifier.applyEntity(
@@ -95,7 +95,6 @@ const completeEntity = (editorState, entityName, entityData, mention, options = 
   });
   const finalContent = contentWithEntity.merge({
     selectionAfter: collapsedSelectionState
-    // selectionBefore: collapsedSelectionState,
   });
   return EditorState.push(editorState, finalContent, editorChangeType);
 };
