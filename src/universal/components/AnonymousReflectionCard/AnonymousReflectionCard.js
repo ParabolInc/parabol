@@ -47,27 +47,24 @@ class AnonymousReflectionCard extends Component<Props, State> {
     return obfuscate(fullText);
   }
 
-  static getNextState = (reflection) => {
-    const contentStr = AnonymousReflectionCard.getContent(reflection);
-    const editorState = EditorState.createWithContent(ContentState.createFromText(contentStr));
-    return {
-      content: reflection.content,
-      editorState,
-      isBlurred: contentStr !== DEFAULT_TEXT
-    };
-  };
-
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflection} = nextProps;
     const {content: nextContent} = reflection;
     if (nextContent === prevState.content) return null;
-    return AnonymousReflectionCard.getNextState(reflection);
+    const contentText = AnonymousReflectionCard.getContent(reflection);
+    const editorState = EditorState.createWithContent(ContentState.createFromText(contentText));
+    return {
+      content: reflection.content,
+      editorState,
+      isBlurred: contentText !== DEFAULT_TEXT
+    };
   }
 
-  constructor(props: Props) {
-    super(props);
-    this.state = AnonymousReflectionCard.getNextState(props.reflection);
-  }
+  state = {
+    content: '',
+    editorState: null,
+    isBlurred: false
+  };
 
   render() {
     const {editorState, isBlurred} = this.state;

@@ -73,30 +73,22 @@ const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperP
 }));
 
 class ReflectionCard extends Component<Props, State> {
-  static getNextState = (content, getEditorState) => {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+    const {reflection} = nextProps;
+    const {content} = reflection;
+    if (content === prevState.content) return null;
     const contentState = convertFromRaw(JSON.parse(content));
     return {
       content,
-      editorState: EditorState.createWithContent(contentState, editorDecorators(getEditorState))
+      editorState: EditorState.createWithContent(contentState, editorDecorators(prevState.getEditorState))
     };
+  }
+
+  state = {
+    content: '',
+    editorState: null,
+    getEditorState: () => this.state.editorState
   };
-
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
-    const {reflection} = nextProps;
-    const {content: nextContent} = reflection;
-    if (nextContent === prevState.content) return null;
-    return ReflectionCard.getNextState(nextContent, this.getEditorState);
-  }
-
-  constructor(props: Props) {
-    super(props);
-    const {reflection: {content}} = props;
-    this.state = ReflectionCard.getNextState(content, this.getEditorState);
-  }
-
-  getEditorState = () => (
-    this.state.editorState
-  );
 
   setEditorState = (editorState: EditorState) => {
     this.setState({editorState});
@@ -123,7 +115,7 @@ class ReflectionCard extends Component<Props, State> {
       submitMutation();
       UpdateReflectionContentMutation(atmosphere, {content: nextContent, reflectionId}, onError, onCompleted);
     } else {
-      RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
+      // RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
     }
   };
 
@@ -146,7 +138,7 @@ class ReflectionCard extends Component<Props, State> {
   };
 
   render() {
-    const {canDelete, hovered, iAmDragging, isCollapsed, pulled, userDragging, meeting, reflection} = this.props;
+    const {hovered, iAmDragging, isCollapsed, pulled, userDragging, meeting, reflection} = this.props;
     const {editorState} = this.state;
     const {teamId} = meeting;
     const holdingPlace = Boolean(userDragging && !pulled);
@@ -169,7 +161,7 @@ class ReflectionCard extends Component<Props, State> {
             teamId={teamId}
           />
           {this.maybeRenderReflectionPhaseQuestion()}
-          {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
+          <ReflectionCardDeleteButton canDelete meeting={meeting} reflection={reflection} />
         </ReflectionCardWrapper>
       </DnDStylesWrapper>
     );

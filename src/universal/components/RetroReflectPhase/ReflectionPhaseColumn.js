@@ -66,14 +66,10 @@ class ReflectionPhaseColumn extends Component<Props, State> {
     };
   }
 
-  constructor(props) {
-    super(props);
-    const {meeting: {reflections}, retroPhaseItem: {retroPhaseItemId}} = props;
-    this.state = {
-      reflections,
-      columnReflections: reflections.filter((reflection) => reflection.retroPhaseItemId === retroPhaseItemId)
-    };
-  }
+  state = {
+    reflections: [],
+    columnReflections: []
+  };
 
   render() {
     const {meeting, retroPhaseItem} = this.props;
@@ -88,7 +84,7 @@ class ReflectionPhaseColumn extends Component<Props, State> {
           {columnReflections.map((reflection) => (
             <ColumnChild key={reflection.id}>
               {reflection.isViewerCreator ?
-                <ReflectionCard meeting={meeting} reflection={reflection} /> :
+                <ReflectionCard canDelete meeting={meeting} reflection={reflection} /> :
                 <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
               }
             </ColumnChild>

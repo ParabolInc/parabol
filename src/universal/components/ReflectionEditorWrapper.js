@@ -189,7 +189,7 @@ class ReflectionEditorWrapper extends Component<Props> {
           placeholder={placeholder}
           readOnly={readOnly}
           ref={this.setEditorRef}
-          style={{padding: '0.8rem', userSelect, WebkitUserSelect: userSelect}}
+          style={{padding: '0.0rem', userSelect, WebkitUserSelect: userSelect}}
         />
       </EditorStyles>
     );
