@@ -17,10 +17,7 @@ type Props = {
   editorState: Object,
   handleBeforeInput: () => void,
   handleChange: () => void,
-  handleUpArrow: () => void,
-  handleDownArrow: () => void,
   handleKeyCommand: () => void,
-  handleTab: () => void,
   handleReturn: () => void,
   isBlurred: boolean,
   isCollapsed: boolean,
@@ -54,7 +51,6 @@ const EditorStyles = styled('div')(
   {
     fontSize: ui.cardContentFontSize,
     lineHeight: ui.cardContentLineHeight,
-    padding: `0.8rem`,
     maxHeight: '10rem',
     overflow: 'auto'
   },
@@ -66,7 +62,7 @@ const EditorStyles = styled('div')(
     filter: 'blur(4px)',
     userSelect: 'none'
   })
-)
+);
 
 class ReflectionEditorWrapper extends Component<Props> {
   componentDidMount() {
@@ -121,27 +117,6 @@ class ReflectionEditorWrapper extends Component<Props> {
     setEditorState(editorState);
   };
 
-  handleUpArrow = (e) => {
-    const {handleUpArrow} = this.props;
-    if (handleUpArrow) {
-      handleUpArrow(e);
-    }
-  };
-
-  handleDownArrow = (e) => {
-    const {handleDownArrow} = this.props;
-    if (handleDownArrow) {
-      handleDownArrow(e);
-    }
-  };
-
-  handleTab = (e) => {
-    const {handleTab} = this.props;
-    if (handleTab) {
-      handleTab(e);
-    }
-  };
-
   handleReturn = (e) => {
     const {handleReturn} = this.props;
     if (handleReturn) {
@@ -161,9 +136,14 @@ class ReflectionEditorWrapper extends Component<Props> {
   keyBindingFn = (e) => {
     const {keyBindingFn} = this.props;
     if (keyBindingFn) {
-      return keyBindingFn(e) || getDefaultKeyBinding(e);
+      keyBindingFn(e);
     }
-    return undefined;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.removeModal();
+    } else {
+      getDefaultKeyBinding(e);
+    }
   };
 
   handleBeforeInput = (char) => {
@@ -173,10 +153,6 @@ class ReflectionEditorWrapper extends Component<Props> {
     }
     return undefined;
   }
-
-  handleClick = () => {
-    this.editorRef.focus();
-  };
 
   handlePastedText = (text) => {
     if (text) {
@@ -196,8 +172,9 @@ class ReflectionEditorWrapper extends Component<Props> {
 
   render() {
     const {ariaLabel, editorState, isBlurred, isCollapsed, onBlur, placeholder, readOnly} = this.props;
+    const userSelect = readOnly ? 'none' : 'text';
     return (
-      <EditorStyles isBlurred={isBlurred} isCollapsed={isCollapsed} onClick={this.handleClick}>
+      <EditorStyles isBlurred={isBlurred} isCollapsed={isCollapsed}>
         <Editor
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}
@@ -209,13 +186,10 @@ class ReflectionEditorWrapper extends Component<Props> {
           keyBindingFn={this.keyBindingFn}
           onBlur={onBlur}
           onChange={this.handleChange}
-          onDownArrow={this.handleDownArrow}
-          onEscape={this.handleEscape}
-          onTab={this.handleTab}
-          onUpArrow={this.handleUpArrow}
           placeholder={placeholder}
           readOnly={readOnly}
           ref={this.setEditorRef}
+          style={{padding: '0.8rem', userSelect, WebkitUserSelect: userSelect}}
         />
       </EditorStyles>
     );

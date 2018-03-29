@@ -42,7 +42,7 @@ const AddButton = styled(PlainButton)({
   textAlign: 'center',
   width: ui.retroCardWidth,
   ':focus': {
-    boxShadow: 'none',
+    boxShadow: 'none'
   }
 });
 

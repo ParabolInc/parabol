@@ -21,10 +21,7 @@ class TaskEditor extends Component {
     trackEditingComponent: PropTypes.func,
     handleBeforeInput: PropTypes.func,
     handleChange: PropTypes.func,
-    handleUpArrow: PropTypes.func,
-    handleDownArrow: PropTypes.func,
     handleKeyCommand: PropTypes.func,
-    handleTab: PropTypes.func,
     handleReturn: PropTypes.func,
     readOnly: PropTypes.bool,
     keyBindingFn: PropTypes.func,
@@ -92,38 +89,12 @@ class TaskEditor extends Component {
     setEditorState(editorState);
   };
 
-  handleUpArrow = (e) => {
-    const {handleUpArrow} = this.props;
-    if (handleUpArrow) {
-      handleUpArrow(e);
-    }
-  };
-
-  handleDownArrow = (e) => {
-    const {handleDownArrow} = this.props;
-    if (handleDownArrow) {
-      handleDownArrow(e);
-    }
-  };
-
-  handleTab = (e) => {
-    const {handleTab} = this.props;
-    if (handleTab) {
-      handleTab(e);
-    }
-  };
-
   handleReturn = (e) => {
     const {handleReturn} = this.props;
     if (handleReturn) {
       return handleReturn(e);
     }
     return 'not-handled';
-  };
-
-  handleEscape = (e) => {
-    e.preventDefault();
-    this.removeModal();
   };
 
   handleKeyCommand = (command) => {
@@ -137,9 +108,14 @@ class TaskEditor extends Component {
   keyBindingFn = (e) => {
     const {keyBindingFn} = this.props;
     if (keyBindingFn) {
-      return keyBindingFn(e) || getDefaultKeyBinding(e);
+      keyBindingFn(e);
     }
-    return undefined;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.removeModal();
+    } else {
+      getDefaultKeyBinding(e);
+    }
   };
 
   handleBeforeInput = (char) => {
@@ -186,10 +162,6 @@ class TaskEditor extends Component {
           handleReturn={this.handleReturn}
           keyBindingFn={this.keyBindingFn}
           onChange={this.handleChange}
-          onDownArrow={this.handleDownArrow}
-          onEscape={this.handleEscape}
-          onTab={this.handleTab}
-          onUpArrow={this.handleUpArrow}
           placeholder={placeholder}
           readOnly={readOnly}
           ref={setEditorRef}

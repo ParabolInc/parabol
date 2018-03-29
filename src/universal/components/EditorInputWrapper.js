@@ -17,10 +17,7 @@ class EditorInputWrapper extends Component {
     editorState: PropTypes.object.isRequired,
     handleBeforeInput: PropTypes.func,
     handleChange: PropTypes.func,
-    handleUpArrow: PropTypes.func,
-    handleDownArrow: PropTypes.func,
     handleKeyCommand: PropTypes.func,
-    handleTab: PropTypes.func,
     handleReturn: PropTypes.func,
     keyBindingFn: PropTypes.func,
     placeholder: PropTypes.string,
@@ -64,27 +61,6 @@ class EditorInputWrapper extends Component {
     setEditorState(editorState);
   };
 
-  handleUpArrow = (e) => {
-    const {handleUpArrow} = this.props;
-    if (handleUpArrow) {
-      handleUpArrow(e);
-    }
-  };
-
-  handleDownArrow = (e) => {
-    const {handleDownArrow} = this.props;
-    if (handleDownArrow) {
-      handleDownArrow(e);
-    }
-  };
-
-  handleTab = (e) => {
-    const {handleTab} = this.props;
-    if (handleTab) {
-      handleTab(e);
-    }
-  };
-
   handleReturn = (e) => {
     const {handleReturn} = this.props;
     if (handleReturn) {
@@ -108,9 +84,9 @@ class EditorInputWrapper extends Component {
   keyBindingFn = (e) => {
     const {keyBindingFn} = this.props;
     if (keyBindingFn) {
-      return keyBindingFn(e) || getDefaultKeyBinding(e);
+      keyBindingFn(e);
     }
-    return undefined;
+    getDefaultKeyBinding(e);
   };
 
   handleBeforeInput = (char) => {
@@ -151,10 +127,6 @@ class EditorInputWrapper extends Component {
         keyBindingFn={this.keyBindingFn}
         onBlur={onBlur}
         onChange={this.handleChange}
-        onDownArrow={this.handleDownArrow}
-        onEscape={this.handleEscape}
-        onTab={this.handleTab}
-        onUpArrow={this.handleUpArrow}
         placeholder={placeholder}
         readOnly={readOnly}
         ref={(c) => {

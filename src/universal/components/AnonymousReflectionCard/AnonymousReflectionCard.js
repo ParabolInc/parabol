@@ -34,7 +34,7 @@ const obfuscate = (content: string): string => {
     // eslint-disable-next-line
     return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - (ROT * 2));
   });
-}
+};
 
 class AnonymousReflectionCard extends Component<Props, State> {
   static getContent(reflection: Reflection) {
@@ -45,7 +45,7 @@ class AnonymousReflectionCard extends Component<Props, State> {
     const fullText = textBlocks.join('\n');
     if (fullText.length === 0) return DEFAULT_TEXT;
     return obfuscate(fullText);
-  };
+  }
 
   static getNextState = (reflection) => {
     const contentStr = AnonymousReflectionCard.getContent(reflection);
@@ -74,7 +74,7 @@ class AnonymousReflectionCard extends Component<Props, State> {
     const {meeting: {teamId}} = this.props;
     return (
       <ReflectionCardWrapper>
-        <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId}/>
+        <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
       </ReflectionCardWrapper>
     );
   }
