@@ -63,8 +63,6 @@ const styleThunk = (theme, {bgTheme, compact}) => ({
     backgroundColor: bgTheme ? bgThemeValues[bgTheme] : bgThemeValues.white,
     boxShadow: ui.panelBoxShadow,
     borderRadius: ui.cardBorderRadius,
-    display: 'flex',
-    flexDirection: 'column',
     fontSize: appTheme.typography.s3,
     lineHeight: appTheme.typography.s5,
     margin: `${ui.panelMarginVertical} 0`,
@@ -74,7 +72,8 @@ const styleThunk = (theme, {bgTheme, compact}) => ({
 
   header: {
     alignItems: 'center',
-    display: 'flex'
+    display: 'flex',
+    width: '100%'
   },
 
   label: {

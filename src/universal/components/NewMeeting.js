@@ -13,10 +13,11 @@ import {Helmet} from 'react-helmet';
 import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
 import NewMeetingLobby from 'universal/components/NewMeetingLobby';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
+import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel, meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
-import {CHECKIN} from 'universal/utils/constants';
+import {CHECKIN, REFLECT} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
@@ -30,6 +31,7 @@ import RejoinFacilitatorButton from 'universal/modules/meeting/components/Rejoin
 import type {Dispatch} from 'redux';
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup';
 import updateLocalStage from 'universal/utils/relay/updateLocalStage';
+import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading';
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -48,12 +50,12 @@ const MeetingArea = styled('div')({
 const MeetingAreaHeader = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
-  flexDirection: 'row-reverse',
   flexWrap: 'wrap',
   justifyContent: 'space-between',
+  margin: '1rem 0',
   maxWidth: '100%',
   overflow: 'hidden',
-  padding: '1rem',
+  padding: '0 1rem',
   width: '100%'
 });
 
@@ -146,6 +148,7 @@ class NewMeeting extends Component<Props> {
         <NewMeetingSidebar gotoStageId={this.gotoStageId} meetingType={meetingType} viewer={viewer} />
         <MeetingArea>
           <MeetingAreaHeader>
+            <NewMeetingPhaseHeading />
             <NewMeetingAvatarGroup
               gotoStageId={this.gotoStageId}
               team={team}
@@ -156,6 +159,10 @@ class NewMeeting extends Component<Props> {
               <Route
                 path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}`}
                 render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
+              />
+              <Route
+                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[REFLECT]}`}
+                render={() => <RetroReflectPhase team={team} />}
               />
               <Route
                 path={`/${meetingSlug}/:teamId`}
@@ -191,6 +198,7 @@ export default createFragmentContainer(
         ...NewMeetingAvatarGroup_team
         ...NewMeetingLobby_team
         ...NewMeetingCheckIn_team
+        ...RetroReflectPhase_team
         checkInGreeting {
           content
           language

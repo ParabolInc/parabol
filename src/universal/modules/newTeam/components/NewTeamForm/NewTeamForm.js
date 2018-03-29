@@ -116,7 +116,6 @@ class NewTeamForm extends Component {
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
-                  colorPalette="gray"
                   component={DropdownInput}
                   disabled={isNewOrganization}
                   fieldSize={controlSize}
@@ -139,7 +138,6 @@ class NewTeamForm extends Component {
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
-                  colorPalette="gray"
                   component={InputField}
                   disabled={!isNewOrganization}
                   fieldSize={controlSize}
@@ -158,7 +156,6 @@ class NewTeamForm extends Component {
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
-                  colorPalette="gray"
                   component={InputField}
                   fieldSize={controlSize}
                   name="teamName"

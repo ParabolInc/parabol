@@ -63,7 +63,6 @@ const UserSettings = (props) => {
                   {/* TODO: Make me Editable.js (TA) */}
                   <Field
                     autoFocus
-                    colorPalette="gray"
                     component={InputField}
                     fieldSize={controlSize}
                     name="preferredName"

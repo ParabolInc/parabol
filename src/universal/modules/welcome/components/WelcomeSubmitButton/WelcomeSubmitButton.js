@@ -1,31 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import IconButton from 'universal/components/IconButton/IconButton';
+import styled from 'react-emotion';
+
+const ButtonBlock = styled('div')({padding: '0 0 0 1rem'});
 
 const WelcomeSubmitButton = (props) => {
-  const {disabled, styles} = props;
+  const ariaLabel = 'Tap to submit and continue';
   return (
-    <div className={css(styles.buttonBlock)}>
+    <ButtonBlock>
       <IconButton
-        disabled={disabled}
+        aria-label={ariaLabel}
+        disabled={props.disabled}
         iconName="check-circle"
         iconSize="2x"
+        title={ariaLabel}
         type="submit"
       />
-    </div>
+    </ButtonBlock>
   );
 };
 
-WelcomeSubmitButton.propTypes = {
-  disabled: PropTypes.bool,
-  styles: PropTypes.object
-};
-const styleThunk = () => ({
-  buttonBlock: {
-    padding: '0 0 0 1rem'
-  }
-});
+WelcomeSubmitButton.propTypes = {disabled: PropTypes.bool};
 
-export default withStyles(styleThunk)(WelcomeSubmitButton);
+export default WelcomeSubmitButton;

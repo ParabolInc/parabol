@@ -1,4 +1,4 @@
-import {WebAuth} from 'auth0-js';
+import {WebAuth} from 'auth0-js/build/auth0';
 
 export default function getWebAuth() {
   return new WebAuth({

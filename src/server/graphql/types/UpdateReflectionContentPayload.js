@@ -16,7 +16,7 @@ const UpdateReflectionContentPayload = new GraphQLObjectType({
     },
     reflection: {
       type: RetroReflection,
-      resolve: makeResolve('reflectionId', 'reflection', 'retroReflections')
+      resolve: makeResolve('reflectionId', 'reflection', 'activeRetroReflections')
     }
   })
 });

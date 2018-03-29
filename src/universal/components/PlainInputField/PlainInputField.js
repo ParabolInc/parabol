@@ -10,7 +10,6 @@ import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 const PlainInputField = (props) => {
   const {
     autoFocus,
-    colorPalette,
     disabled,
     fieldSize,
     input,
@@ -23,7 +22,6 @@ const PlainInputField = (props) => {
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
     styles.field,
-    colorPalette ? styles[colorPalette] : styles.white,
     disabled && styles.disabled,
   );
 
@@ -59,13 +57,6 @@ PlainInputField.propTypes = {
   }),
   spellCheck: PropTypes.bool,
   styles: PropTypes.object,
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'gray',
-    'link',
-    'warm',
-    'white'
-  ]),
   meta: PropTypes.object.isRequired
 };
 
@@ -74,14 +65,9 @@ const styleThunk = (theme, {disabled, fieldSize}) => {
   return ({
     field: {
       ...ui.fieldBaseStyles,
-      ...ui.fieldSizeStyles[size]
+      ...ui.fieldSizeStyles[size],
+      ...makeFieldColorPalette('gray', !disabled)
     },
-
-    cool: makeFieldColorPalette('cool', !disabled),
-    gray: makeFieldColorPalette('gray', !disabled),
-    link: makeFieldColorPalette('link', !disabled),
-    warm: makeFieldColorPalette('warm', !disabled),
-    white: makeFieldColorPalette('white', !disabled),
 
     disabled: ui.fieldDisabled,
 

@@ -29,10 +29,10 @@ const validate = (values, props) => {
 };
 
 const fieldStyles = {
-  color: appTheme.palette.dark,
+  color: ui.colorText,
   fontSize: appTheme.typography.s4,
   lineHeight: '1.625rem',
-  placeholderColor: appTheme.palette.mid70l
+  placeholderColor: ui.placeholderColor
 };
 
 const InviteUser = (props) => {

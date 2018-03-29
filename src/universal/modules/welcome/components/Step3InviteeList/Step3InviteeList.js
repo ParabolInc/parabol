@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Link, withRouter} from 'react-router-dom';
 import {destroy, reduxForm} from 'redux-form';
-import Button from 'universal/components/Button/Button';
+import {Button} from 'universal/components';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';

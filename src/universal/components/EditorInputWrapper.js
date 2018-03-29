@@ -25,6 +25,7 @@ class EditorInputWrapper extends Component {
     keyBindingFn: PropTypes.func,
     placeholder: PropTypes.string,
     onBlur: PropTypes.func,
+    onFocus: PropTypes.func,
     readOnly: PropTypes.bool,
     setEditorState: PropTypes.func.isRequired,
     innerRef: PropTypes.func,
@@ -137,7 +138,7 @@ class EditorInputWrapper extends Component {
   };
 
   render() {
-    const {ariaLabel, editorState, onBlur, placeholder, readOnly, innerRef} = this.props;
+    const {ariaLabel, editorState, onBlur, onFocus, placeholder, readOnly, innerRef} = this.props;
     return (
       <Editor
         ariaLabel={ariaLabel}
@@ -152,6 +153,7 @@ class EditorInputWrapper extends Component {
         onChange={this.handleChange}
         onDownArrow={this.handleDownArrow}
         onEscape={this.handleEscape}
+        onFocus={onFocus}
         onTab={this.handleTab}
         onUpArrow={this.handleUpArrow}
         placeholder={placeholder}
@@ -171,13 +173,14 @@ const styleThunk = () => ({
   editorBlockquote: {
     fontStyle: 'italic',
     borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
-    margin: '1rem 0',
+    margin: '.5rem 0',
     padding: '0 .5rem'
   },
 
   codeBlock: {
-    backgroundColor: appTheme.palette.mid10a,
-    color: appTheme.palette.warm,
+    backgroundColor: appTheme.palette.light,
+    borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
+    borderRadius: '.0625rem',
     fontFamily: appTheme.typography.monospace,
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s6,
@@ -193,4 +196,3 @@ export default withMarkdown(
     )
   )
 );
-

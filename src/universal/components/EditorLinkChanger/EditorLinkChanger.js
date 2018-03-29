@@ -79,7 +79,6 @@ class EditorLinkChanger extends Component {
             <span className={css(styles.inputLabel)}>{'Text'}</span>
             <Field
               autoFocus
-              colorPalette="gray"
               component={PlainInputField}
               fieldSize="small"
               name="text"
@@ -90,7 +89,6 @@ class EditorLinkChanger extends Component {
             <span className={css(styles.inputLabel)}>{'Link'}</span>
             <Field
               autoFocus={link === null && text !== ''}
-              colorPalette="gray"
               component={PlainInputField}
               fieldSize="small"
               name="link"

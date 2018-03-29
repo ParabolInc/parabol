@@ -17,12 +17,12 @@ const UpdateReflectionLocationPayload = new GraphQLObjectType({
     },
     reflection: {
       type: RetroReflection,
-      resolve: makeResolve('reflectionId', 'reflection', 'retroReflections')
+      resolve: makeResolve('reflectionId', 'reflection', 'activeRetroReflections')
     },
     orphanedReflection: {
       type: RetroReflection,
       description: 'If the reflection was removed from a group & was the penultimate in the group, this orphan was removed, too',
-      resolve: makeResolve('orphanedReflectionId', 'orphanedReflection', 'retroReflections')
+      resolve: makeResolve('orphanedReflectionId', 'orphanedReflection', 'activeRetroReflections')
     },
     removedGroup: {
       type: RetroReflectionGroup,

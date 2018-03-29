@@ -4,6 +4,23 @@
  * @flow
  */
 
+export type AuthRole =
+  | 'su';
+
+/**
+ * A deserialized authentication token.
+ */
+export type AuthToken = {
+  aud: string,
+  bet: number,
+  exp: number,
+  iat: number,
+  iss: string,
+  sub: string,
+  rol: ?AuthRole,
+  tms: Array<string>
+};
+
 /**
  * An auth0 authentication response containing the id token and identity object.
  */
