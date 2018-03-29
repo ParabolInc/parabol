@@ -21,8 +21,10 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     reflections: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
       description: 'The reflections generated during the reflect phase of the retro',
-      resolve: ({id}, args, {dataLoader}) => {
-        return dataLoader.get('retroReflectionsByMeetingId').load(id);
+      resolve: async ({id}, args, {dataLoader}) => {
+        const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(id);
+        reflections.sort((a,b) => a.sortOrder < b.sortOrder ? -1 : 1);
+        return reflections;
       }
     }
   })

@@ -151,7 +151,7 @@
     "deep-freeze": "^0.0.1",
     "dotenv": "2.0.0",
     "dotenv-expand": "^0.1.0",
-    "draft-js": "https://github.com/mattkrick/draft-js/tarball/f66eea3789044349386ebc60f5eb4dde6daa90ab",
+    "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
     "draft-js-export-markdown": "^0.3.0",
     "email-addresses": "^3.0.1",
     "emotion": "^9.0.1",
