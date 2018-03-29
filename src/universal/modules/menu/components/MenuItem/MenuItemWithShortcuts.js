@@ -56,6 +56,12 @@ class MenuItemWithShortcuts extends Component {
     title: PropTypes.string
   };
 
+  componentDidMount() {
+    const {isActive} = this.props;
+    if (isActive) {
+      this.itemRef.scrollIntoViewIfNeeded();
+    }
+  }
   componentWillReceiveProps(nextProps) {
     const {isActive} = nextProps;
     if (isActive && !this.props.isActive) {
