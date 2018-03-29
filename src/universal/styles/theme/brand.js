@@ -11,6 +11,7 @@ const brand = {
   // From https://github.com/ParabolInc/marketing/blob/aa958f36a9320957e789309dc92e8fa7345c7a01/assets/src/styles/variables/_colors.scss
   primary: {
     purple: '#493272',
+    purpleLightened: '#8869C2', // temp for gradient
     purpleDarkened: '#3F2B63', // temp for hover states
     orange: '#FD6157',
     teal: '#55C0CF',

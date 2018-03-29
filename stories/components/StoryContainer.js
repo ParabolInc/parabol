@@ -27,6 +27,9 @@ type Props = {
 };
 
 const FullPageWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  flexShrink: 0,
   height: '100vh',
   padding: '1rem',
   width: '100vw'

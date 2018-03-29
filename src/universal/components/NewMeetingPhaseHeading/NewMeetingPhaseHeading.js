@@ -25,8 +25,8 @@ const ReflectPhaseDescription = styled('h2')({
 
 const ReflectPhaseHeading = () => (
   <div>
-    <ReflectPhaseTitle>Reflect</ReflectPhaseTitle>
-    <ReflectPhaseDescription>Looking back to move forward</ReflectPhaseDescription>
+    <ReflectPhaseTitle>{'Reflect'}</ReflectPhaseTitle>
+    <ReflectPhaseDescription>{'Looking back to move forward'}</ReflectPhaseDescription>
   </div>
 );
 
