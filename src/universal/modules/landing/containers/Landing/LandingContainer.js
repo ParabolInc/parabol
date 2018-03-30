@@ -1,3 +1,4 @@
+import {injectGlobal} from 'react-emotion';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Landing from 'universal/modules/landing/components/Landing/Landing';
@@ -12,7 +13,6 @@ import {
   APP_UPGRADE_PENDING_RELOAD
 } from 'universal/utils/constants';
 import {connect} from 'react-redux';
-import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
@@ -44,7 +44,7 @@ export default class LandingContainer extends Component {
           APP_UPGRADE_PENDING_RELOAD) {
       this.setState({refreshNeeded: true});
     } else {
-      injectGlobals(globalStyles);
+      injectGlobal(globalStyles);
     }
   }
 
