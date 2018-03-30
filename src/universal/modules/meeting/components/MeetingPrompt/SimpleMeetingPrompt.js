@@ -8,7 +8,7 @@ const SimpleMeetingPrompt = styled('div')({
   borderRadius: '1rem 1rem 1rem 0',
   color: ui.palette.white,
   fontSize: appTheme.typography.s2,
-  lineHeight: 1.5,
+  lineHeight: appTheme.typography.s5,
   margin: 'auto',
   padding: '.5rem 1rem'
 });
