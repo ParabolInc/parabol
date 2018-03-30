@@ -9,9 +9,12 @@ import type {Node} from 'react';
 import type {RouterHistory, Location} from 'react-router-dom';
 import type {Dispatch} from 'redux';
 import type {AuthResponse, Credentials} from 'universal/types/auth';
+
+import promisify from 'es6-promisify';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
+
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
 import {AuthPage, LoadingView} from 'universal/components';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
@@ -19,7 +22,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
-import promisify from 'es6-promisify';
 import SignIn from './SignIn';
 
 type Props = {
@@ -78,7 +80,8 @@ class SignInPage extends Component<Props, State> {
   };
 
   appSignIn = (response: AuthResponse): void => {
-    signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
+    const {atmosphere, dispatch} = this.props;
+    signinAndUpdateToken(atmosphere, dispatch, null, response.idToken);
   };
 
   webAuth = getWebAuth();

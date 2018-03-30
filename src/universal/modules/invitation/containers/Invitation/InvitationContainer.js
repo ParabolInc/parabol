@@ -1,72 +1,44 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {Redirect, withRouter} from 'react-router-dom';
+import {bindActionCreators} from 'redux';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import withReducer from 'universal/decorators/withReducer/withReducer';
 import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
-import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
+import {setInviteToken} from 'universal/redux/invitationDuck';
 
-const mapStateToProps = (state, props) => {
-  const {match: {params: {id}}} = props;
-  const auth = state.auth.obj;
-  return {
-    auth,
-    inviteToken: id
-  };
-};
+const mapDispatchToProps = (dispatch) => ({
+  ...bindActionCreators({setInviteToken}, dispatch),
+  dispatch
+});
 
-@connect(mapStateToProps)
+@connect(null, mapDispatchToProps)
 @withReducer({userDashboardSettings: userSettingsReducer})
+@withRouter
 @withAtmosphere
 export default class Invitation extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
-    auth: PropTypes.object,
     dispatch: PropTypes.func.isRequired,
-    inviteToken: PropTypes.string.isRequired,
+    location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    setInviteToken: PropTypes.func.isRequired
   };
 
-  state = {
-    processedInvitation: false
-  };
-
-  // use DidMount to be SSR friendly
   componentDidMount() {
-    const {atmosphere, auth, dispatch} = this.props;
-    if (!auth.sub) {
-      showLock(atmosphere, dispatch);
-    } else {
-      this.stateMachine(this.props);
-    }
+    const {setInviteToken} = this.props; // eslint-disable-line no-shadow
+    setInviteToken(this.getInviteToken());
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.stateMachine(nextProps);
-  }
-
-  stateMachine = (props) => {
-    const {auth} = props;
-    const {processedInvitation} = this.state;
-    if (auth.sub && !processedInvitation) {
-      this.setState({processedInvitation: true});
-      this.processInvitation();
-    }
-  };
-
-  processInvitation = () => {
-    const {atmosphere, dispatch, inviteToken, history} = this.props;
-    AcceptTeamInviteMutation(atmosphere, {inviteToken}, {dispatch, history});
-  };
+  getInviteToken = () => (
+    this.props.match.params.id
+  );
 
   render() {
     return (
-      <div>
-        <LoadingView />
-      </div>
+      <Redirect to={{pathname: '/signin'}} />
     );
   }
 }
