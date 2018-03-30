@@ -23,6 +23,7 @@ import type {ReflectionCard_reflection as Reflection} from './__generated__/Refl
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper';
+import {REFLECT} from 'universal/utils/constants';
 
 export type Props = {|
   canDelete: boolean,
@@ -140,8 +141,10 @@ class ReflectionCard extends Component<Props, State> {
   render() {
     const {hovered, iAmDragging, isCollapsed, pulled, userDragging, meeting, reflection} = this.props;
     const {editorState} = this.state;
-    const {teamId} = meeting;
+    const {localPhase: {phaseType}, teamId} = meeting;
     const holdingPlace = Boolean(userDragging && !pulled);
+    const {isViewerCreator} = reflection;
+    const canDelete = isViewerCreator && phaseType === REFLECT;
     return (
       <DnDStylesWrapper pulled={pulled} iAmDragging={iAmDragging} hovered={hovered}>
         {this.maybeRenderUserDragging()}
@@ -157,11 +160,12 @@ class ReflectionCard extends Component<Props, State> {
             onBlur={this.handleEditorBlur}
             onFocus={this.handleEditorFocus}
             placeholder="My reflection thought..."
+            readOnly={phaseType !== REFLECT}
             setEditorState={this.setEditorState}
             teamId={teamId}
           />
           {this.maybeRenderReflectionPhaseQuestion()}
-          <ReflectionCardDeleteButton canDelete meeting={meeting} reflection={reflection} />
+          <ReflectionCardDeleteButton canDelete={canDelete} meeting={meeting} reflection={reflection} />
         </ReflectionCardWrapper>
       </DnDStylesWrapper>
     );
@@ -176,11 +180,15 @@ export default createFragmentContainer(
     fragment ReflectionCard_meeting on RetrospectiveMeeting {
       meetingId: id
       teamId
+      localPhase {
+        phaseType
+      }
       ...ReflectionCardDeleteButton_meeting
     }
     fragment ReflectionCard_reflection on RetroReflection {
       reflectionId: id
       content
+      isViewerCreator
       ...ReflectionCardDeleteButton_reflection
     }
   `

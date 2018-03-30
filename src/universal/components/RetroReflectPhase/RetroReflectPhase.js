@@ -8,7 +8,7 @@ import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
 
 import ReflectionPhaseColumn from './ReflectionPhaseColumn';
-import type {RetroReflectionPhase_team as Team} from './__generated__/RetroReflectPhase_team.graphql';
+import type {RetroReflectPhase_team as Team} from './__generated__/RetroReflectPhase_team.graphql';
 
 type Props = {
   team: Team,

@@ -149,7 +149,7 @@ class NewMeeting extends Component<Props> {
         <NewMeetingSidebar gotoStageId={this.gotoStageId} meetingType={meetingType} viewer={viewer} />
         <MeetingArea>
           <MeetingAreaHeader>
-            <NewMeetingPhaseHeading />
+            <NewMeetingPhaseHeading meeting={newMeeting} />
             <NewMeetingAvatarGroup
               gotoStageId={this.gotoStageId}
               team={team}
@@ -204,6 +204,7 @@ export default createFragmentContainer(
         ...NewMeetingLobby_team
         ...NewMeetingCheckIn_team
         ...RetroReflectPhase_team
+        ...RetroGroupPhase_team
         checkInGreeting {
           content
           language
@@ -226,6 +227,7 @@ export default createFragmentContainer(
           userId
         }
         newMeeting {
+          ...NewMeetingPhaseHeading_meeting
           meetingId: id
           facilitatorStageId
           facilitatorUserId

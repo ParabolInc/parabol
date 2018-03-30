@@ -32,6 +32,13 @@ export const phaseLabelLookup = {
   [LAST_CALL]: 'Last Call'
 };
 
+export const phaseDescriptionLookup = {
+  [REFLECT]: 'Looking back to move forward',
+  [GROUP]: 'Group reflections by common themes',
+  [VOTE]: 'What needs your attention most?',
+  [DISCUSS]: 'What might we do differently next time?'
+};
+
 export const meetingTypeToSlug = {
   [RETROSPECTIVE]: 'retro',
   [ACTION]: 'meeting'

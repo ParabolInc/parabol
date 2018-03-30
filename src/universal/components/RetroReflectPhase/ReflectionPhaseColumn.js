@@ -17,6 +17,8 @@ import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCar
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ui from 'universal/styles/ui';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
+import {GROUP, REFLECT} from 'universal/utils/constants';
+import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
 
 const ColumnWrapper = styled('div')({
   display: 'flex',
@@ -25,7 +27,8 @@ const ColumnWrapper = styled('div')({
 
 const ReflectionsArea = styled('div')({
   flexDirection: 'column',
-  overflow: 'auto'
+  overflow: 'auto',
+  height: '100%'
 });
 
 const TypeDescription = styled('div')({
@@ -74,6 +77,7 @@ class ReflectionPhaseColumn extends Component<Props, State> {
   render() {
     const {meeting, retroPhaseItem} = this.props;
     const {columnReflections} = this.state;
+    const {localPhase: {phaseType}} = meeting;
     return (
       <ColumnWrapper>
         <TypeHeader>
@@ -83,15 +87,19 @@ class ReflectionPhaseColumn extends Component<Props, State> {
         <ReflectionsArea>
           {columnReflections.map((reflection) => (
             <ColumnChild key={reflection.id}>
-              {reflection.isViewerCreator ?
-                <ReflectionCard canDelete meeting={meeting} reflection={reflection} /> :
-                <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
+              {phaseType === GROUP ?
+                <DraggableReflectionCard meeting={meeting} reflection={reflection} /> :
+                reflection.isViewerCreator ?
+                  <ReflectionCard meeting={meeting} reflection={reflection} /> :
+                  <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
               }
             </ColumnChild>
           ))}
-          <ColumnChild>
-            <AddReflectionButton columnReflections={columnReflections} meeting={meeting} retroPhaseItem={retroPhaseItem} />
-          </ColumnChild>
+          {phaseType === REFLECT &&
+            <ColumnChild>
+              <AddReflectionButton columnReflections={columnReflections} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+            </ColumnChild>
+          }
         </ReflectionsArea>
       </ColumnWrapper>
     );
@@ -115,6 +123,9 @@ export default createFragmentContainer(
       ...AnonymousReflectionCard_meeting
       ...ReflectionCard_meeting
       meetingId: id
+      localPhase {
+        phaseType
+      }
       reflections {
         ...AnonymousReflectionCard_reflection
         ...ReflectionCard_reflection
