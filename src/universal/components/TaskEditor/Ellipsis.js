@@ -6,7 +6,7 @@ const EllipsisDecorator = (props) => {
   const {offsetkey} = props;
   return (
     <span data-offset-key={offsetkey}>
-      <Ellipsis/>
+      <Ellipsis />
     </span>
   );
 };

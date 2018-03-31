@@ -10,13 +10,22 @@ import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
 
 graphql`
   fragment CreateReflectionMutation_team on CreateReflectionPayload {
-    reflection {
-      content
-      id
-      isViewerCreator
+    reflectionGroup {
       meetingId
-      retroPhaseItemId
       sortOrder
+      retroPhaseItemId
+      reflections {
+        id
+        content
+        editorIds
+        isViewerCreator
+        meetingId
+        retroPhaseItemId
+        sortOrder
+        phaseItem {
+          question
+        }
+      }
     }
   }
 `;
@@ -30,7 +39,7 @@ const mutation = graphql`
 `;
 
 export const createReflectionTeamUpdater = (payload, store) => {
-  const reflection = payload.getLinkedRecord('reflection');
+  const reflection = payload.getLinkedRecord('reflectionGroup');
   handleCreateReflections(reflection, store);
 };
 
@@ -60,12 +69,25 @@ const CreateReflectionMutation = (atmosphere, variables, context, onError, onCom
         isViewerCreator: true,
         meetingId,
         retroPhaseItemId: input.retroPhaseItemId,
+        sortOrder: 0,
+        updatedAt: nowISO
+      };
+      const optimisticGroup = {
+        id: clientTempId(),
+        createdAt: nowISO,
+        isActive: true,
+        meetingId,
+        retroPhaseItemId: input.retroPhaseItemId,
         sortOrder: input.sortOrder,
         updatedAt: nowISO
       };
+      const meeting = store.get(meetingId);
       const reflectionNode = createProxyRecord(store, 'RetroReflection', optimisticReflection);
-      reflectionNode.setLinkedRecord(store.get(meetingId), 'meeting');
-      handleCreateReflections(reflectionNode, store);
+      reflectionNode.setLinkedRecord(meeting, 'meeting');
+      const reflectionGroupNode = createProxyRecord(store, 'RetroReflectionGroup', optimisticGroup);
+      reflectionGroupNode.setLinkedRecords([reflectionNode], 'reflections');
+      reflectionGroupNode.setLinkedRecord(meeting, 'meeting');
+      handleCreateReflections(reflectionGroupNode, store);
     }
   });
 };

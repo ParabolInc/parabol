@@ -30,10 +30,12 @@ type Props = {|
 |}
 
 const NewMeetingPhaseHeading = (props: Props) => {
-  const {meeting: {localPhase: {phaseType}}} = props;
+  const {meeting} = props;
+  if (!meeting || !meeting.localPhase) return <div />;
+  const {localPhase: {phaseType}} = meeting;
   const label = phaseLabelLookup[phaseType];
   const description = phaseDescriptionLookup[phaseType];
-  if (!label || !description) return null;
+  if (!label || !description) return <div />;
   return (
     <div>
       <PhaseTitle>{label}</PhaseTitle>

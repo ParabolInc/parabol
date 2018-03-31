@@ -4,25 +4,18 @@
  * @flow
  */
 import type {Node} from 'react';
-import type {Props as ReflectionCardProps} from './ReflectionCard';
-import type {ReflectionID} from 'universal/types/retro';
-
 import React, {Component} from 'react';
-import {DragSource, DropTarget} from 'react-dnd';
-import {getEmptyImage} from 'react-dnd-html5-backend';
-import shortId from 'shortid';
-
-import compose from 'universal/utils/compose';
-import {REFLECTION_CARD} from 'universal/utils/constants';
-import without from 'universal/utils/without';
-
+import type {Props as ReflectionCardProps} from './ReflectionCard';
 import ReflectionCard from './ReflectionCard';
-import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
-
-const newId = () => shortId.generate();
+import type {ReflectionID} from 'universal/types/retro';
+import {DragSource, DropTarget} from 'react-dnd';
+import {REFLECTION_CARD} from 'universal/utils/constants';
+import {createFragmentContainer} from 'react-relay';
+import styled from 'react-emotion';
+import type {DraggableReflectionCard_reflection as Reflection} from './__generated__/DraggableReflectionCard_reflection.graphql';
 
 type DragItem = {
-  id: ReflectionID
+  reflection: Reflection
 };
 
 type Props = {
@@ -36,59 +29,64 @@ type Props = {
   handleBeginDrag: (draggedCardId: ReflectionID) => any,
   handleDrop: (draggedCardId: ReflectionID, droppedCardId: ReflectionID) => any,
   isDragging: boolean,
-  isOver: boolean
+  isOver: boolean,
+  reflection: Reflection
 };
+
+const DragStyles = styled('div')(({isOver, canDrop}) => ({
+  backgroundColor: isOver && canDrop ? '#f8f7fa' : '#FFF'
+  // display: 'inline-block'
+}));
 
 class DraggableReflectionCard extends Component<Props> {
   render() {
     const {
-      receiveDrops,
       canDrop,
-      connectDragPreview,
+      // connectDragPreview,
       connectDragSource,
       connectDropTarget,
-      contentState,
-      id,
       isOver,
-      reflectionPhaseQuestion
+      reflection,
+      meeting
     } = this.props;
-    const reflectionCardProps = {
-      ...without(this.props, 'connectDragSource'),
-      hovered: receiveDrops && isOver && canDrop
-    };
-    connectDragPreview(getEmptyImage());
-    const dndDecorators = receiveDrops ? [connectDragSource, connectDropTarget] : [connectDragSource];
-    const connect = compose(...dndDecorators);
-    return connect(
-      isOver && canDrop ? (
-        <div style={{display: 'inline-block'}}>
-          <ReflectionGroup
-            id={newId()}
-            reflections={[
-              {id, content: contentState, reflectionPhaseQuestion}
-            ]}
-            hovered
-          />
-        </div>
-      ) : (
-        <div style={{display: 'inline-block'}}>
-          <ReflectionCard {...reflectionCardProps} />
-        </div>
-      )
+    const hovered = isOver && canDrop;
+    return connectDragSource(connectDropTarget(
+      <div>
+        <DragStyles isOver={isOver} canDrop={canDrop}>
+          <ReflectionCard hovered={hovered} meeting={meeting} reflection={reflection} />
+        </DragStyles>
+      </div>
+      // isOver && canDrop ? (
+      //   <div style={{display: 'inline-block'}}>
+      //     <ReflectionGroup
+      //       id={newId()}
+      //       reflections={[
+      //         {id, content: contentState}
+      //       ]}
+      //       hovered
+      //     />
+      //   </div>
+      // ) : (
+      //   <div style={{display: 'inline-block'}}>
+      //     <ReflectionCard {...reflectionCardProps} />
+      //   </div>
+      // )
+    )
     );
   }
 }
 
 const dragSpec = {
   beginDrag(props: Props): DragItem {
-    const {handleBeginDrag, id} = props;
-    handleBeginDrag(id);
-    return {id};
+    console.log('beginDrag');
+    const {handleBeginDrag, reflection} = props;
+    handleBeginDrag(reflection);
+    return {reflection};
   },
 
   endDrag(props: Props, monitor) {
     if (!monitor.didDrop()) {
-      props.handleCancelDrag(props.id);
+      props.handleCancelDrag(props.reflection.id);
     }
   }
 };
@@ -101,16 +99,16 @@ const dragCollect = (connect, monitor) => ({
 
 const dropSpec = {
   canDrop(props: Props, monitor) {
-    return monitor.isOver() && props.id !== monitor.getItem().id;
+    return monitor.isOver() && props.reflection.id !== monitor.getItem().reflection.id;
   },
 
   // Makes the card-dropped-into available in the dragSpec's endDrag method.
   drop(props: Props, monitor) {
-    if (monitor.didDrop()) {
-      return;
-    }
-    const {id: draggedId} = monitor.getItem();
-    const {handleDrop, id: droppedId} = props;
+    // if (monitor.didDrop()) {
+    //   return;
+    // }
+    const {reflection: {id: draggedId}} = monitor.getItem();
+    const {handleDrop, reflection: {id: droppedId}} = props;
     handleDrop(draggedId, droppedId);
   }
 };
@@ -122,7 +120,17 @@ const dropCollect = (connect, monitor) => ({
   canDrop: monitor.canDrop()
 });
 
-export default compose(
-  DragSource(REFLECTION_CARD, dragSpec, dragCollect),
-  DropTarget(REFLECTION_CARD, dropSpec, dropCollect)
-)(DraggableReflectionCard);
+export default createFragmentContainer(
+  DragSource(REFLECTION_CARD, dragSpec, dragCollect)(
+    DropTarget(REFLECTION_CARD, dropSpec, dropCollect)(
+      DraggableReflectionCard
+    )
+  )
+  ,
+  graphql`
+    fragment DraggableReflectionCard_reflection on RetroReflection {
+      id
+      ...ReflectionCard_reflection
+    }
+  `
+);

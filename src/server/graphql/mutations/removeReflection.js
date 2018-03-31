@@ -8,6 +8,7 @@ import publish from 'server/utils/publish';
 import {REFLECT, TEAM} from 'universal/utils/constants';
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload';
+import removeEmptyReflectionGroup from 'server/graphql/mutations/helpers/removeEmptyReflectionGroup';
 
 export default {
   type: RemoveReflectionPayload,
@@ -27,7 +28,7 @@ export default {
     const viewerId = getUserId(authToken);
     const reflection = await r.table('RetroReflection').get(reflectionId);
     if (!reflection) return sendReflectionNotFoundError(authToken, reflectionId);
-    const {creatorId, meetingId} = reflection;
+    const {creatorId, meetingId, reflectionGroupId} = reflection;
     if (creatorId !== viewerId) return sendReflectionAccessError(authToken, reflectionId);
     const meeting = await dataLoader.get('newMeetings').load(meetingId);
     const {endedAt, phases, teamId} = meeting;
@@ -41,7 +42,7 @@ export default {
         isActive: false,
         updatedAt: now
       });
-
+    await removeEmptyReflectionGroup(reflectionGroupId, reflectionGroupId);
     const data = {meetingId, reflectionId};
     publish(TEAM, teamId, RemoveReflectionPayload, data, subOptions);
     return data;

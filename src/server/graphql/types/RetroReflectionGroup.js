@@ -1,9 +1,10 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroReflection from 'server/graphql/types/RetroReflection';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import Team from 'server/graphql/types/Team';
 import {resolveForSU} from 'server/graphql/resolvers';
+import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 
 const RetroReflectionGroup = new GraphQLObjectType({
   name: 'RetroReflectionGroup',
@@ -21,21 +22,9 @@ const RetroReflectionGroup = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'True if the reflection was not removed, else false'
     },
-    smartTitle: {
-      type: GraphQLString,
-      description: 'Our auto-suggested title, to be compared to the actual title for analytics',
-      resolve: resolveForSU('smartTitle')
-    },
-    title: {
-      type: GraphQLString,
-      description: 'The title of the grouping of the retrospective reflections'
-    },
-    retroReflections: {
-      type: new GraphQLList(new GraphQLNonNull(RetroReflection)),
-      description: 'The reflections that belong in the group',
-      resolve: ({id: retroGroupId}, args, {dataLoader}) => {
-        return dataLoader.get('retroReflectionsByGroupId').load(retroGroupId);
-      }
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The foreign key to link a reflection group to its meeting'
     },
     meeting: {
       type: RetrospectiveMeeting,
@@ -44,6 +33,33 @@ const RetroReflectionGroup = new GraphQLObjectType({
         return dataLoader.get('newMeetings').load(meetingId);
       }
     },
+    phaseItem: {
+      type: RetroPhaseItem,
+      resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
+        return dataLoader.get('customPhaseItems').load(retroPhaseItemId);
+      }
+    },
+    reflections: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
+      resolve: async ({id: reflectionGroupId, meetingId}, args, {dataLoader}) => {
+        // use meetingId so we only hit the DB once instead of once per group
+        const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId);
+        return reflections.filter((reflection) => reflection.reflectionGroupId === reflectionGroupId);
+      }
+    },
+    retroPhaseItemId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The foreign key to link a reflection group to its phaseItem. Immutable.'
+    },
+    smartTitle: {
+      type: GraphQLString,
+      description: 'Our auto-suggested title, to be compared to the actual title for analytics',
+      resolve: resolveForSU('smartTitle')
+    },
+    sortOrder: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'The sort order of the reflection group in the phase item'
+    },
     team: {
       type: Team,
       description: 'The team that is running the retro',
@@ -51,6 +67,10 @@ const RetroReflectionGroup = new GraphQLObjectType({
         const meeting = dataLoader.get('newMeetings').load(meetingId);
         return dataLoader.get('teams').load(meeting.teamId);
       }
+    },
+    title: {
+      type: GraphQLString,
+      description: 'The title of the grouping of the retrospective reflections'
     },
     updatedAt: {
       type: GraphQLISO8601Type,

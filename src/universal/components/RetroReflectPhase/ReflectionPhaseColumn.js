@@ -17,8 +17,8 @@ import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCar
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ui from 'universal/styles/ui';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
-import {GROUP, REFLECT} from 'universal/utils/constants';
-import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
+import {REFLECT} from 'universal/utils/constants';
+import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
 
 const ColumnWrapper = styled('div')({
   display: 'flex',
@@ -55,28 +55,29 @@ type Props = {
 };
 
 type State = {
-  columnReflections: $ReadOnlyArray<Object>,
-  reflections: $ReadOnlyArray<Object>
+  columnReflectionGroups: $ReadOnlyArray<Object>,
+  reflectionGroups: $ReadOnlyArray<Object>
 };
 
 class ReflectionPhaseColumn extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
-    const {meeting: {reflections: nextReflections}, retroPhaseItem: {retroPhaseItemId}} = nextProps;
-    if (nextReflections === prevState.reflections) return null;
+    const {meeting: {reflectionGroups: nextReflectionGroups}, retroPhaseItem: {retroPhaseItemId}} = nextProps;
+    if (nextReflectionGroups === prevState.reflectionGroups) return null;
     return {
-      reflections: nextReflections,
-      columnReflections: nextReflections.filter((reflection) => reflection.retroPhaseItemId === retroPhaseItemId)
+      reflectionGroups: nextReflectionGroups || [],
+      columnReflectionGroups: nextReflectionGroups
+        .filter((group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0)
     };
   }
 
   state = {
-    reflections: [],
-    columnReflections: []
+    reflectionGroups: [],
+    columnReflectionGroups: []
   };
 
   render() {
     const {meeting, retroPhaseItem} = this.props;
-    const {columnReflections} = this.state;
+    const {columnReflectionGroups} = this.state;
     const {localPhase: {phaseType}} = meeting;
     return (
       <ColumnWrapper>
@@ -85,20 +86,29 @@ class ReflectionPhaseColumn extends Component<Props, State> {
           <TypeDescription>{retroPhaseItem.question}</TypeDescription>
         </TypeHeader>
         <ReflectionsArea>
-          {columnReflections.map((reflection) => (
-            <ColumnChild key={reflection.id}>
-              {phaseType === GROUP ?
-                <DraggableReflectionCard meeting={meeting} reflection={reflection} /> :
-                reflection.isViewerCreator ?
-                  <ReflectionCard meeting={meeting} reflection={reflection} /> :
-                  <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
-              }
-            </ColumnChild>
-          ))}
+          {columnReflectionGroups.map((group) => {
+            if (phaseType === REFLECT) {
+              return group.reflections.map((reflection) => {
+                return (
+                  <ColumnChild key={reflection.id}>
+                    {reflection.isViewerCreator ?
+                      <ReflectionCard meeting={meeting} reflection={reflection} /> :
+                      <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
+                    }
+                  </ColumnChild>
+                );
+              });
+            }
+            return (
+              <ColumnChild key={group.id}>
+                <ReflectionGroup reflectionGroup={group} meeting={meeting} />
+              </ColumnChild>
+            );
+          })}
           {phaseType === REFLECT &&
-            <ColumnChild>
-              <AddReflectionButton columnReflections={columnReflections} meeting={meeting} retroPhaseItem={retroPhaseItem} />
-            </ColumnChild>
+          <ColumnChild>
+            <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+          </ColumnChild>
           }
         </ReflectionsArea>
       </ColumnWrapper>
@@ -122,19 +132,25 @@ export default createFragmentContainer(
       ...AddReflectionButton_meeting
       ...AnonymousReflectionCard_meeting
       ...ReflectionCard_meeting
+      ...ReflectionGroup_meeting
       meetingId: id
       localPhase {
         phaseType
       }
-      reflections {
-        ...AnonymousReflectionCard_reflection
-        ...ReflectionCard_reflection
-        content
+      reflectionGroups {
         id
-        isEditing
-        isViewerCreator
+        ...ReflectionGroup_reflectionGroup
         retroPhaseItemId
         sortOrder
+        reflections {
+          ...AnonymousReflectionCard_reflection
+          ...ReflectionCard_reflection
+          content
+          id
+          isEditing
+          isViewerCreator
+          sortOrder
+        }
       }
     }
   `

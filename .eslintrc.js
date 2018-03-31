@@ -108,6 +108,7 @@ module.exports = {
     "graphql": true,
     "System": true,
     // not sure how to handle these undocumented flow types
-    "$ReadOnlyArray": true
+    "$ReadOnlyArray": true,
+    "$Shape": true
   }
 };

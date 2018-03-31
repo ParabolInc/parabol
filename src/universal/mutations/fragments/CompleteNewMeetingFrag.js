@@ -19,6 +19,9 @@ graphql`
         ... on NewMeetingTeamMemberStage {
           teamMemberId
           teamMember {
+            meetingMember {
+              isCheckedIn
+            }
             id
             picture
             preferredName

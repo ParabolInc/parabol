@@ -16,7 +16,7 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 import StyledError from 'universal/components/StyledError';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import PlainButton from 'universal/components/PlainButton/PlainButton';
-import type {RetroReflection} from 'universal/types/schema.flow';
+import type {RetroReflectionGroup} from 'universal/types/schema.flow';
 import type {AddReflectionButton_retroPhaseItem as RetroPhaseItem} from './__generated__/AddReflectionButton_retroPhaseItem.graphql';
 import type {AddReflectionButton_meeting as Meeting} from './__generated__/AddReflectionButton_meeting.graphql';
 
@@ -24,7 +24,7 @@ const {Component} = React;
 
 type Props = {
   atmosphere: Object,
-  columnReflections: Array<RetroReflection>,
+  columnReflectionGroups: Array<RetroReflectionGroup>,
   retroPhaseItem: RetroPhaseItem,
   meeting: Meeting,
   ...MutationProps
@@ -48,11 +48,20 @@ const AddButton = styled(PlainButton)({
 
 class AddReflectionButton extends Component<Props> {
   handleClick = () => {
-    const {atmosphere, columnReflections, meeting: {meetingId}, retroPhaseItem: {retroPhaseItemId}, submitting, submitMutation, onCompleted, onError} = this.props;
+    const {
+      atmosphere,
+      columnReflectionGroups,
+      meeting: {meetingId},
+      retroPhaseItem: {retroPhaseItemId},
+      submitting,
+      submitMutation,
+      onCompleted,
+      onError
+    } = this.props;
     if (submitting) return;
     const input = {
       retroPhaseItemId,
-      sortOrder: getNextSortOrder(columnReflections)
+      sortOrder: getNextSortOrder(columnReflectionGroups)
     };
     submitMutation();
     CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted);

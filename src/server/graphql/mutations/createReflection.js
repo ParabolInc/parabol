@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import shortid from 'shortid';
@@ -45,6 +45,7 @@ export default {
     const normalizedContent = normalizeRawDraftJS(content);
 
     // RESOLUTION
+    const reflectionGroupId = shortid.generate();
     const reflection = {
       id: shortid.generate(),
       createdAt: now,
@@ -52,12 +53,27 @@ export default {
       content: normalizedContent,
       isActive: true,
       meetingId,
+      reflectionGroupId,
       retroPhaseItemId,
-      sortOrder,
+      sortOrder: 0,
       updatedAt: now
     };
-    await r.table('RetroReflection').insert(reflection);
-    const data = {meetingId, reflectionId: reflection.id};
+
+    const reflectionGroup = {
+      id: reflectionGroupId,
+      createdAt: now,
+      isActive: true,
+      meetingId,
+      retroPhaseItemId,
+      sortOrder,
+      updatedAt: now,
+      voterIds: []
+    };
+    await r({
+      group: r.table('RetroReflectionGroup').insert(reflectionGroup),
+      reflection: r.table('RetroReflection').insert(reflection)
+    });
+    const data = {meetingId, reflectionId: reflection.id, reflectionGroupId};
     publish(TEAM, teamId, CreateReflectionPayload, data, subOptions);
     return data;
   }

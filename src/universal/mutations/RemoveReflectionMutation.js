@@ -22,6 +22,7 @@ graphql`
     }
     reflection {
       id
+      reflectionGroupId
     }
   }
 `;
@@ -35,9 +36,9 @@ const mutation = graphql`
 `;
 
 export const removeReflectionTeamUpdater = (payload, store) => {
-  const reflectionId = getInProxy(payload, 'reflection', 'id');
   const meetingId = getInProxy(payload, 'meeting', 'id');
-  handleRemoveReflections(reflectionId, meetingId, store);
+  const reflectionGroupId = getInProxy(payload, 'reflection', 'reflectionGroupId');
+  handleRemoveReflections(reflectionGroupId, meetingId, store);
 };
 
 const RemoveReflectionMutation = (environment: Object,

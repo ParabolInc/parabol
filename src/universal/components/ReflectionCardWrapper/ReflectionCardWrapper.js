@@ -24,7 +24,6 @@ const ReflectionCardWrapper = (props: Props) => {
   const borderRadius = 3;
   const passedOnProps = without(props, 'holdingPlace', 'hoveringOver', 'pulled');
   const styles = {
-    backgroundColor: props.hoveringOver ? '#f8f7fa' : '#FFF',
     borderRadius,
     boxShadow: props.pulled
       ? '0 2px 4px 2px rgba(0, 0, 0, .2)'

@@ -96,14 +96,14 @@ export default class RethinkDataLoader {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
       });
     }, this.dataloaderOptions);
-    this.retroReflectionsByGroupId = makeCustomLoader(async (reflectionGroupIds) => {
+    this.retroReflectionGroupByMeetingId = makeCustomLoader(async (meetingIds) => {
       const r = getRethink();
-      const retroReflections = await r.table('RetroReflection')
-        .getAll(r.args(reflectionGroupIds), {index: 'reflectionGroupId'})
+      const retroReflectionGroups = await r.table('RetroReflectionGroup')
+        .getAll(r.args(meetingIds), {index: 'meetingId'})
         .filter({isActive: true});
-      primeStandardLoader(this.retroReflections, retroReflections);
-      return reflectionGroupIds.map((reflectionGroupId) => {
-        return retroReflections.filter((retroReflection) => retroReflection.reflectionGroupId === reflectionGroupId);
+      primeStandardLoader(this.retroReflectionGroups, retroReflectionGroups);
+      return meetingIds.map((meetingId) => {
+        return retroReflectionGroups.filter((retroReflection) => retroReflection.meetingId === meetingId);
       });
     }, this.dataloaderOptions);
     this.retroReflectionsByMeetingId = makeCustomLoader(async (meetingIds) => {

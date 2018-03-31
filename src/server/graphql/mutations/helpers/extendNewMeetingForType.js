@@ -4,8 +4,8 @@ const extendNewMeetingForType = (newMeetingBase) => {
   if (newMeetingBase.meetingType === RETROSPECTIVE) {
     return {
       ...newMeetingBase,
-      thoughtGroups: [],
-      thoughts: []
+      reflectionGroups: [],
+      reflections: []
     };
   }
   return newMeetingBase;

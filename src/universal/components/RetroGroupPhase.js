@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
-import type {RetroReflectionPhase_team as Team} from './__generated__/RetroReflectPhase_team.graphql';
+import type {RetroGroupPhase_team as Team} from './__generated__/RetroGroupPhase_team.graphql';
 import ReflectionPhaseColumn from 'universal/components/RetroReflectPhase/ReflectionPhaseColumn';
 
 type Props = {
@@ -22,7 +22,7 @@ const GroupPhaseWrapper = styled('div')({
 
 const RetroGroupPhase = ({team}: Props) => {
   const {newMeeting, meetingSettings} = team;
-  const {phaseItems} = meetingSettings;
+  const phaseItems = meetingSettings.phaseItems || [];
   return (
     <GroupPhaseWrapper>
       {phaseItems.map((phaseItem) =>

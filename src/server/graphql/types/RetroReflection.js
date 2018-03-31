@@ -71,14 +71,14 @@ const RetroReflection = new GraphQLObjectType({
       }
     },
     phaseItem: {
-      type: RetroPhaseItem,
+      type: new GraphQLNonNull(RetroPhaseItem),
       resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
         return dataLoader.get('customPhaseItems').load(retroPhaseItemId);
       }
     },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The foreign key to link a reflection to its phaseItem'
+      description: 'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
     },
     reflectionGroupId: {
       type: GraphQLID,
@@ -92,8 +92,8 @@ const RetroReflection = new GraphQLObjectType({
       }
     },
     sortOrder: {
-      type: GraphQLFloat,
-      description: 'The sort order of the reflection in the phase item list'
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'The sort order of the reflection in the group (increments starting from 0)'
     },
     team: {
       type: RetrospectiveMeeting,

@@ -23,7 +23,7 @@ const ReflectPhaseWrapper = styled('div')({
 
 const RetroReflectPhase = ({team}: Props) => {
   const {newMeeting, meetingSettings} = team;
-  const {phaseItems} = meetingSettings;
+  const phaseItems = meetingSettings.phaseItems || [];
   return (
     <ReflectPhaseWrapper>
       {phaseItems.map((phaseItem) =>

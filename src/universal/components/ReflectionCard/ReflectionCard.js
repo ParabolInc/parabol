@@ -4,7 +4,7 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState, convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled, {css} from 'react-emotion';
 import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
@@ -24,11 +24,9 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper';
 import {REFLECT} from 'universal/utils/constants';
+import isTempId from 'universal/utils/relay/isTempId';
 
 export type Props = {|
-  canDelete: boolean,
-  // The draft-js content for this card
-  contentState: ContentState,
   // True when this card is being hovered over by a valid drag source
   hovered?: boolean,
   // True when the current user is the one dragging this card
@@ -40,8 +38,6 @@ export type Props = {|
   isDragging?: boolean,
   // States whether it serves as a drag preview.
   pulled?: boolean,
-  // The display name of the phase in which this reflection was created, e.g. "What's working?"
-  reflectionPhaseQuestion?: ?string,
   // The name of the user who is currently dragging this card to a new place, if any
   userDragging?: string,
   meeting: Meeting,
@@ -52,6 +48,7 @@ export type Props = {|
 type State = {
   content: string,
   editorState: EditorState,
+  getEditorState: () => EditorState
 };
 
 type DnDStylesWrapperProps = {
@@ -97,18 +94,21 @@ class ReflectionCard extends Component<Props, State> {
 
   handleEditorBlur = () => {
     const {atmosphere, reflection: {reflectionId}} = this.props;
+    if (isTempId(reflectionId)) return;
     this.handleContentUpdate();
     EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
   };
 
   handleEditorFocus = () => {
     const {atmosphere, reflection: {reflectionId}} = this.props;
+    if (isTempId(reflectionId)) return;
     EditReflectionMutation(atmosphere, {isEditing: true, reflectionId});
   };
 
   handleContentUpdate = () => {
     const {atmosphere, meeting: {meetingId}, reflection: {content, reflectionId}, submitMutation, onError, onCompleted} = this.props;
     const {editorState} = this.state;
+    if (!editorState) return;
     const contentState = editorState.getCurrentContent();
     if (contentState.hasText()) {
       const nextContent = JSON.stringify(convertToRaw(contentState));
@@ -121,8 +121,9 @@ class ReflectionCard extends Component<Props, State> {
   };
 
   maybeRenderReflectionPhaseQuestion = () => {
-    const {isCollapsed, reflectionPhaseQuestion} = this.props;
-    return !isCollapsed && reflectionPhaseQuestion && <BottomBar>{reflectionPhaseQuestion}</BottomBar>;
+    const {isCollapsed, reflection: {phaseItem: {question}}} = this.props;
+    // TODO when to show?
+    return false && !isCollapsed && <BottomBar>{question}</BottomBar>;
   };
 
   maybeRenderUserDragging = () => {
@@ -146,7 +147,7 @@ class ReflectionCard extends Component<Props, State> {
     const {isViewerCreator} = reflection;
     const canDelete = isViewerCreator && phaseType === REFLECT;
     return (
-      <DnDStylesWrapper pulled={pulled} iAmDragging={iAmDragging} hovered={hovered}>
+      <DnDStylesWrapper pulled={pulled} iAmDragging={iAmDragging}>
         {this.maybeRenderUserDragging()}
         <ReflectionCardWrapper
           holdingPlace={holdingPlace}
@@ -189,6 +190,9 @@ export default createFragmentContainer(
       reflectionId: id
       content
       isViewerCreator
+      phaseItem {
+        question
+      }
       ...ReflectionCardDeleteButton_reflection
     }
   `

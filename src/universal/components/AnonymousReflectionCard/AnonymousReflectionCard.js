@@ -26,15 +26,16 @@ type Props = {
 type State = {
   editorState: EditorState,
   content: string,
-  isBlurred: boolean
+  isBlurred: boolean,
+  isEditing: boolean
 };
 
 const DEFAULT_TEXT = 'Somebody is typing...';
 const ROT = Math.floor(Math.random() * 25) + 1;
 const obfuscate = (content: string): string => {
-  return content.replace(/[a-zA-Z]/g, (c) => {
-    // eslint-disable-next-line
-    return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - (ROT * 2));
+  return content.replace(/[a-zA-Z]/g, (c: string) => {
+    // $FlowFixMe
+    return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - (ROT * 2)); // eslint-disable-line
   });
 };
 
@@ -52,7 +53,7 @@ const getContentState = (contentText) => {
     focusKey: anchorKey
   });
   return makeContentWithEntity(contentState, selectionState, undefined, entityKey);
-}
+};
 
 class AnonymousReflectionCard extends Component<Props, State> {
   static getContent(reflection: Reflection) {
@@ -67,7 +68,8 @@ class AnonymousReflectionCard extends Component<Props, State> {
 
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflection} = nextProps;
-    const {content, isEditing} = reflection;
+    const {content} = reflection;
+    const isEditing = Boolean(reflection.isEditing);
     if (content === prevState.content && isEditing === prevState.isEditing) return null;
     const contentText = AnonymousReflectionCard.getContent(reflection);
     const contentState = getContentState(contentText);

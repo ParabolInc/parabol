@@ -55,7 +55,7 @@ const MeetingAreaHeader = styled('div')({
   justifyContent: 'space-between',
   margin: '1rem 0',
   maxWidth: '100%',
-  overflow: 'hidden',
+  // overflow: 'hidden',
   padding: '0 1rem',
   width: '100%'
 });
@@ -240,14 +240,6 @@ export default createFragmentContainer(
             stages {
               id
               isComplete
-            }
-          }
-          ... on RetrospectiveMeeting {
-            reflections {
-              id
-            }
-            reflectionGroups {
-              id
             }
           }
         }
