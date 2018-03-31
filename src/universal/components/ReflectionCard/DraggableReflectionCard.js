@@ -13,6 +13,7 @@ import {REFLECTION_CARD} from 'universal/utils/constants';
 import {createFragmentContainer} from 'react-relay';
 import styled from 'react-emotion';
 import type {DraggableReflectionCard_reflection as Reflection} from './__generated__/DraggableReflectionCard_reflection.graphql';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 type DragItem = {
   reflection: Reflection
@@ -71,7 +72,7 @@ class DraggableReflectionCard extends Component<Props> {
       //     <ReflectionCard {...reflectionCardProps} />
       //   </div>
       // )
-    )
+      )
     );
   }
 }
@@ -108,8 +109,9 @@ const dropSpec = {
     //   return;
     // }
     const {reflection: {id: draggedId}} = monitor.getItem();
-    const {handleDrop, reflection: {id: droppedId}} = props;
-    handleDrop(draggedId, droppedId);
+    const {atmosphere, reflection: {id: droppedId}} = props;
+    // UpdateReflection
+    // handleDrop(draggedId, droppedId);
   }
 };
 
@@ -121,9 +123,11 @@ const dropCollect = (connect, monitor) => ({
 });
 
 export default createFragmentContainer(
-  DragSource(REFLECTION_CARD, dragSpec, dragCollect)(
-    DropTarget(REFLECTION_CARD, dropSpec, dropCollect)(
-      DraggableReflectionCard
+  withAtmosphere(
+    DragSource(REFLECTION_CARD, dragSpec, dragCollect)(
+      DropTarget(REFLECTION_CARD, dropSpec, dropCollect)(
+        DraggableReflectionCard
+      )
     )
   )
   ,

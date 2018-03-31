@@ -88,9 +88,8 @@ export default {
         retroPhaseItemId,
         updatedAt: now
       });
-    const removeOldGroup = await removeEmptyReflectionGroup(reflectionGroupId, oldReflectionGroupId);
-    const removedGroupId = removeOldGroup && oldReflectionGroupId;
-    const data = {meetingId, reflectionId, removedGroupId};
+    await removeEmptyReflectionGroup(reflectionGroupId, oldReflectionGroupId);
+    const data = {meetingId, reflectionId, reflectionGroupId: nextReflectionGroupId, oldReflectionGroupId};
     publish(TEAM, teamId, UpdateReflectionLocationPayload, data, subOptions);
     return data;
   }

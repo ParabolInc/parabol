@@ -15,16 +15,7 @@ graphql`
       sortOrder
       retroPhaseItemId
       reflections {
-        id
-        content
-        editorIds
-        isViewerCreator
-        meetingId
-        retroPhaseItemId
-        sortOrder
-        phaseItem {
-          question
-        }
+        ...CompleteReflectionFrag@relay(mask: false)
       }
     }
   }
@@ -39,8 +30,8 @@ const mutation = graphql`
 `;
 
 export const createReflectionTeamUpdater = (payload, store) => {
-  const reflection = payload.getLinkedRecord('reflectionGroup');
-  handleCreateReflections(reflection, store);
+  const reflectionGroup = payload.getLinkedRecord('reflectionGroup');
+  handleCreateReflections(reflectionGroup, store);
 };
 
 const CreateReflectionMutation = (atmosphere, variables, context, onError, onCompleted) => {

@@ -19,10 +19,15 @@ const UpdateReflectionLocationPayload = new GraphQLObjectType({
       type: RetroReflection,
       resolve: makeResolve('reflectionId', 'reflection', 'retroReflections')
     },
-    removedGroup: {
+    reflectionGroup: {
       type: RetroReflectionGroup,
-      description: 'If the reflection was removed from a group & was the penultimate in the group, the group was removed, too',
-      resolve: makeResolve('removedGroupId', 'removedGroup', 'retroReflectionGroups')
+      description: 'The group encapsulating the new reflection. A new one was created if one was not provided.',
+      resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
+    },
+    oldReflectionGroup: {
+      type: RetroReflectionGroup,
+      description: 'The old group the reflection was in',
+      resolve: makeResolve('oldReflectionGroupId', 'oldReflectionGroup', 'retroReflectionGroups')
     }
   })
 });

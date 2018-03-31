@@ -5,7 +5,7 @@
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
 import {commitMutation} from 'react-relay';
 import getInProxy from 'universal/utils/relay/getInProxy';
-import handleRemoveReflections from 'universal/mutations/handlers/handleRemoveReflections';
+import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups';
 
 type Context = {
   meetingId: string
@@ -38,7 +38,7 @@ const mutation = graphql`
 export const removeReflectionTeamUpdater = (payload, store) => {
   const meetingId = getInProxy(payload, 'meeting', 'id');
   const reflectionGroupId = getInProxy(payload, 'reflection', 'reflectionGroupId');
-  handleRemoveReflections(reflectionGroupId, meetingId, store);
+  handleRemoveReflectionGroups(reflectionGroupId, meetingId, store);
 };
 
 const RemoveReflectionMutation = (environment: Object,
@@ -57,7 +57,10 @@ const RemoveReflectionMutation = (environment: Object,
     optimisticUpdater: (store) => {
       const {reflectionId} = variables;
       const {meetingId} = context;
-      handleRemoveReflections(reflectionId, meetingId, store);
+      const reflection = store.get(reflectionId);
+      if (!reflection) return;
+      const reflectionGroupId = reflection.getValue('reflectionGroupId');
+      handleRemoveReflectionGroups(reflectionGroupId, meetingId, store);
     },
     onCompleted,
     onError

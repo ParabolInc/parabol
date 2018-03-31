@@ -1,7 +1,7 @@
 import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler';
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
 
-const handleRemoveReflection = (reflectionGroupId, meetingId, store) => {
+const handleRemoveReflectionGroup = (reflectionGroupId, meetingId, store) => {
   const reflectionGroup = store.get(reflectionGroupId);
   if (!reflectionGroup) return;
   const meeting = store.get(meetingId);
@@ -9,5 +9,5 @@ const handleRemoveReflection = (reflectionGroupId, meetingId, store) => {
   safeRemoveNodeFromArray(reflectionGroupId, meeting, 'reflectionGroups');
 };
 
-const handleRemoveReflections = pluralizeHandler(handleRemoveReflection);
-export default handleRemoveReflections;
+const handleRemoveReflectionGroups = pluralizeHandler(handleRemoveReflectionGroup);
+export default handleRemoveReflectionGroups;
