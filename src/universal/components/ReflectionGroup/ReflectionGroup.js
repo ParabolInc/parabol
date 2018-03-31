@@ -53,7 +53,7 @@ class ReflectionGroup extends Component<Props, State> {
     const {isExpanded} = this.state;
     const reflections = isExpanded ? reflectionGroup.reflections : this.getVisibleReflections();
     const cardElements = reflections.map((reflection, index) => ({
-      element: this.renderReflection(reflection, index === reflections.length - 1),
+      element: this.renderReflection(reflection, index, index === reflections.length - 1),
       key: reflection.id
     }));
     return hovered ? (
@@ -110,14 +110,12 @@ class ReflectionGroup extends Component<Props, State> {
     );
   };
 
-  renderReflection = (reflection: Object, isTopCard: boolean) => {
+  renderReflection = (reflection: Object, index: number, isTopCard: boolean) => {
     const {meeting} = this.props;
     const {isExpanded} = this.state;
     return isExpanded ? (
       <DraggableReflectionCard
-        handleBeginDrag={console.log}
-        handleCancelDrag={console.log}
-        handleDrop={console.log}
+        dndIndex={index}
         hovered={this.props.hovered}
         meeting={meeting}
         reflection={reflection}

@@ -43,7 +43,7 @@ graphql`
           reflectionGroup {
             title
             voteCount
-            retroReflections {
+            reflections {
               isViewerCreator
               content
             }

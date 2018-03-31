@@ -47,8 +47,8 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation UpdateReflectionLocationMutation($content: String!, $reflectionId: ID!) {
-    updateReflectionLocation(content: $content, reflectionId: $reflectionId) {
+  mutation UpdateReflectionLocationMutation($reflectionGroupId: ID, $reflectionId: ID!, $retroPhaseItemId: ID, $sortOrder: Float!) {
+    updateReflectionLocation(reflectionGroupId: $reflectionGroupId, reflectionId: $reflectionId, retroPhaseItemId: $retroPhaseItemId, sortOrder: $sortOrder) {
       ...UpdateReflectionLocationMutation_team @relay(mask: false)
     }
   }

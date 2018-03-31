@@ -4,8 +4,8 @@
  *
  * @flow
  */
-import type {ReflectionPhaseColumn_meeting as Meeting} from './__generated__/ReflectionPhaseColumn_meeting.graphql';
-import type {ReflectionPhaseColumn_retroPhaseItem as RetroPhaseItem} from './__generated__/ReflectionPhaseColumn_retroPhaseItem.graphql';
+import type {PhaseItemColumn_meeting as Meeting} from './__generated__/PhaseItemColumn_meeting.graphql';
+import type {PhaseItemColumn_retroPhaseItem as RetroPhaseItem} from './__generated__/PhaseItemColumn_retroPhaseItem.graphql';
 // $FlowFixMe
 import React, {Component} from 'react';
 import styled from 'react-emotion';
@@ -17,14 +17,16 @@ import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCar
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ui from 'universal/styles/ui';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
-import {REFLECT, RETRO_PHASE_ITEM} from 'universal/utils/constants';
+import {REFLECT, REFLECTION_GROUP, RETRO_PHASE_ITEM} from 'universal/utils/constants';
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
-import {Droppable} from 'react-beautiful-dnd';
-import type {DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd';
+import type {DraggableLocation, DragStart, DroppableProvided, DroppableStateSnapshot, DropResult} from 'react-beautiful-dnd';
+import {Draggable, Droppable} from 'react-beautiful-dnd';
 
 const ColumnWrapper = styled('div')({
+  alignItems: 'center',
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  flex: 1
 });
 
 const ReflectionsArea = styled('div')({
@@ -47,6 +49,7 @@ const TypeTitle = styled('div')({
 });
 
 const ColumnChild = styled('div')({
+  display: 'inline-block',
   margin: '0.7rem 0.7rem 0 0'
 });
 
@@ -61,7 +64,7 @@ type State = {
   reflectionGroups: $ReadOnlyArray<Object>
 };
 
-class ReflectionPhaseColumn extends Component<Props, State> {
+class PhaseItemColumn extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {meeting: {reflectionGroups: nextReflectionGroups}, retroPhaseItem: {retroPhaseItemId}} = nextProps;
     if (nextReflectionGroups === prevState.reflectionGroups) return null;
@@ -78,7 +81,7 @@ class ReflectionPhaseColumn extends Component<Props, State> {
   };
 
   render() {
-    const {meeting, retroPhaseItem} = this.props;
+    const {dndIndex, meeting, retroPhaseItem} = this.props;
     const {columnReflectionGroups} = this.state;
     const {localPhase: {phaseType}} = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
@@ -91,7 +94,7 @@ class ReflectionPhaseColumn extends Component<Props, State> {
               <TypeDescription>{question}</TypeDescription>
             </TypeHeader>
             <ReflectionsArea>
-              {columnReflectionGroups.map((group) => {
+              {columnReflectionGroups.map((group, idx) => {
                 if (phaseType === REFLECT) {
                   return group.reflections.map((reflection) => {
                     return (
@@ -105,9 +108,24 @@ class ReflectionPhaseColumn extends Component<Props, State> {
                   });
                 }
                 return (
-                  <ColumnChild key={group.id}>
-                    <ReflectionGroup reflectionGroup={group} meeting={meeting} />
-                  </ColumnChild>
+                  <Draggable
+                    key={group.id}
+                    draggableId={group.id}
+                    index={idx}
+                    type={REFLECTION_GROUP}
+                  >
+                    {(dragProvided, dragSnapshot) => (
+                      <div>
+                        <ColumnChild
+                          innerRef={dragProvided.innerRef}
+                          {...dragProvided.draggableProps}
+                          {...dragProvided.dragHandleProps}
+                        >
+                          <ReflectionGroup reflectionGroup={group} meeting={meeting} />
+                        </ColumnChild>
+                      </div>
+                    )}
+                  </Draggable>
                 );
               })}
               {phaseType === REFLECT &&
@@ -118,25 +136,24 @@ class ReflectionPhaseColumn extends Component<Props, State> {
             </ReflectionsArea>
           </ColumnWrapper>
         )}
-
       </Droppable>
-    );
+    )
   }
 }
 
-reactLifecyclesCompat(ReflectionPhaseColumn);
+reactLifecyclesCompat(PhaseItemColumn);
 
 export default createFragmentContainer(
-  withAtmosphere(ReflectionPhaseColumn),
+  withAtmosphere(PhaseItemColumn),
   graphql`
-    fragment ReflectionPhaseColumn_retroPhaseItem on RetroPhaseItem {
+    fragment PhaseItemColumn_retroPhaseItem on RetroPhaseItem {
       ...AddReflectionButton_retroPhaseItem
       retroPhaseItemId: id
       title
       question
     }
 
-    fragment ReflectionPhaseColumn_meeting on RetrospectiveMeeting {
+    fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
       ...AddReflectionButton_meeting
       ...AnonymousReflectionCard_meeting
       ...ReflectionCard_meeting
