@@ -17,7 +17,7 @@ import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCar
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ui from 'universal/styles/ui';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
-import {REFLECT, REFLECTION_GROUP, RETRO_PHASE_ITEM} from 'universal/utils/constants';
+import {REFLECT, REFLECTION_CARD, REFLECTION_GROUP, RETRO_PHASE_ITEM} from 'universal/utils/constants';
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
 import type {DraggableLocation, DragStart, DroppableProvided, DroppableStateSnapshot, DropResult} from 'react-beautiful-dnd';
 import {Draggable, Droppable} from 'react-beautiful-dnd';
@@ -108,11 +108,10 @@ class PhaseItemColumn extends Component<Props, State> {
                   });
                 }
                 return (
-                  <Draggable
+                  <Droppable
                     key={group.id}
-                    draggableId={group.id}
-                    index={idx}
-                    type={REFLECTION_GROUP}
+                    droppableId={group.id}
+                    type={REFLECTION_CARD}
                   >
                     {(dragProvided, dragSnapshot) => (
                       <div>
@@ -125,7 +124,7 @@ class PhaseItemColumn extends Component<Props, State> {
                         </ColumnChild>
                       </div>
                     )}
-                  </Draggable>
+                  </Droppable>
                 );
               })}
               {phaseType === REFLECT &&

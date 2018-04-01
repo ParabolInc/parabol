@@ -33,7 +33,6 @@ class RetroGroupPhase extends Component<Props, State> {
   };
 
   onDragStart = (initial: DragStart) => {
-    // publishOnDragStart(initial);
     console.log('drag start');
     this.setState({
       autoFocusReflectionId: null
@@ -43,20 +42,19 @@ class RetroGroupPhase extends Component<Props, State> {
   onDragEnd = (result: DropResult) => {
     // publishOnDragEnd(result);
     console.log('drag end', result.type, result);
+    const {draggableId, type, source, destination} = result;
 
     // dropped nowhere
-    if (!result.destination) {
-      return;
-    }
-
-    const source: DraggableLocation = result.source;
-    const destination: DraggableLocation = result.destination;
+    if (!destination) return;
 
     // did not move anywhere - can bail early
     if (source.droppableId === destination.droppableId &&
       source.index === destination.index) {
       return;
     }
+
+
+    // UpdateReflectionLocationMutation(atmosphere, )
 
     // const data = reorderQuoteMap({
     //   quoteMap: this.state.columns,

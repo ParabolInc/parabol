@@ -3,7 +3,7 @@
  *
  */
 import {commitMutation} from 'react-relay';
-import handleCreateReflections from 'universal/mutations/handlers/handleCreateReflections';
+import handleAddReflectionGroups from 'universal/mutations/handlers/handleAddReflectionGroups';
 import clientTempId from 'universal/utils/relay/clientTempId';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
@@ -31,7 +31,7 @@ const mutation = graphql`
 
 export const createReflectionTeamUpdater = (payload, store) => {
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup');
-  handleCreateReflections(reflectionGroup, store);
+  handleAddReflectionGroups(reflectionGroup, store);
 };
 
 const CreateReflectionMutation = (atmosphere, variables, context, onError, onCompleted) => {
@@ -78,7 +78,7 @@ const CreateReflectionMutation = (atmosphere, variables, context, onError, onCom
       const reflectionGroupNode = createProxyRecord(store, 'RetroReflectionGroup', optimisticGroup);
       reflectionGroupNode.setLinkedRecords([reflectionNode], 'reflections');
       reflectionGroupNode.setLinkedRecord(meeting, 'meeting');
-      handleCreateReflections(reflectionGroupNode, store);
+      handleAddReflectionGroups(reflectionGroupNode, store);
     }
   });
 };

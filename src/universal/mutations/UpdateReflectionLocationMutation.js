@@ -6,15 +6,14 @@
 import {commitMutation} from 'react-relay';
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
-import handleCreateReflections from 'universal/mutations/handlers/handleCreateReflections';
+import handleAddReflectionGroups from 'universal/mutations/handlers/handleAddReflectionGroups';
 import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups';
 import getInProxy from 'universal/utils/relay/getInProxy';
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
-import addNodeToArray from 'universal/utils/relay/addNodeToArray';
-import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation';
 import handleRemoveEmptyReflectionGroup from 'universal/mutations/handlers/handleRemoveEmptyReflectionGroup';
 import clientTempId from 'universal/utils/relay/clientTempId';
-import * as shortid from 'shortid';
+import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import handleAddReflectionToGroup from 'universal/mutations/handlers/handleAddReflectionToGroup';
 
 type Variables = {
   sortOrder: string,
@@ -25,9 +24,10 @@ type Variables = {
 
 graphql`
   fragment UpdateReflectionLocationMutation_team on UpdateReflectionLocationPayload {
-    meeting {
-      id
+    reflection {
+      ...CompleteReflectionFrag @relay(mask: false)
     }
+    
     reflectionGroup {
       id
       meetingId
@@ -39,16 +39,14 @@ graphql`
     }
     oldReflectionGroup {
       id
-      reflections {
-        ...CompleteReflectionFrag @relay(mask: false)
-      }
     }
   }
 `;
 
 const mutation = graphql`
-  mutation UpdateReflectionLocationMutation($reflectionGroupId: ID, $reflectionId: ID!, $retroPhaseItemId: ID, $sortOrder: Float!) {
-    updateReflectionLocation(reflectionGroupId: $reflectionGroupId, reflectionId: $reflectionId, retroPhaseItemId: $retroPhaseItemId, sortOrder: $sortOrder) {
+  mutation UpdateReflectionLocationMutation($reflectionGroupId: ID, $reflectionId: ID, $retroPhaseItemId: ID, $sortOrder: Float!) {
+    updateReflectionLocation(
+      reflectionGroupId: $reflectionGroupId, reflectionId: $reflectionId, retroPhaseItemId: $retroPhaseItemId, sortOrder: $sortOrder) {
       ...UpdateReflectionLocationMutation_team @relay(mask: false)
     }
   }
@@ -60,21 +58,30 @@ const handleRemoveReflectionFromGroup = (reflectionId, reflectionGroupId, store)
   safeRemoveNodeFromArray(reflectionId, reflectionGroup, 'reflections');
 };
 
-const handleAddReflectionGroupToMeeting = (reflectionId, store) => {
-  reflectionGroup
-  const teamId = newNode.getValue('teamId');
-  const team = store.get(teamId);
-  addNodeToArray(newNode, team, 'agendaItems', 'sortOrder');
-}
-
-export const updateReflectionLocationTeamUpdater = (payload, store) => {
-  const reflectionGroup = payload.getLinkedRecord('reflectionGroup');
-  handleCreateReflections(reflectionGroup, store);
-  const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id');
-  handleRemoveEmptyReflectionGroup(reflectionGroupId, store);
+const moveGroupLocation = (reflectionGroupProxy, store) => {
+  const reflectionGroupId = reflectionGroupProxy.getValue('id');
+  const meetingId = reflectionGroupProxy.getValue('meetingId');
+  handleRemoveReflectionGroups(reflectionGroupId, meetingId, store);
+  handleAddReflectionGroups(reflectionGroupProxy, store);
 };
 
-const CreateReflectionMutation = (
+const moveReflectionLocation = (reflection, reflectionGroup, oldReflectionGroupId, store) => {
+  moveGroupLocation(reflectionGroup, store);
+  if (!reflection) return;
+  const reflectionId = reflection.getValue('id');
+  handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
+  handleAddReflectionToGroup(reflection, store);
+  handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store);
+};
+
+export const updateReflectionLocationTeamUpdater = (payload, store) => {
+  const reflection = payload.getLinkedRecord('reflection');
+  const reflectionGroup = payload.getLinkedRecord('reflectionGroup');
+  const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id');
+  moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store);
+};
+
+const UpdateReflectionLocationMutation = (
   environment: Object,
   variables: Variables,
   onError?: ErrorHandler,
@@ -93,16 +100,25 @@ const CreateReflectionMutation = (
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON();
       const {reflectionId, reflectionGroupId, retroPhaseItemId, sortOrder} = variables;
+
+      // move an entire group somewhere else
+      if (!reflectionId) {
+        const reflectionGroupProxy = store.get(reflectionGroupId);
+        updateProxyRecord(reflectionGroupProxy, {sortOrder});
+        moveGroupLocation(reflectionGroupProxy, store);
+        return;
+      }
+
       const reflectionProxy = store.get(reflectionId);
-      // a reflection was moved from a group of 1 to a another group
-      // a reflection was moved from a group of > 1 to another group of >= 1
-      // a reflection was moved from a group of > 1 to its own group
-      // a reflection was moved
       const oldReflectionGroupId = reflectionProxy.getValue('reflectionGroupId');
-      // const oldReflectionGroup =
-      const nextReflectionGroupId = reflectionGroupId || clientTempId();
-      const reflectionSortOrder = nextReflectionGroupId === reflectionGroupId ? sortOrder : 0;
+      const oldReflectionGroupProxy = store.get(oldReflectionGroupId);
+      const meetingId = oldReflectionGroupProxy.getValue('meetingId');
+      const meeting = store.get(meetingId);
+      let reflectionGroupProxy;
+      // move a reflection into its own group
       if (reflectionGroupId === null) {
+        updateProxyRecord(reflectionProxy, {sortOrder: 0, retroPhaseItemId});
+        // create the new group
         const reflectionGroup = {
           id: clientTempId(),
           createdAt: nowISO,
@@ -113,15 +129,30 @@ const CreateReflectionMutation = (
           updatedAt: nowISO,
           voterIds: []
         };
+        reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup);
+        reflectionGroupProxy.setLinkedRecords([reflectionProxy], 'reflections');
+        reflectionGroupProxy.setLinkedRecord(meeting, 'meeting');
+        // handleAddReflectionGroups(reflectionGroupProxy, store);
+        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
+      } else if (reflectionGroupId === oldReflectionGroupId) {
+        // move a card within the same group
+        updateProxyRecord(reflectionProxy, {sortOrder});
+        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
+        // handleAddReflectionToGroup(reflectionProxy, store);
+      } else {
+        // move a card into another group
+        updateProxyRecord(reflectionProxy, {sortOrder, reflectionGroupId, retroPhaseItemId});
+        reflectionGroupProxy = store.get(reflectionGroupId);
+        const phaseItemProxy = store.get(retroPhaseItemId);
+        reflectionProxy.setLinkedRecord(phaseItemProxy, 'phaseItem');
+        reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup');
+        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
+        // handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store);
+        // handleAddReflectionToGroup(reflectionProxy, store);
       }
-      const nowISO = new Date().toJSON();
-      const optimisticReflection = {
-        content,
-        updatedAt: nowISO
-      };
-      updateProxyRecord(reflectionProxy, optimisticReflection);
+      moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store);
     }
   });
 };
 
-export default CreateReflectionMutation;
+export default UpdateReflectionLocationMutation;
