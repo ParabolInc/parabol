@@ -1,66 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import {textOverflow} from 'universal/styles/helpers';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import IconButton from 'universal/components/IconButton/IconButton';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-
-const FieldArrayRow = (props) => {
-  const {
-    existingInvites,
-    invitees,
-    labelHeader,
-    fields,
-    hoverRow,
-    onHoverRow,
-    onLeaveRow,
-    styles
-  } = props;
-
-  return (
-    <div className={css(styles.fieldGroup)}>
-      <div className={css(styles.fieldGroupRow)}>
-        <FieldLabel label={labelHeader} />
-      </div>
-      {fields.map((item, index) =>
-        (<div
-          className={css(styles.fieldGroupRow)}
-          key={`inviteeRow${index}`} // eslint-disable-line react/no-array-index-key
-          onMouseEnter={() => onHoverRow(index)}
-          onMouseLeave={() => onLeaveRow()}
-        >
-          <div className={css(styles.relativeParent)}>
-            <div className={css(styles.fieldRemovalBlock)}>
-              {(hoverRow === index) && <IconButton
-                iconName="times-circle"
-                iconSize="2x"
-                onClick={() => fields.remove(index)}
-                title="Remove"
-              />}
-            </div>
-            <div className={css(styles.fieldLabel, existingInvites.includes(index) && styles.highlighted)}>
-              {invitees[index].label}
-            </div>
-          </div>
-        </div>)
-      )}
-    </div>
-  );
-};
-
-FieldArrayRow.propTypes = {
-  invitees: PropTypes.array,
-  existingInvites: PropTypes.array,
-  labelHeader: PropTypes.string.isRequired,
-  fields: PropTypes.object.isRequired,
-  hoverRow: PropTypes.number,
-  onHoverRow: PropTypes.func.isRequired,
-  onLeaveRow: PropTypes.func.isRequired,
-  styles: PropTypes.object
-};
+import styled, {css} from 'react-emotion';
 
 const highlightEmail = {
   '20%': {
@@ -76,47 +21,90 @@ const highlightEmail = {
 
 const fieldSizeStyles = ui.fieldSizeStyles.medium;
 
-const styleThunk = () => ({
-  fieldGroup: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    width: '100%'
-  },
-
-  fieldGroupRow: {
-    display: 'flex',
-    maxWidth: '100%',
-    padding: '0 3.5rem',
-    margin: '0 0 .5rem',
-    position: 'relative'
-  },
-
-  fieldLabel: {
-    ...textOverflow,
-    color: appTheme.palette.dark,
-    fontSize: fieldSizeStyles.fontSize,
-    lineHeight: fieldSizeStyles.lineHeight,
-    padding: `${ui.controlBlockPaddingVertical.medium} 0`,
-    width: '100%'
-  },
-
-  fieldRemovalBlock: {
-    padding: '0 1rem 0 0',
-    position: 'absolute',
-    left: '-2.5rem',
-    top: '.375rem'
-  },
-
-  highlighted: {
-    animationDuration: '1s',
-    animationName: highlightEmail
-  },
-
-  relativeParent: {
-    position: 'relative'
-  }
+const FieldGroup = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  width: '100%'
 });
 
-export default withStyles(styleThunk)(FieldArrayRow);
+const FieldGroupRow = styled('div')({
+  display: 'flex',
+  maxWidth: '100%',
+  padding: '0 3.5rem',
+  margin: '0 0 .5rem',
+  position: 'relative'
+});
+
+const FieldRemovalBlock = styled('div')({
+  padding: '0 1rem 0 0',
+  position: 'absolute',
+  left: '-2.5rem',
+  top: '.375rem'
+});
+
+const FieldContent = styled('div')(({highlighted}) => ({
+  ...textOverflow,
+  animationDuration: highlighted && '1s',
+  animationName: highlighted && highlightEmail,
+  color: appTheme.palette.dark,
+  fontSize: fieldSizeStyles.fontSize,
+  lineHeight: fieldSizeStyles.lineHeight,
+  padding: `${ui.controlBlockPaddingVertical.medium} 0`,
+  width: '100%'
+}));
+
+const FieldArrayRow = (props) => {
+  const {
+    existingInvites,
+    invitees,
+    labelHeader,
+    fields,
+    hoverRow,
+    onHoverRow,
+    onLeaveRow
+  } = props;
+  const removalAriaLabel = `Tap to remove from ${labelHeader}`;
+  return (
+    <FieldGroup>
+      <FieldGroupRow>
+        <FieldLabel label={labelHeader} />
+      </FieldGroupRow>
+      {fields.map((item, index) =>
+        (<FieldGroupRow
+          key={`inviteeRow${index}`} // eslint-disable-line react/no-array-index-key
+          onMouseEnter={() => onHoverRow(index)}
+          onMouseLeave={() => onLeaveRow()}
+        >
+          <div className={css({position: 'relative'})}>
+            <FieldRemovalBlock>
+              {(hoverRow === index) && <IconButton
+                aria-label={removalAriaLabel}
+                iconName="times-circle"
+                iconSize="2x"
+                onClick={() => fields.remove(index)}
+                title={removalAriaLabel}
+              />}
+            </FieldRemovalBlock>
+            <FieldContent highlighted={existingInvites.includes(index)}>
+              {invitees[index].label}
+            </FieldContent>
+          </div>
+        </FieldGroupRow>)
+      )}
+    </FieldGroup>
+  );
+};
+
+FieldArrayRow.propTypes = {
+  invitees: PropTypes.array,
+  existingInvites: PropTypes.array,
+  labelHeader: PropTypes.string.isRequired,
+  fields: PropTypes.object.isRequired,
+  hoverRow: PropTypes.number,
+  onHoverRow: PropTypes.func.isRequired,
+  onLeaveRow: PropTypes.func.isRequired
+};
+
+export default FieldArrayRow;

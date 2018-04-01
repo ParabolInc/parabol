@@ -37,5 +37,6 @@ export async function newUserSession({ browser, behaviors }) {
  */
 export const waitTimes = {
   short: 2000,
-  long: 5000
-}
+  medium: 5000,
+  long: 10000
+};

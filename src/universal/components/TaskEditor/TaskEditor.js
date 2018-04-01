@@ -191,10 +191,9 @@ const styleThunk = () => ({
   },
 
   codeBlock: {
-    backgroundColor: appTheme.palette.mid10a,
+    backgroundColor: appTheme.palette.light,
     borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
     borderRadius: '.0625rem',
-    color: appTheme.palette.warm,
     fontFamily: appTheme.typography.monospace,
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s6,

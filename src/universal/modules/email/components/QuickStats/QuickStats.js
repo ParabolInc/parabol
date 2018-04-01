@@ -22,7 +22,7 @@ const QuickStats = (props) => {
     width: '25%'
   };
 
-  const typeStyles = {
+  const fontStyles = {
     color: appTheme.palette.dark,
     fontFamily: ui.emailFontFamily
   };
@@ -34,12 +34,12 @@ const QuickStats = (props) => {
   };
 
   const statValue = {
-    ...typeStyles,
+    ...fontStyles,
     fontSize: '36px'
   };
 
   const statLabel = {
-    ...typeStyles,
+    ...fontStyles,
     fontSize: '10px',
     fontWeight: 600,
     textTransform: 'uppercase'

@@ -45,7 +45,7 @@ export function addDriversToPATH() {
 export const DRIVERS = [
   new Driver({
     browser: 'chrome',
-    url: `https://chromedriver.storage.googleapis.com/2.36/chromedriver_${getOsName()}${getOsArch()}.zip`,
+    url: `https://chromedriver.storage.googleapis.com/2.37/chromedriver_${getOsName()}${getOsArch()}.zip`,
     driverFilename: 'chromedriver'
   })
 ];

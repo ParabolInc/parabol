@@ -1,4 +1,4 @@
-import {css} from 'aphrodite-local-styles/no-important';
+import {css} from 'react-emotion';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
@@ -9,7 +9,6 @@ import Row from 'universal/components/Row/Row';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
 import {withRouter} from 'react-router-dom';
 
 const TeamInvite = (props) => {
@@ -17,7 +16,6 @@ const TeamInvite = (props) => {
     atmosphere,
     dispatch,
     history,
-    styles,
     notification,
     submitting,
     submitMutation,
@@ -33,17 +31,17 @@ const TeamInvite = (props) => {
 
   return (
     <Row compact>
-      <div className={css(styles.icon)}>
+      <div className={css(defaultStyles.icon)}>
         <IconAvatar icon="users" size="small" />
       </div>
-      <div className={css(styles.message)}>
+      <div className={css(defaultStyles.message)}>
         {'You have been invited by '}
         <b>{inviterName}</b>
         {' to join '}
         <b>{teamName}</b>
         {'.'}
       </div>
-      <div className={css(styles.button)}>
+      <div className={css(defaultStyles.button)}>
         <Button
           aria-label="Accept team invitation"
           buttonSize={ui.notificationButtonSize}
@@ -66,18 +64,13 @@ TeamInvite.propTypes = {
   history: PropTypes.object.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
-  styles: PropTypes.object,
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
   notification: PropTypes.object.isRequired
 };
 
-const styleThunk = () => ({
-  ...defaultStyles
-});
-
 export default createFragmentContainer(
-  connect()(withRouter(withStyles(styleThunk)(TeamInvite))),
+  connect()(withRouter(TeamInvite)),
   graphql`
     fragment TeamInvite_notification on NotifyTeamInvite {
       notificationId: id

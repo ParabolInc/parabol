@@ -8,6 +8,7 @@ import dehydrate from 'server/utils/dehydrate';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 import {StaticRouter} from 'react-router';
 import AtmosphereProvider from '../universal/components/AtmosphereProvider/AtmosphereProvider';
+import sendSentryEvent from 'server/utils/sendSentryEvent';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
@@ -38,8 +39,7 @@ export default function Html({store, assets, clientIds}) {
         </Provider>
       );
     } catch (e) {
-      console.log(`SSR exception: ${e}`);
-      console.trace();
+      sendSentryEvent(undefined, {message: e.message});
       return '<div>Error during render!</div>';
     }
   });

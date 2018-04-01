@@ -1,9 +1,7 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Atmosphere from 'universal/Atmosphere';
-import Button from 'universal/components/Button/Button';
-import Panel from 'universal/components/Panel/Panel';
+import {Button, Panel} from 'universal/components';
 import {SettingsWrapper} from 'universal/components/Settings';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import {requiresAction} from 'universal/types/notification';
@@ -13,8 +11,31 @@ import UserSettingsWrapper from 'universal/modules/userDashboard/components/User
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import styled from 'react-emotion';
+
+const ClearAllButtonBlock = styled('div')({
+  alignSelf: 'center',
+  minWidth: '5.75rem'
+});
+
+const NotificationListBlock = styled('div')({
+  width: '100%'
+});
+
+const NotificationsEmptyBlock = styled('div')({
+  alignItems: 'center',
+  borderTop: `1px solid ${ui.rowBorderColor}`,
+  color: appTheme.palette.dark,
+  display: 'flex',
+  fontSize: appTheme.typography.s5,
+  height: '4.8125rem',
+  justifyContent: 'center',
+  lineHeight: '1.5',
+  padding: ui.rowGutter,
+  textAlign: 'center',
+  width: '100%'
+});
 
 const Notifications = (props) => {
   const {
@@ -24,8 +45,7 @@ const Notifications = (props) => {
     submitMutation,
     onCompleted,
     onError,
-    submitting,
-    styles
+    submitting
   } = props;
 
   const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node));
@@ -37,7 +57,7 @@ const Notifications = (props) => {
   };
 
   const clearAllButton = () => (
-    <div className={css(styles.clearAll)}>
+    <ClearAllButtonBlock>
       <Button
         aria-label="Clear all notifications"
         buttonSize="small"
@@ -50,7 +70,7 @@ const Notifications = (props) => {
         onClick={clearAllNotifications}
         title="Clear all notifications"
       />
-    </div>
+    </ClearAllButtonBlock>
   );
 
   return (
@@ -59,7 +79,7 @@ const Notifications = (props) => {
       <SettingsWrapper>
         <Panel compact label="Notifications" controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}>
           {notifications && notifications.edges.length ?
-            <div className={css(styles.notificationList)}>
+            <NotificationListBlock>
               {notifications.edges.filter(({node}) => Boolean(node)).map(({node}) =>
                 (<NotificationRow
                   dispatch={dispatch}
@@ -67,10 +87,10 @@ const Notifications = (props) => {
                   notification={node}
                 />)
               )}
-            </div> :
-            <div className={css(styles.notificationsEmpty)}>
+            </NotificationListBlock> :
+            <NotificationsEmptyBlock>
               {'Hey there! You’re all caught up! 💯'}
-            </div>
+            </NotificationsEmptyBlock>
           }
         </Panel>
       </SettingsWrapper>
@@ -84,39 +104,10 @@ Notifications.propTypes = {
   notifications: PropTypes.object,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,
-  styles: PropTypes.object,
   submitting: PropTypes.bool.isRequired,
   submitMutation: PropTypes.func.isRequired
-
 };
 
-const styleThunk = () => ({
-  clearAll: {
-    alignSelf: 'center',
-    minWidth: '5.75rem'
-  },
-
-  notificationList: {
-    // Define
-  },
-
-  notificationsEmpty: {
-    alignItems: 'center',
-    borderTop: `1px solid ${ui.rowBorderColor}`,
-    color: appTheme.palette.dark,
-    display: 'flex',
-    fontSize: appTheme.typography.s5,
-    height: '4.8125rem',
-    justifyContent: 'center',
-    lineHeight: '1.5',
-    padding: ui.rowGutter,
-    textAlign: 'center',
-    width: '100%'
-  }
-});
-
 export default withAtmosphere(
-  withMutationProps(
-    withStyles(styleThunk)(Notifications)
-  )
+  withMutationProps(Notifications)
 );

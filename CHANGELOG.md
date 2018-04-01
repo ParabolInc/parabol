@@ -4,11 +4,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.3.0 2018-Mar-28
+### Added
+- New authentication pages
+- Many aesthetic UI updates:
+   - Avatars now use new palette
+   - Forms updated to match latest styles
+   - Email templates match latest styles
+   - Settings views updated
+   - Notifications updated
+   - Cards polished
+- New button to start specific meeting types (behind feature flag)
+- Upgraded Sentry to newest API version
+- Retro reflect phase (behind feature flag)
+- Retro card grouping backend (behind feature flag)
+- Retro card auto grouping and auto-theme naming (behind feature flag)
+- Retro card voting backend (behind feature flag)
+
+### Fixed
+- Fixes for Node v9.9
+- Private tasks (#1863)
+
+### Removed
+- Stopped asking welcome wizard user for invitee's priority for the week
+- Auth0 Lock
+
+
 ## v1.2.0 2018-Mar-21
 ### Added
-- Retro card groups #1729
-- Retro social check-in #1741
-- Retro Backend: Creating & Editing Reflections #1742
+- Retro card groups #1729 (behind feature flag)
+- Retro social check-in #1741 (behind feature flag)
+- Retro Backend: Creating & Editing Reflections #1742 (behind feature flag)
 
 ## v1.1.1 2018-Mar-19
 ### Fixed

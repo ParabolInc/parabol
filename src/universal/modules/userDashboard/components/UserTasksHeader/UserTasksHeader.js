@@ -1,16 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ui from 'universal/styles/ui';
-import {
-  DashHeading,
-  DashSectionControl,
-  DashSectionControls,
-  DashSectionHeader
-} from 'universal/components/Dashboard';
-import {Menu, MenuItem} from 'universal/modules/menu';
-import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
+import {DashHeading, DashSectionControl, DashSectionControls, DashSectionHeader} from 'universal/components/Dashboard';
 import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
+import LoadableMenu from 'universal/components/LoadableMenu';
+import LoadableUserDashTeamMenu from 'universal/components/LoadableUserDashTeamMenu';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -23,8 +18,7 @@ const targetAnchor = {
 };
 
 const UserTasksHeader = (props) => {
-  const {dispatch, teams, teamFilterId, teamFilterName} = props;
-  const toggle = <DashFilterToggle label={teamFilterName} />;
+  const {teams, teamFilterId, teamFilterName} = props;
   // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
@@ -34,29 +28,18 @@ const UserTasksHeader = (props) => {
       <DashSectionControls>
         <DashSectionControl>
           <DashFilterLabel><b>{'Show Tasks for'}</b>{': '}</DashFilterLabel>
-          <Menu
-            label="Filter by:"
-            maxHeight={ui.dashMenuHeight}
-            menuWidth={ui.dashMenuWidth}
+          <LoadableMenu
+            LoadableComponent={LoadableUserDashTeamMenu}
+            maxWidth={350}
+            maxHeight={parseInt(ui.dashMenuHeight, 10) * 16}
             originAnchor={originAnchor}
+            queryVars={{
+              teams,
+              teamFilterId
+            }}
             targetAnchor={targetAnchor}
-            toggle={toggle}
-          >
-            <MenuItem
-              isActive={teamFilterId === null}
-              key={'teamFilterNULL'}
-              label={'All teams'}
-              onClick={() => dispatch(filterTeam(null))}
-            />
-            {teams.map((team) =>
-              (<MenuItem
-                isActive={team.id === teamFilterId}
-                key={`teamFilter${team.id}`}
-                label={team.name}
-                onClick={() => dispatch(filterTeam(team.id, team.name))}
-              />)
-            )}
-          </Menu>
+            toggle={<DashFilterToggle label={teamFilterName} />}
+          />
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>

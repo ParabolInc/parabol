@@ -22,13 +22,9 @@ const getStyles = ({disabled, fieldSize}) => {
   return ({
     field: {
       ...ui.fieldBaseStyles,
-      ...ui.fieldSizeStyles[size]
+      ...ui.fieldSizeStyles[size],
+      ...makeFieldColorPalette('gray', !disabled)
     },
-
-    cool: makeFieldColorPalette('cool', !disabled),
-    gray: makeFieldColorPalette('gray', !disabled),
-    warm: makeFieldColorPalette('warm', !disabled),
-    white: makeFieldColorPalette('white', !disabled),
 
     disabled: ui.fieldDisabled,
     readOnly: ui.fieldReadOnly,
@@ -69,7 +65,6 @@ const InputField = (props) => {
     className,
     autoFocus,
     shortcutDisabled,
-    colorPalette,
     disabled,
     fieldSize,
     input,
@@ -90,7 +85,6 @@ const InputField = (props) => {
   const inputClassName = cx(
     // allow hotkeys to be triggered when inside a field input
     css(styles.field),
-    css(colorPalette ? styles[colorPalette] : styles.white),
     disabled && css(styles.disabled),
     isLarger && css(styles.fieldLarger),
     readyOnly && css(styles.readyOnly),
@@ -164,12 +158,6 @@ InputField.propTypes = {
   type: PropTypes.string,
   isWider: PropTypes.bool,
   styles: PropTypes.object,
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'gray',
-    'warm',
-    'white'
-  ]),
   meta: PropTypes.object.isRequired,
   underline: PropTypes.bool
 };

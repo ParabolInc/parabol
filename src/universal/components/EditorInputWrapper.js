@@ -144,13 +144,14 @@ const styleThunk = () => ({
   editorBlockquote: {
     fontStyle: 'italic',
     borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
-    margin: '1rem 0',
+    margin: '.5rem 0',
     padding: '0 .5rem'
   },
 
   codeBlock: {
-    backgroundColor: appTheme.palette.mid10a,
-    color: appTheme.palette.warm,
+    backgroundColor: appTheme.palette.light,
+    borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
+    borderRadius: '.0625rem',
     fontFamily: appTheme.typography.monospace,
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s6,
@@ -166,4 +167,3 @@ export default withMarkdown(
     )
   )
 );
-

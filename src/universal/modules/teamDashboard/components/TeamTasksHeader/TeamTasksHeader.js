@@ -2,18 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import {
-  DashSectionControl,
-  DashSectionControls,
-  DashSectionHeader,
-  DashHeading
-} from 'universal/components/Dashboard';
+import {DashHeading, DashSectionControl, DashSectionControls, DashSectionHeader} from 'universal/components/Dashboard';
 import {DashNavControl, LabelHeading} from 'universal/components';
 import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
-import {Menu, MenuItem} from 'universal/modules/menu';
-import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
 import ui from 'universal/styles/ui';
+import LoadableTeamDashTeamMemberMenu from 'universal/components/LoadableTeamDashTeamMemberMenu';
+import LoadableMenu from 'universal/components/LoadableMenu';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -26,26 +21,8 @@ const targetAnchor = {
 };
 
 const TeamTasksHeader = (props) => {
-  const {dispatch, history, teamMemberFilterId, teamMemberFilterName, team} = props;
-  const {teamId, teamMembers, teamName} = team;
-  const toggle = <DashFilterToggle label={teamMemberFilterName} />;
-
-  const itemFactory = () => {
-    return [<MenuItem
-      isActive={teamMemberFilterId === null}
-      key={'teamMemberFilterNULL'}
-      label={'All members'}
-      onClick={() => dispatch(filterTeamMember(null))}
-    />].concat(
-      teamMembers.map((teamMember) =>
-        (<MenuItem
-          isActive={teamMember.id === teamMemberFilterId}
-          key={`teamMemberFilter${teamMember.id}`}
-          label={teamMember.preferredName}
-          onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
-        />)
-      ));
-  };
+  const {history, teamMemberFilterId, teamMemberFilterName, team} = props;
+  const {teamId, teamName} = team;
 
   const goToArchive = () => history.push(`/team/${teamId}/archive`);
 
@@ -69,13 +46,17 @@ const TeamTasksHeader = (props) => {
         {/* Filter by Owner */}
         <DashSectionControl>
           <DashFilterLabel><b>{'Show Tasks for'}</b>{': '}</DashFilterLabel>
-          <Menu
-            itemFactory={itemFactory}
-            label="Filter by:"
-            maxHeight={ui.dashMenuHeight}
-            toggle={toggle}
+          <LoadableMenu
+            LoadableComponent={LoadableTeamDashTeamMemberMenu}
+            maxWidth={350}
+            maxHeight={parseInt(ui.dashMenuHeight, 10) * 16}
             originAnchor={originAnchor}
+            queryVars={{
+              team,
+              teamMemberFilterId
+            }}
             targetAnchor={targetAnchor}
+            toggle={<DashFilterToggle label={teamMemberFilterName} />}
           />
         </DashSectionControl>
       </DashSectionControls>
@@ -98,10 +79,7 @@ export default createFragmentContainer(
     fragment TeamTasksHeader_team on Team {
       teamId: id
       teamName: name
-      teamMembers(sortBy: "preferredName") {
-        id
-        preferredName
-      }
+      ...TeamDashTeamMemberMenu_team
     }
   `
 );
