@@ -26,6 +26,7 @@ const subscription = graphql`
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
+      ...DragReflectionMutation_team @relay(mask: false)
       ...EditReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
@@ -83,6 +84,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'CreateReflectionPayload':
           createReflectionTeamUpdater(payload, store);
+          break;
+        case 'DragReflectionPayload':
           break;
         case 'RemoveTeamMemberSelfPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);

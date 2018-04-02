@@ -50,7 +50,6 @@ const TypeTitle = styled('div')({
 const ColumnChild = styled('div')(
   {
     display: 'inline-block',
-    margin: '0.7rem 0.7rem 0 0'
   },
   ({isDraggingOver}) => ({
     background: isDraggingOver && 'blue'

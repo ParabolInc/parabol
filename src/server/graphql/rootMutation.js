@@ -79,6 +79,7 @@ import updateReflectionGroupTitle from 'server/graphql/mutations/updateReflectio
 import voteForReflectionGroup from 'server/graphql/mutations/voteForReflectionGroup';
 import newMeetingCheckIn from 'server/graphql/mutations/newMeetingCheckIn';
 import autoGroupReflections from 'server/graphql/mutations/autoGroupReflections';
+import dragReflection from 'server/graphql/mutations/dragReflection';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -109,6 +110,7 @@ export default new GraphQLObjectType({
     createUserPicturePutUrl,
     deleteTask,
     disconnectSocket,
+    dragReflection,
     editReflection,
     editTask,
     endMeeting,

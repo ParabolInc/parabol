@@ -56,14 +56,7 @@ class ReflectionGroup extends Component<Props, State> {
       element: this.renderReflection(reflection, index, index === reflections.length - 1),
       key: reflection.id
     }));
-    return hovered ? (
-      [
-        {element: <ReflectionCardDropPreview />, key: 'reflection-card-drop-preview'},
-        ...cardElements
-      ]
-    ) : (
-      cardElements
-    );
+    return cardElements;
   };
 
   getCollapsedItemCount = () => (

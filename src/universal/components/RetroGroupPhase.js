@@ -8,11 +8,12 @@ import styled from 'react-emotion';
 import type {RetroGroupPhase_team as Team} from './__generated__/RetroGroupPhase_team.graphql';
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
 import {createFragmentContainer} from 'react-relay';
-import type {DraggableLocation, DragStart, DroppableProvided, DropResult} from 'react-beautiful-dnd';
+import type {DragStart, DropResult} from 'react-beautiful-dnd/src/index';
 import {DragDropContext} from 'react-beautiful-dnd';
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import dndNoise from 'universal/utils/dndNoise';
+import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
 
 const {Component} = React;
 
@@ -35,17 +36,19 @@ class RetroGroupPhase extends Component<Props, State> {
     autoFocusReflectionId: null
   };
 
-  onDragStart = (initial: DragStart) => {
-    console.log('drag start');
+  onDragStart = (dragStart: DragStart) => {
+    const {atmosphere} = this.props;
+    const {draggableId: reflectionId} = dragStart;
     this.setState({
       autoFocusReflectionId: null
     });
+    DragReflectionMutation(atmosphere, {reflectionId, isDragging: true});
   }
 
   onDragEnd = (result: DropResult) => {
-    // publishOnDragEnd(result);
-    console.log('drag end', result.type, result);
+    const {atmosphere, team: {newMeeting}} = this.props;
     const {draggableId: reflectionId, type, source, destination} = result;
+    DragReflectionMutation(atmosphere, {reflectionId, isDragging: false});
 
     // dropped nowhere
     if (!destination) return;
@@ -57,8 +60,6 @@ class RetroGroupPhase extends Component<Props, State> {
     }
 
     const {droppableId: reflectionGroupId, index} = destination;
-
-    const {atmosphere, team: {newMeeting}} = this.props;
     const {meetingId} = newMeeting;
     const reflectionGroups = newMeeting.reflectionGroups || [];
     const reflectionGroup = reflectionGroups.find((group) => group.id === reflectionGroupId);

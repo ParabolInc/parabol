@@ -4,8 +4,9 @@ import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import {getUserId} from 'server/utils/authorization';
-import {resolveForSU} from 'server/graphql/resolvers';
+import {makeResolve, resolveForSU} from 'server/graphql/resolvers';
 import GoogleAnalyzedEntity from 'server/graphql/types/GoogleAnalyzedEntity';
+import User from 'server/graphql/types/User';
 
 const RetroReflection = new GraphQLObjectType({
   name: 'RetroReflection',
@@ -28,6 +29,15 @@ const RetroReflection = new GraphQLObjectType({
       description: 'The userId that created the reflection (or unique Id if not a team member)',
       type: GraphQLID,
       resolve: resolveForSU('creatorId')
+    },
+    draggerUserId: {
+      description: 'The userId of the person currently dragging the reflection',
+      type: GraphQLID
+    },
+    draggerUser: {
+      description: 'The user that is currently dragging the reflection',
+      type: User,
+      resolve: makeResolve('draggerUserId', 'draggerUser', 'users')
     },
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',

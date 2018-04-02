@@ -24,6 +24,7 @@ import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper';
 import {REFLECT} from 'universal/utils/constants';
 import isTempId from 'universal/utils/relay/isTempId';
+import UserDraggingHeader from 'universal/components/UserDraggingHeader';
 
 export type Props = {|
   // True when this card is being hovered over by a valid drag source
@@ -121,32 +122,20 @@ class ReflectionCard extends Component<Props, State> {
     return false && !isCollapsed && <BottomBar>{question}</BottomBar>;
   };
 
-  maybeRenderUserDragging = () => {
-    const {isDragging, pulled, userDragging} = this.props;
-    const styles = {
-      color: appTheme.palette.warm,
-      textAlign: 'end'
-    };
-    return (isDragging && !pulled) && (
-      <div className={css(styles)}>
-        {userDragging}
-      </div>
-    );
-  };
-
   render() {
-    const {hovered, iAmDragging, isCollapsed, pulled, userDragging, meeting, reflection} = this.props;
+    const {atmosphere, isCollapsed, meeting, reflection} = this.props;
     const {editorState} = this.state;
     const {localPhase: {phaseType}, teamId} = meeting;
-    const holdingPlace = Boolean(userDragging && !pulled);
-    const {isViewerCreator} = reflection;
+    const {draggerUser, isViewerCreator} = reflection;
     const canDelete = isViewerCreator && phaseType === REFLECT;
+    const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;
     return (
       <React.Fragment>
-        {this.maybeRenderUserDragging()}
+        {hasDragLock && <UserDraggingHeader user={draggerUser}/>}
         <ReflectionEditorWrapper
           ariaLabel="Edit this reflection"
           editorState={editorState}
+          hasDragLock={hasDragLock}
           isCollapsed={isCollapsed}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
@@ -176,6 +165,10 @@ export default createFragmentContainer(
       ...ReflectionCardDeleteButton_meeting
     }
     fragment ReflectionCard_reflection on RetroReflection {
+      draggerUser {
+        id
+        ...UserDraggingHeader_user
+      }
       reflectionId: id
       reflectionGroupId
       content

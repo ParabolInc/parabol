@@ -36,7 +36,7 @@ type Props = {
 };
 
 const DragStyles = styled('div')(({isDraggingOver}) => ({
-  backgroundColor: isDraggingOver ? '#f8f7fa' : '#FFF'
+  backgroundColor: isDraggingOver && '#f8f7fa'
   // display: 'inline-block'
 }));
 
@@ -44,9 +44,6 @@ class DraggableReflectionCard extends Component<Props> {
   render() {
     const {
       canDrop,
-      // connectDragPreview,
-      connectDragSource,
-      connectDropTarget,
       dndIndex,
       isOver,
       reflection,
@@ -68,7 +65,7 @@ class DraggableReflectionCard extends Component<Props> {
               {...dragProvided.draggableProps}
               {...dragProvided.dragHandleProps}
             >
-              <ReflectionCard hovered={hovered} meeting={meeting} reflection={reflection} />
+              <ReflectionCard meeting={meeting} reflection={reflection} />
             </DragStyles>
             {dragProvided.placeholder}
           </React.Fragment>

@@ -19,6 +19,7 @@ type Props = {
   handleChange: () => void,
   handleKeyCommand: () => void,
   handleReturn: () => void,
+  hasDragLock: boolean,
   isBlurred: boolean,
   isCollapsed: boolean,
   keyBindingFn: () => void,
@@ -68,6 +69,9 @@ const EditorStyles = styled('div')(
   ({isBlurred}) => isBlurred && ({
     filter: 'blur(4px)',
     userSelect: 'none'
+  }),
+  ({hasDragLock}) => hasDragLock && ({
+    border: `solid 1px ${appTheme.palette.warm}`
   })
 );
 
@@ -178,10 +182,10 @@ class ReflectionEditorWrapper extends Component<Props> {
   };
 
   render() {
-    const {ariaLabel, editorState, isBlurred, isCollapsed, onBlur, onFocus, placeholder, readOnly} = this.props;
+    const {ariaLabel, editorState, hasDragLock, isBlurred, isCollapsed, onBlur, onFocus, placeholder, readOnly} = this.props;
     const userSelect = readOnly ? 'none' : 'text';
     return (
-      <EditorStyles isBlurred={isBlurred} isCollapsed={isCollapsed}>
+      <EditorStyles hasDragLock={hasDragLock} isBlurred={isBlurred} isCollapsed={isCollapsed}>
         <Editor
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}
