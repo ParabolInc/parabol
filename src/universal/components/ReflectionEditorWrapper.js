@@ -21,7 +21,6 @@ type Props = {
   handleReturn: () => void,
   hasDragLock: boolean,
   isBlurred: boolean,
-  isCollapsed: boolean,
   keyBindingFn: () => void,
   placeholder: string,
   onBlur: () => void,
@@ -50,9 +49,6 @@ const codeBlock = css({
 
 const EditorStyles = styled('div')(
   {
-    backgroundColor: '#fff',
-    borderRadius: ui.cardBorderRadius,
-    boxShadow: ui.cardBoxShadow,
     color: appTheme.palette.dark,
     fontSize: ui.cardContentFontSize,
     lineHeight: ui.cardContentLineHeight,
@@ -62,10 +58,6 @@ const EditorStyles = styled('div')(
     position: 'relative',
     width: ui.retroCardWidth
   },
-  ({isCollapsed}) => isCollapsed && ({
-    height: `${ui.retroCardCollapsedHeightRem}rem`,
-    overflow: 'hidden'
-  }),
   ({isBlurred}) => isBlurred && ({
     filter: 'blur(4px)',
     userSelect: 'none'
@@ -182,10 +174,10 @@ class ReflectionEditorWrapper extends Component<Props> {
   };
 
   render() {
-    const {ariaLabel, editorState, hasDragLock, isBlurred, isCollapsed, onBlur, onFocus, placeholder, readOnly} = this.props;
+    const {ariaLabel, editorState, hasDragLock, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
     const userSelect = readOnly ? 'none' : 'text';
     return (
-      <EditorStyles hasDragLock={hasDragLock} isBlurred={isBlurred} isCollapsed={isCollapsed}>
+      <EditorStyles hasDragLock={hasDragLock} isBlurred={isBlurred}>
         <Editor
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}

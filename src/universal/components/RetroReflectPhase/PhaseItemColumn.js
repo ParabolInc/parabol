@@ -112,7 +112,12 @@ class PhaseItemColumn extends Component<Props, State> {
                           isDraggingOver={dropSnapshot.isDraggingOver}
                           {...dropProvided.droppableProps}
                         >
-                          <ReflectionGroup reflectionGroup={group} meeting={meeting} isDraggingOver={dropSnapshot.isDraggingOver} />
+                          <ReflectionGroup
+                            reflectionGroup={group}
+                            retroPhaseItemId={retroPhaseItemId}
+                            meeting={meeting}
+                            isDraggingOver={dropSnapshot.isDraggingOver}
+                          />
                           {dropProvided.placeholder}
                         </ColumnChild>
                       </div>

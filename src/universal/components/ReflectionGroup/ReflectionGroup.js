@@ -31,7 +31,8 @@ export type Props = {
   id: ReflectionGroupID,
   meeting: Meeting,
   // Note: `reflections` is treated as a stack where the "top" is the end of the array.
-  reflectionGroup: ReflectionGroupType
+  reflectionGroup: ReflectionGroupType,
+  retroPhaseItemId: string
 };
 
 type State = {
@@ -104,18 +105,17 @@ class ReflectionGroup extends Component<Props, State> {
   };
 
   renderReflection = (reflection: Object, index: number, isTopCard: boolean) => {
-    const {meeting} = this.props;
+    const {meeting, retroPhaseItemId} = this.props;
     const {isExpanded} = this.state;
     return isExpanded ? (
       <DraggableReflectionCard
         dndIndex={index}
-        hovered={this.props.hovered}
+        showOriginFooter={retroPhaseItemId !== reflection.retroPhaseItemId}
         meeting={meeting}
         reflection={reflection}
       />
     ) : (
       <ReflectionCard
-        hovered={this.props.hovered}
         isCollapsed={!isTopCard}
         meeting={meeting}
         reflection={reflection}
@@ -181,6 +181,7 @@ export default createFragmentContainer(
       title
       reflections {
         id
+        retroPhaseItemId
         ...DraggableReflectionCard_reflection
         ...ReflectionCard_reflection
       }

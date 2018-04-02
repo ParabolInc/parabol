@@ -20,7 +20,6 @@ import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 
 type Props = {
   atmosphere: Object,
-  canDelete: boolean,
   reflection: Reflection,
   meeting: Meeting,
   ...MutationProps
@@ -44,8 +43,8 @@ class ReflectionCardDeleteButton extends Component<Props> {
   };
 
   render() {
-    const {canDelete, submitting} = this.props;
-    if (!canDelete || submitting) return null;
+    const {submitting} = this.props;
+    if (submitting) return null;
     return (
       <DeleteButton
         aria-label="Delete this reflection card"

@@ -4,9 +4,9 @@
  * @flow
  */
 // $FlowFixMe
-import {convertFromRaw, convertToRaw, ContentState, EditorState} from 'draft-js';
+import {ContentState, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
-import styled, {css} from 'react-emotion';
+import styled from 'react-emotion';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
 
@@ -25,21 +25,12 @@ import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrappe
 import {REFLECT} from 'universal/utils/constants';
 import isTempId from 'universal/utils/relay/isTempId';
 import UserDraggingHeader from 'universal/components/UserDraggingHeader';
+import ui from 'universal/styles/ui';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 export type Props = {|
-  // True when this card is being hovered over by a valid drag source
-  hovered?: boolean,
-  // True when the current user is the one dragging this card
-  iAmDragging?: boolean,
-  // Whether we're "collapsed" e.g. in a stack of cards.  This allows us to truncate to a constant height,
-  // Simplifying style computations.
+  // true if the card is in a collapsed group and it is not the top card (default false)
   isCollapsed?: boolean,
-  // Provided by react-dnd
-  isDragging?: boolean,
-  // States whether it serves as a drag preview.
-  pulled?: boolean,
-  // The name of the user who is currently dragging this card to a new place, if any
-  userDragging?: string,
   meeting: Meeting,
   reflection: Reflection,
   ...MutationProps
@@ -51,18 +42,27 @@ type State = {
   getEditorState: () => EditorState
 };
 
-const BottomBar = styled('div')({
+const OriginFooter = styled('div')({
+  ...textOverflow,
   alignItems: 'flex-start',
+  background: '#fff',
+  borderRadius: ui.cardBorderRadius,
   color: appTheme.palette.mid,
-  display: 'flex',
-  fontSize: '0.9rem',
-  justifyContent: 'space-between',
+  fontSize: '.8125rem',
   padding: '0.4rem 0.8rem'
 });
 
-const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperProps) => ({
-  opacity: ((iAmDragging && !pulled)) && 0.6
-}));
+const ReflectionStyles = styled('div')(
+  {
+    backgroundColor: '#fff',
+    borderRadius: ui.cardBorderRadius,
+    boxShadow: ui.cardBoxShadow
+  },
+  ({isCollapsed}) => isCollapsed && ({
+    height: `${ui.retroCardCollapsedHeightRem}rem`,
+    overflow: 'hidden'
+  })
+);
 
 class ReflectionCard extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
@@ -116,27 +116,20 @@ class ReflectionCard extends Component<Props, State> {
     }
   };
 
-  maybeRenderReflectionPhaseQuestion = () => {
-    const {isCollapsed, reflection: {phaseItem: {question}}} = this.props;
-    // TODO when to show?
-    return false && !isCollapsed && <BottomBar>{question}</BottomBar>;
-  };
-
   render() {
-    const {atmosphere, isCollapsed, meeting, reflection} = this.props;
+    const {atmosphere, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
     const {editorState} = this.state;
     const {localPhase: {phaseType}, teamId} = meeting;
-    const {draggerUser, isViewerCreator} = reflection;
+    const {draggerUser, isViewerCreator, phaseItem: {question}} = reflection;
     const canDelete = isViewerCreator && phaseType === REFLECT;
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;
     return (
-      <React.Fragment>
-        {hasDragLock && <UserDraggingHeader user={draggerUser}/>}
+      <ReflectionStyles isCollapsed={isCollapsed}>
+        {hasDragLock && <UserDraggingHeader user={draggerUser} />}
         <ReflectionEditorWrapper
           ariaLabel="Edit this reflection"
           editorState={editorState}
           hasDragLock={hasDragLock}
-          isCollapsed={isCollapsed}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           placeholder="My reflection thought..."
@@ -144,9 +137,9 @@ class ReflectionCard extends Component<Props, State> {
           setEditorState={this.setEditorState}
           teamId={teamId}
         />
-        {this.maybeRenderReflectionPhaseQuestion()}
-        <ReflectionCardDeleteButton canDelete={canDelete} meeting={meeting} reflection={reflection} />
-      </React.Fragment>
+        {showOriginFooter && <OriginFooter>{question}</OriginFooter>}
+        {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
+      </ReflectionStyles>
     );
   }
 }

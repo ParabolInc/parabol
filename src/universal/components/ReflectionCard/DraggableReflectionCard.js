@@ -14,11 +14,6 @@ import styled from 'react-emotion';
 import type {DraggableReflectionCard_reflection as Reflection} from './__generated__/DraggableReflectionCard_reflection.graphql';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {Draggable} from 'react-beautiful-dnd';
-import type {DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd/src/index';
-
-type DragItem = {
-  reflection: Reflection
-};
 
 type Props = {
   ...ReflectionCardProps,
@@ -32,7 +27,8 @@ type Props = {
   handleDrop: (draggedCardId: ReflectionID, droppedCardId: ReflectionID) => any,
   isDragging: boolean,
   isOver: boolean,
-  reflection: Reflection
+  reflection: Reflection,
+  showOriginFooter: boolean
 };
 
 const DragStyles = styled('div')(({isDraggingOver}) => ({
@@ -43,14 +39,12 @@ const DragStyles = styled('div')(({isDraggingOver}) => ({
 class DraggableReflectionCard extends Component<Props> {
   render() {
     const {
-      canDrop,
       dndIndex,
-      isOver,
       reflection,
-      meeting
+      meeting,
+      showOriginFooter
     } = this.props;
     const {reflectionId} = reflection;
-    const hovered = isOver && canDrop;
     return (
       <Draggable
         draggableId={reflectionId}
@@ -65,7 +59,7 @@ class DraggableReflectionCard extends Component<Props> {
               {...dragProvided.draggableProps}
               {...dragProvided.dragHandleProps}
             >
-              <ReflectionCard meeting={meeting} reflection={reflection} />
+              <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter={showOriginFooter} />
             </DragStyles>
             {dragProvided.placeholder}
           </React.Fragment>
