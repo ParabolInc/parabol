@@ -9,3 +9,17 @@ export default function makePlaceholderStyles(color) {
     ':-ms-input-placeholder': {color}
   };
 }
+
+export const makePlaceholderStylesString = (color) => `
+  ::placeholder {
+    color: ${color};
+  }
+
+  ::-webkit-input-placeholder {
+    color: ${color};
+  }
+
+  :-ms-input-placeholder {
+    color: ${color};
+  }
+`;
