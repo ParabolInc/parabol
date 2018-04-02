@@ -25,7 +25,7 @@ import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectio
 import deserialize from 'universal/utils/draftjs/deserialize';
 import serialize from 'universal/utils/draftjs/serialize';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import ui from 'universal/styles/ui';
+import {LabelHeading} from 'universal/components';
 
 // Helpers
 
@@ -95,16 +95,12 @@ const ReflectionsArea = styled('div')({
 });
 
 const TypeDescription = styled('div')({
-  fontSize: '1.2rem',
-  fontWeight: 'bold'
+  fontSize: '1.25rem',
+  fontWeight: 600
 });
 
 const TypeHeader = styled('div')({
   marginBottom: '2rem'
-});
-
-const TypeTitle = styled('div')({
-  color: ui.labelHeadingColor
 });
 
 type Props = {
@@ -117,7 +113,7 @@ const ReflectionPhaseColumn = ({atmosphere, team: {newMeeting}, retroPhaseItem}:
   newMeeting && (
     <ColumnWrapper>
       <TypeHeader>
-        <TypeTitle>{retroPhaseItem.title.toUpperCase()}</TypeTitle>
+        <LabelHeading>{retroPhaseItem.title.toUpperCase()}</LabelHeading>
         <TypeDescription>{retroPhaseItem.question}</TypeDescription>
       </TypeHeader>
       <ReflectionsArea>

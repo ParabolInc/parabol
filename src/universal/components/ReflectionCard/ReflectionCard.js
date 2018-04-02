@@ -57,13 +57,13 @@ type DnDStylesWrapperProps = {
   iAmDragging?: boolean
 };
 
-const BottomBar = styled('div')({
+const CardLabel = styled('div')({
   alignItems: 'flex-start',
-  color: appTheme.palette.mid,
+  color: ui.palette.midGray,
   display: 'flex',
-  fontSize: '0.9rem',
+  fontSize: '.8125rem',
   justifyContent: 'space-between',
-  padding: '0.4rem 0.8rem'
+  padding: '0 .75rem .5rem'
 });
 
 const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperProps) => ({
@@ -139,7 +139,7 @@ export default class ReflectionCard extends Component<Props, State> {
 
   maybeRenderReflectionPhaseQuestion = () => {
     const {isCollapsed, reflectionPhaseQuestion} = this.props;
-    return !isCollapsed && reflectionPhaseQuestion && <BottomBar>{reflectionPhaseQuestion}</BottomBar>;
+    return !isCollapsed && reflectionPhaseQuestion && <CardLabel>{reflectionPhaseQuestion}</CardLabel>;
   };
 
   maybeRenderUserDragging = () => {
@@ -169,7 +169,7 @@ export default class ReflectionCard extends Component<Props, State> {
     const styles: Object = {
       maxHeight: '10rem',
       overflow: 'auto',
-      padding: '0.8rem'
+      padding: '.75rem'
     };
     if (isCollapsed) {
       styles.height = `${ui.retroCardCollapsedHeightRem}rem`;
