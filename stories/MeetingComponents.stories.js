@@ -65,6 +65,45 @@ storiesOf('Meeting Components', module)
       />
     </RetroBackground>
   ))
+  .add('Retro Theme Heading', () => (
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
+          <div>
+            <LabelHeading>{'Theme'}</LabelHeading>
+            <MeetingPhaseHeading>{'Group by Theme'}</MeetingPhaseHeading>
+            <MeetingCopy margin="0">{'Drag cards to group by common themes'}</MeetingCopy>
+          </div>
+        )}
+      />
+    </RetroBackground>
+  ))
+  .add('Retro Vote Heading', () => (
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
+          <div>
+            <LabelHeading>{'Vote'}</LabelHeading>
+            <MeetingPhaseHeading>{'Vote'}</MeetingPhaseHeading>
+            <MeetingCopy margin="0">{'Vote on the themes you want to discuss'}</MeetingCopy>
+          </div>
+        )}
+      />
+    </RetroBackground>
+  ))
+  .add('Retro Discuss Heading', () => (
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
+          <div>
+            <LabelHeading>{'Discuss'}</LabelHeading>
+            <MeetingPhaseHeading>{'What might we do differently next time?'}</MeetingPhaseHeading>
+            <MeetingCopy margin="0">{'Create takeaway task cards to capture next steps'}</MeetingCopy>
+          </div>
+        )}
+      />
+    </RetroBackground>
+  ))
   .add('Meeting Control Bar Example', () => (
     <RetroBackground>
       <StoryContainer

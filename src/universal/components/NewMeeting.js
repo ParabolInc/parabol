@@ -52,10 +52,9 @@ const MeetingAreaHeader = styled('div')({
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'space-between',
-  margin: '1rem 0',
+  margin: 0,
   maxWidth: '100%',
-  overflow: 'hidden',
-  padding: '0 1rem',
+  padding: '1rem',
   width: '100%'
 });
 
