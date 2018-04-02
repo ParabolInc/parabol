@@ -7,7 +7,7 @@ import sanitizeAnalyzedEntitiesResponse from 'server/graphql/mutations/helpers/a
 const addEntitiesToReflections = async (meetingId) => {
   const r = getRethink();
   const reflections = await r.table('RetroReflection')
-    .getAll(meetingId, {index: meetingId})
+    .getAll(meetingId, {index: 'meetingId'})
     .filter((reflection) => {
       return r.and(
         reflection('isActive').eq(true),

@@ -65,10 +65,10 @@ class ReflectionPhaseColumn extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {meeting: {reflectionGroups: nextReflectionGroups}, retroPhaseItem: {retroPhaseItemId}} = nextProps;
     if (nextReflectionGroups === prevState.reflectionGroups) return null;
+    const reflectionGroups = nextReflectionGroups || [];
     return {
-      reflectionGroups: nextReflectionGroups || [],
-      columnReflectionGroups: nextReflectionGroups
-        .filter((group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0)
+      reflectionGroups,
+      columnReflectionGroups: reflectionGroups.filter((group) => group.retroPhaseItemId === retroPhaseItemId)
     };
   }
 
@@ -81,45 +81,41 @@ class ReflectionPhaseColumn extends Component<Props, State> {
     const {meeting, retroPhaseItem} = this.props;
     const {columnReflectionGroups} = this.state;
     const {localPhase: {phaseType}} = meeting;
-    const {retroPhaseItemId, title, question} = retroPhaseItem;
+    const {title, question} = retroPhaseItem;
     return (
-      <Droppable droppableId={retroPhaseItemId} type={RETRO_PHASE_ITEM}>
-        {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-          <ColumnWrapper innerRef={dropProvided.innerRef}>
-            <TypeHeader>
-              <TypeTitle>{title.toUpperCase()}</TypeTitle>
-              <TypeDescription>{question}</TypeDescription>
-            </TypeHeader>
-            <ReflectionsArea>
-              {columnReflectionGroups.map((group) => {
-                if (phaseType === REFLECT) {
-                  return group.reflections.map((reflection) => {
-                    return (
-                      <ColumnChild key={reflection.id}>
-                        {reflection.isViewerCreator ?
-                          <ReflectionCard meeting={meeting} reflection={reflection} /> :
-                          <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
-                        }
-                      </ColumnChild>
-                    );
-                  });
-                }
+      <ColumnWrapper>
+        <TypeHeader>
+          <TypeTitle>{title.toUpperCase()}</TypeTitle>
+          <TypeDescription>{question}</TypeDescription>
+        </TypeHeader>
+        <ReflectionsArea>
+          {columnReflectionGroups.map((group) => {
+            if (phaseType === REFLECT) {
+              return group.reflections.map((reflection) => {
                 return (
-                  <ColumnChild key={group.id}>
-                    <ReflectionGroup reflectionGroup={group} meeting={meeting} />
+                  <ColumnChild key={reflection.id}>
+                    {reflection.isViewerCreator ?
+                      <ReflectionCard meeting={meeting} reflection={reflection} /> :
+                      <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
+                    }
                   </ColumnChild>
-                );
-              })}
-              {phaseType === REFLECT &&
-              <ColumnChild>
-                <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
-              </ColumnChild>
-              }
-            </ReflectionsArea>
-          </ColumnWrapper>
-        )}
-
-      </Droppable>
+                )
+              })
+            } else {
+              return (
+                <ColumnChild key={group.id}>
+                  <ReflectionGroup reflectionGroup={group} />
+                </ColumnChild>
+              )
+            }
+          })}
+          {phaseType === REFLECT &&
+          <ColumnChild>
+            <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+          </ColumnChild>
+          }
+        </ReflectionsArea>
+      </ColumnWrapper>
     );
   }
 }
@@ -153,6 +149,7 @@ export default createFragmentContainer(
         reflections {
           ...AnonymousReflectionCard_reflection
           ...ReflectionCard_reflection
+          reflectionGroupId # required for optimistic updates
           content
           id
           isEditing

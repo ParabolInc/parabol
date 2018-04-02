@@ -7,8 +7,6 @@
 // $FlowFixMe
 import {ContentState, EditorState, SelectionState} from 'draft-js';
 import React, {Component} from 'react';
-
-import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 import {createFragmentContainer} from 'react-relay';
 
 import type {AnonymousReflectionCard_reflection as Reflection} from './__generated__/AnonymousReflectionCard_reflection.graphql';
@@ -92,11 +90,7 @@ class AnonymousReflectionCard extends Component<Props, State> {
   render() {
     const {editorState, isBlurred} = this.state;
     const {meeting: {teamId}} = this.props;
-    return (
-      <ReflectionCardWrapper>
-        <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
-      </ReflectionCardWrapper>
-    );
+    return <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />;
   }
 }
 

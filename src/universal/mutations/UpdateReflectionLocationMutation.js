@@ -53,7 +53,7 @@ const mutation = graphql`
 `;
 
 const handleRemoveReflectionFromGroup = (reflectionId, reflectionGroupId, store) => {
-  const reflectionGroup = store.getLinkedRecord(reflectionGroupId);
+  const reflectionGroup = store.get(reflectionGroupId);
   if (!reflectionGroup) return;
   safeRemoveNodeFromArray(reflectionId, reflectionGroup, 'reflections');
 };
@@ -81,9 +81,14 @@ export const updateReflectionLocationTeamUpdater = (payload, store) => {
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store);
 };
 
+type Context = {
+  meetingId: string
+};
+
 const UpdateReflectionLocationMutation = (
   environment: Object,
   variables: Variables,
+  context: Context,
   onError?: ErrorHandler,
   onCompleted?: CompletedHandler
 ) => {
@@ -100,7 +105,7 @@ const UpdateReflectionLocationMutation = (
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON();
       const {reflectionId, reflectionGroupId, retroPhaseItemId, sortOrder} = variables;
-
+      const {meetingId} = context;
       // move an entire group somewhere else
       if (!reflectionId) {
         const reflectionGroupProxy = store.get(reflectionGroupId);
@@ -111,10 +116,8 @@ const UpdateReflectionLocationMutation = (
 
       const reflectionProxy = store.get(reflectionId);
       const oldReflectionGroupId = reflectionProxy.getValue('reflectionGroupId');
-      const oldReflectionGroupProxy = store.get(oldReflectionGroupId);
-      const meetingId = oldReflectionGroupProxy.getValue('meetingId');
       const meeting = store.get(meetingId);
-      let reflectionGroupProxy;
+      let reflectionGroupProxy = store.get(reflectionGroupId);
       // move a reflection into its own group
       if (reflectionGroupId === null) {
         updateProxyRecord(reflectionProxy, {sortOrder: 0, retroPhaseItemId});
@@ -142,7 +145,6 @@ const UpdateReflectionLocationMutation = (
       } else {
         // move a card into another group
         updateProxyRecord(reflectionProxy, {sortOrder, reflectionGroupId, retroPhaseItemId});
-        reflectionGroupProxy = store.get(reflectionGroupId);
         const phaseItemProxy = store.get(retroPhaseItemId);
         reflectionProxy.setLinkedRecord(phaseItemProxy, 'phaseItem');
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup');

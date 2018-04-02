@@ -84,8 +84,8 @@ class ReflectionGroup extends Component<Props, State> {
   maxCollapsedItems = 4;
 
   toggleExpanded = () => {
-    const {reflectionGroup: {reflections}} = this.props;
-    if (reflections.length === 0) return;
+    const {isDraggingOver, reflectionGroup: {reflections}} = this.props;
+    if (isDraggingOver || reflections.length === 0) return;
     this.setState({isExpanded: !this.state.isExpanded});
   }
 

@@ -44,7 +44,9 @@ const RetroReflectionGroup = new GraphQLObjectType({
       resolve: async ({id: reflectionGroupId, meetingId}, args, {dataLoader}) => {
         // use meetingId so we only hit the DB once instead of once per group
         const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId);
-        return reflections.filter((reflection) => reflection.reflectionGroupId === reflectionGroupId);
+        const filteredReflections = reflections.filter((reflection) => reflection.reflectionGroupId === reflectionGroupId);
+        filteredReflections.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
+        return filteredReflections;
       }
     },
     retroPhaseItemId: {

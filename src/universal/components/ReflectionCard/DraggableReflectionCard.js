@@ -14,6 +14,7 @@ import styled from 'react-emotion';
 import type {DraggableReflectionCard_reflection as Reflection} from './__generated__/DraggableReflectionCard_reflection.graphql';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {Draggable} from 'react-beautiful-dnd';
+import type {DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd/src/index';
 
 type DragItem = {
   reflection: Reflection
@@ -34,8 +35,8 @@ type Props = {
   reflection: Reflection
 };
 
-const DragStyles = styled('div')(({isOver, canDrop}) => ({
-  backgroundColor: isOver && canDrop ? '#f8f7fa' : '#FFF'
+const DragStyles = styled('div')(({isDraggingOver}) => ({
+  backgroundColor: isDraggingOver ? '#f8f7fa' : '#FFF'
   // display: 'inline-block'
 }));
 
@@ -60,14 +61,17 @@ class DraggableReflectionCard extends Component<Props> {
         index={dndIndex}
       >
         {(dragProvided, dragSnapshot) => (
+          <React.Fragment>
             <DragStyles
-              isOver={dragSnapshot.isDraggingOver}
+              isDraggingOver={dragSnapshot.isDraggingOver}
               innerRef={dragProvided.innerRef}
               {...dragProvided.draggableProps}
               {...dragProvided.dragHandleProps}
             >
               <ReflectionCard hovered={hovered} meeting={meeting} reflection={reflection} />
             </DragStyles>
+            {dragProvided.placeholder}
+          </React.Fragment>
         )}
       </Draggable>
       // isOver && canDrop ? (

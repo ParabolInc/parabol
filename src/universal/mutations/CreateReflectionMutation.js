@@ -74,7 +74,9 @@ const CreateReflectionMutation = (atmosphere, variables, context, onError, onCom
       };
       const meeting = store.get(meetingId);
       const reflectionNode = createProxyRecord(store, 'RetroReflection', optimisticReflection);
+      const phaseItem = store.get(input.retroPhaseItemId);
       reflectionNode.setLinkedRecord(meeting, 'meeting');
+      reflectionNode.setLinkedRecord(phaseItem, 'phaseItem');
       const reflectionGroupNode = createProxyRecord(store, 'RetroReflectionGroup', optimisticGroup);
       reflectionGroupNode.setLinkedRecords([reflectionNode], 'reflections');
       reflectionGroupNode.setLinkedRecord(meeting, 'meeting');

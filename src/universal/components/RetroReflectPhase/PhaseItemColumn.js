@@ -12,15 +12,14 @@ import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
 
 import AddReflectionButton from 'universal/components/AddReflectionButton/AddReflectionButton';
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
-import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ui from 'universal/styles/ui';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
-import {REFLECT, REFLECTION_CARD, REFLECTION_GROUP, RETRO_PHASE_ITEM} from 'universal/utils/constants';
+import {REFLECT, REFLECTION_CARD, RETRO_PHASE_ITEM} from 'universal/utils/constants';
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
-import type {DraggableLocation, DragStart, DroppableProvided, DroppableStateSnapshot, DropResult} from 'react-beautiful-dnd';
-import {Draggable, Droppable} from 'react-beautiful-dnd';
+import type {DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd/src/index';
+
+import {Droppable} from 'react-beautiful-dnd';
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -48,10 +47,15 @@ const TypeTitle = styled('div')({
   color: ui.labelHeadingColor
 });
 
-const ColumnChild = styled('div')({
-  display: 'inline-block',
-  margin: '0.7rem 0.7rem 0 0'
-});
+const ColumnChild = styled('div')(
+  {
+    display: 'inline-block',
+    margin: '0.7rem 0.7rem 0 0'
+  },
+  ({isDraggingOver}) => ({
+    background: isDraggingOver && 'blue'
+  })
+);
 
 type Props = {
   atmosphere: Object,
@@ -87,40 +91,30 @@ class PhaseItemColumn extends Component<Props, State> {
     const {retroPhaseItemId, title, question} = retroPhaseItem;
     return (
       <Droppable droppableId={retroPhaseItemId} type={RETRO_PHASE_ITEM}>
-        {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-          <ColumnWrapper innerRef={dropProvided.innerRef}>
+        {(columnDropProvided: DroppableProvided, columnDropSnapshot: DroppableStateSnapshot) => (
+          <ColumnWrapper innerRef={columnDropProvided.innerRef}>
+            {columnDropProvided.placeholder}
             <TypeHeader>
               <TypeTitle>{title.toUpperCase()}</TypeTitle>
               <TypeDescription>{question}</TypeDescription>
             </TypeHeader>
             <ReflectionsArea>
               {columnReflectionGroups.map((group, idx) => {
-                if (phaseType === REFLECT) {
-                  return group.reflections.map((reflection) => {
-                    return (
-                      <ColumnChild key={reflection.id}>
-                        {reflection.isViewerCreator ?
-                          <ReflectionCard meeting={meeting} reflection={reflection} /> :
-                          <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
-                        }
-                      </ColumnChild>
-                    );
-                  });
-                }
                 return (
                   <Droppable
                     key={group.id}
                     droppableId={group.id}
                     type={REFLECTION_CARD}
                   >
-                    {(dragProvided, dragSnapshot) => (
+                    {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
                       <div>
                         <ColumnChild
-                          innerRef={dragProvided.innerRef}
-                          {...dragProvided.draggableProps}
-                          {...dragProvided.dragHandleProps}
+                          innerRef={dropProvided.innerRef}
+                          isDraggingOver={dropSnapshot.isDraggingOver}
+                          {...dropProvided.droppableProps}
                         >
-                          <ReflectionGroup reflectionGroup={group} meeting={meeting} />
+                          <ReflectionGroup reflectionGroup={group} meeting={meeting} isDraggingOver={dropSnapshot.isDraggingOver} />
+                          {dropProvided.placeholder}
                         </ColumnChild>
                       </div>
                     )}

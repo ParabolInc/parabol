@@ -49,10 +49,17 @@ const codeBlock = css({
 
 const EditorStyles = styled('div')(
   {
+    backgroundColor: '#fff',
+    borderRadius: ui.cardBorderRadius,
+    boxShadow: ui.cardBoxShadow,
+    color: appTheme.palette.dark,
     fontSize: ui.cardContentFontSize,
     lineHeight: ui.cardContentLineHeight,
     maxHeight: '10rem',
-    overflow: 'auto'
+    minHeight: '1rem',
+    overflow: 'auto',
+    position: 'relative',
+    width: ui.retroCardWidth
   },
   ({isCollapsed}) => isCollapsed && ({
     height: `${ui.retroCardCollapsedHeightRem}rem`,

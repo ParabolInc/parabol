@@ -10,6 +10,9 @@ import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemCol
 import {createFragmentContainer} from 'react-relay';
 import type {DraggableLocation, DragStart, DroppableProvided, DropResult} from 'react-beautiful-dnd';
 import {DragDropContext} from 'react-beautiful-dnd';
+import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import dndNoise from 'universal/utils/dndNoise';
 
 const {Component} = React;
 
@@ -42,19 +45,39 @@ class RetroGroupPhase extends Component<Props, State> {
   onDragEnd = (result: DropResult) => {
     // publishOnDragEnd(result);
     console.log('drag end', result.type, result);
-    const {draggableId, type, source, destination} = result;
+    const {draggableId: reflectionId, type, source, destination} = result;
 
     // dropped nowhere
     if (!destination) return;
 
     // did not move anywhere - can bail early
-    if (source.droppableId === destination.droppableId &&
-      source.index === destination.index) {
+    const inSameGroup = source.droppableId === destination.droppableId;
+    if (inSameGroup && source.index === destination.index) {
       return;
     }
 
+    const {droppableId: reflectionGroupId, index} = destination;
 
-    // UpdateReflectionLocationMutation(atmosphere, )
+    const {atmosphere, team: {newMeeting}} = this.props;
+    const {meetingId} = newMeeting;
+    const reflectionGroups = newMeeting.reflectionGroups || [];
+    const reflectionGroup = reflectionGroups.find((group) => group.id === reflectionGroupId);
+    if (!reflectionGroup) return;
+    const {reflections} = reflectionGroup;
+    let sortOrder;
+    if (index === 0) {
+      sortOrder = reflections[0] ? reflections[0].sortOrder - 1 : 0;
+    } else if (index === reflections.length || (inSameGroup && index === reflections.length -1)) {
+      sortOrder = reflections[reflections.length - 1].sortOrder + 1;
+    } else {
+      sortOrder = (reflections[index - 1].sortOrder + reflections[index].sortOrder) / 2 + dndNoise();
+    }
+    const variables = {
+      reflectionId,
+      reflectionGroupId,
+      sortOrder
+    };
+    UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
 
     // const data = reorderQuoteMap({
     //   quoteMap: this.state.columns,
@@ -87,11 +110,22 @@ class RetroGroupPhase extends Component<Props, State> {
 };
 
 export default createFragmentContainer(
-  RetroGroupPhase,
+  withAtmosphere(RetroGroupPhase),
   graphql`
     fragment RetroGroupPhase_team on Team {
       newMeeting {
+        meetingId: id
         ...PhaseItemColumn_meeting
+        ... on RetrospectiveMeeting {
+          reflectionGroups {
+            id
+            sortOrder
+            reflections {
+              id
+              sortOrder
+            }
+          }
+        }
       }
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {

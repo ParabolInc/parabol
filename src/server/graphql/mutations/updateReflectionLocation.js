@@ -3,7 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import {isTeamMember} from 'server/utils/authorization';
 import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
-import {sendPhaseItemNotFoundError, sendReflectionGroupNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
+import {
+  sendPhaseItemNotFoundError, sendReflectionGroupNotFoundError, sendReflectionNotFoundError,
+  sendRetroPhaseItemIdNotExpectedError
+} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
 import {GROUP, TEAM} from 'universal/utils/constants';
@@ -58,12 +61,10 @@ export default {
     const subOptions = {operationId, mutatorId};
 
     // AUTH
-    if (!reflectionId) {
-      if (!reflectionGroupId) {
-        return sendReflectionNotFoundError(authToken, reflectionId);
-      }
+    if (!reflectionId && !reflectionGroupId) return sendReflectionNotFoundError(authToken, reflectionId);
+    if (reflectionId && retroPhaseItemId) return sendRetroPhaseItemIdNotExpectedError(authToken, reflectionId);
+    if (reflectionGroupId === null && !retroPhaseItemId) return sendReflectionGroupNotFoundError(authToken, null);
 
-    }
     const reflection = reflectionId && await r.table('RetroReflection').get(reflectionId);
     const reflectionGroup = reflectionGroupId && await dataLoader.get('retroReflectionGroups').load(reflectionGroupId);
     if (!reflection && !reflectionGroup) return sendReflectionNotFoundError(authToken, reflectionId);
@@ -73,7 +74,8 @@ export default {
     const {endedAt, phases, teamId} = meeting;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
+    // TODO uncomment in prod
+    // if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
 
     // VALIDATION
     if (retroPhaseItemId) {
@@ -96,7 +98,7 @@ export default {
       await r.table('RetroReflectionGroup')
         .get(reflectionGroupId)
         .update({
-          retroPhaseItemId,
+          retroPhaseItemId: retroPhaseItemId || undefined,
           sortOrder,
           updatedAt: now
         });

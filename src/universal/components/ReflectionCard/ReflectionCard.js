@@ -4,10 +4,9 @@
  * @flow
  */
 // $FlowFixMe
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import {convertFromRaw, convertToRaw, ContentState, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled, {css} from 'react-emotion';
-import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import appTheme from 'universal/styles/theme/appTheme';
 
@@ -51,12 +50,6 @@ type State = {
   getEditorState: () => EditorState
 };
 
-type DnDStylesWrapperProps = {
-  hovered?: boolean,
-  pulled?: boolean,
-  iAmDragging?: boolean
-};
-
 const BottomBar = styled('div')({
   alignItems: 'flex-start',
   color: appTheme.palette.mid,
@@ -73,9 +66,11 @@ const DnDStylesWrapper = styled('div')(({pulled, iAmDragging}: DnDStylesWrapperP
 class ReflectionCard extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflection} = nextProps;
-    const {content} = reflection;
+    const {content, reflectionId, reflectionGroupId, sortOrder} = reflection;
     if (content === prevState.content) return null;
-    const contentState = convertFromRaw(JSON.parse(content));
+    // const contentState = convertFromRaw(JSON.parse(content));
+    const DEBUG_TEXT = `ReflID: ${reflectionId} | GroupId: ${reflectionGroupId} | Sort: ${sortOrder}`;
+    const contentState = ContentState.createFromText(DEBUG_TEXT);
     return {
       content,
       editorState: EditorState.createWithContent(contentState, editorDecorators(prevState.getEditorState))
@@ -147,28 +142,22 @@ class ReflectionCard extends Component<Props, State> {
     const {isViewerCreator} = reflection;
     const canDelete = isViewerCreator && phaseType === REFLECT;
     return (
-      <DnDStylesWrapper pulled={pulled} iAmDragging={iAmDragging}>
+      <React.Fragment>
         {this.maybeRenderUserDragging()}
-        <ReflectionCardWrapper
-          holdingPlace={holdingPlace}
-          hoveringOver={hovered}
-          pulled={pulled}
-        >
-          <ReflectionEditorWrapper
-            ariaLabel="Edit this reflection"
-            editorState={editorState}
-            isCollapsed={isCollapsed}
-            onBlur={this.handleEditorBlur}
-            onFocus={this.handleEditorFocus}
-            placeholder="My reflection thought..."
-            readOnly={phaseType !== REFLECT}
-            setEditorState={this.setEditorState}
-            teamId={teamId}
-          />
-          {this.maybeRenderReflectionPhaseQuestion()}
-          <ReflectionCardDeleteButton canDelete={canDelete} meeting={meeting} reflection={reflection} />
-        </ReflectionCardWrapper>
-      </DnDStylesWrapper>
+        <ReflectionEditorWrapper
+          ariaLabel="Edit this reflection"
+          editorState={editorState}
+          isCollapsed={isCollapsed}
+          onBlur={this.handleEditorBlur}
+          onFocus={this.handleEditorFocus}
+          placeholder="My reflection thought..."
+          readOnly={phaseType !== REFLECT}
+          setEditorState={this.setEditorState}
+          teamId={teamId}
+        />
+        {this.maybeRenderReflectionPhaseQuestion()}
+        <ReflectionCardDeleteButton canDelete={canDelete} meeting={meeting} reflection={reflection} />
+      </React.Fragment>
     );
   }
 }
@@ -188,11 +177,13 @@ export default createFragmentContainer(
     }
     fragment ReflectionCard_reflection on RetroReflection {
       reflectionId: id
+      reflectionGroupId
       content
       isViewerCreator
       phaseItem {
         question
       }
+      sortOrder
       ...ReflectionCardDeleteButton_reflection
     }
   `

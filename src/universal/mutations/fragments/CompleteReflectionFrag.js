@@ -5,9 +5,11 @@ graphql`
     editorIds
     isViewerCreator
     meetingId
+    reflectionGroupId
     retroPhaseItemId
     sortOrder
     phaseItem {
+      title
       question
     }
   }
