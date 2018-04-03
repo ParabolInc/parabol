@@ -1,72 +1,85 @@
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
+import {makePlaceholderStylesString} from 'universal/styles/helpers/makePlaceholderStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import fontLoader from 'universal/styles/theme/fontLoader';
 import ui from 'universal/styles/ui';
 
-const placeholder = makePlaceholderStyles(ui.placeholderColor);
+const placeholderStyles = makePlaceholderStylesString(ui.placeholderColor);
 
-export default {
-  '*': {
-    boxSizing: 'border-box'
-  },
+const fontFaceDefinitions = fontLoader
+  .map((fontFace) => `
+    @font-face {
+      font-family: "${fontFace.fontFamily}";
+      src: ${fontFace.src};
+      font-style: ${fontFace.fontStyle};
+      font-weight: ${fontFace.fontWeight};
+      font-stretch: ${fontFace.fontStretch};
+    }
+  `)
+  .join('\n');
 
-  '*::before, *::after': {
-    boxSizing: 'border-box'
-  },
+export default `
+  * {
+    box-sizing: border-box;
+  }
 
-  html: {
-    fontSize: '16px',
-    fontFamily: fontLoader
-  },
+  *::before, *::after {
+    box-sizing: border-box;
+  }
 
-  body: {
-    color: ui.colorText,
-    fontFamily: appTheme.typography.sansSerif,
-    '-moz-osx-font-smoothing': 'grayscale',
-    '-webkit-font-smoothing': 'antialiased',
-    fontSize: '16px',
-    fontWeight: '400',
-    lineHeight: 'normal',
-    margin: 0,
-    padding: 0
-  },
+  html {
+    font-size: 16px;
+  }
 
-  a: {
-    color: ui.linkColor,
-    textDecoration: 'none'
-  },
+  body {
+    color: ${ui.colorText};
+    font-family: ${appTheme.typography.sansSerif};
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: normal;
+    margin: 0;
+    padding: 0;
+  }
 
-  'a:hover, a:focus': {
-    color: ui.linkColorHover,
-    textDecoration: 'none'
-  },
+  a {
+    color: ${ui.linkColor};
+    text-decoration: none;
+  }
 
-  input: {
-    fontFamily: appTheme.typography.sansSerif,
-    '-moz-osx-font-smoothing': 'grayscale',
-    '-webkit-font-smoothing': 'antialiased'
-  },
+  a:hover, a:focus {
+    color: ${ui.linkColorHover};
+    text-decoration: none;
+  }
 
-  img: {
-    maxWidth: '100%'
-  },
+  input {
+    font-family: ${appTheme.typography.sansSerif};
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+  }
 
-  p: {
-    margin: '0'
-  },
+  img {
+    max-width: 100%;
+  }
 
-  pre: {
-    maxWidth: '100%',
-    overflow: 'auto'
-  },
+  p {
+    margin: 0;
+  }
 
-  b: {
-    fontWeight: 600
-  },
+  pre {
+    max-width: 100%;
+    overflow: auto;
+  }
 
-  strong: {
-    fontWeight: 600
-  },
+  b {
+    font-weight: 600;
+  }
 
-  ...placeholder
-};
+  strong {
+    font-weight: 600;
+  }
+
+  ${placeholderStyles}
+
+  ${fontFaceDefinitions}
+`;

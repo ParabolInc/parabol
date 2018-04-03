@@ -1,8 +1,8 @@
+import {injectGlobal} from 'react-emotion';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import Action from 'universal/components/Action/Action';
-import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 
 const analytics = {
@@ -32,7 +32,7 @@ export default class ActionContainer extends Component {
   }
 
   componentWillMount() {
-    injectGlobals(globalStyles);
+    injectGlobal(globalStyles);
   }
 
   componentWillReceiveProps() {

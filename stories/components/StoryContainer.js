@@ -10,12 +10,11 @@ import React, {Component} from 'react';
 // $FlowFixMe
 import {DragDropContextProvider} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import styled, {css} from 'react-emotion';
+import styled, {css, injectGlobal} from 'react-emotion';
 import {Provider} from 'react-redux';
 import {createStore, combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
 
-import injectGlobals from 'universal/styles/hepha';
 import appTheme from 'universal/styles/theme/appTheme';
 import globalStyles from 'universal/styles/theme/globalStyles';
 
@@ -27,6 +26,9 @@ type Props = {
 };
 
 const FullPageWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  flexShrink: 0,
   height: '100vh',
   padding: '1rem',
   width: '100vw'
@@ -40,7 +42,7 @@ const store = createStore(rootReducer);
 
 export default class StoryContainer extends Component<Props> {
   componentWillMount() {
-    injectGlobals(globalStyles);
+    injectGlobal(globalStyles);
   }
 
   maybeRenderDescription = () => {

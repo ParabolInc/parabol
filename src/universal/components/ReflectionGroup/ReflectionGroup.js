@@ -99,7 +99,7 @@ class ReflectionGroup extends Component<Props, State> {
           title={title}
           onSubmit={({title: newTitle}) => handleSaveTitle(newTitle)}
         />
-        <div className={css({marginLeft: '1rem', fontWeight: 'bold'})}>{reflections.length}</div>
+        <div className={css({marginLeft: '1rem', fontWeight: 600})}>{reflections.length}</div>
       </div>
     );
   };
