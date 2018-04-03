@@ -82,7 +82,7 @@ const questions = [
   'What are your plans for the weekend?',
   'Heard any good tips lately?'
 ];
-  
+
 export const makeCheckinGreeting = (week, seedId = '') => {
   const seed = seedId.charCodeAt(0);
   const idx = (seed + week) % greetings.length;
