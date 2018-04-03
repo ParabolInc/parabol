@@ -1,16 +1,12 @@
-/**
+/*
  * Stories for the Retro Summary
  *
  * @flow
  */
 import React from 'react';
-
 import {storiesOf} from '@storybook/react';
-
-import Grid from './components/Grid';
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
-
 import RetroDiscussionTopics from 'universal/modules/email/components/RetroDiscussionTopics/RetroDiscussionTopics';
 
 const exampleTopic = {

@@ -124,11 +124,11 @@ const RetroDiscussionTopics = (props) => {
 };
 
 RetroDiscussionTopics.propTypes = {
-  topics: PropTypes.array,
   imageSource: PropTypes.oneOf([
     'local',
     'static'
-  ])
+  ]),
+  topics: PropTypes.array
 };
 
 export default RetroDiscussionTopics;
