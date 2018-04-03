@@ -16,10 +16,6 @@ const greetings = [
     language: 'Italian'
   },
   {
-    content: 'Namaste',
-    language: 'Hindi'
-  },
-  {
     content: 'Jambo',
     language: 'Swahili'
   },
@@ -80,9 +76,13 @@ const questions = [
   'If you had an expert personal assistant today, what would you have them do?',
   'What’s something about the next teammate that you appreciate?',
   '“Show & Tell” something in the room that you really like.',
-  'What’s got your attention today?'
+  'What’s got your attention today?',
+  'What was your favorite recent book or article?',
+  'What music have you enjoyed recently?',
+  'What are your plans for the weekend?',
+  'Heard any good tips lately?'
 ];
-
+  
 export const makeCheckinGreeting = (week, seedId = '') => {
   const seed = seedId.charCodeAt(0);
   const idx = (seed + week) % greetings.length;
