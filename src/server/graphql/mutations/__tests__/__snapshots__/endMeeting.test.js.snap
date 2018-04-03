@@ -206,10 +206,10 @@ Object {
   "team": Object {
     "activeFacilitator": null,
     "checkInGreeting": Object {
-      "content": "Shalom",
-      "language": "Hebrew",
+      "content": "Hallo",
+      "language": "German",
     },
-    "checkInQuestion": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What’s something new or interesting you’ve learned recently?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
+    "checkInQuestion": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What’s something about the next teammate that you appreciate?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,
@@ -565,10 +565,10 @@ Object {
   "team": Object {
     "activeFacilitator": null,
     "checkInGreeting": Object {
-      "content": "Shalom",
-      "language": "Hebrew",
+      "content": "Hallo",
+      "language": "German",
     },
-    "checkInQuestion": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What’s something new or interesting you’ve learned recently?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
+    "checkInQuestion": "{\\"blocks\\":[{\\"key\\":0,\\"text\\":\\"What’s something about the next teammate that you appreciate?\\",\\"type\\":\\"unstyled\\",\\"depth\\":0,\\"inlineStyleRanges\\":[],\\"entityRanges\\":[],\\"data\\":{}}],\\"entityMap\\":{}}",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,
