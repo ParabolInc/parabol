@@ -9,6 +9,7 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Footer from '../../components/Footer/Footer';
 import Layout from '../../components/Layout/Layout';
 import QuickStats from '../../components/QuickStats/QuickStats';
+import RetroDiscussionTopics from '../../components/RetroDiscussionTopics/RetroDiscussionTopics';
 import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
 import UserTasks from '../UserTasks/UserTasks';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
@@ -246,6 +247,11 @@ const SummaryEmail = (props) => {
               </tr>
             </tbody>
           </table>
+        }
+        {__RELEASE_FLAGS__.retro ?
+        <hr style={ruleStyle} />
+        <EmptySpace height={48} />
+        <RetroDiscussionTopics />
         }
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
