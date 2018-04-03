@@ -33,10 +33,10 @@ export const phaseLabelLookup = {
 };
 
 export const phaseDescriptionLookup = {
-  [REFLECT]: 'Looking back to move forward',
-  [GROUP]: 'Group reflections by common themes',
-  [VOTE]: 'What needs your attention most?',
-  [DISCUSS]: 'What might we do differently next time?'
+  [REFLECT]: 'Add anonymous reflections for each prompt',
+  [GROUP]: 'Drag cards to group by common themes',
+  [VOTE]: 'Vote on the themes you want to discuss',
+  [DISCUSS]: 'Create takeaway task cards to capture next steps'
 };
 
 export const meetingTypeToSlug = {
