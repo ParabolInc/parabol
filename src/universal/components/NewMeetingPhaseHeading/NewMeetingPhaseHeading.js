@@ -12,6 +12,10 @@ import {phaseDescriptionLookup, phaseLabelLookup} from 'universal/utils/meetings
 import {createFragmentContainer} from 'react-relay';
 import type {NewMeetingPhaseHeading_meeting as Meeting} from './__generated__/NewMeetingPhaseHeading_meeting.graphql';
 
+const HeadingBlock = styled('div')({
+  padding: '1rem 0'
+});
+
 const PhaseTitle = styled('h1')({
   fontFamily: appTheme.typography.serif,
   fontSize: '1.5rem',
@@ -37,10 +41,10 @@ const NewMeetingPhaseHeading = (props: Props) => {
   const description = phaseDescriptionLookup[phaseType];
   if (!label || !description) return <div />;
   return (
-    <div>
+    <HeadingBlock>
       <PhaseTitle>{label}</PhaseTitle>
       <PhaseDescription>{description}</PhaseDescription>
-    </div>
+    </HeadingBlock>
   );
 };
 
