@@ -101,6 +101,17 @@ const UpdateReflectionLocationMutation = (
       const payload = store.getRootField('updateReflectionLocation');
       if (!payload) return;
       updateReflectionLocationTeamUpdater(payload, store);
+
+      // only do this for the mutator, don't want unexpected collapses because someone else did something
+      const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id');
+      const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id');
+      if (reflectionGroupId) {
+        store.get(reflectionGroupId).setValue(false, 'isExpanded');
+      }
+      if (oldReflectionGroupId) {
+        store.get(oldReflectionGroupId).setValue(false, 'isExpanded');
+      }
+
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON();

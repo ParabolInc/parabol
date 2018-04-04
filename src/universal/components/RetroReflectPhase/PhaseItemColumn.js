@@ -12,7 +12,7 @@ import styled from 'react-emotion';
 
 import AddReflectionButton from 'universal/components/AddReflectionButton/AddReflectionButton';
 import ui from 'universal/styles/ui';
-import {REFLECT, REFLECTION_CARD} from 'universal/utils/constants';
+import {GROUP, REFLECT, REFLECTION_CARD} from 'universal/utils/constants';
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
 import type {DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd/src/index';
 
@@ -20,24 +20,31 @@ import {Droppable} from 'react-beautiful-dnd';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
+import ReflectionDropZone from 'universal/components/ReflectionDropZone';
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  flex: 1
+  flex: 1,
 });
 
 const ReflectionsArea = styled('div')({
     flexDirection: 'column',
-  // cannot use overflow since react-beautiful-dnd does not use portals.
+    display: 'flex',
+    // cannot use overflow since react-beautiful-dnd does not use portals.
     // overflow: 'auto',
-    height: '100%'
+    height: '100%',
+    minWidth: ui.retroCardWidth
   },
-  ({isDraggingOver}) => ({
-    background: isDraggingOver && 'pink'
-  })
 );
+
+const ReflectionsList = styled('div')({
+  // display: 'flex',
+  // flexDirection: 'column'
+  // display: 'inline-block'
+});
+
 
 const TypeDescription = styled('div')({
   fontSize: '1.2rem',
@@ -53,13 +60,16 @@ const TypeTitle = styled('div')({
 });
 
 const ColumnChild = styled('div')(
-  {
-    display: 'inline-block'
-  },
   ({isDraggingOver}) => ({
-    background: isDraggingOver && 'blue'
+    background: isDraggingOver && 'blue',
+    opacity: isDraggingOver && 0.6
   })
 );
+
+const EntireDropZone = styled('div')({
+  flex: 1,
+  minWidth: '100%'
+});
 
 type Props = {
   atmosphere: Object,
@@ -100,15 +110,15 @@ class PhaseItemColumn extends Component<Props, State> {
           <TypeDescription>{question}</TypeDescription>
         </TypeHeader>
         <ReflectionsArea>
-          {columnReflectionGroups.map((group, idx) => {
-            return (
-              <Droppable
-                key={group.id}
-                droppableId={group.id}
-                type={REFLECTION_CARD}
-              >
-                {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-                  <div>
+          <ReflectionsList>
+            {columnReflectionGroups.map((group, idx) => {
+              return (
+                <Droppable
+                  key={group.id}
+                  droppableId={group.id}
+                  type={REFLECTION_CARD}
+                >
+                  {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
                     <ColumnChild
                       innerRef={dropProvided.innerRef}
                       isDraggingOver={dropSnapshot.isDraggingOver}
@@ -122,11 +132,16 @@ class PhaseItemColumn extends Component<Props, State> {
                       />
                       {dropProvided.placeholder}
                     </ColumnChild>
-                  </div>
-                )}
-              </Droppable>
-            );
-          })}
+                  )}
+                </Droppable>
+              );
+            })}
+          </ReflectionsList>
+          {phaseType === GROUP &&
+          <EntireDropZone>
+            <ReflectionDropZone retroPhaseItemId={retroPhaseItemId} />
+          </EntireDropZone>
+          }
           {phaseType === REFLECT &&
           <ColumnChild>
             <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />

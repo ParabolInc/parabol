@@ -15,3 +15,7 @@ extend type Team {
 extend type Task {
   contentText: String
 }
+
+extend type RetroReflectionGroup {
+  isExpanded: Boolean
+}

@@ -85,7 +85,7 @@ class RetroGroupPhase extends Component<Props, State> {
       reflectionId,
       reflectionGroupId: dropType === 'reflectionGroupId' ? droppableId : null,
       retroPhaseItemId: dropType === 'retroPhaseItemId' ? droppableId : undefined,
-      sortOrder: getSortOrder(index, children, inSameGroup)
+      sortOrder: dropType === 'retroPhaseItemId' ? children.length : getSortOrder(index, children, inSameGroup)
     };
     UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
     // this.setState({

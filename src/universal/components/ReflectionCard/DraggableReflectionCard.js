@@ -23,6 +23,7 @@ const DraggableReflectionCard = (props: Props) => {
   const {
     dndIndex,
     isCollapsed,
+    isExpanded,
     reflection,
     meeting,
     showOriginFooter
@@ -38,7 +39,7 @@ const DraggableReflectionCard = (props: Props) => {
       >
         {(dragProvided, dragSnapshot) => {
           return (
-            <div ref={dragProvided.transformRef}>
+            <div ref={isExpanded ? undefined : dragProvided.transformRef}>
               <div
                 ref={dragProvided.innerRef}
                 {...dragProvided.draggableProps}
