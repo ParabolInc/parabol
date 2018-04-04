@@ -17,7 +17,7 @@ const EditableAvatar = (props) => {
     <div className={avatarBlockStyles}>
       <div className={css(styles.avatarEditOverlay)} onClick={onClick}>
         <FontAwesome name="pencil" />
-        <span>EDIT</span>
+        <span>{'EDIT'}</span>
       </div>
       <div className={css(styles.avatarImgBlock)}>
         <Avatar picture={picture} size="fill" sansRadius={unstyled} sansShadow={unstyled} />
@@ -51,10 +51,10 @@ const styleThunk = (theme, props) => ({
   },
 
   avatarHasPanel: {
-    backgroundColor: '#fff',
-    border: `1px solid ${ui.panelBorderColor}`,
-    padding: '.5rem',
-    borderRadius: props.hasPanel ? borderRadiusPanel : borderRadius
+    backgroundColor: ui.palette.white,
+    boxShadow: ui.panelBoxShadow,
+    borderRadius: props.hasPanel ? borderRadiusPanel : borderRadius,
+    padding: '.5rem'
   },
 
   avatarEditOverlay: {
@@ -69,10 +69,10 @@ const styleThunk = (theme, props) => ({
     fontWeight: 600,
     height: props.size,
     justifyContent: 'center',
-    left: props.hasPanel ? '-1px' : 0,
+    left: props.hasPanel ? '-.0625rem' : 0,
     opacity: 0,
     position: 'absolute',
-    top: props.hasPanel ? '-1px' : 0,
+    top: props.hasPanel ? '-.0625rem' : 0,
     width: props.size,
     zIndex: 200,
 

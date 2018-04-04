@@ -50,12 +50,13 @@ const {midGray} = appTheme.brand.primary;
 const {red, rose, green} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
+// Border radius ratio: powers of 2
 // Small border radius for controls (inputs, buttons, etcs.)
-const borderRadiusSmall = '.125rem';
+const borderRadiusSmall = '.125rem'; // 2px
 // Medium border radius for grouped components (cards, panels, etc.)
-const borderRadiusMedium = '.25rem';
+const borderRadiusMedium = '.25rem'; // 4px
 // Large border radius for larger components (modals, pages, etc.)
-const borderRadiusLarge = '.5rem';
+const borderRadiusLarge = '.5rem'; // 8px
 
 // Buttons
 const BUTTON_SIZE_SMALL = CONTROL_SIZE_SMALL;
@@ -579,7 +580,6 @@ const ui = {
   // Panels
   // ---------------------------------------------------------------------------
   panelBoxShadow: shadow[0], // based on dark palette color
-  panelBorderColor: appTheme.palette.mid50l,
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
