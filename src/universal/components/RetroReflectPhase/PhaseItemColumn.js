@@ -9,17 +9,17 @@ import type {PhaseItemColumn_retroPhaseItem as RetroPhaseItem} from './__generat
 // $FlowFixMe
 import React, {Component} from 'react';
 import styled from 'react-emotion';
-import {createFragmentContainer} from 'react-relay';
 
 import AddReflectionButton from 'universal/components/AddReflectionButton/AddReflectionButton';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ui from 'universal/styles/ui';
-import reactLifecyclesCompat from 'react-lifecycles-compat';
-import {REFLECT, REFLECTION_CARD, RETRO_PHASE_ITEM} from 'universal/utils/constants';
+import {REFLECT, REFLECTION_CARD} from 'universal/utils/constants';
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
 import type {DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd/src/index';
 
 import {Droppable} from 'react-beautiful-dnd';
+import {createFragmentContainer} from 'react-relay';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import reactLifecyclesCompat from 'react-lifecycles-compat';
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -29,10 +29,15 @@ const ColumnWrapper = styled('div')({
 });
 
 const ReflectionsArea = styled('div')({
-  flexDirection: 'column',
-  overflow: 'auto',
-  height: '100%'
-});
+    flexDirection: 'column',
+  // cannot use overflow since react-beautiful-dnd does not use portals.
+    // overflow: 'auto',
+    height: '100%'
+  },
+  ({isDraggingOver}) => ({
+    background: isDraggingOver && 'pink'
+  })
+);
 
 const TypeDescription = styled('div')({
   fontSize: '1.2rem',
@@ -49,7 +54,7 @@ const TypeTitle = styled('div')({
 
 const ColumnChild = styled('div')(
   {
-    display: 'inline-block',
+    display: 'inline-block'
   },
   ({isDraggingOver}) => ({
     background: isDraggingOver && 'blue'
@@ -89,51 +94,46 @@ class PhaseItemColumn extends Component<Props, State> {
     const {localPhase: {phaseType}} = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
     return (
-      <Droppable droppableId={retroPhaseItemId} type={RETRO_PHASE_ITEM}>
-        {(columnDropProvided: DroppableProvided, columnDropSnapshot: DroppableStateSnapshot) => (
-          <ColumnWrapper innerRef={columnDropProvided.innerRef}>
-            {columnDropProvided.placeholder}
-            <TypeHeader>
-              <TypeTitle>{title.toUpperCase()}</TypeTitle>
-              <TypeDescription>{question}</TypeDescription>
-            </TypeHeader>
-            <ReflectionsArea>
-              {columnReflectionGroups.map((group, idx) => {
-                return (
-                  <Droppable
-                    key={group.id}
-                    droppableId={group.id}
-                    type={REFLECTION_CARD}
-                  >
-                    {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-                      <div>
-                        <ColumnChild
-                          innerRef={dropProvided.innerRef}
-                          isDraggingOver={dropSnapshot.isDraggingOver}
-                          {...dropProvided.droppableProps}
-                        >
-                          <ReflectionGroup
-                            reflectionGroup={group}
-                            retroPhaseItemId={retroPhaseItemId}
-                            meeting={meeting}
-                            isDraggingOver={dropSnapshot.isDraggingOver}
-                          />
-                          {dropProvided.placeholder}
-                        </ColumnChild>
-                      </div>
-                    )}
-                  </Droppable>
-                );
-              })}
-              {phaseType === REFLECT &&
-              <ColumnChild>
-                <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
-              </ColumnChild>
-              }
-            </ReflectionsArea>
-          </ColumnWrapper>
-        )}
-      </Droppable>
+      <ColumnWrapper>
+        <TypeHeader>
+          <TypeTitle>{title.toUpperCase()}</TypeTitle>
+          <TypeDescription>{question}</TypeDescription>
+        </TypeHeader>
+        <ReflectionsArea>
+          {columnReflectionGroups.map((group, idx) => {
+            return (
+              <Droppable
+                key={group.id}
+                droppableId={group.id}
+                type={REFLECTION_CARD}
+              >
+                {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
+                  <div>
+                    <ColumnChild
+                      innerRef={dropProvided.innerRef}
+                      isDraggingOver={dropSnapshot.isDraggingOver}
+                      {...dropProvided.droppableProps}
+                    >
+                      <ReflectionGroup
+                        reflectionGroup={group}
+                        retroPhaseItemId={retroPhaseItemId}
+                        meeting={meeting}
+                        isDraggingOver={dropSnapshot.isDraggingOver}
+                      />
+                      {dropProvided.placeholder}
+                    </ColumnChild>
+                  </div>
+                )}
+              </Droppable>
+            );
+          })}
+          {phaseType === REFLECT &&
+          <ColumnChild>
+            <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+          </ColumnChild>
+          }
+        </ReflectionsArea>
+      </ColumnWrapper>
     )
   }
 }

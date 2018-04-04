@@ -9139,9 +9139,9 @@ react-async-hoc@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/react-async-hoc/-/react-async-hoc-0.4.1.tgz#88c35eca7c9a0f56e81ffcf277f355567a760adb"
 
-react-beautiful-dnd@^6.0.1:
+"react-beautiful-dnd@https://github.com/mattkrick/react-beautiful-dnd/tarball/6b259256b49c955f8714c96e6527d9b4694094a3":
   version "6.0.1"
-  resolved "https://registry.yarnpkg.com/react-beautiful-dnd/-/react-beautiful-dnd-6.0.1.tgz#f5b70cc37188bd9e79c2bd2152bebfadb2861cff"
+  resolved "https://github.com/mattkrick/react-beautiful-dnd/tarball/6b259256b49c955f8714c96e6527d9b4694094a3#dc61b9d324b24d942afe65efb5fa378a7fbb38fb"
   dependencies:
     babel-runtime "^6.26.0"
     invariant "^2.2.2"

@@ -60,9 +60,12 @@ export default {
     const now = new Date();
     const subOptions = {operationId, mutatorId};
 
+    // group-to-group movement requires reflectionId and reflectionGroupId
+    // group-to-single (ie removing from group) movement requires reflectionId, retroPhaseItemId, and a null reflectionGroupId
+    // moving a group requires reflectionGroupId & retroPhaseItemId
+
     // AUTH
     if (!reflectionId && !reflectionGroupId) return sendReflectionNotFoundError(authToken, reflectionId);
-    if (reflectionId && retroPhaseItemId) return sendRetroPhaseItemIdNotExpectedError(authToken, reflectionId);
     if (reflectionGroupId === null && !retroPhaseItemId) return sendReflectionGroupNotFoundError(authToken, null);
 
     const reflection = reflectionId && await r.table('RetroReflection').get(reflectionId);

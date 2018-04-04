@@ -135,22 +135,16 @@ const UpdateReflectionLocationMutation = (
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup);
         reflectionGroupProxy.setLinkedRecords([reflectionProxy], 'reflections');
         reflectionGroupProxy.setLinkedRecord(meeting, 'meeting');
-        // handleAddReflectionGroups(reflectionGroupProxy, store);
-        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
       } else if (reflectionGroupId === oldReflectionGroupId) {
         // move a card within the same group
         updateProxyRecord(reflectionProxy, {sortOrder});
-        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
-        // handleAddReflectionToGroup(reflectionProxy, store);
       } else {
         // move a card into another group
-        updateProxyRecord(reflectionProxy, {sortOrder, reflectionGroupId, retroPhaseItemId});
-        const phaseItemProxy = store.get(retroPhaseItemId);
+        const groupRetroPhaseItemId = reflectionGroupProxy.getValue('retroPhaseItemId');
+        updateProxyRecord(reflectionProxy, {sortOrder, reflectionGroupId, retroPhaseItemId: groupRetroPhaseItemId});
+        const phaseItemProxy = store.get(groupRetroPhaseItemId);
         reflectionProxy.setLinkedRecord(phaseItemProxy, 'phaseItem');
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup');
-        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
-        // handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store);
-        // handleAddReflectionToGroup(reflectionProxy, store);
       }
       moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store);
     }

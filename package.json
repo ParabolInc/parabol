@@ -191,7 +191,7 @@
     "react": "^16.2.0",
     "react-addons-css-transition-group": "^15.4.2",
     "react-async-hoc": "^0.4.1",
-    "react-beautiful-dnd": "^6.0.1",
+    "react-beautiful-dnd": "https://github.com/mattkrick/react-beautiful-dnd/tarball/6b259256b49c955f8714c96e6527d9b4694094a3",
     "react-copy-to-clipboard": "^5.0.0",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",

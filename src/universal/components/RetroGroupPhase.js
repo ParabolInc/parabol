@@ -31,6 +31,23 @@ const GroupPhaseWrapper = styled('div')({
   width: '100%'
 });
 
+const getSortOrder = (index, children, inSameGroup) => {
+  if (index === 0) return children[0] ? children[0].sortOrder - 1 : 0;
+  if (index === children.length || (inSameGroup && index === children.length -1)) return children[children.length - 1].sortOrder + 1;
+  return (children[index - 1].sortOrder + children[index].sortOrder) / 2 + dndNoise();
+};
+
+const getChildren = (team, droppableId) => {
+  const {meetingSettings, newMeeting} = team;
+  const reflectionGroups = newMeeting.reflectionGroups || [];
+  const reflectionGroup = reflectionGroups.find((group) => group.id === droppableId);
+  if (reflectionGroup) return {dropType: 'reflectionGroupId', children: reflectionGroup.reflections};
+  const phaseItems = meetingSettings.phaseItems || [];
+  const retroPhaseItem = phaseItems.find((phaseItem) => phaseItem.id === droppableId);
+  if (retroPhaseItem) return {dropType: 'retroPhaseItemId', children: reflectionGroups};
+  return undefined;
+};
+
 class RetroGroupPhase extends Component<Props, State> {
   state: State = {
     autoFocusReflectionId: null
@@ -46,8 +63,9 @@ class RetroGroupPhase extends Component<Props, State> {
   }
 
   onDragEnd = (result: DropResult) => {
-    const {atmosphere, team: {newMeeting}} = this.props;
-    const {draggableId: reflectionId, type, source, destination} = result;
+    const {atmosphere, team} = this.props;
+    const {newMeeting} = team;
+    const {draggableId: reflectionId, source, destination} = result;
     DragReflectionMutation(atmosphere, {reflectionId, isDragging: false});
 
     // dropped nowhere
@@ -59,33 +77,17 @@ class RetroGroupPhase extends Component<Props, State> {
       return;
     }
 
-    const {droppableId: reflectionGroupId, index} = destination;
+    const {droppableId, index} = destination;
+    const {dropType, children} = getChildren(team, droppableId);
+    if (!dropType) return;
     const {meetingId} = newMeeting;
-    const reflectionGroups = newMeeting.reflectionGroups || [];
-    const reflectionGroup = reflectionGroups.find((group) => group.id === reflectionGroupId);
-    if (!reflectionGroup) return;
-    const {reflections} = reflectionGroup;
-    let sortOrder;
-    if (index === 0) {
-      sortOrder = reflections[0] ? reflections[0].sortOrder - 1 : 0;
-    } else if (index === reflections.length || (inSameGroup && index === reflections.length -1)) {
-      sortOrder = reflections[reflections.length - 1].sortOrder + 1;
-    } else {
-      sortOrder = (reflections[index - 1].sortOrder + reflections[index].sortOrder) / 2 + dndNoise();
-    }
     const variables = {
       reflectionId,
-      reflectionGroupId,
-      sortOrder
+      reflectionGroupId: dropType === 'reflectionGroupId' ? droppableId : null,
+      retroPhaseItemId: dropType === 'retroPhaseItemId' ? droppableId : undefined,
+      sortOrder: getSortOrder(index, children, inSameGroup)
     };
     UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
-
-    // const data = reorderQuoteMap({
-    //   quoteMap: this.state.columns,
-    //   source,
-    //   destination
-    // });
-
     // this.setState({
     // autoFocusReflectionId: data.autoFocusReflectionId
     // });

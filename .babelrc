@@ -3,7 +3,7 @@
     "production": {
       "presets": ["flow", "es2015", "stage-0", "react"],
       "plugins": [
-        ["emotion", {"hoist": true}],
+        ["emotion", {"hoist": true, "autoLabel": true}],
         ["relay"],
         [
           "transform-decorators-legacy"
