@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.4.0 2018-Apr-04
+### Added
+- More check-in questions
+
+### Fixed
+- Clear filter after leaving team dashboard #1871
+- Make dash filter menus keyboard accessible
+- Use react-emotion for global CSS styles
+
+
 ## v1.3.0 2018-Mar-28
 ### Added
 - New authentication pages
