@@ -78,7 +78,7 @@ const styleThunk = (theme, minHeight) => ({
   },
 
   heading: {
-    color: appTheme.palette.warm,
+    color: appTheme.palette.dark,
     fontSize: appTheme.typography.s7,
     fontWeight: 600,
     margin: '0 0 2rem'
@@ -108,9 +108,8 @@ const styleThunk = (theme, minHeight) => ({
   },
 
   message: {
-    color: ui.colorText,
+    color: ui.hintFontColor,
     fontSize: appTheme.typography.s5,
-    fontWeight: 600,
     margin: '.5rem 0 0'
   }
 });
