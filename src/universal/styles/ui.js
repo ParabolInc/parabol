@@ -542,8 +542,9 @@ const ui = {
   menuItemBackgroundColorActive: appTheme.palette.light,
   menuItemColor: appTheme.palette.dark,
   menuItemColorHoverActive: appTheme.palette.dark50d,
-  menuItemHeight: '2rem',
   menuItemFontSize: '.9375rem',
+  menuItemHeight: '2rem',
+  menuItemIconColor: midGray,
 
   // Modals
   // ---------------------------------------------------------------------------
