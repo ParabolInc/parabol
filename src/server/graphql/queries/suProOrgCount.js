@@ -22,8 +22,8 @@ export default {
     // RESOLUTION
     return r.table('Organization')
       .getAll(PRO, {index: 'tier'})
-      .map((org) => r.branch(true,
-        includeInactive, // count all orgs
+      .map((org) => r.branch(includeInactive,
+        true, // count all orgs
         org('orgUsers')
         // calculate whether the org is active or not:
         //   reduces [bool, bool, bool] => bool
