@@ -1,16 +1,16 @@
 import {GraphQLObjectType} from 'graphql';
 import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
-import activeProOrgCount from 'server/graphql/queries/activeProOrgCount';
-import activeProUserCount from 'server/graphql/queries/activeProUserCount';
-import countTiersForUser from 'server/graphql/queries/countTiersForUser';
+import suActiveProOrgCount from 'server/graphql/queries/suActiveProOrgCount';
+import suActiveProUserCount from 'server/graphql/queries/suActiveProUserCount';
+import suCountTiersForUser from 'server/graphql/queries/suCountTiersForUser';
 
 export default new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
-    activeProOrgCount,
-    activeProUserCount,
-    countTiersForUser,
+    suActiveProOrgCount,
+    suActiveProUserCount,
+    suCountTiersForUser,
     viewer: {
       type: User,
       resolve: (source, args, {authToken, dataLoader}) => {

@@ -1,7 +1,7 @@
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
-import countTiersForUser from 'server/graphql/queries/countTiersForUser';
+import suCountTiersForUser from 'server/graphql/queries/suCountTiersForUser';
 import {PRO} from 'universal/utils/constants';
 
 console.error = jest.fn();
@@ -12,7 +12,7 @@ test('return counts for a userId', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[0], {rol: 'su'});
   // TEST
-  const result = await countTiersForUser.resolve(
+  const result = await suCountTiersForUser.resolve(
     undefined, {userId: user[0].id}, {authToken});
 
   // VERIFY
@@ -29,7 +29,7 @@ test('pro count increments on new Pro Org for userId', async () => {
     .newOrg({name: 'Marvel', tier: PRO});
   const authToken = mockAuthToken(mockDB.context.user, {rol: 'su'});
   // TEST
-  const result = await countTiersForUser.resolve(
+  const result = await suCountTiersForUser.resolve(
     undefined, {userId: mockDB.context.user.id}, {authToken});
 
   // VERIFY
@@ -47,6 +47,6 @@ test('user token requires su role', async () => {
 
   // TEST & VERIFY
   await expectAsyncToThrow(
-    countTiersForUser.resolve(undefined, {userId: user[0].id}, {authToken})
+    suCountTiersForUser.resolve(undefined, {userId: user[0].id}, {authToken})
   );
 });

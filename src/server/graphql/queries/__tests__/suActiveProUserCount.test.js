@@ -1,34 +1,39 @@
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
-import activeProOrgCount from 'server/graphql/queries/activeProOrgCount';
+import suActiveProUserCount from 'server/graphql/queries/suActiveProUserCount';
 import {PRO} from 'universal/utils/constants';
+import shortid from 'shortid';
 
 console.error = jest.fn();
 
-test('counts the number of Pro orgs', async () => {
+test('counts the number of Pro users', async () => {
   // SETUP
   const mockDB = new MockDB();
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
-  const initial = await activeProOrgCount.resolve(undefined, undefined, {authToken});
+  const next = await suActiveProUserCount.resolve(undefined, undefined, {authToken});
 
   // VERIFY
-  expect(initial >= 0).toBe(true);
+  expect(next >= 0).toBe(true);
 });
 
-test('new Pro org increments counts of Pro orgs', async () => {
+test('new Pro org increments number of Pro users', async () => {
   // SETUP
   const mockDB = new MockDB();
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
-  await mockDB.newOrg({tier: PRO});
-  const next = await activeProOrgCount.resolve(undefined, undefined, {authToken});
+  // Each newOrg will add one new billing leader:
+  await mockDB
+    .newOrg({name: shortid.generate(), tier: PRO})
+    .newOrg({name: shortid.generate(), tier: PRO});
+  const next = await suActiveProUserCount.resolve(undefined, undefined, {authToken});
 
   // VERIFY
-  expect(next >= 1).toBe(true);
+  // Tests run concurrently, so anything that counts across the entire database must be atomic (no initial, then next)
+  expect(next >= 2).toBe(true);
 });
 
 test('user token requires su role', async () => {
@@ -39,6 +44,6 @@ test('user token requires su role', async () => {
 
   // TEST & VERIFY
   await expectAsyncToThrow(
-    activeProOrgCount.resolve(undefined, undefined, {authToken})
+    suActiveProUserCount.resolve(undefined, undefined, {authToken})
   );
 });
