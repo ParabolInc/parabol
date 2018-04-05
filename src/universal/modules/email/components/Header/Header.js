@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const Header = (props) => {
   const {imgProvider} = props;
 
   const tableStyle = {
-    borderCollapse: 'collapse'
+    ...ui.emailTableBase
   };
 
   const imageStyle = {
@@ -16,8 +17,8 @@ const Header = (props) => {
   };
 
   const emailHeaderStyle = {
+    ...ui.emailTableBase,
     backgroundColor: appTheme.palette.mid,
-    borderCollapse: 'collapse',
     color: '#FFFFFF',
     paddingBottom: '20px',
     paddingTop: '20px',

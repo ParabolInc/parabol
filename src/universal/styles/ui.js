@@ -379,11 +379,18 @@ const ui = {
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
   emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
-  emailRuleColor: appTheme.palette.mid20l,
+  emailRuleColor: appTheme.palette.mid20l, // email rule color
+  emailRuleHeight: '1px', // email rule height
+  emailRuleStyle: {
+    backgroundColor: appTheme.palette.mid20l, // email rule color
+    border: 0,
+    height: '1px', // email rule height
+    margin: '0 auto'
+  },
   emailTableBase: {
     borderCollapse: 'collapse',
-    marginLeft: 'auto',
-    marginRight: 'auto'
+    borderSpacing: 0,
+    margin: '0px auto'
   },
 
   // Fields

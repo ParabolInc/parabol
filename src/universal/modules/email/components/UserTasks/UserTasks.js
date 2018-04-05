@@ -10,6 +10,7 @@ import {DONE} from 'universal/utils/constants';
 const UserTasks = (props) => {
   const {member} = props;
   const {tasks, picture, preferredName, present} = member;
+  const {emailTableBase} = ui;
   const cardsCell = {
     padding: '8px',
     textAlign: 'center'
@@ -34,7 +35,7 @@ const UserTasks = (props) => {
 
   const topBorderStyle = {
     ...textCenter,
-    borderTop: `1px solid ${ui.cardBorderColor}`
+    borderTop: `${ui.emailRuleHeight} solid ${ui.emailRuleColor}`
   };
 
   const nameStyle = {
@@ -68,7 +69,7 @@ const UserTasks = (props) => {
   const makeTaskGroup = (taskArr, label, space) =>
     (<tr>
       <td>
-        <table align="center" width="100%">
+        <table style={emailTableBase} align="center" width="100%">
           <tbody>
             <tr>
               <td style={userStats}>
@@ -91,7 +92,7 @@ const UserTasks = (props) => {
     </tr>);
 
   return (
-    <table align="center" width="100%">
+    <table style={emailTableBase} align="center" width="100%">
       <tbody>
         <tr>
           <td style={topBorderStyle}>
