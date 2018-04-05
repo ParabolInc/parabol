@@ -1,9 +1,4 @@
-/**
- * Displays a group of reflection cards that have been purposefully grouped together.
- *
- * @flow
- */
-import type {Element} from 'react';
+// @flow
 import * as React from 'react';
 import type {ReflectionGroupID} from 'universal/types/retro';
 import styled, {css} from 'react-emotion';
@@ -56,12 +51,14 @@ class ReflectionGroup extends Component<Props, State> {
           reflectionGroupProxy.setValue(isExpanded, 'isExpanded');
         }
       });
-    })
+    });
   }
 
   setTopCardRef = (c) => {
     this.topCardRef = c;
   };
+
+  topCardRef: ?HTMLElement
 
   toggleExpanded = () => {
     const {atmosphere, isDraggingOver, reflectionGroup: {reflections, reflectionGroupId}} = this.props;
@@ -124,7 +121,8 @@ class ReflectionGroup extends Component<Props, State> {
 
   render() {
     const {reflectionGroup: {isExpanded, reflections}} = this.props;
-    const style = !isExpanded && this.topCardRef && {height: reflections.length * 8 + this.topCardRef.clientHeight + ui.retroCardCollapsedHeightRem * 8} || {}
+    const style = !isExpanded && this.topCardRef &&
+      {height: reflections.length * 8 + this.topCardRef.clientHeight + ui.retroCardCollapsedHeightRem * 8} || {};
     return (
       <div>
         {this.maybeRenderHeader()}

@@ -1,7 +1,6 @@
 /**
  * Updates a reflection's content for the retrospective meeting.
  *
- * @flow
  */
 import {commitMutation} from 'react-relay';
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
@@ -111,7 +110,6 @@ const UpdateReflectionLocationMutation = (
       if (oldReflectionGroupId) {
         store.get(oldReflectionGroupId).setValue(false, 'isExpanded');
       }
-
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON();
@@ -120,7 +118,7 @@ const UpdateReflectionLocationMutation = (
       // move an entire group somewhere else
       if (!reflectionId) {
         const reflectionGroupProxy = store.get(reflectionGroupId);
-        updateProxyRecord(reflectionGroupProxy, {sortOrder});
+        updateProxyRecord(reflectionGroupProxy, {sortOrder, retroPhaseItemId});
         moveGroupLocation(reflectionGroupProxy, store);
         return;
       }

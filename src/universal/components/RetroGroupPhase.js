@@ -5,9 +5,9 @@
  */
 import * as React from 'react';
 import styled from 'react-emotion';
-import type {RetroGroupPhase_team as Team} from './__generated__/RetroGroupPhase_team.graphql';
+// import type {RetroGroupPhase_team as Team} from './__generated__/RetroGroupPhase_team.graphql';
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
-import {createFragmentContainer} from 'react-relay';
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import type {DragStart, DropResult} from 'react-beautiful-dnd/src/index';
 import {DragDropContext} from 'react-beautiful-dnd';
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
@@ -18,22 +18,21 @@ import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
 const {Component} = React;
 
 type Props = {
-  team: Team,
+  atmosphere: Object,
+  // flow or relay-compiler is getting really confused here, so I don't use the flow type here
+  team: Object,
 };
 
-type State = {
-  autoFocusReflectionId: ?string
-}
 const GroupPhaseWrapper = styled('div')({
-  height: '100%',
   display: 'flex',
+  height: '100%',
   justifyContent: 'space-around',
   width: '100%'
 });
 
 const getSortOrder = (index, children, inSameGroup) => {
   if (index === 0) return children[0] ? children[0].sortOrder - 1 : 0;
-  if (index === children.length || (inSameGroup && index === children.length -1)) return children[children.length - 1].sortOrder + 1;
+  if (index === children.length || (inSameGroup && index === children.length - 1)) return children[children.length - 1].sortOrder + 1;
   return (children[index - 1].sortOrder + children[index].sortOrder) / 2 + dndNoise();
 };
 
@@ -45,21 +44,46 @@ const getChildren = (team, droppableId) => {
   const phaseItems = meetingSettings.phaseItems || [];
   const retroPhaseItem = phaseItems.find((phaseItem) => phaseItem.id === droppableId);
   if (retroPhaseItem) return {dropType: 'retroPhaseItemId', children: reflectionGroups};
-  return undefined;
+  return {};
 };
 
-class RetroGroupPhase extends Component<Props, State> {
-  state: State = {
-    autoFocusReflectionId: null
-  };
+class RetroGroupPhase extends Component<Props> {
+  constructor(props) {
+    super(props);
+    const {atmosphere, team} = props;
+    const {meetingSettings} = team;
+    const phaseItems = meetingSettings.phaseItems || [];
+    // if a reflection is by itself at the bottom of a column, it's weird to see it be dragged to the dropzone below it & then shift up
+    // this fixes it by disabling the dropzone for single-reflection groups residing in the same column
+    commitLocalUpdate(atmosphere, (store) => {
+      phaseItems.forEach((phaseItem) => {
+        const phaseItemProxy = store.get(phaseItem.id);
+        if (phaseItemProxy) {
+          console.log('setting', phaseItem.id);
+          phaseItemProxy.setValue(true, 'isDropZoneEnabled');
+        }
+      });
+    });
+  }
 
   onDragStart = (dragStart: DragStart) => {
-    const {atmosphere} = this.props;
+    const {atmosphere, team: {newMeeting}} = this.props;
     const {draggableId: reflectionId} = dragStart;
-    this.setState({
-      autoFocusReflectionId: null
-    });
     DragReflectionMutation(atmosphere, {reflectionId, isDragging: true});
+    const {reflectionGroups} = newMeeting;
+    const group = reflectionGroups.find((reflectionGroup) => reflectionGroup.reflections.some((reflection) => reflection.id ===
+      reflectionId));
+    const {reflections, retroPhaseItemId} = group;
+    const isDropZoneEnabled = reflections.length > 1;
+    // setTimeout required otherwise we get a warning https://github.com/atlassian/react-beautiful-dnd/issues/426
+    setTimeout(() => {
+      commitLocalUpdate(atmosphere, (store) => {
+        const phaseItemProxy = store.get(retroPhaseItemId);
+        if (phaseItemProxy) {
+          phaseItemProxy.setValue(isDropZoneEnabled, 'isDropZoneEnabled');
+        }
+      });
+    });
   }
 
   onDragEnd = (result: DropResult) => {
@@ -80,17 +104,35 @@ class RetroGroupPhase extends Component<Props, State> {
     const {droppableId, index} = destination;
     const {dropType, children} = getChildren(team, droppableId);
     if (!dropType) return;
+
+    let nextReflectionId = reflectionId;
+    let nextReflectionGroupId = dropType === 'reflectionGroupId' ? droppableId : null;
+    if (dropType === 'retroPhaseItemId') {
+      const oldGroup = children.find((reflectionGroup) => reflectionGroup.reflections.some((reflection) => reflection.id === reflectionId));
+      if (!oldGroup) return;
+      if (oldGroup.reflections.length === 1) {
+        // don't move a reflection from its own group to a new group in the same column
+        if (oldGroup.retroPhaseItemId === droppableId) return;
+        // move a single group to a different column
+        nextReflectionId = null;
+        nextReflectionGroupId = oldGroup.id;
+        // re-enable drop zone
+        commitLocalUpdate(atmosphere, (store) => {
+          const phaseItemProxy = store.get(oldGroup.retroPhaseItemId);
+          if (phaseItemProxy) {
+            phaseItemProxy.setValue(true, 'isDropZoneEnabled');
+          }
+        });
+      }
+    }
     const {meetingId} = newMeeting;
     const variables = {
-      reflectionId,
-      reflectionGroupId: dropType === 'reflectionGroupId' ? droppableId : null,
+      reflectionId: nextReflectionId,
+      reflectionGroupId: nextReflectionGroupId,
       retroPhaseItemId: dropType === 'retroPhaseItemId' ? droppableId : undefined,
       sortOrder: dropType === 'retroPhaseItemId' ? children.length : getSortOrder(index, children, inSameGroup)
     };
     UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
-    // this.setState({
-    // autoFocusReflectionId: data.autoFocusReflectionId
-    // });
   }
 
   render() {
@@ -110,7 +152,7 @@ class RetroGroupPhase extends Component<Props, State> {
       </DragDropContext>
     );
   }
-};
+}
 
 export default createFragmentContainer(
   withAtmosphere(RetroGroupPhase),
@@ -122,9 +164,12 @@ export default createFragmentContainer(
         ... on RetrospectiveMeeting {
           reflectionGroups {
             id
+            meetingId
             sortOrder
+            retroPhaseItemId
             reflections {
               id
+              retroPhaseItemId
               sortOrder
             }
           }

@@ -26,23 +26,22 @@ const ColumnWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  flex: 1,
+  flex: 1
 });
 
 const ReflectionsArea = styled('div')({
-    flexDirection: 'column',
-    display: 'flex',
-    // cannot use overflow since react-beautiful-dnd does not use portals.
-    // overflow: 'auto',
-    height: '100%',
-    minWidth: ui.retroCardWidth
-  },
+  flexDirection: 'column',
+  display: 'flex',
+  // cannot use overflow since react-beautiful-dnd does not use portals.
+  // overflow: 'auto',
+  height: '100%',
+  minWidth: ui.retroCardWidth
+},
 );
 
 const ReflectionsList = styled('div')({
-  // display: 'flex',
-  // flexDirection: 'column'
-  // display: 'inline-block'
+  // adds a buffer to the dropzone to limit unwanted drags to the dropzone
+  marginBottom: '1rem'
 });
 
 
@@ -99,7 +98,7 @@ class PhaseItemColumn extends Component<Props, State> {
   };
 
   render() {
-    const {dndIndex, meeting, retroPhaseItem} = this.props;
+    const {meeting, retroPhaseItem} = this.props;
     const {columnReflectionGroups} = this.state;
     const {localPhase: {phaseType}} = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
@@ -111,7 +110,7 @@ class PhaseItemColumn extends Component<Props, State> {
         </TypeHeader>
         <ReflectionsArea>
           <ReflectionsList>
-            {columnReflectionGroups.map((group, idx) => {
+            {columnReflectionGroups.map((group) => {
               return (
                 <Droppable
                   key={group.id}
@@ -139,7 +138,7 @@ class PhaseItemColumn extends Component<Props, State> {
           </ReflectionsList>
           {phaseType === GROUP &&
           <EntireDropZone>
-            <ReflectionDropZone retroPhaseItemId={retroPhaseItemId} />
+            <ReflectionDropZone retroPhaseItem={retroPhaseItem} />
           </EntireDropZone>
           }
           {phaseType === REFLECT &&
@@ -149,7 +148,7 @@ class PhaseItemColumn extends Component<Props, State> {
           }
         </ReflectionsArea>
       </ColumnWrapper>
-    )
+    );
   }
 }
 
@@ -160,6 +159,7 @@ export default createFragmentContainer(
   graphql`
     fragment PhaseItemColumn_retroPhaseItem on RetroPhaseItem {
       ...AddReflectionButton_retroPhaseItem
+      ...ReflectionDropZone_retroPhaseItem
       retroPhaseItemId: id
       title
       question

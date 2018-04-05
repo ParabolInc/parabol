@@ -99,15 +99,14 @@ class ReflectionPhaseColumn extends Component<Props, State> {
                       <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
                     }
                   </ColumnChild>
-                )
-              })
-            } else {
-              return (
-                <ColumnChild key={group.id}>
-                  <ReflectionGroup reflectionGroup={group} />
-                </ColumnChild>
-              )
+                );
+              });
             }
+            return (
+              <ColumnChild key={group.id}>
+                <ReflectionGroup reflectionGroup={group} />
+              </ColumnChild>
+            );
           })}
           {phaseType === REFLECT &&
           <ColumnChild>

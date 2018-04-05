@@ -24,15 +24,15 @@ const RetrospectiveMeeting = new GraphQLObjectType({
         return reflectionGroups;
       }
     },
-    reflections: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
-      description: 'The reflections generated during the reflect phase of the retro',
-      resolve: async ({id}, args, {dataLoader}) => {
-        const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(id);
-        reflections.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
-        return reflections;
-      }
-    }
+    // reflections: {
+    //   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
+    //   description: 'The reflections generated during the reflect phase of the retro',
+    //   resolve: async ({id}, args, {dataLoader}) => {
+    //     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(id);
+    //     reflections.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
+    //     return reflections;
+    //   }
+    // }
   })
 });
 

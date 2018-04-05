@@ -1,13 +1,6 @@
-import {RETROSPECTIVE} from 'universal/utils/constants';
+// add props to the NewMeeting table
 
 const extendNewMeetingForType = (newMeetingBase) => {
-  // if (newMeetingBase.meetingType === RETROSPECTIVE) {
-  //   return {
-  //     ...newMeetingBase,
-  //     reflectionGroups: [],
-  //     reflections: []
-  //   };
-  // }
   return newMeetingBase;
 };
 

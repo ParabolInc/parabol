@@ -3,14 +3,10 @@ import getRethink from 'server/database/rethinkDriver';
 import {isTeamMember} from 'server/utils/authorization';
 import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
-import {
-  sendPhaseItemNotFoundError, sendReflectionGroupNotFoundError, sendReflectionNotFoundError,
-  sendRetroPhaseItemIdNotExpectedError
-} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import {sendPhaseItemNotFoundError, sendReflectionGroupNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
+import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
-import {GROUP, TEAM} from 'universal/utils/constants';
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
+import {TEAM} from 'universal/utils/constants';
 import * as shortid from 'shortid';
 import removeEmptyReflectionGroup from 'server/graphql/mutations/helpers/removeEmptyReflectionGroup';
 
@@ -69,7 +65,7 @@ export default {
     if (reflectionGroupId === null && !retroPhaseItemId) return sendReflectionGroupNotFoundError(authToken, null);
 
     const reflection = reflectionId && await r.table('RetroReflection').get(reflectionId);
-    const reflectionGroup = reflectionGroupId && await dataLoader.get('retroReflectionGroups').load(reflectionGroupId);
+    const reflectionGroup = reflectionGroupId && await r.table('RetroReflectionGroup').get(reflectionGroupId);
     if (!reflection && !reflectionGroup) return sendReflectionNotFoundError(authToken, reflectionId);
     const {meetingId} = reflection || reflectionGroup;
     const oldReflectionGroupId = reflection ? reflection.reflectionGroupId : reflectionGroupId;
@@ -99,7 +95,7 @@ export default {
         });
     } else {
       await r.table('RetroReflectionGroup')
-        .get(reflectionGroupId)
+        .get(nextReflectionGroupId)
         .update({
           retroPhaseItemId: retroPhaseItemId || undefined,
           sortOrder,

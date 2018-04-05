@@ -37,7 +37,7 @@ const DraggableReflectionCard = (props: Props) => {
         index={dndIndex}
         isDragDisabled={isCollapsed}
       >
-        {(dragProvided, dragSnapshot) => {
+        {(dragProvided) => {
           return (
             <div ref={isExpanded ? undefined : dragProvided.transformRef}>
               <div
@@ -46,19 +46,19 @@ const DraggableReflectionCard = (props: Props) => {
                 {...dragProvided.dragHandleProps}
                 style={{
                   ...dragProvided.draggableProps.style,
-                  marginBottom: 8,
+                  marginBottom: 8
                 }}
               >
                 <ReflectionCard isCollapsed={isCollapsed} meeting={meeting} reflection={reflection} showOriginFooter={showOriginFooter} />
               </div>
               {dragProvided.placeholder}
             </div>
-          )
+          );
         }}
       </Draggable>
     </div>
   );
-}
+};
 
 export default createFragmentContainer(
   withAtmosphere(DraggableReflectionCard),

@@ -51,16 +51,5 @@ graphql`
         }
       }
     }
-    ... on RetrospectiveMeeting {
-      reflections {
-        id
-        content
-        editorIds
-        isEditing
-        isViewerCreator
-        retroPhaseItemId
-        sortOrder
-      }
-    }
   }
 `;

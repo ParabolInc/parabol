@@ -3,9 +3,11 @@ import {REFLECTION_CARD} from 'universal/utils/constants';
 import {Droppable} from 'react-beautiful-dnd';
 import type {DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd/src/index';
 import styled from 'react-emotion';
+import {createFragmentContainer} from 'react-relay';
+import {ReflectionDropZone_retroPhaseItem as RetroPhaseItem} from './__generated__/ReflectionDropZone_retroPhaseItem.graphql';
 
 type Props = {
-  retroPhaseItemId: string
+  retroPhaseItem: RetroPhaseItem
 };
 
 const DropZoneStyles = styled('div')(({isDraggingOver}) => ({
@@ -15,22 +17,31 @@ const DropZoneStyles = styled('div')(({isDraggingOver}) => ({
 }));
 
 const ReflectionDropZone = (props: Props) => {
-  const {retroPhaseItemId} = props;
+  const {retroPhaseItem} = props;
+  const {isDropZoneEnabled, retroPhaseItemId} = retroPhaseItem;
   return (
-      <Droppable
-        droppableId={retroPhaseItemId}
-        type={REFLECTION_CARD}
-      >
-        {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-          <DropZoneStyles
-            innerRef={dropProvided.innerRef}
-            isDraggingOver={dropSnapshot.isDraggingOver}
-            {...dropProvided.droppableProps}
-          >
-          </DropZoneStyles>
-        )}
-      </Droppable>
+    <Droppable
+      droppableId={retroPhaseItemId}
+      type={REFLECTION_CARD}
+      isDropDisabled={!isDropZoneEnabled}
+    >
+      {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
+        <DropZoneStyles
+          innerRef={dropProvided.innerRef}
+          isDraggingOver={dropSnapshot.isDraggingOver}
+          {...dropProvided.droppableProps}
+        />
+      )}
+    </Droppable>
   );
 };
 
-export default ReflectionDropZone;
+export default createFragmentContainer(
+  ReflectionDropZone,
+  graphql`
+    fragment ReflectionDropZone_retroPhaseItem on RetroPhaseItem {
+      retroPhaseItemId: id
+      isDropZoneEnabled
+    }
+  `
+);
