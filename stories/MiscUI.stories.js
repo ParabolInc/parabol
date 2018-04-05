@@ -7,7 +7,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
-import {Button} from 'universal/components';
+import {Button, LoadingView} from 'universal/components';
 
 storiesOf('Misc. UI Components', module)
   .add('Button variants', () => (
@@ -19,6 +19,15 @@ storiesOf('Misc. UI Components', module)
             <Button colorPalette="dark" buttonSize="medium" buttonStyle="solid" label="Take Action Now" />
             <Button buttonSize="large" buttonStyle="primary" label="Take Action Now" />
           </div>
+        )}
+      />
+    </RetroBackground>
+  ))
+  .add('Loading view', () => (
+    <RetroBackground>
+      <StoryContainer
+        render={() => (
+          <LoadingView />
         )}
       />
     </RetroBackground>
