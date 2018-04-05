@@ -1,7 +1,7 @@
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
-import suActiveProOrgCount from 'server/graphql/queries/suActiveProOrgCount';
+import suProOrgCount from 'server/graphql/queries/suProOrgCount';
 import {PRO} from 'universal/utils/constants';
 
 console.error = jest.fn();
@@ -12,7 +12,7 @@ test('counts the number of Pro orgs', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
-  const initial = await suActiveProOrgCount.resolve(undefined, {includeInactive: true}, {authToken});
+  const initial = await suProOrgCount.resolve(undefined, {includeInactive: true}, {authToken});
 
   // VERIFY
   expect(initial >= 0).toBe(true);
@@ -25,7 +25,7 @@ test('new Pro org increments counts of Pro orgs', async () => {
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
   await mockDB.newOrg({tier: PRO});
-  const next = await suActiveProOrgCount.resolve(undefined, {includeInactive: true}, {authToken});
+  const next = await suProOrgCount.resolve(undefined, {includeInactive: true}, {authToken});
 
   // VERIFY
   expect(next >= 1).toBe(true);
@@ -39,6 +39,6 @@ test('user token requires su role', async () => {
 
   // TEST & VERIFY
   await expectAsyncToThrow(
-    suActiveProOrgCount.resolve(undefined, {includeInactive: true}, {authToken})
+    suProOrgCount.resolve(undefined, {includeInactive: true}, {authToken})
   );
 });
