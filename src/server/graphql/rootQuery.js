@@ -3,7 +3,7 @@ import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import suActiveProUserCount from 'server/graphql/queries/suActiveProUserCount';
 import suCountTiersForUser from 'server/graphql/queries/suCountTiersForUser';
-import suProOrgCount from 'server/graphql/queries/suProOrgCount';
+import suOrgCount from 'server/graphql/queries/suOrgCount';
 import suProOrgInfo from 'server/graphql/queries/suProOrgInfo';
 
 export default new GraphQLObjectType({
@@ -11,7 +11,7 @@ export default new GraphQLObjectType({
   fields: () => ({
     suActiveProUserCount,
     suCountTiersForUser,
-    suProOrgCount,
+    suOrgCount,
     suProOrgInfo,
     viewer: {
       type: User,
