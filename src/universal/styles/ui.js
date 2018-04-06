@@ -253,7 +253,6 @@ const ui = {
     paddingRight: '.5em',
     width: '100%'
   },
-  buttonBorderRadius: borderRadiusSmall,
   buttonDisabledStyles: {
     cursor: 'not-allowed',
     opacity: '.5',
