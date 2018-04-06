@@ -57,7 +57,7 @@ const getValidationError = (title: ?string, reflectionGroups) => {
 
 class ReflectionGroupTitleEditor extends Component<Props> {
   state = {
-    title: this.props.reflectionGroup.title || this.props.reflectionGroup.smartTitle || ''
+    title: this.props.reflectionGroup.title || ''
   };
   onChange = (e) => {
     const {dirty, error, onCompleted, onError, meeting: {reflectionGroups}} = this.props;
@@ -116,7 +116,8 @@ class ReflectionGroupTitleEditor extends Component<Props> {
 
   render() {
     const {title} = this.state;
-    const {error} = this.props;
+    const {error, reflectionGroup} = this.props;
+    console.log('smart', title, reflectionGroup.title)
     return (
       <div>
         <form onSubmit={this.onSubmit}>
@@ -141,7 +142,6 @@ export default createFragmentContainer(
     fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
       reflectionGroupId: id
       title
-      smartTitle
     }
     fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
       reflectionGroups {

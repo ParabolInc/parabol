@@ -35,6 +35,7 @@ graphql`
       reflections {
         ...CompleteReflectionFrag @relay(mask: false)  
       }
+      title
     }
     oldReflectionGroup {
       id

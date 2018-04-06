@@ -4,7 +4,7 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState, convertToRaw, EditorState} from 'draft-js';
+import {ContentState, convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled from 'react-emotion';
 import editorDecorators from 'universal/components/TaskEditor/decorators';

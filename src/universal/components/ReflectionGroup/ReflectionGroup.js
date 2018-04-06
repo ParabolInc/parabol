@@ -105,6 +105,7 @@ class ReflectionGroup extends Component<Props, State> {
     // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
     const style = !isExpanded && this.topCardRef &&
       {height: reflections.length * 8 + this.topCardRef.clientHeight + ui.retroCardCollapsedHeightRem * 8} || {};
+    console.log('style', reflectionGroup.reflectionGroupId, style.height, isExpanded, this.topCardRef);
     return (
       <div>
         {reflections.length > 1 && <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />}
@@ -127,7 +128,6 @@ export default createFragmentContainer(
       ...ReflectionGroupHeader_reflectionGroup
       isExpanded
       reflectionGroupId: id
-      title
       reflections {
         id
         retroPhaseItemId
