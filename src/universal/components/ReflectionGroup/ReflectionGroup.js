@@ -70,21 +70,17 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   maybeRenderHeader = () => {
-    const {handleSaveTitle, reflectionGroup: {reflectionGroupId, reflections, title}} = this.props;
+    const {meeting, reflectionGroup} = this.props;
+    const {reflections} = reflectionGroup;
     const styles = {
       alignItems: 'center',
       display: 'flex',
       justifyContent: 'center',
       marginBottom: MARGIN
     };
-    return handleSaveTitle && (
+    return (
       <div className={css(styles)}>
-        <ReflectionGroupTitleEditor
-          id={reflectionGroupId}
-          form={`reflection-group-title-${reflectionGroupId}`}
-          title={title}
-          onSubmit={({title: newTitle}) => handleSaveTitle(newTitle)}
-        />
+        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} />
         <div className={css({marginLeft: '1rem', fontWeight: 'bold'})}>{reflections.length}</div>
       </div>
     );
@@ -139,8 +135,10 @@ export default createFragmentContainer(
   graphql`
     fragment ReflectionGroup_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
+      ...ReflectionGroupTitleEditor_meeting
     }
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
+      ...ReflectionGroupTitleEditor_reflectionGroup
       isExpanded
       reflectionGroupId: id
       title

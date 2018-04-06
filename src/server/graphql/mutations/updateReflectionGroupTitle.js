@@ -39,7 +39,8 @@ export default {
     const {endedAt, phases, teamId} = meeting;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
+    // TODO uncomment for prod
+    // if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
 
     // VALIDATION
     const normalizedTitle = title.trim();
