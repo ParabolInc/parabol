@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLBoolean, GraphQLString} from 'graphql';
+import {GraphQLInt, GraphQLBoolean} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {requireSU} from 'server/utils/authorization';
 import OrgTierEnum from 'server/graphql/types/OrgTierEnum';
