@@ -21,15 +21,8 @@ storiesOf('Loadable Help Dialog', module)
   .add('drag states', () => (
     <RetroBackground>
       <StoryContainer
-        description={
-          `This
-          is
-          a
-          help
-          dialog
-          for
-          meetings.`
-        }
+        description={`This demonstrates a help dialog (available for all teammates)
+          and an optional tip (for the facilitator in the control bar)`}
         render={() => (
           <div style={{padding: '50vh 0 0'}}>
             <div style={{display: 'flex', justifyContent: 'flex-end', padding: '0 1.25rem 1.25rem 0'}}>
