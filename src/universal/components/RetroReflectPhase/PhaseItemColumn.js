@@ -60,7 +60,7 @@ const TypeTitle = styled('div')({
 
 const ColumnChild = styled('div')(
   ({isDraggingOver}) => ({
-    background: isDraggingOver && 'blue',
+    // background: isDraggingOver && 'blue',
     opacity: isDraggingOver && 0.6
   })
 );

@@ -59,7 +59,6 @@ class RetroGroupPhase extends Component<Props> {
       phaseItems.forEach((phaseItem) => {
         const phaseItemProxy = store.get(phaseItem.id);
         if (phaseItemProxy) {
-          console.log('setting', phaseItem.id);
           phaseItemProxy.setValue(true, 'isDropZoneEnabled');
         }
       });
@@ -88,9 +87,20 @@ class RetroGroupPhase extends Component<Props> {
 
   onDragEnd = (result: DropResult) => {
     const {atmosphere, team} = this.props;
-    const {newMeeting} = team;
+    const {meetingSettings, newMeeting} = team;
     const {draggableId: reflectionId, source, destination} = result;
     DragReflectionMutation(atmosphere, {reflectionId, isDragging: false});
+
+    // re-enable drop zones
+    const phaseItems = meetingSettings.phaseItems || [];
+    commitLocalUpdate(atmosphere, (store) => {
+      phaseItems.forEach((phaseItem) => {
+        const phaseItemProxy = store.get(phaseItem.id);
+        if (phaseItemProxy) {
+          phaseItemProxy.setValue(true, 'isDropZoneEnabled');
+        }
+      });
+    });
 
     // dropped nowhere
     if (!destination) return;
@@ -116,13 +126,6 @@ class RetroGroupPhase extends Component<Props> {
         // move a single group to a different column
         nextReflectionId = null;
         nextReflectionGroupId = oldGroup.id;
-        // re-enable drop zone
-        commitLocalUpdate(atmosphere, (store) => {
-          const phaseItemProxy = store.get(oldGroup.retroPhaseItemId);
-          if (phaseItemProxy) {
-            phaseItemProxy.setValue(true, 'isDropZoneEnabled');
-          }
-        });
       }
     }
     const {meetingId} = newMeeting;

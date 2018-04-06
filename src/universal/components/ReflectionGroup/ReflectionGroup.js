@@ -1,14 +1,14 @@
 // @flow
 import * as React from 'react';
 import type {ReflectionGroupID} from 'universal/types/retro';
-import styled, {css} from 'react-emotion';
+import styled from 'react-emotion';
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
-import ReflectionGroupTitleEditor from './ReflectionGroupTitleEditor';
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import type {ReflectionGroup_reflectionGroup as ReflectionGroupType} from './__generated__/ReflectionGroup_reflectionGroup.graphql';
 import type {ReflectionGroup_meeting as Meeting} from './__generated__/ReflectionGroup_meeting.graphql';
 import ui from 'universal/styles/ui';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader';
 
 const {Component} = React;
 
@@ -69,23 +69,6 @@ class ReflectionGroup extends Component<Props, State> {
     });
   }
 
-  maybeRenderHeader = () => {
-    const {meeting, reflectionGroup} = this.props;
-    const {reflections} = reflectionGroup;
-    const styles = {
-      alignItems: 'center',
-      display: 'flex',
-      justifyContent: 'center',
-      marginBottom: MARGIN
-    };
-    return (
-      <div className={css(styles)}>
-        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} />
-        <div className={css({marginLeft: '1rem', fontWeight: 'bold'})}>{reflections.length}</div>
-      </div>
-    );
-  };
-
   renderReflection = (reflection: Object, idx: number) => {
     const {meeting, retroPhaseItemId} = this.props;
     const {reflectionGroup: {isExpanded, reflections}} = this.props;
@@ -97,8 +80,8 @@ class ReflectionGroup extends Component<Props, State> {
     const yTranslate = -idx * ui.retroCardCollapsedHeightRem;
     const style = {
       transform: !isExpanded &&
-      `translateY(${yTranslate}rem) ` +
-      `scale(${1 - (0.05 * interval)})`,
+      `translateY(${yTranslate}rem)
+       scale(${1 - (0.05 * interval)})`,
       transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`
     };
     return (
@@ -116,12 +99,15 @@ class ReflectionGroup extends Component<Props, State> {
   };
 
   render() {
-    const {reflectionGroup: {isExpanded, reflections}} = this.props;
+    const {meeting, reflectionGroup} = this.props;
+    const {isExpanded, reflections} = reflectionGroup;
+
+    // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
     const style = !isExpanded && this.topCardRef &&
       {height: reflections.length * 8 + this.topCardRef.clientHeight + ui.retroCardCollapsedHeightRem * 8} || {};
     return (
       <div>
-        {this.maybeRenderHeader()}
+        {reflections.length > 1 && <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />}
         <Reflections onClick={this.toggleExpanded} style={style}>
           {reflections.map(this.renderReflection)}
         </Reflections>
@@ -135,10 +121,10 @@ export default createFragmentContainer(
   graphql`
     fragment ReflectionGroup_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
-      ...ReflectionGroupTitleEditor_meeting
+      ...ReflectionGroupHeader_meeting
     }
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
-      ...ReflectionGroupTitleEditor_reflectionGroup
+      ...ReflectionGroupHeader_reflectionGroup
       isExpanded
       reflectionGroupId: id
       title
