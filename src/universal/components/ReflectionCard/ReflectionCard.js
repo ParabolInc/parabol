@@ -69,9 +69,9 @@ class ReflectionCard extends Component<Props, State> {
     const {reflection} = nextProps;
     const {content, reflectionId, reflectionGroupId, sortOrder} = reflection;
     if (content === prevState.content) return null;
-    // const contentState = convertFromRaw(JSON.parse(content));
-    const DEBUG_TEXT = `ReflID: ${reflectionId} | GroupId: ${reflectionGroupId} | Sort: ${sortOrder}`;
-    const contentState = ContentState.createFromText(DEBUG_TEXT);
+    const contentState = convertFromRaw(JSON.parse(content));
+    // const DEBUG_TEXT = `ReflID: ${reflectionId} | GroupId: ${reflectionGroupId} | Sort: ${sortOrder}`;
+    // const contentState = ContentState.createFromText(DEBUG_TEXT);
     return {
       content,
       editorState: EditorState.createWithContent(contentState, editorDecorators(prevState.getEditorState))

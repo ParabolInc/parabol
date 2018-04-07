@@ -39,6 +39,7 @@ graphql`
     }
     oldReflectionGroup {
       id
+      title
     }
   }
 `;

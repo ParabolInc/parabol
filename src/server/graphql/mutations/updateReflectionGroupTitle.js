@@ -55,6 +55,7 @@ export default {
     await r.table('RetroReflectionGroup').get(reflectionGroupId)
       .update({
         title: normalizedTitle,
+        titleIsUserDefined: true,
         updatedAt: now
       });
 

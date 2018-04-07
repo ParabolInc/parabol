@@ -17,13 +17,15 @@ const makeRetroGroupTitle = async (meetingId, reflections) => {
   const distanceMatrix = computeDistanceMatrix(allReflectionEntities, entityNameArr);
   const smartTitle = getTitleFromComputedGroup(entityNameArr, distanceMatrix);
   if (smartTitle) {
-    const allTitles = await r.table('RetroReflectionGroup')
-      .getAll(meetingId, {index: 'meetingId'})
-      .filter({isActive: true})('title')
-      .default([]);
-    if (!allTitles.includes(smartTitle)) {
+    // need to filter out the current group if we want to check for dupes. but a dupe is good, it makes it obvious they should be merged
+    // const allTitles = await r.table('RetroReflectionGroup')
+    //   .getAll(meetingId, {index: 'meetingId'})
+    //   .filter({isActive: true})('title')
+    //   .default([]);
+    // if (!allTitles.includes(smartTitle)) {
+    //   console.log('not unique name');
       return {smartTitle, title: smartTitle};
-    }
+    // }
   }
   const reflectionCount = await r.table('RetroReflectionGroup')
     .getAll(meetingId, {index: 'meetingId'})

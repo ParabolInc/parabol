@@ -36,6 +36,14 @@ const getSortOrder = (index, children, inSameGroup) => {
   return (children[index - 1].sortOrder + children[index].sortOrder) / 2 + dndNoise();
 };
 
+const getPhaseItemSortOrder = (reflectionGroups, retroPhaseItemId) => {
+  const phaseSortOrders = reflectionGroups
+    .filter((reflectionGroup) => reflectionGroup.retroPhaseItemId === retroPhaseItemId)
+    .map(({sortOrder}) => sortOrder);
+  const columnMax = Math.max(...phaseSortOrders, 0);
+  return columnMax + 1 + dndNoise();
+};
+
 const getChildren = (team, droppableId) => {
   const {meetingSettings, newMeeting} = team;
   const reflectionGroups = newMeeting.reflectionGroups || [];
@@ -82,7 +90,7 @@ class RetroGroupPhase extends Component<Props> {
           phaseItemProxy.setValue(isDropZoneEnabled, 'isDropZoneEnabled');
         }
       });
-    });
+    }, 100);
   }
 
   onDragEnd = (result: DropResult) => {
@@ -114,26 +122,41 @@ class RetroGroupPhase extends Component<Props> {
     const {droppableId, index} = destination;
     const {dropType, children} = getChildren(team, droppableId);
     if (!dropType) return;
-
-    let nextReflectionId = reflectionId;
-    let nextReflectionGroupId = dropType === 'reflectionGroupId' ? droppableId : null;
-    if (dropType === 'retroPhaseItemId') {
-      const oldGroup = children.find((reflectionGroup) => reflectionGroup.reflections.some((reflection) => reflection.id === reflectionId));
-      if (!oldGroup) return;
-      if (oldGroup.reflections.length === 1) {
-        // don't move a reflection from its own group to a new group in the same column
-        if (oldGroup.retroPhaseItemId === droppableId) return;
-        // move a single group to a different column
-        nextReflectionId = null;
-        nextReflectionGroupId = oldGroup.id;
-      }
-    }
     const {meetingId} = newMeeting;
+
+    if (dropType === 'reflectionGroupId') {
+      // this is an add
+      const variables = {
+        reflectionId,
+        reflectionGroupId: droppableId,
+        sortOrder: getSortOrder(index, children, inSameGroup)
+      };
+      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
+      return;
+    }
+
+    // this is a move (to a different column) or a remove (from 1 group in a column to its own group)
+    const oldGroup = children.find((reflectionGroup) => reflectionGroup.reflections.some((reflection) => reflection.id === reflectionId));
+    if (!oldGroup) return;
+    if (oldGroup.reflections.length === 1) {
+      // don't move a reflection from its own group to a new group in the same column
+      if (oldGroup.retroPhaseItemId === droppableId) return;
+      // move a single group to a different column
+      const variables = {
+        reflectionGroupId: oldGroup.id,
+        retroPhaseItemId: droppableId,
+        sortOrder: getPhaseItemSortOrder(children, droppableId)
+      };
+      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
+      return;
+    }
+
+    // this is a remove
     const variables = {
-      reflectionId: nextReflectionId,
-      reflectionGroupId: nextReflectionGroupId,
-      retroPhaseItemId: dropType === 'retroPhaseItemId' ? droppableId : undefined,
-      sortOrder: dropType === 'retroPhaseItemId' ? children.length : getSortOrder(index, children, inSameGroup)
+      reflectionId,
+      reflectionGroupId: null,
+      retroPhaseItemId: droppableId,
+      sortOrder: getPhaseItemSortOrder(children, droppableId)
     };
     UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
   }

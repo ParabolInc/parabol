@@ -15,6 +15,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from './__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql';
 import type {ReflectionGroupTitleEditor_meeting as Meeting} from './__generated__/ReflectionGroupTitleEditor_meeting.graphql';
+import reactLifecyclesCompat from 'react-lifecycles-compat';
 
 type Props = {
   ...MutationProps,
@@ -56,9 +57,21 @@ const getValidationError = (title: ?string, reflectionGroups) => {
 };
 
 class ReflectionGroupTitleEditor extends Component<Props> {
-  state = {
-    title: this.props.reflectionGroup.title || ''
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+    const {reflectionGroup: {title}} = nextProps;
+    if (title !== prevState.title) {
+      return {
+        title
+      };
+    }
+    return null;
   };
+
+  state = {
+    title: ''
+  };
+
+
   onChange = (e) => {
     const {dirty, error, onCompleted, onError, meeting: {reflectionGroups}} = this.props;
     const title = e.target.value;
@@ -136,6 +149,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
   }
 }
 
+reactLifecyclesCompat(ReflectionGroupTitleEditor);
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(ReflectionGroupTitleEditor)),
   graphql`
