@@ -24,7 +24,7 @@ const makeRetroGroupTitle = async (meetingId, reflections) => {
     //   .default([]);
     // if (!allTitles.includes(smartTitle)) {
     //   console.log('not unique name');
-      return {smartTitle, title: smartTitle};
+    return {smartTitle, title: smartTitle};
     // }
   }
   const reflectionCount = await r.table('RetroReflectionGroup')

@@ -33,9 +33,13 @@ const Reflections = styled('div')({
   // position: 'relative'
 });
 
-const AnimatedCards = styled('div')({
+const AnimatedReflection = styled('div')({
   transition: 'all 200ms ease',
   margin: MARGIN
+});
+
+const Group = styled('div')({
+  marginBottom: MARGIN * 2
 });
 
 class ReflectionGroup extends Component<Props, State> {
@@ -85,7 +89,7 @@ class ReflectionGroup extends Component<Props, State> {
       transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`
     };
     return (
-      <AnimatedCards key={reflection.id} style={style} innerRef={isTopCard ? this.setTopCardRef : undefined}>
+      <AnimatedReflection key={reflection.id} style={style} innerRef={isTopCard ? this.setTopCardRef : undefined}>
         <DraggableReflectionCard
           dndIndex={idx}
           showOriginFooter={showOriginFooter}
@@ -94,7 +98,7 @@ class ReflectionGroup extends Component<Props, State> {
           isExpanded={isExpanded}
           isCollapsed={isCollapsed}
         />
-      </AnimatedCards>
+      </AnimatedReflection>
     );
   };
 
@@ -106,12 +110,12 @@ class ReflectionGroup extends Component<Props, State> {
     const style = !isExpanded && this.topCardRef && reflections.length > 1 &&
       {height: reflections.length * 8 + this.topCardRef.clientHeight + ui.retroCardCollapsedHeightRem * 8} || {};
     return (
-      <div>
+      <Group>
         {reflections.length > 1 && <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />}
         <Reflections onClick={this.toggleExpanded} style={style}>
           {reflections.map(this.renderReflection)}
         </Reflections>
-      </div>
+      </Group>
     );
   }
 }

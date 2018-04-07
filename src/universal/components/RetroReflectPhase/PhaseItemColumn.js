@@ -21,6 +21,8 @@ import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionDropZone from 'universal/components/ReflectionDropZone';
+import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
+import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -111,6 +113,18 @@ class PhaseItemColumn extends Component<Props, State> {
         <ReflectionsArea>
           <ReflectionsList>
             {columnReflectionGroups.map((group) => {
+              if (phaseType === REFLECT) {
+                return group.reflections.map((reflection) => {
+                  return (
+                    <ColumnChild key={reflection.id}>
+                      {reflection.isViewerCreator ?
+                        <ReflectionCard meeting={meeting} reflection={reflection} /> :
+                        <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
+                      }
+                    </ColumnChild>
+                  );
+                });
+              }
               return (
                 <Droppable
                   key={group.id}

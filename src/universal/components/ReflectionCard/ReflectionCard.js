@@ -3,8 +3,7 @@
  *
  * @flow
  */
-// $FlowFixMe
-import {ContentState, convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled from 'react-emotion';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
@@ -67,7 +66,7 @@ const ReflectionStyles = styled('div')(
 class ReflectionCard extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflection} = nextProps;
-    const {content, reflectionId, reflectionGroupId, sortOrder} = reflection;
+    const {content} = reflection;
     if (content === prevState.content) return null;
     const contentState = convertFromRaw(JSON.parse(content));
     // const DEBUG_TEXT = `ReflID: ${reflectionId} | GroupId: ${reflectionGroupId} | Sort: ${sortOrder}`;

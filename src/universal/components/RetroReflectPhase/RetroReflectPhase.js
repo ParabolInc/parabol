@@ -6,9 +6,8 @@
 import React from 'react';
 import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
-
-import ReflectionPhaseColumn from './ReflectionPhaseColumn';
 import type {RetroReflectPhase_team as Team} from './__generated__/RetroReflectPhase_team.graphql';
+import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
 
 type Props = {
   team: Team,
@@ -27,7 +26,7 @@ const RetroReflectPhase = ({team}: Props) => {
   return (
     <ReflectPhaseWrapper>
       {phaseItems.map((phaseItem) =>
-        <ReflectionPhaseColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+        <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
       )}
     </ReflectPhaseWrapper>
   );
@@ -38,7 +37,7 @@ export default createFragmentContainer(
   graphql`
     fragment RetroReflectPhase_team on Team {
       newMeeting {
-        ...ReflectionPhaseColumn_meeting  
+        ...ReflectionPhaseColumn_meeting
       }
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {

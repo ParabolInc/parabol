@@ -4,7 +4,7 @@
  */
 
 
-const SALIENT_THRESHOLD = 0.85;
+const SALIENT_THRESHOLD = 0.60;
 const MIN_ENTITIES = 2;
 const MAX_CHARS = 30;
 

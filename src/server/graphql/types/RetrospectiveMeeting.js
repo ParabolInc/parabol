@@ -1,7 +1,6 @@
 import {GraphQLFloat, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import NewMeeting, {newMeetingFields} from 'server/graphql/types/NewMeeting';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
-import RetroReflection from 'server/graphql/types/RetroReflection';
 import {resolveForSU} from 'server/graphql/resolvers';
 
 const RetrospectiveMeeting = new GraphQLObjectType({
@@ -23,7 +22,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
         reflectionGroups.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
         return reflectionGroups;
       }
-    },
+    }
     // reflections: {
     //   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
     //   description: 'The reflections generated during the reflect phase of the retro',

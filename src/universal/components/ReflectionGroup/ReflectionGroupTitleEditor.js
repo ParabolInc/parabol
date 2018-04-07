@@ -13,7 +13,9 @@ import UpdateReflectionGroupTitleMutation from 'universal/mutations/UpdateReflec
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
-import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from './__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql';
+import type {
+  ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup
+} from './__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql';
 import type {ReflectionGroupTitleEditor_meeting as Meeting} from './__generated__/ReflectionGroupTitleEditor_meeting.graphql';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 
@@ -23,6 +25,9 @@ type Props = {
   meeting: Meeting
 };
 
+type State = {
+  title: string
+}
 const underlineStyles = {
   backgroundColor: 'transparent',
   borderLeftColor: 'transparent !important',
@@ -56,7 +61,7 @@ const getValidationError = (title: ?string, reflectionGroups) => {
   return undefined;
 };
 
-class ReflectionGroupTitleEditor extends Component<Props> {
+class ReflectionGroupTitleEditor extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflectionGroup: {title}} = nextProps;
     if (title !== prevState.title) {
@@ -65,7 +70,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       };
     }
     return null;
-  };
+  }
 
   state = {
     title: ''
@@ -130,7 +135,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
   render() {
     const {title} = this.state;
     const {error, reflectionGroup} = this.props;
-    console.log('smart', title, reflectionGroup.title)
+    console.log('smart', title, reflectionGroup.title);
     return (
       <div>
         <form onSubmit={this.onSubmit}>
@@ -145,7 +150,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
         </form>
         {error && <StyledError>{error.message}</StyledError>}
       </div>
-    )
+    );
   }
 }
 

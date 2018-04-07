@@ -10,8 +10,8 @@ type Props = {
   retroPhaseItem: RetroPhaseItem
 };
 
-const DropZoneStyles = styled('div')(({isDraggingOver}) => ({
-  background: isDraggingOver && 'blue',
+const DropZoneStyles = styled('div')(() => ({
+  // background: isDraggingOver && 'blue',
   flex: 1,
   height: '100%'
 }));
