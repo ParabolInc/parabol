@@ -38,7 +38,7 @@ const ReflectionsArea = styled('div')({
   // overflow: 'auto',
   height: '100%',
   minWidth: ui.retroCardWidth
-},
+}
 );
 
 const ReflectionsList = styled('div')({
@@ -63,7 +63,8 @@ const TypeTitle = styled('div')({
 const ColumnChild = styled('div')(
   ({isDraggingOver}) => ({
     // background: isDraggingOver && 'blue',
-    opacity: isDraggingOver && 0.6
+    opacity: isDraggingOver && 0.6,
+    margin: 8
   })
 );
 
@@ -87,9 +88,10 @@ class PhaseItemColumn extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {meeting: {reflectionGroups: nextReflectionGroups}, retroPhaseItem: {retroPhaseItemId}} = nextProps;
     if (nextReflectionGroups === prevState.reflectionGroups) return null;
+    const reflectionGroups = nextReflectionGroups || [];
     return {
-      reflectionGroups: nextReflectionGroups || [],
-      columnReflectionGroups: nextReflectionGroups
+      reflectionGroups,
+      columnReflectionGroups: reflectionGroups
         .filter((group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0)
     };
   }
@@ -124,30 +126,32 @@ class PhaseItemColumn extends Component<Props, State> {
                     </ColumnChild>
                   );
                 });
-              }
-              return (
-                <Droppable
-                  key={group.id}
-                  droppableId={group.id}
-                  type={REFLECTION_CARD}
-                >
-                  {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-                    <ColumnChild
-                      innerRef={dropProvided.innerRef}
-                      isDraggingOver={dropSnapshot.isDraggingOver}
-                      {...dropProvided.droppableProps}
-                    >
-                      <ReflectionGroup
-                        reflectionGroup={group}
-                        retroPhaseItemId={retroPhaseItemId}
-                        meeting={meeting}
+              } else if (phaseType === GROUP) {
+                return (
+                  <Droppable
+                    key={group.id}
+                    droppableId={group.id}
+                    type={REFLECTION_CARD}
+                  >
+                    {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
+                      <ColumnChild
+                        innerRef={dropProvided.innerRef}
                         isDraggingOver={dropSnapshot.isDraggingOver}
-                      />
-                      {dropProvided.placeholder}
-                    </ColumnChild>
-                  )}
-                </Droppable>
-              );
+                        {...dropProvided.droppableProps}
+                      >
+                        <ReflectionGroup
+                          reflectionGroup={group}
+                          retroPhaseItemId={retroPhaseItemId}
+                          meeting={meeting}
+                          isDraggingOver={dropSnapshot.isDraggingOver}
+                        />
+                        {dropProvided.placeholder}
+                      </ColumnChild>
+                    )}
+                  </Droppable>
+                );
+              }
+              return null;
             })}
           </ReflectionsList>
           {phaseType === GROUP &&

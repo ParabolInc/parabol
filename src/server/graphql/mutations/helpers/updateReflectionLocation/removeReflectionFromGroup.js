@@ -3,9 +3,11 @@ import {isTeamMember} from 'server/utils/authorization';
 import getRethink from 'server/database/rethinkDriver';
 import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendPhaseItemNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import makeReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/makeReflectionGroup';
 import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle';
+import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
+import {GROUP} from 'universal/utils/constants';
 
 const removeReflectionFromGroup = async (reflectionId, retroPhaseItemId, sortOrder, {authToken, dataLoader}) => {
   const r = getRethink();
@@ -17,8 +19,7 @@ const removeReflectionFromGroup = async (reflectionId, retroPhaseItemId, sortOrd
   const {endedAt, phases, teamId} = meeting;
   if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
   if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-  // TODO uncomment in prod
-  // if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
+  if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
   const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId);
   if (!phaseItem || phaseItem.teamId !== teamId) return sendPhaseItemNotFoundError(authToken, retroPhaseItemId);
   if (!phaseItem.isActive) return sendPhaseItemNotActiveError(authToken, retroPhaseItemId);

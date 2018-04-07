@@ -3,8 +3,10 @@ import {isTeamMember} from 'server/utils/authorization';
 import getRethink from 'server/database/rethinkDriver';
 import {sendReflectionGroupNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle';
+import {GROUP} from 'universal/utils/constants';
+import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 
 const addReflectionToGroup = async (reflectionId, reflectionGroupId, sortOrder, {authToken, dataLoader}) => {
   const r = getRethink();
@@ -20,8 +22,7 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, sortOrder, 
   const {endedAt, phases, teamId} = meeting;
   if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
   if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-  // TODO uncomment in prod
-  // if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
+  if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
 
   // RESOLUTION
   await r.table('RetroReflection').get(reflectionId)

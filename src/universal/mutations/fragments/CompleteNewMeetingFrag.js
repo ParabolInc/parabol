@@ -51,5 +51,10 @@ graphql`
         }
       }
     }
+    ... on RetrospectiveMeeting {
+      reflectionGroups {
+        id
+      }
+    }
   }
 `;

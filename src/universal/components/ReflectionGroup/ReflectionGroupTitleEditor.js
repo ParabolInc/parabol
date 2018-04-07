@@ -64,7 +64,7 @@ const getValidationError = (title: ?string, reflectionGroups) => {
 class ReflectionGroupTitleEditor extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflectionGroup: {title}} = nextProps;
-    if (title !== prevState.title) {
+    if (title && title !== prevState.title) {
       return {
         title
       };
@@ -95,7 +95,9 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
   };
 
   onClick = () => {
-    this.inputRef.focus();
+    if (this.inputRef) {
+      this.inputRef.focus();
+    }
   };
 
   onSubmit = (e) => {
@@ -121,7 +123,6 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
       return;
     }
 
-    // resolve
     submitMutation();
     UpdateReflectionGroupTitleMutation(atmosphere, {title: normalizedTitle, reflectionGroupId}, onError, onCompleted);
   };
@@ -134,15 +135,13 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
 
   render() {
     const {title} = this.state;
-    const {error, reflectionGroup} = this.props;
-    console.log('smart', title, reflectionGroup.title);
+    const {error} = this.props;
     return (
       <div>
         <form onSubmit={this.onSubmit}>
           <NameInput
             onBlur={this.onSubmit}
             onChange={this.onChange}
-            placeholder="group #1"
             ref={this.setInputRef}
             type="text"
             value={title}

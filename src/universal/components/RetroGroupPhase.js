@@ -14,11 +14,14 @@ import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflecti
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import dndNoise from 'universal/utils/dndNoise';
 import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
+import Button from 'universal/components/Button/Button';
 
 const {Component} = React;
 
 type Props = {
   atmosphere: Object,
+  gotoNext: () => void,
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object,
 };
@@ -162,20 +165,40 @@ class RetroGroupPhase extends Component<Props> {
   }
 
   render() {
-    const {team} = this.props;
+    const {atmosphere: {viewerId}, gotoNext, team} = this.props;
     const {newMeeting, meetingSettings} = team;
+    const {facilitatorUserId} = newMeeting || {};
     const phaseItems = meetingSettings.phaseItems || [];
+    const isFacilitating = facilitatorUserId === viewerId;
+    console.log('fac', facilitatorUserId, viewerId);
     return (
-      <DragDropContext
-        onDragStart={this.onDragStart}
-        onDragEnd={this.onDragEnd}
-      >
-        <GroupPhaseWrapper>
-          {phaseItems.map((phaseItem, idx) =>
-            <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-          )}
-        </GroupPhaseWrapper>
-      </DragDropContext>
+      <React.Fragment>
+        <DragDropContext
+          onDragStart={this.onDragStart}
+          onDragEnd={this.onDragEnd}
+        >
+          <GroupPhaseWrapper>
+            {phaseItems.map((phaseItem, idx) =>
+              <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+            )}
+          </GroupPhaseWrapper>
+        </DragDropContext>
+        {isFacilitating &&
+        <MeetingControlBar>
+          <Button
+            buttonSize="medium"
+            buttonStyle="flat"
+            colorPalette="dark"
+            icon="arrow-circle-right"
+            iconLarge
+            iconPalette="warm"
+            iconPlacement="right"
+            label={'Done! Let’s Vote'}
+            onClick={gotoNext}
+          />
+        </MeetingControlBar>
+        }
+      </React.Fragment>
     );
   }
 }
@@ -186,6 +209,7 @@ export default createFragmentContainer(
     fragment RetroGroupPhase_team on Team {
       newMeeting {
         meetingId: id
+        facilitatorUserId
         ...PhaseItemColumn_meeting
         ... on RetrospectiveMeeting {
           reflectionGroups {

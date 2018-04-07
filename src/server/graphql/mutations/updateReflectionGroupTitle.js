@@ -3,13 +3,14 @@ import getRethink from 'server/database/rethinkDriver';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendReflectionGroupNotFoundError} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
-import {TEAM} from 'universal/utils/constants';
+import {GROUP, TEAM} from 'universal/utils/constants';
 import stringSimilarity from 'string-similarity';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {sendGroupTitleDuplicateError, sendGroupTitleRequiredError} from 'server/utils/__tests__/validationErrors';
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload';
+import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 
 export default {
   type: UpdateReflectionGroupTitlePayload,
@@ -38,8 +39,7 @@ export default {
     const {endedAt, phases, teamId} = meeting;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    // TODO uncomment for prod
-    // if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
+    if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
 
     // VALIDATION
     const normalizedTitle = title.trim();

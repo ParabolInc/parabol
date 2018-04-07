@@ -11,8 +11,9 @@ import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendMeetingNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
 import publish from 'server/utils/publish';
-import {TEAM} from 'universal/utils/constants';
-import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import {GROUP, TEAM} from 'universal/utils/constants';
+import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 
 type Args = {
   isDragging: boolean,
@@ -41,18 +42,12 @@ export default {
     const reflection = await r.table('RetroReflection').get(reflectionId);
     if (!reflection) return sendReflectionNotFoundError(authToken, reflectionId);
     const {meetingId} = reflection;
-    // if (draggerUserId && isDragging) {
-    //   const user = await dataLoader.get('users').load(draggerUserId);
-    //   return sendAlreadyDraggingReflectionError(authToken, user);
-    // }
     const meeting = await dataLoader.get('newMeetings').load(meetingId);
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
     const {endedAt, phases, teamId} = meeting;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    // TODO uncomment for prod
-    // if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
-
+    if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
 
     // RESOLUTION
     const nextReflection = {

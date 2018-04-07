@@ -3,6 +3,7 @@
  *
  * @flow
  */
+// $FlowFixMe
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled from 'react-emotion';
@@ -37,8 +38,8 @@ export type Props = {|
 
 type State = {
   content: string,
-  editorState: EditorState,
-  getEditorState: () => EditorState
+  editorState: ?Object,
+  getEditorState: () => ?Object
 };
 
 const OriginFooter = styled('div')({
@@ -55,7 +56,8 @@ const ReflectionStyles = styled('div')(
   {
     backgroundColor: '#fff',
     borderRadius: ui.cardBorderRadius,
-    boxShadow: ui.cardBoxShadow
+    boxShadow: ui.cardBoxShadow,
+    position: 'relative'
   },
   ({isCollapsed}) => isCollapsed && ({
     height: `${ui.retroCardCollapsedHeightRem}rem`,
