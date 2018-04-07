@@ -26,7 +26,7 @@ const removeReflectionFromGroup = async (reflectionId, retroPhaseItemId, sortOrd
 
   // RESOLUTION
   const reflectionGroup = await makeReflectionGroup(meetingId, retroPhaseItemId, sortOrder);
-  const {id: reflectionGroupId, titleIsUserDefined} = reflectionGroup;
+  const {id: reflectionGroupId} = reflectionGroup;
   await r.table('RetroReflection').get(reflectionId)
     .update({
       sortOrder: 0,
@@ -38,12 +38,11 @@ const removeReflectionFromGroup = async (reflectionId, retroPhaseItemId, sortOrd
     .filter({isActive: true});
 
   const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = await makeRetroGroupTitle(meetingId, [reflection]);
-  await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle, !titleIsUserDefined);
+  await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle);
 
   if (oldReflections.length > 0) {
-    const oldReflectionGroup = await r.table('RetroReflectionGroup').get(oldReflectionGroupId);
     const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = await makeRetroGroupTitle(meetingId, oldReflections);
-    await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle, !oldReflectionGroup.titleIsUserDefined);
+    await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle);
   } else {
     await r.table('RetroReflectionGroup').get(oldReflectionGroupId)
       .update({

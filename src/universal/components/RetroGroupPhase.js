@@ -170,7 +170,6 @@ class RetroGroupPhase extends Component<Props> {
     const {facilitatorUserId} = newMeeting || {};
     const phaseItems = meetingSettings.phaseItems || [];
     const isFacilitating = facilitatorUserId === viewerId;
-    console.log('fac', facilitatorUserId, viewerId);
     return (
       <React.Fragment>
         <DragDropContext
