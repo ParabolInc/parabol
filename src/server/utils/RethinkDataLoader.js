@@ -77,6 +77,15 @@ export default class RethinkDataLoader {
         return customPhaseItems.filter((phaseItem) => phaseItem.teamId === teamId);
       });
     }, this.dataloaderOptions);
+    this.meetingMembersByMeetingId = makeCustomLoader(async (meetingIds) => {
+      const r = getRethink();
+      const meetingMembers = await r.table('MeetingMember')
+        .getAll(r.args(meetingIds), {index: 'meetingId'});
+      primeStandardLoader(this.meetingMembers, meetingMembers);
+      return meetingIds.map((meetingId) => {
+        return meetingMembers.filter((member) => member.meetingId === meetingId);
+      });
+    }, this.dataloaderOptions);
     // doing this ugly stuff in the constructor because class properties are created before constructor is called
     this.meetingSettingsByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();

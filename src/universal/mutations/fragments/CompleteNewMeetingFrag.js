@@ -55,6 +55,7 @@ graphql`
       reflectionGroups {
         id
       }
+      votesRemaining
     }
   }
 `;

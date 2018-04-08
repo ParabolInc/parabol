@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLFloat, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import NewMeeting, {newMeetingFields} from 'server/graphql/types/NewMeeting';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import {resolveForSU} from 'server/graphql/resolvers';
@@ -21,6 +21,14 @@ const RetrospectiveMeeting = new GraphQLObjectType({
         const reflectionGroups = await dataLoader.get('retroReflectionGroupByMeetingId').load(meetingId);
         reflectionGroups.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
         return reflectionGroups;
+      }
+    },
+    votesRemaining: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The votes remaining for the whole team',
+      resolve: async ({id: meetingId}, args, {dataLoader}) => {
+        const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId);
+        return meetingMembers.reduce((sum, member) => sum + member.votesRemaining, 0);
       }
     }
     // reflections: {
