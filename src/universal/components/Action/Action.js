@@ -1,12 +1,10 @@
 import styled from 'react-emotion';
-import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import HomePage from 'universal/components/HomePage/HomePage';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
-import withStyles from 'universal/styles/withStyles';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
 import {StyleSheetServer as S} from 'aphrodite-local-styles/no-important';
 import A from 'universal/Atmosphere';
@@ -33,7 +31,7 @@ const ActionStyles = styled('div')({
   width: '100%'
 });
 
-const Action = (props) => {
+const Action = () => {
   return (
     <ActionStyles>
       <Toast />
@@ -68,10 +66,6 @@ const Action = (props) => {
       </Switch>
     </ActionStyles>
   );
-};
-
-Action.propTypes = {
-  children: PropTypes.any
 };
 
 export const Atmosphere = A;
