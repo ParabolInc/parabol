@@ -1,3 +1,4 @@
+// @flow
 import * as React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import styled from 'react-emotion';
@@ -6,76 +7,73 @@ import type {ReflectionGroupVoting_reflectionGroup as ReflectionGroup} from './_
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectionGroupMutation';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
+import appTheme from 'universal/styles/theme/appTheme';
+import StyledError from 'universal/components/StyledError';
 
 const {Component} = React;
 
-type Props = {
+type Props = {|
   atmosphere: Object,
   meeting: Meeting,
   reflectionGroup: ReflectionGroup,
   ...MutationProps
-};
+|};
 
 const CheckMarkRow = styled('div')({
-  display: 'flex'
+  display: 'flex',
+  justifyContent: 'flex-end'
 });
 
 const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
-  color: color || 'pink'
+  color,
+  cursor: 'pointer'
 }));
 
+const CheckColumn = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  justifyContent: 'center'
+});
+
 class ReflectionGroupVoting extends Component<Props> {
-  vote = (e) => {
+  vote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props;
-    const {meetingId, settings, viewerMeetingMember} = meeting;
-    const {maxVotesPerGroup} = settings;
-    const {votesRemaining} = viewerMeetingMember;
-    const {reflectionGroupId, viewerVoteCount} = reflectionGroup;
-    if (votesRemaining < 1) {
-      // onError({message: 'You have no votes left to give'});
-      return;
-    }
-    if (viewerVoteCount >= maxVotesPerGroup) {
-      // onError({message: `You can only give ${maxVotesPerGroup} votes per theme`})
-      return;
-    }
+    const {meetingId} = meeting;
+    const {reflectionGroupId} = reflectionGroup;
     submitMutation();
     VoteForReflectionGroupMutation(atmosphere, {reflectionGroupId}, {meetingId}, onError, onCompleted);
   };
 
-  unvote = (e) => {
+  unvote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props;
-    const {meetingId, settings, viewerMeetingMember} = meeting;
-    const {totalVotes} = settings;
-    const {votesRemaining} = viewerMeetingMember;
-    const {reflectionGroupId, viewerVoteCount} = reflectionGroup;
-    if (votesRemaining >= totalVotes) {
-      return;
-    }
-    if (viewerVoteCount <= 0) {
-      return;
-    }
+    const {meetingId} = meeting;
+    const {reflectionGroupId} = reflectionGroup;
     submitMutation();
     VoteForReflectionGroupMutation(atmosphere, {isUnvote: true, reflectionGroupId}, {meetingId}, onError, onCompleted);
   };
 
   render() {
-    const {reflectionGroup} = this.props;
+    const {error, meeting, reflectionGroup} = this.props;
     const {viewerVoteCount} = reflectionGroup;
-    const checkMarks = new Array(viewerVoteCount).fill(true);
-    console.log('viewerVo', viewerVoteCount, checkMarks)
+    const {settings, viewerMeetingMember} = meeting;
+    const {maxVotesPerGroup} = settings;
+    const {votesRemaining} = viewerMeetingMember;
+    const checkMarks = [...Array(viewerVoteCount).keys()];
+    const canVote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0;
     return (
-      <React.Fragment>
+      <CheckColumn>
         <CheckMarkRow>
-          {checkMarks.map((_, idx) => <CheckIcon key={idx} name="check" color={'pink'} onClick={this.unvote} />)}
+          {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={appTheme.palette.warm} onClick={this.unvote} />)}
+          {canVote && <CheckIcon name="check" color={appTheme.brand.primary.midGray} onClick={this.vote} />}
         </CheckMarkRow>
-        <CheckIcon name="check" color={'gray'} onClick={this.vote} />
-      </React.Fragment>
+        {error && <StyledError>{error.message}</StyledError>}
+      </CheckColumn>
     );
   }
-};
+}
 
 export default createFragmentContainer(
   withMutationProps(withAtmosphere(ReflectionGroupVoting)),

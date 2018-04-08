@@ -32,7 +32,6 @@ const RetrospectiveMeeting = new GraphQLObjectType({
         const meeting = await dataLoader.get('newMeetings').load(meetingId);
         const {teamId} = meeting;
         const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId);
-        console.log('allSet', allSettings);
         return allSettings.find((settings) => settings.meetingType === RETROSPECTIVE);
       }
     },

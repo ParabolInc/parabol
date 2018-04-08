@@ -4,6 +4,7 @@ import styled from 'react-emotion';
 import type {RetroSidebarVoteSection_viewer as Viewer} from './__generated__/RetroSidebarVoteSection_viewer.graphql';
 import {createFragmentContainer} from 'react-relay';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+import appTheme from 'universal/styles/theme/appTheme';
 
 type Props = {
   viewer: Viewer
@@ -20,7 +21,7 @@ const Header = styled('div')({
 });
 
 const CheckIcon = styled(StyledFontAwesome)(({isDark}) => ({
-  color: 'pink',
+  color: appTheme.palette.warm,
   opacity: isDark ? 1 : 0.5
 }));
 
@@ -28,18 +29,20 @@ const CheckMarkRow = styled('div')({
   display: 'flex'
 });
 const RetroSidebarVoteSection = (props: Props) => {
-  const {viewer: {meetingMember: {myVotesRemaining}, team: {meetingSettings: {totalVotes}, newMeeting: {teamVotesRemaining}}}} = props;
-  const checkMarks = new Array(totalVotes).fill(undefined).map((n, idx) => idx < myVotesRemaining);
+  const {viewer: {meetingMember, team: {meetingSettings: {totalVotes = 0}, newMeeting}}} = props;
+  const {teamVotesRemaining = 0} = newMeeting || {};
+  const {myVotesRemaining = 0} = meetingMember || {};
+  const checkMarks = [...Array(totalVotes).keys()];
   return (
     <SidebarPhaseItemChild>
       <Header>{'My Votes Remaining'}</Header>
       <CheckMarkRow>
-        {checkMarks.map((isDark, idx) => <CheckIcon key={idx} name="check" isDark={isDark} />)}
+        {checkMarks.map((idx) => <CheckIcon key={idx} name="check" isDark={idx < myVotesRemaining} />)}
       </CheckMarkRow>
       <Header>{'Team Votes Remaining'}</Header>
       {teamVotesRemaining}
     </SidebarPhaseItemChild>
-  )
+  );
 };
 
 export default createFragmentContainer(

@@ -15,10 +15,13 @@ type Props = {
 const ReflectionCount = styled('span')({});
 
 const GroupHeader = styled('div')({
-  alignItems: 'center',
   display: 'flex',
-  justifyContent: 'center',
   marginBottom: 8
+});
+
+const TitleAndCount = styled('div')({
+  display: 'flex',
+  alignItems: 'center'
 });
 
 const ReflectionGroupHeader = (props: Props) => {
@@ -27,9 +30,11 @@ const ReflectionGroupHeader = (props: Props) => {
   const {localPhase: {phaseType}} = meeting;
   return (
     <GroupHeader>
-      <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={phaseType !== GROUP}/>
-      <ReflectionCount>{reflections.length}</ReflectionCount>
-      {phaseType === VOTE && <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting}/>}
+      <TitleAndCount>
+        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={phaseType !== GROUP} />
+        <ReflectionCount>{reflections.length}</ReflectionCount>
+      </TitleAndCount>
+      {phaseType === VOTE && <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />}
     </GroupHeader>
   );
 };

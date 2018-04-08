@@ -100,7 +100,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
       description: 'The number of votes the viewer has given this group',
       resolve: ({voterIds}, args, {authToken}) => {
         const viewerId = getUserId(authToken);
-        return voterIds ? voterIds.reduce((sum, voterId) => voterId === viewerId ? sum + 1 : sum, 0) : 0
+        return voterIds ? voterIds.reduce((sum, voterId) => voterId === viewerId ? sum + 1 : sum, 0) : 0;
       }
     }
   })

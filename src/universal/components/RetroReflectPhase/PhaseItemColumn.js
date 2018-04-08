@@ -158,7 +158,7 @@ class PhaseItemColumn extends Component<Props, State> {
                       meeting={meeting}
                     />
                   </ColumnChild>
-                )
+                );
               }
               return null;
             })}

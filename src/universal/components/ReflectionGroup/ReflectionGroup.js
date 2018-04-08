@@ -113,7 +113,7 @@ class ReflectionGroup extends Component<Props, State> {
           showOriginFooter={showOriginFooter}
         />
       </AnimatedReflection>
-    )
+    );
   };
 
   render() {

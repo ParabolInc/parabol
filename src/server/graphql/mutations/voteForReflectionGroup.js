@@ -38,8 +38,7 @@ export default {
     const {endedAt, phases, teamId} = meeting;
     if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    // TODO uncomment in prod
-    // if (isPhaseComplete(VOTE, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, VOTE);
+    if (isPhaseComplete(VOTE, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, VOTE);
 
     // VALIDATION
     const meetingMember = await r.table('MeetingMember')
