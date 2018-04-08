@@ -1,4 +1,4 @@
-import {css} from 'aphrodite-local-styles/no-important';
+import styled from 'react-emotion';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
@@ -26,10 +26,16 @@ const retroRoot = () => System.import('universal/components/RetroRoot/RetroRoot'
 const signInPage = () => System.import('universal/components/SignInPage/SignInPage');
 const signUpPage = () => System.import('universal/components/SignUpPage/SignUpPage');
 
+const ActionStyles = styled('div')({
+  margin: 0,
+  minHeight: '100vh',
+  padding: 0,
+  width: '100%'
+});
+
 const Action = (props) => {
-  const {styles} = props;
   return (
-    <div className={css(styles.app)}>
+    <ActionStyles>
       <Toast />
       <SocketHealthMonitor />
       <Switch>
@@ -60,24 +66,14 @@ const Action = (props) => {
         <AsyncRoute mod={signout} />
         <AsyncRoute mod={notFound} />
       </Switch>
-    </div>
+    </ActionStyles>
   );
 };
 
 Action.propTypes = {
-  children: PropTypes.any,
-  styles: PropTypes.object
+  children: PropTypes.any
 };
-
-const styleThunk = () => ({
-  app: {
-    margin: 0,
-    minHeight: '100vh',
-    padding: 0,
-    width: '100%'
-  }
-});
 
 export const Atmosphere = A;
 export const StyleSheetServer = S;
-export default withStyles(styleThunk)(Action);
+export default Action;
