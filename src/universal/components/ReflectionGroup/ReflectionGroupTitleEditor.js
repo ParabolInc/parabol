@@ -6,22 +6,21 @@
 import React, {Component} from 'react';
 import styled from 'react-emotion';
 import StyledError from 'universal/components/StyledError';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import UpdateReflectionGroupTitleMutation from 'universal/mutations/UpdateReflectionGroupTitleMutation';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import type {MutationProps} from 'universal/utils/relay/withMutationProps';
-import type {
-  ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup
-} from './__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql';
+import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from './__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql';
 import type {ReflectionGroupTitleEditor_meeting as Meeting} from './__generated__/ReflectionGroupTitleEditor_meeting.graphql';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 
 type Props = {
   ...MutationProps,
   reflectionGroup: ReflectionGroup,
+  readOnly: boolean,
   meeting: Meeting
 };
 
@@ -36,7 +35,7 @@ const underlineStyles = {
   boxShadow: 'none !important'
 };
 
-const NameInput = styled('input')({
+const NameInput = styled('input')(({readOnly}) => ({
   ...underlineStyles,
   ':hover,:focus,:active': {
     underlineStyles
@@ -46,8 +45,9 @@ const NameInput = styled('input')({
   boxShadow: 'none',
   fontSize: '1.2rem',
   color: appTheme.brand.primary.darkGray,
-  textAlign: 'center'
-});
+  textAlign: 'center',
+  cursor: readOnly ? 'default' : 'text'
+}));
 
 const getValidationError = (title: ?string, reflectionGroups) => {
   if (!title || title.length < 1) {
@@ -135,7 +135,7 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
 
   render() {
     const {title} = this.state;
-    const {error} = this.props;
+    const {error, readOnly} = this.props;
     return (
       <div>
         <form onSubmit={this.onSubmit}>
@@ -145,6 +145,7 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
             ref={this.setInputRef}
             type="text"
             value={title}
+            readOnly={readOnly}
           />
         </form>
         {error && <StyledError>{error.message}</StyledError>}

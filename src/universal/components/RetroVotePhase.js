@@ -38,16 +38,11 @@ class RetroVotePhase extends Component<Props> {
     const isFacilitating = facilitatorUserId === viewerId;
     return (
       <React.Fragment>
-        <DragDropContext
-          onDragStart={this.onDragStart}
-          onDragEnd={this.onDragEnd}
-        >
           <VotePhaseWrapper>
-            {phaseItems.map((phaseItem, idx) =>
-              <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+            {phaseItems.map((phaseItem) =>
+              <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
             )}
           </VotePhaseWrapper>
-        </DragDropContext>
         {isFacilitating &&
         <MeetingControlBar>
           <Button
@@ -58,7 +53,7 @@ class RetroVotePhase extends Component<Props> {
             iconLarge
             iconPalette="warm"
             iconPlacement="right"
-            label={'Done! Let’s Vote'}
+            label={'Done! Let’s Discuss'}
             onClick={gotoNext}
           />
         </MeetingControlBar>

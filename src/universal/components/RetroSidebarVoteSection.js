@@ -30,12 +30,11 @@ const CheckMarkRow = styled('div')({
 const RetroSidebarVoteSection = (props: Props) => {
   const {viewer: {meetingMember: {myVotesRemaining}, team: {meetingSettings: {totalVotes}, newMeeting: {teamVotesRemaining}}}} = props;
   const checkMarks = new Array(totalVotes).fill(undefined).map((n, idx) => idx < myVotesRemaining);
-  console.log('che', checkMarks)
   return (
     <SidebarPhaseItemChild>
       <Header>{'My Votes Remaining'}</Header>
       <CheckMarkRow>
-        {checkMarks.map((isDark) => <CheckIcon name="check" isDark={isDark} />)}
+        {checkMarks.map((isDark, idx) => <CheckIcon key={idx} name="check" isDark={isDark} />)}
       </CheckMarkRow>
       <Header>{'Team Votes Remaining'}</Header>
       {teamVotesRemaining}

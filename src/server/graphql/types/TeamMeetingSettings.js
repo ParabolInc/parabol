@@ -31,16 +31,15 @@ export const teamMeetingSettingsFields = () => ({
   }
 });
 
-const resolveTypeLookup = {
-  [ACTION]: ActionMeetingSettings,
-  [RETROSPECTIVE]: RetrospectiveMeetingSettings
-};
-
 const TeamMeetingSettings = new GraphQLInterfaceType({
   name: 'TeamMeetingSettings',
   description: 'The team settings for a specific type of meeting',
   fields: teamMeetingSettingsFields,
   resolveType: (({meetingType}) => {
+    const resolveTypeLookup = {
+      [ACTION]: ActionMeetingSettings,
+      [RETROSPECTIVE]: RetrospectiveMeetingSettings
+    };
     return resolveTypeLookup[meetingType];
   })
 });
