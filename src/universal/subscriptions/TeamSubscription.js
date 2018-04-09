@@ -45,6 +45,7 @@ const subscription = graphql`
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
+      ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
       ...UpdateReflectionLocationMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
@@ -148,6 +149,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'UpdateCheckInQuestionPayload':
           break;
         case 'UpdateReflectionContentPayload':
+          break;
+        case 'UpdateReflectionGroupTitlePayload':
           break;
         case 'UpdateReflectionLocationPayload':
           updateReflectionLocationTeamUpdater(payload, options);

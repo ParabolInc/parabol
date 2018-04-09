@@ -57,7 +57,7 @@ class ReflectionGroupVoting extends Component<Props> {
 
   render() {
     const {error, meeting, reflectionGroup} = this.props;
-    const {viewerVoteCount} = reflectionGroup;
+    const {viewerVoteCount = 0} = reflectionGroup;
     const {settings, viewerMeetingMember} = meeting;
     const {maxVotesPerGroup} = settings;
     const {votesRemaining} = viewerMeetingMember;

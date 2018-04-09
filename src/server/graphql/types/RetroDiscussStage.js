@@ -16,7 +16,7 @@ const RetroDiscussStage = new GraphQLObjectType({
       type: RetroReflectionGroup,
       description: 'the group that is the focal point of the discussion',
       resolve: ({reflectionGroupId}, args, {dataLoader}) => {
-        return dataLoader.get('retroReflectionGroups').load(reflectionGroupId);
+        return reflectionGroupId ? dataLoader.get('retroReflectionGroups').load(reflectionGroupId) : undefined;
       }
     }
   })

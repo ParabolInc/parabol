@@ -98,7 +98,7 @@ const RetroReflection = new GraphQLObjectType({
       type: RetroReflectionGroup,
       description: 'The group the reflection belongs to, if any',
       resolve: async ({reflectionGroupId}, args, {dataLoader}) => {
-        return dataLoader.get('retroThoughGroups').load(reflectionGroupId);
+        return dataLoader.get('retroReflectionGroups').load(reflectionGroupId);
       }
     },
     sortOrder: {

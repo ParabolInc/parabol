@@ -105,7 +105,7 @@ export default class RethinkDataLoader {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
       });
     }, this.dataloaderOptions);
-    this.retroReflectionGroupByMeetingId = makeCustomLoader(async (meetingIds) => {
+    this.retroReflectionGroupsByMeetingId = makeCustomLoader(async (meetingIds) => {
       const r = getRethink();
       const retroReflectionGroups = await r.table('RetroReflectionGroup')
         .getAll(r.args(meetingIds), {index: 'meetingId'})

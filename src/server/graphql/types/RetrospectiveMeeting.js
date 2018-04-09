@@ -20,7 +20,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
       description: 'The grouped reflections',
       resolve: async ({id: meetingId}, args, {dataLoader}) => {
-        const reflectionGroups = await dataLoader.get('retroReflectionGroupByMeetingId').load(meetingId);
+        const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId);
         reflectionGroups.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
         return reflectionGroups;
       }

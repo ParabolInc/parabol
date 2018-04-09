@@ -60,7 +60,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
               isFacilitatorPhaseGroup={facilitatorPhaseGroup === phaseType}
               handleClick={handleClick}
             >
-              <NewMeetingSidebarPhaseListItemChildren phaseType={phaseType} viewer={viewer} />
+              <NewMeetingSidebarPhaseListItemChildren gotoStageId={gotoStageId} phaseType={phaseType} viewer={viewer} />
             </NewMeetingSidebarPhaseListItem>
           );
         })}

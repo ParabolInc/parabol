@@ -9,7 +9,7 @@ import type {ReflectionGroup_meeting as Meeting} from './__generated__/Reflectio
 import ui from 'universal/styles/ui';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader';
-import {GROUP} from 'universal/utils/constants';
+import {GROUP, VOTE} from 'universal/utils/constants';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 
 const {Component} = React;
@@ -119,13 +119,14 @@ class ReflectionGroup extends Component<Props, State> {
   render() {
     const {meeting, reflectionGroup} = this.props;
     const {isExpanded, reflections} = reflectionGroup;
-
+    const {localPhase: {phaseType}} = meeting;
     // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
     const style = !isExpanded && this.topCardRef && reflections.length > 1 &&
       {height: reflections.length * 8 + this.topCardRef.clientHeight + ui.retroCardCollapsedHeightRem * 8} || {};
+    const showHeader = reflections.length > 1 || phaseType === VOTE;
     return (
       <Group>
-        {reflections.length > 1 && <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />}
+        {showHeader && <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />}
         <Reflections onClick={this.toggleExpanded} style={style}>
           {reflections.map(this.renderReflection)}
         </Reflections>
