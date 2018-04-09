@@ -46,16 +46,17 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
-const {midGray} = appTheme.brand.primary;
+const {purple, purpleLightened, midGray} = appTheme.brand.primary;
 const {red, rose, green} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
+// Border radius ratio: powers of 2
 // Small border radius for controls (inputs, buttons, etcs.)
-const borderRadiusSmall = '.125rem';
+const borderRadiusSmall = '.125rem'; // 2px
 // Medium border radius for grouped components (cards, panels, etc.)
-const borderRadiusMedium = '.25rem';
+const borderRadiusMedium = '.25rem'; // 4px
 // Large border radius for larger components (modals, pages, etc.)
-const borderRadiusLarge = '.5rem';
+const borderRadiusLarge = '.5rem'; // 8px
 
 // Buttons
 const BUTTON_SIZE_SMALL = CONTROL_SIZE_SMALL;
@@ -117,6 +118,7 @@ export const MAX_WAIT_TIME = 5000;
 const filterBlur = 'blur(1.5px)';
 
 // Theme Gradients TODO: theme-able?
+const gradientPurple = makeGradient(purpleLightened, purple);
 const gradientWarm = makeGradient(red, rose);
 const gradientWarmDarkened = makeGradient(
   tinycolor(red).darken(3),
@@ -252,7 +254,6 @@ const ui = {
     paddingRight: '.5em',
     width: '100%'
   },
-  buttonBorderRadius: borderRadiusSmall,
   buttonDisabledStyles: {
     cursor: 'not-allowed',
     opacity: '.5',
@@ -378,11 +379,18 @@ const ui = {
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
   emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
-  emailRuleColor: appTheme.palette.mid20l,
+  emailRuleColor: appTheme.palette.mid20l, // email rule color
+  emailRuleHeight: '1px', // email rule height
+  emailRuleStyle: {
+    backgroundColor: appTheme.palette.mid20l, // email rule color
+    border: 0,
+    height: '1px', // email rule height
+    margin: '0 auto'
+  },
   emailTableBase: {
     borderCollapse: 'collapse',
-    marginLeft: 'auto',
-    marginRight: 'auto'
+    borderSpacing: 0,
+    margin: '0px auto'
   },
 
   // Fields
@@ -472,6 +480,7 @@ const ui = {
 
   // Gradients
   // ---------------------------------------------------------------------------
+  gradientPurple,
   gradientWarm,
   gradientWarmDarkened,
   gradientWarmLightened,
@@ -541,8 +550,9 @@ const ui = {
   menuItemBackgroundColorActive: appTheme.palette.light,
   menuItemColor: appTheme.palette.dark,
   menuItemColorHoverActive: appTheme.palette.dark50d,
-  menuItemHeight: '2rem',
   menuItemFontSize: '.9375rem',
+  menuItemHeight: '2rem',
+  menuItemIconColor: midGray,
 
   // Modals
   // ---------------------------------------------------------------------------
@@ -579,7 +589,6 @@ const ui = {
   // Panels
   // ---------------------------------------------------------------------------
   panelBoxShadow: shadow[0], // based on dark palette color
-  panelBorderColor: appTheme.palette.mid50l,
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',

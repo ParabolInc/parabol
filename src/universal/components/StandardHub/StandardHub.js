@@ -166,7 +166,7 @@ const styleThunk = () => ({
   notifications: {
     alignItems: 'center',
     backgroundColor: ui.dashSidebarBackgroundColor,
-    borderRadius: ui.buttonBorderRadius,
+    borderRadius: '2rem',
     display: 'flex',
     height: 32,
     justifyContent: 'center',

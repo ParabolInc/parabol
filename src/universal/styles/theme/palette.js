@@ -2,11 +2,6 @@ import tinycolor from 'tinycolor2';
 import brand from './brand';
 
 const theme = {
-  // cool: brand.darkCyan,
-  // warm: brand.darkishPink,
-  // dark: brand.slateGray,
-  // mid: brand.greyBlue,
-  // light: brand.eggShell
   cool: brand.primary.teal,
   warm: brand.primary.orange,
   dark: brand.primary.darkGray,

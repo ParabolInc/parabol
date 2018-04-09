@@ -46,7 +46,7 @@ class MenuItem extends Component {
     const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
     const titleStr = title || titleFallbackStr;
     const iconStyle = {
-      color: iconColor || 'inherit',
+      color: iconColor || ui.menuItemIconColor,
       fontSize: ui.iconSize,
       lineHeight: 'inherit',
       marginLeft: ui.menuGutterHorizontal,
@@ -147,7 +147,7 @@ const styleThunk = () => ({
   hr: {
     backgroundColor: ui.menuBorderColor,
     border: 'none',
-    height: '1px',
+    height: '.0625rem',
     marginBottom: ui.menuGutterVertical,
     marginTop: ui.menuGutterVertical,
     padding: 0
