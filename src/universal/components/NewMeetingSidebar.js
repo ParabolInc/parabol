@@ -12,7 +12,7 @@ import LogoBlock from 'universal/components/LogoBlock/LogoBlock';
 import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList';
 import makeHref from 'universal/utils/makeHref';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
+import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
 const Nav = styled('nav')({
   display: 'flex',
@@ -64,6 +64,7 @@ const NewMeetingSidebar = (props: Props) => {
   } = props;
   const {team: {teamId, teamName}} = viewer;
   const meetingSlug = meetingTypeToSlug[meetingType];
+  const meetingLabel = meetingTypeToLabel[meetingType];
   const relativeLink = `/${meetingSlug}/${teamId}`;
   return (
     <SidebarParent>
@@ -77,7 +78,7 @@ const NewMeetingSidebar = (props: Props) => {
         <CopyShortLink icon="link" label="Meeting Link" url={makeHref(relativeLink)} />
       </SidebarHeader>
       <SidebarSubHeading>
-        <LabelHeading>{'Action Meeting'}</LabelHeading>
+        <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
       </SidebarSubHeading>
       <Nav>
         <NewMeetingSidebarPhaseList gotoStageId={gotoStageId} viewer={viewer} />

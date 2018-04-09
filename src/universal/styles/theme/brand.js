@@ -4,6 +4,7 @@
 const brand = {
   primary: {
     purple: '#493272',
+    purpleLightened: '#8869C2', // temp for gradient
     purpleDarkened: '#3F2B63', // temp for hover states
     orange: '#FD6157',
     teal: '#55C0CF',

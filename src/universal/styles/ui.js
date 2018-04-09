@@ -46,7 +46,7 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
-const {midGray} = appTheme.brand.primary;
+const {purple, purpleLightened, midGray} = appTheme.brand.primary;
 const {red, rose, green} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
@@ -118,6 +118,7 @@ export const MAX_WAIT_TIME = 5000;
 const filterBlur = 'blur(1.5px)';
 
 // Theme Gradients TODO: theme-able?
+const gradientPurple = makeGradient(purpleLightened, purple);
 const gradientWarm = makeGradient(red, rose);
 const gradientWarmDarkened = makeGradient(
   tinycolor(red).darken(3),
@@ -479,6 +480,7 @@ const ui = {
 
   // Gradients
   // ---------------------------------------------------------------------------
+  gradientPurple,
   gradientWarm,
   gradientWarmDarkened,
   gradientWarmLightened,
