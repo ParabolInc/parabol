@@ -15,6 +15,8 @@ import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper';
 import {makeContentWithEntity} from 'universal/utils/draftjs/completeEnitity';
 import anonymousReflectionDecorators from 'universal/components/TaskEditor/anonymousReflectionDecorators';
+import styled from 'react-emotion';
+import ui from 'universal/styles/ui';
 
 type Props = {
   meeting: Meeting,
@@ -27,6 +29,13 @@ type State = {
   isBlurred: boolean,
   isEditing: boolean
 };
+
+const AnonymousStyles = styled('div')({
+  backgroundColor: '#fff',
+  borderRadius: ui.cardBorderRadius,
+  boxShadow: ui.cardBoxShadow,
+  position: 'relative'
+});
 
 const DEFAULT_TEXT = 'Somebody is typing...';
 const ROT = Math.floor(Math.random() * 25) + 1;
@@ -90,7 +99,11 @@ class AnonymousReflectionCard extends Component<Props, State> {
   render() {
     const {editorState, isBlurred} = this.state;
     const {meeting: {teamId}} = this.props;
-    return <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />;
+    return (
+      <AnonymousStyles>
+        <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
+      </AnonymousStyles>
+    );
   }
 }
 

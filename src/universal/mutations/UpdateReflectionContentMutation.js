@@ -32,7 +32,7 @@ const mutation = graphql`
   }
 `;
 
-const CreateReflectionMutation = (
+const UpdateReflectionContentMutation = (
   environment: Object,
   variables: Variables,
   onError?: ErrorHandler,
@@ -56,4 +56,4 @@ const CreateReflectionMutation = (
   });
 };
 
-export default CreateReflectionMutation;
+export default UpdateReflectionContentMutation;

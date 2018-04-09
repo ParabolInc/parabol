@@ -74,6 +74,10 @@ const RetroReflectionGroup = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The title of the grouping of the retrospective reflections'
     },
+    titleIsUserDefined: {
+      type: GraphQLBoolean,
+      description: 'true if a user wrote the title, else false'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the meeting was updated at'

@@ -4,9 +4,9 @@
  */
 
 
-const SALIENT_THRESHOLD = 0.85;
+const SALIENT_THRESHOLD = 0.60;
 const MIN_ENTITIES = 2;
-const MAX_CHARS = 40;
+const MAX_CHARS = 30;
 
 const getTitleFromComputedGroup = (entityNameArr, group) => {
   const sumArr = new Array(entityNameArr.length).fill(0);

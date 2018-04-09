@@ -1,7 +1,6 @@
 /**
  * Updates a reflection's content for the retrospective meeting.
  *
- * @flow
  */
 import {commitMutation} from 'react-relay';
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
@@ -36,9 +35,11 @@ graphql`
       reflections {
         ...CompleteReflectionFrag @relay(mask: false)  
       }
+      title
     }
     oldReflectionGroup {
       id
+      title
     }
   }
 `;
@@ -101,6 +102,16 @@ const UpdateReflectionLocationMutation = (
       const payload = store.getRootField('updateReflectionLocation');
       if (!payload) return;
       updateReflectionLocationTeamUpdater(payload, store);
+
+      // only do this for the mutator, don't want unexpected collapses because someone else did something
+      const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id');
+      const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id');
+      if (reflectionGroupId) {
+        store.get(reflectionGroupId).setValue(false, 'isExpanded');
+      }
+      if (oldReflectionGroupId) {
+        store.get(oldReflectionGroupId).setValue(false, 'isExpanded');
+      }
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON();
@@ -109,7 +120,7 @@ const UpdateReflectionLocationMutation = (
       // move an entire group somewhere else
       if (!reflectionId) {
         const reflectionGroupProxy = store.get(reflectionGroupId);
-        updateProxyRecord(reflectionGroupProxy, {sortOrder});
+        updateProxyRecord(reflectionGroupProxy, {sortOrder, retroPhaseItemId});
         moveGroupLocation(reflectionGroupProxy, store);
         return;
       }
@@ -135,22 +146,16 @@ const UpdateReflectionLocationMutation = (
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup);
         reflectionGroupProxy.setLinkedRecords([reflectionProxy], 'reflections');
         reflectionGroupProxy.setLinkedRecord(meeting, 'meeting');
-        // handleAddReflectionGroups(reflectionGroupProxy, store);
-        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
       } else if (reflectionGroupId === oldReflectionGroupId) {
         // move a card within the same group
         updateProxyRecord(reflectionProxy, {sortOrder});
-        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
-        // handleAddReflectionToGroup(reflectionProxy, store);
       } else {
         // move a card into another group
-        updateProxyRecord(reflectionProxy, {sortOrder, reflectionGroupId, retroPhaseItemId});
-        const phaseItemProxy = store.get(retroPhaseItemId);
+        const groupRetroPhaseItemId = reflectionGroupProxy.getValue('retroPhaseItemId');
+        updateProxyRecord(reflectionProxy, {sortOrder, reflectionGroupId, retroPhaseItemId: groupRetroPhaseItemId});
+        const phaseItemProxy = store.get(groupRetroPhaseItemId);
         reflectionProxy.setLinkedRecord(phaseItemProxy, 'phaseItem');
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup');
-        // handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store);
-        // handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store);
-        // handleAddReflectionToGroup(reflectionProxy, store);
       }
       moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store);
     }

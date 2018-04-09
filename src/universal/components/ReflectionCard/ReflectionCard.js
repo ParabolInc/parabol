@@ -4,7 +4,7 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState, convertToRaw, EditorState} from 'draft-js';
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 import React, {Component} from 'react';
 import styled from 'react-emotion';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
@@ -38,8 +38,8 @@ export type Props = {|
 
 type State = {
   content: string,
-  editorState: EditorState,
-  getEditorState: () => EditorState
+  editorState: ?Object,
+  getEditorState: () => ?Object
 };
 
 const OriginFooter = styled('div')({
@@ -56,7 +56,8 @@ const ReflectionStyles = styled('div')(
   {
     backgroundColor: '#fff',
     borderRadius: ui.cardBorderRadius,
-    boxShadow: ui.cardBoxShadow
+    boxShadow: ui.cardBoxShadow,
+    position: 'relative'
   },
   ({isCollapsed}) => isCollapsed && ({
     height: `${ui.retroCardCollapsedHeightRem}rem`,
@@ -67,11 +68,11 @@ const ReflectionStyles = styled('div')(
 class ReflectionCard extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflection} = nextProps;
-    const {content, reflectionId, reflectionGroupId, sortOrder} = reflection;
+    const {content} = reflection;
     if (content === prevState.content) return null;
-    // const contentState = convertFromRaw(JSON.parse(content));
-    const DEBUG_TEXT = `ReflID: ${reflectionId} | GroupId: ${reflectionGroupId} | Sort: ${sortOrder}`;
-    const contentState = ContentState.createFromText(DEBUG_TEXT);
+    const contentState = convertFromRaw(JSON.parse(content));
+    // const DEBUG_TEXT = `ReflID: ${reflectionId} | GroupId: ${reflectionGroupId} | Sort: ${sortOrder}`;
+    // const contentState = ContentState.createFromText(DEBUG_TEXT);
     return {
       content,
       editorState: EditorState.createWithContent(contentState, editorDecorators(prevState.getEditorState))
