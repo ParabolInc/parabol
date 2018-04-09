@@ -1,15 +1,7 @@
-import {RETROSPECTIVE} from 'universal/utils/constants';
+// add props to the NewMeeting table
 
 const extendNewMeetingForType = (newMeetingBase) => {
-  switch (newMeetingBase.meetingType) {
-    case RETROSPECTIVE:
-    default:
-      return {
-        reflections: [],
-        reflectionGroups: [],
-        ...newMeetingBase
-      };
-  }
+  return newMeetingBase;
 };
 
 export default extendNewMeetingForType;

@@ -11,7 +11,8 @@ const withKeyboardShortcuts = (ComposedComponent) => {
       editorState: PropTypes.object.isRequired,
       handleKeyCommand: PropTypes.func,
       keyBindingFn: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired
+      // could be readOnly, so not strictly required
+      setEditorState: PropTypes.func
     };
 
     handleKeyCommand = (command) => {

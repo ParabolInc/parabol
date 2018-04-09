@@ -101,7 +101,8 @@ const withMarkdown = (ComposedComponent) => {
       keyBindingFn: PropTypes.func,
       removeModal: PropTypes.func,
       renderModal: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired
+      // could be readOnly, so not strictly required
+      setEditorState: PropTypes.func
     };
 
     state = {};

@@ -9,6 +9,7 @@ graphql`
     }
     meetingNumber
     meetingType
+    teamId
     phases {
       id
       phaseType
@@ -18,6 +19,9 @@ graphql`
         ... on NewMeetingTeamMemberStage {
           teamMemberId
           teamMember {
+            meetingMember {
+              isCheckedIn
+            }
             id
             picture
             preferredName
@@ -39,12 +43,17 @@ graphql`
           reflectionGroup {
             title
             voteCount
-            retroReflections {
+            reflections {
               isViewerCreator
               content
             }
           }
         }
+      }
+    }
+    ... on RetrospectiveMeeting {
+      reflectionGroups {
+        id
       }
     }
   }

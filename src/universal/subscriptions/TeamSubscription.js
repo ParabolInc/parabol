@@ -2,20 +2,20 @@ import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteM
 import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation';
 import {addTeamMutationNotificationUpdater, addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation';
 import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation';
-import {createReflectionUpdater} from 'universal/mutations/CreateReflectionMutation';
+import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation';
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation';
 import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation';
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation';
 import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation';
-import {removeReflectionUpdater} from 'universal/mutations/RemoveReflectionMutation';
+import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation';
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
 import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMutation';
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
-import {updateReflectionContentUpdater} from 'universal/mutations/UpdateReflectionContentMutation';
-import {updateReflectionIsEditingUpdater} from 'universal/mutations/UpdateReflectionIsEditingMutation';
+import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation';
+import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -26,6 +26,8 @@ const subscription = graphql`
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
+      ...DragReflectionMutation_team @relay(mask: false)
+      ...EditReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
       ...KillNewMeetingMutation_team @relay(mask: false)
@@ -43,7 +45,7 @@ const subscription = graphql`
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
-      ...UpdateReflectionIsEditingMutation_team @relay(mask: false)
+      ...UpdateReflectionLocationMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
     }
@@ -81,7 +83,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'CreateGitHubIssuePayload':
           break;
         case 'CreateReflectionPayload':
-          createReflectionUpdater(payload, store);
+          createReflectionTeamUpdater(payload, store);
+          break;
+        case 'DragReflectionPayload':
           break;
         case 'RemoveTeamMemberSelfPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);
@@ -94,6 +98,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'ArchiveTeamPayload':
           archiveTeamTeamUpdater(payload, store, viewerId, options);
+          break;
+        case 'EditReflectionPayload':
+          editReflectionTeamUpdater(payload, store);
           break;
         case 'EndMeetingPayload':
           endMeetingTeamUpdater(payload, options);
@@ -123,7 +130,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           removeOrgUserTeamUpdater(payload, store, viewerId);
           break;
         case 'RemoveReflectionPayload':
-          removeReflectionUpdater(payload, store);
+          removeReflectionTeamUpdater(payload, store);
           break;
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options);
@@ -140,10 +147,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'UpdateCheckInQuestionPayload':
           break;
         case 'UpdateReflectionContentPayload':
-          updateReflectionContentUpdater(payload, store);
           break;
-        case 'UpdateReflectionIsEditingPayload':
-          updateReflectionIsEditingUpdater(payload, store);
+        case 'UpdateReflectionLocationPayload':
+          updateReflectionLocationTeamUpdater(payload, options);
           break;
         case 'UpgradeToProPayload':
           break;
