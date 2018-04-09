@@ -3678,9 +3678,9 @@ draft-js-utils@>=0.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-1.2.0.tgz#f5cb23eb167325ffed3d79882fdc317721d2fd12"
 
-"draft-js@https://github.com/mattkrick/draft-js/tarball/d028124eb14c51954fd687448799864fda6d9413":
+"draft-js@https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6":
   version "0.10.5"
-  resolved "https://github.com/mattkrick/draft-js/tarball/d028124eb14c51954fd687448799864fda6d9413#e5b41a75dc86c49ee705f359d7866e3f85ba7023"
+  resolved "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6#025fddba56f21aaf3383aee778e0b17025c9a7bc"
   dependencies:
     fbjs "^0.8.15"
     immutable "~3.7.4"
