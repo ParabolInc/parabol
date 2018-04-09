@@ -22,19 +22,20 @@ const Header = styled('div')({
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
   const {localPhase} = newMeeting || {};
-  if (!localPhase) return null;
+  if (!localPhase || !localPhase.stages) return null;
   const {stages} = localPhase;
   return (
     <SidebarPhaseItemChild>
       <Header>{'Upvoted Topics'}</Header>
       {stages.map((stage, idx) => {
-        const {reflectionGroup: {title}} = stage;
+        const {reflectionGroup} = stage;
+        const title = reflectionGroup && reflectionGroup.title || 'Unknown group';
         return (
           <div key={stage.id} onClick={() => gotoStageId(stage.id)}>
             <span>{`${idx + 1}. `}</span>
             <span>{title}</span>
           </div>
-        )
+        );
       })}
     </SidebarPhaseItemChild>
   );

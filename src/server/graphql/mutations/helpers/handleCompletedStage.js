@@ -3,6 +3,11 @@ import addEntitiesToReflections from 'server/graphql/mutations/helpers/addEntiti
 import addDiscussionTopics from 'server/graphql/mutations/helpers/addDiscussionTopics';
 import addDefaultGroupTitles from 'server/graphql/mutations/helpers/addDefaultGroupTitles';
 
+/*
+ * Used to stage-complete side effects.
+ * Should only return a promise if the side effect changes the phases or stages
+ * Otherwise, just update via pubsub so we don't slow down the navigation
+ */
 const handleCompletedRetrospectiveStage = async (stage, meeting, dataLoader, subOptions) => {
   if (stage.phaseType === REFLECT) {
     // don't wait for the response from google

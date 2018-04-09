@@ -28,14 +28,7 @@ const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
   color
 }));
 
-const DiscussPhaseWrapper = styled('div')({
-  display: 'flex',
-  height: '100%',
-  justifyContent: 'space-around',
-  width: '100%'
-});
-
-const ReflectionGrid = styled('div')({})
+const ReflectionGrid = styled('div')({});
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere: {viewerId}, gotoNext, team} = props;
   const {newMeeting} = team;
