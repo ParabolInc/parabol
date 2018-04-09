@@ -3,7 +3,7 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-
+import {srOnly} from 'universal/styles/helpers';
 
 const ProgressDots = (props) => {
   const {currentDot, clickFactory, numCompleted, styles} = props;
@@ -83,14 +83,7 @@ const styleThunk = () => ({
   },
 
   progressDotLabel: {
-    border: 0,
-    clip: 'rect(0, 0, 0, 0)',
-    height: '1px',
-    margin: '-1px',
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    width: '1px'
+    ...srOnly
   }
 });
 

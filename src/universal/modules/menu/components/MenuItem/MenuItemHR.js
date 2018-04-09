@@ -6,7 +6,7 @@ const MenuItemHR = () => {
   return (<hr className={css({
     backgroundColor: ui.menuBorderColor,
     border: 'none',
-    height: '1px',
+    height: '.0625rem',
     marginBottom: ui.menuGutterVertical,
     marginTop: ui.menuGutterVertical,
     padding: 0

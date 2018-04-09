@@ -29,10 +29,7 @@ const teamNameStyle = {
 };
 
 const ruleStyle = {
-  backgroundColor: ui.emailRuleColor,
-  border: 0,
-  height: '2px',
-  margin: '0 auto',
+  ...ui.emailRuleStyle,
   width: '80%'
 };
 
