@@ -1,37 +1,8 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import {isTeamMember} from 'server/utils/authorization';
-import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
-import {
-  sendPhaseItemNotFoundError, sendReflectionGroupNotFoundError, sendReflectionNotFoundError,
-  sendRetroPhaseItemIdNotExpectedError
-} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
-import {GROUP, TEAM} from 'universal/utils/constants';
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
-import * as shortid from 'shortid';
-import removeEmptyReflectionGroup from 'server/graphql/mutations/helpers/removeEmptyReflectionGroup';
-
-const ensureReflectionGroup = async (reflectionGroupId, meetingId, retroPhaseItemId, sortOrder) => {
-  const r = getRethink();
-  const now = new Date();
-  if (reflectionGroupId !== null) return reflectionGroupId;
-  // the reflection was dragged out on its own, create a new group
-  const reflectionGroup = {
-    id: shortid.generate(),
-    createdAt: now,
-    isActive: true,
-    meetingId,
-    retroPhaseItemId,
-    sortOrder,
-    updatedAt: now,
-    voterIds: []
-  };
-  await r.table('RetroReflectionGroup').insert(reflectionGroup);
-  return reflectionGroup.id;
-};
+import {TEAM} from 'universal/utils/constants';
+import handleUpdatedLocation from 'server/graphql/mutations/helpers/updateReflectionLocation/handleUpdateLocation';
 
 export default {
   type: UpdateReflectionLocationPayload,
@@ -54,58 +25,16 @@ export default {
       description: 'The new group the reflection is a part of (or leaving, if null)'
     }
   },
-  async resolve(source, {reflectionId, reflectionGroupId, retroPhaseItemId, sortOrder}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
+  async resolve(source, {reflectionId, reflectionGroupId, retroPhaseItemId, sortOrder}, context) {
+    const {dataLoader, socketId: mutatorId} = context;
     const operationId = dataLoader.share();
-    const now = new Date();
     const subOptions = {operationId, mutatorId};
 
     // AUTH
-    if (!reflectionId && !reflectionGroupId) return sendReflectionNotFoundError(authToken, reflectionId);
-    if (reflectionId && retroPhaseItemId) return sendRetroPhaseItemIdNotExpectedError(authToken, reflectionId);
-    if (reflectionGroupId === null && !retroPhaseItemId) return sendReflectionGroupNotFoundError(authToken, null);
-
-    const reflection = reflectionId && await r.table('RetroReflection').get(reflectionId);
-    const reflectionGroup = reflectionGroupId && await dataLoader.get('retroReflectionGroups').load(reflectionGroupId);
-    if (!reflection && !reflectionGroup) return sendReflectionNotFoundError(authToken, reflectionId);
-    const {meetingId} = reflection || reflectionGroup;
-    const oldReflectionGroupId = reflection ? reflection.reflectionGroupId : reflectionGroupId;
-    const meeting = await dataLoader.get('newMeetings').load(meetingId);
-    const {endedAt, phases, teamId} = meeting;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    // TODO uncomment in prod
-    // if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
-
-    // VALIDATION
-    if (retroPhaseItemId) {
-      const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId);
-      if (!phaseItem || phaseItem.teamId !== teamId) return sendPhaseItemNotFoundError(authToken, retroPhaseItemId);
-      if (!phaseItem.isActive) return sendPhaseItemNotActiveError(authToken, retroPhaseItemId);
+    const data = await handleUpdatedLocation(reflectionId, reflectionGroupId, retroPhaseItemId, sortOrder, context);
+    if (!data.error) {
+      publish(TEAM, data.teamId, UpdateReflectionLocationPayload, data, subOptions);
     }
-    if (reflectionGroup && reflectionGroup.meetingId !== meetingId) sendReflectionGroupNotFoundError(authToken, reflectionGroupId);
-
-    // RESOLUTION
-    const nextReflectionGroupId = await ensureReflectionGroup(reflectionGroupId, meetingId, retroPhaseItemId, sortOrder);
-    if (reflection) {
-      await r.table('RetroReflection').get(reflectionId)
-        .update({
-          sortOrder: nextReflectionGroupId === reflectionGroupId ? sortOrder : 0,
-          reflectionGroupId: nextReflectionGroupId,
-          updatedAt: now
-        });
-    } else {
-      await r.table('RetroReflectionGroup')
-        .get(reflectionGroupId)
-        .update({
-          retroPhaseItemId: retroPhaseItemId || undefined,
-          sortOrder,
-          updatedAt: now
-        });
-    }
-    await removeEmptyReflectionGroup(reflectionGroupId, oldReflectionGroupId);
-    const data = {meetingId, reflectionId, reflectionGroupId: nextReflectionGroupId, oldReflectionGroupId};
-    publish(TEAM, teamId, UpdateReflectionLocationPayload, data, subOptions);
     return data;
   }
 };

@@ -1,36 +1,24 @@
-/**
- * Displays a group of reflection cards that have been purposefully grouped together.
- *
- * @flow
- */
-import type {Element} from 'react';
-// $FlowFixMe
-import React, {Component, Fragment} from 'react';
+// @flow
+import * as React from 'react';
 import type {ReflectionGroupID} from 'universal/types/retro';
-import {css} from 'react-emotion';
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
+import styled from 'react-emotion';
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
-import ReflectionCardDropPreview from 'universal/components/ReflectionCardDropPreview/ReflectionCardDropPreview';
-import ui from 'universal/styles/ui';
-
-import ReflectionGroupTitleEditor from './ReflectionGroupTitleEditor';
-import {createFragmentContainer} from 'react-relay';
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import type {ReflectionGroup_reflectionGroup as ReflectionGroupType} from './__generated__/ReflectionGroup_reflectionGroup.graphql';
 import type {ReflectionGroup_meeting as Meeting} from './__generated__/ReflectionGroup_meeting.graphql';
+import ui from 'universal/styles/ui';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader';
 
-const animationTime = 200;
-
-const animationTimeout = {
-  enter: animationTime,
-  exit: animationTime
-};
+const {Component} = React;
 
 export type Props = {
+  atmosphere: Object,
   handleSaveTitle?: (string) => any,
   hovered?: boolean,
   id: ReflectionGroupID,
+  isDraggingOver: boolean,
   meeting: Meeting,
-  // Note: `reflections` is treated as a stack where the "top" is the end of the array.
   reflectionGroup: ReflectionGroupType,
   retroPhaseItemId: string
 };
@@ -39,146 +27,111 @@ type State = {
   isExpanded: boolean
 };
 
+const MARGIN = 8;
+
+const Reflections = styled('div')({
+  // position: 'relative'
+});
+
+const AnimatedReflection = styled('div')({
+  transition: 'all 200ms ease',
+  margin: MARGIN
+});
+
+const Group = styled('div')({
+  marginBottom: MARGIN * 2
+});
+
 class ReflectionGroup extends Component<Props, State> {
-  state = {
-    isExpanded: this.props.reflectionGroup.reflections.length === 1
-  };
-
-  getAnimatedCardsStyles = (extraStyles: ?Object) => ({
-    transition: `transform ${animationTimeout.enter / 1000}s ease`,
-    ...extraStyles
-  });
-
-  getCardElements = () => {
-    const {hovered, reflectionGroup} = this.props;
-    const {isExpanded} = this.state;
-    const reflections = isExpanded ? reflectionGroup.reflections : this.getVisibleReflections();
-    const cardElements = reflections.map((reflection, index) => ({
-      element: this.renderReflection(reflection, index, index === reflections.length - 1),
-      key: reflection.id
-    }));
-    return cardElements;
-  };
-
-  getCollapsedItemCount = () => (
-    this.getVisibleReflections().length + (this.props.hovered ? 1 : 0)
-  );
-
-  getVisibleReflections = () => {
-    const {hovered, reflectionGroup} = this.props;
-    const {reflections} = reflectionGroup;
-    if (hovered && reflections.length <= this.maxCollapsedItems - 1 || !hovered && reflections.length <= this.maxCollapsedItems) {
-      return reflections;
-    }
-    return reflections.slice(
-      reflections.length - (this.props.hovered ? this.maxCollapsedItems - 1 : this.maxCollapsedItems)
-    );
-  };
-
-  maxCollapsedItems = 4;
-
-  toggleExpanded = () => {
-    const {isDraggingOver, reflectionGroup: {reflections}} = this.props;
-    if (isDraggingOver || reflections.length === 0) return;
-    this.setState({isExpanded: !this.state.isExpanded});
+  constructor(props) {
+    super(props);
+    const {atmosphere, reflectionGroup: {reflections, reflectionGroupId}} = props;
+    const isExpanded = reflections.length === 1;
+    // setTimeout is a workaround for https://github.com/atlassian/react-beautiful-dnd/issues/279
+    setTimeout(() => {
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflectionGroupProxy = store.get(reflectionGroupId);
+        if (reflectionGroupProxy) {
+          reflectionGroupProxy.setValue(isExpanded, 'isExpanded');
+        }
+      });
+    });
   }
 
-  maybeRenderHeader = () => {
-    const {handleSaveTitle, reflectionGroup: {reflectionGroupId, reflections, title}} = this.props;
-    const styles = {
-      alignItems: 'center',
-      display: 'flex',
-      justifyContent: 'center',
-      marginBottom: 8
-    };
-    return handleSaveTitle && (
-      <div className={css(styles)}>
-        <ReflectionGroupTitleEditor
-          id={reflectionGroupId}
-          form={`reflection-group-title-${reflectionGroupId}`}
-          title={title}
-          onSubmit={({title: newTitle}) => handleSaveTitle(newTitle)}
-        />
-        <div className={css({marginLeft: '1rem', fontWeight: 'bold'})}>{reflections.length}</div>
-      </div>
-    );
+  setTopCardRef = (c) => {
+    this.topCardRef = c;
   };
 
-  renderReflection = (reflection: Object, index: number, isTopCard: boolean) => {
-    const {meeting, retroPhaseItemId} = this.props;
-    const {isExpanded} = this.state;
-    return isExpanded ? (
-      <DraggableReflectionCard
-        dndIndex={index}
-        showOriginFooter={retroPhaseItemId !== reflection.retroPhaseItemId}
-        meeting={meeting}
-        reflection={reflection}
-      />
-    ) : (
-      <ReflectionCard
-        isCollapsed={!isTopCard}
-        meeting={meeting}
-        reflection={reflection}
-      />
-    );
-  };
+  topCardRef: ?HTMLElement
 
-  renderCollapsedCards = () => {
-    return (
-      <Fragment>
-        {this.getCardElements().map(({element, key}, index) => (
-          this.renderCollapsedElement(element, key, index)
-        ))}
-      </Fragment>
-    );
-  };
-
-  renderCollapsedElement = (element: Element<*>, key: string, index: number) => {
-    const styles = this.getAnimatedCardsStyles({
-      transform:
-      `translateY(${-(index * (ui.retroCardCollapsedHeightRem - 0.5))}rem) ` +
-      `scale(${1 - (0.05 * (this.getCollapsedItemCount() - index - 1))})`
+  toggleExpanded = () => {
+    const {atmosphere, isDraggingOver, reflectionGroup: {reflections, reflectionGroupId}} = this.props;
+    if (isDraggingOver || reflections.length <= 1) return;
+    commitLocalUpdate(atmosphere, (store) => {
+      const reflectionGroupProxy = store.get(reflectionGroupId);
+      reflectionGroupProxy.setValue(!reflectionGroupProxy.getValue('isExpanded'), 'isExpanded');
     });
+  }
+
+  renderReflection = (reflection: Object, idx: number) => {
+    const {meeting, retroPhaseItemId} = this.props;
+    const {reflectionGroup: {isExpanded, reflections}} = this.props;
+    const isTopCard = idx === reflections.length - 1;
+    const isCollapsed = isExpanded ? false : !isTopCard;
+    const showOriginFooter = retroPhaseItemId !== reflection.retroPhaseItemId;
+    const interval = reflections.length - idx - 1;
+
+    const yTranslate = -idx * ui.retroCardCollapsedHeightRem;
+    const style = {
+      transform: !isExpanded &&
+      `translateY(${yTranslate}rem)
+       scale(${1 - (0.05 * interval)})`,
+      transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`
+    };
     return (
-      <div className={css(styles)} key={key}>
-        {element}
-      </div>
+      <AnimatedReflection key={reflection.id} style={style} innerRef={isTopCard ? this.setTopCardRef : undefined}>
+        <DraggableReflectionCard
+          dndIndex={idx}
+          showOriginFooter={showOriginFooter}
+          meeting={meeting}
+          reflection={reflection}
+          isExpanded={isExpanded}
+          isCollapsed={isCollapsed}
+        />
+      </AnimatedReflection>
     );
   };
-
-  renderExpandedCards = () => (
-    <Fragment>
-      {this.getCardElements().map(({element, key}) => (
-        <div className={css(this.getAnimatedCardsStyles({marginBottom: 8}))} key={key}>
-          {element}
-        </div>
-      ))}
-    </Fragment>
-  );
 
   render() {
-    const {isExpanded} = this.state;
-    const {reflectionGroup: {reflections}} = this.props;
+    const {meeting, reflectionGroup} = this.props;
+    const {isExpanded, reflections} = reflectionGroup;
+
+    // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
+    const style = !isExpanded && this.topCardRef && reflections.length > 1 &&
+      {height: reflections.length * 8 + this.topCardRef.clientHeight + ui.retroCardCollapsedHeightRem * 8} || {};
     return (
-      <div>
-        {this.maybeRenderHeader()}
-        <div onClick={this.toggleExpanded}>
-          {isExpanded || reflections.length === 1 ? this.renderExpandedCards() : this.renderCollapsedCards()}
-        </div>
-      </div>
+      <Group>
+        {reflections.length > 1 && <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />}
+        <Reflections onClick={this.toggleExpanded} style={style}>
+          {reflections.map(this.renderReflection)}
+        </Reflections>
+      </Group>
     );
   }
 }
 
 export default createFragmentContainer(
-  ReflectionGroup,
+  withAtmosphere(ReflectionGroup),
   graphql`
     fragment ReflectionGroup_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
+      ...ReflectionGroupHeader_meeting
     }
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
+      ...ReflectionGroupHeader_reflectionGroup
+      isExpanded
       reflectionGroupId: id
-      title
+      sortOrder
       reflections {
         id
         retroPhaseItemId

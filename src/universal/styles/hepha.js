@@ -8,4 +8,3 @@ export default function injectGlobals(globalStyles) {
     injectStyleOnce(name, name, [value], false, true);
   }
 }
-

@@ -5,7 +5,7 @@
  * if it does, grab the salience, else, set it to 0
  */
 const computeDistanceMatrix = (reflectionEntities, entityNameArr) => {
-  reflectionEntities.map((entities) => {
+  return reflectionEntities.map((entities) => {
     if (!entities) return new Array(entityNameArr.length).fill(0);
     return entityNameArr.map((name) => {
       const entity = entities.find((ent) => ent.name === name);

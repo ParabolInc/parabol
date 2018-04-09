@@ -11,7 +11,7 @@ const addEntitiesToReflections = async (meetingId) => {
     .filter((reflection) => {
       return r.and(
         reflection('isActive').eq(true),
-        reflection('entities').ne(null)
+        reflection.hasFields('entities').not()
       );
     });
 
@@ -26,7 +26,7 @@ const addEntitiesToReflections = async (meetingId) => {
 
   const nextReflections = reflections.map((reflection, idx) => ({
     id: reflection.id,
-    entities: sanitizedReflectionResponses[idx]
+    entities: sanitizedReflectionResponses[idx].entities
   }));
 
   return r(nextReflections).forEach((reflection) => {

@@ -1,5 +1,5 @@
 // @flow
-import React, {Component} from 'react';
+import * as React from 'react';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import withHotkey from 'react-hotkey-hoc';
@@ -7,7 +7,7 @@ import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import type {Match, RouterHistory} from 'react-router-dom';
-import {Route, Switch, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import styled from 'react-emotion';
 import {Helmet} from 'react-helmet';
 import NewMeetingSidebar from 'universal/components/NewMeetingSidebar';
@@ -15,7 +15,7 @@ import NewMeetingLobby from 'universal/components/NewMeetingLobby';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase';
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
-import {meetingTypeToLabel, meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
 import {CHECKIN, GROUP, REFLECT} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
@@ -33,6 +33,8 @@ import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingA
 import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading';
 import RetroGroupPhase from 'universal/components/RetroGroupPhase';
+
+const {Component} = React;
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -139,10 +141,10 @@ class NewMeeting extends Component<Props> {
     const {meetingType, viewer} = this.props;
     const {team} = viewer;
     const {newMeeting, teamName} = team;
-    const {facilitatorStageId, localStage} = newMeeting || {};
-    const meetingSlug = meetingTypeToSlug[meetingType];
+    const {facilitatorStageId, localPhase, localStage} = newMeeting || {};
     const meetingLabel = meetingTypeToLabel[meetingType];
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true;
+    const localPhaseType = localPhase && localPhase.phaseType;
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
@@ -156,24 +158,12 @@ class NewMeeting extends Component<Props> {
             />
           </MeetingAreaHeader>
           <ErrorBoundary>
-            <Switch>
-              <Route
-                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[CHECKIN]}`}
-                render={() => <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
-              />
-              <Route
-                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[REFLECT]}`}
-                render={() => <RetroReflectPhase team={team} />}
-              />
-              <Route
-                path={`/${meetingSlug}/:teamId/${phaseTypeToSlug[GROUP]}`}
-                render={() => <RetroGroupPhase team={team} />}
-              />
-              <Route
-                path={`/${meetingSlug}/:teamId`}
-                render={() => <NewMeetingLobby meetingType={meetingType} team={team} />}
-              />
-            </Switch>
+            <React.Fragment>
+              {localPhaseType === CHECKIN && <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
+              {localPhaseType === REFLECT && <RetroReflectPhase gotoNext={this.gotoNext} team={team} />}
+              {localPhaseType === GROUP && <RetroGroupPhase gotoNext={this.gotoNext} team={team} />}
+              {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
+            </React.Fragment>
           </ErrorBoundary>
         </MeetingArea>
         {!inSync && <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />}
@@ -231,6 +221,9 @@ export default createFragmentContainer(
           meetingId: id
           facilitatorStageId
           facilitatorUserId
+          localPhase {
+            phaseType
+          }
           localStage {
             localStageId: id
           }

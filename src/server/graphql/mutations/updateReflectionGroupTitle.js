@@ -6,11 +6,11 @@ import {sendReflectionGroupNotFoundError} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
 import {GROUP, TEAM} from 'universal/utils/constants';
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 import stringSimilarity from 'string-similarity';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {sendGroupTitleDuplicateError, sendGroupTitleRequiredError} from 'server/utils/__tests__/validationErrors';
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload';
+import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 
 export default {
   type: UpdateReflectionGroupTitlePayload,
@@ -54,6 +54,7 @@ export default {
     await r.table('RetroReflectionGroup').get(reflectionGroupId)
       .update({
         title: normalizedTitle,
+        titleIsUserDefined: true,
         updatedAt: now
       });
 

@@ -30,7 +30,7 @@ const DragReflectionPayload = new GraphQLObjectType({
     isDragging: {
       type: GraphQLBoolean,
       description: 'true if the reflection is being dragged, else false'
-    },
+    }
   })
 });
 

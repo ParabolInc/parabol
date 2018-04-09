@@ -1,12 +1,10 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
+import styled from 'react-emotion';
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import HomePage from 'universal/components/HomePage/HomePage';
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
-import withStyles from 'universal/styles/withStyles';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
 import {StyleSheetServer as S} from 'aphrodite-local-styles/no-important';
 import A from 'universal/Atmosphere';
@@ -26,10 +24,16 @@ const retroRoot = () => System.import('universal/components/RetroRoot/RetroRoot'
 const signInPage = () => System.import('universal/components/SignInPage/SignInPage');
 const signUpPage = () => System.import('universal/components/SignUpPage/SignUpPage');
 
-const Action = (props) => {
-  const {styles} = props;
+const ActionStyles = styled('div')({
+  margin: 0,
+  minHeight: '100vh',
+  padding: 0,
+  width: '100%'
+});
+
+const Action = () => {
   return (
-    <div className={css(styles.app)}>
+    <ActionStyles>
       <Toast />
       <SocketHealthMonitor />
       <Switch>
@@ -60,24 +64,10 @@ const Action = (props) => {
         <AsyncRoute mod={signout} />
         <AsyncRoute mod={notFound} />
       </Switch>
-    </div>
+    </ActionStyles>
   );
 };
 
-Action.propTypes = {
-  children: PropTypes.any,
-  styles: PropTypes.object
-};
-
-const styleThunk = () => ({
-  app: {
-    margin: 0,
-    minHeight: '100vh',
-    padding: 0,
-    width: '100%'
-  }
-});
-
 export const Atmosphere = A;
 export const StyleSheetServer = S;
-export default withStyles(styleThunk)(Action);
+export default Action;

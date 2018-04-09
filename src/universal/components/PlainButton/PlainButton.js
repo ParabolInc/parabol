@@ -14,7 +14,7 @@ const disabledStyles = {
   ':active': {
     animation: 'none'
   }
-};const PlainButton = styled('button')({
+}; const PlainButton = styled('button')({
   appearance: 'none',
   background: 'inherit',
   border: 0,

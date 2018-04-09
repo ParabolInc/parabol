@@ -52,14 +52,8 @@ graphql`
       }
     }
     ... on RetrospectiveMeeting {
-      reflections {
+      reflectionGroups {
         id
-        content
-        editorIds
-        isEditing
-        isViewerCreator
-        retroPhaseItemId
-        sortOrder
       }
     }
   }

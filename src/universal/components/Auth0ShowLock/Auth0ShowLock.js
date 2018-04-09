@@ -1,7 +1,7 @@
+import {injectGlobal} from 'react-emotion';
 import PropTypes from 'prop-types';
 import React from 'react';
 import signinAndUpdateToken from './signinAndUpdateToken';
-import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
@@ -15,7 +15,7 @@ let stylesInjected;
 export function showLock(atmosphere, dispatch) {
   if (!stylesInjected) {
     stylesInjected = true;
-    injectGlobals(auth0Overrides);
+    injectGlobal(auth0Overrides);
   }
   // eslint-disable-next-line global-require
   require.ensure([], (require) => {
