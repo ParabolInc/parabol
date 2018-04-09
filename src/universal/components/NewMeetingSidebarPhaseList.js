@@ -5,11 +5,11 @@ import styled from 'react-emotion';
 import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSidebarPhaseListItem';
 import {createFragmentContainer, graphql} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {phaseLabelLookup, phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups';
+import {phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups';
 import type {NewMeetingSidebarPhaseList_viewer as Viewer} from './__generated__/NewMeetingSidebarPhaseList_viewer.graphql';
 import findStageById from 'universal/utils/meetings/findStageById';
 import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
+import NewMeetingSidebarPhaseListItemChildren from 'universal/components/NewMeetingSidebarPhaseListItemChildren';
 
 const NavList = styled('ul')({
   listStyle: 'none',
@@ -35,10 +35,10 @@ const getItemStage = (name: string, phases: $ReadOnlyArray<Object>, facilitatorS
 };
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
-  const {atmosphere: {viewerId}, gotoStageId, viewer: {team: {meetingSettings: {phaseTypes}, newMeeting}}} = props;
+  const {gotoStageId, viewer} = props;
+  const {viewerId, team: {meetingSettings: {phaseTypes}, newMeeting}} = viewer;
   const {facilitatorUserId, facilitatorStageId, localPhase = {}, phases = []} = newMeeting || {};
-  const {phaseType} = localPhase;
-  const localGroup = phaseTypeToPhaseGroup[phaseType];
+  const localGroup = phaseTypeToPhaseGroup[localPhase.phaseType];
   const facilitatorStageRes = findStageById(phases, facilitatorStageId);
   const {phase: facilitatorPhase = {phaseType: LOBBY}} = facilitatorStageRes || {};
   const facilitatorPhaseGroup = phaseTypeToPhaseGroup[facilitatorPhase.phaseType];
@@ -46,28 +46,34 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
   return (
     <NavList>
       {phaseTypes
-        .map((name, idx) => {
-          const itemStage = getItemStage(name, phases, facilitatorStageId);
+        .map((phaseType, idx) => {
+          const itemStage = getItemStage(phaseType, phases, facilitatorStageId);
           const itemStageId = itemStage && itemStage.id || '';
           const isNavigable = getIsNavigable(isViewerFacilitator, phases, itemStageId);
           const handleClick = isNavigable ? () => gotoStageId(itemStageId) : undefined;
-          return (<NewMeetingSidebarPhaseListItem
-            key={name}
-            name={phaseLabelLookup[name]}
-            listPrefix={String(idx + 1)}
-            isActive={localGroup === name}
-            isFacilitatorPhaseGroup={facilitatorPhaseGroup === name}
-            handleClick={handleClick}
-          />);
+          return (
+            <NewMeetingSidebarPhaseListItem
+              key={phaseType}
+              phaseType={phaseType}
+              listPrefix={String(idx + 1)}
+              isActive={localGroup === phaseType}
+              isFacilitatorPhaseGroup={facilitatorPhaseGroup === phaseType}
+              handleClick={handleClick}
+            >
+              <NewMeetingSidebarPhaseListItemChildren phaseType={phaseType} viewer={viewer} />
+            </NewMeetingSidebarPhaseListItem>
+          );
         })}
     </NavList>
   );
 };
 
 export default createFragmentContainer(
-  withAtmosphere(withRouter(NewMeetingSidebarPhaseList)),
+  withRouter(NewMeetingSidebarPhaseList),
   graphql`
     fragment NewMeetingSidebarPhaseList_viewer on User {
+      ...NewMeetingSidebarPhaseListItemChildren_viewer
+      viewerId: id
       team(teamId: $teamId) {
         meetingSettings(meetingType: $meetingType) {
           phaseTypes

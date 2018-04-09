@@ -17,7 +17,7 @@ import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroRefle
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
-import {CHECKIN, GROUP, REFLECT} from 'universal/utils/constants';
+import {CHECKIN, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
@@ -33,6 +33,7 @@ import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingA
 import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading';
 import RetroGroupPhase from 'universal/components/RetroGroupPhase';
+import RetroVotePhase from 'universal/components/RetroVotePhase';
 
 const {Component} = React;
 
@@ -162,6 +163,7 @@ class NewMeeting extends Component<Props> {
               {localPhaseType === CHECKIN && <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
               {localPhaseType === REFLECT && <RetroReflectPhase gotoNext={this.gotoNext} team={team} />}
               {localPhaseType === GROUP && <RetroGroupPhase gotoNext={this.gotoNext} team={team} />}
+              {localPhaseType === VOTE && <RetroVotePhase gotoNext={this.gotoNext} team={team} />}
               {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
             </React.Fragment>
           </ErrorBoundary>
@@ -195,6 +197,7 @@ export default createFragmentContainer(
         ...NewMeetingCheckIn_team
         ...RetroReflectPhase_team
         ...RetroGroupPhase_team
+        ...RetroVotePhase_team
         checkInGreeting {
           content
           language

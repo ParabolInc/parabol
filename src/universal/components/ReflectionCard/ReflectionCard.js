@@ -57,6 +57,7 @@ const ReflectionStyles = styled('div')(
     backgroundColor: '#fff',
     borderRadius: ui.cardBorderRadius,
     boxShadow: ui.cardBoxShadow,
+    margin: 8,
     position: 'relative'
   },
   ({isCollapsed}) => isCollapsed && ({

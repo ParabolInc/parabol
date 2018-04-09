@@ -48,6 +48,7 @@ const subscription = graphql`
       ...UpdateReflectionLocationMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
+      ...VoteForReflectionGroupMutation_team @relay(mask: false) 
     }
   }
 `;
@@ -152,6 +153,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           updateReflectionLocationTeamUpdater(payload, options);
           break;
         case 'UpgradeToProPayload':
+          break;
+        case 'VoteForReflectionGroupPayload':
           break;
         default:
           console.error('TeamSubscription case fail', type);

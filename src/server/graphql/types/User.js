@@ -31,6 +31,7 @@ import archivedTasks from 'server/graphql/queries/archivedTasks';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
+import MeetingMember from 'server/graphql/types/MeetingMember';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -153,6 +154,31 @@ const User = new GraphQLObjectType({
         }
         if (!isTeamMember(authToken, meeting.teamId)) return sendTeamAccessError(authToken, meeting.teamId, null);
         return meeting;
+      }
+    },
+    meetingMember: {
+      type: MeetingMember,
+      description: 'The meeting member associated with this user, if a meeting is currently in progress',
+      args: {
+        meetingId: {
+          type: GraphQLID,
+          description: 'The specific meeting ID'
+        },
+        teamId: {
+          type: GraphQLID,
+          description: 'The teamId of the meeting currently in progress'
+        }
+      },
+      resolve: async (source, args, {authToken, dataLoader}) => {
+        if (!args.teamId && !args.meetingId) return null;
+        const viewerId = getUserId(authToken);
+        let meetingId = args.meetingId;
+        if (!meetingId) {
+          const team = await dataLoader.get('teams').load(args.teamId);
+          meetingId = team.meetingId;
+        }
+        const meetingMemberId = toTeamMemberId(meetingId, viewerId);
+        return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined;
       }
     },
     notifications: require('../queries/notifications').default,
