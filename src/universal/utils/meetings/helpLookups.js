@@ -93,7 +93,7 @@ const phaseHelpLookup = {
     helpDialog: groupHelpContent
   },
   [VOTE]: {
-    facilitatorBarTip: '',
+    facilitatorBarTip: 'Only 1 vote is required to move forward.',
     helpDialog: voteHelpContent
   },
   [DISCUSS]: {
