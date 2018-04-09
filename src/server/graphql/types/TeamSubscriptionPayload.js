@@ -21,7 +21,7 @@ import KillNewMeetingPayload from 'server/graphql/types/KillNewMeetingPayload';
 import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload';
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload';
 import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload';
-import UpdateRetroReflectionIsEditingPayload from 'server/graphql/types/UpdateReflectionIsEditingPayload';
+import EditReflectionPayload from 'server/graphql/types/EditReflectionPayload';
 import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload';
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload';
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload';
@@ -29,6 +29,7 @@ import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflec
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload';
 import NewMeetingCheckInPayload from 'server/graphql/types/NewMeetingCheckInPayload';
 import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload';
+import DragReflectionPayload from 'server/graphql/types/DragReflectionPayload';
 
 
 const types = [
@@ -38,6 +39,8 @@ const types = [
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
   CreateReflectionGroupPayload,
+  DragReflectionPayload,
+  EditReflectionPayload,
   EndMeetingPayload,
   KillMeetingPayload,
   KillNewMeetingPayload,
@@ -57,7 +60,6 @@ const types = [
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,
   UpdateReflectionGroupTitlePayload,
-  UpdateRetroReflectionIsEditingPayload,
   UpdateReflectionLocationPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload,

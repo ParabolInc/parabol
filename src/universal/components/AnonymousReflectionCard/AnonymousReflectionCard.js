@@ -5,87 +5,119 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState, EditorState} from 'draft-js';
+import {ContentState, EditorState, SelectionState} from 'draft-js';
 import React, {Component} from 'react';
-import styled from 'react-emotion';
+import {createFragmentContainer} from 'react-relay';
 
-import EditorInputWrapper from 'universal/components/EditorInputWrapper';
-import ReflectionCardWrapper from 'universal/components/ReflectionCardWrapper/ReflectionCardWrapper';
+import type {AnonymousReflectionCard_reflection as Reflection} from './__generated__/AnonymousReflectionCard_reflection.graphql';
+import type {AnonymousReflectionCard_meeting as Meeting} from './__generated__/AnonymousReflectionCard_meeting.graphql';
+import reactLifecyclesCompat from 'react-lifecycles-compat';
+import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper';
+import {makeContentWithEntity} from 'universal/utils/draftjs/completeEnitity';
+import anonymousReflectionDecorators from 'universal/components/TaskEditor/anonymousReflectionDecorators';
+import styled from 'react-emotion';
+import ui from 'universal/styles/ui';
 
 type Props = {
-  contentState: ContentState,
-  isEditing?: boolean
+  meeting: Meeting,
+  reflection: Reflection,
 };
 
 type State = {
-  obfuscatedContentState: ContentState
+  editorState: EditorState,
+  content: string,
+  isBlurred: boolean,
+  isEditing: boolean
 };
 
-const randomChar = () => String.fromCharCode(97 + Math.floor(Math.random() * 26));
-
-// Given a string, returns another string which has the same "shape", e.g.
-// same punctuation and word length, but with completely random characters.
-const obfuscate = (content: string): string => (
-  content
-    .split('')
-    .map((char) =>
-      /^[a-z0-9]+$/i.test(char) ? randomChar() : char
-    )
-    .join('')
-);
-
-const obfuscateContentState = (contentState: ContentState): ContentState => (
-  ContentState.createFromText(obfuscate(contentState.getPlainText()))
-);
-
-const BlurredDiv = styled('div')({
-  filter: 'blur(4px)',
-  userSelect: 'none'
+const AnonymousStyles = styled('div')({
+  backgroundColor: '#fff',
+  borderRadius: ui.cardBorderRadius,
+  boxShadow: ui.cardBoxShadow,
+  position: 'relative'
 });
 
-const ReflectionContents = styled('div')({
-  padding: '0.8rem'
-});
+const DEFAULT_TEXT = 'Somebody is typing...';
+const ROT = Math.floor(Math.random() * 25) + 1;
+const obfuscate = (content: string): string => {
+  return content.replace(/[a-zA-Z]/g, (c: string) => {
+    // $FlowFixMe
+    return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - (ROT * 2)); // eslint-disable-line
+  });
+};
+
+const getContentState = (contentText) => {
+  const contentState = ContentState.createFromText(contentText);
+  if (contentText !== DEFAULT_TEXT) return contentState;
+  const contentStateWithEntity = contentState
+    .createEntity('ELLIPSIS', 'IMMUTABLE', {});
+  const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+  const anchorKey = contentState.getFirstBlock().getKey();
+  const selectionState = new SelectionState({
+    anchorOffset: DEFAULT_TEXT.length - 3,
+    focusOffset: DEFAULT_TEXT.length,
+    anchorKey,
+    focusKey: anchorKey
+  });
+  return makeContentWithEntity(contentState, selectionState, undefined, entityKey);
+};
 
 class AnonymousReflectionCard extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      obfuscatedContentState: obfuscateContentState(props.contentState)
+  static getContent(reflection: Reflection) {
+    const {content, isEditing} = reflection;
+    if (isEditing) return DEFAULT_TEXT;
+    const parsedContent = JSON.parse(content);
+    const textBlocks = parsedContent.blocks.map(({text}) => text);
+    const fullText = textBlocks.join('\n');
+    if (fullText.length === 0) return DEFAULT_TEXT;
+    return obfuscate(fullText);
+  }
+
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+    const {reflection} = nextProps;
+    const {content} = reflection;
+    const isEditing = Boolean(reflection.isEditing);
+    if (content === prevState.content && isEditing === prevState.isEditing) return null;
+    const contentText = AnonymousReflectionCard.getContent(reflection);
+    const contentState = getContentState(contentText);
+    const editorState = EditorState.createWithContent(contentState, anonymousReflectionDecorators);
+    return {
+      content: reflection.content,
+      editorState,
+      isBlurred: contentText !== DEFAULT_TEXT,
+      isEditing
     };
   }
 
-  componentWillReceiveProps({contentState: nextContentState}: Props) {
-    const {contentState: thisContentState} = this.props;
-    if (!thisContentState.getBlockMap().equals(nextContentState.getBlockMap())) {
-      this.setState({
-        obfuscatedContentState: obfuscateContentState(nextContentState)
-      });
-    }
-  }
+  state = {
+    content: '',
+    editorState: null,
+    isBlurred: false,
+    isEditing: false
+  };
 
   render() {
-    const {isEditing} = this.props;
-    const {obfuscatedContentState} = this.state;
+    const {editorState, isBlurred} = this.state;
+    const {meeting: {teamId}} = this.props;
     return (
-      <ReflectionCardWrapper>
-        <ReflectionContents>
-          {isEditing || !obfuscatedContentState.hasText() ? (
-            'Somebody is typing...'
-          ) : (
-            <BlurredDiv>
-              <EditorInputWrapper
-                editorState={EditorState.createWithContent(obfuscatedContentState)}
-                setEditorState={() => {}}
-                readOnly
-              />
-            </BlurredDiv>
-          )
-          }
-        </ReflectionContents>
-      </ReflectionCardWrapper>
+      <AnonymousStyles>
+        <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
+      </AnonymousStyles>
     );
   }
 }
 
-export default AnonymousReflectionCard;
+reactLifecyclesCompat(AnonymousReflectionCard);
+
+export default createFragmentContainer(
+  AnonymousReflectionCard,
+  graphql`
+    fragment AnonymousReflectionCard_meeting on RetrospectiveMeeting {
+      teamId
+    }
+    fragment AnonymousReflectionCard_reflection on RetroReflection {
+      isEditing
+      content
+    }
+  `
+);

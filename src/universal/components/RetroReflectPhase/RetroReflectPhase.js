@@ -3,15 +3,19 @@
  *
  * @flow
  */
-import type {Team} from 'universal/types/schema.flow';
-
-import React from 'react';
+import * as React from 'react';
 import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
-
-import ReflectionPhaseColumn from './ReflectionPhaseColumn';
+import type {RetroReflectPhase_team as Team} from './__generated__/RetroReflectPhase_team.graphql';
+import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import Button from 'universal/components/Button/Button';
+import {REFLECT} from 'universal/utils/constants';
 
 type Props = {
+  atmosphere: Object,
+  gotoNext: () => void,
   team: Team,
 };
 
@@ -22,35 +26,56 @@ const ReflectPhaseWrapper = styled('div')({
   width: '100%'
 });
 
-const RetroReflectPhase = ({team}: Props) => {
+const RetroReflectPhase = (props: Props) => {
+  const {atmosphere: {viewerId}, team, gotoNext} = props;
   const {newMeeting, meetingSettings} = team;
-  if (!meetingSettings.hasOwnProperty('phaseItems')) {
-    return null;
-  }
-  // The nested union types of meetingSettings/phaseItems are creating a multiplicative
-  // effect on the possible values of meetingSettings, making it really difficult
-  // $FlowFixMe
-  const {phaseItems} = meetingSettings;
+  const {facilitatorUserId, localPhase: {phaseType}} = newMeeting || {};
+  const phaseItems = meetingSettings.phaseItems || [];
+  const isFacilitating = facilitatorUserId === viewerId;
   return (
-    <ReflectPhaseWrapper>
-      {phaseItems && phaseItems.map((phaseItem) =>
-        <ReflectionPhaseColumn newMeeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} team={team} />
-      )}
-    </ReflectPhaseWrapper>
+    <React.Fragment>
+      <ReflectPhaseWrapper>
+        {phaseType === REFLECT &&
+        phaseItems.map((phaseItem) =>
+          <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+        )}
+      </ReflectPhaseWrapper>
+      {isFacilitating &&
+      <MeetingControlBar>
+        <Button
+          buttonSize="medium"
+          buttonStyle="flat"
+          colorPalette="dark"
+          icon="arrow-circle-right"
+          iconLarge
+          iconPalette="warm"
+          iconPlacement="right"
+          label={'Done! Let’s Theme'}
+          onClick={gotoNext}
+        />
+      </MeetingControlBar>
+      }
+    </React.Fragment>
   );
 };
 
 export default createFragmentContainer(
-  RetroReflectPhase,
+  withAtmosphere(RetroReflectPhase),
   graphql`
     fragment RetroReflectPhase_team on Team {
-      ...ReflectionPhaseColumn_team
+      newMeeting {
+        ...PhaseItemColumn_meeting
+        localPhase {
+          phaseType
+        }
+        facilitatorUserId
+      }
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
           phaseItems {
             ... on RetroPhaseItem {
               id
-              ...ReflectionPhaseColumn_retroPhaseItem
+              ...PhaseItemColumn_retroPhaseItem
             }
           }
         }

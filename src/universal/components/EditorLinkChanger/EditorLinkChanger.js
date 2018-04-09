@@ -20,12 +20,16 @@ const validate = (values) => {
 class EditorLinkChanger extends Component {
   componentWillMount() {
     const {trackEditingComponent} = this.props;
-    trackEditingComponent('editor-link-changer', true);
+    if (trackEditingComponent) {
+      trackEditingComponent('editor-link-changer', true);
+    }
   }
 
   componentWillUnmount() {
     const {trackEditingComponent} = this.props;
-    trackEditingComponent('editor-link-changer', false);
+    if (trackEditingComponent) {
+      trackEditingComponent('editor-link-changer', false);
+    }
   }
 
   onSubmit = (submissionData) => {
@@ -123,7 +127,7 @@ EditorLinkChanger.propTypes = {
   removeModal: PropTypes.func.isRequired,
   selectionState: PropTypes.object.isRequired,
   setEditorState: PropTypes.func.isRequired,
-  trackEditingComponent: PropTypes.func.isRequired,
+  trackEditingComponent: PropTypes.func,
   innerRef: PropTypes.func,
   styles: PropTypes.object,
   text: PropTypes.string,

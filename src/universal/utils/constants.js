@@ -244,6 +244,6 @@ export const AUTH0_DB_CONNECTION = 'Username-Password-Authentication';
 export const ACTION = 'action';
 export const RETROSPECTIVE = 'retrospective';
 
-/* Retro meeting types */
+/* Retro DnD types */
 export const REFLECTION_CARD = 'REFLECTION_CARD';
 export const REFLECTION_GROUP = 'REFLECTION_GROUP';

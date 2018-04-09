@@ -89,8 +89,9 @@ const withLinks = (ComposedComponent) => {
       keyBindingFn: PropTypes.func,
       removeModal: PropTypes.func,
       renderModal: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired,
-      trackEditingComponent: PropTypes.func.isRequired
+      // could be readOnly, so not strictly required
+      setEditorState: PropTypes.func,
+      trackEditingComponent: PropTypes.func
     };
 
     constructor(props) {

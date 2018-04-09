@@ -12,6 +12,7 @@ import CheckInPhase from 'server/graphql/types/CheckInPhase';
 import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings';
 import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings';
 import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember';
+import AuthToken from 'server/graphql/types/AuthToken';
 
 export default new GraphQLSchema({
   query,
@@ -27,6 +28,7 @@ export default new GraphQLSchema({
     RetrospectiveMeeting,
     RetrospectiveMeetingMember,
     RetrospectiveMeetingSettings,
-    ActionMeetingSettings
+    ActionMeetingSettings,
+    AuthToken
   ]
 });

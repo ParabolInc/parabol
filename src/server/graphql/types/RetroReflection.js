@@ -4,8 +4,9 @@ import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import {getUserId} from 'server/utils/authorization';
-import {resolveForSU} from 'server/graphql/resolvers';
+import {makeResolve, resolveForSU} from 'server/graphql/resolvers';
 import GoogleAnalyzedEntity from 'server/graphql/types/GoogleAnalyzedEntity';
+import User from 'server/graphql/types/User';
 
 const RetroReflection = new GraphQLObjectType({
   name: 'RetroReflection',
@@ -29,16 +30,27 @@ const RetroReflection = new GraphQLObjectType({
       type: GraphQLID,
       resolve: resolveForSU('creatorId')
     },
+    draggerUserId: {
+      description: 'The userId of the person currently dragging the reflection',
+      type: GraphQLID
+    },
+    draggerUser: {
+      description: 'The user that is currently dragging the reflection',
+      type: User,
+      resolve: makeResolve('draggerUserId', 'draggerUser', 'users')
+    },
+    editorIds: {
+      description: 'an array of all the socketIds that are currently editing the reflection',
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
+      resolve: () => []
+    },
     isActive: {
       type: GraphQLBoolean,
       description: 'True if the reflection was not removed, else false'
     },
     isEditing: {
-      description: 'Whether or not this reflection is currently being edited by a teammate',
-      type: new GraphQLNonNull(GraphQLBoolean),
-      // NOTE: we statically resolve to false here, as the editing state is not persisted,
-      // but rather declared through the `UpdateReflectionIsEditingPayload` on the `TeamSubscription`.
-      resolve: () => false
+      description: 'true if the reflection is being edited, else false',
+      type: GraphQLBoolean
     },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
@@ -69,14 +81,14 @@ const RetroReflection = new GraphQLObjectType({
       }
     },
     phaseItem: {
-      type: RetroPhaseItem,
+      type: new GraphQLNonNull(RetroPhaseItem),
       resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
         return dataLoader.get('customPhaseItems').load(retroPhaseItemId);
       }
     },
     retroPhaseItemId: {
-      type: GraphQLID,
-      description: 'The foreign key to link a reflection to its phaseItem'
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
     },
     reflectionGroupId: {
       type: GraphQLID,
@@ -90,8 +102,8 @@ const RetroReflection = new GraphQLObjectType({
       }
     },
     sortOrder: {
-      type: GraphQLFloat,
-      description: 'The sort order of the reflection in the phase item list'
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'The sort order of the reflection in the group (increments starting from 0)'
     },
     team: {
       type: RetrospectiveMeeting,

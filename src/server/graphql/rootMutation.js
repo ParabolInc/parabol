@@ -71,7 +71,7 @@ import updateUserProfile from 'server/graphql/mutations/updateUserProfile';
 import killNewMeeting from 'server/graphql/mutations/killNewMeeting';
 import createReflection from 'server/graphql/mutations/createReflection';
 import updateReflectionContent from 'server/graphql/mutations/updateReflectionContent';
-import updateReflectionIsEditing from 'server/graphql/mutations/updateReflectionIsEditing';
+import editReflection from 'server/graphql/mutations/editReflection';
 import updateReflectionLocation from 'server/graphql/mutations/updateReflectionLocation';
 import removeReflection from 'server/graphql/mutations/removeReflection';
 import createReflectionGroup from 'server/graphql/mutations/createReflectionGroup';
@@ -79,6 +79,7 @@ import updateReflectionGroupTitle from 'server/graphql/mutations/updateReflectio
 import voteForReflectionGroup from 'server/graphql/mutations/voteForReflectionGroup';
 import newMeetingCheckIn from 'server/graphql/mutations/newMeetingCheckIn';
 import autoGroupReflections from 'server/graphql/mutations/autoGroupReflections';
+import dragReflection from 'server/graphql/mutations/dragReflection';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -109,6 +110,8 @@ export default new GraphQLObjectType({
     createUserPicturePutUrl,
     deleteTask,
     disconnectSocket,
+    dragReflection,
+    editReflection,
     editTask,
     endMeeting,
     githubAddAssignee,
@@ -155,7 +158,6 @@ export default new GraphQLObjectType({
     updateNewCheckInQuestion,
     updateReflectionContent,
     updateReflectionGroupTitle,
-    updateReflectionIsEditing,
     updateReflectionLocation,
     updateTask,
     updateTeamName,

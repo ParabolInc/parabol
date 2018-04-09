@@ -3,6 +3,7 @@ import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import RetroReflection from 'server/graphql/types/RetroReflection';
+import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 
 const CreateReflectionPayload = new GraphQLObjectType({
   name: 'CreateReflectionPayload',
@@ -16,7 +17,12 @@ const CreateReflectionPayload = new GraphQLObjectType({
     },
     reflection: {
       type: RetroReflection,
-      resolve: makeResolve('reflectionId', 'reflection', 'activeRetroReflections')
+      resolve: makeResolve('reflectionId', 'reflection', 'retroReflections')
+    },
+    reflectionGroup: {
+      type: RetroReflectionGroup,
+      description: 'The group automatically created for the reflection',
+      resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
     }
   })
 });

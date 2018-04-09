@@ -1,15 +1,15 @@
 /**
  * Removes a reflection for the retrospective meeting.
  *
- * @flow
  */
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
-
-import {maybe} from 'maeby';
 import {commitMutation} from 'react-relay';
-import {Environment, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime';
+import getInProxy from 'universal/utils/relay/getInProxy';
+import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups';
 
-import fmap3 from 'universal/utils/fmap3';
+type Context = {
+  meetingId: string
+};
 
 type Variables = {
   reflectionId: string,
@@ -22,6 +22,7 @@ graphql`
     }
     reflection {
       id
+      reflectionGroupId
     }
   }
 `;
@@ -34,52 +35,36 @@ const mutation = graphql`
   }
 `;
 
-export const removeReflectionUpdater = (payload: ?RecordProxy, store: RecordSourceSelectorProxy) => {
-  const maybeMeeting = maybe(payload)
-    .bind((pl) => pl.getLinkedRecord('meeting'))
-    .bind((payloadMeeting) => payloadMeeting.getValue('id'))
-    .bind((meetingId) => store.get(meetingId));
-  const maybeReflections = maybeMeeting
-    .bind((meeting) => meeting.getLinkedRecords('reflections'));
-  const maybeReflection = maybe(payload)
-    .bind((pl) => pl.getLinkedRecord('reflection'));
-
-  fmap3((meeting, reflections, reflection) => {
-    const newReflections = reflections.filter((r) => (
-      r.getValue('id') !== reflection.getValue('id')
-    ));
-    meeting.setLinkedRecords(newReflections, 'reflections');
-  }, maybeMeeting, maybeReflections, maybeReflection);
+export const removeReflectionTeamUpdater = (payload, store) => {
+  const meetingId = getInProxy(payload, 'meeting', 'id');
+  const reflectionGroupId = getInProxy(payload, 'reflection', 'reflectionGroupId');
+  handleRemoveReflectionGroups(reflectionGroupId, meetingId, store);
 };
 
-const getOptimisticResponse = (variables: Variables, meetingId: string) => ({
-  removeReflection: {
-    meeting: {
-      __typename: 'RetrospectiveMeeting',
-      id: meetingId
-    },
-    reflection: variables
-  }
-});
-
-const CreateReflectionMutation = (
-  environment: Environment,
+const RemoveReflectionMutation = (environment: Object,
   variables: Variables,
-  meetingId: string,
+  context: Context,
   onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
-) => {
+  onCompleted?: CompletedHandler) => {
   return commitMutation(environment, {
     mutation,
     variables,
-    onCompleted,
-    onError,
-    optimisticResponse: getOptimisticResponse(variables, meetingId),
-    updater: (store: RecordSourceSelectorProxy) => {
+    updater: (store) => {
       const payload = store.getRootField('removeReflection');
-      removeReflectionUpdater(payload, store);
-    }
+      if (!payload) return;
+      removeReflectionTeamUpdater(payload, store);
+    },
+    optimisticUpdater: (store) => {
+      const {reflectionId} = variables;
+      const {meetingId} = context;
+      const reflection = store.get(reflectionId);
+      if (!reflection) return;
+      const reflectionGroupId = reflection.getValue('reflectionGroupId');
+      handleRemoveReflectionGroups(reflectionGroupId, meetingId, store);
+    },
+    onCompleted,
+    onError
   });
 };
 
-export default CreateReflectionMutation;
+export default RemoveReflectionMutation;

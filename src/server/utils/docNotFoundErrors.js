@@ -127,3 +127,12 @@ export const sendNoInvitationProvidedError = (authToken, returnValue) => {
   };
   return sendAuthRaven(authToken, 'Invitation not provided', breadcrumb, returnValue);
 };
+
+export const sendRetroPhaseItemIdNotExpectedError = (authToken, reflectionId, returnValue) => {
+  const breadcrumb = {
+    message: 'Phase Item ID not expected',
+    category: 'Not found',
+    data: {reflectionId}
+  };
+  return sendAuthRaven(authToken, 'Phase item ID Not Expected', breadcrumb, returnValue);
+};

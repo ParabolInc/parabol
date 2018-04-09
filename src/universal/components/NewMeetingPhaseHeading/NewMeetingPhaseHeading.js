@@ -5,39 +5,52 @@
  */
 import React from 'react';
 import styled from 'react-emotion';
-import {Route, Switch} from 'react-router-dom';
 
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import {phaseDescriptionLookup, phaseLabelLookup} from 'universal/utils/meetings/lookups';
+import {createFragmentContainer} from 'react-relay';
+import type {NewMeetingPhaseHeading_meeting as Meeting} from './__generated__/NewMeetingPhaseHeading_meeting.graphql';
 
-const ReflectPhaseTitle = styled('h1')({
+const PhaseTitle = styled('h1')({
   fontFamily: appTheme.typography.serif,
   fontSize: '1.5rem',
   margin: 0
 });
 
-const ReflectPhaseDescription = styled('h2')({
+const PhaseDescription = styled('h2')({
   color: ui.labelHeadingColor,
   fontSize: '1rem',
   fontWeight: 'normal',
   margin: 0
 });
 
-const ReflectPhaseHeading = () => (
-  <div>
-    <ReflectPhaseTitle>Reflect</ReflectPhaseTitle>
-    <ReflectPhaseDescription>Looking back to move forward</ReflectPhaseDescription>
-  </div>
-);
+type Props = {|
+  meeting: Meeting
+|}
 
-const MeetingPhaseHeading = () => (
-  <Switch>
-    <Route
-      path="/retro/:teamId/reflect"
-      component={ReflectPhaseHeading}
-    />
-    <Route render={() => <div />} />
-  </Switch>
-);
+const NewMeetingPhaseHeading = (props: Props) => {
+  const {meeting} = props;
+  if (!meeting || !meeting.localPhase) return <div />;
+  const {localPhase: {phaseType}} = meeting;
+  const label = phaseLabelLookup[phaseType];
+  const description = phaseDescriptionLookup[phaseType];
+  if (!label || !description) return <div />;
+  return (
+    <div>
+      <PhaseTitle>{label}</PhaseTitle>
+      <PhaseDescription>{description}</PhaseDescription>
+    </div>
+  );
+};
 
-export default MeetingPhaseHeading;
+export default createFragmentContainer(
+  NewMeetingPhaseHeading,
+  graphql`
+    fragment NewMeetingPhaseHeading_meeting on NewMeeting {
+      localPhase {
+        phaseType
+      }
+    }
+  `
+);

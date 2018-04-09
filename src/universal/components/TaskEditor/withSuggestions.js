@@ -43,14 +43,13 @@ const targetAnchor = {
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
     static propTypes = {
-      handleUpArrow: PropTypes.func,
-      handleDownArrow: PropTypes.func,
       editorRef: PropTypes.any,
       editorState: PropTypes.object.isRequired,
-      handleTab: PropTypes.func,
       handleReturn: PropTypes.func,
       handleChange: PropTypes.func,
-      setEditorState: PropTypes.func.isRequired,
+      keyBindingFn: PropTypes.func,
+      // could be readOnly, so not strictly required
+      setEditorState: PropTypes.func,
       teamId: PropTypes.string.isRequired
     };
 
@@ -66,28 +65,28 @@ const withSuggestions = (ComposedComponent) => {
       }
     };
 
-    handleUpArrow = (e) => {
-      const {handleUpArrow} = this.props;
-      if (handleUpArrow) {
-        handleUpArrow(e);
+    keyBindingFn = (e) => {
+      const {keyBindingFn} = this.props;
+      if (keyBindingFn) {
+        keyBindingFn(e);
       }
-      e.preventDefault();
-      const {active} = this.state;
-      this.setState({
-        active: Math.max(active - 1, 0)
-      });
-    };
-
-    handleDownArrow = (e) => {
-      const {handleDownArrow} = this.props;
-      if (handleDownArrow) {
-        handleDownArrow(e);
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const {active} = this.state;
+        this.setState({
+          active: Math.max(active - 1, 0)
+        });
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const {active, suggestions} = this.state;
+        this.setState({
+          active: Math.min(active + 1, suggestions.length - 1)
+        });
+      } else if (e.key === 'Tab') {
+        const {active} = this.state;
+        this.handleSelect(active)(e);
       }
-      e.preventDefault();
-      const {active, suggestions} = this.state;
-      this.setState({
-        active: Math.min(active + 1, suggestions.length - 1)
-      });
+      return undefined;
     };
 
     handleSelect = (idx) => (e) => {
@@ -107,15 +106,6 @@ const withSuggestions = (ComposedComponent) => {
         setEditorState(completeEntity(editorState, 'MENTION', {userId}, item.preferredName));
       }
       this.removeModal();
-    };
-
-    handleTab = (e) => {
-      const {handleTab} = this.props;
-      const {active} = this.state;
-      if (handleTab) {
-        handleTab(e);
-      }
-      this.handleSelect(active)(e);
     };
 
     handleReturn = (e) => {
@@ -199,8 +189,8 @@ const withSuggestions = (ComposedComponent) => {
     initialize = () => {
       const {suggestionType} = this.state;
       if (suggestionType) {
-        const {renderModal, removeModal, handleUpArrow, handleDownArrow, handleTab, handleReturn} = this;
-        return {renderModal, removeModal, handleUpArrow, handleDownArrow, handleTab, handleReturn};
+        const {renderModal, removeModal, keyBindingFn, handleReturn} = this;
+        return {renderModal, removeModal, keyBindingFn, handleReturn};
       }
       return {};
     }
