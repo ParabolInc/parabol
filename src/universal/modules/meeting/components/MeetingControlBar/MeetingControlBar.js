@@ -8,7 +8,7 @@ const MeetingControlBar = styled('div')({
   boxShadow: ui.meetingChromeBoxShadow,
   color: ui.hintFontColor,
   display: 'flex',
-  fontSize: '.9375rem',
+  fontSize: '.8125rem',
   justifyContent: 'center',
   minHeight: '4rem', // 3.125rem
   padding: '0 1.25rem',

@@ -15,10 +15,10 @@ import phaseHelpLookup from 'universal/utils/meetings/helpLookups';
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
 
-const EXAMPLE_PHASE = 'lobby';
+const EXAMPLE_PHASE = 'firstcall';
 
 storiesOf('Loadable Help Dialog', module)
-  .add('drag states', () => (
+  .add('toggle the help dialog', () => (
     <RetroBackground>
       <StoryContainer
         description={`This demonstrates a help dialog (available for all teammates)

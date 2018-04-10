@@ -47,11 +47,12 @@ const DialogClose = styled(FontAwesome)({
 
 const MeetingHelpDialogMenu = (props: Props) => {
   const {closePortal, phase} = props;
+  const phaseLabel = phaseLabelLookup[phase];
 
   return (
     <DialogContent>
       <DialogClose name="times-circle" onClick={closePortal} title="Close help menu" />
-      <h3>{phaseLabelLookup[phase]}</h3>
+      {phaseLabel && <h3>{phaseLabel}</h3>}
       {phaseHelpLookup[phase].helpDialog}
     </DialogContent>
   );
