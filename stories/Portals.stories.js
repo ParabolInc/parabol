@@ -15,7 +15,7 @@ import phaseHelpLookup from 'universal/utils/meetings/helpLookups';
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
 
-const EXAMPLE_PHASE = 'updates';
+const EXAMPLE_PHASE = 'lobby';
 
 storiesOf('Loadable Help Dialog', module)
   .add('drag states', () => (

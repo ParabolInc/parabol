@@ -4,6 +4,7 @@ import styled from 'react-emotion';
 import FontAwesome from 'react-fontawesome';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 import phaseHelpLookup from 'universal/utils/meetings/helpLookups';
 
 type Props = {
@@ -16,7 +17,18 @@ const DialogContent = styled('div')({
   lineHeight: '1.5',
   position: 'relative',
   padding: '.75rem 1.25rem',
-  width: '15rem'
+  width: '15rem',
+  '& h3': {
+    fontSize: '1em',
+    fontWeight: 600,
+    margin: '0 0 1em'
+  },
+  '& p': {
+    margin: '0 0 1em'
+  },
+  '& a': {
+    textDecoration: 'underline'
+  }
 });
 
 const DialogClose = styled(FontAwesome)({
@@ -39,6 +51,7 @@ const MeetingHelpDialogMenu = (props: Props) => {
   return (
     <DialogContent>
       <DialogClose name="times-circle" onClick={closePortal} title="Close help menu" />
+      <h3>{phaseLabelLookup[phase]}</h3>
       {phaseHelpLookup[phase].helpDialog}
     </DialogContent>
   );
