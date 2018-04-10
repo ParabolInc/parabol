@@ -57,6 +57,9 @@ graphql`
         reflections {
           ...CompleteReflectionFrag @relay(mask: false)
         }
+        tasks {
+          ...CompleteTaskFrag @relay(mask: false)
+        }
       }
       votesRemaining
       settings {

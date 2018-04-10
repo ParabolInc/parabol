@@ -9,6 +9,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 
 type Props = {|
   atmosphere: Object,
@@ -18,45 +19,59 @@ type Props = {|
 |};
 
 const CheckColumn = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  justifyContent: 'center'
+  display: 'flex'
 });
 
 const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
   color
 }));
 
-const ReflectionGrid = styled('div')({});
+const PhaseWrapper = styled('div')({
+  height: '100%'
+});
+
+const ReflectionSection = styled('div')({
+  height: '50%'
+});
+
+const ReflectionGrid = styled('div')({
+  display: 'flex',
+  flexWrap: 'wrap'
+});
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere: {viewerId}, gotoNext, team} = props;
-  const {newMeeting} = team;
-  const {facilitatorUserId, localStage: {reflectionGroup}} = newMeeting || {};
+  const {newMeeting, teamId} = team;
+  const {facilitatorUserId, localStage: {localStageId, reflectionGroup}, meetingId, phases} = newMeeting || {};
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null;
-  const {reflectionGroupId, title, reflections, voteCount} = reflectionGroup;
+  const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup;
   const isFacilitating = facilitatorUserId === viewerId;
   const checkMarks = [...Array(voteCount).keys()];
+  const nextStageRes = findStageAfterId(phases, localStageId);
+  if (!nextStageRes) return null;
   return (
     <React.Fragment>
-      <div>{`"${title}"`}</div>
-      <CheckColumn>
-        {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={appTheme.brand.primary.midGray} />)}
-      </CheckColumn>
-      <ReflectionGrid>
-        {reflections.map((reflection) => {
-          return (
-            <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
-          );
-        })}
-      </ReflectionGrid>
-      <hr />
-      <MeetingAgendaCards
-        agendaId={reflectionGroupId}
-        tasks={[]}
-        teamId={team.id}
-      />
+      <PhaseWrapper>
+        <ReflectionSection>
+          <div>{`"${title}"`}</div>
+          <CheckColumn>
+            {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={appTheme.brand.primary.midGray} />)}
+          </CheckColumn>
+          <ReflectionGrid>
+            {reflections.map((reflection) => {
+              return (
+                <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
+              );
+            })}
+          </ReflectionGrid>
+        </ReflectionSection>
+        <MeetingAgendaCards
+          meetingId={meetingId}
+          reflectionGroupId={reflectionGroupId}
+          tasks={tasks}
+          teamId={teamId}
+        />
+      </PhaseWrapper>
       {isFacilitating &&
       <MeetingControlBar>
         <Button
@@ -80,11 +95,30 @@ export default createFragmentContainer(
   withAtmosphere(RetroDiscussPhase),
   graphql`
     fragment RetroDiscussPhase_team on Team {
+      teamId: id
       newMeeting {
         ...ReflectionCard_meeting
         meetingId: id
         facilitatorUserId
+        phases {
+          stages {
+            ... on RetroDiscussStage {
+              reflectionGroup {
+                id
+                tasks {
+                  ...NullableTask_task
+                }
+              }
+            }
+          }
+        }
+        localPhase {
+          stages {
+            id
+          }
+        }
         localStage {
+          localStageId: id
           ... on RetroDiscussStage {
             reflectionGroup {
               reflectionGroupId: id
@@ -93,6 +127,13 @@ export default createFragmentContainer(
               reflections {
                 id
                 ...ReflectionCard_reflection
+              }
+              tasks {
+                id
+                reflectionGroupId
+                createdAt
+                sortOrder
+                ...NullableTask_task
               }
             }
           }

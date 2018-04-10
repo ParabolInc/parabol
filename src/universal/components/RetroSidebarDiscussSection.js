@@ -3,6 +3,9 @@ import React from 'react';
 import styled from 'react-emotion';
 import type {RetroSidebarDiscussSection_viewer as Viewer} from './__generated__/RetroSidebarDiscussSection_viewer.graphql';
 import {createFragmentContainer} from 'react-relay';
+import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+import appTheme from 'universal/styles/theme/appTheme';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 type Props = {|
   gotoStageId: (stageId: string) => void,
@@ -19,6 +22,29 @@ const Header = styled('div')({
   fontWeight: 'bold'
 });
 
+const VoteTally = styled('span')({
+  marginRight: '0.5rem'
+});
+
+const ItemNumberAndTitle = styled('span')({
+  ...textOverflow,
+  width: '60%'
+});
+
+const Title = styled('span')({
+
+});
+
+const TopicRow = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  width: '100%'
+});
+
+const CheckIcon = styled(StyledFontAwesome)({
+  color: appTheme.palette.warm
+});
+
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
   const {localPhase} = newMeeting || {};
@@ -29,12 +55,20 @@ const RetroSidebarDiscussSection = (props: Props) => {
       <Header>{'Upvoted Topics'}</Header>
       {stages.map((stage, idx) => {
         const {reflectionGroup} = stage;
-        const title = reflectionGroup && reflectionGroup.title || 'Unknown group';
+        if (!reflectionGroup) return null;
+        const {title, voteCount} = reflectionGroup;
         return (
-          <div key={stage.id} onClick={() => gotoStageId(stage.id)}>
-            <span>{`${idx + 1}. `}</span>
-            <span>{title}</span>
-          </div>
+          <TopicRow key={stage.id} onClick={() => gotoStageId(stage.id)}>
+            <ItemNumberAndTitle>
+              <span>{`${idx + 1}. `}</span>
+              <Title>{title}</Title>
+            </ItemNumberAndTitle>
+            <VoteTally>
+              <CheckIcon name="check" />
+              {' x '}
+              {voteCount}
+            </VoteTally>
+          </TopicRow>
         );
       })}
     </SidebarPhaseItemChild>
@@ -55,6 +89,7 @@ export default createFragmentContainer(
                   id
                   reflectionGroup {
                     title
+                    voteCount
                   }
                 }
               }
@@ -65,6 +100,7 @@ export default createFragmentContainer(
                   id
                   reflectionGroup {
                     title
+                    voteCount
                   }
                 }
               }

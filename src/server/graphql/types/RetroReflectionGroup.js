@@ -6,6 +6,7 @@ import Team from 'server/graphql/types/Team';
 import {resolveForSU} from 'server/graphql/resolvers';
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import {getUserId} from 'server/utils/authorization';
+import Task from 'server/graphql/types/Task';
 
 const RetroReflectionGroup = new GraphQLObjectType({
   name: 'RetroReflectionGroup',
@@ -63,11 +64,21 @@ const RetroReflectionGroup = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order of the reflection group in the phase item'
     },
+    tasks: {
+      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
+      description: 'The tasks created for this group in the discussion phase',
+      resolve: async ({id: reflectionGroupId, meetingId}, args, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId);
+        const {teamId} = meeting;
+        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId);
+        return teamTasks.filter((task) => task.reflectionGroupId === reflectionGroupId);
+      }
+    },
     team: {
       type: Team,
       description: 'The team that is running the retro',
       resolve: async ({meetingId}, args, {dataLoader}) => {
-        const meeting = dataLoader.get('newMeetings').load(meetingId);
+        const meeting = await dataLoader.get('newMeetings').load(meetingId);
         return dataLoader.get('teams').load(meeting.teamId);
       }
     },

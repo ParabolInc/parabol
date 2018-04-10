@@ -6,6 +6,7 @@ import getNodeById from 'universal/utils/relay/getNodeById';
 import {insertEdgeAfter} from 'universal/utils/relay/insertEdge';
 import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn';
 import {ConnectionHandler} from 'relay-runtime';
+import addNodeToArray from 'universal/utils/relay/addNodeToArray';
 
 const handleUpsertTask = (task, store, viewerId) => {
   if (!task) return;
@@ -14,10 +15,14 @@ const handleUpsertTask = (task, store, viewerId) => {
   const teamId = task.getValue('teamId');
   const taskId = task.getValue('id');
   const tags = task.getValue('tags');
+  const reflectionGroupId = task.getValue('reflectionGroupId');
+  const meetingId = task.getValue('meetingId');
   const isNowArchived = tags.includes('archived');
   const archiveConn = getArchivedTasksConn(viewer, teamId);
   const teamConn = getTeamTasksConn(viewer, teamId);
   const userConn = getUserTasksConn(viewer);
+  const reflectionGroup = reflectionGroupId && store.get(reflectionGroupId);
+  const meeting = meetingId && store.get(meetingId);
   const safePutNodeInConn = (conn) => {
     if (conn && !getNodeById(taskId, conn)) {
       const newEdge = ConnectionHandler.createEdge(
@@ -38,6 +43,8 @@ const handleUpsertTask = (task, store, viewerId) => {
   } else {
     safeRemoveNodeFromConn(taskId, archiveConn);
     safePutNodeInConn(teamConn);
+    addNodeToArray(task, reflectionGroup, 'tasks', 'createdAt');
+    addNodeToArray(task, meeting, 'tasks', 'createdAt');
     if (userConn) {
       const ownedByViewer = task.getValue('userId') === viewerId;
       if (ownedByViewer) {

@@ -39,8 +39,10 @@ const VoteForReflectionGroupMutation = (atmosphere, variables, context, onError,
       const increment = isUnvote ? -1 : 1;
       const meetingMemberId = toTeamMemberId(meetingId, viewerId);
       const meetingMemberProxy = store.get(meetingMemberId);
-      reflectionGroupProxy.setValue(reflectionGroupProxy.getValue('viewerVoteCount') + increment, 'viewerVoteCount');
-      meetingMemberProxy.setValue(meetingMemberProxy.getValue('votesRemaining') - increment, 'votesRemaining');
+      const viewerVoteCount = reflectionGroupProxy.getValue('viewerVoteCount') || 0;
+      const votesRemaining = meetingMemberProxy.getValue('votesRemaining') || 0;
+      reflectionGroupProxy.setValue(viewerVoteCount + increment, 'viewerVoteCount');
+      meetingMemberProxy.setValue(votesRemaining - increment, 'votesRemaining');
     }
   });
 };

@@ -9,6 +9,8 @@ export default function makeTaskSchema() {
     content: (value) => value
       .normalize(normalizeRawDraftJS)
       .max(TASK_MAX_CHARS, 'Whoa! That looks like 2 tasks'),
+    meetingId: id,
+    reflectionGroupId: id,
     status: (value) => value
     // status may be empty eg unarchive card
       .test((str) => str && !columnArray.includes(str) && 'That isn’t a status!'),
