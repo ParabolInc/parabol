@@ -16,6 +16,7 @@ import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMuta
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation';
 import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation';
+import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -30,7 +31,7 @@ const subscription = graphql`
       ...EditReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
-      ...KillNewMeetingMutation_team @relay(mask: false)
+      ...EndNewMeetingMutation_team @relay(mask: false)
       ...MoveMeetingMutation_team @relay(mask: false)
       ...NavigateMeetingMutation_team @relay(mask: false)
       ...NewMeetingCheckInMutation_team @relay(mask: false)
@@ -55,6 +56,7 @@ const subscription = graphql`
 `;
 
 const onNextHandlers = {
+  EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
   NavigateMeetingPayload: navigateMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
@@ -113,7 +115,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'KillMeetingPayload':
           killMeetingTeamUpdater();
           break;
-        case 'KillNewMeetingPayload':
+        case 'EndNewMeetingPayload':
           break;
         case 'MeetingCheckInPayload':
           break;

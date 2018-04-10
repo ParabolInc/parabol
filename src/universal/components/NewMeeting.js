@@ -26,7 +26,7 @@ import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId';
 import handleHotkey from 'universal/utils/meetings/handleHotkey';
 import {connect} from 'react-redux';
-import KillNewMeetingMutation from 'universal/mutations/KillNewMeetingMutation';
+import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation';
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import type {Dispatch} from 'redux';
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup';
@@ -91,7 +91,7 @@ class NewMeeting extends Component<Props> {
       const {viewer: {team: {newMeeting}}} = props;
       if (!newMeeting) return;
       const {meetingId} = newMeeting;
-      KillNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
+      EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
     });
   }
 
