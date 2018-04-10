@@ -62,7 +62,7 @@ test('new Personal org increments counts of Personal orgs', async () => {
   );
 
   // VERIFY
-  expect(initial - next).toEqual(1); // includes seed org
+  expect(next - initial).toEqual(1); // includes seed org
 });
 
 test('user token requires su role', async () => {
