@@ -29,11 +29,12 @@ test('new Pro org increments counts of Pro orgs', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
+  const initial = await suOrgCount.resolve(undefined, defaultResolverArgs, {authToken});
   await mockDB.newOrg({tier: PRO});
   const next = await suOrgCount.resolve(undefined, defaultResolverArgs, {authToken});
 
   // VERIFY
-  expect(next >= 1).toBe(true);
+  expect(next - initial).toEqual(1);
 });
 
 test('new Personal org increments counts of Personal orgs', async () => {

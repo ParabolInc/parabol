@@ -18,7 +18,7 @@ test('counts the number of Personal users', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
-  const next = await suUserCount.resolve(
+  const initial = await suUserCount.resolve(
     undefined,
     {
       ...defaultResolverArgs,
@@ -27,7 +27,7 @@ test('counts the number of Personal users', async () => {
     {authToken});
 
   // VERIFY
-  expect(next >= 0).toBe(true);
+  expect(initial >= 0).toBe(true);
 });
 
 test('counts the number of Pro users', async () => {
@@ -36,10 +36,10 @@ test('counts the number of Pro users', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
-  const next = await suUserCount.resolve(undefined, defaultResolverArgs, {authToken});
+  const initial = await suUserCount.resolve(undefined, defaultResolverArgs, {authToken});
 
   // VERIFY
-  expect(next >= 0).toBe(true);
+  expect(initial >= 0).toBe(true);
 });
 
 test('new Pro org increments number of Pro users', async () => {
@@ -49,6 +49,7 @@ test('new Pro org increments number of Pro users', async () => {
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
   // Each newOrg will add one new billing leader:
+  const initial = await suUserCount.resolve(undefined, defaultResolverArgs, {authToken});
   await mockDB
     .newOrg({name: shortid.generate(), tier: PRO})
     .newOrg({name: shortid.generate(), tier: PRO});
@@ -56,7 +57,7 @@ test('new Pro org increments number of Pro users', async () => {
 
   // VERIFY
   // Tests run concurrently, so anything that counts across the entire database must be atomic (no initial, then next)
-  expect(next >= 2).toBe(true);
+  expect(next - initial).toEqual(2);
 });
 
 test('user token requires su role', async () => {
