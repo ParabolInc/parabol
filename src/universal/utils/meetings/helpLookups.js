@@ -115,7 +115,7 @@ const phaseHelpLookup = {
     helpDialog: checkInHelpContent
   },
   [REFLECT]: {
-    facilitatorBarTip: 'ask your team to focus on 1 prompt at a time, or both, depending on preference.',
+    facilitatorBarTip: 'Facilitator: ask your team to focus on 1 prompt at a time, or both, depending on preference.',
     helpDialog: reflectHelpContent
   },
   [GROUP]: {
