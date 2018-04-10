@@ -43,6 +43,14 @@ test('new Personal org increments counts of Personal orgs', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
+  const initial = await suOrgCount.resolve(
+    undefined,
+    {
+      ...defaultResolverArgs,
+      tier: PERSONAL
+    },
+    {authToken}
+  );
   await mockDB.newOrg({tier: PERSONAL});
   const next = await suOrgCount.resolve(
     undefined,
@@ -54,7 +62,7 @@ test('new Personal org increments counts of Personal orgs', async () => {
   );
 
   // VERIFY
-  expect(next >= 2).toBe(true); // includes seed org
+  expect(initial - next).toEqual(1); // includes seed org
 });
 
 test('user token requires su role', async () => {
