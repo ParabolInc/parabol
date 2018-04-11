@@ -10,6 +10,8 @@ graphql`
       nameWithOwner
       issueNumber
     }
+    meetingId
+    reflectionGroupId
     sortOrder
     status
     tags

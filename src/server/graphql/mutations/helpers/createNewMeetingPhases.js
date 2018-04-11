@@ -39,7 +39,7 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
       return {
         id: shortid.generate(),
         phaseType,
-        stages: []
+        stages: [makeRetroStage(phaseType, meetingId)]
       };
     }
     throw new Error('Unhandled phaseType', phaseType);

@@ -41,19 +41,30 @@ graphql`
       ... on DiscussPhase {
         stages {
           reflectionGroup {
-            title
-            voteCount
-            reflections {
-              isViewerCreator
-              content
-            }
+            id
           }
         }
       }
     }
+    viewerMeetingMember {
+      ... on RetrospectiveMeetingMember {
+        votesRemaining
+      }
+    }
     ... on RetrospectiveMeeting {
       reflectionGroups {
-        id
+        ...CompleteReflectionGroupFrag @relay(mask: false)
+        reflections {
+          ...CompleteReflectionFrag @relay(mask: false)
+        }
+        tasks {
+          ...CompleteTaskFrag @relay(mask: false)
+        }
+      }
+      votesRemaining
+      settings {
+        maxVotesPerGroup
+        totalVotes
       }
     }
   }

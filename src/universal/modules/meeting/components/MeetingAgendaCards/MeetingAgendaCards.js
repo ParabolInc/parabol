@@ -16,10 +16,9 @@ import {ACTIVE, MEETING} from 'universal/utils/constants';
 
 const makeCards = (tasks, myUserId, itemStyle, handleAddTask) => {
   return tasks.map((task) => {
-    const {id} = task;
-    const key = `$outcomeCard${id}`;
+    const {id: taskId} = task;
     return (
-      <div className={css(itemStyle)} key={key}>
+      <div className={css(itemStyle)} key={taskId}>
         <NullableTask
           area={MEETING}
           handleAddTask={handleAddTask}
@@ -47,10 +46,12 @@ const makePlaceholders = (length, itemStyle) => {
 };
 
 type Props = {
-  agendaId: string,
+  agendaId?: string,
   atmosphere: Object, // TODO: atmosphere type
   bindHotkey: (key: string, cb: () => void) => void,
   history: Object,
+  meetingId: string,
+  reflectionGroupId?: string,
   tasks: Task[],
   styles: Object,
   teamId: string
@@ -63,7 +64,7 @@ class MeetingAgendaCards extends Component<Props> {
   }
 
   handleAddTask = (content) => () => {
-    const {agendaId, atmosphere, tasks, teamId} = this.props;
+    const {agendaId, atmosphere, meetingId, reflectionGroupId, tasks, teamId} = this.props;
     const {userId} = atmosphere;
     const maybeLastTask = tasks[tasks.length - 1];
     const sortOrder = sortOrderBetween(
@@ -74,6 +75,8 @@ class MeetingAgendaCards extends Component<Props> {
       status: ACTIVE,
       sortOrder,
       agendaId,
+      meetingId,
+      reflectionGroupId,
       userId,
       teamId
     };

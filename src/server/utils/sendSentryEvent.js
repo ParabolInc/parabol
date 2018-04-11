@@ -36,7 +36,11 @@ type AuthToken = {
 
 const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb) => {
   if (process.env.NODE_ENV !== 'production') {
-    console.error(JSON.stringify(breadcrumb));
+    if (breadcrumb && breadcrumb.data.firstError) {
+      console.error(breadcrumb.data.firstError);
+    } else {
+      console.error(JSON.stringify(breadcrumb));
+    }
     return;
   }
   const r = getRethink();

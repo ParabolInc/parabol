@@ -1,11 +1,12 @@
+import type {Node} from 'react';
 // @flow
 import React from 'react';
 import styled, {css} from 'react-emotion';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 
 const NavListItem = styled('li')({
-  fontSize: 0,
   fontWeight: 600,
   lineHeight: '2.5rem'
 });
@@ -69,21 +70,24 @@ const NavListItemLink = styled('div')(
 );
 
 type Props = {
+  children: Node,
   handleClick: ?() => void,
-  name: string,
+  phaseType: string,
   listPrefix: string,
   isActive: boolean,
   isFacilitatorPhaseGroup: boolean
 };
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {handleClick, name, listPrefix, isActive, isFacilitatorPhaseGroup} = props;
+  const {children, handleClick, phaseType, listPrefix, isActive, isFacilitatorPhaseGroup} = props;
+  const label = phaseLabelLookup[phaseType];
   return (
     <NavListItem>
-      <NavListItemLink isDisabled={!handleClick} isActive={isActive} onClick={handleClick} title={name}>
+      <NavListItemLink isDisabled={!handleClick} isActive={isActive} onClick={handleClick} title={label}>
         <NavItemBullet isFacilitatorPhaseGroup={isFacilitatorPhaseGroup}>{listPrefix}</NavItemBullet>
-        <NavItemLabel>{name}</NavItemLabel>
+        <NavItemLabel>{label}</NavItemLabel>
       </NavListItemLink>
+      {children}
     </NavListItem>
   );
 };

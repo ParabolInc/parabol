@@ -75,7 +75,7 @@ const moveReflectionLocation = (reflection, reflectionGroup, oldReflectionGroupI
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store);
 };
 
-export const updateReflectionLocationTeamUpdater = (payload, store) => {
+export const updateReflectionLocationTeamUpdater = (payload, {store}) => {
   const reflection = payload.getLinkedRecord('reflection');
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup');
   const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id');
@@ -101,7 +101,7 @@ const UpdateReflectionLocationMutation = (
     updater: (store) => {
       const payload = store.getRootField('updateReflectionLocation');
       if (!payload) return;
-      updateReflectionLocationTeamUpdater(payload, store);
+      updateReflectionLocationTeamUpdater(payload, {store});
 
       // only do this for the mutator, don't want unexpected collapses because someone else did something
       const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id');

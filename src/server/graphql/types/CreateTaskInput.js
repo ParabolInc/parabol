@@ -8,7 +8,23 @@ const CreateTaskInput = new GraphQLInputObjectType({
       type: GraphQLID,
       description: 'foreign key for AgendaItem'
     },
-    content: {type: GraphQLString},
+    content: {
+      type: GraphQLString
+    },
+    meetingId: {
+      type: GraphQLID,
+      description: 'foreign key for the meeting this was created in'
+    },
+    reflectionGroupId: {
+      type: GraphQLID,
+      description: 'foreign key for the reflection group this was created from'
+    },
+    sortOrder: {
+      type: GraphQLFloat
+    },
+    status: {
+      type: TaskStatusEnum
+    },
     teamId: {
       type: GraphQLID,
       description: 'teamId, the team the task is on'
@@ -16,9 +32,7 @@ const CreateTaskInput = new GraphQLInputObjectType({
     userId: {
       type: GraphQLID,
       description: 'userId, the owner of the task'
-    },
-    sortOrder: {type: GraphQLFloat},
-    status: {type: TaskStatusEnum}
+    }
   })
 });
 
