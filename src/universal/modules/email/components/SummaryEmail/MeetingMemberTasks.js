@@ -2,8 +2,8 @@
 import * as React from 'react';
 import MeetingMemberTaskList from './MeetingMemberTaskList';
 import MeetingMemberNoTasks from './MeetingMemberNoTasks';
-import type {MeetingTypeEnum} from '../../../../types/schema.flow';
-
+import type {MeetingTypeEnum} from 'universal/types/schema.flow';
+// boop
 type Props = {|
   meetingType: MeetingTypeEnum,
   meeting: Object
