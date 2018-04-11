@@ -28,14 +28,8 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
         stages: await makeCheckinStages(teamId, meetingId, dataLoader)
       };
     }
-    if (phaseType === REFLECT || phaseType === GROUP || phaseType === VOTE) {
-      return {
-        id: shortid.generate(),
-        phaseType,
-        stages: [makeRetroStage(phaseType, meetingId)]
-      };
-    }
-    if (phaseType === DISCUSS) {
+    const standardRetroPhases = [REFLECT, GROUP, VOTE, DISCUSS];
+    if (standardRetroPhases.indexOf(phaseType) !== -1) {
       return {
         id: shortid.generate(),
         phaseType,

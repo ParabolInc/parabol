@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+// @flow
 import React from 'react';
 import Card from '../Card/Card';
 import ui from 'universal/styles/ui';
@@ -33,7 +33,17 @@ const makeTaskCards = (arr) => {
   );
 };
 
-const TasksTable = (props) => {
+type Task = {
+  content: string,
+  status: string,
+  tags: Array<string>
+};
+
+export type TasksTableProps = {
+  tasks: Array<Task>
+};
+
+const TasksTable = (props: TasksTableProps) => {
   const taskRows = getTaskRows(props.tasks);
   return (
     <table align="center" style={ui.emailTableBase}>
@@ -49,8 +59,4 @@ const TasksTable = (props) => {
 };
 
 /* eslint-enable */
-TasksTable.propTypes = {
-  tasks: PropTypes.array
-};
-
 export default TasksTable;

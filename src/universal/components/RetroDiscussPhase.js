@@ -48,7 +48,6 @@ const RetroDiscussPhase = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId;
   const checkMarks = [...Array(voteCount).keys()];
   const nextStageRes = findStageAfterId(phases, localStageId);
-  if (!nextStageRes) return null;
   return (
     <React.Fragment>
       <PhaseWrapper>
@@ -74,7 +73,7 @@ const RetroDiscussPhase = (props: Props) => {
       </PhaseWrapper>
       {isFacilitating &&
       <MeetingControlBar>
-        <Button
+        {nextStageRes && <Button
           buttonSize="medium"
           buttonStyle="flat"
           colorPalette="dark"
@@ -83,6 +82,17 @@ const RetroDiscussPhase = (props: Props) => {
           iconPalette="warm"
           iconPlacement="right"
           label={'Done! Next topic'}
+          onClick={gotoNext}
+        />}
+        <Button
+          buttonSize="medium"
+          buttonStyle="flat"
+          colorPalette="dark"
+          icon="arrow-circle-right"
+          iconLarge
+          iconPalette="warm"
+          iconPlacement="right"
+          label={'End Meeting'}
           onClick={gotoNext}
         />
       </MeetingControlBar>

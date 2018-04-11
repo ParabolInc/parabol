@@ -32,6 +32,7 @@ import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
 import MeetingMember from 'server/graphql/types/MeetingMember';
+import NewMeeting from 'server/graphql/types/NewMeeting';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -179,6 +180,23 @@ const User = new GraphQLObjectType({
         }
         const meetingMemberId = toTeamMemberId(meetingId, viewerId);
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined;
+      }
+    },
+    newMeeting: {
+      type: new GraphQLNonNull(NewMeeting),
+      description: 'A previous meeting that the user was in (present or absent)',
+      args: {
+        meetingId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The meeting ID'
+        }
+      },
+      async resolve(source, {meetingId}, {authToken, dataLoader}) {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId);
+        if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
+        const {teamId} = meeting;
+        if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
+        return meeting;
       }
     },
     notifications: require('../queries/notifications').default,

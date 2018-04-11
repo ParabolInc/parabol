@@ -4,6 +4,7 @@ import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import {resolveForSU} from 'server/graphql/resolvers';
 import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings';
 import {RETROSPECTIVE} from 'universal/utils/constants';
+import Task from 'server/graphql/types/Task';
 
 const RetrospectiveMeeting = new GraphQLObjectType({
   name: 'RetrospectiveMeeting',
@@ -33,6 +34,16 @@ const RetrospectiveMeeting = new GraphQLObjectType({
         const {teamId} = meeting;
         const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId);
         return allSettings.find((settings) => settings.meetingType === RETROSPECTIVE);
+      }
+    },
+    tasks: {
+      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
+      description: 'The tasks created within the meeting',
+      resolve: async ({id: meetingId}, args, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId);
+        const {teamId} = meeting;
+        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId);
+        return teamTasks.filter((task) => task.meetingId === meetingId);
       }
     },
     votesRemaining: {
