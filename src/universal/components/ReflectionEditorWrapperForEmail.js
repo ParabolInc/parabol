@@ -1,6 +1,5 @@
 import {Editor, EditorState} from 'draft-js';
 import React, {Component} from 'react';
-import 'universal/components/TaskEditor/Draft.css';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import truncateCard from 'universal/utils/draftjs/truncateCard';
 

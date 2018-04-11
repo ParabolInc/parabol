@@ -3,7 +3,6 @@ import React from 'react';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import ui from 'universal/styles/ui';
 import arrayToRows from '../../helpers/arrayToRows';
-import checkIcon from 'universal/styles/theme/images/icons/fa-check.svg';
 import ReflectionEditorWrapperForEmail from 'universal/components/ReflectionEditorWrapperForEmail';
 
 const fontFamily = ui.emailFontFamily;
@@ -60,7 +59,8 @@ const RetroDiscussionTopic = (props: Props) => {
   const {imageSource, topic} = props;
   const {reflections, title, voteCount} = topic;
   const rows = arrayToRows(reflections);
-  const src = imageSource === 'local' ? checkIcon : '/static/images/icons/fa-check@3x.png';
+  const icon = imageSource === 'local' ? 'fa-check.svg' : 'fa-check@3x.png';
+  const src = `/static/images/icons/${icon}`;
   const voteRange = [...Array(voteCount).keys()];
   return (
     <table style={tableStyle} width="100%">

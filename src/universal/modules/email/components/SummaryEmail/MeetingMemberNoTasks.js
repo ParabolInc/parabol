@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
 import ui from 'universal/styles/ui';
-import EmptySpace from '../../components/EmptySpace/EmptySpace';
-import MeetingMemberNoTasksRow from 'universal/modules/email/components/UserNoNewOutcomes/MeetingMemberNoTasksRow';
+import EmptySpace from '../EmptySpace/EmptySpace';
+import MeetingMemberNoTasksRow from 'universal/modules/email/components/SummaryEmail/MeetingMemberNoTasksRow';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import {RETROSPECTIVE} from 'universal/utils/constants';
 

@@ -1,8 +1,8 @@
 // @flow
 import * as React from 'react';
-import MeetingMemberTaskList from 'universal/modules/email/components/SummaryEmail/MeetingMemberTaskList';
-import MeetingMemberNoTasks from 'universal/modules/email/components/UserNoNewOutcomes/MeetingMemberNoTasks';
-import type {MeetingTypeEnum} from 'universal/types/schema.flow';
+import MeetingMemberTaskList from './MeetingMemberTaskList';
+import MeetingMemberNoTasks from './MeetingMemberNoTasks';
+import type {MeetingTypeEnum} from '../../../../types/schema.flow';
 
 type Props = {|
   meetingType: MeetingTypeEnum,
