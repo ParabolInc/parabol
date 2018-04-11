@@ -14,7 +14,7 @@ import MeetingControlBar from 'universal/modules/meeting/components/MeetingContr
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import {AGENDA_ITEM_LABEL, AGENDA_ITEMS} from 'universal/utils/constants';
 
 class MeetingAgendaItems extends Component {
   state = {agendaTasks: []};
@@ -61,7 +61,7 @@ class MeetingAgendaItems extends Component {
     const isLast = agendaItems.length === localPhaseItem;
     const subHeading = (<span><b>{currentTeamMember.preferredName}</b>{', what do you need?'}</span>);
     return (
-      <MeetingMain>
+      <MeetingMain hasHelpFor={AGENDA_ITEMS} isFacilitating={showMoveMeetingControls}>
         <MeetingSection flexToFill paddingBottom="2rem">
           <MeetingSection flexToFill>
             <div className={css(styles.layout)}>

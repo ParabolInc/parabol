@@ -5,9 +5,9 @@ import Button from 'universal/components/Button/Button';
 import styled from 'react-emotion';
 
 const RejoinButton = styled('div')({
-  bottom: '2.75rem',
+  bottom: '1.25rem',
   position: 'fixed',
-  right: '2rem',
+  right: '4.5rem',
   zIndex: ui.ziRejoinFacilitatorButton
 });
 
@@ -21,7 +21,7 @@ const RejoinFacilitatorButton = (props) => {
         icon="user"
         label="Rejoin Facilitator"
         onClick={onClickHandler}
-        buttonSize="medium"
+        buttonSize="small"
       />
     </RejoinButton>
   );

@@ -14,6 +14,7 @@ import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import {CHECKIN} from 'universal/utils/constants';
 
 const MeetingCheckin = (props) => {
   const {
@@ -44,7 +45,7 @@ const MeetingCheckin = (props) => {
   const {isSelf: isMyMeetingSection} = currentMember;
   const nextMember = teamMembers[memberIdx + 1];
   return (
-    <MeetingMain>
+    <MeetingMain hasHelpFor={CHECKIN} isFacilitating={isFacilitating}>
       <MeetingSection flexToFill paddingBottom="1rem">
         <MeetingCheckInPrompt
           isFacilitating={isFacilitating}

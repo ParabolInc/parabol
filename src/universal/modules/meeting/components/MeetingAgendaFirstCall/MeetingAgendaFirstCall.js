@@ -13,7 +13,7 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {css} from 'aphrodite-local-styles/no-important';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import {AGENDA_ITEM_LABEL, FIRST_CALL} from 'universal/utils/constants';
 
 const MeetingAgendaFirstCall = (props) => {
   const {
@@ -24,7 +24,7 @@ const MeetingAgendaFirstCall = (props) => {
   } = props;
   const phaseName = actionMeeting.agendaitems.name;
   return (
-    <MeetingMain>
+    <MeetingMain hasHelpFor={FIRST_CALL}>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <div className={css(styles.main)}>

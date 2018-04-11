@@ -35,6 +35,7 @@ const MeetingHelpDialog = ({phase}: Props) => {
         buttonSize="small"
         buttonStyle="solid"
         colorPalette="white"
+        depth={2}
         icon="question"
         isBlock
       />
