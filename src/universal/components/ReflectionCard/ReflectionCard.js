@@ -126,6 +126,7 @@ class ReflectionCard extends Component<Props, State> {
     const {localPhase: {phaseType}, phases, teamId} = meeting;
     const {draggerUser, isViewerCreator, phaseItem: {question}} = reflection;
     const meetingStageRes = findMeetingStage(phases);
+    if (!meetingStageRes) return null;
     const {phase: {phaseType: meetingPhaseType}} = meetingStageRes;
     const canDelete = isViewerCreator && phaseType === REFLECT && meetingPhaseType === REFLECT;
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;

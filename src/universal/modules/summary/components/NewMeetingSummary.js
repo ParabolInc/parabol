@@ -68,7 +68,7 @@ export default createFragmentContainer(
           teamName: name
         }
         ... on RetrospectiveMeeting {
-          reflectionGroups {
+          reflectionGroups(sortBy: voteCount) {
             id
             title
             voteCount

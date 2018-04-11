@@ -18,14 +18,15 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
   }
   const {phaseTypes} = meetingSettings;
 
-  return Promise.all(phaseTypes.map(async (phaseType) => {
+  return Promise.all(phaseTypes.map(async (phaseType, idx) => {
+    const isFirstPhase = idx === 0;
     if (phaseType === CHECKIN) {
       return {
         id: shortid.generate(),
         phaseType,
         checkInGreeting: makeCheckinGreeting(meetingCount, teamId),
         checkInQuestion: convertToTaskContent(makeCheckinQuestion(meetingCount, teamId)),
-        stages: await makeCheckinStages(teamId, meetingId, dataLoader)
+        stages: await makeCheckinStages(teamId, meetingId, dataLoader, isFirstPhase)
       };
     }
     const standardRetroPhases = [REFLECT, GROUP, VOTE, DISCUSS];
@@ -33,7 +34,7 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
       return {
         id: shortid.generate(),
         phaseType,
-        stages: [makeRetroStage(phaseType, meetingId)]
+        stages: [makeRetroStage(phaseType, meetingId, isFirstPhase)]
       };
     }
     throw new Error('Unhandled phaseType', phaseType);

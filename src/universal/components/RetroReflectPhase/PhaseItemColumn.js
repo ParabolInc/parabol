@@ -107,6 +107,7 @@ class PhaseItemColumn extends Component<Props, State> {
     const {localPhase: {phaseType}, phases} = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
     const meetingStageRes = findMeetingStage(phases);
+    if (!meetingStageRes) return null;
     const {phase: {phaseType: meetingPhaseType}} = meetingStageRes;
     return (
       <ColumnWrapper>

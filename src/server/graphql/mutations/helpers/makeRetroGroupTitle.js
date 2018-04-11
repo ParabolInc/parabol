@@ -7,7 +7,7 @@ import getEntityNameArrFromResponses from 'server/graphql/mutations/helpers/auto
 import computeDistanceMatrix from 'server/graphql/mutations/helpers/autoGroup/computeDistanceMatrix';
 import getTitleFromComputedGroup from 'server/graphql/mutations/helpers/autoGroup/getTitleFromComputedGroup';
 
-const makeRetroGroupTitle = async (meetingId, reflections) => {
+const makeRetroGroupTitle = async (meetingId, reflections, defaultCount) => {
   const r = getRethink();
 
   const allReflectionEntities = reflections.map(({entities}) => entities);
@@ -20,11 +20,10 @@ const makeRetroGroupTitle = async (meetingId, reflections) => {
     // need to filter out the current group if we want to check for dupes. but a dupe is good, it makes it obvious they should be merged
     return {smartTitle, title: smartTitle};
   }
-  const reflectionCount = await r.table('RetroReflectionGroup')
+  const count = defaultCount || await r.table('RetroReflectionGroup')
     .getAll(meetingId, {index: 'meetingId'})
     .count();
-  const nextCount = reflectionCount + 1;
-  return {title: `Group #${nextCount}`};
+  return {title: `Group #${count}`};
 };
 
 export default makeRetroGroupTitle;

@@ -1,16 +1,15 @@
-import getRethink from 'server/database/rethinkDriver';
+// @flow
 import shortid from 'shortid';
-import {DISCUSS, TEAM} from 'universal/utils/constants';
-import publish from 'server/utils/publish';
-import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload';
+import {DISCUSS} from 'universal/utils/constants';
 
-
-export const makeDiscussionStage = (reflectionGroupId, meetingId) => ({
-  id: shortid.generate(),
+export const makeDiscussionStage = (reflectionGroupId: string, meetingId: string, placeholderId: ?string) => ({
+  id: placeholderId || shortid.generate(),
   meetingId,
   isComplete: false,
   phaseType: DISCUSS,
-  reflectionGroupId
+  reflectionGroupId,
+  startAt: placeholderId ? new Date() : undefined,
+  viewCount: placeholderId ? 1 : 0
 });
 
 const mapGroupsToStages = (reflectionGroups) => {
@@ -21,31 +20,23 @@ const mapGroupsToStages = (reflectionGroups) => {
   return importantReflectionGroups;
 };
 
-const addDiscussionTopics = async (meeting, dataLoader, subOptions) => {
-  const r = getRethink();
-  const now = new Date();
-  const {phases, teamId} = meeting;
+const addDiscussionTopics = async (meeting: Object, dataLoader: Object): Object => {
+  const {id: meetingId, phases} = meeting;
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS);
-  if (!discussPhase) return false;
-  const {id: meetingId} = meeting;
+  if (!discussPhase) return {};
+  const placeholderStage = discussPhase.stages[0];
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId);
   const importantReflectionGroups = mapGroupsToStages(reflectionGroups);
-  const discussStages = importantReflectionGroups.map((reflectionGroup) => makeDiscussionStage(reflectionGroup.id, meetingId));
+  const nextDiscussStages = importantReflectionGroups.map((reflectionGroup, idx) => {
+    const placeholderId = idx === 0 ? placeholderStage.id : undefined;
+    return makeDiscussionStage(reflectionGroup.id, meetingId, placeholderId);
+  });
+  const firstDiscussStage = nextDiscussStages[0];
+  if (!firstDiscussStage || !placeholderStage) return {};
 
-  if (!discussStages[0] || !discussPhase.stages[0]) return false;
-  // mutative, replaces the placeholder with an actual stage
-  discussStages[0].id = discussPhase.stages[0].id;
-  discussPhase.stages = discussStages;
-
-  await r.table('NewMeeting')
-    .get(meetingId)
-    .update({
-      phases,
-      updatedAt: now
-    });
-  const data = {teamId, meetingId};
-  publish(TEAM, teamId, StartNewMeetingPayload, data, {operationId: subOptions.operationId});
-  return true;
+  // MUTATIVE
+  discussPhase.stages = nextDiscussStages;
+  return {meetingId, discussPhaseStages: nextDiscussStages};
 };
 
 export default addDiscussionTopics;

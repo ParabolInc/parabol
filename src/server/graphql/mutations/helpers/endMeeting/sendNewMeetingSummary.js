@@ -24,6 +24,8 @@ const getRetroMeeting = (meetingId) => {
       reflectionGroups: r.table('RetroReflectionGroup')
         .getAll(meetingId, {index: 'meetingId'})
         .filter({isActive: true})
+        .filter((group) => group('voterIds').count().ge(1))
+        .orderBy(r.desc('voterIds'))
         .merge((reflectionGroup) => ({
           reflections: r.table('RetroReflection')
             .getAll(reflectionGroup('id'), {index: 'reflectionGroupId'})

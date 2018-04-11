@@ -1,10 +1,18 @@
-import {GraphQLFloat, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {GraphQLEnumType, GraphQLFloat, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import NewMeeting, {newMeetingFields} from 'server/graphql/types/NewMeeting';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import {resolveForSU} from 'server/graphql/resolvers';
 import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings';
 import {RETROSPECTIVE} from 'universal/utils/constants';
 import Task from 'server/graphql/types/Task';
+
+const ReflectionGroupSortEnum = new GraphQLEnumType({
+  name: 'ReflectionGroupSortEnum',
+  description: 'sorts for the reflection group. default is sortOrder',
+  values: {
+    voteCount: {}
+  }
+});
 
 const RetrospectiveMeeting = new GraphQLObjectType({
   name: 'RetrospectiveMeeting',
@@ -20,8 +28,19 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     reflectionGroups: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
       description: 'The grouped reflections',
-      resolve: async ({id: meetingId}, args, {dataLoader}) => {
+      args: {
+        sortBy: {
+          type: ReflectionGroupSortEnum
+        }
+      },
+      resolve: async ({id: meetingId}, {sortBy}, {dataLoader}) => {
         const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId);
+        console.log('sortBy', sortBy);
+        if (sortBy === 'voteCount') {
+          const groupsWithVotes = reflectionGroups.filter(({voterIds}) => voterIds.length > 0);
+          groupsWithVotes.sort((a, b) => a.voterIds.length < b.voterIds.length ? 1 : -1);
+          return groupsWithVotes;
+        }
         reflectionGroups.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
         return reflectionGroups;
       }

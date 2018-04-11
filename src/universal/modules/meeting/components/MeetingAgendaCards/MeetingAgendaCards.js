@@ -14,7 +14,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {ACTIVE, MEETING} from 'universal/utils/constants';
 
-const makeCards = (tasks, myUserId, itemStyle, handleAddTask) => {
+const makeCards = (tasks = [], myUserId, itemStyle, handleAddTask) => {
   return tasks.map((task) => {
     const {id: taskId} = task;
     return (
@@ -52,7 +52,7 @@ type Props = {
   history: Object,
   meetingId: string,
   reflectionGroupId?: string,
-  tasks: Task[],
+  tasks: ?Array<Task>,
   styles: Object,
   teamId: string
 };
@@ -64,7 +64,8 @@ class MeetingAgendaCards extends Component<Props> {
   }
 
   handleAddTask = (content) => () => {
-    const {agendaId, atmosphere, meetingId, reflectionGroupId, tasks, teamId} = this.props;
+    const {agendaId, atmosphere, meetingId, reflectionGroupId, teamId} = this.props;
+    const tasks = this.props.tasks || [];
     const {userId} = atmosphere;
     const maybeLastTask = tasks[tasks.length - 1];
     const sortOrder = sortOrderBetween(
@@ -84,7 +85,8 @@ class MeetingAgendaCards extends Component<Props> {
   }
 
   render() {
-    const {atmosphere: {userId}, tasks, styles} = this.props;
+    const {atmosphere: {userId}, styles} = this.props;
+    const tasks = this.props.tasks || [];
     return (
       <div className={css(styles.root)}>
         {makeCards(tasks, userId, styles.item, this.handleAddTask)}

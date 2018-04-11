@@ -12,9 +12,11 @@ import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgen
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation';
 import {withRouter} from 'react-router-dom';
+import type {RouterHistory} from 'react-router-dom';
 
 type Props = {|
   atmosphere: Object,
+  history: RouterHistory,
   gotoNext: () => void,
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object,

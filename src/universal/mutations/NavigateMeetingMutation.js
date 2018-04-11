@@ -15,6 +15,32 @@ graphql`
       id
       isComplete
     }
+    phaseComplete {
+      group {
+        reflectionGroups {
+          title
+        }
+      }
+      vote {
+        meeting {
+          phases {
+            id
+            ... on DiscussPhase {
+              phaseType
+              stages {
+                id
+                isComplete
+                meetingId
+                phaseType
+                reflectionGroup {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 `;
 

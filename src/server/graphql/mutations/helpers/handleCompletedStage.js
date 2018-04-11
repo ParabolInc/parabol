@@ -8,29 +8,28 @@ import addDefaultGroupTitles from 'server/graphql/mutations/helpers/addDefaultGr
  * Should only return a promise if the side effect changes the phases or stages
  * Otherwise, just update via pubsub so we don't slow down the navigation
  */
-const handleCompletedRetrospectiveStage = async (stage, meeting, dataLoader, subOptions) => {
+const handleCompletedRetrospectiveStage = async (stage, meeting, dataLoader) => {
   if (stage.phaseType === REFLECT) {
     // don't wait for the response from google
     addEntitiesToReflections(meeting.id);
-    return undefined;
+    return {};
   } else if (stage.phaseType === GROUP) {
-    // don't wait, just publish the titles when they're ready. a little hacky, probably better to use a refetch container?
-    addDefaultGroupTitles(meeting, subOptions);
-    return undefined;
+    const data = await addDefaultGroupTitles(meeting);
+    return {[GROUP]: data};
   } else if (stage.phaseType === VOTE) {
-    // OK this is really hacky. we're using the start new meeting message to send down something unrelated, but the client uses the same payload
-    addDiscussionTopics(meeting, dataLoader, subOptions);
-    return undefined;
+    // mutates the meeting discuss phase.stages array
+    const data = await addDiscussionTopics(meeting, dataLoader);
+    return {[VOTE]: data};
   }
-  return undefined;
+  return {};
 };
 
 
-const handleCompletedStage = async (stage, meeting, dataLoader, subOptions) => {
+const handleCompletedStage = async (stage, meeting, dataLoader) => {
   if (meeting.meetingType === RETROSPECTIVE) {
-    return handleCompletedRetrospectiveStage(stage, meeting, dataLoader, subOptions);
+    return handleCompletedRetrospectiveStage(stage, meeting, dataLoader);
   }
-  return undefined;
+  return {};
 };
 
 export default handleCompletedStage;

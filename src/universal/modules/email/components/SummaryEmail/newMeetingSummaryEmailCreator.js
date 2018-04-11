@@ -1,6 +1,5 @@
 import React from 'react';
 import Oy from 'oy-vey';
-import {summaryEmailText} from './SummaryEmail';
 import makeDateString from 'universal/utils/makeDateString';
 import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants';
 import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail';
@@ -19,7 +18,7 @@ const newMeetingSummaryEmailCreator = (props) => {
   const teamDashUrl = makeAppLink(`team/${teamId}`);
   return {
     subject,
-    body: summaryEmailText(props),
+    body: `Hello, ${teamName}. Here is your ${meetingLabel} meeting summary`,
     html: Oy.renderTemplate(
       <NewMeetingSummaryEmail
         meeting={meeting}
