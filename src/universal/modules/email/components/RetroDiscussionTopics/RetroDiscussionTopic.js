@@ -4,6 +4,7 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import ui from 'universal/styles/ui';
 import arrayToRows from '../../helpers/arrayToRows';
 import checkIcon from 'universal/styles/theme/images/icons/fa-check.svg';
+import ReflectionEditorWrapperForEmail from 'universal/components/ReflectionEditorWrapperForEmail';
 
 const fontFamily = ui.emailFontFamily;
 
@@ -64,38 +65,38 @@ const RetroDiscussionTopic = (props: Props) => {
   return (
     <table style={tableStyle} width="100%">
       <tbody>
-      <tr>
-        <td>
-          <EmptySpace height={16} />
-          <div style={topicThemeHeading}>{`“${title}”`}</div>
-        </td>
-      </tr>
-      <tr>
-        <td style={votesBlock}>
-          {voteRange.map((idx) => <img key={idx} height="10" src={src} style={voteIcon} width="14" />)}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <table style={tableStyle} width="100%">
-            <tbody>
-            {rows.map((row, idx) => (
-              // eslint-disable-next-line
-              <tr key={idx}>
-                {row.map(({id, content}) => (
-                  <td key={id}>
-                    <div style={reflectionCard}>
-                      {content}
-                    </div>
-                  </td>
+        <tr>
+          <td>
+            <EmptySpace height={16} />
+            <div style={topicThemeHeading}>{`“${title}”`}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style={votesBlock}>
+            {voteRange.map((idx) => <img key={idx} height="10" src={src} style={voteIcon} width="14" />)}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table style={tableStyle} width="100%">
+              <tbody>
+                {rows.map((row, idx) => (
+                  // eslint-disable-next-line
+                  <tr key={idx}>
+                    {row.map(({id, content}) => (
+                      <td key={id}>
+                        <div style={reflectionCard}>
+                          <ReflectionEditorWrapperForEmail content={content} />
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-            </tbody>
-          </table>
-          <EmptySpace height={16} />
-        </td>
-      </tr>
+              </tbody>
+            </table>
+            <EmptySpace height={16} />
+          </td>
+        </tr>
       </tbody>
     </table>
   );

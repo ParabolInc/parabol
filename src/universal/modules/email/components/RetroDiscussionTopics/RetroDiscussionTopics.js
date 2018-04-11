@@ -26,18 +26,18 @@ const RetroDiscussionTopics = (props) => {
   return (
     <table style={tableStyle} width="100%">
       <tbody>
-      <tr>
-        <td style={sectionHeading}>
-          <EmptySpace height={16} />
-          {'Upvoted Reflections'}
-          <EmptySpace height={16} />
-        </td>
-      </tr>
-      <tr>
-        <td>
-          {topics.map((topic) => <RetroDiscussionTopic imageSource={imageSource} topic={topic} />)}
-        </td>
-      </tr>
+        <tr>
+          <td style={sectionHeading}>
+            <EmptySpace height={16} />
+            {'Upvoted Reflections'}
+            <EmptySpace height={16} />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            {topics.map((topic) => <RetroDiscussionTopic key={topic.id} imageSource={imageSource} topic={topic} />)}
+          </td>
+        </tr>
       </tbody>
     </table>
   );

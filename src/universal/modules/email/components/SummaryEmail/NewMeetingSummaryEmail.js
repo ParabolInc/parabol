@@ -9,10 +9,11 @@ import Footer from '../../components/Footer/Footer';
 import Layout from '../../components/Layout/Layout';
 import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
 import {Link} from 'react-router-dom';
-import {MEETING_NAME, RETROSPECTIVE} from 'universal/utils/constants';
+import {ACTION, RETROSPECTIVE} from 'universal/utils/constants';
 import RetroQuickStats from 'universal/modules/email/components/QuickStats/RetroQuickStats';
 import MeetingMemberTasks from 'universal/modules/email/components/SummaryEmail/MeetingMemberTasks';
 import RetroDiscussionTopics from 'universal/modules/email/components/RetroDiscussionTopics/RetroDiscussionTopics';
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
 
 const teamDashLabel = 'Go to Team Dashboard';
 
@@ -89,6 +90,7 @@ const SummaryEmail = (props: Props) => {
     teamDashUrl
   } = props;
   const {createdAt, meetingNumber, meetingType, team: {teamName}} = meeting;
+  const meetingLabel = meetingTypeToLabel[meetingType];
   return (
     <Layout>
       {referrer === 'email' &&
@@ -156,14 +158,14 @@ const SummaryEmail = (props: Props) => {
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
         {meetingType === RETROSPECTIVE &&
-          <RetroDiscussionTopics imageSource={referrer === 'email' ? 'static' : 'local'} topics={meeting.reflectionGroups}/>
+          <RetroDiscussionTopics imageSource={referrer === 'email' ? 'static' : 'local'} topics={meeting.reflectionGroups} />
         }
         <div>
           <ContactUs
             fontSize={18}
-            hasLearningLink
+            hasLearningLink={meetingType === ACTION}
             lineHeight={1.5}
-            prompt={`How’d your ${MEETING_NAME} go?`}
+            prompt={`How’d your ${meetingLabel} meeting go?`}
             tagline="We’re eager for your feedback!"
             vSpacing={0}
           />

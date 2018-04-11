@@ -62,19 +62,19 @@ const MeetingMemberTaskList = (props: Props) => {
   return (
     <table align="center" width="100%">
       <tbody>
-      <tr>
-        <td style={topBorderStyle}>
-          <EmptySpace height={24} />
-          <img height="80" src={picture} style={avatarStyles} width="80" />
-          <div style={nameStyle}>{preferredName}</div>
-          <div style={presentLabelStyles}>{presentLabel}</div>
-          <EmptySpace height={8} />
-        </td>
-      </tr>
-      {/* Done Tasks */}
-      <MeetingMemberTaskListItem tasks={doneTasks} label={doneTasksLabel} space={8} />
-      {/* New Tasks */}
-      <MeetingMemberTaskListItem tasks={newTasks} label={newTasksLabel} space={24} />
+        <tr>
+          <td style={topBorderStyle}>
+            <EmptySpace height={24} />
+            <img height="80" src={picture} style={avatarStyles} width="80" />
+            <div style={nameStyle}>{preferredName}</div>
+            <div style={presentLabelStyles}>{presentLabel}</div>
+            <EmptySpace height={8} />
+          </td>
+        </tr>
+        {/* Done Tasks */}
+        <MeetingMemberTaskListItem tasks={doneTasks} label={doneTasksLabel} space={8} />
+        {/* New Tasks */}
+        <MeetingMemberTaskListItem tasks={newTasks} label={newTasksLabel} space={24} />
       </tbody>
     </table>
   );

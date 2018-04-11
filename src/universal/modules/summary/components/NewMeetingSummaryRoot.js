@@ -11,7 +11,7 @@ import NewMeetingSummary from 'universal/modules/summary/components/NewMeetingSu
 const query = graphql`
   query NewMeetingSummaryRootQuery($meetingId: ID!) {
     viewer {
-      ...MeetingSummary_viewer
+      ...NewMeetingSummary_viewer
     }
   }
 `;

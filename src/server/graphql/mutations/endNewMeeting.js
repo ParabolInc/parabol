@@ -9,6 +9,7 @@ import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
+import sendNewMeetingSummary from 'server/graphql/mutations/helpers/endMeeting/sendNewMeetingSummary';
 
 export default {
   type: EndNewMeetingPayload,
@@ -61,7 +62,7 @@ export default {
     if (lastStageStarted) {
       sendSegmentEvent('Retro Meeting Completed', presentMemberUserIds, {teamId, meetingNumber});
       // TODO create summary and reactivate this if minimum phases complete
-      // await sendEmailSummary(completedMeeting);
+      await sendNewMeetingSummary(completedMeeting, dataLoader);
     }
 
 
