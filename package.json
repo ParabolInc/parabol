@@ -25,7 +25,7 @@
     "build:client-deploy": "NODE_ENV=production WEBPACK_DEPLOY=true WEBPACK_MIN=true webpack --config ./webpack/prod.babel.js",
     "build:client-min": "NODE_ENV=production WEBPACK_MIN=true webpack --config ./webpack/prod.babel.js",
     "build:deploy": "rimraf build && npm run build:deps && npm run build:server && npm run build:client-deploy",
-    "build:deps": "concurrently \"npm run build:theme\" \"npm run build:relay\"",
+    "build:deps": "npm run build:relay && npm run build:theme",
     "build:dll": "NODE_ENV=production webpack --config ./webpack/webpack.config.dll.js",
     "build:relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.json --client-schema src/client/clientSchema.graphql",
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
