@@ -41,7 +41,7 @@ const safelyCastVote = async (authToken, meetingId, userId, reflectionGroupId, m
       .update((member) => ({
         votesRemaining: member('votesRemaining').add(1)
       }));
-    return sendMaxVotesPerGroupError(authToken, reflectionGroupId);
+    return sendMaxVotesPerGroupError(authToken, reflectionGroupId, maxVotesPerGroup);
   }
   return undefined;
 };

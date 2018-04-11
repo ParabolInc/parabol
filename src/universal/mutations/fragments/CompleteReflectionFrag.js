@@ -6,11 +6,13 @@ graphql`
     isViewerCreator
     meetingId
     reflectionGroupId
+    retroReflectionGroup {
+      id
+    }
     retroPhaseItemId
     sortOrder
     phaseItem {
-      title
-      question
+      id
     }
   }
 `;

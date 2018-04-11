@@ -9,6 +9,8 @@ import type {ReflectionGroup_meeting as Meeting} from './__generated__/Reflectio
 import ui from 'universal/styles/ui';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader';
+import {GROUP, VOTE} from 'universal/utils/constants';
+import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 
 const {Component} = React;
 
@@ -74,8 +76,8 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   renderReflection = (reflection: Object, idx: number) => {
-    const {meeting, retroPhaseItemId} = this.props;
-    const {reflectionGroup: {isExpanded, reflections}} = this.props;
+    const {meeting, retroPhaseItemId, reflectionGroup: {isExpanded, reflections}} = this.props;
+    const {localPhase: {phaseType}} = meeting;
     const isTopCard = idx === reflections.length - 1;
     const isCollapsed = isExpanded ? false : !isTopCard;
     const showOriginFooter = retroPhaseItemId !== reflection.retroPhaseItemId;
@@ -88,15 +90,27 @@ class ReflectionGroup extends Component<Props, State> {
        scale(${1 - (0.05 * interval)})`,
       transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`
     };
+    if (phaseType === GROUP) {
+      return (
+        <AnimatedReflection key={reflection.id} style={style} innerRef={isTopCard ? this.setTopCardRef : undefined}>
+          <DraggableReflectionCard
+            dndIndex={idx}
+            showOriginFooter={showOriginFooter}
+            meeting={meeting}
+            reflection={reflection}
+            isExpanded={isExpanded}
+            isCollapsed={isCollapsed}
+          />
+        </AnimatedReflection>
+      );
+    }
     return (
       <AnimatedReflection key={reflection.id} style={style} innerRef={isTopCard ? this.setTopCardRef : undefined}>
-        <DraggableReflectionCard
-          dndIndex={idx}
-          showOriginFooter={showOriginFooter}
+        <ReflectionCard
+          isCollapsed={isCollapsed}
           meeting={meeting}
           reflection={reflection}
-          isExpanded={isExpanded}
-          isCollapsed={isCollapsed}
+          showOriginFooter={showOriginFooter}
         />
       </AnimatedReflection>
     );
@@ -105,13 +119,14 @@ class ReflectionGroup extends Component<Props, State> {
   render() {
     const {meeting, reflectionGroup} = this.props;
     const {isExpanded, reflections} = reflectionGroup;
-
+    const {localPhase: {phaseType}} = meeting;
     // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
     const style = !isExpanded && this.topCardRef && reflections.length > 1 &&
       {height: reflections.length * 8 + this.topCardRef.clientHeight + ui.retroCardCollapsedHeightRem * 8} || {};
+    const showHeader = reflections.length > 1 || phaseType === VOTE;
     return (
       <Group>
-        {reflections.length > 1 && <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />}
+        {showHeader && <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />}
         <Reflections onClick={this.toggleExpanded} style={style}>
           {reflections.map(this.renderReflection)}
         </Reflections>
@@ -126,6 +141,9 @@ export default createFragmentContainer(
     fragment ReflectionGroup_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
       ...ReflectionGroupHeader_meeting
+      localPhase {
+        phaseType
+      }
     }
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
       ...ReflectionGroupHeader_reflectionGroup

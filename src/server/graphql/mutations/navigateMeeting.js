@@ -51,7 +51,7 @@ export default {
         stage.isComplete = true;
         stage.endAt = now;
         // handle any side effects
-        handleCompletedStage(stage, meeting);
+        await handleCompletedStage(stage, meeting, dataLoader, subOptions);
       }
     }
     if (facilitatorStageId) {

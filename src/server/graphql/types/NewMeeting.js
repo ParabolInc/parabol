@@ -8,6 +8,9 @@ import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import {RETROSPECTIVE} from 'universal/utils/constants';
 import User from 'server/graphql/types/User';
+import MeetingMember from 'server/graphql/types/MeetingMember';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {getUserId} from 'server/utils/authorization';
 
 export const newMeetingFields = () => ({
   id: {
@@ -65,6 +68,15 @@ export const newMeetingFields = () => ({
   updatedAt: {
     type: GraphQLISO8601Type,
     description: 'The last time a meeting was updated (stage completed, finished, etc)'
+  },
+  viewerMeetingMember: {
+    type: MeetingMember,
+    description: 'The meeting member of the viewer',
+    resolve: ({id: meetingId}, args, {authToken, dataLoader}) => {
+      const viewerId = getUserId(authToken);
+      const meetingMemberId = toTeamMemberId(meetingId, viewerId);
+      return dataLoader.get('meetingMembers').load(meetingMemberId);
+    }
   }
 });
 
