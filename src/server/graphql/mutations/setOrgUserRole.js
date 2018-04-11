@@ -7,6 +7,8 @@ import shortid from 'shortid';
 import {BILLING_LEADER, billingLeaderTypes, ORGANIZATION, PROMOTE_TO_BILLING_LEADER} from 'universal/utils/constants';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 import sendAuthRaven from 'server/utils/sendAuthRaven';
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
+
 
 export default {
   type: SetOrgUserRolePayload,
@@ -119,6 +121,7 @@ export default {
       const data = {orgId, userId, notificationIdsAdded};
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
+      await sendSegmentIdentify(userId);
       return data;
     }
     if (role === null) {
@@ -142,6 +145,7 @@ export default {
       const data = {orgId, userId, notificationsRemoved};
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
+      await sendSegmentIdentify(userId);
       return data;
     }
     return null;
